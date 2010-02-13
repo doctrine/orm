@@ -124,30 +124,21 @@ class DatabaseDriver implements Driver
         }
 
         foreach ($foreignKeys as $foreignKey) {
-            if (count($foreignKey->getColumns()) != 1) {
-                throw new MappingException(
-                    "Cannot generate mapping for table '".$tableName."' with foreign keys with multiple local columns."
-                );
-            }
             $cols = $foreignKey->getColumns();
             $localColumn = current($cols);
 
             $fkCols = $foreignKey->getForeignColumns();
-            if (count($fkCols) != 1) {
-                throw new MappingException(
-                    "Cannot generate mapping for table '".$tableName."' with foreign keys with multiple foreign columns."
-                );
-            }
-            $foreignColumn = current($fkCols);
 
             $associationMapping = array();
             $associationMapping['fieldName'] = Inflector::camelize(str_ireplace('_id', '', $localColumn));
-            $associationMapping['columnName'] = $localColumn;
             $associationMapping['targetEntity'] = Inflector::classify($foreignKey->getForeignTableName());
-            $associationMapping['joinColumns'][] = array(
-                'name' => $localColumn,
-                'referencedColumnName' => $foreignColumn
-            );
+
+            for ($i = 0; $i < count($cols); $i++) {
+                $associationMapping['joinColumns'][] = array(
+                    'name' => $cols[$i],
+                    'referencedColumnName' => $fkCols[$i],
+                );
+            }
 
             $metadata->mapManyToOne($associationMapping);
         }
