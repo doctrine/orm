@@ -131,4 +131,19 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals($cacheCount + 1, count($cache->getIds()));
     }
+
+    /**
+     * @param <type> $query
+     * @depends testNativeQueryResultCaching
+     */
+    public function testResultCacheDependsOnHydrationMode($query)
+    {
+        $cache = $query->getResultCacheDriver();
+        $cacheCount = count($cache->getIds());
+
+        $this->assertNotEquals(\Doctrine\ORM\Query::HYDRATE_ARRAY, $query->getHydrationMode());
+        $query->getArrayResult();
+
+        $this->assertEquals($cacheCount + 1, count($cache->getIds()));
+    }
 }

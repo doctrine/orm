@@ -67,6 +67,19 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($cacheCount + 1, count($cache->getIds()));
     }
 
+    /**
+     * @param <type> $query
+     * @depends testQueryCache_DependsOnHints
+     */
+    public function testQueryCache_DependsOnHydrationMode($query)
+    {
+        $cache = $query->getQueryCacheDriver();
+        $cacheCount = count($cache->getIds());
+
+        $query->getArrayResult();
+        $this->assertEquals($cacheCount + 1, count($cache->getIds()));
+    }
+
     public function testQueryCache_NoHitSaveParserResult()
     {
         $this->_em->getConfiguration()->setQueryCacheImpl(null);

@@ -548,7 +548,8 @@ abstract class AbstractQuery
         } else {
             $sql = $this->getSql();
             ksort($this->_hints);
-            return md5(implode(";", (array)$sql) . var_export($params, true) . var_export($this->_hints, true));
+            return md5(implode(";", (array)$sql) . var_export($params, true) .
+                var_export($this->_hints, true)."&hydrationMode=".$this->_hydrationMode);
         }
     }
 
