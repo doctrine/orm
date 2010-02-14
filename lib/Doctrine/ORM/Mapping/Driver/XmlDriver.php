@@ -266,6 +266,10 @@ class XmlDriver extends AbstractFileDriver
                 if (isset($oneToManyElement->{'orphan-removal'})) {
                     $mapping['orphanRemoval'] = (bool)$oneToManyElement->{'orphan-removal'};
                 }
+
+                if (isset($oneToManyElement['order-by'])) {
+                    $mapping['orderBy'] = (string)$oneToManyElement['order-by'];
+                }
                 
                 $metadata->mapOneToMany($mapping);
             }
@@ -352,6 +356,10 @@ class XmlDriver extends AbstractFileDriver
                 
                 if (isset($manyToManyElement->{'orphan-removal'})) {
                     $mapping['orphanRemoval'] = (bool)$manyToManyElement->{'orphan-removal'};
+                }
+
+                if (isset($manyToManyElement['order-by'])) {
+                    $mapping['orderBy'] = (string)$manyToManyElement['order-by'];
                 }
                 
                 $metadata->mapManyToMany($mapping);

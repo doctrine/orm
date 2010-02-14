@@ -27,6 +27,7 @@ Doctrine\Tests\ORM\Mapping\User:
     phonenumbers:
       targetEntity: Phonenumber
       mappedBy: user
+      orderBy: %alias%.number ASC
       cascade: [ persist ]
   manyToMany:
     groups:

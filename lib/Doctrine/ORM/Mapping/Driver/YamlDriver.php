@@ -278,6 +278,10 @@ class YamlDriver extends AbstractFileDriver
                 if (isset($oneToManyElement['cascade'])) {
                     $mapping['cascade'] = $oneToManyElement['cascade'];
                 }
+
+                if (isset($oneToManyElement['orderBy'])) {
+                    $mapping['orderBy'] = $oneToManyElement['orderBy'];
+                }
                 
                 $metadata->mapOneToMany($mapping);
             }
@@ -364,6 +368,10 @@ class YamlDriver extends AbstractFileDriver
                 
                 if (isset($manyToManyElement['cascade'])) {
                     $mapping['cascade'] = $manyToManyElement['cascade'];
+                }
+
+                if (isset($manyToManyElement['orderBy'])) {
+                    $mapping['orderBy'] = $manyToManyElement['orderBy'];
                 }
 
                 $metadata->mapManyToMany($mapping);

@@ -302,6 +302,11 @@ class AnnotationDriver implements Driver
                 $mapping['cascade'] = $oneToManyAnnot->cascade;
                 $mapping['orphanRemoval'] = $oneToManyAnnot->orphanRemoval;
                 $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $oneToManyAnnot->fetch);
+
+                if ($orderByAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OrderBy')) {
+                    $mapping['orderBy'] = $orderByAnnot->value;
+                }
+
                 $metadata->mapOneToMany($mapping);
             } else if ($manyToOneAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\ManyToOne')) {
                 $mapping['joinColumns'] = $joinColumns;
@@ -348,6 +353,11 @@ class AnnotationDriver implements Driver
                 $mapping['mappedBy'] = $manyToManyAnnot->mappedBy;
                 $mapping['cascade'] = $manyToManyAnnot->cascade;
                 $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $manyToManyAnnot->fetch);
+
+                if ($orderByAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OrderBy')) {
+                    $mapping['orderBy'] = $orderByAnnot->value;
+                }
+
                 $metadata->mapManyToMany($mapping);
             }
         }

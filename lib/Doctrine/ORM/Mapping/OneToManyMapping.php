@@ -52,6 +52,11 @@ class OneToManyMapping extends AssociationMapping
     //public $keyColumn;
 
     /**
+     * Order this collection by the given SQL snippet.
+     */
+    public $orderBy = null;
+
+    /**
      * Initializes a new OneToManyMapping.
      *
      * @param array $mapping  The mapping information.
@@ -79,6 +84,10 @@ class OneToManyMapping extends AssociationMapping
         
         $this->orphanRemoval = isset($mapping['orphanRemoval']) ?
                 (bool) $mapping['orphanRemoval'] : false;
+
+        if (isset($mapping['orderBy'])) {
+            $this->orderBy = $mapping['orderBy'];
+        }
     }
     
     /**

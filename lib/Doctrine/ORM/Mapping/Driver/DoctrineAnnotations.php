@@ -124,6 +124,8 @@ final class SequenceGenerator extends Annotation {
 }
 final class ChangeTrackingPolicy extends Annotation {}
 
+final class OrderBy extends Annotation {}
+
 /* Annotations for lifecycle callbacks */
 final class HasLifecycleCallbacks extends Annotation {}
 final class PrePersist extends Annotation {}

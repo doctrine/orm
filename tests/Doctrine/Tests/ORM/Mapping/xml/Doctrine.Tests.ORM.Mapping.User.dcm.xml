@@ -24,7 +24,7 @@
             <join-column name="address_id" referenced-column-name="id"/>
         </one-to-one>
         
-        <one-to-many field="phonenumbers" target-entity="Phonenumber" mapped-by="user">
+        <one-to-many field="phonenumbers" target-entity="Phonenumber" mapped-by="user" order-by="%alias%.number ASC">
             <cascade>
                 <cascade-persist/>
             </cascade>

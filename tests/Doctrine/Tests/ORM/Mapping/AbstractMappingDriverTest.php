@@ -18,9 +18,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $mappingDriver = $this->_loadDriver();
 
         $class = new ClassMetadata($className);
-
-        $this->assertFalse($mappingDriver->isTransient($className));
-
         $mappingDriver->loadMetadataForClass($className, $class);
 
         return $class;
@@ -64,7 +61,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     public function testIdentifier($class)
     {
         $this->assertEquals(array('id'), $class->identifier);
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $class->getIdGeneratorType());
+        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $class->getIdGeneratorType(), "ID-Generator is not ClassMetadata::GENERATOR_TYPE_AUTO");
 
         return $class;
     }
@@ -116,6 +113,9 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeDetach);
         $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeMerge);
 
+        // Test Order By
+        $this->assertEquals('%alias%.number ASC', $class->associationMappings['phonenumbers']->orderBy);
+
         return $class;
     }
 
@@ -134,6 +134,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($class->associationMappings['groups']->isCascadeRefresh);
         $this->assertTrue($class->associationMappings['groups']->isCascadeDetach);
         $this->assertTrue($class->associationMappings['groups']->isCascadeMerge);
+
+        $this->assertNull($class->associationMappings['groups']->orderBy);
 
         return $class;
     }
@@ -177,20 +179,57 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     }
 }
 
-class User {
-    private $id;
-    private $name;
-    private $email;
-    private $address;
-    private $phonenumbers;
-    private $groups;
+/**
+ * @Entity
+ * @HasLifecycleCallbacks
+ * @Table(name="cms_users")
+ */
+class User
+{
+    /** @Id @Column(type="int") @generatedValue(strategy="AUTO") */
+    public $id;
 
-    // ... rest of code omitted, irrelevant for the mapping tests
+    /**
+     * @Column(length=50, nullable=true, unique=true)
+     */
+    public $name;
 
+    /**
+     * @Column(name="user_email", columnDefinition="CHAR(32) NOT NULL")
+     */
+    public $email;
+
+    /**
+     * @OneToOne(targetEntity="Address", cascade={"remove"})
+     */
+    public $address;
+
+    /**
+     *
+     * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist"})
+     * @OrderBy("%alias%.number ASC")
+     */
+    public $phonenumbers;
+
+    /**
+     * @ManyToMany(targetEntity="Group", cascade={"all"})
+     * @JoinTable(name="cms_user_groups",
+     *    joinColumns={@JoinColumn(name="user_id", referencedColumnName="id", nullable=false, unique=false)},
+     *    inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id", columnDefinition="INT NULL")}
+     * )
+     */
+    public $groups;
+
+    /**
+     * @PrePersist
+     */
     public function doStuffOnPrePersist()
     {
     }
 
+    /**
+     * @PostPersist
+     */
     public function doStuffOnPostPersist()
     {
 

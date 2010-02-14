@@ -59,6 +59,11 @@ class ManyToManyMapping extends AssociationMapping
     
     /** FUTURE: The key column mapping, if any. The key column holds the keys of the Collection. */
     //public $keyColumn;
+
+    /**
+     * Order this collection by the given SQL snippet.
+     */
+    public $orderBy = null;
     
     /**
      * Initializes a new ManyToManyMapping.
@@ -134,6 +139,10 @@ class ManyToManyMapping extends AssociationMapping
                 $this->relationToTargetKeyColumns[$inverseJoinColumn['name']] = $inverseJoinColumn['referencedColumnName'];
                 $this->joinTableColumns[] = $inverseJoinColumn['name'];
             }
+        }
+
+        if (isset($mapping['orderBy'])) {
+            $this->orderBy = $mapping['orderBy'];
         }
     }
 

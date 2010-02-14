@@ -219,6 +219,7 @@
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
+    <xs:attribute name="order-by" type="xs:string" />
   </xs:complexType>
 
   <xs:complexType name="one-to-many">
@@ -230,6 +231,7 @@
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
+    <xs:attribute name="order-by" type="xs:string" />
   </xs:complexType>
   
   <xs:complexType name="many-to-one">
