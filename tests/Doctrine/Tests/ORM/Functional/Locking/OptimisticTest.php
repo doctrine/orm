@@ -94,7 +94,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($test);
         $this->_em->flush();
 
-        $this->assertEquals(1, $test->version);
+        $this->assertEquals(1, $test->getVersion());
     }
 
     /**
@@ -205,7 +205,9 @@ class OptimisticStandard
     /**
      * @Version @Column(type="integer")
      */
-    public $version;
+    private $version;
+    
+    function getVersion() {return $this->version;}
 }
 
 /**

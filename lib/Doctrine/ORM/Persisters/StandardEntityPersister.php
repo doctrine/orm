@@ -253,7 +253,7 @@ class StandardEntityPersister
             $versionField = $this->_class->versionField;
             $versionFieldType = $this->_class->getTypeOfField($versionField);
             $where[$versionField] = Type::getType($versionFieldType)
-                    ->convertToDatabaseValue($entity->version, $this->_platform);
+                    ->convertToDatabaseValue($this->_class->reflFields[$versionField]->getValue($entity), $this->_platform);
             $versionFieldColumnName = $this->_class->getQuotedColumnName($versionField, $this->_platform);
             if ($versionFieldType == 'integer') {
                 $set[] = $versionFieldColumnName . ' = ' . $versionFieldColumnName . ' + 1';
