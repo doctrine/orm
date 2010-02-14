@@ -33,6 +33,7 @@ use Doctrine\ORM\Query\Lexer;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
 class SizeFunction extends FunctionNode
 {
@@ -65,12 +66,9 @@ class SizeFunction extends FunctionNode
                            . $targetTableAlias . '.' . $sourceKeyColumn . ' = ' 
                            . $sourceTableAlias . '.' . $targetKeyColumn;
             }
-            
-            $sql = '(SELECT COUNT(' 
-                 . "$targetTableAlias." . implode(", $targetTableAlias.", $targetAssoc->targetToSourceKeyColumns)
-                 . ') FROM ' . $targetClass->primaryTable['name'] . ' ' . $targetTableAlias .  $whereSql . ')';
+
+            $tableName = $targetClass->primaryTable['name'];
         } else if ($assoc->isManyToMany()) {
-            // TODO
             $targetTableAlias = $sqlWalker->getSqlTableAlias($assoc->joinTable['name']);
             $sourceTableAlias = $sqlWalker->getSqlTableAlias($qComp['metadata']->primaryTable['name'], $dqlAlias);
             
@@ -82,12 +80,10 @@ class SizeFunction extends FunctionNode
                            . $sourceTableAlias . '.' . $sourceKeyColumn;
             }
 
-            $sql = '(SELECT COUNT(' 
-                 . "$targetTableAlias." . implode(", $targetTableAlias.", $assoc->joinTableColumns)
-                 . ') FROM ' . $assoc->joinTable['name'] . ' ' . $targetTableAlias . $whereSql . ')';
+            $tableName = $assoc->joinTable['name'];
         }
         
-        return $sql;
+        return '(SELECT COUNT(*) FROM ' . $tableName . ' ' . $targetTableAlias . $whereSql . ')';
     }
 
     /**
