@@ -540,14 +540,20 @@ class StandardEntityPersister
     /**
      * Loads a collection of entities in a one-to-many association.
      *
+     * @param OneToManyMapping $assoc
      * @param array $criteria The criteria by which to select the entities.
      * @param PersistentCollection The collection to fill.
      */
-    public function loadOneToManyCollection(array $criteria, PersistentCollection $coll)
+    public function loadOneToManyCollection($assoc, array $criteria, PersistentCollection $coll)
     {
         $owningAssoc = $this->_class->associationMappings[$coll->getMapping()->mappedByFieldName];
         
         $sql = $this->_getSelectEntitiesSql($criteria, $owningAssoc);
+
+        if ($assoc->orderBy !== null) {
+            $sql .= ' ORDER BY '.str_replace('%alias%', $this->_class->getTableName(), $assoc->orderBy);
+        }
+
         $params = array_values($criteria);
         
         if ($this->_sqlLogger !== null) {
@@ -565,6 +571,7 @@ class StandardEntityPersister
     /**
      * Loads a collection of entities of a many-to-many association.
      *
+     * @param ManyToManyMapping $assoc
      * @param array $criteria
      * @param PersistentCollection $coll The collection to fill.
      */
@@ -716,7 +723,8 @@ class StandardEntityPersister
     
     /**
      * Gets the SQL to select a collection of entities in a many-many association.
-     * 
+     *
+     * @param ManyToManyMapping $assoc
      * @param array $criteria
      * @return string
      */
@@ -750,11 +758,16 @@ class StandardEntityPersister
             $columnName = $joinTableName . '.' . $owningAssoc->getQuotedJoinColumnName($joinColumn, $this->_platform);
             $conditionSql .= $columnName . ' = ?';
         }
+
+        $orderBySql = '';
+        if ($manyToMany->orderBy !== null) {
+            $orderBySql = ' ORDER BY '.str_replace('%alias%', $this->_class->getTableName(), $manyToMany->orderBy);
+        }
         
         return 'SELECT ' . $this->_getSelectColumnList() 
              . ' FROM ' . $this->_class->getQuotedTableName($this->_platform)
              . $joinSql
-             . ' WHERE ' . $conditionSql;
+             . ' WHERE ' . $conditionSql . $orderBySql;
     }
     
     /** @override */

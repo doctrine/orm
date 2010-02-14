@@ -135,6 +135,6 @@ class OneToManyMapping extends AssociationMapping
             }
         }
 
-        $persister->loadOneToManyCollection($conditions, $targetCollection);
+        $persister->loadOneToManyCollection($this, $conditions, $targetCollection);
     }
 }
