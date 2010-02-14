@@ -192,6 +192,34 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group DDC-135
+     */
+    public function testSupportsJoinAndWithClauseRestriction()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a WITH a.topic LIKE '%foo%'",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ LEFT JOIN cms_articles c1_ ON c0_.id = c1_.user_id AND (c1_.topic LIKE '%foo%')"
+        );
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a WITH a.topic LIKE '%foo%'",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ INNER JOIN cms_articles c1_ ON c0_.id = c1_.user_id AND (c1_.topic LIKE '%foo%')"
+        );
+    }
+
+    /**
+     * @group DDC-135
+     * @group DDC-177
+     */
+    public function testJoinOnClause_NotYetSupported_ThrowsException()
+    {
+        $this->setExpectedException('Doctrine\ORM\Query\QueryException');
+
+        $sql = $this->_em->createQuery(
+            "SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a ON a.topic LIKE '%foo%'"
+        )->getSql();
+    }
+
     public function testSupportsMultipleJoins()
     {
         $this->assertSqlGeneration(

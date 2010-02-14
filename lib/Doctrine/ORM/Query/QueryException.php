@@ -33,6 +33,7 @@ use Doctrine\ORM\Query\AST\PathExpression;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
 class QueryException extends \Doctrine\Common\DoctrineException 
 {
@@ -82,6 +83,15 @@ class QueryException extends \Doctrine\Common\DoctrineException
         return new self(
             "Invalid query operation: Not allowed to iterate over fetch join collections ".
             "in class ".$assoc->sourceEntityName." assocation ".$assoc->sourceFieldName
+        );
+    }
+
+    public static function overwritingJoinConditionsNotYetSupported($assoc)
+    {
+        return new self(
+            "Unsupported query operation: It is not yet possible to overwrite the join ".
+            "conditions in class ".$assoc->sourceEntityName." assocation ".$assoc->sourceFieldName.". ".
+            "Use WITH to append additional join conditions to the association."
         );
     }
 }

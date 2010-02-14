@@ -30,11 +30,14 @@ use Doctrine\ORM\Query,
  * the corresponding SQL.
  *
  * @author Roman Borschel <roman@code-factory.org>
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
  * @since 2.0
  */
 class SqlWalker implements TreeWalker
 {
-    /** The ResultSetMapping. */
+    /**
+     * @var ResultSetMapping
+     */
     private $_rsm;
     
     /** Counter for generating unique column aliases. */
@@ -47,13 +50,19 @@ class SqlWalker implements TreeWalker
     /** Counter for SQL parameter positions. */
     private $_sqlParamIndex = 1;
     
-    /** The ParserResult. */
+    /**
+     * @var ParserResult
+     */
     private $_parserResult;
     
-    /** The EntityManager. */
+    /**
+     * @var EntityManager
+     */
     private $_em;
     
-    /** The Connection of the EntityManager. */
+    /**
+     * @var Doctrine\DBAL\Connection
+     */
     private $_conn;
     
     /**
@@ -738,6 +747,17 @@ class SqlWalker implements TreeWalker
                           . ' = '
                           . $joinTableAlias . '.' . $assoc->getQuotedJoinColumnName($relationColumn, $this->_platform);
                 }
+            }
+        }
+
+        // Handle ON / WITH clause
+        if ($join->conditionalExpression !== null) {
+            if ($join->whereType == AST\Join::JOIN_WHERE_ON) {
+                throw QueryException::overwritingJoinConditionsNotYetSupported($assoc);
+            } else {
+                $sql .= ' AND (' . implode(' OR ',
+                    array_map(array($this, 'walkConditionalTerm'), $join->conditionalExpression->conditionalTerms)
+                ). ')';
             }
         }
 
