@@ -73,6 +73,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Routing\RoutingLeg',
             'Doctrine\Tests\Models\Routing\RoutingLocation',
             'Doctrine\Tests\Models\Routing\RoutingRoute',
+            'Doctrine\Tests\Models\Routing\RoutingRouteBooking',
         ),
     );
 
@@ -127,6 +128,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         
         if (isset($this->_usedModelSets['generic'])) {
             $conn->executeUpdate('DELETE FROM date_time_model');
+        }
+
+        if (isset($this->_usedModelSets['routing'])) {
+            $conn->executeUpdate('DELETE FROM RoutingRouteLegs');
+            $conn->executeUpdate('DELETE FROM RoutingRouteBooking');
+            $conn->executeUpdate('DELETE FROM RoutingRoute');
+            $conn->executeUpdate('DELETE FROM RoutingLeg');
+            $conn->executeUpdate('DELETE FROM RoutingLocation');
         }
 
         $this->_em->clear();
