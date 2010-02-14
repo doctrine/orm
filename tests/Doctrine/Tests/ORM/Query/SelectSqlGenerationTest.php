@@ -180,6 +180,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    public function testSupportsMultipleEntitesInFromClause()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a WHERE u.id = a.user.id',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c1_.id AS id4, c1_.topic AS topic5, c1_.text AS text6 FROM cms_users c0_ INNER JOIN cms_users c2_ ON c1_.user_id = c2_.id WHERE c0_.id = c2_.id'
+        );
+    }
+
     public function testSupportsPlainJoinWithoutClause()
     {
         $this->assertSqlGeneration(
