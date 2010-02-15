@@ -548,11 +548,7 @@ class StandardEntityPersister
     {
         $owningAssoc = $this->_class->associationMappings[$coll->getMapping()->mappedByFieldName];
         
-        $sql = $this->_getSelectEntitiesSql($criteria, $owningAssoc);
-
-        if ($assoc->orderBy !== null) {
-            $sql .= ' ORDER BY '.str_replace('%alias%', $this->_class->getTableName(), $assoc->orderBy);
-        }
+        $sql = $this->_getSelectEntitiesSql($criteria, $owningAssoc, $assoc->orderBy);
 
         $params = array_values($criteria);
         
@@ -653,9 +649,11 @@ class StandardEntityPersister
      * Gets the SELECT SQL to select one or more entities by a set of field criteria.
      *
      * @param array $criteria
-     * @return string The SQL.
+     * @param AssociationMapping $assoc
+     * @param string $orderBy
+     * @return string
      */
-    protected function _getSelectEntitiesSql(array &$criteria, $assoc = null)
+    protected function _getSelectEntitiesSql(array &$criteria, $assoc = null, $orderBy = null)
     {
         // Construct WHERE conditions
         $conditionSql = '';
@@ -676,9 +674,43 @@ class StandardEntityPersister
             $conditionSql .= ' = ?';
         }
 
+        $orderBySql = '';
+        if ($orderBy !== null) {
+            $orderBySql = $this->_getCollectionOrderBySql(
+                $orderBy, $this->_class->getQuotedTableName($this->_platform)
+            );
+        }
+
         return 'SELECT ' . $this->_getSelectColumnList() 
              . ' FROM ' . $this->_class->getQuotedTableName($this->_platform)
-             . ($conditionSql ? ' WHERE ' . $conditionSql : '');
+             . ($conditionSql ? ' WHERE ' . $conditionSql : '') . $orderBySql;
+    }
+
+    /**
+     * Generate ORDER BY Sql Snippet for ordered collections
+     * 
+     * @param array $orderBy
+     * @return string
+     */
+    protected function _getCollectionOrderBySql(array $orderBy, $baseTableAlias, $tableAliases = array())
+    {
+        $orderBySql = '';
+        foreach ($orderBy AS $fieldName => $orientation) {
+            if (!isset($this->_class->fieldMappings[$fieldName])) {
+                ORMException::unrecognizedField($fieldName);
+            }
+
+            $tableAlias = isset($this->_class->fieldMappings['inherited']) ?
+                $tableAliases[$this->_class->fieldMappings['inherited']] : $baseTableAlias;
+            $columnName = $this->_class->getQuotedColumnName($fieldName, $this->_platform);
+            if ($orderBySql != '') {
+                $orderBySql .= ', ';
+            } else {
+                $orderBySql = ' ORDER BY ';
+            }
+            $orderBySql .= $tableAlias . '.' . $columnName . ' '.$orientation;
+        }
+        return $orderBySql;
     }
     
     /**
@@ -724,7 +756,7 @@ class StandardEntityPersister
     /**
      * Gets the SQL to select a collection of entities in a many-many association.
      *
-     * @param ManyToManyMapping $assoc
+     * @param ManyToManyMapping $manyToMany
      * @param array $criteria
      * @return string
      */
@@ -761,7 +793,9 @@ class StandardEntityPersister
 
         $orderBySql = '';
         if ($manyToMany->orderBy !== null) {
-            $orderBySql = ' ORDER BY '.str_replace('%alias%', $this->_class->getTableName(), $manyToMany->orderBy);
+            $orderBySql = $this->_getCollectionOrderBySql(
+                $manyToMany->orderBy, $this->_class->getQuotedTableName($this->_platform)
+            );
         }
         
         return 'SELECT ' . $this->_getSelectColumnList() 

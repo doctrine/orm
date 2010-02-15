@@ -9,7 +9,7 @@ use Doctrine\Tests\Models\Routing\RoutingRouteBooking;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-class OrderedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OrderedCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected $locations = array();
 

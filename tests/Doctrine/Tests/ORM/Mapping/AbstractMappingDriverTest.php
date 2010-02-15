@@ -114,7 +114,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeMerge);
 
         // Test Order By
-        $this->assertEquals('%alias%.number ASC', $class->associationMappings['phonenumbers']->orderBy);
+        $this->assertEquals(array('number' => 'ASC'), $class->associationMappings['phonenumbers']->orderBy);
 
         return $class;
     }
@@ -207,7 +207,7 @@ class User
     /**
      *
      * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist"})
-     * @OrderBy("%alias%.number ASC")
+     * @OrderBy("number ASC")
      */
     public $phonenumbers;
 

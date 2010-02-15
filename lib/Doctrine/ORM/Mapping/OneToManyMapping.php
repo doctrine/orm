@@ -86,7 +86,18 @@ class OneToManyMapping extends AssociationMapping
                 (bool) $mapping['orphanRemoval'] : false;
 
         if (isset($mapping['orderBy'])) {
-            $this->orderBy = $mapping['orderBy'];
+            $parts = explode(",", $mapping['orderBy']);
+            $orderByGroup = array();
+            foreach ($parts AS $part) {
+                $orderByItem = explode(" ", trim($part));
+                if (count($orderByItem) == 1) {
+                    $orderByGroup[$orderByItem[0]] = "ASC";
+                } else {
+                    $orderByGroup[$orderByItem[0]] = array_pop($orderByItem);
+                }
+            }
+
+            $this->orderBy = $orderByGroup;
         }
     }
     

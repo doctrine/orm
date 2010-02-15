@@ -294,10 +294,12 @@ class JoinedSubclassPersister extends StandardEntityPersister
      * Gets the SELECT SQL to select one or more entities by a set of field criteria.
      *
      * @param array $criteria
-     * @return string The SQL.
+     * @param AssociationMapping $assoc
+     * @param string $orderBy
+     * @return string
      * @override
      */
-    protected function _getSelectEntitiesSql(array &$criteria, $assoc = null)
+    protected function _getSelectEntitiesSql(array &$criteria, $assoc = null, $orderBy = null)
     {
         $tableAliases = array();
         $aliasIndex = 1;
@@ -419,10 +421,15 @@ class JoinedSubclassPersister extends StandardEntityPersister
             $conditionSql .= ' = ?';
         }
 
+        $orderBySql = '';
+        if ($orderBy !== null) {
+            $orderBySql = $this->_getCollectionOrderBySql($orderBy, $baseTableAlias, $tableAliases);
+        }
+
         return 'SELECT ' . $columnList
                 . ' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' ' . $baseTableAlias
                 . $joinSql
-                . ($conditionSql != '' ? ' WHERE ' . $conditionSql : '');
+                . ($conditionSql != '' ? ' WHERE ' . $conditionSql : '') . $orderBySql;
     }
     
     /** @override */

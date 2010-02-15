@@ -41,6 +41,8 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OneToOneSelfReferentialAssociationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OneToManySelfReferentialAssociationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\ManyToManySelfReferentialAssociationTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OrderedCollectionTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\OrderedJoinedTableInheritanceCollectionTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\ReferenceProxyTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\LifecycleCallbackTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\StandardEntityPersisterTest');

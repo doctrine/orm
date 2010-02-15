@@ -61,7 +61,11 @@ class ManyToManyMapping extends AssociationMapping
     //public $keyColumn;
 
     /**
-     * Order this collection by the given SQL snippet.
+     * Order this collection by the given DQL snippet.
+     * 
+     * Only simple unqualified field names and ASC|DESC are allowed
+     *
+     * @var array
      */
     public $orderBy = null;
     
@@ -142,7 +146,18 @@ class ManyToManyMapping extends AssociationMapping
         }
 
         if (isset($mapping['orderBy'])) {
-            $this->orderBy = $mapping['orderBy'];
+            $parts = explode(",", $mapping['orderBy']);
+            $orderByGroup = array();
+            foreach ($parts AS $part) {
+                $orderByItem = explode(" ", trim($part));
+                if (count($orderByItem) == 1) {
+                    $orderByGroup[$orderByItem[0]] = "ASC";
+                } else {
+                    $orderByGroup[$orderByItem[0]] = array_pop($orderByItem);
+                }
+            }
+
+            $this->orderBy = $orderByGroup;
         }
     }
 
