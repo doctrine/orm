@@ -14,6 +14,12 @@ use Doctrine\DBAL\Types\Type;
 
 class TableTest extends \PHPUnit_Framework_TestCase
 {
+    public function testCreateWithInvalidTableName()
+    {
+        $this->setExpectedException('Doctrine\DBAL\DBALException');
+        $table = new \Doctrine\DBAL\Schema\Table('');
+    }
+
     public function testGetName()
     {
         $table =  new Table("foo", array(), array(), array());

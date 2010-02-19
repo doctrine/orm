@@ -16,6 +16,14 @@ abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
         $this->_platform = $this->createPlatform();
     }
 
+    public function testCreateWithNoColumns()
+    {
+        $table = new \Doctrine\DBAL\Schema\Table('test');
+
+        $this->setExpectedException('Doctrine\DBAL\DBALException');
+        $sql = $this->_platform->getCreateTableSql($table);
+    }
+
     public function testGeneratesTableCreationSql()
     {
         $table = new \Doctrine\DBAL\Schema\Table('test');

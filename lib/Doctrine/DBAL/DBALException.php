@@ -6,7 +6,7 @@ class DBALException extends \Exception
 {
     public static function notSupported($method)
     {
-        return new self("Operation '$method' is not supported.");
+        return new self("Operation '$method' is not supported by platform.");
     }
 
     public static function invalidPlatformSpecified()
@@ -46,5 +46,28 @@ class DBALException extends \Exception
     {
         return new self("The given 'driverClass' ".$driverClass." has to implement the ".
             "\Doctrine\DBAL\Driver interface.");
+    }
+
+    /**
+     * @param string $tableName
+     * @return DBALException
+     */
+    public static function invalidTableName($tableName)
+    {
+        return new self("Invalid table name specified: ".$tableName);
+    }
+
+    /**
+     * @param string $tableName
+     * @return DBALException
+     */
+    public static function noColumnsSpecifiedForTable($tableName)
+    {
+        return new self("No columns specified for table ".$tableName);
+    }
+
+    public static function limitOffsetInvalid()
+    {
+        return new self("Invalid Offset in Limit Query, it has to be larger or equal to 0.");
     }
 }

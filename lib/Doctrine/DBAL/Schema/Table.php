@@ -23,6 +23,7 @@ namespace Doctrine\DBAL\Schema;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Schema\Visitor\Visitor;
+use Doctrine\DBAL\DBALException;
 
 /**
  * Object Representation of a table
@@ -101,6 +102,10 @@ class Table extends AbstractAsset
      */
     public function __construct($tableName, array $columns=array(), array $indexes=array(), array $fkConstraints=array(), $idGeneratorType=self::ID_NONE, array $options=array())
     {
+        if (strlen($tableName) == 0) {
+            throw DBALException::invalidTableName($tableName);
+        }
+
         $this->_setName($tableName);
         $this->_idGeneratorType = $idGeneratorType;
         

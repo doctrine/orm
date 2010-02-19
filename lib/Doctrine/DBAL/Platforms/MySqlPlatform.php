@@ -21,7 +21,7 @@
 
 namespace Doctrine\DBAL\Platforms;
 
-use Doctrine\Common\DoctrineException,
+use Doctrine\DBAL\DBALException,
     Doctrine\DBAL\Schema\TableDiff;
 
 /**
@@ -347,12 +347,6 @@ class MySqlPlatform extends AbstractPlatform
      */
     protected function _getCreateTableSql($tableName, array $columns, array $options = array())
     {
-        if ( ! $tableName) {
-            throw DoctrineException::missingTableName();
-        }
-        if (empty($columns)) {
-            throw DoctrineException::missingFieldsArrayForTable($tableName);
-        }
         $queryFields = $this->getColumnDeclarationListSql($columns);
 
         if (isset($options['uniqueConstraints']) && ! empty($options['uniqueConstraints'])) {
@@ -591,44 +585,6 @@ class MySqlPlatform extends AbstractPlatform
         $unsigned = (isset($columnDef['unsigned']) && $columnDef['unsigned']) ? ' UNSIGNED' : '';
 
         return $unsigned . $autoinc;
-    }
-    
-    /**
-     * Obtain DBMS specific SQL code portion needed to set an index
-     * declaration to be used in statements like CREATE TABLE.
-     *
-     * @return string
-     * @override
-     */
-    public function getIndexFieldDeclarationListSql(array $fields)
-    {
-        $declFields = array();
-
-        foreach ($fields as $fieldName => $field) {
-            $fieldString = $fieldName;
-
-            if (is_array($field)) {
-                if (isset($field['length'])) {
-                    $fieldString .= '(' . $field['length'] . ')';
-                }
-
-                if (isset($field['sorting'])) {
-                    $sort = strtoupper($field['sorting']);
-                    switch ($sort) {
-                        case 'ASC':
-                        case 'DESC':
-                            $fieldString .= ' ' . $sort;
-                            break;
-                        default:
-                            throw DoctrineException::unknownIndexSortingOption($sort);
-                    }
-                }
-            } else {
-                $fieldString = $field;
-            }
-            $declFields[] = $fieldString;
-        }
-        return implode(', ', $declFields);
     }
     
     /**

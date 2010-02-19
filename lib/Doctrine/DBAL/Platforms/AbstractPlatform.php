@@ -582,6 +582,10 @@ abstract class AbstractPlatform
             throw new \InvalidArgumentException("Second argument of AbstractPlatform::getCreateTableSql() has to be integer.");
         }
 
+        if (count($table->getColumns()) == 0) {
+            throw DBALException::noColumnsSpecifiedForTable($table->getName());
+        }
+
         $tableName = $table->getName();
         $options = $table->getOptions();
         $options['uniqueConstraints'] = array();
@@ -692,7 +696,7 @@ abstract class AbstractPlatform
      * Gets the SQL to create a sequence on this platform.
      *
      * @param \Doctrine\DBAL\Schema\Sequence $sequence
-     * @throws DoctrineException
+     * @throws DBALException
      */
     public function getCreateSequenceSql(\Doctrine\DBAL\Schema\Sequence $sequence)
     {
@@ -1573,7 +1577,7 @@ abstract class AbstractPlatform
      */
     public function getTimeTypeDeclarationSql(array $fieldDeclaration)
     {
-        throw DoctrineException::getTimeTypeDeclarationNotSupported($this);
+        throw DBALException::notSupported(__METHOD__);
     }
 
     /**

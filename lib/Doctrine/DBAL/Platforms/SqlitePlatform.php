@@ -21,7 +21,7 @@
 
 namespace Doctrine\DBAL\Platforms;
 
-use Doctrine\Common\DoctrineException;
+use Doctrine\DBAL\DBALException;
 
 /**
  * The SqlitePlatform class describes the specifics and dialects of the SQLite
@@ -267,13 +267,6 @@ class SqlitePlatform extends AbstractPlatform
      */
     protected function _getCreateTableSql($name, array $columns, array $options = array())
     {
-        if ( ! $name) {
-            throw DoctrineException::invalidTableName($name);
-        }
-
-        if (empty($columns)) {
-            throw DoctrineException::noFieldsSpecifiedForTable($name);
-        }
         $queryFields = $this->getColumnDeclarationListSql($columns);
 
         $autoinc = false;

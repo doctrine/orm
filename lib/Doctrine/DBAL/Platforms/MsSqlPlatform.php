@@ -21,9 +21,8 @@
 
 namespace Doctrine\DBAL\Platforms;
 
-use \Doctrine\DBAL\Schema\TableDiff;
-
-use Doctrine\Common\DoctrineException;
+use Doctrine\DBAL\Schema\TableDiff;
+use Doctrine\DBAL\DBALException;
 
 /**
  * The MsSqlPlatform provides the behavior, features and SQL dialect of the
@@ -54,7 +53,7 @@ class MsSqlPlatform extends AbstractPlatform
 
             $offset = intval($offset);
             if ($offset < 0) {
-                throw \Doctrine\Common\DoctrineException::limitOffsetInvalid($offset);
+                throw DBALException::limitOffsetInvalid($offset);
             }
     
             $orderby = stristr($query, 'ORDER BY');

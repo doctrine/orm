@@ -387,7 +387,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      * Gets the SQL to create a sequence on this platform.
      *
      * @param \Doctrine\DBAL\Schema\Sequence $sequence
-     * @throws DoctrineException
+     * @return string
      */
     public function getCreateSequenceSql(\Doctrine\DBAL\Schema\Sequence $sequence)
     {

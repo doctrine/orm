@@ -22,7 +22,6 @@
 namespace Doctrine\DBAL\Schema;
 
 use \Doctrine\DBAL\Types;
-use \Doctrine\Common\DoctrineException;
 use \Doctrine\DBAL\DBALException;
 use \Doctrine\DBAL\Platforms\AbstractPlatform;
 

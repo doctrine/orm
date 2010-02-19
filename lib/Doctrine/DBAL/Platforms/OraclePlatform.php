@@ -111,7 +111,7 @@ class OraclePlatform extends AbstractPlatform
      * in {@see listSequences()}
      *
      * @param \Doctrine\DBAL\Schema\Sequence $sequence
-     * @throws DoctrineException
+     * @return string
      */
     public function getCreateSequenceSql(\Doctrine\DBAL\Schema\Sequence $sequence)
     {
