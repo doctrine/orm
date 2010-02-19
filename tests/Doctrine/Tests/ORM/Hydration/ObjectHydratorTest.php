@@ -743,6 +743,81 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertEquals(0, $result[0]->articles->count());
         $this->assertEquals(0, $result[1]->articles->count());
     }
+    
+    /**
+     * DQL: select partial u.{id,status}, a.id, a.topic, c.id as cid, c.topic as ctopic from CmsUser u left join u.articles a left join a.comments c
+     * 
+     * @group bubu
+     */
+    /*public function testChainedJoinWithScalars()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__status', 'status');
+        $rsm->addScalarResult('a__id', 'id');
+        $rsm->addScalarResult('a__topic', 'topic');
+        $rsm->addScalarResult('c__id', 'cid');
+        $rsm->addScalarResult('c__topic', 'ctopic');
+
+        // Faked result set
+        $resultSet = array(
+            //row1
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'a__id' => '1',
+                'a__topic' => 'The First',
+                'c__id' => '1',
+                'c__topic' => 'First Comment'
+                ),
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'a__id' => '1',
+                'a__topic' => 'The First',
+                'c__id' => '2',
+                'c__topic' => 'Second Comment'
+                ),
+           array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'a__id' => '42',
+                'a__topic' => 'The Answer',
+                'c__id' => null,
+                'c__topic' => null
+                ),
+            );
+
+        $stmt = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+
+        $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+
+        $this->assertEquals(3, count($result));
+        
+        $this->assertTrue($result[0][0] instanceof CmsUser); // User object
+        $this->assertEquals(1, $result[0]['id']);
+        $this->assertEquals('The First', $result[0]['topic']);
+        $this->assertEquals(1, $result[0]['cid']);
+        $this->assertEquals('First Comment', $result[0]['ctopic']);
+        
+        $this->assertTrue($result[1][0] instanceof CmsUser); // Same User object
+        $this->assertEquals(1, $result[1]['id']); // duplicated
+        $this->assertEquals('The First', $result[1]['topic']); // duplicated
+        $this->assertEquals(2, $result[1]['cid']);
+        $this->assertEquals('Second Comment', $result[1]['ctopic']);
+        
+        $this->assertTrue($result[2][0] instanceof CmsUser); // Same User object
+        $this->assertEquals(42, $result[2]['id']);
+        $this->assertEquals('The Answer', $result[2]['topic']);
+        $this->assertNull($result[2]['cid']);
+        $this->assertNull($result[2]['ctopic']);
+        
+        $this->assertTrue($result[0][0] === $result[1][0]);
+        $this->assertTrue($result[1][0] === $result[2][0]);
+        $this->assertTrue($result[0][0] === $result[2][0]);
+    }*/
 
     public function testResultIteration()
     {

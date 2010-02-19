@@ -317,7 +317,7 @@ class UnitOfWork implements PropertyChangedListener
         } catch (\Exception $e) {
             $conn->setRollbackOnly();
             $conn->rollback();
-            $this->clear();
+            $this->_em->close();
             throw $e;
         }
 

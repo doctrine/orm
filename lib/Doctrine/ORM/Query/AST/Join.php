@@ -38,13 +38,10 @@ class Join extends Node
     const JOIN_TYPE_LEFT = 1;
     const JOIN_TYPE_LEFTOUTER = 2;
     const JOIN_TYPE_INNER = 3;
-    const JOIN_WHERE_ON = 1;
-    const JOIN_WHERE_WITH = 2;
 
     public $joinType = self::JOIN_TYPE_INNER;    
     public $joinAssociationPathExpression = null;
     public $aliasIdentificationVariable = null;
-    public $whereType = self::JOIN_WHERE_WITH;
     public $conditionalExpression = null;
 
     public function __construct($joinType, $joinAssocPathExpr, $aliasIdentVar)

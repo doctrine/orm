@@ -278,7 +278,7 @@ class OneToOneMapping extends AssociationMapping
     /**
      * @internal Experimental. For MetaModel API, Doctrine 2.1 or later.
      */
-    public static function __set_state(array $state)
+    /*public static function __set_state(array $state)
     {
         $assoc = new self(array());
         $assoc->isOptional = $state['isOptional'];
@@ -302,5 +302,5 @@ class OneToOneMapping extends AssociationMapping
         $assoc->sourceFieldName = $state['sourceFieldName'];
         
         return $assoc;
-    }
+    }*/
 }

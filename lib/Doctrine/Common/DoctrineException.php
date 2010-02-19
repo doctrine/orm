@@ -124,10 +124,6 @@ class DoctrineException extends \Exception
         if ( ! self::$_messages) {
             // Lazy-init messages
             self::$_messages = array(
-                'DoctrineException#partialObjectsAreDangerous' =>
-                        "Loading partial objects is dangerous. Fetch full objects or consider " .
-                        "using a different fetch mode. If you really want partial objects, " .
-                        "set the doctrine.forcePartialLoad query hint to TRUE.",
                 'QueryException#nonUniqueResult' =>
                         "The query contains more than one result."
             );

@@ -45,7 +45,7 @@ class DDC163Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $dql = 'SELECT person.name, spouse.name, friend.name
+        $dql = 'SELECT PARTIAL person.{id,name}, PARTIAL spouse.{id,name}, PARTIAL friend.{id,name}
             FROM  Doctrine\Tests\Models\Company\CompanyPerson person
             LEFT JOIN person.spouse spouse
             LEFT JOIN person.friends friend

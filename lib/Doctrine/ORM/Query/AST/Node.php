@@ -34,7 +34,17 @@ namespace Doctrine\ORM\Query\AST;
  */
 abstract class Node
 {
-    abstract public function dispatch($walker);
+    /**
+     * Double-dispatch method, supposed to dispatch back to the walker.
+     * 
+     * Implementation is not mandatory for all nodes.
+     * 
+     * @param $walker
+     */
+    public function dispatch($walker)
+    {
+        throw ASTException::noDispatchForNode($this);
+    }
     
     /**
      * Dumps the AST Node into a string representation for information purpose only

@@ -286,6 +286,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('gblanco', $users[0]->username);
         $this->assertEquals('developer', $users[0]->status);
         $this->assertTrue($users[0]->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertTrue($users[0]->phonenumbers->isInitialized());
         $this->assertEquals(0, $users[0]->phonenumbers->count());
         //$this->assertNull($users[0]->articles);
     }
@@ -332,7 +333,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $query = $this->_em->createQuery("select u, g from Doctrine\Tests\Models\CMS\CmsUser u inner join u.groups g");
+        $query = $this->_em->createQuery("select u, g from Doctrine\Tests\Models\CMS\CmsUser u join u.groups g");
         $this->assertEquals(0, count($query->getResult()));
     }
     

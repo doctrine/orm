@@ -189,8 +189,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
                " TRIM(LEADING '.' FROM m.name) AS str2, TRIM(CONCAT(' ', CONCAT(m.name, ' '))) AS str3 ".
                "FROM Doctrine\Tests\Models\Company\CompanyManager m";
 
-        $result = $this->_em->createQuery($dql)
-                         ->getArrayResult();
+        $result = $this->_em->createQuery($dql)->getArrayResult();
 
         $this->assertEquals(4, count($result));
         $this->assertEquals('Roman B', $result[0]['str1']);
@@ -207,34 +206,34 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Jonathan W.', $result[3]['str3']);
     }
 
-    /*public function testOperatorAdd()
+    public function testOperatorAdd()
     {
         $result = $this->_em->createQuery('SELECT m, m.salary+2500 AS add FROM Doctrine\Tests\Models\Company\CompanyManager m')
-                         ->getResult();
-
+                ->getResult();
+        
         $this->assertEquals(4, count($result));
-        $this->assertEquals(102500, $result[0]['op']);
-        $this->assertEquals(202500, $result[1]['op']);
-        $this->assertEquals(402500, $result[2]['op']);
-        $this->assertEquals(802500, $result[3]['op']);
+        $this->assertEquals(102500, $result[0]['add']);
+        $this->assertEquals(202500, $result[1]['add']);
+        $this->assertEquals(402500, $result[2]['add']);
+        $this->assertEquals(802500, $result[3]['add']);
     }
 
     public function testOperatorSub()
     {
-        $result = $this->_em->createQuery('SELECT m, m.salary-2500 AS add FROM Doctrine\Tests\Models\Company\CompanyManager m')
-                         ->getResult();
+        $result = $this->_em->createQuery('SELECT m, m.salary-2500 AS sub FROM Doctrine\Tests\Models\Company\CompanyManager m')
+                ->getResult();
 
         $this->assertEquals(4, count($result));
-        $this->assertEquals(102500, $result[0]['op']);
-        $this->assertEquals(202500, $result[1]['op']);
-        $this->assertEquals(402500, $result[2]['op']);
-        $this->assertEquals(802500, $result[3]['op']);
+        $this->assertEquals(97500, $result[0]['sub']);
+        $this->assertEquals(197500, $result[1]['sub']);
+        $this->assertEquals(397500, $result[2]['sub']);
+        $this->assertEquals(797500, $result[3]['sub']);
     }
 
     public function testOperatorMultiply()
     {
         $result = $this->_em->createQuery('SELECT m, m.salary*2 AS op FROM Doctrine\Tests\Models\Company\CompanyManager m')
-                         ->getResult();
+                ->getResult();
 
         $this->assertEquals(4, count($result));
         $this->assertEquals(200000, $result[0]['op']);
@@ -243,17 +242,33 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(1600000, $result[3]['op']);
     }
 
+    /**
+     * @group test
+     */
     public function testOperatorDiv()
     {
         $result = $this->_em->createQuery('SELECT m, (m.salary/0.5) AS op FROM Doctrine\Tests\Models\Company\CompanyManager m')
-                         ->getResult();
+                ->getResult();
 
         $this->assertEquals(4, count($result));
         $this->assertEquals(200000, $result[0]['op']);
         $this->assertEquals(400000, $result[1]['op']);
         $this->assertEquals(800000, $result[2]['op']);
         $this->assertEquals(1600000, $result[3]['op']);
-    }*/
+    }
+    
+    public function testConcatFunction()
+    {
+        $arg = $this->_em->createQuery('SELECT CONCAT(m.name, m.department) AS namedep FROM Doctrine\Tests\Models\Company\CompanyManager m order by namedep desc')
+                ->getArrayResult();
+
+        $this->assertEquals(4, count($arg));
+        $this->assertEquals('Roman B.IT', $arg[0]['namedep']);
+        $this->assertEquals('Jonathan W.Administration', $arg[1]['namedep']);
+        $this->assertEquals('Guilherme B.Complaint Department', $arg[2]['namedep']);
+        $this->assertEquals('Benjamin E.HR', $arg[3]['namedep']);
+    }
+    
 
     protected function generateFixture()
     {

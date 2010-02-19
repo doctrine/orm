@@ -88,7 +88,6 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_NULL                = 145;
     const T_OF                  = 146;
     const T_OFFSET              = 147;
-    const T_ON                  = 148;
     const T_OPEN_PARENTHESIS    = 149;
     const T_OR                  = 150;
     const T_ORDER               = 151;
@@ -104,8 +103,9 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_UPDATE              = 161;
     const T_WHERE               = 162;
     const T_WITH                = 163;
-
-    private $_keywordsTable;
+    const T_PARTIAL             = 164;
+    const T_OPEN_CURLY_BRACE    = 165;
+    const T_CLOSE_CURLY_BRACE   = 166;
 
     /**
      * Creates a new query scanner object.
@@ -151,7 +151,7 @@ class Lexer extends \Doctrine\Common\Lexer
             $value = $newVal;
 
             return (strpos($value, '.') !== false || stripos($value, 'e') !== false) 
-                ? self::T_FLOAT : self::T_INTEGER;
+                    ? self::T_FLOAT : self::T_INTEGER;
         }
         
         if ($value[0] === "'") {
@@ -176,6 +176,8 @@ class Lexer extends \Doctrine\Common\Lexer
                 case '*': return self::T_MULTIPLY;
                 case '/': return self::T_DIVIDE;
                 case '!': return self::T_NEGATE;
+                case '{': return self::T_OPEN_CURLY_BRACE;
+                case '}': return self::T_CLOSE_CURLY_BRACE;
                 default:
                     // Do nothing
                     break;
@@ -186,7 +188,7 @@ class Lexer extends \Doctrine\Common\Lexer
     }
 
     /**
-     * @todo Doc
+     * @todo Inline this method.
      */
     private function _getNumeric($value)
     {
@@ -206,6 +208,7 @@ class Lexer extends \Doctrine\Common\Lexer
      *
      * @param string $identifier identifier name
      * @return int token type
+     * @todo Inline this method.
      */
     private function _checkLiteral($identifier)
     {

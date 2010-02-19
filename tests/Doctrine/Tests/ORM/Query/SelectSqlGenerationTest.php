@@ -23,7 +23,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
             parent::assertEquals($sqlToBeConfirmed, $query->getSql());
             $query->free();
-        } catch (DoctrineException $e) {
+        } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
     }
@@ -533,5 +533,25 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             //"SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id = (SELECT c1_.user_id FROM cms_addresses c1_ WHERE c1_.id = ?)"
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_addresses c1_ WHERE c1_.user_id = c0_.id AND c1_.id = ?)"
         );*/
+    }
+    
+
+    public function testSingleValuedAssociationNullCheckOnOwningSide()
+    {
+        $this->assertSqlGeneration(
+            "SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.user IS NULL",
+            "SELECT c0_.id AS id0, c0_.country AS country1, c0_.zip AS zip2, c0_.city AS city3 FROM cms_addresses c0_ WHERE c0_.user_id IS NULL"
+        );
+    }
+
+    // Null check on inverse side has to happen through explicit JOIN.
+    // "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.address IS NULL"
+    // where the CmsUser is the inverse side is not supported.
+    public function testSingleValuedAssociationNullCheckOnInverseSide()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.address a WHERE a.id IS NULL",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ LEFT JOIN cms_addresses c1_ ON c0_.id = c1_.user_id WHERE c1_.id IS NULL"
+        );
     }
 }

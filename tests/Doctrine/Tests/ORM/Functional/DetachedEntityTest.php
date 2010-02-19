@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\ORM\UnitOfWork;
 
 require_once __DIR__ . '/../../TestInit.php';
@@ -83,7 +84,6 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $phonenumbers = $user->getPhonenumbers();
         $this->assertTrue($this->_em->contains($phonenumbers[0]));
         $this->assertTrue($this->_em->contains($phonenumbers[1]));
-    }
-
+    }    
 }
 

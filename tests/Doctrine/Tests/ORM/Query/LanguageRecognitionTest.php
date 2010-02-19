@@ -215,9 +215,9 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :id');
     }
 
-    public function testJoinConditionsSupported()
+    public function testJoinConditionOverrideNotSupported()
     {
-        $this->assertValidDql("SELECT u.name, p FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.phonenumbers p ON p.phonenumber = '123 123'");
+        $this->assertInvalidDql("SELECT u.name, p FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.phonenumbers p ON p.phonenumber = '123 123'");
     }
 
     public function testIndexByClauseWithOneComponent()
@@ -270,12 +270,12 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertInvalidDql("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles u WHERE u.id = 1");
     }
 
-    /*public function testImplicitJoinInWhereOnSingleValuedAssociationPathExpression()
+    public function testImplicitJoinInWhereOnSingleValuedAssociationPathExpression()
     {
         // This should be allowed because avatar is a single-value association.
         // SQL: SELECT ... FROM forum_user fu INNER JOIN forum_avatar fa ON fu.avatar_id = fa.id WHERE fa.id = ?
-        $this->assertValidDql("SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u WHERE u.avatar.id = ?");
-    }*/
+        $this->assertValidDql("SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u WHERE u.avatar.id = ?1");
+    }
 
     public function testImplicitJoinInWhereOnCollectionValuedPathExpression()
     {
@@ -319,10 +319,6 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-     * TODO: Hydration can't deal with this currently but it should be allowed.
-     *       Also, generated SQL looks like: "... FROM cms_user, cms_article ..." which
-     *       may not work on all dbms.
-     *
      * The main use case for this generalized style of join is when a join condition
      * does not involve a foreign key relationship that is mapped to an entity relationship.
      */
@@ -392,15 +388,30 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertInvalidDql('SELECT u FROM UnknownClassName u');
     }
     
-    /**
-     * This checks for invalid attempt to hydrate a proxy. It should throw an exception
-     *
-     * @expectedException \Doctrine\Common\DoctrineException
-     */
-    public function testPartialObjectLoad()
+    public function testCorrectPartialObjectLoad()
     {
-        $this->parseDql('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u', array(
-        	\Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD => false
-        ));
+        $this->assertValidDql('SELECT PARTIAL u.{id,name} FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
+    
+    public function testIncorrectPartialObjectLoadBecauseOfMissingIdentifier()
+    {
+        $this->assertInvalidDql('SELECT PARTIAL u.{name} FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+    
+    public function testScalarExpressionInSelect()
+    {
+        $this->assertValidDql('SELECT u, 42 + u.id AS someNumber FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+    
+    public function testInputParameterInSelect()
+    {
+        $this->assertValidDql('SELECT u, u.id + ?1 AS someNumber FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
+    /* The exception is currently thrown in the SQLWalker, not earlier.
+    public function testInverseSideSingleValuedAssociationPathNotAllowed()
+    {
+        $this->assertInvalidDql('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.address = ?1');
+    }
+    */
 }

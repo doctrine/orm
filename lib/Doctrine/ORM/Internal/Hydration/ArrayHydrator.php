@@ -79,6 +79,9 @@ class ArrayHydrator extends AbstractHydrator
         if (isset($rowData['scalars'])) {
             $scalars = $rowData['scalars'];
             unset($rowData['scalars']);
+            if (empty($rowData)) {
+                ++$this->_resultCounter;
+            }
         }
 
         // 2) Now hydrate the data found in the current row.
@@ -129,7 +132,7 @@ class ArrayHydrator extends AbstractHydrator
                             }
                             end($baseElement[$relationAlias]);
                             $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] =
-                            key($baseElement[$relationAlias]);
+                                    key($baseElement[$relationAlias]);
                         }
                     } else if ( ! isset($baseElement[$relationAlias])) {
                         $baseElement[$relationAlias] = array();
@@ -177,6 +180,10 @@ class ArrayHydrator extends AbstractHydrator
                     $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = key($result);
                 } else {
                     $index = $this->_identifierMap[$dqlAlias][$id[$dqlAlias]];
+                    /*if ($this->_rsm->isMixed) {
+                        $result[] =& $result[$index];
+                        ++$this->_resultCounter;
+                    }*/
                 }
                 $this->updateResultPointer($result, $index, $dqlAlias, false);
             }

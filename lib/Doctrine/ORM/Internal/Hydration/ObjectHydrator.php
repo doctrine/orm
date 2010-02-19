@@ -251,6 +251,9 @@ class ObjectHydrator extends AbstractHydrator
         if (isset($rowData['scalars'])) {
             $scalars = $rowData['scalars'];
             unset($rowData['scalars']);
+            if (empty($rowData)) {
+                ++$this->_resultCounter;
+            }
         }
 
         // Hydrate the data chunks
@@ -409,14 +412,18 @@ class ObjectHydrator extends AbstractHydrator
                         $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $this->_resultCounter;
                         ++$this->_resultCounter;
                     }
-                    
+
                     // Update result pointer
                     $this->_resultPointers[$dqlAlias] = $element;
-                    
+
                 } else {
                     // Update result pointer
                     $index = $this->_identifierMap[$dqlAlias][$id[$dqlAlias]];
                     $this->_resultPointers[$dqlAlias] = $result[$index];
+                    /*if ($this->_rsm->isMixed) {
+                        $result[] = $result[$index];
+                        ++$this->_resultCounter;
+                    }*/
                 }
             }
         }

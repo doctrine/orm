@@ -85,6 +85,15 @@ class QueryException extends \Doctrine\Common\DoctrineException
             "in class ".$assoc->sourceEntityName." assocation ".$assoc->sourceFieldName
         );
     }
+    
+    public static function partialObjectsAreDangerous()
+    {
+        return new self(
+            "Loading partial objects is dangerous. Fetch full objects or consider " .
+            "using a different fetch mode. If you really want partial objects, " .
+            "set the doctrine.forcePartialLoad query hint to TRUE."
+        );
+    }
 
     public static function overwritingJoinConditionsNotYetSupported($assoc)
     {
@@ -92,6 +101,23 @@ class QueryException extends \Doctrine\Common\DoctrineException
             "Unsupported query operation: It is not yet possible to overwrite the join ".
             "conditions in class ".$assoc->sourceEntityName." assocation ".$assoc->sourceFieldName.". ".
             "Use WITH to append additional join conditions to the association."
+        );
+    }
+    
+    public static function associationPathInverseSideNotSupported()
+    {
+        return new self(
+            "A single-valued association path expression to an inverse side is not supported".
+            " in DQL queries. Use an explicit join instead."
+        );
+    }
+    
+    public static function associationPathCompositeKeyNotSupported()
+    {
+        return new self(
+            "A single-valued association path expression to an entity with a composite primary ".
+            "key is not supported. Explicitly name the components of the composite primary key ".
+            "in the query."
         );
     }
 }
