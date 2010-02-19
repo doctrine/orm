@@ -70,4 +70,19 @@ class DBALException extends \Exception
     {
         return new self("Invalid Offset in Limit Query, it has to be larger or equal to 0.");
     }
+
+    public static function typeExists($name)
+    {
+        return new self('Type '.$name.' already exists.');
+    }
+
+    public static function unknownColumnType($name)
+    {
+        return new self('Unknown column type '.$name.' requested.');
+    }
+
+    public static function typeNotFound($name)
+    {
+        return new self('Type to be overwritten '.$name.' does not exist.');
+    }
 }

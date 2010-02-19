@@ -115,6 +115,7 @@ abstract class Type
      * Type instances are implemented as flyweights.
      *
      * @static
+     * @throws DBALException
      * @param string $name The name of the type (as returned by getName()).
      * @return Doctrine\DBAL\Types\Type
      */
@@ -122,7 +123,7 @@ abstract class Type
     {
         if ( ! isset(self::$_typeObjects[$name])) {
             if ( ! isset(self::$_typesMap[$name])) {
-                throw DoctrineException::unknownColumnType($name);
+                throw DBALException::unknownColumnType($name);
             }
             
             self::$_typeObjects[$name] = new self::$_typesMap[$name]();
@@ -138,12 +139,12 @@ abstract class Type
      * @param string $name Name of the type. This should correspond to what
      *                           getName() returns.
      * @param string $className The class name of the custom type.
-     * @throws DoctrineException
+     * @throws DBALException
      */
     public static function addType($name, $className)
     {
         if (isset(self::$_typesMap[$name])) {
-            throw DoctrineException::typeExists($name);
+            throw DBALException::typeExists($name);
         }
         
         self::$_typesMap[$name] = $className;
@@ -167,12 +168,12 @@ abstract class Type
      * @static
      * @param string $name
      * @param string $className
-     * @throws DoctrineException
+     * @throws DBALException
      */
     public static function overrideType($name, $className)
     {
         if ( ! isset(self::$_typesMap[$name])) {
-            throw DoctrineException::typeNotFound($name);
+            throw DBALException::typeNotFound($name);
         }
         
         self::$_typesMap[$name] = $className;
