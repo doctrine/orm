@@ -272,7 +272,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
     public function delete($entity)
     {
         $id = array_combine(
-            $this->_class->identifier,
+            $this->_class->getIdentifierColumnNames(),
             $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
         );
 
