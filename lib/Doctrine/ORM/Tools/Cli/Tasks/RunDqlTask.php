@@ -25,7 +25,8 @@ use Doctrine\Common\Cli\Tasks\AbstractTask,
     Doctrine\Common\Cli\CliException,
     Doctrine\Common\Util\Debug,
     Doctrine\Common\Cli\Option,
-    Doctrine\Common\Cli\OptionGroup;
+    Doctrine\Common\Cli\OptionGroup,
+    Doctrine\ORM\Query;
 
 /**
  * Task for executing DQL in passed EntityManager.
@@ -49,6 +50,22 @@ class RunDqlTask extends AbstractTask
             new Option('dql', '<DQL>', 'The DQL to execute.')
         ));
         
+        $hydrate = new OptionGroup(OptionGroup::CARDINALITY_0_1, array(
+            new Option(
+                'hydrate', '<HYDRATION_MODE>', 
+                'Hydration mode of result set.' . PHP_EOL . 
+                'Should be either: object, array, scalar or single-scalar.'
+            )
+        ));
+ 
+        $firstResult = new OptionGroup(OptionGroup::CARDINALITY_0_1, array(
+            new Option('first-result', '<INTEGER>', 'The first result in the result set.')
+        ));
+        
+        $maxResults = new OptionGroup(OptionGroup::CARDINALITY_0_1, array(
+            new Option('max-results', '<INTEGER>', 'The maximum number of results in the result set.')
+        ));
+        
         $depth = new OptionGroup(OptionGroup::CARDINALITY_0_1, array(
             new Option('depth', '<DEPTH>', 'Dumping depth of Entities graph.')
         ));
@@ -58,6 +75,9 @@ class RunDqlTask extends AbstractTask
             ->setDescription('Executes arbitrary DQL directly from the command line.')
             ->getOptionGroup()
                 ->addOption($dql)
+                ->addOption($hydrate)
+                ->addOption($firstResult)
+                ->addOption($maxResults)
                 ->addOption($depth);
     }
     
@@ -78,10 +98,25 @@ class RunDqlTask extends AbstractTask
         if ( ! isset($arguments['dql'])) {
             throw new CliException('Argument --dql must be defined.');
         }
+
+        if (isset($arguments['hydrate'])) {
+            $hydrationModeName = 'Doctrine\ORM\Query::HYDRATE_' . strtoupper(str_replace('-', '_', $arguments['hydrate']));
+
+            if ( ! defined($hydrationModeName)) {
+                throw new CliException("Argument --hydrate must be either 'object', 'array', 'scalar' or 'single-scalar'.");
+            }
+        }
+
+        if (isset($arguments['first-result']) && ! ctype_digit($arguments['first-result'])) {
+            throw new CliException('Argument --first-result must be an integer value.');
+        }
+
+        if (isset($arguments['max-results']) && ! ctype_digit($arguments['max-results'])) {
+            throw new CliException('Argument --max-results must be an integer value.');
+        }
         
         return true;
     }
-    
     
     /**
      * @inheritdoc
@@ -91,9 +126,22 @@ class RunDqlTask extends AbstractTask
         $arguments = $this->getArguments();
         $em = $this->getConfiguration()->getAttribute('em');
         $query = $em->createQuery($arguments['dql']);
-        $resultSet = $query->getResult();
-        $maxDepth = isset($arguments['depth']) ? $arguments['depth'] : 7;
-        
+
+        $hydrationMode = isset($arguments['hydrate'])
+            ? constant('Doctrine\ORM\Query::HYDRATE_' . strtoupper(str_replace('-', '_', $arguments['hydrate']))) 
+            : Query::HYDRATE_OBJECT;
+
+        if (isset($arguments['first-result'])) {
+            $query->setFirstResult($arguments['first-result']);
+        }
+
+        if (isset($arguments['max-results'])) {
+            $query->setMaxResults($arguments['max-results']);
+        }
+
+        $resultSet = $query->getResult($hydrationMode);
+        $maxDepth = isset($arguments['depth']) ? $arguments['depth'] : 7; 
+       
         Debug::dump($resultSet, $maxDepth);
     }
 }
