@@ -72,5 +72,7 @@ class EnsureProductionSettingsTask extends AbstractTask
     {
         $em = $this->getConfiguration()->getAttribute('em');
         $em->getConfiguration()->ensureProductionSettings();
+
+        $this->getPrinter()->writeln('Environment is correctly configured for production.');
     }
 }
