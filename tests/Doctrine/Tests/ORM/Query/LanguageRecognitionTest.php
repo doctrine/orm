@@ -346,10 +346,11 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id > SOME (SELECT u2.id FROM Doctrine\Tests\Models\CMS\CmsUser u2 WHERE u2.name = u.name)');
     }
-    
+
     public function testMemberOfExpression()
     {
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.phonenumbers');
+        //$this->assertValidDql("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE 'Joe' MEMBER OF u.nicknames");
     }
     
     public function testSizeFunction()
@@ -407,6 +408,11 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertValidDql('SELECT u, u.id + ?1 AS someNumber FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
+    
+    public function testDQLKeywordInJoinIsAllowed()
+    {
+        $this->assertValidDql('SELECT u FROM ' . __NAMESPACE__ . '\DQLKeywordsModelUser u JOIN u.group g');
+    }
 
     /* The exception is currently thrown in the SQLWalker, not earlier.
     public function testInverseSideSingleValuedAssociationPathNotAllowed()
@@ -414,4 +420,20 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertInvalidDql('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.address = ?1');
     }
     */
+}
+
+/** @Entity */
+class DQLKeywordsModelUser
+{
+    /** @Id @Column(type="integer") @GeneratedValue */
+    private $id;
+    /** @OneToOne(targetEntity="DQLKeywordsModelGroup") */
+    private $group;
+}
+
+/** @Entity */
+class DQLKeywordsModelGroup
+{
+    /** @Id @Column(type="integer") @GeneratedValue */
+    private $id;
 }

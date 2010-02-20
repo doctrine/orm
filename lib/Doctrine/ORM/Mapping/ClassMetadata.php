@@ -159,7 +159,7 @@ class ClassMetadata extends ClassMetadataInfo
      * with the same order as the field order in {@link identifier}.
      *
      * @param object $entity
-     * @return mixed
+     * @return array
      */
     public function getIdentifierValues($entity)
     {

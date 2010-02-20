@@ -442,7 +442,7 @@ class SqlWalker implements TreeWalker
                         throw QueryException::associationPathCompositeKeyNotSupported();
                     }
                     $sql .= $this->walkIdentificationVariable($dqlAlias) . '.'
-                            . $assoc->getQuotedJoinColumnName(key($assoc->sourceToTargetKeyColumns), $this->_platform);
+                            . $assoc->getQuotedJoinColumnName(reset($assoc->targetToSourceKeyColumns), $this->_platform);
                 } else {
                     // 2- Inverse side: NOT (YET?) SUPPORTED
                     throw QueryException::associationPathInverseSideNotSupported();
@@ -466,7 +466,7 @@ class SqlWalker implements TreeWalker
         $sql = 'SELECT ' . (($selectClause->isDistinct) ? 'DISTINCT ' : '') . implode(
             ', ', array_map(array($this, 'walkSelectExpression'), $selectClause->selectExpressions)
         );
-        
+
         $addMetaColumns = ! $this->_query->getHint(Query::HINT_FORCE_PARTIAL_LOAD) &&
                 $this->_query->getHydrationMode() == Query::HYDRATE_OBJECT
                 ||
@@ -521,7 +521,7 @@ class SqlWalker implements TreeWalker
                     }
                 }
             } else {
-                // Add foreign key columns to SQL, if necessary            
+                // Add foreign key columns to SQL, if necessary
                 if ($addMetaColumns) {
                     $sqlTableAlias = $this->getSqlTableAlias($class->primaryTable['name'], $dqlAlias);
                     foreach ($class->associationMappings as $assoc) {

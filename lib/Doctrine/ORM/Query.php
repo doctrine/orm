@@ -220,8 +220,9 @@ final class Query extends AbstractQuery
 
             if (is_object($value)) {
                 $values = $this->_em->getClassMetadata(get_class($value))->getIdentifierValues($value);
+                //var_dump($this->_em->getUnitOfWork()->getEntityIdentifier($value));
                 $sqlPositions = $paramMappings[$key];
-                $sqlParams = array_merge($sqlParams, array_combine((array)$sqlPositions, (array)$values));
+                $sqlParams = array_merge($sqlParams, array_combine((array)$sqlPositions, $values));
             } else if (is_bool($value)) {
                 $boolValue = $this->_em->getConnection()->getDatabasePlatform()->convertBooleans($value);
                 foreach ($paramMappings[$key] as $position) {

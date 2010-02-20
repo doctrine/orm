@@ -547,7 +547,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
     
     public function testFlushDoesNotIssueUnnecessaryUpdates()
     {
-        
         $user = new CmsUser;
         $user->name = 'Guilherme';
         $user->username = 'gblanco';
@@ -612,6 +611,35 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         //$this->_em->getConnection()->getConfiguration()->setSqlLogger(null);
     }
+    
+    /**
+     * @group ref
+     */
+    /*public function testQueryEntityByReference()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+        
+        $address = new CmsAddress;
+        $address->country = 'Germany';
+        $address->city = 'Berlin';
+        $address->zip = '12345';
+        
+        $user->setAddress($address);
+        
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        $userRef = $this->_em->getReference('Doctrine\Tests\Models\CMS\CmsUser', $user->getId());
+        $address2 = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsAddress a where a.user = :user')
+                ->setParameter('user', $userRef)
+                ->getSingleResult();
+        
+        
+    }*/
     
     //DRAFT OF EXPECTED/DESIRED BEHAVIOR
     /*public function testPersistentCollectionContainsDoesNeverInitialize()

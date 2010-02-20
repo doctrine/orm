@@ -483,7 +483,6 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
     
-    
     public function testBooleanLiteralInWhereOnSqlite()
     {
         $oldPlat = $this->_em->getConnection()->getDatabasePlatform();
@@ -519,22 +518,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         
         $this->_em->getConnection()->setDatabasePlatform($oldPlat);
     }
-    
-    
-    /* Not yet implemented, needs more thought */
+
     public function testSingleValuedAssociationFieldInWhere()
     {
-        /*$this->assertSqlGeneration(
-            "SELECT p FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.user = ?1",
-            "SELECT c0_.id AS id0, c0_user_id AS user_id1, c0_.phonenumber AS phonenumber2 FROM cms_phonenumbers c0_ WHERE c0_.user_id = ?"
-        );
         $this->assertSqlGeneration(
-            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.address = ?1",
-            //"SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id = (SELECT c1_.user_id FROM cms_addresses c1_ WHERE c1_.id = ?)"
-            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_addresses c1_ WHERE c1_.user_id = c0_.id AND c1_.id = ?)"
-        );*/
+            "SELECT p FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.user = ?1",
+            "SELECT c0_.phonenumber AS phonenumber0 FROM cms_phonenumbers c0_ WHERE c0_.user_id = ?"
+        );
     }
-    
 
     public function testSingleValuedAssociationNullCheckOnOwningSide()
     {
@@ -552,6 +543,25 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.address a WHERE a.id IS NULL",
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ LEFT JOIN cms_addresses c1_ ON c0_.id = c1_.user_id WHERE c1_.id IS NULL"
+        );
+    }
+    
+    /**
+     * @group DDC-339
+     */
+    public function testStringFunctionLikeExpression()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE LOWER(u.name) LIKE '%foo OR bar%'",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE LOWER(c0_.name) LIKE '%foo OR bar%'"
+        );
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE LOWER(u.name) LIKE :str",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE LOWER(c0_.name) LIKE ?"
+        );
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(UPPER(u.name), '_moo') LIKE :str",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE UPPER(c0_.name) || '_moo' LIKE ?"
         );
     }
 }

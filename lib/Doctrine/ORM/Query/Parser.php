@@ -417,10 +417,10 @@ class Parser
      */
     private function _isFunction()
     {
-        $peek     = $this->_lexer->peek();
+        $peek = $this->_lexer->peek();
         $nextpeek = $this->_lexer->peek();
         $this->_lexer->resetPeek();
-        
+
         // We deny the COUNT(SELECT * FROM User u) here. COUNT won't be considered a function
         return ($peek['value'] === '(' && $nextpeek['type'] !== Lexer::T_SELECT);
     }
@@ -929,10 +929,9 @@ class Parser
         
         $identVariable = $this->IdentificationVariable();
         $this->match(Lexer::T_DOT);
-        //TODO: $this->match($this->_lexer->lookahead['value']);
-        $this->match(Lexer::T_IDENTIFIER);
+        $this->match($this->_lexer->lookahead['type']);
         $field = $this->_lexer->token['value'];
-        
+
         // Validate association field
         $qComp = $this->_queryComponents[$identVariable];
         $class = $qComp['metadata'];
@@ -1878,17 +1877,7 @@ class Parser
         
         if ($this->_lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)) {
             // Peek beyond the matching closing paranthesis ')'
-            $numUnmatched = 1;
-            $peek = $this->_lexer->peek();
-            while ($numUnmatched > 0 && $peek !== null) {
-                if ($peek['value'] == ')') {
-                    --$numUnmatched;
-                } else if ($peek['value'] == '(') {
-                    ++$numUnmatched;
-                }
-                $peek = $this->_lexer->peek();
-            }
-            $this->_lexer->resetPeek();
+            $peek = $this->_peekBeyondClosingParenthesis();
        
             if (in_array($peek['value'], array("=",  "<", "<=", "<>", ">", ">=", "!=")) ||
                     $peek['type'] === Lexer::T_NOT ||
@@ -1928,70 +1917,75 @@ class Parser
             return $this->ExistsExpression();
         }
 
-        $pathExprOrInputParam = false;
-
+        $peek = $this->_lexer->glimpse();
+ 
         if ($token['type'] === Lexer::T_IDENTIFIER || $token['type'] === Lexer::T_INPUT_PARAMETER) {
-            // Peek beyond the PathExpression
-            $pathExprOrInputParam = true;
-            $peek = $this->_lexer->peek();
-
-            while ($peek['value'] === '.') {
+            if ($peek['value'] == '(') {
+                // Peek beyond the matching closing paranthesis ')'
                 $this->_lexer->peek();
+                $token = $this->_peekBeyondClosingParenthesis();
+            } else {
+                // Peek beyond the PathExpression (or InputParameter)
                 $peek = $this->_lexer->peek();
-            }
 
-            // Also peek beyond a NOT if there is one
-            if ($peek['type'] === Lexer::T_NOT) {
-                $peek = $this->_lexer->peek();
-            }
-            
-            $token = $peek;
-            
-            // We need to go even further in case of IS (differenciate between NULL and EMPTY)
-            $lookahead = $this->_lexer->peek();
-                
-            // Also peek beyond a NOT if there is one
-            if ($lookahead['type'] === Lexer::T_NOT) {
+                while ($peek['value'] === '.') {
+                    $this->_lexer->peek();
+                    $peek = $this->_lexer->peek();
+                }
+
+                // Also peek beyond a NOT if there is one
+                if ($peek['type'] === Lexer::T_NOT) {
+                    $peek = $this->_lexer->peek();
+                }
+
+                $token = $peek;
+
+                // We need to go even further in case of IS (differenciate between NULL and EMPTY)
                 $lookahead = $this->_lexer->peek();
-            }
-            
-            $this->_lexer->resetPeek();
-        }
 
-        if ($pathExprOrInputParam) {            
-            switch ($token['type']) {
-                case Lexer::T_EQUALS:
-                case Lexer::T_LOWER_THAN:
-                case Lexer::T_GREATER_THAN:
-                case Lexer::T_NEGATE:
-                case Lexer::T_OPEN_PARENTHESIS:
-                    return $this->ComparisonExpression();
+                // Also peek beyond a NOT if there is one
+                if ($lookahead['type'] === Lexer::T_NOT) {
+                    $lookahead = $this->_lexer->peek();
+                }
 
-                case Lexer::T_BETWEEN:
-                    return $this->BetweenExpression();
-
-                case Lexer::T_LIKE:
-                    return $this->LikeExpression();
-
-                case Lexer::T_IN:
-                    return $this->InExpression();
-
-                case Lexer::T_IS:
-                	if ($lookahead['type'] == Lexer::T_NULL) {
-                        return $this->NullComparisonExpression();
-                    }
-                    
-                    return $this->EmptyCollectionComparisonExpression();
-
-                case Lexer::T_MEMBER:
-                    return $this->CollectionMemberExpression();
-
-                default:
-                    $this->syntaxError();
+                $this->_lexer->resetPeek();
             }
         }
+
+        switch ($token['type']) {
+            case Lexer::T_BETWEEN:
+                return $this->BetweenExpression();
+            case Lexer::T_LIKE:
+                return $this->LikeExpression();
+            case Lexer::T_IN:
+                return $this->InExpression();
+            case Lexer::T_IS:
+                if ($lookahead['type'] == Lexer::T_NULL) {
+                    return $this->NullComparisonExpression();
+                }
+                return $this->EmptyCollectionComparisonExpression();
+            case Lexer::T_MEMBER:
+                return $this->CollectionMemberExpression();
+            default:
+                return $this->ComparisonExpression();
+        }
+    }
+    
+    private function _peekBeyondClosingParenthesis()
+    {
+        $numUnmatched = 1;
+        $token = $this->_lexer->peek();
+        while ($numUnmatched > 0 && $token !== null) {
+            if ($token['value'] == ')') {
+                --$numUnmatched;
+            } else if ($token['value'] == '(') {
+                ++$numUnmatched;
+            }
+            $token = $this->_lexer->peek();
+        }
+        $this->_lexer->resetPeek();
         
-        return $this->ComparisonExpression();
+        return $token;
     }
 
     /**
