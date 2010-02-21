@@ -46,35 +46,35 @@ class EntityManager
      * @var Doctrine\ORM\Configuration
      */
     private $_config;
-    
+
     /**
      * The database connection used by the EntityManager.
      *
      * @var Doctrine\DBAL\Connection
      */
     private $_conn;
-    
+
     /**
      * The metadata factory, used to retrieve the ORM metadata of entity classes.
      *
      * @var Doctrine\ORM\Mapping\ClassMetadataFactory
      */
     private $_metadataFactory;
-    
+
     /**
      * The EntityRepository instances.
      *
      * @var array
      */
     private $_repositories = array();
-    
+
     /**
      * The UnitOfWork used to coordinate object-level transactions.
      *
      * @var Doctrine\ORM\UnitOfWork
      */
     private $_unitOfWork;
-    
+
     /**
      * The event manager that is the central point of the event system.
      *
@@ -95,7 +95,7 @@ class EntityManager
      * @var Doctrine\ORM\Proxy\ProxyFactory
      */
     private $_proxyFactory;
-    
+
     /**
      * @var ExpressionBuilder The expression builder instance used to generate query expressions.
      */
@@ -105,7 +105,7 @@ class EntityManager
      * Whether the EntityManager is closed or not.
      */
     private $_closed = false;
-    
+
     /**
      * Creates a new EntityManager that operates on the given database connection
      * and uses the given Configuration and EventManager implementations.
@@ -127,7 +127,7 @@ class EntityManager
                 $config->getProxyNamespace(),
                 $config->getAutoGenerateProxyClasses());
     }
-    
+
     /**
      * Gets the database connection object used by the EntityManager.
      *
@@ -147,10 +147,10 @@ class EntityManager
     {
         return $this->_metadataFactory;
     }
-    
+
     /**
      * Gets an ExpressionBuilder used for object-oriented construction of query expressions.
-     * 
+     *
      * Example:
      *
      *     [php]
@@ -168,7 +168,7 @@ class EntityManager
         }
         return $this->_expressionBuilder;
     }
-    
+
     /**
      * Starts a transaction on the underlying database connection.
      */
@@ -176,7 +176,7 @@ class EntityManager
     {
         $this->_conn->beginTransaction();
     }
-    
+
     /**
      * Commits a transaction on the underlying database connection.
      */
@@ -184,7 +184,7 @@ class EntityManager
     {
         $this->_conn->commit();
     }
-    
+
     /**
      * Performs a rollback on the underlying database connection and closes the
      * EntityManager as it may now be in a corrupted state.
@@ -205,10 +205,10 @@ class EntityManager
     {
         return $this->_metadataFactory->getMetadataFor($className);
     }
-    
+
     /**
      * Creates a new Query object.
-     * 
+     *
      * @param string  The DQL string.
      * @return Doctrine\ORM\Query
      */
@@ -231,7 +231,7 @@ class EntityManager
     {
         return $this->createQuery($this->_config->getNamedQuery($name));
     }
-    
+
     /**
      * Creates a native SQL query.
      *
@@ -246,10 +246,10 @@ class EntityManager
         $query->setResultSetMapping($rsm);
         return $query;
     }
-    
+
     /**
      * Creates a NativeQuery from a named native query.
-     * 
+     *
      * @param string $name
      * @return Doctrine\ORM\NativeQuery
      */
@@ -258,7 +258,7 @@ class EntityManager
         list($sql, $rsm) = $this->_config->getNamedNativeQuery($name);
         return $this->createNativeQuery($sql, $rsm);
     }
-    
+
     /**
      * Create a QueryBuilder instance
      *
@@ -268,7 +268,7 @@ class EntityManager
     {
         return new QueryBuilder($this);
     }
-    
+
     /**
      * Flushes all changes to objects that have been queued up to now to the database.
      * This effectively synchronizes the in-memory state of managed objects with the
@@ -279,7 +279,7 @@ class EntityManager
         $this->_errorIfClosed();
         $this->_unitOfWork->commit();
     }
-    
+
     /**
      * Finds an Entity by its identifier.
      *
@@ -297,7 +297,7 @@ class EntityManager
     /**
      * Gets a reference to the entity identified by the given type and identifier
      * without actually loading it.
-     * 
+     *
      * If partial objects are allowed, this method will return a partial object that only
      * has its identifier populated. Otherwise a proxy is returned that automatically
      * loads itself on first access.
@@ -307,7 +307,7 @@ class EntityManager
     public function getReference($entityName, $identifier)
     {
         $class = $this->_metadataFactory->getMetadataFor($entityName);
-        
+
         // Check identity map first, if its already in there just return it.
         if ($entity = $this->_unitOfWork->tryGetById($identifier, $class->rootEntityName)) {
             return $entity;
@@ -320,7 +320,7 @@ class EntityManager
 
         return $entity;
     }
-    
+
     /**
      * Clears the EntityManager. All entities that are currently managed
      * by this EntityManager become detached.
@@ -336,7 +336,7 @@ class EntityManager
             throw new ORMException("EntityManager#clear(\$entityName) not yet implemented.");
         }
     }
-    
+
     /**
      * Closes the EntityManager. All entities that are currently managed
      * by this EntityManager become detached. The EntityManager may no longer
@@ -347,35 +347,41 @@ class EntityManager
         $this->clear();
         $this->_closed = true;
     }
-    
+
     /**
      * Tells the EntityManager to make an instance managed and persistent.
-     * 
+     *
      * The entity will be entered into the database at or before transaction
      * commit or as a result of the flush operation.
-     * 
+     *
      * @param object $object The instance to make managed and persistent.
      */
-    public function persist($object)
+    public function persist($entity)
     {
+        if ( ! is_object($entity)) {
+            throw new \InvalidArgumentException(gettype($entity));
+        }
         $this->_errorIfClosed();
-        $this->_unitOfWork->persist($object);
+        $this->_unitOfWork->persist($entity);
     }
-    
+
     /**
      * Removes an entity instance.
-     * 
+     *
      * A removed entity will be removed from the database at or before transaction commit
-     * or as a result of the flush operation. 
-     * 
+     * or as a result of the flush operation.
+     *
      * @param object $entity The entity instance to remove.
      */
     public function remove($entity)
     {
+        if ( ! is_object($entity)) {
+            throw new \InvalidArgumentException(gettype($entity));
+        }
         $this->_errorIfClosed();
         $this->_unitOfWork->remove($entity);
     }
-    
+
     /**
      * Refreshes the persistent state of an entity from the database,
      * overriding any local changes that have not yet been persisted.
@@ -384,6 +390,9 @@ class EntityManager
      */
     public function refresh($entity)
     {
+        if ( ! is_object($entity)) {
+            throw new \InvalidArgumentException(gettype($entity));
+        }
         $this->_errorIfClosed();
         $this->_unitOfWork->refresh($entity);
     }
@@ -392,13 +401,16 @@ class EntityManager
      * Detaches an entity from the EntityManager, causing a managed entity to
      * become detached.  Unflushed changes made to the entity if any
      * (including removal of the entity), will not be synchronized to the database.
-     * Entities which previously referenced the detached entity will continue to 
+     * Entities which previously referenced the detached entity will continue to
      * reference it.
      *
      * @param object $entity The entity to detach.
      */
     public function detach($entity)
     {
+        if ( ! is_object($entity)) {
+            throw new \InvalidArgumentException(gettype($entity));
+        }
         $this->_unitOfWork->detach($entity);
     }
 
@@ -412,10 +424,13 @@ class EntityManager
      */
     public function merge($entity)
     {
+        if ( ! is_object($entity)) {
+            throw new \InvalidArgumentException(gettype($entity));
+        }
         $this->_errorIfClosed();
         return $this->_unitOfWork->merge($entity);
     }
-    
+
     /**
      * Creates a copy of the given entity. Can create a shallow or a deep copy.
      *
@@ -451,10 +466,10 @@ class EntityManager
 
         return $repository;
     }
-    
+
     /**
      * Determines whether an entity instance is managed in this EntityManager.
-     * 
+     *
      * @param object $entity
      * @return boolean TRUE if this EntityManager currently manages the given entity, FALSE otherwise.
      */
@@ -464,7 +479,7 @@ class EntityManager
                 $this->_unitOfWork->isInIdentityMap($entity) &&
                 ! $this->_unitOfWork->isScheduledForDelete($entity);
     }
-    
+
     /**
      * Gets the EventManager used by the EntityManager.
      *
@@ -474,7 +489,7 @@ class EntityManager
     {
         return $this->_eventManager;
     }
-    
+
     /**
      * Gets the Configuration used by the EntityManager.
      *
@@ -484,7 +499,7 @@ class EntityManager
     {
         return $this->_config;
     }
-    
+
     /**
      * Throws an exception if the EntityManager is closed or currently not active.
      *
@@ -496,7 +511,7 @@ class EntityManager
             throw ORMException::entityManagerClosed();
         }
     }
-    
+
     /**
      * Gets the UnitOfWork used by the EntityManager to coordinate operations.
      *
@@ -506,7 +521,7 @@ class EntityManager
     {
         return $this->_unitOfWork;
     }
-    
+
     /**
      * Gets a hydrator for the given hydration mode.
      *
@@ -526,7 +541,7 @@ class EntityManager
 
     /**
      * Create a new instance for the given hydration mode.
-     * 
+     *
      * @param  int $hydrationMode
      * @return Doctrine\ORM\Internal\Hydration\AbstractHydrator
      */
@@ -553,14 +568,14 @@ class EntityManager
 
     /**
      * Gets the proxy factory used by the EntityManager to create entity proxies.
-     * 
+     *
      * @return ProxyFactory
      */
     public function getProxyFactory()
     {
         return $this->_proxyFactory;
     }
-    
+
     /**
      * Factory method to create EntityManager instances.
      *

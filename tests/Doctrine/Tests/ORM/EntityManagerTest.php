@@ -56,18 +56,18 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertType('\Doctrine\ORM\QueryBuilder', $this->_em->createQueryBuilder());
     }
-    
+
     public function testCreateQueryBuilderAliasValid()
     {
         $q = $this->_em->createQueryBuilder()
              ->select('u')->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $q2 = clone $q;
-             
+
         $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $q->getQuery()->getDql());
         $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $q2->getQuery()->getDql());
-        
+
         $q3 = clone $q;
-        
+
         $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $q3->getQuery()->getDql());
     }
 
@@ -81,6 +81,26 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         $q = $this->_em->createQuery('SELECT 1');
         $this->assertType('\Doctrine\ORM\Query', $q);
         $this->assertEquals('SELECT 1', $q->getDql());
+    }
+
+    static public function dataMethodsAffectedByNoObjectArguments()
+    {
+        return array(
+            array('persist'),
+            array('remove'),
+            array('merge'),
+            array('refresh'),
+            array('detach')
+        );
+    }
+
+    /**
+     * @dataProvider dataMethodsAffectedByNoObjectArguments
+     * @expectedException \InvalidArgumentException
+     * @param string $methodName
+     */
+    public function testThrowsExceptionOnNonObjectValues($methodName) {
+        $this->_em->$methodName(null);
     }
 
     static public function dataAffectedByErrorIfClosedException()
