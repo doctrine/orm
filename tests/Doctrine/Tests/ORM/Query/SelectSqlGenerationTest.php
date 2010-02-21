@@ -564,4 +564,16 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE UPPER(c0_.name) || '_moo' LIKE ?"
         );
     }
+
+    /**
+     * @group DDC-338
+     */
+    public function testOrderedCollectionFetchJoined()
+    {
+        $this->assertSqlGeneration(
+            "SELECT r, l FROM Doctrine\Tests\Models\Routing\RoutingRoute r JOIN r.legs l",
+            "SELECT r0_.id AS id0, r1_.id AS id1, r1_.departureDate AS departureDate2, r1_.arrivalDate AS arrivalDate3 FROM RoutingRoute r0_ INNER JOIN RoutingRouteLegs r2_ ON r0_.id = r2_.route_id INNER JOIN RoutingLeg r1_ ON r1_.id = r2_.leg_id ".
+            "ORDER BY r1_.departureDate ASC"
+        );
+    }
 }

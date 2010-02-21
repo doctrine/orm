@@ -284,6 +284,32 @@ class SqlWalker implements TreeWalker
         return $sql;
     }
 
+    private function _generateOrderedCollectionOrderByItems()
+    {
+        $sql = '';
+        foreach ($this->_selectedClasses AS $dqlAlias => $class) {
+            $qComp = $this->_queryComponents[$dqlAlias];
+            if (isset($qComp['relation']) && ($qComp['relation']->isManyToMany() || $qComp['relation']->isOneToMany())
+                && $qComp['relation']->orderBy != null) {
+                
+                foreach ($qComp['relation']->orderBy AS $fieldName => $orientation) {
+                    if ($qComp['metadata']->isInheritanceTypeJoined()) {
+                        $tableName = $this->_em->getUnitOfWork()->getEntityPersister($class->name)->getOwningTable($fieldName);
+                    } else {
+                        $tableName = $qComp['metadata']->primaryTable['name'];
+                    }
+
+                    if ($sql != '') {
+                        $sql .= ', ';
+                    }
+                    $sql .= $this->getSqlTableAlias($tableName, $dqlAlias) . "." .
+                            $qComp['metadata']->getQuotedColumnName($fieldName, $this->_platform) . " ".$orientation;
+                }
+            }
+        }
+        return $sql;
+    }
+
     /**
      * Generates a discriminator column SQL condition for the class with the given DQL alias.
      *
@@ -334,7 +360,13 @@ class SqlWalker implements TreeWalker
 
         $sql .= $AST->groupByClause ? $this->walkGroupByClause($AST->groupByClause) : '';
         $sql .= $AST->havingClause ? $this->walkHavingClause($AST->havingClause) : '';
-        $sql .= $AST->orderByClause ? $this->walkOrderByClause($AST->orderByClause) : '';
+
+        if (($orderByClause = $AST->orderByClause) !== null) {
+            $sql .= $AST->orderByClause ? $this->walkOrderByClause($AST->orderByClause) : '';
+        } else if (($orderBySql = $this->_generateOrderedCollectionOrderByItems()) !== '') {
+            $sql .= ' ORDER BY '.$orderBySql;
+        }
+
 
         $sql = $this->_platform->modifyLimitQuery(
             $sql, $this->_query->getMaxResults(), $this->_query->getFirstResult()
@@ -589,10 +621,15 @@ class SqlWalker implements TreeWalker
      */
     public function walkOrderByClause($orderByClause)
     {
+        $colSql = $this->_generateOrderedCollectionOrderByItems();
+        if ($colSql != '') {
+            $colSql = ", ".$colSql;
+        }
+
         // OrderByClause ::= "ORDER" "BY" OrderByItem {"," OrderByItem}*
         return ' ORDER BY ' . implode(
             ', ', array_map(array($this, 'walkOrderByItem'), $orderByClause->orderByItems)
-        );
+        )  . $colSql;
     }
 
     /**

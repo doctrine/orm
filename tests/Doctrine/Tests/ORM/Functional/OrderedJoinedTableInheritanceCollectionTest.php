@@ -24,10 +24,7 @@ class OrderedJoinedTableInheritanceCollectionTest extends \Doctrine\Tests\OrmFun
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
-    }
 
-    public function testOrderdOneToManyCollection()
-    {
         $dog = new OJTIC_Dog();
         $dog->name = "Poofy";
 
@@ -47,9 +44,24 @@ class OrderedJoinedTableInheritanceCollectionTest extends \Doctrine\Tests\OrmFun
         $this->_em->persist($dog2);
         $this->_em->flush();
         $this->_em->clear();
+    }
 
+    public function testOrderdOneToManyCollection()
+    {
         $poofy = $this->_em->createQuery("SELECT p FROM Doctrine\Tests\ORM\Functional\OJTIC_Pet p WHERE p.name = 'Poofy'")->getSingleResult();
 
+        $this->assertEquals('Aari', $poofy->children[0]->getName());
+        $this->assertEquals('Zampa', $poofy->children[1]->getName());
+
+        $this->_em->clear();
+
+        $result = $this->_em->createQuery(
+            "SELECT p, c FROM Doctrine\Tests\ORM\Functional\OJTIC_Pet p JOIN p.children c WHERE p.name = 'Poofy'")
+                ->getResult();
+
+        $this->assertEquals(1, count($result));
+        $poofy = $result[0];
+        
         $this->assertEquals('Aari', $poofy->children[0]->getName());
         $this->assertEquals('Zampa', $poofy->children[1]->getName());
     }

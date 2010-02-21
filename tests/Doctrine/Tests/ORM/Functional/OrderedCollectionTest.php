@@ -29,7 +29,7 @@ class OrderedCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    public function testLazyManyToManyCollection_IsRetrievedWithOrderByClause()
+    public function createPersistedRouteWithLegs()
     {
         $route = new RoutingRoute();
 
@@ -52,6 +52,13 @@ class OrderedCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $routeId = $route->id;
         $this->_em->clear();
+
+        return $routeId;
+    }
+
+    public function testLazyManyToManyCollection_IsRetrievedWithOrderByClause()
+    {
+        $routeId = $this->createPersistedRouteWithLegs();
 
         $route = $this->_em->find('Doctrine\Tests\Models\Routing\RoutingRoute', $routeId);
 
@@ -89,5 +96,18 @@ class OrderedCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(2, count($route->bookings));
         $this->assertEquals('Benjamin', $route->bookings[0]->getPassengerName());
         $this->assertEquals('Guilherme', $route->bookings[1]->getPassengerName());
+    }
+
+    public function testOrderedResultFromDqlQuery()
+    {
+        $routeId = $this->createPersistedRouteWithLegs();
+
+        $route = $this->_em->createQuery("SELECT r, l FROM Doctrine\Tests\Models\Routing\RoutingRoute r JOIN r.legs l WHERE r.id = ?1")
+                           ->setParameter(1, $routeId)
+                           ->getSingleResult();
+
+        $this->assertEquals(2, count($route->legs));
+        $this->assertEquals("Berlin", $route->legs[0]->fromLocation->getName());
+        $this->assertEquals("Bonn", $route->legs[1]->fromLocation->getName());
     }
 }
