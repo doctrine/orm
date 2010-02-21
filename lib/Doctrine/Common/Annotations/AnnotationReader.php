@@ -65,12 +65,12 @@ class AnnotationReader
      * Constructor. Initializes a new AnnotationReader that uses the given 
      * Cache provider.
      * 
-     * @param Cache $cache The cache provider to use.
+     * @param Cache $cache The cache provider to use. If none is provided, ArrayCache is used.
      */
-    public function __construct(Cache $cache)
+    public function __construct(Cache $cache = null)
     {
         $this->_parser = new Parser;
-        $this->_cache = $cache;
+        $this->_cache = $cache ?: new Doctrine\Common\Cache\ArrayCache;
     }
     
     /**
