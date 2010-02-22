@@ -21,8 +21,6 @@
 
 namespace Doctrine\ORM\Event;
 
-use Doctrine\ORM\EntityManager;
-
 /**
  * Lifecycle Events are triggered by the UnitOfWork
  *
@@ -45,7 +43,7 @@ class LifecycleEventArgs extends \Doctrine\Common\EventArgs
      */
     private $_entity;
     
-    public function __construct($entity, EntityManager $em)
+    public function __construct($entity, $em)
     {
         $this->_entity = $entity;
         $this->_em = $em;
