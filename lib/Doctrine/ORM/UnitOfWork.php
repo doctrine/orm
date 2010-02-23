@@ -541,20 +541,6 @@ class UnitOfWork implements PropertyChangedListener
                 $this->_originalEntityData[$oid] = $actualData;
 
                 if ($entityIsDirty) {
-                    $hasPreUpdateListeners = $this->_evm->hasListeners(Events::preUpdate);
-                    if (isset($class->lifecycleCallbacks[Events::preUpdate])) {
-                        $class->invokeLifecycleCallbacks(Events::preUpdate, $entity);
-                        if ( ! $hasPreUpdateListeners) {
-                            // Need to recompute entity changeset to detect changes made in the callback.
-                            $this->recomputeSingleEntityChangeSet($class, $entity);
-                        }
-                    }
-                    if ($hasPreUpdateListeners) {
-                        $this->_evm->dispatchEvent(Events::preUpdate, new LifecycleEventArgs($entity, $this->_em));
-                        // Need to recompute entity changeset to detect changes made in the listener.
-                        $this->recomputeSingleEntityChangeSet($class, $entity);
-                    }
-
                     $this->_entityUpdates[$oid] = $entity;
                 }
             }
@@ -750,12 +736,28 @@ class UnitOfWork implements PropertyChangedListener
     {
         $className = $class->name;
         $persister = $this->getEntityPersister($className);
-        
+
+        $hasPreUpdateLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::preUpdate]);
+        $hasPreUpdateListeners = $this->_evm->hasListeners(Events::preUpdate);
         $hasPostUpdateLifecycleCallbacks = isset($class->lifecycleCallbacks[Events::postUpdate]);
         $hasPostUpdateListeners = $this->_evm->hasListeners(Events::postUpdate);
         
         foreach ($this->_entityUpdates as $oid => $entity) {
-            if (get_class($entity) == $className || $entity instanceof Proxy && $entity instanceof $className) {                
+            if (get_class($entity) == $className || $entity instanceof Proxy && $entity instanceof $className) {
+                
+                if ($hasPreUpdateLifecycleCallbacks) {
+                    $class->invokeLifecycleCallbacks(Events::preUpdate, $entity);
+                    if ( ! $hasPreUpdateListeners) {
+                        // Need to recompute entity changeset to detect changes made in the callback.
+                        $this->recomputeSingleEntityChangeSet($class, $entity);
+                    }
+                }
+                if ($hasPreUpdateListeners) {
+                    $this->_evm->dispatchEvent(Events::preUpdate, new LifecycleEventArgs($entity, $this->_em));
+                    // Need to recompute entity changeset to detect changes made in the listener.
+                    $this->recomputeSingleEntityChangeSet($class, $entity);
+                }
+
                 $persister->update($entity);
                 unset($this->_entityUpdates[$oid]);
                 
