@@ -607,7 +607,6 @@ class UnitOfWork implements PropertyChangedListener
                 $idGen = $targetClass->idGenerator;
                 if ( ! $idGen->isPostInsertGenerator()) {
                     $idValue = $idGen->generate($this->_em, $entry);
-                    $this->_entityStates[$oid] = self::STATE_MANAGED;
                     if ( ! $idGen instanceof \Doctrine\ORM\Id\Assigned) {
                         $this->_entityIdentifiers[$oid] = array($targetClass->identifier[0] => $idValue);
                         $targetClass->getSingleIdReflectionProperty()->setValue($entry, $idValue);
@@ -616,6 +615,7 @@ class UnitOfWork implements PropertyChangedListener
                     }
                     $this->addToIdentityMap($entry);
                 }
+                $this->_entityStates[$oid] = self::STATE_MANAGED;
 
                 // NEW entities are INSERTed within the current unit of work.
                 $this->_entityInsertions[$oid] = $entry;

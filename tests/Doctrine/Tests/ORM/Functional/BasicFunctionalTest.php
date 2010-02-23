@@ -615,7 +615,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group ref
      */
-    /*public function testQueryEntityByReference()
+    public function testQueryEntityByReference()
     {
         $user = new CmsUser;
         $user->name = 'Guilherme';
@@ -633,13 +633,21 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
         
+        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(new \Doctrine\DBAL\Logging\EchoSqlLogger);
+        
         $userRef = $this->_em->getReference('Doctrine\Tests\Models\CMS\CmsUser', $user->getId());
         $address2 = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsAddress a where a.user = :user')
                 ->setParameter('user', $userRef)
                 ->getSingleResult();
         
+        $this->assertTrue($address2->getUser() instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertTrue($userRef === $address2->getUser());
+        $this->assertFalse($userRef->__isInitialized__);
+        $this->assertEquals('Germany', $address2->country);
+        $this->assertEquals('Berlin', $address2->city);
+        $this->assertEquals('12345', $address2->zip);
         
-    }*/
+    }
     
     //DRAFT OF EXPECTED/DESIRED BEHAVIOR
     /*public function testPersistentCollectionContainsDoesNeverInitialize()
