@@ -213,10 +213,12 @@ class Parser
 
     /**
      * Annotation     ::= "@" AnnotationName ["(" [Values] ")"]
-     * AnnotationName ::= QualifiedName | SimpleName
+     * AnnotationName ::= QualifiedName | SimpleName | AliasedName
      * QualifiedName  ::= NameSpacePart "\" {NameSpacePart "\"}* SimpleName
+     * AliasedName    ::= Alias ":" SimpleName
      * NameSpacePart  ::= identifier
      * SimpleName     ::= identifier
+     * Alias          ::= identifier
      *
      * @return mixed False if it is not a valid Annotation; instance of Annotation subclass otherwise. 
      */
@@ -228,7 +230,7 @@ class Parser
         $this->match(Lexer::T_AT);
         $this->match(Lexer::T_IDENTIFIER);
         $nameParts[] = $this->_lexer->token['value'];
-        
+
         while ($this->_lexer->isNextToken(Lexer::T_NAMESPACE_SEPARATOR)) {
             $this->match(Lexer::T_NAMESPACE_SEPARATOR);
             $this->match(Lexer::T_IDENTIFIER);
@@ -237,9 +239,12 @@ class Parser
 
         // Effectively pick the name of class (append default NS if none, grab from NS alias, etc)
         if (count($nameParts) == 1) {
-            $name = $this->_defaultAnnotationNamespace . $nameParts[0];
-        } else if (count($nameParts) == 2 && isset($this->_namespaceAliases[$nameParts[0]])) {
-            $name = $this->_namespaceAliases[$nameParts[0]] . $nameParts[1];
+            if (strpos($nameParts[0], ':')) {
+                list ($alias, $simpleName) = explode(':', $nameParts[0]);
+                $name = $this->_namespaceAliases[$alias] . $simpleName;
+            } else {
+                $name = $this->_defaultAnnotationNamespace . $nameParts[0];
+            }
         } else {
             $name = implode('\\', $nameParts);
         }

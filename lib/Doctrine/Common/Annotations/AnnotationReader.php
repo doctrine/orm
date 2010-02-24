@@ -85,6 +85,17 @@ class AnnotationReader
     }
     
     /**
+     * Sets an alias for an annotation namespace.
+     * 
+     * @param $namespace
+     * @param $alias
+     */
+    public function setAnnotationNamespaceAlias($namespace, $alias)
+    {
+        $this->_parser->setAnnotationNamespaceAlias($namespace, $alias);
+    }
+    
+    /**
      * Gets the annotations applied to a class.
      * 
      * @param string|ReflectionClass $class The name or ReflectionClass of the class from which

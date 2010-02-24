@@ -100,6 +100,29 @@ DOCBLOCK;
         $parser = $this->createTestParser();
         $parser->parse("@Name(foo='bar')");
     }
+    
+    /**
+     * @group parse
+     */
+    public function testAnnotationNamespaceAlias()
+    {
+        $parser = new Parser;
+        $parser->setAnnotationNamespaceAlias('Doctrine\Tests\Common\Annotations\\', 'alias');
+        $docblock = <<<DOCBLOCK
+/**
+ * Some nifty class.
+ * 
+ * @author Mr.X
+ * @alias:Name(foo="stuff")
+ */
+DOCBLOCK;
+        
+        $result = $parser->parse($docblock);
+        $this->assertEquals(1, count($result));
+        $annot = $result['Doctrine\Tests\Common\Annotations\Name'];
+        $this->assertTrue($annot instanceof Name);
+        $this->assertEquals("stuff", $annot->foo);
+    }
 
     public function createTestParser()
     {
