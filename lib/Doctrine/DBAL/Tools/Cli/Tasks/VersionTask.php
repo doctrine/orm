@@ -19,7 +19,7 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli\Tasks;
+namespace Doctrine\DBAL\Tools\Cli\Tasks;
 
 use Doctrine\Common\Cli\Tasks\AbstractTask,
     Doctrine\Common\Version;

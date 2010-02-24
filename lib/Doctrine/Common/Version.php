@@ -19,13 +19,10 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli\Tasks;
-
-use Doctrine\Common\Cli\Tasks\AbstractTask,
-    Doctrine\Common\Version;
+namespace Doctrine\Common;
 
 /**
- * CLI Task to display the doctrine version
+ * Class to store and retrieve the version of Doctrine
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -36,27 +33,25 @@ use Doctrine\Common\Cli\Tasks\AbstractTask,
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class VersionTask extends AbstractTask
+class Version
 {
     /**
-     * @inheritdoc
+     * Current Doctrine Version
      */
-    public function buildDocumentation()
-    {
-        // There're no options on this task
-        $this->getDocumentation()->getOptionGroup()->clear();
-    
-        $doc = $this->getDocumentation();
-        $doc->setName('version')
-            ->setDescription('Displays the current installed Doctrine version.');
-    }
+    const VERSION = '2.0 ALPHA 4';
 
     /**
-     * Displays the current version of Doctrine
+     * Compares a Doctrine version with the current one.
      *
+     * @param string $version Doctrine version to compare.
+     * @return int Returns -1 if older, 0 if it is the same, 1 if version 
+     *             passed as argument is newer.
      */
-    public function run()
+    public static function compare($version)
     {
-        $this->getPrinter()->writeln('You are currently running Doctrine ' . Version::VERSION, 'INFO');
+        $currentVersion = str_replace(' ', '', strtolower(self::VERSION));
+        $version = str_replace(' ', '', $version);
+
+        return version_compare($version, $currentVersion);
     }
 }

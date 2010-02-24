@@ -19,10 +19,9 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli\Tasks;
+namespace Doctrine\Common\Cli\Tasks;
 
-use Doctrine\Common\Cli\Tasks\AbstractTask,
-    Doctrine\Common\Version;
+use Doctrine\Common\Version;
 
 /**
  * CLI Task to display the doctrine version
