@@ -85,7 +85,11 @@ class XmlDriver extends AbstractFileDriver
 
         // Evaluate <discriminator-map...>
         if (isset($xmlRoot->{'discriminator-map'})) {
-            $metadata->setDiscriminatorMap((array)$xmlRoot->{'discriminator-map'});
+            $map = array();
+            foreach ($xmlRoot->{'discriminator-map'}->{'discriminator-mapping'} AS $discrMapElement) {
+                $map[(string)$discrMapElement['value']] = (string)$discrMapElement['class'];
+            }
+            $metadata->setDiscriminatorMap($map);
         }
 
         // Evaluate <change-tracking-policy...>
