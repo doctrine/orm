@@ -71,7 +71,6 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
         
-        //TODO: Test bulk UPDATE
         $query = $this->_em->createQuery("update Doctrine\Tests\Models\Company\CompanyEmployee p set p.name = ?1, p.department = ?2 where p.name='Guilherme Blanco' and p.salary = ?3");
         $query->setParameter(1, 'NewName');
         $query->setParameter(2, 'NewDepartment');
@@ -273,6 +272,20 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // mainEvent should have been loaded because it can't be lazy
         $this->assertTrue($mainEvent instanceof CompanyAuction);
         $this->assertFalse($mainEvent instanceof \Doctrine\ORM\Proxy\Proxy);
+    }
+    
+    /**
+     * @group DDC-368
+     */
+    public function testBulkUpdateIssueDDC368()
+    {
+        $dql = 'UPDATE Doctrine\Tests\Models\Company\CompanyEmployee AS p SET p.salary = 1';
+        $this->_em->createQuery($dql)->execute();
+
+        $this->assertTrue(count($this->_em->createQuery(
+            'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1')
+            ->getResult()) > 0);
+        
     }
     
 }

@@ -152,7 +152,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
         // Execute UPDATE statements
         for ($i=0, $count=count($this->_sqlStatements); $i<$count; ++$i) {
-            $conn->executeUpdate($this->_sqlStatements[$i], $this->_sqlParameters[$i]);
+            $conn->executeUpdate($this->_sqlStatements[$i], isset($this->_sqlParameters[$i]) ? $this->_sqlParameters[$i] : array());
         }
 
         // Drop temporary table
