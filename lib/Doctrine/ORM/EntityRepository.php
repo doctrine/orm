@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  *  $Id$
  *
@@ -24,7 +24,7 @@ namespace Doctrine\ORM;
 /**
  * An EntityRepository serves as a repository for entities with generic as well as
  * business specific methods for retrieving entities.
- * 
+ *
  * This class is designed for inheritance and users can subclass this class to
  * write their own repositories with business-specific methods to locate entities.
  *
@@ -50,10 +50,10 @@ class EntityRepository
      * @var Doctrine\ORM\Mapping\ClassMetadata
      */
     protected $_class;
-    
+
     /**
      * Initializes a new <tt>EntityRepository</tt>.
-     * 
+     *
      * @param EntityManager $em The EntityManager to use.
      * @param ClassMetadata $classMetadata The class descriptor.
      */
@@ -63,11 +63,11 @@ class EntityRepository
         $this->_em = $em;
         $this->_class = $class;
     }
-    
+
     /**
      * Create a new QueryBuilder instance that is prepopulated for this entity name
      *
-     * @param string $alias 
+     * @param string $alias
      * @return QueryBuilder $qb
      */
     public function createQueryBuilder($alias)
@@ -76,7 +76,7 @@ class EntityRepository
             ->select($alias)
             ->from($this->_entityName, $alias);
     }
-    
+
     /**
      * Clears the repository, causing all managed entities to become detached.
      */
@@ -84,7 +84,7 @@ class EntityRepository
     {
         $this->_em->clear($this->_class->rootEntityName);
     }
-    
+
     /**
      * Finds an entity by its primary key / identifier.
      *
@@ -118,23 +118,23 @@ class EntityRepository
     {
         return $this->findBy(array());
     }
-    
+
     /**
      * Finds entities by a set of criteria.
      *
-     * @param string $column 
-     * @param string $value 
+     * @param string $column
+     * @param string $value
      * @return array
      */
     public function findBy(array $criteria)
     {
         return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->loadAll($criteria);
     }
-    
+
     /**
      * Finds a single entity by a set of criteria.
      *
-     * @param string $column 
+     * @param string $column
      * @param string $value
      * @return object
      */
@@ -142,7 +142,7 @@ class EntityRepository
     {
         return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($criteria);
     }
-    
+
     /**
      * Adds support for magic finders.
      *
@@ -160,11 +160,14 @@ class EntityRepository
             $by = substr($method, 9, strlen($method));
             $method = 'findOneBy';
         } else {
-            throw new \BadMethodCallException("Undefined method '$method'.");
+            throw new \BadMethodCallException(
+                "Undefined method '$method'. The method name must start with ".
+                "either findBy or findOneBy!"
+            );
         }
-        
+
         if ( ! isset($arguments[0])) {
-            throw DoctrineException::findByNameRequired();
+            throw ORMException::findByRequiresParameter($method.$by);
         }
 
         $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
@@ -172,7 +175,7 @@ class EntityRepository
         if ($this->_class->hasField($fieldName)) {
             return $this->$method(array($fieldName => $arguments[0]));
         } else {
-            throw \Doctrine\Common\DoctrineException::invalidFindBy($by);
+            throw ORMException::invalidFindByCall($this->_entityName, $fieldName, $method.$by);
         }
     }
 }
