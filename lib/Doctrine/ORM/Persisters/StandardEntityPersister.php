@@ -339,10 +339,10 @@ class StandardEntityPersister
             if (isset($this->_class->associationMappings[$field])) {
                 $assocMapping = $this->_class->associationMappings[$field];
                 // Only owning side of x-1 associations can have a FK column.
-                if ( ! $assocMapping->isOneToOne() || ! $assocMapping->isOwningSide) {
+                if ( ! $assocMapping->isOwningSide || ! $assocMapping->isOneToOne()) {
                     continue;
                 }
-         
+
                 if ($newVal !== null) {
                     $oid = spl_object_hash($newVal);
                     if (isset($this->_queuedInserts[$oid]) || $uow->isScheduledForInsert($newVal)) {

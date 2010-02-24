@@ -22,37 +22,28 @@
 namespace Doctrine\ORM\Event;
 
 /**
- * Lifecycle Events are triggered by the UnitOfWork during lifecycle transitions
- * of entities.
+ * Provides event arguments for the preFlush event.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
- * @since       1.0
+ * @since       2.0
  * @version     $Revision$
  * @author      Roman Borschel <roman@code-factory.de>
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
  */
-class LifecycleEventArgs extends \Doctrine\Common\EventArgs
+class OnFlushEventArgs extends \Doctrine\Common\EventArgs
 {
     /**
      * @var EntityManager
      */
     private $_em;
-
-    /**
-     * @var object
-     */
-    private $_entity;
     
-    public function __construct($entity, $em)
+    //private $_entitiesToPersist = array();
+    //private $_entitiesToRemove = array();
+    
+    public function __construct($em)
     {
-        $this->_entity = $entity;
         $this->_em = $em;
-    }
-    
-    public function getEntity()
-    {
-        return $this->_entity;
     }
 
     /**
@@ -62,4 +53,26 @@ class LifecycleEventArgs extends \Doctrine\Common\EventArgs
     {
         return $this->_em;
     }
+    
+    /*
+    public function addEntityToPersist($entity)
+    {
+        
+    }
+    
+    public function addEntityToRemove($entity)
+    {
+        
+    }
+    
+    public function addEntityToUpdate($entity)
+    {
+        
+    }
+    
+    public function getEntitiesToPersist()
+    {
+        return $this->_entitiesToPersist;
+    }
+    */
 }

@@ -271,6 +271,11 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
         
+        // Raise onFlush
+        if ($this->_evm->hasListeners(Events::onFlush)) {
+            $this->_evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->_em));
+        }
+        
         // Now we need a commit order to maintain referential integrity
         $commitOrder = $this->_getCommitOrder();
 
@@ -945,7 +950,8 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Registers a deleted entity.
+     * INTERNAL:
+     * Schedules an entity for deletion.
      * 
      * @param object $entity
      */
@@ -2063,5 +2069,35 @@ class UnitOfWork implements PropertyChangedListener
         } else {
             $this->_entityUpdates[$oid] = $entity;
         }
+    }
+    
+    /**
+     * Gets the currently scheduled entity insertions in this UnitOfWork.
+     * 
+     * @return array
+     */
+    public function getScheduledEntityInsertions()
+    {
+        return $this->_entityInsertions;
+    }
+    
+    /**
+     * Gets the currently scheduled entity updates in this UnitOfWork.
+     * 
+     * @return array
+     */
+    public function getScheduledEntityUpdates()
+    {
+        return $this->_entityUpdates;
+    }
+    
+    /**
+     * Gets the currently scheduled entity deletions in this UnitOfWork.
+     * 
+     * @return array
+     */
+    public function getScheduledEntityDeletions()
+    {
+        return $this->_entityDeletions;
     }
 }

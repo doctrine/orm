@@ -108,4 +108,15 @@ final class Events
      * @var string
      */
     const loadClassMetadata = 'loadClassMetadata';
+    
+    /**
+     * The onFlush event occurs when the EntityManager#flush() operation is invoked,
+     * after any changes to managed entities have been determined but before any
+     * actual database operations are executed. The event is only raised if there is
+     * actually something to do for the underlying UnitOfWork. If nothing needs to be done,
+     * the onFlush event is not raised.
+     * 
+     * @var string
+     */
+    const onFlush = 'onFlush';
 }

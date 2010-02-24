@@ -72,7 +72,7 @@ class AnnotationReader
         $this->_parser = new Parser;
         $this->_cache = $cache ?: new Doctrine\Common\Cache\ArrayCache;
     }
-    
+
     /**
      * Sets the default namespace that the AnnotationReader should assume for annotations
      * with not fully qualified names.
@@ -83,7 +83,7 @@ class AnnotationReader
     {
         $this->_parser->setDefaultAnnotationNamespace($defaultNamespace);
     }
-    
+
     /**
      * Sets an alias for an annotation namespace.
      * 
@@ -94,7 +94,7 @@ class AnnotationReader
     {
         $this->_parser->setAnnotationNamespaceAlias($namespace, $alias);
     }
-    
+
     /**
      * Gets the annotations applied to a class.
      * 

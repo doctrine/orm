@@ -106,7 +106,7 @@ DOCBLOCK;
      */
     public function testAnnotationNamespaceAlias()
     {
-        $parser = new Parser;
+        $parser = $this->createTestParser();
         $parser->setAnnotationNamespaceAlias('Doctrine\Tests\Common\Annotations\\', 'alias');
         $docblock = <<<DOCBLOCK
 /**

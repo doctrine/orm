@@ -249,7 +249,7 @@ class Parser
             $name = implode('\\', $nameParts);
         }
 
-        // If it really an annotation class?
+        // Is it really an annotation class?
         if (
             (! $this->_isNestedAnnotation && $this->_lexer->lookahead != null &&
             ! $this->_lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS) && 
