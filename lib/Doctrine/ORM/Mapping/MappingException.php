@@ -34,9 +34,9 @@ class MappingException extends \Doctrine\ORM\ORMException
                 . " Every Entity must have an identifier/primary key.");
     }
 
-    public static function invalidInheritanceType($type)
+    public static function invalidInheritanceType($entityName, $type)
     {
-        return new self("The inheritance type '$type' does not exist.");
+        return new self("The inheritance type '$type' specified for '$entityName' does not exist.");
     }
 
     public static function generatorNotAllowedWithCompositeId()

@@ -70,7 +70,8 @@ class XmlDriver extends AbstractFileDriver
         }
         
         if (isset($xmlRoot['inheritance-type'])) {
-            $metadata->setInheritanceType((string)$xmlRoot['inheritance-type']);
+            $inheritanceType = (string)$xmlRoot['inheritance-type'];
+            $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceType));
         }
 
         // Evaluate <discriminator-column...>

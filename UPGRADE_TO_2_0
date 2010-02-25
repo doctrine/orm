@@ -12,6 +12,13 @@ be implemented by using the @columnDefinition annotation (or the approriate XML 
 Additionally keep in mind that Doctrine's focus in on objects and you can specifiy default values for an Entitiy's
 mapped fields inside PHP easily. Upon persist() invocation these values are saved as if they were default values.
 
+## Partial Objects
+
+## XML Mapping Driver
+
+The 'inheritance-type' attribute changed to take last bit of ClassMetadata constant names, i.e.
+NONE, SINGLE_TABLE, INHERITANCE_TYPE_JOINED
+
 # Upgrade from 2.0-ALPHA3 to 2.0-ALPHA4
 
 ## CLI Controller changes
