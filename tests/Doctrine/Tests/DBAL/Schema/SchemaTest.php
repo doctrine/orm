@@ -171,11 +171,11 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
     {
         $schema = new Schema();
         $tableA = $schema->createTable('foo');
-        $tableA->createColumn('id', 'integer');
+        $tableA->addColumn('id', 'integer');
 
         $tableB = $schema->createTable('bar');
-        $tableB->createColumn('id', 'integer');
-        $tableB->createcolumn('foo_id', 'integer');
+        $tableB->addColumn('id', 'integer');
+        $tableB->addColumn('foo_id', 'integer');
         $tableB->addForeignKeyConstraint($tableA, array('foo_id'), array('id'));
 
         $this->assertEquals(0, count($tableB->getIndexes()));
@@ -207,7 +207,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
 
         $schema = new Schema(array(), array(), array(), array(), $schemaConfig);
         $table = $schema->createTable("smalltable");
-        $table->createColumn('long_id', 'integer');
+        $table->addColumn('long_id', 'integer');
         $table->addIndex(array('long_id'));
 
         $this->assertTrue($table->hasIndex('le_id_idx'));
@@ -219,11 +219,11 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
         $sequence = $schema->createSequence('baz');
 
         $tableA = $schema->createTable('foo');
-        $tableA->createColumn('id', 'integer');
+        $tableA->addColumn('id', 'integer');
 
         $tableB = $schema->createTable('bar');
-        $tableB->createColumn('id', 'integer');
-        $tableB->createcolumn('foo_id', 'integer');
+        $tableB->addColumn('id', 'integer');
+        $tableB->addColumn('foo_id', 'integer');
         $tableB->addForeignKeyConstraint($tableA, array('foo_id'), array('id'));
 
         $schemaNew = clone $schema;

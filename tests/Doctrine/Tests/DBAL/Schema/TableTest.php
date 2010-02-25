@@ -47,7 +47,7 @@ class TableTest extends \PHPUnit_Framework_TestCase
     public function testColumnsCaseInsensitive()
     {
         $table = new Table("foo");
-        $column = $table->createColumn('Foo', 'integer');
+        $column = $table->addColumn('Foo', 'integer');
 
         $this->assertTrue($table->hasColumn('Foo'));
         $this->assertTrue($table->hasColumn('foo'));
@@ -65,7 +65,7 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $table = new Table("foo");
 
         $this->assertFalse($table->hasColumn("bar"));
-        $table->createColumn("bar", 'integer');
+        $table->addColumn("bar", 'integer');
         $this->assertTrue($table->hasColumn("bar"));
         $this->assertSame($type, $table->getColumn("bar")->getType());
     }
@@ -223,7 +223,7 @@ class TableTest extends \PHPUnit_Framework_TestCase
     {
         $table = new Table("foo");
 
-        $table->createColumn("bar", 'integer');
+        $table->addColumn("bar", 'integer');
         $table->setPrimaryKey(array("bar"));
 
         $this->assertTrue($table->hasIndex("primary"));
@@ -236,7 +236,7 @@ class TableTest extends \PHPUnit_Framework_TestCase
     {
         $table = new Table("foo");
 
-        $table->createColumn("bar", 'integer');
+        $table->addColumn("bar", 'integer');
         $table->addUniqueIndex(array("bar"), "my_idx");
 
         $this->assertTrue($table->hasIndex("my_idx"));
@@ -248,7 +248,7 @@ class TableTest extends \PHPUnit_Framework_TestCase
     {
         $table = new Table("foo");
 
-        $table->createColumn("bar", 'integer');
+        $table->addColumn("bar", 'integer');
         $table->addIndex(array("bar"), "my_idx");
 
         $this->assertTrue($table->hasIndex("my_idx"));
@@ -261,7 +261,7 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException("Doctrine\DBAL\Schema\SchemaException");
 
         $table = new Table("foo");
-        $table->createColumn("bar",'integer');
+        $table->addColumn("bar",'integer');
         $table->addIndex(array("bar"), "invalid name %&/");
     }
 
@@ -297,10 +297,10 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException("Doctrine\DBAL\Schema\SchemaException");
 
         $table = new Table("foo");
-        $table->createColumn("id", 'int');
+        $table->addColumn("id", 'int');
 
         $foreignTable = new Table("bar");
-        $foreignTable->createColumn("id", 'int');
+        $foreignTable->addColumn("id", 'int');
 
         $table->addForeignKeyConstraint($foreignTable, array("foo"), array("id"));
     }
@@ -310,10 +310,10 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException("Doctrine\DBAL\Schema\SchemaException");
 
         $table = new Table("foo");
-        $table->createColumn("id", 'integer');
+        $table->addColumn("id", 'integer');
 
         $foreignTable = new Table("bar");
-        $foreignTable->createColumn("id", 'integer');
+        $foreignTable->addColumn("id", 'integer');
 
         $table->addForeignKeyConstraint($foreignTable, array("id"), array("foo"));
     }
@@ -321,10 +321,10 @@ class TableTest extends \PHPUnit_Framework_TestCase
     public function testAddForeignKeyConstraint()
     {
         $table = new Table("foo");
-        $table->createColumn("id", 'integer');
+        $table->addColumn("id", 'integer');
 
         $foreignTable = new Table("bar");
-        $foreignTable->createColumn("id", 'integer');
+        $foreignTable->addColumn("id", 'integer');
 
         $table->addForeignKeyConstraint($foreignTable, array("id"), array("id"), array("foo" => "bar"));
 
@@ -340,7 +340,7 @@ class TableTest extends \PHPUnit_Framework_TestCase
     public function testAddIndexWithCaseSensitiveColumnProblem()
     {
         $table = new Table("foo");
-        $table->createColumn("id", 'integer');
+        $table->addColumn("id", 'integer');
 
         $table->addIndex(array("ID"), "my_idx");
 
@@ -351,7 +351,7 @@ class TableTest extends \PHPUnit_Framework_TestCase
     public function testAddPrimaryKey_ColumnsAreExplicitlySetToNotNull()
     {
         $table = new Table("foo");
-        $column = $table->createColumn("id", 'integer', array('notnull' => false));
+        $column = $table->addColumn("id", 'integer', array('notnull' => false));
 
         $this->assertFalse($column->getNotnull());
 

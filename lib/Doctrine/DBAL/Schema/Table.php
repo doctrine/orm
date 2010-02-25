@@ -263,7 +263,7 @@ class Table extends AbstractAsset
      * @param array $options
      * @return Column
      */
-    public function createColumn($columnName, $typeName, array $options=array())
+    public function addColumn($columnName, $typeName, array $options=array())
     {
         $column = new Column($columnName, Type::getType($typeName), $options);
 

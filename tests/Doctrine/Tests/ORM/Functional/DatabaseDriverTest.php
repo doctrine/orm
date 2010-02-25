@@ -27,9 +27,9 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
 
         $table = new \Doctrine\DBAL\Schema\Table("dbdriver_foo");
-        $table->createColumn('id', 'integer');
+        $table->addColumn('id', 'integer');
         $table->setPrimaryKey(array('id'));
-        $table->createColumn('bar', 'string', array('length' => 200));
+        $table->addColumn('bar', 'string', array('length' => 200));
 
         $this->_sm->dropAndCreateTable($table);
 
@@ -56,15 +56,15 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
 
         $tableB = new \Doctrine\DBAL\Schema\Table("dbdriver_bar");
-        $tableB->createColumn('id', 'integer');
+        $tableB->addColumn('id', 'integer');
         $tableB->setPrimaryKey(array('id'));
 
         $this->_sm->dropAndCreateTable($tableB);
 
         $tableA = new \Doctrine\DBAL\Schema\Table("dbdriver_baz");
-        $tableA->createColumn('id', 'integer');
+        $tableA->addColumn('id', 'integer');
         $tableA->setPrimaryKey(array('id'));
-        $tableA->createColumn('bar_id', 'integer');
+        $tableA->addColumn('bar_id', 'integer');
         $tableA->addForeignKeyConstraint('dbdriver_bar', array('bar_id'), array('id'));
 
         $this->_sm->dropAndCreateTable($tableA);

@@ -244,7 +244,7 @@ class SchemaTool
             $discrColumn['length'] = 255;
         }
 
-        $table->createColumn(
+        $table->addColumn(
             $class->getQuotedDiscriminatorColumnName($this->_platform),
             $discrColumn['type'],
             array('length' => $discrColumn['length'], 'notnull' => true)
@@ -324,7 +324,7 @@ class SchemaTool
             // required in some inheritence scenarios
             $table->changeColumn($columnName, $options);
         } else {
-            $table->createColumn($columnName, $columnType, $options);
+            $table->addColumn($columnName, $columnType, $options);
         }
 
         $isUnique = isset($mapping['unique']) ? $mapping['unique'] : false;
@@ -433,7 +433,7 @@ class SchemaTool
                     $columnOptions['notnull'] = !$joinColumn['nullable'];
                 }
 
-                $theJoinTable->createColumn(
+                $theJoinTable->addColumn(
                     $columnName, $class->getTypeOfColumn($joinColumn['referencedColumnName']), $columnOptions
                 );
             }

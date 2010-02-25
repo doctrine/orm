@@ -27,8 +27,8 @@ abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
     public function testGeneratesTableCreationSql()
     {
         $table = new \Doctrine\DBAL\Schema\Table('test');
-        $table->createColumn('id', 'integer', array('notnull' => true));
-        $table->createColumn('test', 'string', array('notnull' => false, 'length' => 255));
+        $table->addColumn('id', 'integer', array('notnull' => true));
+        $table->addColumn('test', 'string', array('notnull' => false, 'length' => 255));
         $table->setPrimaryKey(array('id'));
         $table->setIdGeneratorType(\Doctrine\DBAL\Schema\Table::ID_IDENTITY);
 
@@ -41,8 +41,8 @@ abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
     public function testGenerateTableWithMultiColumnUniqueIndex()
     {
         $table = new \Doctrine\DBAL\Schema\Table('test');
-        $table->createColumn('foo', 'string', array('notnull' => false, 'length' => 255));
-        $table->createColumn('bar', 'string', array('notnull' => false, 'length' => 255));
+        $table->addColumn('foo', 'string', array('notnull' => false, 'length' => 255));
+        $table->addColumn('bar', 'string', array('notnull' => false, 'length' => 255));
         $table->addUniqueIndex(array("foo", "bar"));
 
         $sql = $this->_platform->getCreateTableSql($table);

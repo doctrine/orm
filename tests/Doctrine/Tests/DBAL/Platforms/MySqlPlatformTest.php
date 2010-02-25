@@ -17,7 +17,7 @@ class MySqlPlatformTest extends AbstractPlatformTestCase
     public function testGenerateMixedCaseTableCreate()
     {
         $table = new \Doctrine\DBAL\Schema\Table("Foo");
-        $table->createColumn("Bar", "integer");
+        $table->addColumn("Bar", "integer");
 
         $sql = $this->_platform->getCreateTableSql($table);
         $this->assertEquals('CREATE TABLE Foo (Bar INT NOT NULL) ENGINE = InnoDB', array_shift($sql));

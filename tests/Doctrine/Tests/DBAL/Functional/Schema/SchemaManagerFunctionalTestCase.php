@@ -91,13 +91,13 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
     public function testListTableColumns()
     {
         $table = new \Doctrine\DBAL\Schema\Table('list_table_columns');
-        $table->createColumn('id', 'integer', array('notnull' => true));
-        $table->createColumn('test', 'string', array('length' => 255, 'notnull' => false));
-        $table->createColumn('foo', 'text', array('notnull' => true));
-        $table->createColumn('bar', 'decimal', array('precision' => 10, 'scale' => 4, 'notnull' => false));
-        $table->createColumn('baz1', 'datetime');
-        $table->createColumn('baz2', 'time');
-        $table->createColumn('baz3', 'date');
+        $table->addColumn('id', 'integer', array('notnull' => true));
+        $table->addColumn('test', 'string', array('length' => 255, 'notnull' => false));
+        $table->addColumn('foo', 'text', array('notnull' => true));
+        $table->addColumn('bar', 'decimal', array('precision' => 10, 'scale' => 4, 'notnull' => false));
+        $table->addColumn('baz1', 'datetime');
+        $table->addColumn('baz2', 'time');
+        $table->addColumn('baz3', 'date');
 
         $this->_sm->dropAndCreateTable($table);
 
@@ -370,10 +370,10 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
         $table = new \Doctrine\DBAL\Schema\Table($name, array(), array(), array(), \Doctrine\DBAL\Schema\Table::ID_NONE, $options);
         $table->setSchemaConfig($this->_sm->createSchemaConfig());
         $table->setIdGeneratorType(\Doctrine\DBAL\Schema\Table::ID_IDENTITY);
-        $table->createColumn('id', 'integer', array('notnull' => true));
+        $table->addColumn('id', 'integer', array('notnull' => true));
         $table->setPrimaryKey(array('id'));
-        $table->createColumn('test', 'string', array('length' => 255));
-        $table->createColumn('foreign_key_test', 'integer');
+        $table->addColumn('test', 'string', array('length' => 255));
+        $table->addColumn('foreign_key_test', 'integer');
         return $table;
     }
 

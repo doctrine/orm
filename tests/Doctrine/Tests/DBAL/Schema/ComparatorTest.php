@@ -404,13 +404,13 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
     public function testTableAddForeignKey()
     {
         $tableForeign = new Table("bar");
-        $tableForeign->createColumn('id', 'integer');
+        $tableForeign->addColumn('id', 'integer');
 
         $table1 = new Table("foo");
-        $table1->createColumn('fk', 'integer');
+        $table1->addColumn('fk', 'integer');
 
         $table2 = new Table("foo");
-        $table2->createColumn('fk', 'integer');
+        $table2->addColumn('fk', 'integer');
         $table2->addForeignKeyConstraint($tableForeign, array('fk'), array('id'));
 
         $c = new Comparator();
@@ -423,13 +423,13 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
     public function testTableRemoveForeignKey()
     {
         $tableForeign = new Table("bar");
-        $tableForeign->createColumn('id', 'integer');
+        $tableForeign->addColumn('id', 'integer');
 
         $table1 = new Table("foo");
-        $table1->createColumn('fk', 'integer');
+        $table1->addColumn('fk', 'integer');
 
         $table2 = new Table("foo");
-        $table2->createColumn('fk', 'integer');
+        $table2->addColumn('fk', 'integer');
         $table2->addForeignKeyConstraint($tableForeign, array('fk'), array('id'));
 
         $c = new Comparator();
@@ -442,14 +442,14 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
     public function testTableUpdateForeignKey()
     {
         $tableForeign = new Table("bar");
-        $tableForeign->createColumn('id', 'integer');
+        $tableForeign->addColumn('id', 'integer');
 
         $table1 = new Table("foo");
-        $table1->createColumn('fk', 'integer');
+        $table1->addColumn('fk', 'integer');
         $table1->addForeignKeyConstraint($tableForeign, array('fk'), array('id'));
 
         $table2 = new Table("foo");
-        $table2->createColumn('fk', 'integer');
+        $table2->addColumn('fk', 'integer');
         $table2->addForeignKeyConstraint($tableForeign, array('fk'), array('id'), array('onUpdate' => 'CASCADE'));
 
         $c = new Comparator();
@@ -502,10 +502,10 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
     public function testCompareColumnCompareCaseInsensitive()
     {
         $tableA = new Table("foo");
-        $tableA->createColumn('id', 'integer');
+        $tableA->addColumn('id', 'integer');
 
         $tableB = new Table("foo");
-        $tableB->createColumn('ID', 'integer');
+        $tableB->addColumn('ID', 'integer');
 
         $c = new Comparator();
         $tableDiff = $c->diffTable($tableA, $tableB);
@@ -516,11 +516,11 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
     public function testCompareIndexBasedOnPropertiesNotName()
     {
         $tableA = new Table("foo");
-        $tableA->createColumn('id', 'integer');
+        $tableA->addColumn('id', 'integer');
         $tableA->addIndex(array("id"), "foo_bar_idx");
 
         $tableB = new Table("foo");
-        $tableB->createColumn('ID', 'integer');
+        $tableB->addColumn('ID', 'integer');
         $tableB->addIndex(array("id"), "bar_foo_idx");
 
         $c = new Comparator();
@@ -532,11 +532,11 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
     public function testCompareForeignKeyBasedOnPropertiesNotName()
     {
         $tableA = new Table("foo");
-        $tableA->createColumn('id', 'integer');
+        $tableA->addColumn('id', 'integer');
         $tableA->addNamedForeignKeyConstraint('foo_constraint', 'bar', array('id'), array('id'));
 
         $tableB = new Table("foo");
-        $tableB->createColumn('ID', 'integer');
+        $tableB->addColumn('ID', 'integer');
         $tableB->addNamedForeignKeyConstraint('bar_constraint', 'bar', array('id'), array('id'));
 
         $c = new Comparator();
@@ -548,10 +548,10 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
     public function testDetectRenameColumn()
     {
         $tableA = new Table("foo");
-        $tableA->createColumn('foo', 'integer');
+        $tableA->addColumn('foo', 'integer');
 
         $tableB = new Table("foo");
-        $tableB->createColumn('bar', 'integer');
+        $tableB->addColumn('bar', 'integer');
 
         $c = new Comparator();
         $tableDiff = $c->diffTable($tableA, $tableB);
