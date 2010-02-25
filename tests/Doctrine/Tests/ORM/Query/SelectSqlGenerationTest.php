@@ -324,7 +324,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT c0_.id AS id0 FROM cms_users c0_ WHERE EXISTS (SELECT c1_.phonenumber FROM cms_phonenumbers c1_ WHERE c1_.phonenumber = c0_.id)'
         );
     }
-    
+
     public function testSupportsMemberOfExpression()
     {
         // "Get all users who have $phone as a phonenumber." (*cough* doesnt really make sense...)
@@ -575,6 +575,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT r, l FROM Doctrine\Tests\Models\Routing\RoutingRoute r JOIN r.legs l",
             "SELECT r0_.id AS id0, r1_.id AS id1, r1_.departureDate AS departureDate2, r1_.arrivalDate AS arrivalDate3 FROM RoutingRoute r0_ INNER JOIN RoutingRouteLegs r2_ ON r0_.id = r2_.route_id INNER JOIN RoutingLeg r1_ ON r1_.id = r2_.leg_id ".
             "ORDER BY r1_.departureDate ASC"
+        );
+    }
+
+    public function testSubselectInSelect()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name, (SELECT COUNT(p.phonenumber) FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234) pcount FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = 'jon'",
+            "SELECT c0_.name AS name0, (SELECT COUNT(c1_.phonenumber) AS dctrn__ FROM cms_phonenumbers c1_ WHERE c1_.phonenumber = 1234) AS pcount FROM cms_users c0_ WHERE c0_.name = 'jon'"
         );
     }
 }

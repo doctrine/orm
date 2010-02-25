@@ -842,7 +842,18 @@ class SqlWalker implements TreeWalker
             $this->_rsm->addScalarResult($columnAlias, $resultAlias);
         }
         else if ($expr instanceof AST\Subselect) {
-            $sql .= $this->walkSubselect($expr);
+            if ( ! $selectExpression->fieldIdentificationVariable) {
+                $resultAlias = $this->_scalarResultCounter++;
+            } else {
+                $resultAlias = $selectExpression->fieldIdentificationVariable;
+            }
+
+            $columnAlias = 'sclr' . $this->_aliasCounter++;
+            $sql .= '(' . $this->walkSubselect($expr) . ') AS '.$columnAlias;
+            $this->_scalarResultAliasMap[$resultAlias] = $columnAlias;
+
+            $columnAlias = $this->_platform->getSqlResultCasing($columnAlias);
+            $this->_rsm->addScalarResult($columnAlias, $resultAlias);
         }
         else if ($expr instanceof AST\Functions\FunctionNode) {
             if ( ! $selectExpression->fieldIdentificationVariable) {
@@ -1045,8 +1056,8 @@ class SqlWalker implements TreeWalker
             } else {
                 $alias = $simpleSelectExpression->fieldIdentificationVariable;
             }
-            
-            $sql .= $this->walkAggregateExpression($expr) . ' AS dctrn__' . $alias;
+
+            $sql .= ' ' . $this->walkAggregateExpression($expr) . ' AS dctrn__' . $alias;
         } else {
             // IdentificationVariable
             // FIXME: Composite key support, or select all columns? Does that make sense
