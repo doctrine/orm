@@ -114,7 +114,7 @@ class SchemaTool
         $metadataSchemaConfig->setMaxIdentifierLength(63);
 
         $sm = $this->_em->getConnection()->getSchemaManager();
-        $schema = new \Doctrine\DBAL\Schema\Schema(array(), array(), array(), array(), $metadataSchemaConfig);
+        $schema = new \Doctrine\DBAL\Schema\Schema(array(), array(), $metadataSchemaConfig);
 
         foreach ($classes as $class) {
             if (isset($processedClasses[$class->name]) || $class->isMappedSuperclass) {
