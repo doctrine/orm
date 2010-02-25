@@ -1052,7 +1052,7 @@ class SqlWalker implements TreeWalker
             $sql .= ' ' . $this->walkPathExpression($expr);
         } else if ($expr instanceof AST\AggregateExpression) {
             if ( ! $simpleSelectExpression->fieldIdentificationVariable) {
-                $alias = $this->_scalarAliasCounter++;
+                $alias = $this->_scalarResultCounter++;
             } else {
                 $alias = $simpleSelectExpression->fieldIdentificationVariable;
             }
