@@ -22,7 +22,8 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\ORM\Mapping\Driver\Driver,
-    Doctrine\ORM\Mapping\ClassMetadataInfo;
+    Doctrine\ORM\Mapping\ClassMetadataInfo,
+    Doctrine\ORM\Mapping\MappingException;
 
 /**
  * The DriverChain allows you to add multiple other mapping drivers for
@@ -44,6 +45,12 @@ class DriverChain implements Driver
      */
     private $_drivers = array();
 
+    /**
+     * Add a nested driver
+     *
+     * @param Driver $nestedDriver
+     * @param string $namespace
+     */
     public function addDriver(Driver $nestedDriver, $namespace)
     {
         $this->_drivers[$namespace] = $nestedDriver;
@@ -60,8 +67,11 @@ class DriverChain implements Driver
         foreach ($this->_drivers AS $namespace => $driver) {
             if (strpos($className, $namespace) === 0) {
                 $driver->loadMetadataForClass($className, $metadata);
+                return;
             }
         }
+
+        throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
     }
 
     /**
@@ -93,5 +103,7 @@ class DriverChain implements Driver
                 return $driver->isTransient($className);
             }
         }
+
+        throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
     }
 }
