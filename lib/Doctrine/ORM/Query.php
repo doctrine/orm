@@ -121,6 +121,11 @@ final class Query extends AbstractQuery
      * @var int Query Cache lifetime.
      */
     private $_queryCacheTTL;
+    
+    /**
+     * @var boolean Whether to use a query cache, if available. Defaults to TRUE.
+     */
+    private $_useQueryCache = true;
 
     // End of Caching Stuff
 
@@ -154,11 +159,29 @@ final class Query extends AbstractQuery
      */
     private function _parse()
     {
-        if ($this->_state === self::STATE_DIRTY) {
+        if ($this->_state === self::STATE_CLEAN) {
+            return $this->_parserResult;
+        }
+        
+        // Check query cache.
+        if ($this->_useQueryCache && ($queryCache = $this->getQueryCacheDriver())) {
+            $hash = $this->_getQueryCacheId();
+            $cached = $this->_expireQueryCache ? false : $queryCache->fetch($hash);
+            if ($cached === false) {
+                // Cache miss.
+                $parser = new Parser($this);
+                $this->_parserResult = $parser->parse();
+                $queryCache->save($hash, $this->_parserResult, null);
+            } else {
+                // Cache hit.
+                $this->_parserResult = $cached;
+            }
+        } else {
             $parser = new Parser($this);
             $this->_parserResult = $parser->parse();
-            $this->_state = self::STATE_CLEAN;
         }
+        $this->_state = self::STATE_CLEAN;
+        
         return $this->_parserResult;
     }
 
@@ -171,26 +194,8 @@ final class Query extends AbstractQuery
      */
     protected function _doExecute(array $params)
     {
-        // Check query cache
-        if ($queryCache = $this->getQueryCacheDriver()) {
-            $hash = $this->_getQueryCacheId();
-            $cached = ($this->_expireQueryCache) ? false : $queryCache->fetch($hash);
-
-            if ($cached === false) {
-                // Cache miss.
-                $executor = $this->_parse()->getSqlExecutor();
-                $queryCache->save($hash, $this->_parserResult, null);
-            } else {
-                // Cache hit.
-                $this->_parserResult = $cached;
-                $executor = $this->_parserResult->getSqlExecutor();
-            }
-        } else {
-            $executor = $this->_parse()->getSqlExecutor();
-        }
-
+        $executor = $this->_parse()->getSqlExecutor();
         $params = $this->_prepareParams($params);
-
         if ( ! $this->_resultSetMapping) {
             $this->_resultSetMapping = $this->_parserResult->getResultSetMapping();
         }
@@ -249,6 +254,18 @@ final class Query extends AbstractQuery
     public function setQueryCacheDriver($queryCache)
     {
         $this->_queryCache = $queryCache;
+        return $this;
+    }
+    
+    /**
+     * Defines whether the query should make use of a query cache, if available.
+     * 
+     * @param boolean $bool
+     * @return @return Query This query instance.
+     */
+    public function useQueryCache($bool)
+    {
+        $this->_useQueryCache = $bool;
         return $this;
     }
 
@@ -386,6 +403,7 @@ final class Query extends AbstractQuery
     public function setFirstResult($firstResult)
     {
         $this->_firstResult = $firstResult;
+        $this->_state = self::STATE_DIRTY;
         return $this;
     }
     
@@ -409,6 +427,7 @@ final class Query extends AbstractQuery
     public function setMaxResults($maxResults)
     {
         $this->_maxResults = $maxResults;
+        $this->_state = self::STATE_DIRTY;
         return $this;
     }
     
@@ -435,6 +454,24 @@ final class Query extends AbstractQuery
     {
         $this->setHint(self::HINT_INTERNAL_ITERATION, true);
         return parent::iterate($params, $hydrationMode);
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function setHint($name, $value)
+    {
+        $this->_state = self::STATE_DIRTY;
+        return parent::setHint($name, $value);
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function setHydrationMode($hydrationMode)
+    {
+        $this->_state = self::STATE_DIRTY;
+        return parent::setHydrationMode($hydrationMode);
     }
 
     /**

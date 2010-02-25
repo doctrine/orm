@@ -47,6 +47,7 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $cacheCount = count($cache->getIds());
 
         $query->setFirstResult(10);
+        $query->setMaxResults(9999);
 
         $query->getResult();
         $this->assertEquals($cacheCount + 1, count($cache->getIds()));

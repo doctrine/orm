@@ -477,7 +477,7 @@ abstract class AbstractQuery
         }
 
         if ($hydrationMode !== null) {
-            $this->_hydrationMode = $hydrationMode;
+            $this->setHydrationMode($hydrationMode);
         }
 
         $params = $this->getParameters($params);

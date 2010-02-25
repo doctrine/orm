@@ -157,9 +157,9 @@ class ObjectHydrator extends AbstractHydrator
             $this->_initializedCollections[$oid . $fieldName] = $value;
         } else if (isset($this->_hints[Query::HINT_REFRESH])) {
             // Is already PersistentCollection, but REFRESH
-            $value->clear();
             $value->setDirty(false);
             $value->setInitialized(true);
+            $value->unwrap()->clear();
             $this->_initializedCollections[$oid . $fieldName] = $value;
         } else {
             // Is already PersistentCollection, and DONT REFRESH
@@ -360,10 +360,10 @@ class ObjectHydrator extends AbstractHydrator
                                 if (isset($targetClass->inverseMappings[$relation->sourceEntityName][$relationField])) {
                                     $inverseAssoc = $targetClass->inverseMappings[$relation->sourceEntityName][$relationField];
                                     if ($inverseAssoc->isOneToMany()) {
-                                        // Only initialize reverse collection if it is not yet initialized.
+                                        /*// Only initialize reverse collection if it is not yet initialized.
                                         if ( ! isset($this->_initializedCollections[spl_object_hash($element) . $inverseAssoc->sourceFieldName])) {
                                             $this->_initRelatedCollection($element, $targetClass, $inverseAssoc->sourceFieldName);
-                                        }
+                                        }*/
                                     } else {
                                         $targetClass->reflFields[$inverseAssoc->sourceFieldName]->setValue($element, $parentObject);
                                         $this->_uow->setOriginalEntityProperty(spl_object_hash($element), $inverseAssoc->sourceFieldName, $parentObject);

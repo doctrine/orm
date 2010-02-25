@@ -20,7 +20,8 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         try {
             $query = $this->_em->createQuery($dqlToBeTested);
-            $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+            $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true)
+                    ->useQueryCache(false);
             parent::assertEquals($sqlToBeConfirmed, $query->getSql());
             $query->free();
         } catch (\Exception $e) {
