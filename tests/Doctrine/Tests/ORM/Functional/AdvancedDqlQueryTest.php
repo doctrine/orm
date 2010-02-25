@@ -87,6 +87,16 @@ class AdvancedDqlQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals("Caramba", $result[0]['brandName']);
     }
 
+    public function testInSubselect()
+    {
+        $dql = "SELECT p.name FROM Doctrine\Tests\Models\Company\CompanyPerson p ".
+               "WHERE p.name IN (SELECT n.name FROM Doctrine\Tests\Models\Company\CompanyPerson n WHERE n.name = 'Roman B.')";
+        $result = $this->_em->createQuery($dql)->getScalarResult();
+
+        $this->assertEquals(1, count($result));
+        $this->assertEquals('Roman B.', $result[0]['name']);
+    }
+
     /*public function testGroupByMultipleFields()
     {
         $dql = 'SELECT p.department, p.name, count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p '.
