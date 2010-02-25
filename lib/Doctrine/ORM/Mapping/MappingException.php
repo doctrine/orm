@@ -59,9 +59,9 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self("The association mapping '$fieldName' misses the 'sourceEntity' attribute.");
     }
 
-    public static function mappingFileNotFound($fileName)
+    public static function mappingFileNotFound($entityName, $fileName)
     {
-        return new self("No mapping file found named '$fileName'.");
+        return new self("No mapping file found named '$fileName' for class '$entityName'.");
     }
 
     public static function mappingNotFound($fieldName)
