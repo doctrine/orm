@@ -272,8 +272,12 @@ class XmlDriver extends AbstractFileDriver
                     $mapping['orphanRemoval'] = (bool)$oneToManyElement->{'orphan-removal'};
                 }
 
-                if (isset($oneToManyElement['order-by'])) {
-                    $mapping['orderBy'] = (string)$oneToManyElement['order-by'];
+                if (isset($oneToManyElement->{'order-by'})) {
+                    $orderBy = array();
+                    foreach ($oneToManyElement->{'order-by'}->{'order-by-field'} AS $orderByField) {
+                        $orderBy[(string)$orderByField['name']] = (string)$orderByField['direction'];
+                    }
+                    $mapping['orderBy'] = $orderBy;
                 }
                 
                 $metadata->mapOneToMany($mapping);
@@ -363,8 +367,12 @@ class XmlDriver extends AbstractFileDriver
                     $mapping['orphanRemoval'] = (bool)$manyToManyElement->{'orphan-removal'};
                 }
 
-                if (isset($manyToManyElement['order-by'])) {
-                    $mapping['orderBy'] = (string)$manyToManyElement['order-by'];
+                if (isset($manyToManyElement->{'order-by'})) {
+                    $orderBy = array();
+                    foreach ($manyToManyElement->{'order-by'}->{'order-by-field'} AS $orderByField) {
+                        $orderBy[(string)$orderByField['name']] = (string)$orderByField['direction'];
+                    }
+                    $mapping['orderBy'] = $orderBy;
                 }
                 
                 $metadata->mapManyToMany($mapping);

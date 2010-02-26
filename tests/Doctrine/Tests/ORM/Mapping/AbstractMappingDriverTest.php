@@ -207,7 +207,7 @@ class User
     /**
      *
      * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist"})
-     * @OrderBy("number ASC")
+     * @OrderBy({"number"="ASC"})
      */
     public $phonenumbers;
 

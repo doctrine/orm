@@ -24,7 +24,10 @@
             <join-column name="address_id" referenced-column-name="id"/>
         </one-to-one>
         
-        <one-to-many field="phonenumbers" target-entity="Phonenumber" mapped-by="user" order-by="number ASC">
+        <one-to-many field="phonenumbers" target-entity="Phonenumber" mapped-by="user">
+            <order-by>
+                <order-by-field name="number" direction="ASC" />
+            </order-by>
             <cascade>
                 <cascade-persist/>
             </cascade>

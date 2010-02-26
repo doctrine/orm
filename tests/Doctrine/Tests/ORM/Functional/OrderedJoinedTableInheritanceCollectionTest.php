@@ -97,7 +97,7 @@ abstract class OJTIC_Pet
 
     /**
      * @OneToMany(targetEntity="OJTIC_Pet", mappedBy="mother")
-     * @OrderBy("name ASC")
+     * @OrderBy({"name" = "ASC"})
      */
     public $children;
 
@@ -106,7 +106,7 @@ abstract class OJTIC_Pet
      * @JoinTable(name="OTJIC_Pet_Friends",
      *     joinColumns={@JoinColumn(name="pet_id", referencedColumnName="id")},
      *     inverseJoinColumns={@JoinColumn(name="friend_id", referencedColumnName="id")})
-     * @OrderBy("name ASC")
+     * @OrderBy({"name" = "ASC"})
      */
     public $friends;
 

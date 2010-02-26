@@ -22,13 +22,13 @@ class RoutingRoute
      *     joinColumns={@JoinColumn(name="route_id", referencedColumnName="id")},
      *     inverseJoinColumns={@JoinColumn(name="leg_id", referencedColumnName="id", unique=true)}
      * )
-     * @OrderBy("departureDate ASC")
+     * @OrderBy({"departureDate" = "ASC"})
      */
     public $legs;
 
     /**
      * @OneToMany(targetEntity="RoutingRouteBooking", mappedBy="route")
-     * @OrderBy("passengerName ASC")
+     * @OrderBy({"passengerName" = "ASC"})
      */
     public $bookings = array();
 
