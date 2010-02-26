@@ -218,8 +218,15 @@
 
   <xs:complexType name="order-by-field">
       <xs:attribute name="field" type="XS:NMTOKEN" use="required" />
-      <xs:attribute name="direction" type="XS:NMTOKEN" default="ASC" />
+      <xs:attribute name="direction" type="orm:order-by-direction" default="ASC" />
   </xs:complexType>
+
+  <xs:simpleType name="order-by-direction">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="ASC"/>
+      <xs:enumeration value="DESC"/>
+    </xs:restriction>
+  </xs:simpleType>
 
   <xs:complexType name="many-to-many">
     <xs:sequence>
