@@ -251,10 +251,10 @@ class MySqlSchemaManager extends AbstractSchemaManager
     {
         $tableForeignKey = array_change_key_case($tableForeignKey, CASE_LOWER);
 
-        if ($tableForeignKey['delete_rule'] == "RESTRICT") {
+        if (!isset($tableForeignKey['delete_rule']) || $tableForeignKey['delete_rule'] == "RESTRICT") {
             $tableForeignKey['delete_rule'] = null;
         }
-        if ($tableForeignKey['update_rule'] == "RESTRICT") {
+        if (!isset($tableForeignKey['update_rule']) || $tableForeignKey['update_rule'] == "RESTRICT") {
             $tableForeignKey['update_rule'] = null;
         }
         
