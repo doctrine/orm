@@ -57,6 +57,16 @@ class DriverChain implements Driver
     }
 
     /**
+     * Get the array of nested drivers
+     *
+     * @return array $drivers
+     */
+    public function getDrivers()
+    {
+        return $this->_drivers;
+    }
+
+    /**
      * Loads the metadata for the specified class into the provided container.
      *
      * @param string $className
