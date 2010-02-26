@@ -105,10 +105,14 @@ class ClassMetadataExporter
      */
     public function getMappingDriver($type, $source = null)
     {
+        if ($source instanceof \Doctrine\ORM\Mapping\Driver\Driver) {
+            return $source;
+        }
+
         if ( ! isset($this->_mappingDrivers[$type])) {
             return false;
         }
-        
+
         $class = $this->_mappingDrivers[$type];
         
         if (is_subclass_of($class, 'Doctrine\ORM\Mapping\Driver\AbstractFileDriver')) {

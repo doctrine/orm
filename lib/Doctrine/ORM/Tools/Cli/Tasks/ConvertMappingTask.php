@@ -215,13 +215,13 @@ class ConvertMappingTask extends AbstractTask
 
             // Check if it has a class definition in it for annotations
             if (preg_match("/class (.*)/", $contents)) {
-              return 'annotation';
+                return 'annotation';
             // Otherwise lets determine the type based on the extension of the 
             // first file in the directory (yml, xml, etc)
             } else {
-              $info = pathinfo($files[0]);
-              
-              return $info['extension'];
+                $info = pathinfo($files[0]);
+
+                return $info['extension'];
             }
         // Nothing special for database
         } else if ($source == 'database') {
@@ -237,6 +237,21 @@ class ConvertMappingTask extends AbstractTask
             $em = $this->getConfiguration()->getAttribute('em');
             
             return $em->getConnection()->getSchemaManager();
+        } else if ($type == 'annotation') {
+            $em = $this->getConfiguration()->getAttribute('em');
+            $metadataDriverImpl = $em->getConfiguration()->getMetadataDriverImpl();
+            if ($metadataDriverImpl instanceof \Doctrine\ORM\Mapping\Driver\DriverChain) {
+                foreach ($metadataDriverImpl->getDrivers() as $namespace => $driver) {
+                    if ($driver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
+                        $paths = $driver->getPaths();
+                        if (in_array($source, $paths)) {
+                            return $driver;
+                        }
+                    }
+                }
+            } else if ($metadataDriverImpl instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
+                return $metadataDriverImpl;
+            }
         } else {
             return $source;
         }
