@@ -236,7 +236,8 @@ class SchemaTest extends \PHPUnit_Framework_TestCase
         $this->assertNotSame($tableB, $schemaNew->getTable('bar'));
         $this->assertNotSame($tableB->getColumn('id'), $schemaNew->getTable('bar')->getColumn('id'));
 
-        $fk = current( $schemaNew->getTable('bar')->getForeignKeys() );
+        $fk = $schemaNew->getTable('bar')->getForeignKeys();
+        $fk = current($fk);
         $this->assertSame($schemaNew->getTable('bar'), $this->readAttribute($fk, '_localTable'));
     }
 }
