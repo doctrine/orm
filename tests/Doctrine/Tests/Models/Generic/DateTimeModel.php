@@ -14,15 +14,15 @@ class DateTimeModel
      */
     public $id;
     /**
-     * @Column(type="datetime")
+     * @Column(name="col_datetime", type="datetime")
      */
     public $datetime;
     /**
-     * @Column(type="date")
+     * @Column(name="col_date", type="date")
      */
     public $date;
     /**
-     * @Column(type="time")
+     * @Column(name="col_time", type="time")
      */
     public $time;
 }

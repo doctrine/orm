@@ -67,7 +67,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\ECommerce\ECommerceCategory'
         ),
         'generic' => array(
-            'Doctrine\Tests\Models\Generic\DateTimeModel'
+            'Doctrine\Tests\Models\Generic\BooleanModel',
+            'Doctrine\Tests\Models\Generic\DateTimeModel',
+            'Doctrine\Tests\Models\Generic\DecimalModel',
+            'Doctrine\Tests\Models\Generic\SerializationModel',
         ),
         'routing' => array(
             'Doctrine\Tests\Models\Routing\RoutingLeg',
@@ -127,7 +130,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
         
         if (isset($this->_usedModelSets['generic'])) {
+            $conn->executeUpdate('DELETE FROM boolean_model');
             $conn->executeUpdate('DELETE FROM date_time_model');
+            $conn->executeUpdate('DELETE FROM decimal_model');
+            $conn->executeUpdate('DELETE FROM serialize_model');
         }
 
         if (isset($this->_usedModelSets['routing'])) {

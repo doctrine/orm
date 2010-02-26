@@ -4,6 +4,7 @@ namespace Doctrine\DBAL\Types;
 
 use Doctrine\Common\DoctrineException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\DBALException;
 
 /**
  * The base class for so-called Doctrine mapping types.

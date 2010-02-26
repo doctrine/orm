@@ -58,7 +58,7 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals(2, count($sql));
         
-        $this->assertEquals('CREATE TABLE decimal_model (id INT NOT NULL, "decimal" NUMERIC(5, 2) NOT NULL, PRIMARY KEY(id))', $sql[0]);
+        $this->assertEquals('CREATE TABLE decimal_model (id INT NOT NULL, "decimal" NUMERIC(5, 2) NOT NULL, "high_scale" NUMERIC(14, 4) NOT NULL, PRIMARY KEY(id))', $sql[0]);
         $this->assertEquals("CREATE SEQUENCE decimal_model_id_seq INCREMENT BY 10 MINVALUE 1 START 1", $sql[1]);
     }
     
