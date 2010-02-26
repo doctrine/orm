@@ -128,6 +128,10 @@ class ClassMetadataFactory
     public function getMetadataFor($className)
     {
         if ( ! isset($this->_loadedMetadata[$className])) {
+            $aliasMap = $this->_em->getConfiguration()->getEntityAliasMap();
+            if (isset($aliasMap[$className])) {
+                $className = $aliasMap[$className];
+            }
             $cacheKey = "$className\$CLASSMETADATA";
             if ($this->_cacheDriver) {
                 if (($cached = $this->_cacheDriver->fetch($cacheKey)) !== false) {

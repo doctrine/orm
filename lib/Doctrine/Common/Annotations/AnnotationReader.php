@@ -70,7 +70,7 @@ class AnnotationReader
     public function __construct(Cache $cache = null)
     {
         $this->_parser = new Parser;
-        $this->_cache = $cache ?: new Doctrine\Common\Cache\ArrayCache;
+        $this->_cache = $cache ?: new \Doctrine\Common\Cache\ArrayCache;
     }
 
     /**

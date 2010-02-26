@@ -226,5 +226,19 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a")
                 ->getSingleResult();
     }
-}
 
+    public function testSupportsQueriesWithEntityAliases()
+    {
+        $this->_em->getConfiguration()->addEntityAlias('Doctrine\Tests\Models\CMS\CmsUser', 'TestAlias');
+
+        try {
+            $query = $this->_em->createQuery('UPDATE TestAlias u SET u.name = ?1');
+            $this->assertEquals('UPDATE cms_users SET name = ?', $query->getSql());
+            $query->free();
+        } catch (\Exception $e) {
+            $this->fail($e->getMessage());
+        }
+
+        $this->_em->getConfiguration()->setEntityAliasMap(array());
+    }
+}

@@ -51,7 +51,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'namedQueries' => array(),
             'namedNativeQueries' => array(),
             'autoGenerateProxyClasses' => true,
-            'proxyNamespace' => null
+            'proxyNamespace' => null,
+            'entityAliasMap' => array()
         ));
     }
 
@@ -117,6 +118,38 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setMetadataDriverImpl($driverImpl)
     {
         $this->_attributes['metadataDriverImpl'] = $driverImpl;
+    }
+
+    /**
+     * Add an alias for an entity.
+     *
+     * @param string $className
+     * @param string $alias
+     */
+    public function addEntityAlias($className, $alias)
+    {
+        $this->_attributes['entityAliasMap'][$alias] = $className;
+    }
+
+    /**
+     * get the array of entity aliases
+     *
+     * @return array $aliasMap
+     */
+    public function getEntityAliasMap()
+    {
+        return $this->_attributes['entityAliasMap'];
+    }
+
+    /**
+     * Set the entity alias map
+     *
+     * @param array $entityAliasMap 
+     * @return void
+     */
+    public function setEntityAliasMap(array $entityAliasMap)
+    {
+      $this->_attributes['entityAliasMap'] = $entityAliasMap;
     }
 
     /**

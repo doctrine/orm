@@ -867,6 +867,10 @@ class Parser
         $this->match(Lexer::T_IDENTIFIER);
 
         $schemaName = $this->_lexer->token['value'];
+        $aliasMap = $this->_em->getConfiguration()->getEntityAliasMap();
+        if (isset($aliasMap[$schemaName])) {
+            $schemaName = $aliasMap[$schemaName];
+        }
         $exists = class_exists($schemaName, true);
         
         if ( ! $exists) {
