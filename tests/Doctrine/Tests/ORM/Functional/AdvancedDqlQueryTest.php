@@ -28,7 +28,7 @@ class AdvancedDqlQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $dql = 'SELECT p.department, AVG(p.salary) AS avgSalary '.
                'FROM Doctrine\Tests\Models\Company\CompanyEmployee p '.
-               'GROUP BY p.department HAVING SUM(p.salary) > 200000';
+               'GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department';
 
         $result = $this->_em->createQuery($dql)->getScalarResult();
 
@@ -97,22 +97,23 @@ class AdvancedDqlQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Roman B.', $result[0]['name']);
     }
 
-    /*public function testGroupByMultipleFields()
+    public function testGroupByMultipleFields()
     {
         $dql = 'SELECT p.department, p.name, count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p '.
                'GROUP BY p.department, p.name';
         $result = $this->_em->createQuery($dql)->getResult();
-    }*/
 
-    /**
+        $this->assertEquals(4, count($result));
+    }
+
     public function testUpdateAs()
     {
         $dql = 'UPDATE Doctrine\Tests\Models\Company\CompanyEmployee AS p SET p.salary = 1';
         $this->_em->createQuery($dql)->getResult();
 
         $this->assertTrue(count($this->_em->createQuery(
-            'SELECT count(p) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1')->getResult()) > 0);
-    }*/
+            'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1')->getResult()) > 0);
+    }
 
     /*public function testDeleteAs()
     {
