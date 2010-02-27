@@ -74,13 +74,16 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $query = $this->_em->createQuery('select p, f from Doctrine\Tests\Models\ECommerce\ECommerceProduct p join p.features f');
         $result = $query->getResult();
         $product = $result[0];
+        
         $features = $product->getFeatures();
         
         $this->assertTrue($features[0] instanceof ECommerceFeature);
+        $this->assertFalse($features[0]->getProduct() instanceof \Doctrine\ORM\Proxy\Proxy);
         $this->assertSame($product, $features[0]->getProduct());
         $this->assertEquals('Model writing tutorial', $features[0]->getDescription());
         $this->assertTrue($features[1] instanceof ECommerceFeature);
         $this->assertSame($product, $features[1]->getProduct());
+        $this->assertFalse($features[1]->getProduct() instanceof \Doctrine\ORM\Proxy\Proxy);
         $this->assertEquals('Annotations examples', $features[1]->getDescription());
     }
     

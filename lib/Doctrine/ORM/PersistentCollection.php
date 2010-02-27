@@ -165,31 +165,23 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
     /**
      * INTERNAL:
      * Adds an element to a collection during hydration. This will automatically
-     * complete bidirectional associations.
+     * complete bidirectional associations in the case of a one-to-many association.
      * 
      * @param mixed $element The element to add.
      */
     public function hydrateAdd($element)
     {
         $this->_coll->add($element);
-        
         // If _backRefFieldName is set, then the association is bidirectional
         // and we need to set the back reference.
-        if ($this->_backRefFieldName) {
+        if ($this->_backRefFieldName && $this->_association->isOneToMany()) {
             // Set back reference to owner
-            if ($this->_association->isOneToMany()) {
-                // OneToMany
-                $this->_typeClass->reflFields[$this->_backRefFieldName]
-                        ->setValue($element, $this->_owner);
-                $this->_em->getUnitOfWork()->setOriginalEntityProperty(
-                        spl_object_hash($element),
-                        $this->_backRefFieldName,
-                        $this->_owner);
-            } else {
-                // ManyToMany
-                $this->_typeClass->reflFields[$this->_backRefFieldName] 
-                        ->getValue($element)->unwrap()->add($this->_owner);
-            }
+            $this->_typeClass->reflFields[$this->_backRefFieldName]
+                    ->setValue($element, $this->_owner);
+            $this->_em->getUnitOfWork()->setOriginalEntityProperty(
+                    spl_object_hash($element),
+                    $this->_backRefFieldName,
+                    $this->_owner);
         }
     }
     
@@ -203,20 +195,12 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
     public function hydrateSet($key, $element)
     {
         $this->_coll->set($key, $element);
-        
         // If _backRefFieldName is set, then the association is bidirectional
         // and we need to set the back reference.
-        if ($this->_backRefFieldName) {
+        if ($this->_backRefFieldName && $this->_association->isOneToMany()) {
             // Set back reference to owner
-            if ($this->_association->isOneToMany()) {
-                // OneToMany
-                $this->_typeClass->reflFields[$this->_backRefFieldName]
-                        ->setValue($element, $this->_owner);
-            } else {
-                // ManyToMany
-                $this->_typeClass->reflFields[$this->_backRefFieldName] 
-                        ->getValue($element)->set($key, $this->_owner);
-            }
+            $this->_typeClass->reflFields[$this->_backRefFieldName]
+                    ->setValue($element, $this->_owner);
         }
     }
 

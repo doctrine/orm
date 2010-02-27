@@ -81,15 +81,20 @@ class ObjectHydrator extends AbstractHydrator
                         $this->_hints['fetched'][$sourceSubclassName][$assoc->sourceFieldName] = true;
                     }
                 }
-                if ($assoc->mappedByFieldName) {
-                    $this->_hints['fetched'][$className][$assoc->mappedByFieldName] = true;
-                } else {
-                    if (isset($sourceClass->inverseMappings[$className][$assoc->sourceFieldName])) {
-                        $inverseAssoc = $sourceClass->inverseMappings[$className][$assoc->sourceFieldName];
-                        $this->_hints['fetched'][$className][$inverseAssoc->sourceFieldName] = true;
-                        if ($class->subClasses) {
-                            foreach ($class->subClasses as $targetSubclassName) {
-                                $this->_hints['fetched'][$targetSubclassName][$inverseAssoc->sourceFieldName] = true;
+                if ( ! $assoc->isManyToMany()) {
+                    // Mark any non-collection opposite sides as fetched, too.
+                    if ($assoc->mappedByFieldName) {
+                        $this->_hints['fetched'][$className][$assoc->mappedByFieldName] = true;
+                    } else {
+                        if (isset($class->inverseMappings[$sourceClassName][$assoc->sourceFieldName])) {
+                            $inverseAssoc = $class->inverseMappings[$sourceClassName][$assoc->sourceFieldName];
+                            if ($inverseAssoc->isOneToOne()) {
+                                $this->_hints['fetched'][$className][$inverseAssoc->sourceFieldName] = true;
+                                if ($class->subClasses) {
+                                    foreach ($class->subClasses as $targetSubclassName) {
+                                        $this->_hints['fetched'][$targetSubclassName][$inverseAssoc->sourceFieldName] = true;
+                                    }
+                                }
                             }
                         }
                     }
@@ -308,22 +313,7 @@ class ObjectHydrator extends AbstractHydrator
                                 }
                             } else {
                                 $element = $this->_getEntity($data, $dqlAlias);
-                                
-                                // If it's a bi-directional many-to-many, also initialize the reverse collection,
-                                // but only once, of course.
-                                if ($relation->isManyToMany()) {
-                                    if ($relation->isOwningSide && isset($this->_ce[$entityName]->inverseMappings[$relation->sourceEntityName][$relationField])) {
-                                        $inverseFieldName = $this->_ce[$entityName]->inverseMappings[$relation->sourceEntityName][$relationField]->sourceFieldName;
-                                        if ( ! isset($this->_initializedCollections[spl_object_hash($element) . $inverseFieldName])) {
-                                            $this->_initRelatedCollection($element, $this->_ce[$entityName], $inverseFieldName);
-                                        }
-                                    } else if ($relation->mappedByFieldName) {
-                                        if ( ! isset($this->_initializedCollections[spl_object_hash($element) . $relation->mappedByFieldName])) {
-                                            $this->_initRelatedCollection($element, $this->_ce[$entityName], $relation->mappedByFieldName);
-                                        }
-                                    }
-                                }
-    
+
                                 if (isset($this->_rsm->indexByMap[$dqlAlias])) {
                                     $field = $this->_rsm->indexByMap[$dqlAlias];
                                     $indexValue = $this->_ce[$entityName]->reflFields[$field]->getValue($element);
@@ -359,12 +349,7 @@ class ObjectHydrator extends AbstractHydrator
                                 // If there is an inverse mapping on the target class its bidirectional
                                 if (isset($targetClass->inverseMappings[$relation->sourceEntityName][$relationField])) {
                                     $inverseAssoc = $targetClass->inverseMappings[$relation->sourceEntityName][$relationField];
-                                    if ($inverseAssoc->isOneToMany()) {
-                                        /*// Only initialize reverse collection if it is not yet initialized.
-                                        if ( ! isset($this->_initializedCollections[spl_object_hash($element) . $inverseAssoc->sourceFieldName])) {
-                                            $this->_initRelatedCollection($element, $targetClass, $inverseAssoc->sourceFieldName);
-                                        }*/
-                                    } else {
+                                    if ($inverseAssoc->isOneToOne()) {
                                         $targetClass->reflFields[$inverseAssoc->sourceFieldName]->setValue($element, $parentObject);
                                         $this->_uow->setOriginalEntityProperty(spl_object_hash($element), $inverseAssoc->sourceFieldName, $parentObject);
                                     }
