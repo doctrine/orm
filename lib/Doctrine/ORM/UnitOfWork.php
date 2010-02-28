@@ -1808,7 +1808,11 @@ class UnitOfWork implements PropertyChangedListener
                                         $newValue = $assoc->load($entity, null, $this->_em, $associatedId);
                                     } else {
                                         $newValue = $this->_em->getProxyFactory()->getProxy($assoc->targetEntityName, $associatedId);
-                                        $this->registerManaged($newValue, $associatedId, array());
+                                        // PERF: Inlined & optimized code from UnitOfWork#registerManaged()
+                                        $newValueOid = spl_object_hash($newValue);
+                                        $this->_entityIdentifiers[$newValueOid] = $associatedId;
+                                        $this->_identityMap[$targetClass->rootEntityName][$relatedIdHash] = $newValue;
+                                        $this->_entityStates[$newValueOid] = self::STATE_MANAGED;
                                     }
                                 }
                                 $this->_originalEntityData[$oid][$field] = $newValue;
