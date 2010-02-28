@@ -489,10 +489,11 @@ class StandardEntityPersister
                             }
                             $newData[$field] = $found;
                         } else {
+                            // FIXME: What is happening with subClassees here?
                             $proxy = $this->_em->getProxyFactory()->getProxy($assoc->targetEntityName, $joinColumnValues);
                             $this->_class->reflFields[$field]->setValue($entity, $proxy);
                             $newData[$field] = $proxy;
-                            $this->_em->getUnitOfWork()->addToIdentityMap($proxy);
+                            $this->_em->getUnitOfWork()->registerManaged($proxy, $joinColumnValues, array());
                         }
                     }
                 } else {

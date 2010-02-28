@@ -122,14 +122,16 @@ class ObjectHydratorTest extends HydrationTestCase
                 'p__shipping_id' => 42
                 )
             );
-        
+
+        $proxyInstance = new \Doctrine\Tests\Models\ECommerce\ECommerceShipping();
+
         // mocking the proxy factory
         $proxyFactory = $this->getMock('Doctrine\ORM\Proxy\ProxyFactory', array('getProxy'), array(), '', false, false, false);
         $proxyFactory->expects($this->once())
                      ->method('getProxy')
                      ->with($this->equalTo('Doctrine\Tests\Models\ECommerce\ECommerceShipping'),
                             array('id' => 42))
-                     ->will($this->returnValue(new \stdClass));
+                     ->will($this->returnValue($proxyInstance));
 
         $this->_em->setProxyFactory($proxyFactory);
 

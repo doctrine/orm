@@ -1808,8 +1808,7 @@ class UnitOfWork implements PropertyChangedListener
                                         $newValue = $assoc->load($entity, null, $this->_em, $associatedId);
                                     } else {
                                         $newValue = $this->_em->getProxyFactory()->getProxy($assoc->targetEntityName, $associatedId);
-                                        $this->_entityIdentifiers[spl_object_hash($newValue)] = $associatedId;
-                                        $this->_identityMap[$targetClass->rootEntityName][$relatedIdHash] = $newValue;
+                                        $this->registerManaged($newValue, $associatedId, array());
                                     }
                                 }
                                 $this->_originalEntityData[$oid][$field] = $newValue;
