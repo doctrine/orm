@@ -256,7 +256,7 @@ namespace <namespace> {
             $this->_identifier = $identifier;
         }
         private function _load() {
-            if (!$this->__isInitialized__) {
+            if (!$this->__isInitialized__ && $this->_entityPersister) {
                 $this->__isInitialized__ = true;
                 $this->_entityPersister->load($this->_identifier, $this);
                 unset($this->_entityPersister);
