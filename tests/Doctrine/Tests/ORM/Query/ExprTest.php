@@ -180,9 +180,9 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('CONCAT(u.first_name, u.last_name)', (string) $this->_expr->concat('u.first_name', 'u.last_name'));
     }
 
-    public function testSubstrExpr()
+    public function testSubstringExpr()
     {
-        $this->assertEquals('SUBSTR(a.title, 0, 25)', (string) $this->_expr->substr('a.title', 0, 25));
+        $this->assertEquals('SUBSTRING(a.title, 0, 25)', (string) $this->_expr->substring('a.title', 0, 25));
     }
 
     public function testLowerExpr()
