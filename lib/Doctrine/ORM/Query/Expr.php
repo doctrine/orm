@@ -463,16 +463,16 @@ class Expr
     }
 
     /**
-     * Creates a SUBSTR() function expression with the given arguments.
+     * Creates a SUBSTRING() function expression with the given arguments.
      *
-     * @param mixed $x Argument to be used as string to be cropped by SUBSTR() function.
+     * @param mixed $x Argument to be used as string to be cropped by SUBSTRING() function.
      * @param integer $from Initial offset to start cropping string. May accept negative values.
      * @param integer $len Length of crop. May accept negative values.
      * @return Expr\Func
      */
-    public function substr($x, $from, $len)
+    public function substring($x, $from, $len)
     {
-        return new Expr\Func('SUBSTR', array($x, $from, $len));
+        return new Expr\Func('SUBSTRING', array($x, $from, $len));
     }
 
     /**
