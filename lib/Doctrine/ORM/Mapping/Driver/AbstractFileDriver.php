@@ -196,7 +196,7 @@ abstract class AbstractFileDriver implements Driver
             }
         }
 
-        throw MappingException::mappingFileNotFound($className);
+        throw MappingException::mappingFileNotFound($className, $fileName);
     }
 
     /**
