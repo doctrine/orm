@@ -16,6 +16,7 @@ use <?php echo $this->_getClassToExtendNamespace() ?>;
  * @Entity
 <?php endif; ?>
  * <?php echo $this->_getTableAnnotation($metadata)."\n" ?>
+ * <?php echo $this->_getInheritanceAnnotation($metadata)."\n" ?>
  */
 class <?Php echo $this->_getClassName($metadata) ?><?php if ($this->_extendsClass()): ?> extends <?php echo $this->_getClassToExtendName() ?><?php endif; ?>
 
