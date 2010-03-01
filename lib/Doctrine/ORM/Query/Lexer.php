@@ -51,44 +51,43 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_BOTH                = 108;
     const T_BY                  = 109;
     const T_CLOSE_PARENTHESIS   = 110;
-    const T_COLON               = 111;
-    const T_COMMA               = 112;
-    const T_COUNT               = 113;
-    const T_DELETE              = 114;
-    const T_DESC                = 115;
-    const T_DISTINCT            = 116;
-    const T_DIVIDE              = 117;
-    const T_DOT                 = 118;
-    const T_EMPTY               = 119;
-    const T_EQUALS              = 120;
-    const T_ESCAPE              = 121;
-    const T_EXISTS              = 122;
-    const T_FALSE               = 123;
-    const T_FROM                = 124;
-    const T_GREATER_THAN        = 125;
-    const T_GROUP               = 126;
-    const T_HAVING              = 127;
-    const T_IN                  = 128;
-    const T_INDEX               = 129;
-    const T_INNER               = 130;
-    const T_IS                  = 131;
-    const T_JOIN                = 132;
-    const T_LEADING             = 133;
-    const T_LEFT                = 134;
-    const T_LIKE                = 135;
-    const T_LIMIT               = 136;
-    const T_LOWER_THAN          = 137;
-    const T_MAX                 = 138;
-    const T_MEMBER              = 139;
-    const T_MIN                 = 140;
-    const T_MINUS               = 141;
-    const T_MOD                 = 142;
-    const T_MULTIPLY            = 143;
-    const T_NEGATE              = 144;
-    const T_NOT                 = 145;
-    const T_NULL                = 146;
-    const T_OF                  = 147;
-    const T_OFFSET              = 148;
+    const T_COMMA               = 111;
+    const T_COUNT               = 112;
+    const T_DELETE              = 113;
+    const T_DESC                = 114;
+    const T_DISTINCT            = 115;
+    const T_DIVIDE              = 116;
+    const T_DOT                 = 117;
+    const T_EMPTY               = 118;
+    const T_EQUALS              = 119;
+    const T_ESCAPE              = 120;
+    const T_EXISTS              = 121;
+    const T_FALSE               = 122;
+    const T_FROM                = 123;
+    const T_GREATER_THAN        = 124;
+    const T_GROUP               = 125;
+    const T_HAVING              = 126;
+    const T_IN                  = 127;
+    const T_INDEX               = 128;
+    const T_INNER               = 129;
+    const T_IS                  = 130;
+    const T_JOIN                = 131;
+    const T_LEADING             = 132;
+    const T_LEFT                = 133;
+    const T_LIKE                = 134;
+    const T_LIMIT               = 135;
+    const T_LOWER_THAN          = 136;
+    const T_MAX                 = 137;
+    const T_MEMBER              = 138;
+    const T_MIN                 = 139;
+    const T_MINUS               = 140;
+    const T_MOD                 = 141;
+    const T_MULTIPLY            = 142;
+    const T_NEGATE              = 143;
+    const T_NOT                 = 144;
+    const T_NULL                = 145;
+    const T_OF                  = 146;
+    const T_OFFSET              = 147;
     const T_OPEN_PARENTHESIS    = 149;
     const T_OR                  = 150;
     const T_ORDER               = 151;
@@ -124,7 +123,7 @@ class Lexer extends \Doctrine\Common\Lexer
     protected function getCatchablePatterns()
     {
         return array(
-            '[a-z_][a-z0-9_\:\\\]*[a-z0-9_]{1}',
+            '[a-z_][a-z0-9_\\\]*',
             '(?:[0-9]+(?:[,\.][0-9]+)*)(?:e[+-]?[0-9]+)?',
             "'(?:[^']|'')*'",
             '\?[1-9]+|:[a-z][a-z0-9_]+'

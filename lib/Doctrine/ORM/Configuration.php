@@ -52,7 +52,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'namedNativeQueries' => array(),
             'autoGenerateProxyClasses' => true,
             'proxyNamespace' => null,
-            'entityNamespaces' => array()
+            'entityAliasMap' => array()
         ));
     }
 
@@ -121,24 +121,24 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Add a namespace alias for entities.
+     * Add an alias for an entity.
      *
+     * @param string $className
      * @param string $alias
-     * @param string $namespace
      */
-    public function addEntityNamespace($alias, $namespace)
+    public function addEntityAlias($className, $alias)
     {
-        $this->_attributes['entityNamespaces'][$alias] = $namespace;
+        $this->_attributes['entityAliasMap'][$alias] = $className;
     }
 
     /**
-     * get the array of entity namespaces
+     * get the array of entity aliases
      *
-     * @return array $entityNamespaces
+     * @return array $aliasMap
      */
-    public function getEntityNamespaces()
+    public function getEntityAliasMap()
     {
-        return $this->_attributes['entityNamespaces'];
+        return $this->_attributes['entityAliasMap'];
     }
 
     /**
@@ -147,9 +147,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param array $entityAliasMap 
      * @return void
      */
-    public function setEntityNamespaces(array $entityNamespaces)
+    public function setEntityAliasMap(array $entityAliasMap)
     {
-      $this->_attributes['entityNamespaces'] = $entityNamespaces;
+      $this->_attributes['entityAliasMap'] = $entityAliasMap;
     }
 
     /**

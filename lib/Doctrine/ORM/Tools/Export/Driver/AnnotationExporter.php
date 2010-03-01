@@ -297,27 +297,6 @@ class AnnotationExporter extends AbstractExporter
         return '@Table(' . implode(', ', $table) . ')';
     }
 
-    private function _getInheritanceAnnotation($metadata)
-    {
-        if ($metadata->inheritanceType != ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
-            switch ($metadata->inheritanceType) {
-                case ClassMetadataInfo::INHERITANCE_TYPE_JOINED:
-                        $type = "JOINED";
-                    break;
-                case ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_TABLE:
-                        $type = "SINGLE_TABLE";
-                    break;
-                case ClassMetadataInfo::INHERITANCE_TYPE_TABLE_PER_CLASS:
-                        $type = "TABLE_PER_CLASS";
-                    break;
-            }
-
-            return '@InheritanceType("'.$type.'")';
-        }
-
-        return '';
-    }
-
     private function _getJoinColumnAnnotation(array $joinColumn)
     {
         $joinColumnAnnot = array();

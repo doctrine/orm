@@ -227,18 +227,18 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->getSingleResult();
     }
 
-    public function testSupportsQueriesWithEntityNamespaces()
+    public function testSupportsQueriesWithEntityAliases()
     {
-        $this->_em->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
+        $this->_em->getConfiguration()->addEntityAlias('Doctrine\Tests\Models\CMS\CmsUser', 'TestAlias');
 
         try {
-            $query = $this->_em->createQuery('UPDATE CMS:CmsUser u SET u.name = ?1');
+            $query = $this->_em->createQuery('UPDATE TestAlias u SET u.name = ?1');
             $this->assertEquals('UPDATE cms_users SET name = ?', $query->getSql());
             $query->free();
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
 
-        $this->_em->getConfiguration()->setEntityNamespaces(array());
+        $this->_em->getConfiguration()->setEntityAliasMap(array());
     }
 }

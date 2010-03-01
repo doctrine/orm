@@ -127,11 +127,12 @@ class ClassMetadataFactory
      */
     public function getMetadataFor($className)
     {
-        $className = $this->_resolveClassName($className);
-
         if ( ! isset($this->_loadedMetadata[$className])) {
+            $aliasMap = $this->_em->getConfiguration()->getEntityAliasMap();
+            if (isset($aliasMap[$className])) {
+                $className = $aliasMap[$className];
+            }
             $cacheKey = "$className\$CLASSMETADATA";
-
             if ($this->_cacheDriver) {
                 if (($cached = $this->_cacheDriver->fetch($cacheKey)) !== false) {
                     $this->_loadedMetadata[$className] = $cached;
@@ -377,21 +378,5 @@ class ClassMetadataFactory
             default:
                 throw new ORMException("Unknown generator type: " . $class->generatorType);
         }
-    }
-
-    protected function _resolveClassName($className)
-    {
-        if (($pos = strrpos($className, ':')) !== false) {
-            $entityNamespaces = $this->_em->getConfiguration()->getEntityNamespaces();
-            $entityNamespace = substr($className, 0, $pos);
-
-            if ( ! isset($entityNamespaces[$entityNamespace])) {
-                throw MappingException::unknownEntityNamespace($entityNamespace, $className);
-            }
-
-            $className = trim($entityNamespaces[$entityNamespace], '\\') . '\\' . substr($className, $pos + 1);
-        }
-
-        return $className;
     }
 }

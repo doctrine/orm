@@ -867,22 +867,12 @@ class Parser
         $this->match(Lexer::T_IDENTIFIER);
 
         $schemaName = $this->_lexer->token['value'];
-
-        if (($pos = strrpos($schemaName, ':')) !== false) {
-            $entityNamespaces = $this->_em->getConfiguration()->getEntityNamespaces();
-            $entityNamespace = substr($schemaName, 0, $pos);
-
-            if ( ! isset($entityNamespaces[$entityNamespace])) {
-                $this->semanticalError(
-                    "Unknown Entity namespace '$entityNamespace' when processing '$schemaName'.", $this->_lexer->token
-                );
-            }
-
-            $schemaName = trim($entityNamespaces[$entityNamespace], '\\') . '\\' . substr($schemaName, $pos + 1);
+        $aliasMap = $this->_em->getConfiguration()->getEntityAliasMap();
+        if (isset($aliasMap[$schemaName])) {
+            $schemaName = $aliasMap[$schemaName];
         }
-
         $exists = class_exists($schemaName, true);
-
+        
         if ( ! $exists) {
             $this->semanticalError("Class '$schemaName' is not defined.", $this->_lexer->token);
         }

@@ -65,17 +65,6 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $users = $repos->findAll();
         $this->assertEquals(2, count($users));
-
-        $this->_em->clear();
-
-        $this->_em->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
-
-        $repos = $this->_em->getRepository('CMS:CmsUser');
-
-        $users = $repos->findAll();
-        $this->assertEquals(2, count($users));
-
-        $this->_em->getConfiguration()->setEntityNamespaces(array());
     }
 
     /**
