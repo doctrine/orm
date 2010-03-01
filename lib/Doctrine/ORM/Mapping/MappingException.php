@@ -185,4 +185,11 @@ class MappingException extends \Doctrine\ORM\ORMException
             "does not exist."
         );
     }
+
+    public static function unknownEntityNamespace($namespace, $entity)
+    {
+        return new self(
+            "Unknown Entity namespace '$namespace' when processing '$entity'."
+        );
+    }
 }
