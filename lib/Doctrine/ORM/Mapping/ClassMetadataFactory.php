@@ -149,7 +149,9 @@ class ClassMetadataFactory
                     $this->_loadedMetadata[$realClassName] = $cached;
                 } else {
                     foreach ($this->_loadMetadata($realClassName) as $loadedClassName) {
-                        $this->_cacheDriver->save($cacheKey, $this->_loadedMetadata[$realClassName], null);
+                        $this->_cacheDriver->save(
+                            "$loadedClassName\$CLASSMETADATA", $this->_loadedMetadata[$realClassName], null
+                        );
                     }
                 }
             } else {
