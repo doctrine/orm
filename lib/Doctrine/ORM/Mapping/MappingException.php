@@ -179,7 +179,7 @@ class MappingException extends \Doctrine\ORM\ORMException
      * @param string $owningClass The class that declares the discriminator map.
      * @return self
      */
-    public static function invalidClassInDiscriminatorMap($invalidClass, $owningClass) {
+    public static function invalidClassInDiscriminatorMap($className, $owningClass) {
         return new self(
             "Entity class '$className' used in the discriminator map of class '$owningClass' ".
             "does not exist."
