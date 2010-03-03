@@ -150,7 +150,7 @@ class ClassMetadataFactory
                 } else {
                     foreach ($this->_loadMetadata($realClassName) as $loadedClassName) {
                         $this->_cacheDriver->save(
-                            "$loadedClassName\$CLASSMETADATA", $this->_loadedMetadata[$realClassName], null
+                            "$loadedClassName\$CLASSMETADATA", $this->_loadedMetadata[$loadedClassName], null
                         );
                     }
                 }
