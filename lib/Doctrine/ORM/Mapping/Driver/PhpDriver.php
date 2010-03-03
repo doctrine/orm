@@ -121,7 +121,7 @@ class PhpDriver implements Driver
     {
         $path = $this->_classPaths[$className];
 
-        include $path;
+        require_once $path;
     }
 
     /**

@@ -99,7 +99,60 @@ class RunSqlTask extends AbstractTask
         $arguments = $this->getArguments();
         
         if (isset($arguments['file'])) {
-            //TODO
+            $em = $this->getConfiguration()->getAttribute('em');
+            $conn = $em->getConnection();
+            $printer = $this->getPrinter();
+            
+            $fileNames = (array) $arguments['file'];
+            
+            foreach ($fileNames as $fileName) {
+                if ( ! file_exists($fileName)) {
+                    throw new CliException(sprintf('The SQL file [%s] does not exist.', $fileName));
+                } else if ( ! is_readable($fileName)) {
+                    throw new CliException(sprintf('The SQL file [%s] does not have read permissions.', $fileName));
+                }
+
+                $printer->write('Processing file [' . $fileName . ']... ');
+                $sql = file_get_contents($fileName);
+
+                if ($conn instanceof \Doctrine\DBAL\Driver\PDOConnection) {
+                    // PDO Drivers
+                    try {
+                        $lines = 0;
+
+                        $stmt = $conn->prepare($sql);
+                        $stmt->execute();
+
+                        do { 
+                            // Required due to "MySQL has gone away!" issue
+                            $stmt->fetch(); 
+                            $stmt->closeCursor();
+
+                            $lines++; 
+                        } while ($stmt->nextRowset());
+
+                        $printer->writeln(sprintf('%d statements executed!', $lines));
+                    } catch (\PDOException $e) {
+                        $printer->writeln('error!')
+                                ->writeln($e->getMessage());
+                    }
+                } else {
+                    // Non-PDO Drivers (ie. OCI8 driver)
+                    $stmt = $conn->prepare($sql);
+                    $rs = $stmt->execute();
+                    
+                    if ($rs) {
+                        $printer->writeln('OK!');
+                    } else {
+                        $error = $stmt->errorInfo();
+                    
+                        $printer->writeln('error!')
+                                ->writeln($error['message']);
+                    }
+                    
+                    $stmt->closeCursor();
+                }
+            }
         } else if (isset($arguments['sql'])) {
             $em = $this->getConfiguration()->getAttribute('em');
             
