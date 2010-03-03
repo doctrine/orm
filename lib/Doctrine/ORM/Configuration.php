@@ -21,8 +21,6 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\DoctrineException;
-
 /**
  * Configuration container for all configuration options of Doctrine.
  * It combines all configuration options from DBAL & ORM.
@@ -52,7 +50,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'namedNativeQueries' => array(),
             'autoGenerateProxyClasses' => true,
             'proxyNamespace' => null,
-            'entityAliasMap' => array()
+            'entityNamespaces' => array()
         ));
     }
 
@@ -121,24 +119,30 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Add an alias for an entity.
+     * Add a namespace alias for entities.
      *
-     * @param string $className
      * @param string $alias
+     * @param string $namespace
      */
-    public function addEntityAlias($className, $alias)
+    public function addEntityNamespace($alias, $namespace)
     {
-        $this->_attributes['entityAliasMap'][$alias] = $className;
+        $this->_attributes['entityNamespaces'][$alias] = $namespace;
     }
 
     /**
-     * get the array of entity aliases
+     * Get the namespace of a given entity namespace
      *
-     * @return array $aliasMap
+     * @param string $entityNamespaceAlias 
+     * @return string
+     * @throws MappingException
      */
-    public function getEntityAliasMap()
+    public function getEntityNamespace($entityNamespaceAlias)
     {
-        return $this->_attributes['entityAliasMap'];
+        if (isset($this->_attributes['entityNamespaces'][$entityNamespaceAlias])) {
+            return trim($this->_attributes['entityNamespaces'][$entityNamespaceAlias], '\\');
+        }
+
+        throw ORMException::unknownEntityNamespace($entityNamespaceAlias);
     }
 
     /**
@@ -147,9 +151,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param array $entityAliasMap 
      * @return void
      */
-    public function setEntityAliasMap(array $entityAliasMap)
+    public function setEntityNamespaces(array $entityNamespaces)
     {
-      $this->_attributes['entityAliasMap'] = $entityAliasMap;
+      $this->_attributes['entityNamespaces'] = $entityNamespaces;
     }
 
     /**
@@ -306,13 +310,13 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function ensureProductionSettings()
     {
         if ( ! $this->_attributes['queryCacheImpl']) {
-            throw DoctrineException::queryCacheNotConfigured();
+            throw ORMException::queryCacheNotConfigured();
         }
         if ( ! $this->_attributes['metadataCacheImpl']) {
-            throw DoctrineException::metadataCacheNotConfigured();
+            throw ORMException::metadataCacheNotConfigured();
         }
         if ($this->_attributes['autoGenerateProxyClasses']) {
-            throw DoctrineException::proxyClassesAlwaysRegenerating();
+            throw ORMException::proxyClassesAlwaysRegenerating();
         }
     }
 }

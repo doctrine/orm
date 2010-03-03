@@ -128,27 +128,44 @@ class ClassMetadataFactory
     public function getMetadataFor($className)
     {
         if ( ! isset($this->_loadedMetadata[$className])) {
-            $aliasMap = $this->_em->getConfiguration()->getEntityAliasMap();
-            if (isset($aliasMap[$className])) {
-                $className = $aliasMap[$className];
+            $realClassName = $className;
+
+            if (strpos($className, ':') !== false) {
+                list($namespaceAlias, $simpleClassName) = explode(':', $className);
+                $realClassName = $this->_em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
+
+                if (isset($this->_loadedMetadata[$realClassName])) {
+                    // We do not have the alias reference, include it
+                    $this->_loadedMetadata[$className] = $this->_loadedMetadata[$realClassName];
+
+                    return $this->_loadedMetadata[$realClassName];
+                }
             }
-            $cacheKey = "$className\$CLASSMETADATA";
+
+            $cacheKey = "$realClassName\$CLASSMETADATA";
+
             if ($this->_cacheDriver) {
                 if (($cached = $this->_cacheDriver->fetch($cacheKey)) !== false) {
-                    $this->_loadedMetadata[$className] = $cached;
+                    $this->_loadedMetadata[$realClassName] = $cached;
                 } else {
-                    foreach ($this->_loadMetadata($className) as $loadedClassName) {
-                        $this->_cacheDriver->save($cacheKey, $this->_loadedMetadata[$className], null);
+                    foreach ($this->_loadMetadata($realClassName) as $loadedClassName) {
+                        $this->_cacheDriver->save($cacheKey, $this->_loadedMetadata[$realClassName], null);
                     }
                 }
             } else {
-                $this->_loadMetadata($className);
+                $this->_loadMetadata($realClassName);
+            }
+
+            // Include the alias of this situation:
+            // CMS:CmsUser => Doctrine\Tests\ORM\Models\CMS\CmsUser
+            if ($className != $realClassName) {
+                $this->_loadedMetadata[$className] = $this->_loadedMetadata[$realClassName];
             }
         }
-        
+
         return $this->_loadedMetadata[$className];
     }
-    
+
     /**
      * Checks whether the factory has the metadata for a class loaded already.
      * 

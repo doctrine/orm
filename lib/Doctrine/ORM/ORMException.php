@@ -57,14 +57,38 @@ class ORMException extends \Exception
         return new self("Cannot use different EventManager instances for EntityManager and Connection.");
     }
 
-    public static function findByRequiresParameter($methodName) {
+    public static function findByRequiresParameter($methodName)
+    {
         return new self("You need to pass a parameter to '".$methodName."'");
     }
 
-    public static function invalidFindByCall($entityName, $fieldName, $method) {
+    public static function invalidFindByCall($entityName, $fieldName, $method)
+    {
         return new self(
             "Entity '".$entityName."' has no field '".$fieldName."'. ".
             "You can therefore not call '".$method."' on the entities' repository"
+        );
+    }
+
+    public static function queryCacheNotConfigured()
+    {
+        return new self('Query Cache is not configured.');
+    }
+
+    public static function metadataCacheNotConfigured()
+    {
+        return new self('Class Metadata Cache is not configured.');
+    }
+
+    public static function proxyClassesAlwaysRegenerating()
+    {
+        return new self('Proxy Classes are always regenerating.');
+    }
+
+    public static function unknownEntityNamespace($entityNamespaceAlias)
+    {
+        return new self(
+            "Unknown Entity namespace alias '$entityNamespaceAlias'."
         );
     }
 }

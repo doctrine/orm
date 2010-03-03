@@ -123,7 +123,7 @@ class Lexer extends \Doctrine\Common\Lexer
     protected function getCatchablePatterns()
     {
         return array(
-            '[a-z_][a-z0-9_\\\]*',
+            '[a-z_][a-z0-9_\:\\\]*[a-z0-9_]{1}',
             '(?:[0-9]+(?:[,\.][0-9]+)*)(?:e[+-]?[0-9]+)?',
             "'(?:[^']|'')*'",
             '\?[1-9]+|:[a-z][a-z0-9_]+'
