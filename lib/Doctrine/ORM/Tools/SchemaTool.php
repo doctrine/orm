@@ -21,7 +21,8 @@
 
 namespace Doctrine\ORM\Tools;
 
-use Doctrine\DBAL\Types\Type,
+use Doctrine\ORM\ORMException,
+    Doctrine\DBAL\Types\Type,
     Doctrine\ORM\EntityManager,
     Doctrine\ORM\Internal\CommitOrderCalculator;
 
@@ -80,7 +81,7 @@ class SchemaTool
     {
         $createSchemaSql = $this->getCreateSchemaSql($classes);
         $conn = $this->_em->getConnection();
-        
+
         foreach ($createSchemaSql as $sql) {
             $conn->execute($sql);
         }
@@ -130,11 +131,11 @@ class SchemaTool
             }
 
             $columns = array(); // table columns
-            
+
             if ($class->isInheritanceTypeSingleTable()) {
                 $columns = $this->_gatherColumns($class, $table);
                 $this->_gatherRelationsSql($class, $table, $schema);
-                
+
                 // Add the discriminator column
                 $discrColumnDef = $this->_getDiscriminatorColumnDefinition($class, $table);
 
@@ -143,7 +144,7 @@ class SchemaTool
                     // Parent class information is already contained in this class
                     $processedClasses[$parentClassName] = true;
                 }
-                
+
                 foreach ($class->subClasses as $subClassName) {
                     $subClass = $this->_em->getClassMetadata($subClassName);
                     $this->_gatherColumns($subClass, $table);
@@ -175,12 +176,12 @@ class SchemaTool
                     $idMapping = $class->fieldMappings[$class->identifier[0]];
                     $this->_gatherColumn($class, $idMapping, $table);
                     $columnName = $class->getQuotedColumnName($class->identifier[0], $this->_platform);
-                    
+
                     $pkColumns[] = $columnName;
                     if ($table->isIdGeneratorIdentity()) {
                        $table->setIdGeneratorType(\Doctrine\DBAL\Schema\Table::ID_NONE);
                     }
-                    
+
                     // Add a FK constraint on the ID column
                     $table->addUnnamedForeignKeyConstraint(
                         $this->_em->getClassMetadata($class->rootEntityName)->getQuotedTableName($this->_platform),
@@ -191,18 +192,18 @@ class SchemaTool
                 $table->setPrimaryKey($pkColumns);
 
             } else if ($class->isInheritanceTypeTablePerClass()) {
-                throw DoctrineException::notSupported();
+                throw ORMException::notSupported();
             } else {
                 $this->_gatherColumns($class, $table);
                 $this->_gatherRelationsSql($class, $table, $schema);
             }
-            
+
             if (isset($class->primaryTable['indexes'])) {
                 foreach ($class->primaryTable['indexes'] AS $indexName => $indexData) {
                     $table->addIndex($indexData['columns'], $indexName);
                 }
             }
-            
+
             if (isset($class->primaryTable['uniqueConstraints'])) {
                 foreach ($class->primaryTable['uniqueConstraints'] AS $indexName => $indexData) {
                     $table->addUniqueIndex($indexData['columns'], $indexName);
@@ -223,14 +224,14 @@ class SchemaTool
                 }
             }
         }
-        
+
         return $schema;
     }
 
     /**
      * Gets a portable column definition as required by the DBAL for the discriminator
      * column of a class.
-     * 
+     *
      * @param ClassMetadata $class
      * @return array The portable column definition of the discriminator column as required by
      *              the DBAL.
@@ -245,7 +246,7 @@ class SchemaTool
         }
 
         $table->addColumn(
-            $class->getQuotedDiscriminatorColumnName($this->_platform),
+            $discrColumn['name'],
             $discrColumn['type'],
             array('length' => $discrColumn['length'], 'notnull' => true)
         );
@@ -263,10 +264,10 @@ class SchemaTool
     {
         $columns = array();
         $pkColumns = array();
-        
+
         foreach ($class->fieldMappings as $fieldName => $mapping) {
             $column = $this->_gatherColumn($class, $mapping, $table);
-            
+
             if ($class->isIdentifier($mapping['fieldName'])) {
                 $pkColumns[] = $class->getQuotedColumnName($mapping['fieldName'], $this->_platform);
             }
@@ -276,13 +277,13 @@ class SchemaTool
         if(!$table->hasIndex('primary')) {
             $table->setPrimaryKey($pkColumns);
         }
-        
+
         return $columns;
     }
-    
+
     /**
      * Creates a column definition as required by the DBAL from an ORM field mapping definition.
-     * 
+     *
      * @param ClassMetadata $class The class that owns the field mapping.
      * @param array $mapping The field mapping.
      * @param Table $table
@@ -307,15 +308,15 @@ class SchemaTool
         if (isset($mapping['precision'])) {
             $options['precision'] = $mapping['precision'];
         }
-        
+
         if (isset($mapping['scale'])) {
             $options['scale'] = $mapping['scale'];
         }
-        
+
         if (isset($mapping['default'])) {
             $options['default'] = $mapping['default'];
         }
-        
+
         if (isset($mapping['columnDefinition'])) {
             $options['columnDefinition'] = $mapping['columnDefinition'];
         }
@@ -336,7 +337,7 @@ class SchemaTool
     /**
      * Gathers the SQL for properly setting up the relations of the given class.
      * This includes the SQL for foreign key constraints and join tables.
-     * 
+     *
      * @param ClassMetadata $class
      * @param \Doctrine\DBAL\Schema\Table $table
      * @param \Doctrine\DBAL\Schema\Schema $schema
@@ -357,7 +358,7 @@ class SchemaTool
                 $this->_gatherRelationJoinColumns($mapping->getJoinColumns(), $table, $foreignClass, $mapping, $primaryKeyColumns, $uniqueConstraints);
             } else if ($mapping->isOneToMany() && $mapping->isOwningSide) {
                 //... create join table, one-many through join table supported later
-                throw DoctrineException::notSupported();
+                throw ORMException::notSupported();
             } else if ($mapping->isManyToMany() && $mapping->isOwningSide) {
                 // create join table
                 $joinTable = $mapping->getJoinTable();
@@ -385,7 +386,7 @@ class SchemaTool
 
     /**
      * Gather columns and fk constraints that are required for one part of relationship.
-     * 
+     *
      * @param array $joinColumns
      * @param \Doctrine\DBAL\Schema\Table $theJoinTable
      * @param ClassMetadata $class
@@ -400,12 +401,11 @@ class SchemaTool
         $fkOptions = array();
 
         foreach ($joinColumns as $joinColumn) {
-            // Note that this thing might be quoted, i.e. `foo`, [foo], ...
-            $columnName = $mapping->getQuotedJoinColumnName($joinColumn['name'], $this->_platform);
+            $columnName = $joinColumn['name'];
             $referencedFieldName = $class->getFieldName($joinColumn['referencedColumnName']);
 
-            if (!$class->hasField($referencedFieldName)) {
-                throw new \Doctrine\Common\DoctrineException(
+            if ( ! $class->hasField($referencedFieldName)) {
+                throw new \Doctrine\ORM\ORMException(
                     "Column name `".$joinColumn['referencedColumnName']."` referenced for relation from ".
                     "$mapping->sourceEntityName towards $mapping->targetEntityName does not exist."
                 );
@@ -455,7 +455,7 @@ class SchemaTool
             $class->getQuotedTableName($this->_platform), $localColumns, $foreignColumns, $fkOptions
         );
     }
-    
+
     /**
      * Drops the database schema for the given classes.
      *
@@ -470,15 +470,15 @@ class SchemaTool
     {
         $dropSchemaSql = $this->getDropSchemaSql($classes, $mode);
         $conn = $this->_em->getConnection();
-        
+
         foreach ($dropSchemaSql as $sql) {
             $conn->execute($sql);
         }
     }
-    
+
     /**
      * Gets the SQL needed to drop the database schema for the given classes.
-     * 
+     *
      * @param array $classes
      * @param string $mode
      * @return array
@@ -496,13 +496,13 @@ class SchemaTool
 
     /**
      * Drop all tables of the database connection.
-     * 
+     *
      * @return array
      */
     private function _getDropSchemaTablesDatabaseMode($classes)
     {
         $conn = $this->_em->getConnection();
-        
+
         $sm = $conn->getSchemaManager();
         /* @var $sm \Doctrine\DBAL\Schema\AbstractSchemaManager */
 
@@ -521,7 +521,7 @@ class SchemaTool
     private function _getDropSchemaTablesMetadataMode(array $classes)
     {
         $orderedTables = array();
-        
+
         $commitOrder = $this->_getCommitOrder($classes);
         $associationTables = $this->_getAssociationTables($commitOrder);
 
@@ -546,11 +546,11 @@ class SchemaTool
 
         return $orderedTables;
     }
-    
+
     /**
      * Updates the database schema of the given classes by comparing the ClassMetadata
      * instances to the current database schema that is inspected.
-     * 
+     *
      * @param array $classes
      * @return void
      */
@@ -563,11 +563,11 @@ class SchemaTool
             $conn->execute($sql);
         }
     }
-    
+
     /**
      * Gets the sequence of SQL statements that need to be performed in order
      * to bring the given class mappings in-synch with the relational schema.
-     * 
+     *
      * @param array $classes The classes to consider.
      * @return array The sequence of SQL statements.
      */
@@ -587,23 +587,23 @@ class SchemaTool
             return $schemaDiff->toSql($this->_platform);
         }
     }
-    
+
     private function _getCommitOrder(array $classes)
     {
         $calc = new CommitOrderCalculator;
-        
+
         // Calculate dependencies
         foreach ($classes as $class) {
             $calc->addClass($class);
-            
+
             foreach ($class->associationMappings as $assoc) {
                 if ($assoc->isOwningSide) {
                     $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
-                    
+
                     if ( ! $calc->hasClass($targetClass->name)) {
                         $calc->addClass($targetClass);
                     }
-                    
+
                     // add dependency ($targetClass before $class)
                     $calc->addDependency($targetClass, $class);
                 }
@@ -612,11 +612,11 @@ class SchemaTool
 
         return $calc->getCommitOrder();
     }
-    
+
     private function _getAssociationTables(array $classes)
     {
         $associationTables = array();
-        
+
         foreach ($classes as $class) {
             foreach ($class->associationMappings as $assoc) {
                 if ($assoc->isOwningSide && $assoc->isManyToMany()) {
@@ -624,7 +624,7 @@ class SchemaTool
                 }
             }
         }
-        
+
         return $associationTables;
     }
 }

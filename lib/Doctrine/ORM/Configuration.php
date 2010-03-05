@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  *  $Id$
  *
@@ -31,14 +31,14 @@ namespace Doctrine\ORM;
  * pair and add the option to the _attributes array with a proper default value.
  */
 class Configuration extends \Doctrine\DBAL\Configuration
-{    
+{
     /**
      * Creates a new configuration that can be used for Doctrine.
      */
     public function __construct()
     {
         parent::__construct();
-        
+
         $this->_attributes = array_merge($this->_attributes, array(
             'resultCacheImpl' => null,
             'queryCacheImpl' => null,
@@ -73,7 +73,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         return $this->_attributes['proxyDir'];
     }
-    
+
     /**
      * Gets a boolean flag that indicates whether proxy classes should always be regenerated
      * during each script execution.
@@ -84,7 +84,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         return $this->_attributes['autoGenerateProxyClasses'];
     }
-    
+
     /**
      * Sets a boolean flag that indicates whether proxy classes should always be regenerated
      * during each script execution.
@@ -95,12 +95,12 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $this->_attributes['autoGenerateProxyClasses'] = $bool;
     }
-    
+
     public function getProxyNamespace()
     {
         return $this->_attributes['proxyNamespace'];
     }
-    
+
     public function setProxyNamespace($ns)
     {
         $this->_attributes['proxyNamespace'] = $ns;
@@ -148,7 +148,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Set the entity alias map
      *
-     * @param array $entityAliasMap 
+     * @param array $entityAliasMap
      * @return void
      */
     public function setEntityNamespaces(array $entityNamespaces)
@@ -231,32 +231,32 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $this->_attributes['metadataCacheImpl'] = $cacheImpl;
     }
-    
+
     /**
      * Gets a boolean flag that indicates whether Doctrine should make use of the
      * C extension.
-     * 
+     *
      * @return boolean TRUE if Doctrine is configured to use the C extension, FALSE otherwise.
      */
     public function getUseCExtension()
     {
         return $this->_attributes['useCExtension'];
     }
-    
+
     /**
      * Sets a boolean flag that indicates whether Doctrine should make use of the
      * C extension.
-     * 
+     *
      * @param boolean $boolean Whether to make use of the C extension or not.
      */
     public function setUseCExtension($boolean)
     {
         $this->_attributes['useCExtension'] = $boolean;
     }
-    
+
     /**
      * Adds a named DQL query to the configuration.
-     * 
+     *
      * @param string $name The name of the query.
      * @param string $dql The DQL query string.
      */
@@ -264,10 +264,10 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $this->_attributes['namedQueries'][$name] = $dql;
     }
-    
+
     /**
      * Gets a previously registered named DQL query.
-     * 
+     *
      * @param string $name The name of the query.
      * @return string The DQL query.
      */
@@ -275,22 +275,22 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         return $this->_attributes['namedQueries'][$name];
     }
-    
+
     /**
      * Adds a named native query to the configuration.
-     * 
+     *
      * @param string $name The name of the query.
-     * @param string $sql The native SQL query string. 
+     * @param string $sql The native SQL query string.
      * @param ResultSetMapping $rsm The ResultSetMapping used for the results of the SQL query.
      */
     public function addNamedNativeQuery($name, $sql, Query\ResultSetMapping $rsm)
     {
         $this->_attributes['namedNativeQueries'][$name] = array($sql, $rsm);
     }
-    
+
     /**
      * Gets the components of a previously registered named native query.
-     * 
+     *
      * @param string $name The name of the query.
      * @return array A tuple with the first element being the SQL string and the second
      *          element being the ResultSetMapping.
@@ -299,13 +299,13 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         return $this->_attributes['namedNativeQueries'][$name];
     }
-    
+
     /**
      * Ensures that this Configuration instance contains settings that are
      * suitable for a production environment.
-     * 
-     * @throws DoctrineException If a configuration setting has a value that is not
-     *                           suitable for a production environment.
+     *
+     * @throws ORMException If a configuration setting has a value that is not
+     *                      suitable for a production environment.
      */
     public function ensureProductionSettings()
     {

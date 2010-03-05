@@ -6,19 +6,19 @@ use Doctrine\DBAL\Platforms;
 
 class MockPlatform extends \Doctrine\DBAL\Platforms\AbstractPlatform
 {
-    public function getBooleanTypeDeclarationSql(array $columnDef) {}
-    public function getIntegerTypeDeclarationSql(array $columnDef) {}
-    public function getBigIntTypeDeclarationSql(array $columnDef) {}
-    public function getSmallIntTypeDeclarationSql(array $columnDef) {}
-    public function _getCommonIntegerTypeDeclarationSql(array $columnDef) {}
+    public function getBooleanTypeDeclarationSQL(array $columnDef) {}
+    public function getIntegerTypeDeclarationSQL(array $columnDef) {}
+    public function getBigIntTypeDeclarationSQL(array $columnDef) {}
+    public function getSmallIntTypeDeclarationSQL(array $columnDef) {}
+    public function _getCommonIntegerTypeDeclarationSQL(array $columnDef) {}
 
-    public function getVarcharTypeDeclarationSql(array $field)
+    public function getVarcharTypeDeclarationSQL(array $field)
     {
         return "DUMMYVARCHAR()";
     }
     
     /** @override */
-    public function getClobTypeDeclarationSql(array $field)
+    public function getClobTypeDeclarationSQL(array $field)
     {
         return 'DUMMYCLOB';
     }

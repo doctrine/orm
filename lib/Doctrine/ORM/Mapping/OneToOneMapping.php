@@ -119,11 +119,7 @@ class OneToOneMapping extends AssociationMapping
                     'referencedColumnName' => 'id'
                 ));
             }
-            foreach ($mapping['joinColumns'] as &$joinColumn) {
-                if ($joinColumn['name'][0] == '`') {
-                    $joinColumn['name'] = trim($joinColumn['name'], '`');
-                    $joinColumn['quoted'] = true;
-                }
+            foreach ($mapping['joinColumns'] as $joinColumn) {
                 $this->sourceToTargetKeyColumns[$joinColumn['name']] = $joinColumn['referencedColumnName'];
                 $this->joinColumnFieldNames[$joinColumn['name']] = isset($joinColumn['fieldName'])
                         ? $joinColumn['fieldName'] : $joinColumn['name'];
@@ -194,22 +190,7 @@ class OneToOneMapping extends AssociationMapping
     {
         return true;
     }
-    
-    /**
-     * Gets the (possibly quoted) column name of a join column that is safe to use
-     * in an SQL statement.
-     * 
-     * @param string $joinColumn
-     * @param AbstractPlatform $platform
-     * @return string
-     */
-    public function getQuotedJoinColumnName($joinColumn, $platform)
-    {
-        return isset($this->joinColumns[$joinColumn]['quoted']) ?
-                $platform->quoteIdentifier($joinColumn) :
-                $joinColumn;
-    }
-    
+
     /**
      * {@inheritdoc}
      *

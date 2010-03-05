@@ -32,14 +32,14 @@ namespace Doctrine\Common\Annotations;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class AnnotationException extends \Doctrine\Common\DoctrineException 
+class AnnotationException extends \Doctrine\Common\CommonException
 {
 	public static function syntaxError($message)
     {
         return new self('[Syntax Error] ' . $message);
     }
-    
-    
+
+
     public static function semanticalError($message)
     {
         return new self('[Semantical Error] ' . $message);

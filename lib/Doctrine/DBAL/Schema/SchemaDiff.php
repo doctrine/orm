@@ -128,42 +128,42 @@ class SchemaDiff
 
         if ($platform->supportsForeignKeyConstraints() && $saveMode == false) {
             foreach ($this->orphanedForeignKeys AS $orphanedForeignKey) {
-                $sql[] = $platform->getDropForeignKeySql($orphanedForeignKey, $orphanedForeignKey->getLocalTableName());
+                $sql[] = $platform->getDropForeignKeySQL($orphanedForeignKey, $orphanedForeignKey->getLocalTableName());
             }
         }
 
         if ($platform->supportsSequences() == true) {
             foreach ($this->changedSequences AS $sequence) {
-                $sql[] = $platform->getDropSequenceSql($sequence);
-                $sql[] = $platform->getCreateSequenceSql($sequence);
+                $sql[] = $platform->getDropSequenceSQL($sequence);
+                $sql[] = $platform->getCreateSequenceSQL($sequence);
             }
 
             if ($saveMode === false) {
                 foreach ($this->removedSequences AS $sequence) {
-                    $sql[] = $platform->getDropSequenceSql($sequence);
+                    $sql[] = $platform->getDropSequenceSQL($sequence);
                 }
             }
 
             foreach ($this->newSequences AS $sequence) {
-                $sql[] = $platform->getCreateSequenceSql($sequence);
+                $sql[] = $platform->getCreateSequenceSQL($sequence);
             }
         }
 
         foreach ($this->newTables AS $table) {
             $sql = array_merge(
                 $sql,
-                $platform->getCreateTableSql($table, AbstractPlatform::CREATE_FOREIGNKEYS|AbstractPlatform::CREATE_INDEXES)
+                $platform->getCreateTableSQL($table, AbstractPlatform::CREATE_FOREIGNKEYS|AbstractPlatform::CREATE_INDEXES)
             );
         }
 
         if ($saveMode === false) {
             foreach ($this->removedTables AS $table) {
-                $sql[] = $platform->getDropTableSql($table);
+                $sql[] = $platform->getDropTableSQL($table);
             }
         }
 
         foreach ($this->changedTables AS $tableDiff) {
-            $sql = array_merge($sql, $platform->getAlterTableSql($tableDiff));
+            $sql = array_merge($sql, $platform->getAlterTableSQL($tableDiff));
         }
 
         return $sql;

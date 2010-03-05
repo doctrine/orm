@@ -20,7 +20,7 @@ class CurrentTimestampFunction extends FunctionNode
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        return $sqlWalker->getConnection()->getDatabasePlatform()->getCurrentTimestampSql();
+        return $sqlWalker->getConnection()->getDatabasePlatform()->getCurrentTimestampSQL();
     }
 
     /**

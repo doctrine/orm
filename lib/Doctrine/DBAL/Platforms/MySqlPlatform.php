@@ -100,27 +100,27 @@ class MySqlPlatform extends AbstractPlatform
         return 'CONCAT(' . join(', ', (array) $args) . ')';
     }
 
-    public function getListDatabasesSql()
+    public function getListDatabasesSQL()
     {
         return 'SHOW DATABASES';
     }
 
-    public function getListTableConstraintsSql($table)
+    public function getListTableConstraintsSQL($table)
     {
         return 'SHOW INDEX FROM ' . $table;
     }
 
-    public function getListTableIndexesSql($table)
+    public function getListTableIndexesSQL($table)
     {
         return 'SHOW INDEX FROM ' . $table;
     }
 
-    public function getListViewsSql($database)
+    public function getListViewsSQL($database)
     {
         return "SELECT * FROM information_schema.VIEWS WHERE TABLE_SCHEMA = '".$database."'";
     }
 
-    public function getListTableForeignKeysSql($table, $database = null)
+    public function getListTableForeignKeysSQL($table, $database = null)
     {
         $sql = "SELECT DISTINCT k.`CONSTRAINT_NAME`, k.`COLUMN_NAME`, k.`REFERENCED_TABLE_NAME`, ".
                "k.`REFERENCED_COLUMN_NAME` /*!50116 , c.update_rule, c.delete_rule */ ".
@@ -138,12 +138,12 @@ class MySqlPlatform extends AbstractPlatform
         return $sql;
     }
 
-    public function getCreateViewSql($name, $sql)
+    public function getCreateViewSQL($name, $sql)
     {
         return 'CREATE VIEW ' . $name . ' AS ' . $sql;
     }
 
-    public function getDropViewSql($name)
+    public function getDropViewSQL($name)
     {
         return 'DROP VIEW '. $name;
     }
@@ -153,7 +153,7 @@ class MySqlPlatform extends AbstractPlatform
      *
      * @params array $field
      */
-    public function getVarcharTypeDeclarationSql(array $field)
+    public function getVarcharTypeDeclarationSQL(array $field)
     {
         if ( ! isset($field['length'])) {
             if (array_key_exists('default', $field)) {
@@ -171,7 +171,7 @@ class MySqlPlatform extends AbstractPlatform
     }
 
     /** @override */
-    public function getClobTypeDeclarationSql(array $field)
+    public function getClobTypeDeclarationSQL(array $field)
     {
         if ( ! empty($field['length'])) {
             $length = $field['length'];
@@ -189,7 +189,7 @@ class MySqlPlatform extends AbstractPlatform
     /**
      * @override
      */
-    public function getDateTimeTypeDeclarationSql(array $fieldDeclaration)
+    public function getDateTimeTypeDeclarationSQL(array $fieldDeclaration)
     {
         if (isset($fieldDeclaration['version']) && $fieldDeclaration['version'] == true) {
             return 'TIMESTAMP';
@@ -201,7 +201,7 @@ class MySqlPlatform extends AbstractPlatform
     /**
      * @override
      */
-    public function getDateTypeDeclarationSql(array $fieldDeclaration)
+    public function getDateTypeDeclarationSQL(array $fieldDeclaration)
     {
         return 'DATE';
     }
@@ -209,7 +209,7 @@ class MySqlPlatform extends AbstractPlatform
     /**
      * @override
      */
-    public function getTimeTypeDeclarationSql(array $fieldDeclaration) 
+    public function getTimeTypeDeclarationSQL(array $fieldDeclaration) 
     {
         return 'TIME';
     }	
@@ -217,7 +217,7 @@ class MySqlPlatform extends AbstractPlatform
     /**
      * @override
      */
-    public function getBooleanTypeDeclarationSql(array $field)
+    public function getBooleanTypeDeclarationSQL(array $field)
     {
         return 'TINYINT(1)';
     }
@@ -271,17 +271,17 @@ class MySqlPlatform extends AbstractPlatform
         return false;
     }
 
-    public function getShowDatabasesSql()
+    public function getShowDatabasesSQL()
     {
         return 'SHOW DATABASES';
     }
     
-    public function getListTablesSql()
+    public function getListTablesSQL()
     {
         return 'SHOW FULL TABLES WHERE Table_type = "BASE TABLE"';
     }
 
-    public function getListTableColumnsSql($table)
+    public function getListTableColumnsSQL($table)
     {
         return 'DESCRIBE ' . $table;
     }
@@ -293,7 +293,7 @@ class MySqlPlatform extends AbstractPlatform
      * @return string
      * @override
      */
-    public function getCreateDatabaseSql($name)
+    public function getCreateDatabaseSQL($name)
     {
         return 'CREATE DATABASE ' . $name;
     }
@@ -305,7 +305,7 @@ class MySqlPlatform extends AbstractPlatform
      * @return string
      * @override
      */
-    public function getDropDatabaseSql($name)
+    public function getDropDatabaseSQL($name)
     {
         return 'DROP DATABASE ' . $name;
     }
@@ -345,20 +345,20 @@ class MySqlPlatform extends AbstractPlatform
      * @return void
      * @override
      */
-    protected function _getCreateTableSql($tableName, array $columns, array $options = array())
+    protected function _getCreateTableSQL($tableName, array $columns, array $options = array())
     {
-        $queryFields = $this->getColumnDeclarationListSql($columns);
+        $queryFields = $this->getColumnDeclarationListSQL($columns);
 
         if (isset($options['uniqueConstraints']) && ! empty($options['uniqueConstraints'])) {
             foreach ($options['uniqueConstraints'] as $index => $definition) {
-                $queryFields .= ', ' . $this->getUniqueConstraintDeclarationSql($index, $definition);
+                $queryFields .= ', ' . $this->getUniqueConstraintDeclarationSQL($index, $definition);
             }
         }
 
         // add all indexes
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
             foreach($options['indexes'] as $index => $definition) {
-                $queryFields .= ', ' . $this->getIndexDeclarationSql($index, $definition);
+                $queryFields .= ', ' . $this->getIndexDeclarationSQL($index, $definition);
             }
         }
 
@@ -401,7 +401,7 @@ class MySqlPlatform extends AbstractPlatform
 
         if (isset($options['foreignKeys'])) {
             foreach ((array) $options['foreignKeys'] as $definition) {
-                $sql[] = $this->getCreateForeignKeySql($definition, $tableName);
+                $sql[] = $this->getCreateForeignKeySQL($definition, $tableName);
             }
         }
         
@@ -497,7 +497,7 @@ class MySqlPlatform extends AbstractPlatform
      * @return boolean
      * @override
      */
-    public function getAlterTableSql(TableDiff $diff)
+    public function getAlterTableSQL(TableDiff $diff)
     {
         $queryParts = array();
         if ($diff->newName !== false) {
@@ -505,7 +505,7 @@ class MySqlPlatform extends AbstractPlatform
         }
 
         foreach ($diff->addedColumns AS $fieldName => $column) {
-            $queryParts[] = 'ADD ' . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
+            $queryParts[] = 'ADD ' . $this->getColumnDeclarationSQL($column->getName(), $column->toArray());
         }
 
         foreach ($diff->removedColumns AS $column) {
@@ -516,19 +516,19 @@ class MySqlPlatform extends AbstractPlatform
             /* @var $columnDiff Doctrine\DBAL\Schema\ColumnDiff */
             $column = $columnDiff->column;
             $queryParts[] =  'CHANGE ' . ($columnDiff->oldColumnName) . ' '
-                    . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
+                    . $this->getColumnDeclarationSQL($column->getName(), $column->toArray());
         }
 
         foreach ($diff->renamedColumns AS $oldColumnName => $column) {
             $queryParts[] =  'CHANGE ' . $oldColumnName . ' '
-                    . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
+                    . $this->getColumnDeclarationSQL($column->getName(), $column->toArray());
         }
 
         $sql = array();
         if (count($queryParts) > 0) {
             $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . implode(", ", $queryParts);
         }
-        $sql = array_merge($sql, $this->_getAlterTableIndexForeignKeySql($diff));
+        $sql = array_merge($sql, $this->_getAlterTableIndexForeignKeySQL($diff));
         return $sql;
     }
     
@@ -558,25 +558,25 @@ class MySqlPlatform extends AbstractPlatform
      *                 declare the specified field.
      * @override
      */
-    public function getIntegerTypeDeclarationSql(array $field)
+    public function getIntegerTypeDeclarationSQL(array $field)
     {
-        return 'INT' . $this->_getCommonIntegerTypeDeclarationSql($field);
+        return 'INT' . $this->_getCommonIntegerTypeDeclarationSQL($field);
     }
 
     /** @override */
-    public function getBigIntTypeDeclarationSql(array $field)
+    public function getBigIntTypeDeclarationSQL(array $field)
     {
-        return 'BIGINT' . $this->_getCommonIntegerTypeDeclarationSql($field);
+        return 'BIGINT' . $this->_getCommonIntegerTypeDeclarationSQL($field);
     }
 
     /** @override */
-    public function getSmallIntTypeDeclarationSql(array $field)
+    public function getSmallIntTypeDeclarationSQL(array $field)
     {
-        return 'SMALLINT' . $this->_getCommonIntegerTypeDeclarationSql($field);
+        return 'SMALLINT' . $this->_getCommonIntegerTypeDeclarationSQL($field);
     }
 
     /** @override */
-    protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
+    protected function _getCommonIntegerTypeDeclarationSQL(array $columnDef)
     {
         $autoinc = '';
         if ( ! empty($columnDef['autoincrement'])) {
@@ -595,13 +595,13 @@ class MySqlPlatform extends AbstractPlatform
      * @return string
      * @override
      */
-    public function getAdvancedForeignKeyOptionsSql(\Doctrine\DBAL\Schema\ForeignKeyConstraint $foreignKey)
+    public function getAdvancedForeignKeyOptionsSQL(\Doctrine\DBAL\Schema\ForeignKeyConstraint $foreignKey)
     {
         $query = '';
         if ($foreignKey->hasOption('match')) {
             $query .= ' MATCH ' . $foreignKey->getOption('match');
         }
-        $query .= parent::getAdvancedForeignKeyOptionsSql($foreignKey);
+        $query .= parent::getAdvancedForeignKeyOptionsSQL($foreignKey);
         return $query;
     }
     
@@ -612,18 +612,18 @@ class MySqlPlatform extends AbstractPlatform
      * @param string|Table $table          name of table that should be used in method
      * @override
      */
-    public function getDropIndexSql($index, $table=null)
+    public function getDropIndexSQL($index, $table=null)
     {
         if($index instanceof \Doctrine\DBAL\Schema\Index) {
             $index = $index->getName();
         } else if(!is_string($index)) {
-            throw new \InvalidArgumentException('MysqlPlatform::getDropIndexSql() expects $index parameter to be string or \Doctrine\DBAL\Schema\Index.');
+            throw new \InvalidArgumentException('MysqlPlatform::getDropIndexSQL() expects $index parameter to be string or \Doctrine\DBAL\Schema\Index.');
         }
         
         if($table instanceof \Doctrine\DBAL\Schema\Table) {
             $table = $table->getName();
         } else if(!is_string($table)) {
-            throw new \InvalidArgumentException('MysqlPlatform::getDropIndexSql() expects $table parameter to be string or \Doctrine\DBAL\Schema\Table.');
+            throw new \InvalidArgumentException('MysqlPlatform::getDropIndexSQL() expects $table parameter to be string or \Doctrine\DBAL\Schema\Table.');
         }
 
         return 'DROP INDEX ' . $index . ' ON ' . $table;
@@ -635,20 +635,20 @@ class MySqlPlatform extends AbstractPlatform
      * @param string $table The name of table to drop.
      * @override
      */
-    public function getDropTableSql($table)
+    public function getDropTableSQL($table)
     {
         if ($table instanceof \Doctrine\DBAL\Schema\Table) {
             $table = $table->getName();
         } else if(!is_string($table)) {
-            throw new \InvalidArgumentException('MysqlPlatform::getDropTableSql() expects $table parameter to be string or \Doctrine\DBAL\Schema\Table.');
+            throw new \InvalidArgumentException('MysqlPlatform::getDropTableSQL() expects $table parameter to be string or \Doctrine\DBAL\Schema\Table.');
         }
 
         return 'DROP TABLE ' . $table;
     }
 
-    public function getSetTransactionIsolationSql($level)
+    public function getSetTransactionIsolationSQL($level)
     {
-        return 'SET SESSION TRANSACTION ISOLATION LEVEL ' . $this->_getTransactionIsolationLevelSql($level);
+        return 'SET SESSION TRANSACTION ISOLATION LEVEL ' . $this->_getTransactionIsolationLevelSQL($level);
     }
 
     /**

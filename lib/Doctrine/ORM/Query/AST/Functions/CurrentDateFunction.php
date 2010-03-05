@@ -41,7 +41,7 @@ class CurrentDateFunction extends FunctionNode
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        return $sqlWalker->getConnection()->getDatabasePlatform()->getCurrentDateSql();
+        return $sqlWalker->getConnection()->getDatabasePlatform()->getCurrentDateSQL();
     }
 
     /**

@@ -35,31 +35,31 @@ class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
     }
 
     /** @override */
-    public function getSequenceNextValSql($sequenceName)
+    public function getSequenceNextValSQL($sequenceName)
     {
         return $this->_sequenceNextValSql;
     }
 
     /** @override */
-    public function getBooleanTypeDeclarationSql(array $field) {}
+    public function getBooleanTypeDeclarationSQL(array $field) {}
 
     /** @override */
-    public function getIntegerTypeDeclarationSql(array $field) {}
+    public function getIntegerTypeDeclarationSQL(array $field) {}
 
     /** @override */
-    public function getBigIntTypeDeclarationSql(array $field) {}
+    public function getBigIntTypeDeclarationSQL(array $field) {}
 
     /** @override */
-    public function getSmallIntTypeDeclarationSql(array $field) {}
+    public function getSmallIntTypeDeclarationSQL(array $field) {}
 
     /** @override */
-    protected function _getCommonIntegerTypeDeclarationSql(array $columnDef) {}
+    protected function _getCommonIntegerTypeDeclarationSQL(array $columnDef) {}
 
     /** @override */
-    public function getVarcharTypeDeclarationSql(array $field) {}
+    public function getVarcharTypeDeclarationSQL(array $field) {}
     
     /** @override */
-    public function getClobTypeDeclarationSql(array $field) {}
+    public function getClobTypeDeclarationSQL(array $field) {}
 
     /* MOCK API */
 

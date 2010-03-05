@@ -105,7 +105,9 @@ class AnnotationReader
     public function getClassAnnotations(ReflectionClass $class)
     {
         $cacheKey = $class->getName() . self::$CACHE_SALT;
-        
+
+        //FIXME: Just use ->fetch(), otherwise some drivers, i.e. APC will fetch twice because they
+        // implement contains() in terms of fetch(), *sigh*.
         if ($this->_cache->contains($cacheKey)) {
             return $this->_cache->fetch($cacheKey);
         }
@@ -140,7 +142,9 @@ class AnnotationReader
     public function getPropertyAnnotations(ReflectionProperty $property)
     {
         $cacheKey = $property->getDeclaringClass()->getName() . '$' . $property->getName() . self::$CACHE_SALT;
-        
+
+        //FIXME: Just use ->fetch(), otherwise some drivers, i.e. APC will fetch twice because they
+        // implement contains() in terms of fetch(), *sigh*.
         if ($this->_cache->contains($cacheKey)) {
             return $this->_cache->fetch($cacheKey);
         }
@@ -176,7 +180,9 @@ class AnnotationReader
     public function getMethodAnnotations(ReflectionMethod $method)
     {
         $cacheKey = $method->getDeclaringClass()->getName() . '#' . $method->getName() . self::$CACHE_SALT;
-        
+
+        //FIXME: Just use ->fetch(), otherwise some drivers, i.e. APC will fetch twice because they
+        // implement contains() in terms of fetch(), *sigh*.
         if ($this->_cache->contains($cacheKey)) {
             return $this->_cache->fetch($cacheKey);
         }

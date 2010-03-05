@@ -21,8 +21,7 @@
 
 namespace Doctrine\ORM\Tools;
 
-use Doctrine\Common\DoctrineException,
-    Doctrine\ORM\Mapping\ClassMetadataInfo,
+use Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Tools\Export\Driver\AbstractExporter,
     Doctrine\Common\Util\Inflector;
 
@@ -56,7 +55,7 @@ class ConvertDoctrine1Schema
      * Constructor passes the directory or array of directories
      * to convert the Doctrine 1 schema files from
      *
-     * @param string $from 
+     * @param string $from
      * @author Jonathan Wage
      */
     public function __construct($from)
@@ -169,7 +168,7 @@ class ConvertDoctrine1Schema
             $column['type'] = $this->_legacyTypeMap[$column['type']];
         }
         if ( ! \Doctrine\DBAL\Types\Type::hasType($column['type'])) {
-            throw DoctrineException::couldNotMapDoctrine1Type($column['type']);
+            throw ToolsException::couldNotMapDoctrine1Type($column['type']);
         }
 
         $fieldMapping = array();
@@ -215,7 +214,7 @@ class ConvertDoctrine1Schema
             foreach ($model['indexes'] as $name => $index) {
                 $type = (isset($index['type']) && $index['type'] == 'unique')
                     ? 'uniqueConstraints' : 'indexes';
-                    
+
                 $metadata->primaryTable[$type][$name] = array(
                     'columns' => $index['fields']
                 );

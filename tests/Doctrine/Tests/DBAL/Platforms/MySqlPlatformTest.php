@@ -19,7 +19,7 @@ class MySqlPlatformTest extends AbstractPlatformTestCase
         $table = new \Doctrine\DBAL\Schema\Table("Foo");
         $table->addColumn("Bar", "integer");
 
-        $sql = $this->_platform->getCreateTableSql($table);
+        $sql = $this->_platform->getCreateTableSQL($table);
         $this->assertEquals('CREATE TABLE Foo (Bar INT NOT NULL) ENGINE = InnoDB', array_shift($sql));
     }
 
@@ -53,45 +53,45 @@ class MySqlPlatformTest extends AbstractPlatformTestCase
     {
         $this->assertEquals(
             'SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED',
-            $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_READ_UNCOMMITTED),
+            $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_READ_UNCOMMITTED),
             ''
         );
         $this->assertEquals(
             'SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED',
-            $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_READ_COMMITTED)
+            $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_READ_COMMITTED)
         );
         $this->assertEquals(
             'SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ',
-            $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_REPEATABLE_READ)
+            $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_REPEATABLE_READ)
         );
         $this->assertEquals(
             'SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE',
-            $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_SERIALIZABLE)
+            $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_SERIALIZABLE)
         );
     }
 
 
     public function testGeneratesDDLSnippets()
     {
-        $this->assertEquals('SHOW DATABASES', $this->_platform->getShowDatabasesSql());
-        $this->assertEquals('CREATE DATABASE foobar', $this->_platform->getCreateDatabaseSql('foobar'));
-        $this->assertEquals('DROP DATABASE foobar', $this->_platform->getDropDatabaseSql('foobar'));
-        $this->assertEquals('DROP TABLE foobar', $this->_platform->getDropTableSql('foobar'));
+        $this->assertEquals('SHOW DATABASES', $this->_platform->getShowDatabasesSQL());
+        $this->assertEquals('CREATE DATABASE foobar', $this->_platform->getCreateDatabaseSQL('foobar'));
+        $this->assertEquals('DROP DATABASE foobar', $this->_platform->getDropDatabaseSQL('foobar'));
+        $this->assertEquals('DROP TABLE foobar', $this->_platform->getDropTableSQL('foobar'));
     }
 
     public function testGeneratesTypeDeclarationForIntegers()
     {
         $this->assertEquals(
             'INT',
-            $this->_platform->getIntegerTypeDeclarationSql(array())
+            $this->_platform->getIntegerTypeDeclarationSQL(array())
         );
         $this->assertEquals(
             'INT AUTO_INCREMENT',
-            $this->_platform->getIntegerTypeDeclarationSql(array('autoincrement' => true)
+            $this->_platform->getIntegerTypeDeclarationSQL(array('autoincrement' => true)
         ));
         $this->assertEquals(
             'INT AUTO_INCREMENT',
-            $this->_platform->getIntegerTypeDeclarationSql(
+            $this->_platform->getIntegerTypeDeclarationSQL(
                 array('autoincrement' => true, 'primary' => true)
         ));
     }
@@ -100,17 +100,17 @@ class MySqlPlatformTest extends AbstractPlatformTestCase
     {
         $this->assertEquals(
             'CHAR(10)',
-            $this->_platform->getVarcharTypeDeclarationSql(
+            $this->_platform->getVarcharTypeDeclarationSQL(
                 array('length' => 10, 'fixed' => true)
         ));
         $this->assertEquals(
             'VARCHAR(50)',
-            $this->_platform->getVarcharTypeDeclarationSql(array('length' => 50)),
+            $this->_platform->getVarcharTypeDeclarationSQL(array('length' => 50)),
             'Variable string declaration is not correct'
         );
         $this->assertEquals(
             'VARCHAR(255)',
-            $this->_platform->getVarcharTypeDeclarationSql(array()),
+            $this->_platform->getVarcharTypeDeclarationSQL(array()),
             'Long string declaration is not correct'
         );
     }
@@ -162,8 +162,8 @@ class MySqlPlatformTest extends AbstractPlatformTestCase
      */
     public function testGetDateTimeTypeDeclarationSql()
     {
-        $this->assertEquals("DATETIME", $this->_platform->getDateTimeTypeDeclarationSql(array('version' => false)));
-        $this->assertEquals("TIMESTAMP", $this->_platform->getDateTimeTypeDeclarationSql(array('version' => true)));
-        $this->assertEquals("DATETIME", $this->_platform->getDateTimeTypeDeclarationSql(array()));
+        $this->assertEquals("DATETIME", $this->_platform->getDateTimeTypeDeclarationSQL(array('version' => false)));
+        $this->assertEquals("TIMESTAMP", $this->_platform->getDateTimeTypeDeclarationSQL(array('version' => true)));
+        $this->assertEquals("DATETIME", $this->_platform->getDateTimeTypeDeclarationSQL(array()));
     }
 }

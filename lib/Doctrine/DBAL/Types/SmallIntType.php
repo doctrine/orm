@@ -16,7 +16,7 @@ class SmallIntType extends Type
 
     public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
-        return $platform->getSmallIntTypeDeclarationSql($fieldDeclaration);
+        return $platform->getSmallIntTypeDeclarationSQL($fieldDeclaration);
     }
 
     public function convertToPHPValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)

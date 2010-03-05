@@ -95,8 +95,8 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
                 'type' => \Doctrine\DBAL\Types\Type::getType($rootClass->getTypeOfColumn($idColumnName))
             );
         }
-        $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSql() . ' ' . $tempTable . ' ('
-                . $conn->getDatabasePlatform()->getColumnDeclarationListSql($columnDefinitions)
+        $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
+                . $conn->getDatabasePlatform()->getColumnDeclarationListSQL($columnDefinitions)
                 . ', PRIMARY KEY(' . $idColumnList . '))';
         $this->_dropTempTableSql = 'DROP TABLE ' . $tempTable;
     }

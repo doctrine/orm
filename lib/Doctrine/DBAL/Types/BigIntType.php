@@ -17,7 +17,7 @@ class BigIntType extends Type
 
     public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
-        return $platform->getBigIntTypeDeclarationSql($fieldDeclaration);
+        return $platform->getBigIntTypeDeclarationSQL($fieldDeclaration);
     }
     
     public function getTypeCode()

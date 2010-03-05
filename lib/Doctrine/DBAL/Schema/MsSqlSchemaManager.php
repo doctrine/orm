@@ -31,7 +31,7 @@ namespace Doctrine\DBAL\Schema;
  * @since       2.0
  */
 class MsSqlSchemaManager extends AbstractSchemaManager
-{    
+{
     /**
      * create a new database
      *
@@ -160,7 +160,7 @@ class MsSqlSchemaManager extends AbstractSchemaManager
                 case 'rename':
                 case 'change':
                 default:
-                    throw \Doctrine\Common\DoctrineException::alterTableChangeNotSupported($changeName);
+                    throw SchemaException::alterTableChangeNotSupported($changeName);
             }
         }
 
@@ -225,7 +225,7 @@ class MsSqlSchemaManager extends AbstractSchemaManager
     {
         return 'DROP TABLE ' . $seqName;
     }
-    
+
     /**
      * lists all database sequences
      *

@@ -16,7 +16,7 @@ class DecimalType extends Type
 
     public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
-        return $platform->getDecimalTypeDeclarationSql($fieldDeclaration);
+        return $platform->getDecimalTypeDeclarationSQL($fieldDeclaration);
     }
 
     public function convertToPHPValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)

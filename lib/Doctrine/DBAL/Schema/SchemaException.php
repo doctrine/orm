@@ -119,4 +119,8 @@ class SchemaException extends \Doctrine\DBAL\DBALException
             "unnamed."
         );
     }
+
+    static public function alterTableChangeNotSupported($changeName) {
+        return new self ("Alter table change not supported, given '$changeName'");
+    }
 }

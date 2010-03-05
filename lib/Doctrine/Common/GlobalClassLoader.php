@@ -18,7 +18,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
  */
- 
+
 namespace Doctrine\Common;
 
 /**
@@ -30,12 +30,12 @@ namespace Doctrine\Common;
  * is also compatible with the underscore "_" namespace separator.
  *
  * A recommended class loading setup for optimal performance looks as follows:
- * 
+ *
  * 1) Use a GlobalClassLoader.
  * 2) Reduce the include_path to only the path to the PEAR packages.
  * 2) Register the namespaces of any other (non-pear) class library with their
  *    absolute base paths, like this: $gcl->registerNamespace('Zend', '/path/to/zf-lib');
- * 
+ *
  * If no base path is configured for a certain namespace, the GlobalClassLoader relies on
  * the include_path.
  *
@@ -46,7 +46,7 @@ namespace Doctrine\Common;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
- * 
+ *
  * @deprecated Use Doctrine\Common\ClassLoader instead.
  */
 class GlobalClassLoader
@@ -55,26 +55,26 @@ class GlobalClassLoader
      * @var string File extension used for classes
      */
     private $_defaultFileExtension = '.php';
-    
+
     /**
      * @var array The custom file extensions of class libraries.
      */
     private $_fileExtensions = array();
-    
+
     /**
      * @var array Hashmap of base paths to class libraries.
      */
     private $_basePaths = array();
-    
+
     /**
      * Installs this class loader on the SPL autoload stack as the only class loader.
-     * 
-     * @throws DoctrineException If the SPL autoload stack already contains other autoloaders. 
+     *
+     * @throws Exception If the SPL autoload stack already contains other autoloaders.
      */
     public function register()
     {
         if (spl_autoload_functions() !== false) {
-            throw new DoctrineException("Autoload stack is not empty. GlobalClassLoader does not work "
+            throw new CommonException("Autoload stack is not empty. GlobalClassLoader does not work "
                     . "in an autoload stack.");
         }
         spl_autoload_register(array($this, 'loadClass'));
@@ -83,7 +83,7 @@ class GlobalClassLoader
     /**
      * Sets the default file extension of class files.
      *
-     * @param string $extension 
+     * @param string $extension
      * @return void
      */
     public function setDefaultFileExtension($extension)
@@ -117,7 +117,7 @@ class GlobalClassLoader
     {
         $prefix = '';
         $separator = '\\';
-        
+
         if (($pos = strpos($className, $separator)) !== false) {
             $prefix = substr($className, 0, strpos($className, $separator));
         } else if (($pos = strpos($className, '_')) !== false) {
@@ -125,7 +125,7 @@ class GlobalClassLoader
             $prefix = substr($className, 0, strpos($className, '_'));
             $separator = '_';
         }
-        
+
         require ((isset($this->_basePaths[$prefix])) ? $this->_basePaths[$prefix] . DIRECTORY_SEPARATOR : '')
                . str_replace($separator, DIRECTORY_SEPARATOR, $className)
                . (isset($this->_fileExtensions[$prefix]) ? $this->_fileExtensions[$prefix] : $this->_defaultFileExtension);

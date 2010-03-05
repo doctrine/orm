@@ -161,6 +161,7 @@ class ResultSetMapping
      *
      * @param string $alias
      * @return boolean
+     * @todo Rename: isIndexed($alias)
      */
     public function hasIndexBy($alias)
     {
@@ -380,11 +381,11 @@ class ResultSetMapping
     }
     
     /**
+     * Adds a meta column (foreign key or discriminator column) to the result set.
      * 
      * @param $alias
      * @param $columnName
      * @param $fieldName
-     * @return unknown_type
      */
     public function addMetaResult($alias, $columnName, $fieldName)
     {

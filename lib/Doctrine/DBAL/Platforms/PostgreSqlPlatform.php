@@ -146,12 +146,12 @@ class PostgreSqlPlatform extends AbstractPlatform
         return true;
     }
 
-    public function getListDatabasesSql()
+    public function getListDatabasesSQL()
     {
         return 'SELECT datname FROM pg_database';
     }
 
-    public function getListSequencesSql($database)
+    public function getListSequencesSQL($database)
     {
         return "SELECT
                     relname
@@ -162,7 +162,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                         WHERE nspname NOT LIKE 'pg_%' AND nspname != 'information_schema')";
     }
 
-    public function getListTablesSql()
+    public function getListTablesSQL()
     {
         return "SELECT
                     c.relname AS table_name
@@ -180,12 +180,12 @@ class PostgreSqlPlatform extends AbstractPlatform
                     AND c.relname !~ '^pg_'";
     }
 
-    public function getListViewsSql($database)
+    public function getListViewsSQL($database)
     {
         return 'SELECT viewname, definition FROM pg_views';
     }
 
-    public function getListTableForeignKeysSql($table, $database = null)
+    public function getListTableForeignKeysSQL($table, $database = null)
     {
         return "SELECT r.conname, pg_catalog.pg_get_constraintdef(r.oid, true) as condef
                   FROM pg_catalog.pg_constraint r
@@ -199,17 +199,17 @@ class PostgreSqlPlatform extends AbstractPlatform
                   AND r.contype = 'f'";
     }
 
-    public function getCreateViewSql($name, $sql)
+    public function getCreateViewSQL($name, $sql)
     {
         return 'CREATE VIEW ' . $name . ' AS ' . $sql;
     }
 
-    public function getDropViewSql($name)
+    public function getDropViewSQL($name)
     {
         return 'DROP VIEW '. $name;
     }
 
-    public function getListTableConstraintsSql($table)
+    public function getListTableConstraintsSQL($table)
     {
         return "SELECT
                     relname
@@ -230,7 +230,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @param  string $table
      * @return string
      */
-    public function getListTableIndexesSql($table)
+    public function getListTableIndexesSQL($table)
     {
         return "SELECT relname, pg_index.indisunique, pg_index.indisprimary,
                        pg_index.indkey, pg_index.indrelid
@@ -242,7 +242,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                  ) AND pg_index.indexrelid = oid";
     }
 
-    public function getListTableColumnsSql($table)
+    public function getListTableColumnsSQL($table)
     {
         return "SELECT
                     a.attnum,
@@ -277,7 +277,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @return void
      * @override
      */
-    public function getCreateDatabaseSql($name)
+    public function getCreateDatabaseSQL($name)
     {
         return 'CREATE DATABASE ' . $name;
     }
@@ -289,7 +289,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @throws PDOException
      * @access public
      */
-    public function getDropDatabaseSql($name)
+    public function getDropDatabaseSQL($name)
     {
         return 'DROP DATABASE ' . $name;
     }
@@ -303,13 +303,13 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @return string
      * @override
      */
-    public function getAdvancedForeignKeyOptionsSql(\Doctrine\DBAL\Schema\ForeignKeyConstraint $foreignKey)
+    public function getAdvancedForeignKeyOptionsSQL(\Doctrine\DBAL\Schema\ForeignKeyConstraint $foreignKey)
     {
         $query = '';
         if ($foreignKey->hasOption('match')) {
             $query .= ' MATCH ' . $foreignKey->getOption('match');
         }
-        $query .= parent::getAdvancedForeignKeyOptionsSql($foreignKey);
+        $query .= parent::getAdvancedForeignKeyOptionsSQL($foreignKey);
         if ($foreignKey->hasOption('deferrable') && $foreignKey->getOption('deferrable') !== false) {
             $query .= ' DEFERRABLE';
         } else {
@@ -335,12 +335,12 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @return array
      * @override
      */
-    public function getAlterTableSql(TableDiff $diff)
+    public function getAlterTableSQL(TableDiff $diff)
     {
         $sql = array();
 
         foreach ($diff->addedColumns as $column) {
-            $query = 'ADD ' . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
+            $query = 'ADD ' . $this->getColumnDeclarationSQL($column->getName(), $column->toArray());
             $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . $query;
         }
 
@@ -361,7 +361,7 @@ class PostgreSqlPlatform extends AbstractPlatform
                 $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . $query;
             }
             if ($columnDiff->hasChanged('default')) {
-                $query = 'ALTER ' . $oldColumnName . ' SET ' . $this->getDefaultValueDeclarationSql($column->toArray());
+                $query = 'ALTER ' . $oldColumnName . ' SET ' . $this->getDefaultValueDeclarationSQL($column->toArray());
                 $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . $query;
             }
             if ($columnDiff->hasChanged('notnull')) {
@@ -378,7 +378,7 @@ class PostgreSqlPlatform extends AbstractPlatform
             $sql[] = 'ALTER TABLE ' . $diff->name . ' RENAME TO ' . $diff->newName;
         }
 
-        $sql = array_merge($sql, $this->_getAlterTableIndexForeignKeySql($diff));
+        $sql = array_merge($sql, $this->_getAlterTableIndexForeignKeySQL($diff));
 
         return $sql;
     }
@@ -389,7 +389,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @param \Doctrine\DBAL\Schema\Sequence $sequence
      * @return string
      */
-    public function getCreateSequenceSql(\Doctrine\DBAL\Schema\Sequence $sequence)
+    public function getCreateSequenceSQL(\Doctrine\DBAL\Schema\Sequence $sequence)
     {
         return 'CREATE SEQUENCE ' . $sequence->getName() .
                ' INCREMENT BY ' . $sequence->getAllocationSize() .
@@ -402,7 +402,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @param  \Doctrine\DBAL\Schema\Sequence $sequence
      * @return string
      */
-    public function getDropSequenceSql($sequence)
+    public function getDropSequenceSQL($sequence)
     {
         if ($sequence instanceof \Doctrine\DBAL\Schema\Sequence) {
             $sequence = $sequence->getName();
@@ -415,9 +415,9 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @param  Table|string $table
      * @return string
      */
-    public function getDropForeignKeySql($foreignKey, $table)
+    public function getDropForeignKeySQL($foreignKey, $table)
     {
-        return $this->getDropConstraintSql($foreignKey, $table);
+        return $this->getDropConstraintSQL($foreignKey, $table);
     }
     
     /**
@@ -428,9 +428,9 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @param array $options
      * @return unknown
      */
-    protected function _getCreateTableSql($tableName, array $columns, array $options = array())
+    protected function _getCreateTableSQL($tableName, array $columns, array $options = array())
     {
-        $queryFields = $this->getColumnDeclarationListSql($columns);
+        $queryFields = $this->getColumnDeclarationListSQL($columns);
 
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $keyColumns = array_unique(array_values($options['primary']));
@@ -443,13 +443,13 @@ class PostgreSqlPlatform extends AbstractPlatform
 
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
             foreach ($options['indexes'] AS $index) {
-                $sql[] = $this->getCreateIndexSql($index, $tableName);
+                $sql[] = $this->getCreateIndexSQL($index, $tableName);
             }
         }
 
         if (isset($options['foreignKeys'])) {
             foreach ((array) $options['foreignKeys'] as $definition) {
-                $sql[] = $this->getCreateForeignKeySql($definition, $tableName);
+                $sql[] = $this->getCreateForeignKeySQL($definition, $tableName);
             }
         }
 
@@ -478,21 +478,21 @@ class PostgreSqlPlatform extends AbstractPlatform
         return $item;
     }
 
-    public function getSequenceNextValSql($sequenceName)
+    public function getSequenceNextValSQL($sequenceName)
     {
         return "SELECT NEXTVAL('" . $sequenceName . "')";
     }
 
-    public function getSetTransactionIsolationSql($level)
+    public function getSetTransactionIsolationSQL($level)
     {
         return 'SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL '
-                . $this->_getTransactionIsolationLevelSql($level);
+                . $this->_getTransactionIsolationLevelSQL($level);
     }
     
     /**
      * @override
      */
-    public function getBooleanTypeDeclarationSql(array $field)
+    public function getBooleanTypeDeclarationSQL(array $field)
     {
         return 'BOOLEAN';
     }
@@ -500,7 +500,7 @@ class PostgreSqlPlatform extends AbstractPlatform
     /**
      * @override
      */
-    public function getIntegerTypeDeclarationSql(array $field)
+    public function getIntegerTypeDeclarationSQL(array $field)
     {
         if ( ! empty($field['autoincrement'])) {
             return 'SERIAL';
@@ -512,7 +512,7 @@ class PostgreSqlPlatform extends AbstractPlatform
     /**
      * @override
      */
-    public function getBigIntTypeDeclarationSql(array $field)
+    public function getBigIntTypeDeclarationSQL(array $field)
     {
         if ( ! empty($field['autoincrement'])) {
             return 'BIGSERIAL';
@@ -523,7 +523,7 @@ class PostgreSqlPlatform extends AbstractPlatform
     /**
      * @override
      */
-    public function getSmallIntTypeDeclarationSql(array $field)
+    public function getSmallIntTypeDeclarationSQL(array $field)
     {
         return 'SMALLINT';
     }
@@ -531,7 +531,7 @@ class PostgreSqlPlatform extends AbstractPlatform
     /**
      * @override
      */
-    public function getDateTimeTypeDeclarationSql(array $fieldDeclaration)
+    public function getDateTimeTypeDeclarationSQL(array $fieldDeclaration)
     {
         return 'TIMESTAMP(0) WITH TIME ZONE';
     }
@@ -539,7 +539,7 @@ class PostgreSqlPlatform extends AbstractPlatform
     /**
      * @override
      */
-    public function getDateTypeDeclarationSql(array $fieldDeclaration)
+    public function getDateTypeDeclarationSQL(array $fieldDeclaration)
     {
         return 'DATE';
     }
@@ -547,7 +547,7 @@ class PostgreSqlPlatform extends AbstractPlatform
     /**
      * @override
      */
-    public function getTimeTypeDeclarationSql(array $fieldDeclaration)
+    public function getTimeTypeDeclarationSQL(array $fieldDeclaration)
     {
         return 'TIME';
     }
@@ -555,7 +555,7 @@ class PostgreSqlPlatform extends AbstractPlatform
     /**
      * @override
      */
-    protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
+    protected function _getCommonIntegerTypeDeclarationSQL(array $columnDef)
     {
         return '';
     }
@@ -566,7 +566,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @params array $field
      * @override
      */
-    public function getVarcharTypeDeclarationSql(array $field)
+    public function getVarcharTypeDeclarationSQL(array $field)
     {
         if ( ! isset($field['length'])) {
             if (array_key_exists('default', $field)) {
@@ -584,7 +584,7 @@ class PostgreSqlPlatform extends AbstractPlatform
     }
     
     /** @override */
-    public function getClobTypeDeclarationSql(array $field)
+    public function getClobTypeDeclarationSQL(array $field)
     {
         return 'TEXT';
     }
@@ -607,7 +607,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @param string $column The column name for which to get the correct character casing.
      * @return string The column name in the character casing used in SQL result sets.
      */
-    public function getSqlResultCasing($column)
+    public function getSQLResultCasing($column)
     {
         return strtolower($column);
     }
@@ -624,7 +624,7 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @param string $identifierColumnName 
      * @return string $sql
      */
-    public function getEmptyIdentityInsertSql($quotedTableName, $quotedIdentifierColumnName)
+    public function getEmptyIdentityInsertSQL($quotedTableName, $quotedIdentifierColumnName)
     {
         return 'INSERT INTO ' . $quotedTableName . ' (' . $quotedIdentifierColumnName . ') VALUES (DEFAULT)';
     }
@@ -632,7 +632,7 @@ class PostgreSqlPlatform extends AbstractPlatform
     /**
      * @inheritdoc
      */
-    public function getTruncateTableSql($tableName, $cascade = false)
+    public function getTruncateTableSQL($tableName, $cascade = false)
     {
         return 'TRUNCATE '.$tableName.' '.($cascade)?'CASCADE':'';
     }

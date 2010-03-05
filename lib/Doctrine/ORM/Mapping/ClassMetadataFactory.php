@@ -130,12 +130,13 @@ class ClassMetadataFactory
         if ( ! isset($this->_loadedMetadata[$className])) {
             $realClassName = $className;
 
+            // Check for namespace alias
             if (strpos($className, ':') !== false) {
                 list($namespaceAlias, $simpleClassName) = explode(':', $className);
                 $realClassName = $this->_em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
 
                 if (isset($this->_loadedMetadata[$realClassName])) {
-                    // We do not have the alias reference, include it
+                    // We do not have the alias name in the map, include it
                     $this->_loadedMetadata[$className] = $this->_loadedMetadata[$realClassName];
 
                     return $this->_loadedMetadata[$realClassName];
@@ -158,9 +159,8 @@ class ClassMetadataFactory
                 $this->_loadMetadata($realClassName);
             }
 
-            // Include the alias of this situation:
-            // CMS:CmsUser => Doctrine\Tests\ORM\Models\CMS\CmsUser
             if ($className != $realClassName) {
+                // We do not have the alias name in the map, include it
                 $this->_loadedMetadata[$className] = $this->_loadedMetadata[$realClassName];
             }
         }

@@ -227,7 +227,7 @@ abstract class AbstractQuery
     public function setResultCacheDriver($resultCacheDriver = null)
     {
         if ($resultCacheDriver !== null && ! ($resultCacheDriver instanceof \Doctrine\Common\Cache\Cache)) {
-            throw DoctrineException::invalidResultCacheObject($resultCacheDriver);
+            throw ORMException::invalidResultCacheDriver();
         }
         $this->_resultCacheDriver = $resultCacheDriver;
         if ($resultCacheDriver) {

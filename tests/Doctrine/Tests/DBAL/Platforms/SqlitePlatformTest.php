@@ -36,10 +36,10 @@ class SqlitePlatformTest extends AbstractPlatformTestCase
 
     public function testGeneratesTransactionCommands()
     {
-        $this->assertEquals('PRAGMA read_uncommitted = 0', $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_READ_UNCOMMITTED));
-        $this->assertEquals('PRAGMA read_uncommitted = 1', $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_READ_COMMITTED));
-        $this->assertEquals('PRAGMA read_uncommitted = 1', $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_REPEATABLE_READ));
-        $this->assertEquals('PRAGMA read_uncommitted = 1', $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_SERIALIZABLE));
+        $this->assertEquals('PRAGMA read_uncommitted = 0', $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_READ_UNCOMMITTED));
+        $this->assertEquals('PRAGMA read_uncommitted = 1', $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_READ_COMMITTED));
+        $this->assertEquals('PRAGMA read_uncommitted = 1', $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_REPEATABLE_READ));
+        $this->assertEquals('PRAGMA read_uncommitted = 1', $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_SERIALIZABLE));
     }
 
     public function testPrefersIdentityColumns()
@@ -51,15 +51,15 @@ class SqlitePlatformTest extends AbstractPlatformTestCase
     {
         $this->assertEquals(
             'INTEGER',
-            $this->_platform->getIntegerTypeDeclarationSql(array())
+            $this->_platform->getIntegerTypeDeclarationSQL(array())
         );
         $this->assertEquals(
             'INTEGER AUTOINCREMENT',
-            $this->_platform->getIntegerTypeDeclarationSql(array('autoincrement' => true))
+            $this->_platform->getIntegerTypeDeclarationSQL(array('autoincrement' => true))
         );
         $this->assertEquals(
             'INTEGER PRIMARY KEY AUTOINCREMENT',
-            $this->_platform->getIntegerTypeDeclarationSql(
+            $this->_platform->getIntegerTypeDeclarationSQL(
                 array('autoincrement' => true, 'primary' => true))
         );
     }
@@ -68,17 +68,17 @@ class SqlitePlatformTest extends AbstractPlatformTestCase
     {
         $this->assertEquals(
             'CHAR(10)',
-            $this->_platform->getVarcharTypeDeclarationSql(
+            $this->_platform->getVarcharTypeDeclarationSQL(
                 array('length' => 10, 'fixed' => true))
         );
         $this->assertEquals(
             'VARCHAR(50)',
-            $this->_platform->getVarcharTypeDeclarationSql(array('length' => 50)),
+            $this->_platform->getVarcharTypeDeclarationSQL(array('length' => 50)),
             'Variable string declaration is not correct'
         );
         $this->assertEquals(
             'TEXT',
-            $this->_platform->getVarcharTypeDeclarationSql(array()),
+            $this->_platform->getVarcharTypeDeclarationSQL(array()),
             'Long string declaration is not correct'
         );
     }

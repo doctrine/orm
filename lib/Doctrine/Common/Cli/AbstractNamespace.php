@@ -18,11 +18,10 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
  */
- 
+
 namespace Doctrine\Common\Cli;
 
-use Doctrine\Common\Util\Inflector,
-    Doctrine\Common\DoctrineException;
+use Doctrine\Common\Util\Inflector;
 
 /**
  * Abstract CLI Namespace class
@@ -42,22 +41,22 @@ abstract class AbstractNamespace
      * @var Configuration CLI Configuration instance
      */
     private $_configuration = null;
-    
+
     /**
      * @var AbstractPrinter CLI Printer instance
      */
     private $_printer = null;
-    
+
     /**
      * @var AbstractNamespace CLI Namespace instance
      */
     private $_parentNamespace = null;
-    
+
     /**
      * @var array Available namespaces
      */
     private $_namespaces = array();
-    
+
     /**
      * Add a single namespace to CLI.
      * Example of inclusion support to a single namespace:
@@ -72,14 +71,14 @@ abstract class AbstractNamespace
     public function addNamespace($name)
     {
         $name = self::formatName($name);
-    
+
         if ($this->hasNamespace($name)) {
-            throw DoctrineException::cannotOverrideNamespace($name);
+            throw CliException::cannotOverrideNamespace($name);
         }
-        
+
         return $this->overrideNamespace($name);
     }
-    
+
     /**
      * Overrides a namespace to CLI.
      * Example of inclusion support to a single namespace:
@@ -92,18 +91,18 @@ abstract class AbstractNamespace
      * @return AbstractNamespace Newly created CLI Namespace
      */
     public function overrideNamespace($name)
-    {    
+    {
         $taskNamespace = new TaskNamespace($name);
-        
+
         $taskNamespace->setParentNamespace($this);
         $taskNamespace->setPrinter($this->_printer);
         $taskNamespace->setConfiguration($this->_configuration);
-        
+
         $this->_namespaces[$taskNamespace->getName()] = $taskNamespace;
-        
+
         return $taskNamespace;
     }
-    
+
     /**
      * Retrieve CLI Namespace.
      * Example of usage:
@@ -118,11 +117,11 @@ abstract class AbstractNamespace
     public function getNamespace($name)
     {
         $name = self::formatName($name);
-        
-        return isset($this->_namespaces[$name]) 
+
+        return isset($this->_namespaces[$name])
             ? $this->_namespaces[$name] : null;
     }
-    
+
     /**
      * Check existance of a CLI Namespace
      *
@@ -134,7 +133,7 @@ abstract class AbstractNamespace
     {
         return ($this->getNamespace($name) !== null);
     }
-    
+
     /**
      * Defines the parent CLI Namespace
      *
@@ -143,10 +142,10 @@ abstract class AbstractNamespace
     public function setParentNamespace(AbstractNamespace $namespace)
     {
         $this->_parentNamespace = $namespace;
-        
+
         return $this;
     }
-    
+
     /**
      * Retrieves currently parent CLI Namespace
      *
@@ -156,7 +155,7 @@ abstract class AbstractNamespace
     {
         return $this->_parentNamespace;
     }
-    
+
     /**
      * Retrieve all defined CLI Tasks
      *
@@ -165,14 +164,14 @@ abstract class AbstractNamespace
     public function getAvailableTasks()
     {
         $tasks = array();
-        
+
         foreach ($this->_namespaces as $namespace) {
             $tasks = array_merge($tasks, $namespace->getAvailableTasks());
         }
-        
+
         return $tasks;
     }
-    
+
     /**
      * Defines the CLI Output Printer
      *
@@ -183,10 +182,10 @@ abstract class AbstractNamespace
     public function setPrinter(Printers\AbstractPrinter $printer = null)
     {
         $this->_printer = $printer ?: new Printers\AnsiColorPrinter;
-        
+
         return $this;
     }
-    
+
     /**
      * Retrieves currently used CLI Output Printer
      *
@@ -196,7 +195,7 @@ abstract class AbstractNamespace
     {
         return $this->_printer;
     }
-    
+
     /**
      * Defines the CLI Configuration
      *
@@ -207,10 +206,10 @@ abstract class AbstractNamespace
     public function setConfiguration(Configuration $config)
     {
         $this->_configuration = $config;
-        
+
         return $this;
     }
-    
+
     /**
      * Retrieves currently used CLI Configuration
      *
@@ -220,7 +219,7 @@ abstract class AbstractNamespace
     {
         return $this->_configuration;
     }
-    
+
     /**
      * Formats the CLI Namespace name into a camel-cased name
      *

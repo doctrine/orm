@@ -21,7 +21,7 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Persister for entities that participate in a hierarchy mapped with the
@@ -41,46 +41,41 @@ class SingleTablePersister extends StandardEntityPersister
         parent::_prepareData($entity, $result, $isInsert);
         // Populate the discriminator column
         if ($isInsert) {
-            $discColumn = $this->_class->getQuotedDiscriminatorColumnName($this->_platform);
+            $discColumn = $this->_class->discriminatorColumn['name'];
             $result[$this->_class->getQuotedTableName($this->_platform)][$discColumn] =
                     $this->_class->discriminatorValue;
         }
     }
     
     /** @override */
-    protected function _getSelectColumnList()
+    protected function _getSelectColumnListSQL()
     {
-        $setResultColumnNames = empty($this->_resultColumnNames);
-        $columnList = parent::_getSelectColumnList();
+        $columnList = parent::_getSelectColumnListSQL();
         // Append discriminator column
-        $columnList .= ', ' . $this->_class->getQuotedDiscriminatorColumnName($this->_platform);
-        
-        if ($setResultColumnNames) {
-            $resultColumnName = $this->_platform->getSqlResultCasing($this->_class->discriminatorColumn['name']);
-            $this->_resultColumnNames[$resultColumnName] = $this->_class->discriminatorColumn['name'];
-        }
-        
-        ///$tableAlias = $this->_class->getQuotedTableName($this->_platform);
+        $discrColumn = $this->_class->discriminatorColumn['name'];
+        $columnList .= ", $discrColumn";
+        $rootClass = $this->_em->getClassMetadata($this->_class->rootEntityName);
+        $tableAlias = $this->_getSQLTableAlias($rootClass);
+        $resultColumnName = $this->_platform->getSQLResultCasing($discrColumn);
+        $this->_resultColumnNames[$resultColumnName] = $discrColumn;
+
         foreach ($this->_class->subClasses as $subClassName) {
             $subClass = $this->_em->getClassMetadata($subClassName);
             // Append subclass columns
             foreach ($subClass->fieldMappings as $fieldName => $mapping) {
                 if ( ! isset($mapping['inherited'])) {
-                    $columnList .= ', ' . $subClass->getQuotedColumnName($fieldName, $this->_platform);
-                    if ($setResultColumnNames) {
-                        $resultColumnName = $this->_platform->getSqlResultCasing($mapping['columnName']);
-                        $this->_resultColumnNames[$resultColumnName] = $mapping['columnName'];
-                    }
+                    $columnList .= ', ' . $this->_getSelectColumnSQL($fieldName, $subClass);
                 }
             }
-            
+
             // Append subclass foreign keys
             foreach ($subClass->associationMappings as $assoc) {
                 if ($assoc->isOwningSide && $assoc->isOneToOne() && ! isset($subClass->inheritedAssociationFields[$assoc->sourceFieldName])) {
                     foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
-                        $columnList .= ', ' /*. $tableAlias . '.'*/ . $assoc->getQuotedJoinColumnName($srcColumn, $this->_platform);
-                        if ($setResultColumnNames) {
-                            $resultColumnName = $this->_platform->getSqlResultCasing($srcColumn);
+                        $columnAlias = $srcColumn . $this->_sqlAliasCounter++;
+                        $columnList .= ', ' . $tableAlias . ".$srcColumn AS $columnAlias";
+                        $resultColumnName = $this->_platform->getSQLResultCasing($columnAlias);
+                        if ( ! isset($this->_resultColumnNames[$resultColumnName])) {
                             $this->_resultColumnNames[$resultColumnName] = $srcColumn;
                         }
                     }
@@ -90,20 +85,32 @@ class SingleTablePersister extends StandardEntityPersister
 
         return $columnList;
     }
-    
+
     /** @override */
     protected function _getInsertColumnList()
     {
         $columns = parent::_getInsertColumnList();
         // Add discriminator column to the INSERT SQL
-        $columns[] = $this->_class->getQuotedDiscriminatorColumnName($this->_platform);
-        
+        $columns[] = $this->_class->discriminatorColumn['name'];
+
         return $columns;
     }
-    
+
     /** @override */
-    protected function _processSqlResult(array $sqlResult)
+    protected function _processSQLResult(array $sqlResult)
     {
-        return $this->_processSqlResultInheritanceAware($sqlResult);
+        return $this->_processSQLResultInheritanceAware($sqlResult);
+    }
+
+    /** @override */
+    protected function _getSQLTableAlias(ClassMetadata $class)
+    {
+        if (isset($this->_sqlTableAliases[$class->rootEntityName])) {
+            return $this->_sqlTableAliases[$class->rootEntityName];
+        }
+        $tableAlias = $this->_em->getClassMetadata($class->rootEntityName)->primaryTable['name'][0] . $this->_sqlAliasCounter++;
+        $this->_sqlTableAliases[$class->rootEntityName] = $tableAlias;
+
+        return $tableAlias;
     }
 }

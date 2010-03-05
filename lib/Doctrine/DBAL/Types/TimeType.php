@@ -21,7 +21,7 @@ class TimeType extends Type
      */
     public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        return $platform->getTimeTypeDeclarationSql($fieldDeclaration);
+        return $platform->getTimeTypeDeclarationSQL($fieldDeclaration);
     }
 
     /**

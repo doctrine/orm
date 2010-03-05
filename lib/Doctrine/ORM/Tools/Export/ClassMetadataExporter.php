@@ -25,21 +25,21 @@ namespace Doctrine\ORM\Tools\Export;
 use Doctrine\ORM\EntityManager,
     Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\Common\DoctrineException;
+    Doctrine\ORM\Mapping\MappingException;
 
 /**
- * Class used for converting your mapping information between the 
+ * Class used for converting your mapping information between the
  * supported formats: yaml, xml, and php/annotation.
  *
  *     [php]
  *     // Unify all your mapping information which is written in php, xml, yml
  *     // and convert it to a single set of yaml files.
- *     
+ *
  *     $cme = new Doctrine\ORM\Tools\Export\ClassMetadataExporter();
  *     $cme->addMappingSource(__DIR__ . '/Entities', 'php');
  *     $cme->addMappingSource(__DIR__ . '/xml', 'xml');
  *     $cme->addMappingSource(__DIR__ . '/yaml', 'yaml');
- *     
+ *
  *     $exporter = $cme->getExporter('yaml');
  *     $exporter->setOutputDir(__DIR__ . '/new_yaml');
  *
@@ -89,7 +89,7 @@ class ClassMetadataExporter
     public function addMappingSource($source, $type)
     {
         if ( ! isset($this->_mappingDrivers[$type])) {
-            throw DoctrineException::invalidMappingDriverType($type);
+            throw ExportException::invalidMappingDriverType($type);
         }
 
         $driver = $this->getMappingDriver($type, $source);
@@ -114,17 +114,17 @@ class ClassMetadataExporter
         }
 
         $class = $this->_mappingDrivers[$type];
-        
+
         if (is_subclass_of($class, 'Doctrine\ORM\Mapping\Driver\AbstractFileDriver')) {
             if (is_null($source)) {
-                throw DoctrineException::fileMappingDriversRequireDirectoryPath();
+                throw MappingException::fileMappingDriversRequireConfiguredDirectoryPath();
             }
-            
+
             $driver = new $class($source);
         } else if ($class == 'Doctrine\ORM\Mapping\Driver\AnnotationDriver') {
             $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
             $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-            
+
             $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader, $source);
         } else {
             $driver = new $class($source);
@@ -158,16 +158,16 @@ class ClassMetadataExporter
             list($source, $driver) = $d;
 
             $allClasses = $driver->getAllClassNames();
-            
+
             foreach ($allClasses as $className) {
                 if (class_exists($className, false)) {
                     $metadata = new ClassMetadata($className);
                 } else {
-                    $metadata = new ClassMetadataInfo($className);    
+                    $metadata = new ClassMetadataInfo($className);
                 }
-                
+
                 $driver->loadMetadataForClass($className, $metadata);
-                
+
                 if ( ! $metadata->isMappedSuperclass) {
                     $classes[$metadata->name] = $metadata;
                 }
@@ -187,11 +187,11 @@ class ClassMetadataExporter
     public function getExporter($type, $source = null)
     {
         if ( ! isset($this->_exporterDrivers[$type])) {
-            throw DoctrineException::invalidExporterDriverType($type);
+            throw ExportException::invalidExporterDriverType($type);
         }
 
         $class = $this->_exporterDrivers[$type];
-        
+
         return new $class($source);
     }
 }

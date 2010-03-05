@@ -11,15 +11,15 @@ class ClassLoaderTest extends \Doctrine\Tests\DoctrineTestCase
 {
     public function testGlobalClassLoaderThrowsExceptionIfPutInChain()
     {
-        $this->setExpectedException('Doctrine\Common\DoctrineException');
-        
+        $this->setExpectedException('Doctrine\Common\CommonException');
+
         $classLoader1 = new IsolatedClassLoader('Foo');
         $classLoader1->register();
-        
+
         $globalClassLoader = new GlobalClassLoader;
         $globalClassLoader->register();
     }
-    
+
     /*public function testIsolatedClassLoaderReturnsFalseOnClassExists()
     {
         $classLoader = new IsolatedClassLoader('ClassLoaderTest');

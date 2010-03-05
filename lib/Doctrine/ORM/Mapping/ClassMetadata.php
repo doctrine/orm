@@ -176,15 +176,6 @@ class ClassMetadata extends ClassMetadataInfo
             return array($this->identifier[0] => $this->reflFields[$this->identifier[0]]->getValue($entity));
         }
     }
-    
-    public function getColumnValues($entity, array $columns)
-    {
-        $values = array();
-        foreach ($columns as $column) {
-            $values[] = $this->reflFields[$this->fieldNames[$column]]->getValue($entity);
-        }
-        return $values;
-    }
 
     /**
      * Populates the entity identifier of an entity.
@@ -287,21 +278,7 @@ class ClassMetadata extends ClassMetadataInfo
                 $platform->quoteIdentifier($this->primaryTable['name']) :
                 $this->primaryTable['name'];
     }
-    
-    /**
-     * Gets the (possibly quoted) name of the discriminator column for safe use
-     * in an SQL statement.
-     * 
-     * @param AbstractPlatform $platform
-     * @return string
-     */
-    public function getQuotedDiscriminatorColumnName($platform)
-    {
-        return isset($this->discriminatorColumn['quoted']) ?
-                $platform->quoteIdentifier($this->discriminatorColumn['name']) :
-                $this->discriminatorColumn['name'];
-    }
-    
+
     /**
      * Creates a string representation of this instance.
      *

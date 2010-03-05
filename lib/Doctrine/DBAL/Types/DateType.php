@@ -18,7 +18,7 @@ class DateType extends Type
 
     public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        return $platform->getDateTypeDeclarationSql($fieldDeclaration);
+        return $platform->getDateTypeDeclarationSQL($fieldDeclaration);
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)

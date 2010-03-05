@@ -126,27 +126,19 @@ class ManyToManyMapping extends AssociationMapping
                 );
             }
             
-            foreach ($mapping['joinTable']['joinColumns'] as &$joinColumn) {
-                if ($joinColumn['name'][0] == '`') {
-                    $joinColumn['name'] = trim($joinColumn['name'], '`');
-                    $joinColumn['quoted'] = true;
-                }
+            foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
                 $this->relationToSourceKeyColumns[$joinColumn['name']] = $joinColumn['referencedColumnName'];
                 $this->joinTableColumns[] = $joinColumn['name'];
             }
             
-            foreach ($mapping['joinTable']['inverseJoinColumns'] as &$inverseJoinColumn) {
-                if ($inverseJoinColumn['name'][0] == '`') {
-                    $inverseJoinColumn['name'] = trim($inverseJoinColumn['name'], '`');
-                    $inverseJoinColumn['quoted'] = true;
-                }
+            foreach ($mapping['joinTable']['inverseJoinColumns'] as $inverseJoinColumn) {
                 $this->relationToTargetKeyColumns[$inverseJoinColumn['name']] = $inverseJoinColumn['referencedColumnName'];
                 $this->joinTableColumns[] = $inverseJoinColumn['name'];
             }
         }
 
         if (isset($mapping['orderBy'])) {
-            if (!is_array($mapping['orderBy'])) {
+            if ( ! is_array($mapping['orderBy'])) {
                 throw new \InvalidArgumentException("'orderBy' is expected to be an array, not ".gettype($mapping['orderBy']));
             }
             $this->orderBy = $mapping['orderBy'];
@@ -212,26 +204,8 @@ class ManyToManyMapping extends AssociationMapping
         $persister->loadManyToManyCollection($this, $joinTableConditions, $targetCollection);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function isManyToMany()
     {
         return true;
-    }
-    
-    /**
-     * Gets the (possibly quoted) column name of a join column that is safe to use
-     * in an SQL statement.
-     * 
-     * @param string $joinColumn
-     * @param AbstractPlatform $platform
-     * @return string
-     */
-    public function getQuotedJoinColumnName($joinColumn, $platform)
-    {
-        return isset($this->joinTable['joinColumns'][$joinColumn]['quoted']) ?
-                $platform->quoteIdentifier($joinColumn) :
-                $joinColumn;
     }
 }

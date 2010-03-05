@@ -2,8 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Query;
 
-use Doctrine\ORM\Query,
-    Doctrine\Common\DoctrineException;
+use Doctrine\ORM\Query;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -44,7 +43,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT c0_.id AS id0 FROM cms_users c0_'
         );
     }
-    
+
     public function testSupportsSelectForOneNestedField()
     {
         $this->assertSqlGeneration(
@@ -52,7 +51,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT c0_.id AS id0 FROM cms_articles c1_ INNER JOIN cms_users c0_ ON c1_.user_id = c0_.id'
         );
     }
-    
+
     public function testSupportsSelectForAllNestedField()
     {
         $this->assertSqlGeneration(
@@ -236,7 +235,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT c0_.id AS id0, c1_.id AS id1, c2_.phonenumber AS phonenumber2, c3_.id AS id3 FROM cms_users c0_ INNER JOIN cms_articles c1_ ON c0_.id = c1_.user_id INNER JOIN cms_phonenumbers c2_ ON c0_.id = c2_.user_id INNER JOIN cms_comments c3_ ON c1_.id = c3_.article_id'
         );
     }
-    
+
     public function testSupportsTrimFunction()
     {
         $this->assertSqlGeneration(
@@ -330,29 +329,29 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         // "Get all users who have $phone as a phonenumber." (*cough* doesnt really make sense...)
         $q1 = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.phonenumbers');
         $q1->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
-        
+
         $phone = new \Doctrine\Tests\Models\CMS\CmsPhonenumber;
         $phone->phonenumber = 101;
         $q1->setParameter('param', $phone);
-        
+
         $this->assertEquals(
             'SELECT c0_.id AS id0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_phonenumbers c1_ WHERE c0_.id = c1_.user_id AND c1_.phonenumber = ?)',
             $q1->getSql()
         );
-        
+
         // "Get all users who are members of $group."
         $q2 = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.groups');
         $q2->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
-        
+
         $group = new \Doctrine\Tests\Models\CMS\CmsGroup;
         $group->id = 101;
         $q2->setParameter('param', $group);
-        
+
         $this->assertEquals(
             'SELECT c0_.id AS id0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_users_groups c1_ INNER JOIN cms_groups c2_ ON c1_.user_id = c0_.id WHERE c1_.group_id = c2_.id AND c2_.id = ?)',
             $q2->getSql()
         );
-        
+
         // "Get all persons who have $person as a friend."
         // Tough one: Many-many self-referencing ("friends") with class table inheritance
         $q3 = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p WHERE :param MEMBER OF p.friends');
@@ -423,7 +422,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals('SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ LIMIT 10 OFFSET 0', $q->getSql());
     }
-    
+
     public function testSizeFunction()
     {
         $this->assertSqlGeneration(
@@ -431,7 +430,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (SELECT COUNT(*) FROM cms_phonenumbers c1_ WHERE c1_.user_id = c0_.id) > 1"
         );
     }
-    
+
     public function testSizeFunctionSupportsManyToMany()
     {
         $this->assertSqlGeneration(
@@ -451,7 +450,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (SELECT COUNT(*) FROM cms_phonenumbers c1_ WHERE c1_.user_id = c0_.id) > 0"
         );
     }
-    
+
     public function testNestedExpressions()
     {
         $this->assertSqlGeneration(
@@ -459,7 +458,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id > 10 AND c0_.id < 42 AND ((c0_.id * 2) > 5)"
         );
     }
-    
+
     public function testNestedExpressions2()
     {
         $this->assertSqlGeneration(
@@ -467,7 +466,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (c0_.id > 10) AND (c0_.id < 42 AND ((c0_.id * 2) > 5)) OR c0_.id <> 42"
         );
     }
-    
+
     public function testNestedExpressions3()
     {
         $this->assertSqlGeneration(
@@ -475,7 +474,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (c0_.id > 10) AND (c0_.id BETWEEN 1 AND 10 OR c0_.id IN (1, 2, 3, 4, 5))"
         );
     }
-    
+
     public function testOrderByCollectionAssociationSize()
     {
         $this->assertSqlGeneration(
@@ -483,40 +482,40 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, (SELECT COUNT(*) FROM cms_articles c1_ WHERE c1_.user_id = c0_.id) AS sclr4 FROM cms_users c0_ ORDER BY sclr4 ASC"
         );
     }
-    
+
     public function testBooleanLiteralInWhereOnSqlite()
     {
         $oldPlat = $this->_em->getConnection()->getDatabasePlatform();
         $this->_em->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\SqlitePlatform);
-        
+
         $this->assertSqlGeneration(
             "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true",
             "SELECT b0_.id AS id0, b0_.booleanField AS booleanField1 FROM boolean_model b0_ WHERE b0_.booleanField = 1"
         );
-        
+
         $this->assertSqlGeneration(
             "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = false",
             "SELECT b0_.id AS id0, b0_.booleanField AS booleanField1 FROM boolean_model b0_ WHERE b0_.booleanField = 0"
         );
-        
+
         $this->_em->getConnection()->setDatabasePlatform($oldPlat);
     }
-    
+
     public function testBooleanLiteralInWhereOnPostgres()
     {
         $oldPlat = $this->_em->getConnection()->getDatabasePlatform();
         $this->_em->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
-        
+
         $this->assertSqlGeneration(
             "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true",
             "SELECT b0_.id AS id0, b0_.booleanField AS booleanField1 FROM boolean_model b0_ WHERE b0_.booleanField = 'true'"
         );
-        
+
         $this->assertSqlGeneration(
             "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = false",
             "SELECT b0_.id AS id0, b0_.booleanField AS booleanField1 FROM boolean_model b0_ WHERE b0_.booleanField = 'false'"
         );
-        
+
         $this->_em->getConnection()->setDatabasePlatform($oldPlat);
     }
 
@@ -546,7 +545,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ LEFT JOIN cms_addresses c1_ ON c0_.id = c1_.user_id WHERE c1_.id IS NULL"
         );
     }
-    
+
     /**
      * @group DDC-339
      */

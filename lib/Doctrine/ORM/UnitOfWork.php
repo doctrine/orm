@@ -375,7 +375,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @Internal
      *
-     * @Todo inline _computeChangeSet to here?
+     * @Todo inline _computeEntityChanges to here?
      * 
      * @param ClassMetadata $class
      * @param object $entity

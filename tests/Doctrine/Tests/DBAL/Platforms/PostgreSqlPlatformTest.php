@@ -57,7 +57,7 @@ class PostgreSqlPlatformTest extends AbstractPlatformTestCase
         );
         $this->assertEquals(
             "CONSTRAINT my_fk FOREIGN KEY (foreign_id) REFERENCES my_table(id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE",
-            $this->_platform->getForeignKeyDeclarationSql($foreignKey)
+            $this->_platform->getForeignKeyDeclarationSQL($foreignKey)
         );
     }
 
@@ -74,42 +74,42 @@ class PostgreSqlPlatformTest extends AbstractPlatformTestCase
     {
         $this->assertEquals(
             'SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL READ UNCOMMITTED',
-            $this->_platform->getSetTransactionIsolationSql(Connection::TRANSACTION_READ_UNCOMMITTED)
+            $this->_platform->getSetTransactionIsolationSQL(Connection::TRANSACTION_READ_UNCOMMITTED)
         );
         $this->assertEquals(
             'SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL READ COMMITTED',
-            $this->_platform->getSetTransactionIsolationSql(Connection::TRANSACTION_READ_COMMITTED)
+            $this->_platform->getSetTransactionIsolationSQL(Connection::TRANSACTION_READ_COMMITTED)
         );
         $this->assertEquals(
             'SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL REPEATABLE READ',
-            $this->_platform->getSetTransactionIsolationSql(Connection::TRANSACTION_REPEATABLE_READ)
+            $this->_platform->getSetTransactionIsolationSQL(Connection::TRANSACTION_REPEATABLE_READ)
         );
         $this->assertEquals(
             'SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL SERIALIZABLE',
-            $this->_platform->getSetTransactionIsolationSql(Connection::TRANSACTION_SERIALIZABLE)
+            $this->_platform->getSetTransactionIsolationSQL(Connection::TRANSACTION_SERIALIZABLE)
         );
     }
 
     public function testGeneratesDDLSnippets()
     {
-        $this->assertEquals('CREATE DATABASE foobar', $this->_platform->getCreateDatabaseSql('foobar'));
-        $this->assertEquals('DROP DATABASE foobar', $this->_platform->getDropDatabaseSql('foobar'));
-        $this->assertEquals('DROP TABLE foobar', $this->_platform->getDropTableSql('foobar'));
+        $this->assertEquals('CREATE DATABASE foobar', $this->_platform->getCreateDatabaseSQL('foobar'));
+        $this->assertEquals('DROP DATABASE foobar', $this->_platform->getDropDatabaseSQL('foobar'));
+        $this->assertEquals('DROP TABLE foobar', $this->_platform->getDropTableSQL('foobar'));
     }
 
     public function testGeneratesTypeDeclarationForIntegers()
     {
         $this->assertEquals(
             'INT',
-            $this->_platform->getIntegerTypeDeclarationSql(array())
+            $this->_platform->getIntegerTypeDeclarationSQL(array())
         );
         $this->assertEquals(
             'SERIAL',
-            $this->_platform->getIntegerTypeDeclarationSql(array('autoincrement' => true)
+            $this->_platform->getIntegerTypeDeclarationSQL(array('autoincrement' => true)
         ));
         $this->assertEquals(
             'SERIAL',
-            $this->_platform->getIntegerTypeDeclarationSql(
+            $this->_platform->getIntegerTypeDeclarationSQL(
                 array('autoincrement' => true, 'primary' => true)
         ));
     }
@@ -118,17 +118,17 @@ class PostgreSqlPlatformTest extends AbstractPlatformTestCase
     {
         $this->assertEquals(
             'CHAR(10)',
-            $this->_platform->getVarcharTypeDeclarationSql(
+            $this->_platform->getVarcharTypeDeclarationSQL(
                 array('length' => 10, 'fixed' => true))
         );
         $this->assertEquals(
             'VARCHAR(50)',
-            $this->_platform->getVarcharTypeDeclarationSql(array('length' => 50)),
+            $this->_platform->getVarcharTypeDeclarationSQL(array('length' => 50)),
             'Variable string declaration is not correct'
         );
         $this->assertEquals(
             'TEXT',
-            $this->_platform->getVarcharTypeDeclarationSql(array()),
+            $this->_platform->getVarcharTypeDeclarationSQL(array()),
             'Long string declaration is not correct'
         );
     }
@@ -143,15 +143,15 @@ class PostgreSqlPlatformTest extends AbstractPlatformTestCase
         $sequence = new \Doctrine\DBAL\Schema\Sequence('myseq', 20, 1);
         $this->assertEquals(
             'CREATE SEQUENCE myseq INCREMENT BY 20 MINVALUE 1 START 1',
-            $this->_platform->getCreateSequenceSql($sequence)
+            $this->_platform->getCreateSequenceSQL($sequence)
         );
         $this->assertEquals(
             'DROP SEQUENCE myseq',
-            $this->_platform->getDropSequenceSql('myseq')
+            $this->_platform->getDropSequenceSQL('myseq')
         );
         $this->assertEquals(
             "SELECT NEXTVAL('myseq')",
-            $this->_platform->getSequenceNextValSql('myseq')
+            $this->_platform->getSequenceNextValSQL('myseq')
         );
     }
 

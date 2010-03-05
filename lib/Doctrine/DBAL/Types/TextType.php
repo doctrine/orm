@@ -12,7 +12,7 @@ class TextType extends Type
     /** @override */
     public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
-        return $platform->getClobTypeDeclarationSql($fieldDeclaration);
+        return $platform->getClobTypeDeclarationSQL($fieldDeclaration);
     }
 
     public function getName()

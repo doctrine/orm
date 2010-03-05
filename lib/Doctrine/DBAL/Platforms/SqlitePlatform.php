@@ -126,7 +126,7 @@ class SqlitePlatform extends AbstractPlatform
         }
     }
 
-    protected function _getTransactionIsolationLevelSql($level)
+    protected function _getTransactionIsolationLevelSQL($level)
     {
         switch ($level) {
             case \Doctrine\DBAL\Connection::TRANSACTION_READ_UNCOMMITTED:
@@ -136,13 +136,13 @@ class SqlitePlatform extends AbstractPlatform
             case \Doctrine\DBAL\Connection::TRANSACTION_SERIALIZABLE:
                 return 1;
             default:
-                return parent::_getTransactionIsolationLevelSql($level);
+                return parent::_getTransactionIsolationLevelSQL($level);
         }
     }
 
-    public function getSetTransactionIsolationSql($level)
+    public function getSetTransactionIsolationSQL($level)
     {
-        return 'PRAGMA read_uncommitted = ' . $this->_getTransactionIsolationLevelSql($level);
+        return 'PRAGMA read_uncommitted = ' . $this->_getTransactionIsolationLevelSQL($level);
     }
 
     /** 
@@ -156,7 +156,7 @@ class SqlitePlatform extends AbstractPlatform
     /** 
      * @override 
      */
-    public function getBooleanTypeDeclarationSql(array $field)
+    public function getBooleanTypeDeclarationSQL(array $field)
     {
         return 'BOOLEAN';
     }
@@ -164,17 +164,17 @@ class SqlitePlatform extends AbstractPlatform
     /** 
      * @override 
      */
-    public function getIntegerTypeDeclarationSql(array $field)
+    public function getIntegerTypeDeclarationSQL(array $field)
     {
-        return $this->_getCommonIntegerTypeDeclarationSql($field);
+        return $this->_getCommonIntegerTypeDeclarationSQL($field);
     }
 
     /** 
      * @override 
      */
-    public function getBigIntTypeDeclarationSql(array $field)
+    public function getBigIntTypeDeclarationSQL(array $field)
     {
-        return $this->_getCommonIntegerTypeDeclarationSql($field);
+        return $this->_getCommonIntegerTypeDeclarationSQL($field);
     }
 
     /** 
@@ -182,15 +182,15 @@ class SqlitePlatform extends AbstractPlatform
      */
     public function getTinyIntTypeDeclarationSql(array $field)
     {
-        return $this->_getCommonIntegerTypeDeclarationSql($field);
+        return $this->_getCommonIntegerTypeDeclarationSQL($field);
     }
 
     /** 
      * @override 
      */
-    public function getSmallIntTypeDeclarationSql(array $field)
+    public function getSmallIntTypeDeclarationSQL(array $field)
     {
-        return $this->_getCommonIntegerTypeDeclarationSql($field);
+        return $this->_getCommonIntegerTypeDeclarationSQL($field);
     }
 
     /** 
@@ -198,13 +198,13 @@ class SqlitePlatform extends AbstractPlatform
      */
     public function getMediumIntTypeDeclarationSql(array $field)
     {
-        return $this->_getCommonIntegerTypeDeclarationSql($field);
+        return $this->_getCommonIntegerTypeDeclarationSQL($field);
     }
 
     /** 
      * @override 
      */
-    public function getDateTimeTypeDeclarationSql(array $fieldDeclaration)
+    public function getDateTimeTypeDeclarationSQL(array $fieldDeclaration)
     {
         return 'DATETIME';
     }
@@ -212,7 +212,7 @@ class SqlitePlatform extends AbstractPlatform
     /**
      * @override
      */
-    public function getDateTypeDeclarationSql(array $fieldDeclaration)
+    public function getDateTypeDeclarationSQL(array $fieldDeclaration)
     {
         return 'DATE';
     }
@@ -220,7 +220,7 @@ class SqlitePlatform extends AbstractPlatform
     /**
      * @override
      */
-    public function getTimeTypeDeclarationSql(array $fieldDeclaration)
+    public function getTimeTypeDeclarationSQL(array $fieldDeclaration)
     {
         return 'TIME';
     }
@@ -228,7 +228,7 @@ class SqlitePlatform extends AbstractPlatform
     /** 
      * @override 
      */
-    protected function _getCommonIntegerTypeDeclarationSql(array $columnDef)
+    protected function _getCommonIntegerTypeDeclarationSQL(array $columnDef)
     {
         $autoinc = ! empty($columnDef['autoincrement']) ? ' AUTOINCREMENT' : '';
         $pk = ! empty($columnDef['primary']) && ! empty($autoinc) ? ' PRIMARY KEY' : '';
@@ -265,9 +265,9 @@ class SqlitePlatform extends AbstractPlatform
      * @return void
      * @override
      */
-    protected function _getCreateTableSql($name, array $columns, array $options = array())
+    protected function _getCreateTableSQL($name, array $columns, array $options = array())
     {
-        $queryFields = $this->getColumnDeclarationListSql($columns);
+        $queryFields = $this->getColumnDeclarationListSQL($columns);
 
         $autoinc = false;
         foreach($columns as $field) {
@@ -287,12 +287,12 @@ class SqlitePlatform extends AbstractPlatform
 
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
             foreach ($options['indexes'] as $index => $indexDef) {
-                $query[] = $this->getCreateIndexSql($indexDef, $name);
+                $query[] = $this->getCreateIndexSQL($indexDef, $name);
             }
         }
         if (isset($options['unique']) && ! empty($options['unique'])) {
             foreach ($options['unique'] as $index => $indexDef) {
-                $query[] = $this->getCreateIndexSql($indexDef, $name);
+                $query[] = $this->getCreateIndexSQL($indexDef, $name);
             }
         }
         return $query;
@@ -301,7 +301,7 @@ class SqlitePlatform extends AbstractPlatform
     /**
      * {@inheritdoc}
      */
-    public function getVarcharTypeDeclarationSql(array $field)
+    public function getVarcharTypeDeclarationSQL(array $field)
     {
         if ( ! isset($field['length'])) {
             if (array_key_exists('default', $field)) {
@@ -317,44 +317,44 @@ class SqlitePlatform extends AbstractPlatform
                 : ($length ? 'VARCHAR(' . $length . ')' : 'TEXT');
     }
     
-    public function getClobTypeDeclarationSql(array $field)
+    public function getClobTypeDeclarationSQL(array $field)
     {
         return 'CLOB';
     }
 
-    public function getListTableConstraintsSql($table)
+    public function getListTableConstraintsSQL($table)
     {
         return "SELECT sql FROM sqlite_master WHERE type='index' AND tbl_name = '$table' AND sql NOT NULL ORDER BY name";
     }
 
-    public function getListTableColumnsSql($table)
+    public function getListTableColumnsSQL($table)
     {
         return "PRAGMA table_info($table)";
     }
 
-    public function getListTableIndexesSql($table)
+    public function getListTableIndexesSQL($table)
     {
         return "PRAGMA index_list($table)";
     }
 
-    public function getListTablesSql()
+    public function getListTablesSQL()
     {
         return "SELECT name FROM sqlite_master WHERE type = 'table' AND name != 'sqlite_sequence' "
              . "UNION ALL SELECT name FROM sqlite_temp_master "
              . "WHERE type = 'table' ORDER BY name";
     }
 
-    public function getListViewsSql($database)
+    public function getListViewsSQL($database)
     {
         return "SELECT name, sql FROM sqlite_master WHERE type='view' AND sql NOT NULL";
     }
 
-    public function getCreateViewSql($name, $sql)
+    public function getCreateViewSQL($name, $sql)
     {
         return 'CREATE VIEW ' . $name . ' AS ' . $sql;
     }
 
-    public function getDropViewSql($name)
+    public function getDropViewSQL($name)
     {
         return 'DROP VIEW '. $name;
     }
@@ -390,7 +390,7 @@ class SqlitePlatform extends AbstractPlatform
     /**
      * @inheritdoc
      */
-    public function getTruncateTableSql($tableName, $cascade = false)
+    public function getTruncateTableSQL($tableName, $cascade = false)
     {
         return 'DELETE FROM '.$tableName;
     }

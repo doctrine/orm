@@ -55,19 +55,19 @@ class OraclePlatformTest extends AbstractPlatformTestCase
     {
         $this->assertEquals(
             'SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED',
-            $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_READ_UNCOMMITTED)
+            $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_READ_UNCOMMITTED)
         );
         $this->assertEquals(
             'SET TRANSACTION ISOLATION LEVEL READ COMMITTED',
-            $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_READ_COMMITTED)
+            $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_READ_COMMITTED)
         );
         $this->assertEquals(
             'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE',
-            $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_REPEATABLE_READ)
+            $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_REPEATABLE_READ)
         );
         $this->assertEquals(
             'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE',
-            $this->_platform->getSetTransactionIsolationSql(\Doctrine\DBAL\Connection::TRANSACTION_SERIALIZABLE)
+            $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_SERIALIZABLE)
         );
     }
 
@@ -76,7 +76,7 @@ class OraclePlatformTest extends AbstractPlatformTestCase
      */
     public function testShowDatabasesThrowsException()
     {
-        $this->assertEquals('SHOW DATABASES', $this->_platform->getShowDatabasesSql());
+        $this->assertEquals('SHOW DATABASES', $this->_platform->getShowDatabasesSQL());
     }
 
     /**
@@ -84,32 +84,32 @@ class OraclePlatformTest extends AbstractPlatformTestCase
      */
     public function testCreateDatabaseThrowsException()
     {
-        $this->assertEquals('CREATE DATABASE foobar', $this->_platform->getCreateDatabaseSql('foobar'));
+        $this->assertEquals('CREATE DATABASE foobar', $this->_platform->getCreateDatabaseSQL('foobar'));
     }
 
     public function testDropDatabaseThrowsException()
     {
-        $this->assertEquals('DROP USER foobar CASCADE', $this->_platform->getDropDatabaseSql('foobar'));
+        $this->assertEquals('DROP USER foobar CASCADE', $this->_platform->getDropDatabaseSQL('foobar'));
     }
 
     public function testDropTable()
     {
-        $this->assertEquals('DROP TABLE foobar', $this->_platform->getDropTableSql('foobar'));        
+        $this->assertEquals('DROP TABLE foobar', $this->_platform->getDropTableSQL('foobar'));        
     }
 
     public function testGeneratesTypeDeclarationForIntegers()
     {
         $this->assertEquals(
             'NUMBER(10)',
-            $this->_platform->getIntegerTypeDeclarationSql(array())
+            $this->_platform->getIntegerTypeDeclarationSQL(array())
         );
         $this->assertEquals(
             'NUMBER(10)',
-            $this->_platform->getIntegerTypeDeclarationSql(array('autoincrement' => true)
+            $this->_platform->getIntegerTypeDeclarationSQL(array('autoincrement' => true)
         ));
         $this->assertEquals(
             'NUMBER(10)',
-            $this->_platform->getIntegerTypeDeclarationSql(
+            $this->_platform->getIntegerTypeDeclarationSQL(
                 array('autoincrement' => true, 'primary' => true)
         ));
     }
@@ -118,17 +118,17 @@ class OraclePlatformTest extends AbstractPlatformTestCase
     {
         $this->assertEquals(
             'CHAR(10)',
-            $this->_platform->getVarcharTypeDeclarationSql(
+            $this->_platform->getVarcharTypeDeclarationSQL(
                 array('length' => 10, 'fixed' => true)
         ));
         $this->assertEquals(
             'VARCHAR2(50)',
-            $this->_platform->getVarcharTypeDeclarationSql(array('length' => 50)),
+            $this->_platform->getVarcharTypeDeclarationSQL(array('length' => 50)),
             'Variable string declaration is not correct'
         );
         $this->assertEquals(
             'VARCHAR2(4000)',
-            $this->_platform->getVarcharTypeDeclarationSql(array()),
+            $this->_platform->getVarcharTypeDeclarationSQL(array()),
             'Long string declaration is not correct'
         );
     }

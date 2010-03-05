@@ -77,7 +77,7 @@ class CreateSchemaSqlCollector implements Visitor
     public function acceptTable(Table $table)
     {
         $this->_createTableQueries = array_merge($this->_createTableQueries,
-            $this->_platform->getCreateTableSql($table)
+            $this->_platform->getCreateTableSQL($table)
         );
     }
 
@@ -95,7 +95,7 @@ class CreateSchemaSqlCollector implements Visitor
         // Append the foreign key constraints SQL
         if ($this->_platform->supportsForeignKeyConstraints()) {
             $this->_createFkConstraintQueries = array_merge($this->_createFkConstraintQueries,
-                (array) $this->_platform->getCreateForeignKeySql($fkConstraint, $localTable->getName())
+                (array) $this->_platform->getCreateForeignKeySQL($fkConstraint, $localTable->getName())
             );
         }
     }
@@ -115,7 +115,7 @@ class CreateSchemaSqlCollector implements Visitor
     public function acceptSequence(Sequence $sequence)
     {
         $this->_createSequenceQueries = array_merge(
-            $this->_createSequenceQueries, (array)$this->_platform->getCreateSequenceSql($sequence)
+            $this->_createSequenceQueries, (array)$this->_platform->getCreateSequenceSQL($sequence)
         );
     }
 

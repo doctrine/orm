@@ -23,8 +23,7 @@ namespace Doctrine\ORM\Proxy;
 
 use Doctrine\ORM\EntityManager,
     Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\AssociationMapping,
-    Doctrine\Common\DoctrineException;
+    Doctrine\ORM\Mapping\AssociationMapping;
 
 /**
  * This factory is used to create proxy objects for entities at runtime.
@@ -56,17 +55,17 @@ class ProxyFactory
     public function __construct(EntityManager $em, $proxyDir, $proxyNs, $autoGenerate = false)
     {
         if ( ! $proxyDir) {
-            throw DoctrineException::proxyDirectoryRequired();
+            throw ProxyException::proxyDirectoryRequired();
         }
         if ( ! $proxyNs) {
-            throw DoctrineException::proxyNamespaceRequired();
+            throw ProxyException::proxyNamespaceRequired();
         }
         $this->_em = $em;
         $this->_proxyDir = $proxyDir;
         $this->_autoGenerate = $autoGenerate;
         $this->_proxyNamespace = $proxyNs;
-    } 
-    
+    }
+
     /**
      * Gets a reference proxy instance for the entity of the given type and identified by
      * the given identifier.
@@ -79,25 +78,25 @@ class ProxyFactory
     {
         $proxyClassName = str_replace('\\', '', $className) . 'Proxy';
         $fqn = $this->_proxyNamespace . '\\' . $proxyClassName;
-        
+
         if ($this->_autoGenerate && ! class_exists($fqn, false)) {
             $fileName = $this->_proxyDir . DIRECTORY_SEPARATOR . $proxyClassName . '.php';
             $this->_generateProxyClass($this->_em->getClassMetadata($className), $proxyClassName, $fileName, self::$_proxyClassTemplate);
             require $fileName;
         }
-        
+
         if ( ! $this->_em->getMetadataFactory()->hasMetadataFor($fqn)) {
             $this->_em->getMetadataFactory()->setMetadataFor($fqn, $this->_em->getClassMetadata($className));
         }
-        
+
         $entityPersister = $this->_em->getUnitOfWork()->getEntityPersister($className);
-        
+
         return new $fqn($entityPersister, $identifier);
     }
-    
+
     /**
      * Generates proxy classes for all given classes.
-     * 
+     *
      * @param array $classes The classes (ClassMetadata instances) for which to generate proxies.
      * @param string $toDir The target directory of the proxy classes. If not specified, the
      *                      directory configured on the Configuration of the EntityManager used
@@ -113,10 +112,10 @@ class ProxyFactory
             $this->_generateProxyClass($class, $proxyClassName, $proxyFileName, self::$_proxyClassTemplate);
         }
     }
-    
+
     /**
      * Generates a (reference or association) proxy class.
-     * 
+     *
      * @param $class
      * @param $originalClassName
      * @param $proxyClassName
@@ -144,33 +143,33 @@ class ProxyFactory
             $proxyClassName, $className,
             $methods, $sleepImpl
         );
-        
+
         $file = str_replace($placeholders, $replacements, $file);
 
         file_put_contents($fileName, $file);
     }
-    
+
     /**
      * Generates the methods of a proxy class.
-     * 
+     *
      * @param ClassMetadata $class
      * @return string The code of the generated methods.
      */
     private function _generateMethods(ClassMetadata $class)
     {
         $methods = '';
-        
+
         foreach ($class->reflClass->getMethods() as $method) {
             /* @var $method ReflectionMethod */
             if ($method->isConstructor() || strtolower($method->getName()) == "__sleep") {
                 continue;
             }
-            
+
             if ($method->isPublic() && ! $method->isFinal() && ! $method->isStatic()) {
                 $methods .= PHP_EOL . '        public function ' . $method->getName() . '(';
                 $firstParam = true;
                 $parameterString = $argumentString = '';
-                
+
                 foreach ($method->getParameters() as $param) {
                     if ($firstParam) {
                         $firstParam = false;
@@ -178,68 +177,68 @@ class ProxyFactory
                         $parameterString .= ', ';
                         $argumentString  .= ', ';
                     }
-                    
+
                     // We need to pick the type hint class too
                     if (($paramClass = $param->getClass()) !== null) {
                         $parameterString .= '\\' . $paramClass->getName() . ' ';
                     } else if ($param->isArray()) {
                         $parameterString .= 'array ';
                     }
-                    
+
                     if ($param->isPassedByReference()) {
                         $parameterString .= '&';
                     }
-                    
+
                     $parameterString .= '$' . $param->getName();
                     $argumentString  .= '$' . $param->getName();
-                    
+
                     if ($param->isDefaultValueAvailable()) {
                         $parameterString .= ' = ' . var_export($param->getDefaultValue(), true);
                     }
                 }
-                
+
                 $methods .= $parameterString . ') {' . PHP_EOL;
                 $methods .= '            $this->_load();' . PHP_EOL;
                 $methods .= '            return parent::' . $method->getName() . '(' . $argumentString . ');';
                 $methods .= PHP_EOL . '        }' . PHP_EOL;
             }
         }
-        
+
         return $methods;
     }
-    
+
     /**
      * Generates the code for the __sleep method for a proxy class.
-     * 
+     *
      * @param $class
      * @return string
      */
     private function _generateSleep(ClassMetadata $class)
     {
         $sleepImpl = '';
-        
+
         if ($class->reflClass->hasMethod('__sleep')) {
             $sleepImpl .= 'return parent::__sleep();';
         } else {
             $sleepImpl .= 'return array(';
             $first = true;
-            
+
             foreach ($class->getReflectionProperties() as $name => $prop) {
                 if ($first) {
                     $first = false;
                 } else {
                     $sleepImpl .= ', ';
                 }
-                
+
                 $sleepImpl .= "'" . $name . "'";
             }
-            
+
             $sleepImpl .= ');';
         }
-        
+
         return $sleepImpl;
     }
-    
+
     /** Reference Proxy class code template */
     private static $_proxyClassTemplate =
 '<?php

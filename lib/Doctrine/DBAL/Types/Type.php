@@ -2,15 +2,14 @@
 
 namespace Doctrine\DBAL\Types;
 
-use Doctrine\Common\DoctrineException;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Platforms\AbstractPlatform,
+    Doctrine\DBAL\DBALException;
 
 /**
  * The base class for so-called Doctrine mapping types.
- * 
+ *
  * A Type object is obtained by calling the static {@link getType()} method.
- * 
+ *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
@@ -24,10 +23,10 @@ abstract class Type
     const CODE_INT = 1;
     const CODE_STR = 2;
     const CODE_LOB = 3;
-    
+
     /** Map of already instantiated type objects. One instance per type (flyweight). */
     private static $_typeObjects = array();
-    
+
     /** The map of supported doctrine mapping types. */
     private static $_typesMap = array(
         'array' => 'Doctrine\DBAL\Types\ArrayType',
@@ -45,10 +44,10 @@ abstract class Type
         'decimal' => 'Doctrine\DBAL\Types\DecimalType',
         'double' => 'Doctrine\DBAL\Types\DoubleType'
     );
-    
+
     /* Prevent instantiation and force use of the factory method. */
     private function __construct() {}
-    
+
     /**
      * Converts a value from its PHP representation to its database representation
      * of this type.
@@ -74,7 +73,7 @@ abstract class Type
     {
         return $value;
     }
-    
+
     /**
      * Gets the default length of this type.
      *
@@ -84,7 +83,7 @@ abstract class Type
     {
         return null;
     }
-    
+
     /**
      * Gets the SQL declaration snippet for a field of this type.
      *
@@ -95,7 +94,7 @@ abstract class Type
 
     /**
      * Gets the name of this type.
-     * 
+     *
      * @return string
      * @todo Needed?
      */
@@ -103,14 +102,14 @@ abstract class Type
 
     /**
      * Gets the type code of this type.
-     * 
+     *
      * @return integer
      */
     public function getTypeCode()
     {
         return self::CODE_STR;
     }
-    
+
     /**
      * Factory method to create type instances.
      * Type instances are implemented as flyweights.
@@ -126,13 +125,13 @@ abstract class Type
             if ( ! isset(self::$_typesMap[$name])) {
                 throw DBALException::unknownColumnType($name);
             }
-            
+
             self::$_typeObjects[$name] = new self::$_typesMap[$name]();
         }
-        
+
         return self::$_typeObjects[$name];
     }
-    
+
     /**
      * Adds a custom type to the type map.
      *
@@ -147,10 +146,10 @@ abstract class Type
         if (isset(self::$_typesMap[$name])) {
             throw DBALException::typeExists($name);
         }
-        
+
         self::$_typesMap[$name] = $className;
     }
-    
+
     /**
      * Checks if exists support for a type.
      *
@@ -162,7 +161,7 @@ abstract class Type
     {
         return isset(self::$_typesMap[$name]);
     }
-    
+
     /**
      * Overrides an already defined type to use a different implementation.
      *
@@ -176,7 +175,7 @@ abstract class Type
         if ( ! isset(self::$_typesMap[$name])) {
             throw DBALException::typeNotFound($name);
         }
-        
+
         self::$_typesMap[$name] = $className;
     }
 

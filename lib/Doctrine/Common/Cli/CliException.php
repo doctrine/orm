@@ -18,10 +18,8 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
  */
- 
-namespace Doctrine\Common\Cli;
 
-use Doctrine\Common\DoctrineException;
+namespace Doctrine\Common\Cli;
 
 /**
  * CLI Exception class
@@ -35,12 +33,12 @@ use Doctrine\Common\DoctrineException;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class CliException extends DoctrineException
+class CliException extends \Doctrine\Common\CommonException
 {
     public static function namespaceDoesNotExist($namespaceName, $namespacePath = '')
     {
         return new self(
-            "Namespace '{$namespaceName}' does not exist" . 
+            "Namespace '{$namespaceName}' does not exist" .
             (( ! empty($namespacePath)) ? " in '{$namespacePath}'." : '.')
         );
     }
@@ -49,9 +47,13 @@ class CliException extends DoctrineException
     {
         return new self("Task '{$taskName}' does not exist in '{$namespacePath}'.");
     }
-    
+
     public static function cannotOverrideTask($taskName)
     {
         return new self("Task '{$taskName}' cannot be overriden.");
+    }
+
+    public static function cannotOverrideNamespace($namespace) {
+        return new self("Namespace '$namespace' cannot be overriden. Call overrideNamespace() directly.");
     }
 }

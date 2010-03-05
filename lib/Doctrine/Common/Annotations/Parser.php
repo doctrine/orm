@@ -23,7 +23,7 @@ namespace Doctrine\Common\Annotations;
 
 /**
  * A simple parser for docblock annotations.
- * 
+ *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
@@ -35,8 +35,8 @@ namespace Doctrine\Common\Annotations;
  */
 class Parser
 {
-    /** 
-     * Tags that are stripped prior to parsing in order to reduce parsing overhead. 
+    /**
+     * Tags that are stripped prior to parsing in order to reduce parsing overhead.
      *
      * @var array
      */
@@ -44,28 +44,28 @@ class Parser
         "{@example", "{@id", "{@internal", "{@inheritdoc",
         "{@link", "{@source", "{@toc", "{@tutorial", "*/"
     );
-    
+
     /**
      * The lexer.
      *
      * @var Doctrine\Common\Annotations\Lexer
      */
     private $_lexer;
-    
+
     /**
      * Flag to control if the current Annotation is nested or not.
      *
      * @var boolean
      */
     private $_isNestedAnnotation = false;
-    
+
     /**
      * Default namespace for Annotations.
      *
      * @var string
      */
     private $_defaultAnnotationNamespace = '';
-    
+
     /**
      * Hashmap to store namespace aliases.
      *
@@ -75,9 +75,9 @@ class Parser
 
     /**
      * @var string
-     */ 
+     */
     private $_context = '';
-    
+
     /**
      * Constructs a new AnnotationParser.
      *
@@ -86,21 +86,21 @@ class Parser
     {
         $this->_lexer = new Lexer;
     }
-    
+
     /**
      * Sets the default namespace that is assumed for an annotation that does not
      * define a namespace prefix.
-     * 
+     *
      * @param $defaultNamespace
      */
     public function setDefaultAnnotationNamespace($defaultNamespace)
     {
         $this->_defaultAnnotationNamespace = $defaultNamespace;
     }
-    
+
     /**
      * Sets an alias for an annotation namespace.
-     * 
+     *
      * @param $namespace
      * @param $alias
      */
@@ -111,7 +111,7 @@ class Parser
 
     /**
      * Parses the given docblock string for annotations.
-     * 
+     *
      * @param string $docBlockString
      * @param string $context
      * @return array Array of Annotations. If no annotations are found, an empty array is returned.
@@ -122,18 +122,18 @@ class Parser
 
         // Strip out some known inline tags.
         $input = str_replace(self::$_strippedInlineTags, '', $docBlockString);
-        
+
         // Cut of the beginning of the input until the first '@'.
         $input = substr($input, strpos($input, '@'));
-        
+
         $this->_lexer->reset();
         $this->_lexer->setInput(trim($input, '* /'));
         $this->_lexer->moveNext();
-        
+
         if ($this->_lexer->isNextToken(Lexer::T_AT)) {
             return $this->Annotations();
         }
-        
+
         return array();
     }
 
@@ -152,22 +152,22 @@ class Parser
 
         $this->_lexer->moveNext();
     }
-    
+
     /**
      * Generates a new syntax error.
-     * 
+     *
      * @param string $expected Expected string.
      * @param array $token Optional token.
-     * @throws Exception
+     * @throws AnnotationException
      */
     private function syntaxError($expected, $token = null)
     {
         if ($token === null) {
             $token = $this->_lexer->lookahead;
         }
-        
+
         $message =  "Expected {$expected}, got ";
-        
+
         if ($this->_lexer->lookahead === null) {
             $message .= 'end of string';
         } else {
@@ -178,10 +178,10 @@ class Parser
             $message .= ' in '.$this->_context;
         }
         $message .= '.';
-        
+
         throw AnnotationException::syntaxError($message);
     }
-    
+
     /**
      * Annotations ::= Annotation {[ "*" ]* [Annotation]}*
      *
@@ -190,24 +190,24 @@ class Parser
     public function Annotations()
     {
         $this->_isNestedAnnotation = false;
-        
+
         $annotations = array();
         $annot = $this->Annotation();
-        
+
         if ($annot !== false) {
             $annotations[get_class($annot)] = $annot;
         }
-        
+
         while ($this->_lexer->lookahead !== null && $this->_lexer->isNextToken(Lexer::T_AT)) {
             $this->_isNestedAnnotation = false;
-                
+
             $annot = $this->Annotation();
-                
+
             if ($annot !== false) {
                 $annotations[get_class($annot)] = $annot;
             }
         }
-        
+
         return $annotations;
     }
 
@@ -220,13 +220,13 @@ class Parser
      * SimpleName     ::= identifier
      * Alias          ::= identifier
      *
-     * @return mixed False if it is not a valid Annotation; instance of Annotation subclass otherwise. 
+     * @return mixed False if it is not a valid Annotation; instance of Annotation subclass otherwise.
      */
     public function Annotation()
     {
         $values = array();
         $nameParts = array();
-        
+
         $this->match(Lexer::T_AT);
         $this->match(Lexer::T_IDENTIFIER);
         $nameParts[] = $this->_lexer->token['value'];
@@ -252,13 +252,13 @@ class Parser
         // Is it really an annotation class?
         if (
             (! $this->_isNestedAnnotation && $this->_lexer->lookahead != null &&
-            ! $this->_lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS) && 
+            ! $this->_lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS) &&
             ! $this->_lexer->isNextToken(Lexer::T_AT)) ||
             ! class_exists($name, false) ||
             ! is_subclass_of($name, 'Doctrine\Common\Annotations\Annotation')
         ) {
             $this->_lexer->skipUntil(Lexer::T_AT);
-            
+
             return false;
         }
 
@@ -267,11 +267,11 @@ class Parser
 
         if ($this->_lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)) {
             $this->match(Lexer::T_OPEN_PARENTHESIS);
-            
+
             if ( ! $this->_lexer->isNextToken(Lexer::T_CLOSE_PARENTHESIS)) {
                 $values = $this->Values();
             }
-            
+
             $this->match(Lexer::T_CLOSE_PARENTHESIS);
         }
 
@@ -286,26 +286,26 @@ class Parser
     public function Values()
     {
         $values = array();
-        
+
         // Handle the case of a single array as value, i.e. @Foo({....})
         if ($this->_lexer->isNextToken(Lexer::T_OPEN_CURLY_BRACES)) {
             $values['value'] = $this->Value();
             return $values;
         }
-        
+
         $values[] = $this->Value();
-        
+
         while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
             $this->match(Lexer::T_COMMA);
             $value = $this->Value();
-            
+
             if ( ! is_array($value)) {
                 $this->syntaxError('Value', $value);
             }
-            
+
             $values[] = $value;
         }
-        
+
         foreach ($values as $k => $value) {
             if (is_array($value) && is_string(key($value))) {
                 $key = key($value);
@@ -313,10 +313,10 @@ class Parser
             } else {
                 $values['value'] = $value;
             }
-            
+
             unset($values[$k]);
         }
-        
+
         return $values;
     }
 
@@ -328,11 +328,11 @@ class Parser
     public function Value()
     {
         $peek = $this->_lexer->glimpse();
-        
+
         if ($peek['value'] === '=') {
             return $this->FieldAssignment();
         }
-        
+
         return $this->PlainValue();
     }
 
@@ -346,7 +346,7 @@ class Parser
         if ($this->_lexer->isNextToken(Lexer::T_OPEN_CURLY_BRACES)) {
             return $this->Arrayx();
         }
-        
+
         if ($this->_lexer->isNextToken(Lexer::T_AT)) {
             return $this->Annotation();
         }
@@ -355,23 +355,23 @@ class Parser
             case Lexer::T_STRING:
                 $this->match(Lexer::T_STRING);
                 return $this->_lexer->token['value'];
-                
+
             case Lexer::T_INTEGER:
                 $this->match(Lexer::T_INTEGER);
                 return $this->_lexer->token['value'];
-                
+
             case Lexer::T_FLOAT:
                 $this->match(Lexer::T_FLOAT);
                 return $this->_lexer->token['value'];
-                
+
             case Lexer::T_TRUE:
                 $this->match(Lexer::T_TRUE);
                 return true;
-                
+
             case Lexer::T_FALSE:
                 $this->match(Lexer::T_FALSE);
                 return false;
-                
+
             default:
                 $this->syntaxError('PlainValue');
         }
@@ -388,7 +388,7 @@ class Parser
         $this->match(Lexer::T_IDENTIFIER);
         $fieldName = $this->_lexer->token['value'];
         $this->match(Lexer::T_EQUALS);
-        
+
         return array($fieldName => $this->PlainValue());
     }
 
@@ -400,27 +400,27 @@ class Parser
     public function Arrayx()
     {
         $array = $values = array();
-        
+
         $this->match(Lexer::T_OPEN_CURLY_BRACES);
         $values[] = $this->ArrayEntry();
-        
+
         while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
             $this->match(Lexer::T_COMMA);
             $values[] = $this->ArrayEntry();
         }
-        
+
         $this->match(Lexer::T_CLOSE_CURLY_BRACES);
-        
+
         foreach ($values as $value) {
             $key = key($value);
-            
+
             if (is_string($key)) {
                 $array[$key] = $value[$key];
             } else {
                 $array[] = $value[$key];
             }
         }
-        
+
         return $array;
     }
 
@@ -434,18 +434,18 @@ class Parser
     public function ArrayEntry()
     {
         $peek = $this->_lexer->glimpse();
-        
+
         if ($peek['value'] == '=') {
             $this->match(
                 $this->_lexer->isNextToken(Lexer::T_INTEGER) ? Lexer::T_INTEGER : Lexer::T_STRING
             );
-            
+
             $key = $this->_lexer->token['value'];
             $this->match(Lexer::T_EQUALS);
-            
+
             return array($key => $this->PlainValue());
         }
-        
+
         return array($this->Value());
     }
 }

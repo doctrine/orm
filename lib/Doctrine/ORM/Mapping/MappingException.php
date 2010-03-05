@@ -166,9 +166,9 @@ class MappingException extends \Doctrine\ORM\ORMException
         );
     }
 
-    public static function annotationDriverRequiresConfiguredDirectoryPath()
+    public static function fileMappingDriversRequireConfiguredDirectoryPath()
     {
-        return new self('The annotation driver needs to have a directory path');
+        return new self('File mapping drivers must have a directory path');
     }
 
     /**

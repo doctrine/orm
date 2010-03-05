@@ -21,7 +21,7 @@ abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
         $table = new \Doctrine\DBAL\Schema\Table('test');
 
         $this->setExpectedException('Doctrine\DBAL\DBALException');
-        $sql = $this->_platform->getCreateTableSql($table);
+        $sql = $this->_platform->getCreateTableSQL($table);
     }
 
     public function testGeneratesTableCreationSql()
@@ -32,7 +32,7 @@ abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
         $table->setPrimaryKey(array('id'));
         $table->setIdGeneratorType(\Doctrine\DBAL\Schema\Table::ID_IDENTITY);
 
-        $sql = $this->_platform->getCreateTableSql($table);
+        $sql = $this->_platform->getCreateTableSQL($table);
         $this->assertEquals($this->getGenerateTableSql(), $sql[0]);
     }
 
@@ -45,7 +45,7 @@ abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
         $table->addColumn('bar', 'string', array('notnull' => false, 'length' => 255));
         $table->addUniqueIndex(array("foo", "bar"));
 
-        $sql = $this->_platform->getCreateTableSql($table);
+        $sql = $this->_platform->getCreateTableSQL($table);
         $this->assertEquals($this->getGenerateTableWithMultiColumnUniqueIndexSql(), $sql);
     }
 
@@ -57,7 +57,7 @@ abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
 
         $this->assertEquals(
             $this->getGenerateIndexSql(),
-            $this->_platform->getCreateIndexSql($indexDef, 'mytable')
+            $this->_platform->getCreateIndexSQL($indexDef, 'mytable')
         );
     }
 
@@ -67,7 +67,7 @@ abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
     {
         $indexDef = new \Doctrine\DBAL\Schema\Index('index_name', array('test', 'test2'), true);
 
-        $sql = $this->_platform->getCreateIndexSql($indexDef, 'test');
+        $sql = $this->_platform->getCreateIndexSQL($indexDef, 'test');
         $this->assertEquals($this->getGenerateUniqueIndexSql(), $sql);
     }
 
@@ -77,7 +77,7 @@ abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
     {
         $fk = new \Doctrine\DBAL\Schema\ForeignKeyConstraint(array('fk_name_id'), 'other_table', array('id'), '');
 
-        $sql = $this->_platform->getCreateForeignKeySql($fk, 'test');
+        $sql = $this->_platform->getCreateForeignKeySQL($fk, 'test');
         $this->assertEquals($sql, $this->getGenerateForeignKeySql());
     }
 
@@ -86,15 +86,15 @@ abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
     public function testGeneratesConstraintCreationSql()
     {
         $idx = new \Doctrine\DBAL\Schema\Index('constraint_name', array('test'), true, false);
-        $sql = $this->_platform->getCreateConstraintSql($idx, 'test');
+        $sql = $this->_platform->getCreateConstraintSQL($idx, 'test');
         $this->assertEquals($this->getGenerateConstraintUniqueIndexSql(), $sql);
 
         $pk = new \Doctrine\DBAL\Schema\Index('constraint_name', array('test'), true, true);
-        $sql = $this->_platform->getCreateConstraintSql($pk, 'test');
+        $sql = $this->_platform->getCreateConstraintSQL($pk, 'test');
         $this->assertEquals($this->getGenerateConstraintPrimaryIndexSql(), $sql);
 
         $fk = new \Doctrine\DBAL\Schema\ForeignKeyConstraint(array('fk_name'), 'foreign', array('id'), 'constraint_fk');
-        $sql = $this->_platform->getCreateConstraintSql($fk, 'test');
+        $sql = $this->_platform->getCreateConstraintSQL($fk, 'test');
         $this->assertEquals($this->getGenerateConstraintForeignKeySql(), $sql);
     }
 
@@ -132,7 +132,7 @@ abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
         $tableDiff->removedColumns['foo'] = new \Doctrine\DBAL\Schema\Column('foo', \Doctrine\DBAL\Types\Type::getType('integer'));
         $tableDiff->changedColumns['bar'] = $columnDiff;
 
-        $sql = $this->_platform->getAlterTableSql($tableDiff);
+        $sql = $this->_platform->getAlterTableSQL($tableDiff);
 
         $this->assertEquals($expectedSql, $sql);
     }
@@ -140,6 +140,6 @@ abstract class AbstractPlatformTestCase extends \Doctrine\Tests\DbalTestCase
     public function testGetCustomColumnDeclarationSql()
     {
         $field = array('columnDefinition' => 'MEDIUMINT(6) UNSIGNED');
-        $this->assertEquals('foo MEDIUMINT(6) UNSIGNED', $this->_platform->getColumnDeclarationSql('foo', $field));
+        $this->assertEquals('foo MEDIUMINT(6) UNSIGNED', $this->_platform->getColumnDeclarationSQL('foo', $field));
     }
 }

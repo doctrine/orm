@@ -12,7 +12,7 @@ class StringType extends Type
     /** @override */
     public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
-        return $platform->getVarcharTypeDeclarationSql($fieldDeclaration);
+        return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 
     /** @override */

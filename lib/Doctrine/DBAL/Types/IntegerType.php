@@ -17,7 +17,7 @@ class IntegerType extends Type
 
     public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
-        return $platform->getIntegerTypeDeclarationSql($fieldDeclaration);
+        return $platform->getIntegerTypeDeclarationSQL($fieldDeclaration);
     }
 
     public function convertToPHPValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)

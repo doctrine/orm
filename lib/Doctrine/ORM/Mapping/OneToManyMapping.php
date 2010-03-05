@@ -54,7 +54,7 @@ class OneToManyMapping extends AssociationMapping
     /**
      * Order this collection by the given SQL snippet.
      */
-    public $orderBy = null;
+    public $orderBy;
 
     /**
      * Initializes a new OneToManyMapping.

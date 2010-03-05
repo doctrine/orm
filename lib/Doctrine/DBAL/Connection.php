@@ -409,7 +409,7 @@ class Connection
     {
         $this->_transactionIsolationLevel = $level;
         
-        return $this->executeUpdate($this->_platform->getSetTransactionIsolationSql($level));
+        return $this->executeUpdate($this->_platform->getSetTransactionIsolationSQL($level));
     }
 
     /**
@@ -493,7 +493,7 @@ class Connection
      */
     public function setCharset($charset)
     {
-        $this->executeUpdate($this->_platform->getSetCharsetSql($charset));
+        $this->executeUpdate($this->_platform->getSetCharsetSQL($charset));
     }
 
     /**

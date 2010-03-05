@@ -35,18 +35,18 @@ use Doctrine\ORM\Query\AST\PathExpression;
  * @author  Roman Borschel <roman@code-factory.org>
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
-class QueryException extends \Doctrine\Common\DoctrineException 
+class QueryException extends \Doctrine\ORM\ORMException
 {
     public static function syntaxError($message)
     {
         return new self('[Syntax Error] ' . $message);
     }
-    
+
     public static function semanticalError($message)
     {
         return new self('[Semantical Error] ' . $message);
     }
-    
+
     public static function invalidParameterPosition($pos)
     {
         return new self('Invalid parameter position: ' . $pos);
@@ -66,13 +66,17 @@ class QueryException extends \Doctrine\Common\DoctrineException
     {
         return new self("Invalid parameter: token ".$key." is not defined in the query.");
     }
-    
+
     public static function invalidPathExpression($pathExpr)
     {
         return new self(
-            "Invalid PathExpression '" . $pathExpr->identificationVariable . 
+            "Invalid PathExpression '" . $pathExpr->identificationVariable .
             "." . implode('.', $pathExpr->parts) . "'."
         );
+    }
+
+    public static function invalidLiteral($literal) {
+        return new self("Invalid literal '$literal'");
     }
 
     /**
@@ -85,7 +89,7 @@ class QueryException extends \Doctrine\Common\DoctrineException
             "in class ".$assoc->sourceEntityName." assocation ".$assoc->sourceFieldName
         );
     }
-    
+
     public static function partialObjectsAreDangerous()
     {
         return new self(
@@ -103,7 +107,7 @@ class QueryException extends \Doctrine\Common\DoctrineException
             "Use WITH to append additional join conditions to the association."
         );
     }
-    
+
     public static function associationPathInverseSideNotSupported()
     {
         return new self(
@@ -111,7 +115,12 @@ class QueryException extends \Doctrine\Common\DoctrineException
             " in DQL queries. Use an explicit join instead."
         );
     }
-    
+
+    // TODO: Add the $assoc to the error message
+    public static function iterateWithFetchJoinNotAllowed($assoc) {
+        return new self("Iterate with fetch join not allowed");
+    }
+
     public static function associationPathCompositeKeyNotSupported()
     {
         return new self(

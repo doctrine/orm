@@ -70,6 +70,14 @@ class ORMException extends \Exception
         );
     }
 
+    public static function invalidResultCacheDriver() {
+        return new self("Invalid result cache driver; it must implement \Doctrine\Common\Cache\Cache.");
+    }
+
+    public static function notSupported() {
+        return new self("This behaviour is (currently) not supported by Doctrine 2");
+    }
+
     public static function queryCacheNotConfigured()
     {
         return new self('Query Cache is not configured.');
