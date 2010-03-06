@@ -292,6 +292,10 @@ class Parser
             $this->_customTreeWalkers = $customWalkers;
         }
 
+        if ($customOutputWalker = $this->_query->getHint(Query::HINT_CUSTOM_OUTPUT_WALKER)) {
+            $this->_customOutputWalker = $customOutputWalker;
+        }
+
         // Run any custom tree walkers over the AST
         if ($this->_customTreeWalkers) {
             $treeWalkerChain = new TreeWalkerChain($this->_query, $this->_parserResult, $this->_queryComponents);

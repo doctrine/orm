@@ -73,8 +73,23 @@ final class Query extends AbstractQuery
      * @var string
      */
     const HINT_INCLUDE_META_COLUMNS = 'doctrine.includeMetaColumns';
-    
+
+    /**
+     * An array of class names that implement Doctrine\ORM\Query\TreeWalker and
+     * are iterated and executed after the DQL has been parsed into an AST.
+     *
+     * @var string
+     */
     const HINT_CUSTOM_TREE_WALKERS = 'doctrine.customTreeWalkers';
+
+    /**
+     * A string with a class name that implements Doctrine\ORM\Query\TreeWalker
+     * and is used for generating the target SQL from any DQL AST tree.
+     *
+     * @var string
+     */
+    const HINT_CUSTOM_OUTPUT_WALKER = 'doctrine.customOutputWalker';
+
     //const HINT_READ_ONLY = 'doctrine.readOnly';
 
     /**
