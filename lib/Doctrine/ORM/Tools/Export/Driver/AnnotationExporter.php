@@ -357,11 +357,11 @@ class AnnotationExporter extends AbstractExporter
         }
         if ($associationMapping->hasCascades()) {
             $cascades = array();
-            if ($this->isCascadePersist) $cascades[] = '"persist"';
-            if ($this->isCascadeRemove) $cascades[] = '"remove"';
-            if ($this->isCascadeDetach) $cascades[] = '"detach"';
-            if ($this->isCascadeMerge) $cascades[] = '"merge"';
-            if ($this->isCascadeRefresh) $cascades[] = '"refresh"';
+            if ($associationMapping->isCascadePersist) $cascades[] = '"persist"';
+            if ($associationMapping->isCascadeRemove) $cascades[] = '"remove"';
+            if ($associationMapping->isCascadeDetach) $cascades[] = '"detach"';
+            if ($associationMapping->isCascadeMerge) $cascades[] = '"merge"';
+            if ($associationMapping->isCascadeRefresh) $cascades[] = '"refresh"';
             $typeOptions[] = 'cascade={' . implode(',', $cascades) . '}';            
         }
         if (isset($associationMapping->orphanRemoval) && $associationMapping->orphanRemoval) {
