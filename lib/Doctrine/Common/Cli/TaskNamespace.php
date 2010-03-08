@@ -237,7 +237,7 @@ class TaskNamespace extends AbstractNamespace
                 $message .= PHP_EOL . PHP_EOL . $e->getTraceAsString();
             }
 
-            $printer->writeln($messageMessage, 'ERROR');
+            $printer->writeln($message, 'ERROR');
 
             // Unable instantiate task or task is not valid
             if ($task !== null) {

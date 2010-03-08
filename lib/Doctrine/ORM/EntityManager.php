@@ -457,11 +457,13 @@ class EntityManager
 
         $metadata = $this->getClassMetadata($entityName);
         $customRepositoryClassName = $metadata->getCustomRepositoryClass();
+
         if ($customRepositoryClassName !== null) {
             $repository = new $customRepositoryClassName($this, $metadata);
         } else {
             $repository = new EntityRepository($this, $metadata);
         }
+
         $this->_repositories[$entityName] = $repository;
 
         return $repository;
@@ -476,8 +478,8 @@ class EntityManager
     public function contains($entity)
     {
         return $this->_unitOfWork->isScheduledForInsert($entity) ||
-                $this->_unitOfWork->isInIdentityMap($entity) &&
-                ! $this->_unitOfWork->isScheduledForDelete($entity);
+               $this->_unitOfWork->isInIdentityMap($entity) &&
+               ! $this->_unitOfWork->isScheduledForDelete($entity);
     }
 
     /**
@@ -536,6 +538,7 @@ class EntityManager
         if ( ! isset($this->_hydrators[$hydrationMode])) {
             $this->_hydrators[$hydrationMode] = $this->newHydrator($hydrationMode);
         }
+
         return $this->_hydrators[$hydrationMode];
     }
 
@@ -563,6 +566,7 @@ class EntityManager
             default:
                 throw ORMException::invalidHydrationMode($hydrationMode);
         }
+
         return $hydrator;
     }
 
