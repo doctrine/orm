@@ -137,7 +137,9 @@ class ConvertMappingTask extends AbstractTask
                 $type = $this->_determineSourceType($sourceArg);
                 
                 if ( ! $type) {
-                    throw CliException::invalidMappingSourceType($sourceArg);
+                    throw new CliException(
+                        "Invalid mapping source type '$sourceArg'."
+                    );
                 }
                 
                 $source = $this->_getSourceByType($type, $sourceArg);
