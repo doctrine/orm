@@ -45,9 +45,15 @@ class AnnotationExporter extends AbstractExporter
     private $_classToExtend;
     private $_currentCode;
 
+    /**
+     * Constructor
+     *
+     * @param string $dir Diretory to fetch for metadatas
+     */
     public function __construct($dir = null)
     {
         parent::__construct($dir);
+
         $this->setNumSpaces(4);
     }
 
@@ -61,6 +67,7 @@ class AnnotationExporter extends AbstractExporter
     public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
         $this->_currentCode = null;
+
         if (file_exists($this->_outputPath)) {
             $this->_currentCode = file_get_contents($this->_outputPath);
         }
@@ -77,10 +84,13 @@ class AnnotationExporter extends AbstractExporter
             $body = $code;
             $code = $this->_currentCode;
             $code = explode("\n", $code);
+
             unset($code[array_search('}', $code)]);
+
             foreach ($body as $line) {
                 $code[] = $line;
             }
+
             $code[] = '}';
         }
 
@@ -89,13 +99,16 @@ class AnnotationExporter extends AbstractExporter
         // Remove empty lines before last "}"
         for ($i = count($code) - 1; $i > 0; --$i) {
             $line = trim($code[$i]);
+
             if ($line && $line != '}') {
                 break;
             }
+
             if ( ! $line) {
                 unset($code[$i]);
             }
         }
+
         $code = array_values($code);
         $exported = implode("\n", $code);
 
@@ -142,14 +155,18 @@ class AnnotationExporter extends AbstractExporter
         foreach ($this->_metadatas as $metadata) {
             $outputPath = $this->_outputDir . '/' . str_replace('\\', DIRECTORY_SEPARATOR, $metadata->name) . $this->_extension;
             $outputDir = dirname($outputPath);
+
             if ( ! is_dir($outputDir)) {
                 mkdir($outputDir, 0777, true);
             }
+
             if ( ! file_exists($outputPath)) {
                $this->_isNew = true;
             }
+
             $this->_outputPath = $outputPath;
             $output = $this->exportClassMetadata($metadata);
+
             file_put_contents($outputPath, $output);
         }
     }
@@ -211,6 +228,85 @@ class AnnotationExporter extends AbstractExporter
     private function _getNamespace($metadata)
     {
         return substr($metadata->name, 0, strrpos($metadata->name, '\\'));
+    }
+
+    private function _getEntityAnnotation($metadata)
+    {
+        if ($metadata->isMappedSuperclass) {
+            return '@MappedSupperClass';
+        }
+
+        $str = '@Entity';
+
+        if ($metadata->customRepositoryClassName) {
+            $str .= '(repositoryClass=' . $metadata->customRepositoryClassName . ')';
+        }
+
+        return $str;
+    }
+
+    private function _getTableAnnotation($metadata)
+    {
+        $table = array();
+        $table[] = 'name="' . $metadata->primaryTable['name'] . '"';
+
+        if (isset($metadata->primaryTable['schema'])) {
+            $table[] = 'schema="' . $metadata->primaryTable['schema'] . '"';
+        }
+
+        return '@Table(' . implode(', ', $table) . ')';
+    }
+
+    private function _getInheritanceAnnotation($metadata)
+    {
+        if ($metadata->inheritanceType != ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
+            switch ($metadata->inheritanceType) {
+                case ClassMetadataInfo::INHERITANCE_TYPE_JOINED:
+                    $type = "JOINED";
+                    break;
+
+                case ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_TABLE:
+                    $type = "SINGLE_TABLE";
+                    break;
+
+                case ClassMetadataInfo::INHERITANCE_TYPE_TABLE_PER_CLASS:
+                    $type = "TABLE_PER_CLASS";
+                    break;
+            }
+
+            return '@InheritanceType("'.$type.'")';
+        }
+
+        return '';
+    }
+
+    private function _getDiscriminatorColumnAnnotation($metadata)
+    {
+        if ($metadata->inheritanceType != ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
+            $discrColumn = $metadata->discriminatorValue;
+            $columnDefinition = 'name="' . $discrColumn['name']
+                . '", type="' . $discrColumn['type']
+                . '", length=' . $discrColumn['length'];
+
+            return '@DiscriminatorColumn(' . $columnDefinition . ')';
+        }
+
+        return '';
+    }
+
+    private function _getDiscriminatorMapAnnotation($metadata)
+    {
+        if ($metadata->inheritanceType != ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
+            $inheritanceClassMap = array();
+
+            foreach ($metadata->discriminatorMap as $type => $class) {
+                $inheritanceClassMap[] .= '"' . $type . '" = "' . $class . '"';
+            }
+
+            return '@DiscriminatorMap({' . implode(', ', $inheritanceClassMap) . '})';
+        }
+
+        return '';
     }
 
     private function _addMethod($type, $fieldName, $metadata, array &$methods)
@@ -286,39 +382,6 @@ class AnnotationExporter extends AbstractExporter
 
       return $methods;
     }
-
-    private function _getTableAnnotation($metadata)
-    {
-        $table = array();
-        $table[] = 'name="' . $metadata->primaryTable['name'] . '"';
-        if (isset($metadata->primaryTable['schema'])) {
-            $table[] = 'schema="' . $metadata->primaryTable['schema'] . '"';
-        }
-        return '@Table(' . implode(', ', $table) . ')';
-    }
-
-    private function _getInheritanceAnnotation($metadata)
-    {
-        if ($metadata->inheritanceType != ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
-            switch ($metadata->inheritanceType) {
-                case ClassMetadataInfo::INHERITANCE_TYPE_JOINED:
-                    $type = "JOINED";
-                    break;
-
-                case ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_TABLE:
-                    $type = "SINGLE_TABLE";
-                    break;
-
-                case ClassMetadataInfo::INHERITANCE_TYPE_TABLE_PER_CLASS:
-                    $type = "TABLE_PER_CLASS";
-                    break;
-            }
-
-            return '@InheritanceType("'.$type.'")';
-        }
-
-        return '';
-    } 
 
     private function _getJoinColumnAnnotation(array $joinColumn)
     {
