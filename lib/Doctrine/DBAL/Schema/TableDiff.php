@@ -95,7 +95,7 @@ class TableDiff
 
     /**
      * All added foreign key definitions
-     * 
+     *
      * @var array
      */
     public $addedForeignKeys = array();
@@ -119,14 +119,14 @@ class TableDiff
      *
      * @param array(string=>Column) $addedColumns
      * @param array(string=>Column) $changedColumns
-     * @param array(string=>bool)             $removedColumns
-     * @param array(string=>Index) $addedIndexes
-     * @param array(string=>Index) $changedIndexes
-     * @param array(string=>bool)             $removedIndexes
+     * @param array(string=>bool)   $removedColumns
+     * @param array(string=>Index)  $addedIndexes
+     * @param array(string=>Index)  $changedIndexes
+     * @param array(string=>bool)   $removedIndexes
      */
-    function __construct( $tableName, $addedColumns = array(), $changedColumns = array(),
-            $removedColumns = array(), $addedIndexes = array(), $changedIndexes =
-            array(), $removedIndexes = array() )
+    public function __construct($tableName, $addedColumns = array(),
+        $changedColumns = array(), $removedColumns = array(), $addedIndexes = array(),
+        $changedIndexes = array(), $removedIndexes = array())
     {
         $this->name = $tableName;
         $this->addedColumns = $addedColumns;
