@@ -6,8 +6,8 @@ $classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
 $classLoader->register();
 
 $configFile = getcwd() . DIRECTORY_SEPARATOR . 'cli-config.php';
-$configuration = new \Doctrine\Common\Cli\Configuration();
 
+$configuration = null;
 if (file_exists($configFile)) {
     if ( ! is_readable($configFile)) {
         trigger_error(
@@ -24,6 +24,8 @@ if (file_exists($configFile)) {
         }
     }
 }
+
+$configuration = ($configuration) ?: new \Doctrine\Common\Cli\Configuration();
 
 $cli = new \Doctrine\Common\Cli\CliController($configuration);
 $cli->run($_SERVER['argv']);
