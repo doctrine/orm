@@ -257,7 +257,9 @@ namespace <namespace> {
         private function _load() {
             if (!$this->__isInitialized__ && $this->_entityPersister) {
                 $this->__isInitialized__ = true;
-                $this->_entityPersister->load($this->_identifier, $this);
+                if ($this->_entityPersister->load($this->_identifier, $this) === null) {
+                    throw new \Doctrine\ORM\EntityNotFoundException();
+                }
                 unset($this->_entityPersister);
                 unset($this->_identifier);
             }
