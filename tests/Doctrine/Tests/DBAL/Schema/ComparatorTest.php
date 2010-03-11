@@ -31,7 +31,8 @@ use Doctrine\DBAL\Schema\Schema,
     Doctrine\DBAL\Schema\SchemaDiff,
     Doctrine\DBAL\Schema\TableDiff,
     Doctrine\DBAL\Schema\Comparator,
-    Doctrine\DBAL\Types\Type;
+    Doctrine\DBAL\Types\Type,
+    Doctrine\DBAL\Schema\ForeignKeyConstraint;
 
 /**
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -543,6 +544,15 @@ class ComparatorTest extends \PHPUnit_Framework_TestCase
         $tableDiff = $c->diffTable($tableA, $tableB);
 
         $this->assertFalse($tableDiff);
+    }
+
+    public function testCompareForeignKey_RestrictNoAction_AreTheSame()
+    {
+        $fk1 = new ForeignKeyConstraint(array("foo"), "bar", array("baz"), "fk1", array('onDelete' => 'NO ACTION'));
+        $fk2 = new ForeignKeyConstraint(array("foo"), "bar", array("baz"), "fk1", array('onDelete' => 'RESTRICT'));
+
+        $c = new Comparator();
+        $this->assertFalse($c->diffForeignKey($fk1, $fk2));
     }
 
     public function testDetectRenameColumn()
