@@ -239,7 +239,10 @@ class ConvertMappingTask extends AbstractTask
             $em = $this->getConfiguration()->getAttribute('em');
             
             return $em->getConnection()->getSchemaManager();
+        // If source is annotation then lets try and find the existing annotation
+        // driver for the source instead of re-creating a new instance
         } else if ($type == 'annotation') {
+            $source = realpath($source);
             $em = $this->getConfiguration()->getAttribute('em');
             $metadataDriverImpl = $em->getConfiguration()->getMetadataDriverImpl();
             if ($metadataDriverImpl instanceof \Doctrine\ORM\Mapping\Driver\DriverChain) {
