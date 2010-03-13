@@ -2103,4 +2103,24 @@ class UnitOfWork implements PropertyChangedListener
     {
         return $this->_entityDeletions;
     }
+
+    /**
+     * Get the currently scheduled complete collection deletions
+     *
+     * @return array
+     */
+    public function getScheduledCollectionDeletions()
+    {
+        return $this->_collectionDeletions;
+    }
+
+    /**
+     * Gets the currently scheduled collection inserts, updates and deletes.
+     *
+     * @return array
+     */
+    public function getScheduledCollectionUpdates()
+    {
+        return $this->_collectionUpdates;
+    }
 }
