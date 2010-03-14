@@ -239,7 +239,7 @@ class AnnotationExporter extends AbstractExporter
         $str = '@Entity';
 
         if ($metadata->customRepositoryClassName) {
-            $str .= '(repositoryClass=' . $metadata->customRepositoryClassName . ')';
+            $str .= '(repositoryClass="' . $metadata->customRepositoryClassName . '")';
         }
 
         return $str;
