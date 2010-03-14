@@ -60,7 +60,8 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         
         $persister->expects($this->atLeastOnce())
                   ->method('load')
-                  ->with($this->equalTo($identifier), $this->isInstanceOf($proxyClass));
+                  ->with($this->equalTo($identifier), $this->isInstanceOf($proxyClass))
+                  ->will($this->returnValue(new \stdClass())); // fake return of entity instance
         
         $proxy->getDescription();
     }
@@ -74,7 +75,8 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $proxy = $this->_proxyFactory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $identifier);
         $persister->expects($this->atLeastOnce())
                   ->method('load')
-                  ->with($this->equalTo($identifier), $this->isInstanceOf($proxyClass));
+                  ->with($this->equalTo($identifier), $this->isInstanceOf($proxyClass))
+                  ->will($this->returnValue(new \stdClass())); // fake return of entity instance
         $proxy->getId();
         $proxy->getDescription();
     }
@@ -142,7 +144,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
     
     protected function _getMockPersister()
     {
-        $persister = $this->getMock('Doctrine\ORM\Persisters\StandardEntityPersister', array('load'), array(), '', false, false, false);
+        $persister = $this->getMock('Doctrine\ORM\Persisters\StandardEntityPersister', array('load'), array(), '', false);
         return $persister;
     }
 }
