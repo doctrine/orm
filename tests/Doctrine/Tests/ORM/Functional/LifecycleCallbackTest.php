@@ -1,6 +1,7 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -111,6 +112,32 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $childMeta = $this->_em->getClassMetadata(__NAMESPACE__ . '\LifecycleCallbackChildEntity');
         $this->assertEquals(array('prePersist' => array(0 => 'doStuff')), $childMeta->lifecycleCallbacks);
     }
+
+    public function testLifecycleListener_ChangeUpdateChangeSet()
+    {
+        $listener = new LifecycleListenerPreUpdate;
+        $this->_em->getEventManager()->addEventListener(array('preUpdate'), $listener);
+
+        $user = new LifecycleCallbackTestUser;
+        $user->setName('Bob');
+        $user->setValue('value');
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $dql = "SELECT u FROM Doctrine\Tests\ORM\Functional\LifecycleCallbackTestUser u WHERE u.name = 'Bob'";
+        $bob = $this->_em->createQuery($dql)->getSingleResult();
+        $bob->setName('Alice');
+
+        $this->_em->flush(); // preUpdate reverts Alice to Bob
+        $this->_em->clear();
+
+        $this->_em->getEventManager()->removeEventListener(array('preUpdate'), $listener);
+
+        $bob = $this->_em->createQuery($dql)->getSingleResult();
+
+        $this->assertEquals('Bob', $bob->getName());
+    }
 }
 
 /** @Entity @HasLifecycleCallbacks */
@@ -218,4 +245,12 @@ class LifecycleCallbackParentEntity {
 class LifecycleCallbackChildEntity extends LifecycleCallbackParentEntity {
     /** @Id @Column(type="integer") @GeneratedValue */
     private $id;
+}
+
+class LifecycleListenerPreUpdate
+{
+    public function preUpdate(PreUpdateEventArgs $eventArgs)
+    {
+        $eventArgs->setNewValue('name', 'Bob');
+    }
 }

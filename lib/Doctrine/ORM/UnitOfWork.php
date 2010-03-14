@@ -752,15 +752,13 @@ class UnitOfWork implements PropertyChangedListener
                 
                 if ($hasPreUpdateLifecycleCallbacks) {
                     $class->invokeLifecycleCallbacks(Events::preUpdate, $entity);
-                    if ( ! $hasPreUpdateListeners) {
-                        // Need to recompute entity changeset to detect changes made in the callback.
-                        $this->recomputeSingleEntityChangeSet($class, $entity);
-                    }
-                }
-                if ($hasPreUpdateListeners) {
-                    $this->_evm->dispatchEvent(Events::preUpdate, new LifecycleEventArgs($entity, $this->_em));
-                    // Need to recompute entity changeset to detect changes made in the listener.
                     $this->recomputeSingleEntityChangeSet($class, $entity);
+                }
+                
+                if ($hasPreUpdateListeners) {
+                    $this->_evm->dispatchEvent(Events::preUpdate, new Event\PreUpdateEventArgs(
+                        $entity, $this->_em, $this->_entityChangeSets[$oid])
+                    );
                 }
 
                 $persister->update($entity);
