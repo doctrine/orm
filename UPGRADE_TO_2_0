@@ -16,6 +16,23 @@ xxx
 The 'inheritance-type' attribute changed to take last bit of ClassMetadata constant names, i.e.
 NONE, SINGLE_TABLE, INHERITANCE_TYPE_JOINED
 
+## YAML Mapping Driver
+
+The way to specify lifecycle callbacks in YAML Mapping driver was changed to allow for multiple callbacks
+per event. The Old syntax ways:
+
+    [yaml]
+    lifecycleCallbacks:
+      prePersist  doStuffOnPrePersist
+      postPersist: doStuffOnPostPersist
+
+The new syntax is:
+
+    [yaml]
+    lifecycleCallbacks:
+      prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersistToo ]
+      postPersist: [ doStuffOnPostPersist ]
+
 ## PreUpdate Event Listeners
 
 Event Listeners listening to the 'preUpdate' event can only affect the primitive values of entity changesets
