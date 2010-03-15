@@ -9,6 +9,7 @@
         
         <lifecycle-callbacks>
             <lifecycle-callback type="prePersist" method="doStuffOnPrePersist"/>
+            <lifecycle-callback type="prePersist" method="doOtherStuffOnPrePersistToo"/>
             <lifecycle-callback type="postPersist" method="doStuffOnPostPersist"/>
         </lifecycle-callbacks>
 

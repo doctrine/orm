@@ -154,7 +154,18 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-     * @depends testLifecycleCallbacks
+     * @depends testManyToManyAssociationWithCascadeAll
+     * @param ClassMetadata $class
+     */
+    public function testLifecycleCallbacksSupportMultipleMethodNames($class) {
+        $this->assertEquals(count($class->lifecycleCallbacks['prePersist']), 2);
+        $this->assertEquals($class->lifecycleCallbacks['prePersist'][1], 'doOtherStuffOnPrePersistToo');
+
+        return $class;
+    }
+
+    /**
+     * @depends testLifecycleCallbacksSupportMultipleMethodNames
      * @param ClassMetadata $class
      */
     public function testJoinColumnUniqueAndNullable($class)
@@ -220,11 +231,18 @@ class User
      */
     public $groups;
 
+
     /**
      * @PrePersist
      */
     public function doStuffOnPrePersist()
     {
+    }
+
+    /**
+     * @PrePersist
+     */
+    public function doOtherStuffOnPrePersistToo() {
     }
 
     /**

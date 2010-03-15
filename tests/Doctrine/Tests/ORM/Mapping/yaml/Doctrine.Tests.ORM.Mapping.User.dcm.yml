@@ -47,5 +47,5 @@ Doctrine\Tests\ORM\Mapping\User:
       cascade:
         - all
   lifecycleCallbacks:
-    doStuffOnPrePersist: prePersist
-    doStuffOnPostPersist: postPersist
+    prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersistToo ] 
+    postPersist: [ doStuffOnPostPersist ] 
