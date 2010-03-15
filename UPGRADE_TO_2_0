@@ -23,8 +23,8 @@ per event. The Old syntax ways:
 
     [yaml]
     lifecycleCallbacks:
-      prePersist  doStuffOnPrePersist
-      postPersist: doStuffOnPostPersist
+      doStuffOnPrePersist: prePersist
+      doStuffOnPostPersist: postPersist
 
 The new syntax is:
 
