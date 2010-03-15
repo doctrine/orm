@@ -149,7 +149,6 @@ class Parser
         if ( ! ($this->_lexer->lookahead['type'] === $token)) {
             $this->syntaxError($this->_lexer->getLiteral($token));
         }
-
         $this->_lexer->moveNext();
     }
 
@@ -254,8 +253,7 @@ class Parser
             (! $this->_isNestedAnnotation && $this->_lexer->lookahead != null &&
             ! $this->_lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS) &&
             ! $this->_lexer->isNextToken(Lexer::T_AT)) ||
-            ! class_exists($name, false) ||
-            ! is_subclass_of($name, 'Doctrine\Common\Annotations\Annotation')
+            ! class_exists($name, false)
         ) {
             $this->_lexer->skipUntil(Lexer::T_AT);
 
