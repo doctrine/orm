@@ -1012,11 +1012,15 @@ class SqlWalker implements TreeWalker
         $identificationVarDecls = $subselectFromClause->identificationVariableDeclarations;
         $firstIdentificationVarDecl = $identificationVarDecls[0];
         $rangeDecl = $firstIdentificationVarDecl->rangeVariableDeclaration;
-        $class = $this->_em->getClassMetadata($rangeDecl->abstractSchemaName);
         $dqlAlias = $rangeDecl->aliasIdentificationVariable;
 
+        $class = $this->_em->getClassMetadata($rangeDecl->abstractSchemaName);
         $sql = ' FROM ' . $class->getQuotedTableName($this->_platform) . ' '
              . $this->getSqlTableAlias($class->primaryTable['name'], $dqlAlias);
+
+        if ($class->isInheritanceTypeJoined()) {
+            $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
+        }
 
         foreach ($firstIdentificationVarDecl->joinVariableDeclarations as $joinVarDecl) {
             $sql .= $this->walkJoinVariableDeclaration($joinVarDecl);
