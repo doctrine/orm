@@ -32,7 +32,7 @@ namespace Doctrine\ORM\Mapping;
  * <b>IMPORTANT NOTE:</b>
  *
  * The fields of this class are only public for 2 reasons:
- * 1) To allow fast, internal READ access.
+ * 1) To allow fast READ access.
  * 2) To drastically reduce the size of a serialized instance (private/protected members
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
@@ -46,26 +46,21 @@ namespace Doctrine\ORM\Mapping;
  */
 class OneToManyMapping extends AssociationMapping
 {
-    /** Whether to delete orphaned elements (removed from the collection) */
+    /**
+     * READ-ONLY: Whether to delete orphaned elements (removed from the collection)
+     *
+     * @var boolean
+     */
     public $orphanRemoval = false;
+
     /** FUTURE: The key column mapping, if any. The key column holds the keys of the Collection. */
     //public $keyColumn;
 
     /**
-     * Order this collection by the given SQL snippet.
+     * READ-ONLY: Order this collection by the given SQL snippet.
      */
     public $orderBy;
 
-    /**
-     * Initializes a new OneToManyMapping.
-     *
-     * @param array $mapping  The mapping information.
-     */
-    public function __construct(array $mapping)
-    {
-        parent::__construct($mapping);
-    }
-    
     /**
      * Validates and completes the mapping.
      *
@@ -82,6 +77,7 @@ class OneToManyMapping extends AssociationMapping
             throw MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
         }
         
+        //TODO: if orphanRemoval, cascade=remove is implicit!
         $this->orphanRemoval = isset($mapping['orphanRemoval']) ?
                 (bool) $mapping['orphanRemoval'] : false;
 
@@ -127,7 +123,7 @@ class OneToManyMapping extends AssociationMapping
         $persister = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName);
         // a one-to-many is always inverse (does not have foreign key)
         $sourceClass = $em->getClassMetadata($this->sourceEntityName);
-        $owningAssoc = $em->getClassMetadata($this->targetEntityName)->associationMappings[$this->mappedByFieldName];
+        $owningAssoc = $em->getClassMetadata($this->targetEntityName)->associationMappings[$this->mappedBy];
         // TRICKY: since the association is specular source and target are flipped
         foreach ($owningAssoc->targetToSourceKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
             // getting id

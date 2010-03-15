@@ -50,69 +50,110 @@ abstract class AssociationMapping
      * @var integer
      */
     const FETCH_EAGER = 3;
-    
-    public $isCascadeRemove;
-    public $isCascadePersist;
-    public $isCascadeRefresh;
-    public $isCascadeMerge;
-    public $isCascadeDetach;
-    
+
     /**
-     * The fetch mode used for the association.
+     * READ-ONLY: Whether the association cascades delete() operations from the source entity
+     * to the target entity/entities.
+     *
+     * @var boolean
+     */
+    public $isCascadeRemove;
+
+    /**
+     * READ-ONLY: Whether the association cascades save() operations from the source entity
+     * to the target entity/entities.
+     *
+     * @var boolean
+     */
+    public $isCascadePersist;
+
+    /**
+     * READ-ONLY: Whether the association cascades refresh() operations from the source entity
+     * to the target entity/entities.
+     *
+     * @var boolean
+     */
+    public $isCascadeRefresh;
+
+    /**
+     * READ-ONLY: Whether the association cascades merge() operations from the source entity
+     * to the target entity/entities.
+     *
+     * @var boolean
+     */
+    public $isCascadeMerge;
+
+    /**
+     * READ-ONLY: Whether the association cascades detach() operations from the source entity
+     * to the target entity/entities.
+     *
+     * @var boolean
+     */
+    public $isCascadeDetach;
+
+    /**
+     * READ-ONLY: The fetch mode used for the association.
      *
      * @var integer
      */
     public $fetchMode;
-    
+
     /**
-     * Flag that indicates whether the class that defines this mapping is
+     * READ-ONLY: Flag that indicates whether the class that defines this mapping is
      * the owning side of the association.
      *
      * @var boolean
      */
     public $isOwningSide = true;
-    
+
     /**
-     * The name of the source Entity (the Entity that defines this mapping).
+     * READ-ONLY: The name of the source Entity (the Entity that defines this mapping).
      *
      * @var string
      */
     public $sourceEntityName;
-    
+
     /**
-     * The name of the target Entity (the Enitity that is the target of the
+     * READ-ONLY: The name of the target Entity (the Enitity that is the target of the
      * association).
      *
      * @var string
      */
     public $targetEntityName;
-    
+
     /**
-     * Identifies the field on the source class (the class this AssociationMapping
+     * READ-ONLY: Identifies the field on the source class (the class this AssociationMapping
      * belongs to) that represents the association and stores the reference to the
      * other entity/entities.
      *
      * @var string
      */
     public $sourceFieldName;
-    
+
     /**
-     * Identifies the field on the owning side that controls the mapping for the
-     * association. This is only set on the inverse side of an association.
+     * READ-ONLY: Identifies the field on the owning side of a bidirectional association that
+     * controls the mapping for the association. This is only set on the inverse side
+     * of an association.
      *
      * @var string
      */
-    public $mappedByFieldName;
-    
+    public $mappedBy;
+
     /**
-     * The join table definition, if any.
+     * READ-ONLY: Identifies the field on the inverse side of a bidirectional association.
+     * This is only set on the owning side of an association.
+     *
+     * @var string
+     */
+    public $inversedBy;
+
+    /**
+     * READ-ONLY: The join table definition, if any.
      *
      * @var array
      */
     public $joinTable = array();
 
-    //protected $_joinTableInsertSql;
-    
     /**
      * Initializes a new instance of a class derived from AssociationMapping.
      *
@@ -124,7 +165,7 @@ abstract class AssociationMapping
             $this->_validateAndCompleteMapping($mapping);
         }
     }
-    
+
     /**
      * Validates & completes the mapping. Mapping defaults are applied here.
      *
@@ -159,9 +200,12 @@ abstract class AssociationMapping
                 }
                 $this->joinTable = $mapping['joinTable'];   
             }
+            if (isset($mapping['inversedBy'])) {
+                $this->inversedBy = $mapping['inversedBy'];
+            }
         } else {
             $this->isOwningSide = false;
-            $this->mappedByFieldName = $mapping['mappedBy'];
+            $this->mappedBy = $mapping['mappedBy'];
         }
         
         // Optional attributes for both sides
@@ -184,62 +228,7 @@ abstract class AssociationMapping
         $this->isCascadeMerge = in_array('merge',   $cascades);
         $this->isCascadeDetach = in_array('detach',  $cascades);
     }
-    
-    /**
-     * Whether the association cascades delete() operations from the source entity
-     * to the target entity/entities.
-     *
-     * @return boolean
-     */
-    public function isCascadeRemove()
-    {
-        return $this->isCascadeRemove;
-    }
-    
-    /**
-     * Whether the association cascades save() operations from the source entity
-     * to the target entity/entities.
-     *
-     * @return boolean
-     */
-    public function isCascadePersist()
-    {
-        return $this->isCascadePersist;
-    }
-    
-    /**
-     * Whether the association cascades refresh() operations from the source entity
-     * to the target entity/entities.
-     *
-     * @return boolean
-     */
-    public function isCascadeRefresh()
-    {
-        return $this->isCascadeRefresh;
-    }
 
-    /**
-     * Whether the association cascades merge() operations from the source entity
-     * to the target entity/entities.
-     *
-     * @return boolean
-     */
-    public function isCascadeMerge()
-    {
-        return $this->isCascadeMerge;
-    }
-    
-    /**
-     * Whether the association cascades detach() operations from the source entity
-     * to the target entity/entities.
-     *
-     * @return boolean
-     */
-    public function isCascadeDetach()
-    {
-        return $this->isCascadeDetach;
-    }
-    
     /**
      * Whether the target entity/entities of the association are eagerly fetched.
      *
@@ -249,7 +238,7 @@ abstract class AssociationMapping
     {
         return $this->fetchMode == self::FETCH_EAGER;
     }
-    
+
     /**
      * Whether the target entity/entities of the association are lazily fetched.
      *
@@ -259,17 +248,7 @@ abstract class AssociationMapping
     {
         return $this->fetchMode == self::FETCH_LAZY;
     }
-    
-    /**
-     * Whether the source entity of this association represents the owning side.
-     *
-     * @return boolean
-     */
-    public function isOwningSide()
-    {
-        return $this->isOwningSide;
-    }
-    
+
     /**
      * Whether the source entity of this association represents the inverse side.
      *
@@ -278,58 +257,6 @@ abstract class AssociationMapping
     public function isInverseSide()
     {
         return ! $this->isOwningSide;
-    }
-    
-    /**
-     * Gets the name of the source entity class.
-     *
-     * @return string
-     */
-    public function getSourceEntityName()
-    {
-        return $this->sourceEntityName;
-    }
-    
-    /**
-     * Gets the name of the target entity class.
-     *
-     * @return string
-     */
-    public function getTargetEntityName()
-    {
-        return $this->targetEntityName;
-    }
-    
-    /**
-     * Gets the join table definition, if any.
-     *
-     * @return array
-     */
-    public function getJoinTable()
-    {
-        return $this->joinTable;
-    }
-    
-    /**
-     * Get the name of the field the association is mapped into.
-     *
-     * @return string
-     */
-    public function getSourceFieldName()
-    {
-        return $this->sourceFieldName;
-    }
-    
-    /**
-     * Gets the field name of the owning side in a bi-directional association.
-     * This is only set on the inverse side. When invoked on the owning side,
-     * NULL is returned.
-     *
-     * @return string
-     */
-    public function getMappedByFieldName()
-    {
-        return $this->mappedByFieldName;
     }
 
     /**
@@ -397,7 +324,7 @@ abstract class AssociationMapping
     /**
      * 
      * @param $platform
-     * @return unknown_type
+     * @return string
      */
     public function getQuotedJoinTableName($platform)
     {

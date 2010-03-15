@@ -415,8 +415,8 @@ class AnnotationExporter extends AbstractExporter
         if (isset($associationMapping->targetEntityName)) {
             $typeOptions[] = 'targetEntity="' . $associationMapping->targetEntityName . '"';
         }
-        if (isset($associationMapping->mappedByFieldName)) {
-            $typeOptions[] = 'mappedBy="' . $associationMapping->mappedByFieldName . '"';
+        if (isset($associationMapping->mappedBy)) {
+            $typeOptions[] = 'mappedBy="' . $associationMapping->mappedBy . '"';
         }
         if ($associationMapping->hasCascades()) {
             $cascades = array();

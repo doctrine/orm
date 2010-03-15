@@ -32,6 +32,7 @@ namespace Doctrine\Common\Cache;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  * @author  David Abdemoulaie <dave@hobodave.com>
+ * @todo Rename: APCCache
  */
 class ApcCache extends AbstractCache
 {

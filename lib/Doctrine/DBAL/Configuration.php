@@ -46,7 +46,7 @@ class Configuration
      * @var array
      */
     protected $_attributes = array();
-    
+
     /**
      * Creates a new DBAL configuration instance.
      */
@@ -56,7 +56,7 @@ class Configuration
             'sqlLogger' => null
         );
     }
-    
+
     /**
      * Sets the SQL logger to use. Defaults to NULL which means SQL logging is disabled.
      *
@@ -66,7 +66,7 @@ class Configuration
     {
         $this->_attributes['sqlLogger'] = $logger;
     }
-    
+
     /**
      * Gets the SQL logger that is used.
      * 
@@ -75,32 +75,5 @@ class Configuration
     public function getSqlLogger()
     {
         return $this->_attributes['sqlLogger'];
-    }
-
-    /**
-     * Defines new custom types to be supported by Doctrine
-     *
-     * @param array $types Key-value map of types to include
-     * @param boolean $override Optional flag to support only inclusion or also override
-     */
-    public function setCustomTypes(array $types, $override = false)
-    {
-        foreach ($types as $name => $typeClassName) {
-            $method = (Type::hasType($name) && $override ? 'override' : 'add') . 'Type';
-            
-            Type::$method($name, $typeClassName);
-        }
-    }
-
-    /**
-     * Overrides existent types in Doctrine
-     *
-     * @param array $types Key-value map of types to override
-     */
-    public function setTypeOverrides(array $overrides)
-    {
-        foreach ($override as $name => $typeClassName) {
-            Type::overrideType($name, $typeClassName);
-        }
     }
 }

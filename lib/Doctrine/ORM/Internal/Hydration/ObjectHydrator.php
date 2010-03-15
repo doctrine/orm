@@ -83,8 +83,8 @@ class ObjectHydrator extends AbstractHydrator
                 }
                 if ( ! $assoc->isManyToMany()) {
                     // Mark any non-collection opposite sides as fetched, too.
-                    if ($assoc->mappedByFieldName) {
-                        $this->_hints['fetched'][$className][$assoc->mappedByFieldName] = true;
+                    if ($assoc->mappedBy) {
+                        $this->_hints['fetched'][$className][$assoc->mappedBy] = true;
                     } else {
                         if (isset($class->inverseMappings[$sourceClassName][$assoc->sourceFieldName])) {
                             $inverseAssoc = $class->inverseMappings[$sourceClassName][$assoc->sourceFieldName];
@@ -353,14 +353,14 @@ class ObjectHydrator extends AbstractHydrator
                                         $targetClass->reflFields[$inverseAssoc->sourceFieldName]->setValue($element, $parentObject);
                                         $this->_uow->setOriginalEntityProperty(spl_object_hash($element), $inverseAssoc->sourceFieldName, $parentObject);
                                     }
-                                } else if ($parentClass === $targetClass && $relation->mappedByFieldName) {
+                                } else if ($parentClass === $targetClass && $relation->mappedBy) {
                                     // Special case: bi-directional self-referencing one-one on the same class
                                     $targetClass->reflFields[$relationField]->setValue($element, $parentObject);
                                 }
                             } else {
                                 // For sure bidirectional, as there is no inverse side in unidirectional mappings
-                                $targetClass->reflFields[$relation->mappedByFieldName]->setValue($element, $parentObject);
-                                $this->_uow->setOriginalEntityProperty(spl_object_hash($element), $relation->mappedByFieldName, $parentObject);
+                                $targetClass->reflFields[$relation->mappedBy]->setValue($element, $parentObject);
+                                $this->_uow->setOriginalEntityProperty(spl_object_hash($element), $relation->mappedBy, $parentObject);
                             }
                             // Update result pointer
                             $this->_resultPointers[$dqlAlias] = $element;

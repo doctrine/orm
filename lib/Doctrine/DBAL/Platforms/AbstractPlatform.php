@@ -579,7 +579,7 @@ abstract class AbstractPlatform
      */
     public function getCreateTableSQL(Table $table, $createFlags=self::CREATE_INDEXES)
     {
-        if (!is_int($createFlags)) {
+        if ( ! is_int($createFlags)) {
             throw new \InvalidArgumentException("Second argument of AbstractPlatform::getCreateTableSQL() has to be integer.");
         }
 

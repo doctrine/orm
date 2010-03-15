@@ -135,9 +135,10 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
         $this->_association = $assoc;
         
         // Check for bidirectionality
+        //$this->_backRefFieldName = $assoc->inversedBy ?: $assoc->mappedBy;
         if ( ! $assoc->isOwningSide) {
             // For sure bi-directional
-            $this->_backRefFieldName = $assoc->mappedByFieldName;
+            $this->_backRefFieldName = $assoc->mappedBy;
         } else {
             if (isset($this->_typeClass->inverseMappings[$assoc->sourceEntityName][$assoc->sourceFieldName])) {
                 // Bi-directional
@@ -523,9 +524,7 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
     public function map(Closure $func)
     {
         $this->_initialize();
-        $result = $this->_coll->map($func);
-        $this->_changed();
-        return $result;
+        return $this->_coll->map($func);
     }
 
     /**

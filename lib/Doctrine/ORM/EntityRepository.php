@@ -57,7 +57,7 @@ class EntityRepository
      * @param EntityManager $em The EntityManager to use.
      * @param ClassMetadata $classMetadata The class descriptor.
      */
-    public function __construct($em, \Doctrine\ORM\Mapping\ClassMetadata $class)
+    public function __construct($em, Mapping\ClassMetadata $class)
     {
         $this->_entityName = $class->name;
         $this->_em = $em;

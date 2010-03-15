@@ -143,10 +143,8 @@ class ClassMetadataFactory
                 }
             }
 
-            $cacheKey = "$realClassName\$CLASSMETADATA";
-
             if ($this->_cacheDriver) {
-                if (($cached = $this->_cacheDriver->fetch($cacheKey)) !== false) {
+                if (($cached = $this->_cacheDriver->fetch("$realClassName\$CLASSMETADATA")) !== false) {
                     $this->_loadedMetadata[$realClassName] = $cached;
                 } else {
                     foreach ($this->_loadMetadata($realClassName) as $loadedClassName) {
@@ -206,8 +204,9 @@ class ClassMetadataFactory
         }
         
         $loaded = array();
-        
+
         // Collect parent classes, ignoring transient (not-mapped) classes.
+        //TODO: Evaluate whether we can use class_parents() here.
         $parentClass = $name;
         $parentClasses = array();
         while ($parentClass = get_parent_class($parentClass)) {
@@ -258,15 +257,15 @@ class ClassMetadataFactory
             }
             if ($parent && ! $parent->isMappedSuperclass) {
                 if ($parent->isIdGeneratorSequence()) {
-                    $class->setSequenceGeneratorDefinition($parent->getSequenceGeneratorDefinition());
+                    $class->setSequenceGeneratorDefinition($parent->sequenceGeneratorDefinition);
                 } else if ($parent->isIdGeneratorTable()) {
-                    $class->getTableGeneratorDefinition($parent->getTableGeneratorDefinition());
+                    $class->getTableGeneratorDefinition($parent->tableGeneratorDefinition);
                 }
                 if ($generatorType = $parent->generatorType) {
                     $class->setIdGeneratorType($generatorType);
                 }
-                if ($idGenerator = $parent->getIdGenerator()) {
-                    $class->setIdGenerator($idGenerator);
+                if ($parent->idGenerator) {
+                    $class->setIdGenerator($parent->idGenerator);
                 }
             } else {
                 $this->_completeIdGeneratorMapping($class);
@@ -374,7 +373,7 @@ class ClassMetadataFactory
                 break;
             case ClassMetadata::GENERATOR_TYPE_SEQUENCE:
                 // If there is no sequence definition yet, create a default definition
-                $definition = $class->getSequenceGeneratorDefinition();
+                $definition = $class->sequenceGeneratorDefinition;
                 if ( ! $definition) {
                     $sequenceName = $class->getTableName() . '_' . $class->getSingleIdentifierColumnName() . '_seq';
                     $definition['sequenceName'] = $this->_targetPlatform->fixSchemaElementName($sequenceName);

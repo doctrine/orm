@@ -40,13 +40,13 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('UserParent', $cm->rootEntityName);
         $this->assertEquals(array('Doctrine\Tests\Models\CMS\One', 'Doctrine\Tests\Models\CMS\Two', 'Doctrine\Tests\Models\CMS\Three'), $cm->subClasses);
         $this->assertEquals(array('UserParent'), $cm->parentClasses);
-        $this->assertEquals('UserRepository', $cm->getCustomRepositoryClass());
+        $this->assertEquals('UserRepository', $cm->customRepositoryClassName);
         $this->assertEquals(array('name' => 'disc', 'type' => 'integer', 'fieldName' => 'disc'), $cm->discriminatorColumn);
         $this->assertTrue($cm->getAssociationMapping('phonenumbers') instanceof \Doctrine\ORM\Mapping\OneToOneMapping);
         $this->assertEquals(1, count($cm->associationMappings));
         $oneOneMapping = $cm->getAssociationMapping('phonenumbers');
-        $this->assertEquals('phonenumbers', $oneOneMapping->getSourceFieldName());
-        $this->assertEquals('Doctrine\Tests\Models\CMS\Bar', $oneOneMapping->getTargetEntityName());
+        $this->assertEquals('phonenumbers', $oneOneMapping->sourceFieldName);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\Bar', $oneOneMapping->targetEntityName);
     }
 
     public function testFieldIsNullable()

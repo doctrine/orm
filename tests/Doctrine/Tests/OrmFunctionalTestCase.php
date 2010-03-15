@@ -205,7 +205,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         if (is_null(self::$_metadataCacheImpl)) {
             self::$_metadataCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
         }
-        
+
         if (is_null(self::$_queryCacheImpl)) {
         	self::$_queryCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
         }

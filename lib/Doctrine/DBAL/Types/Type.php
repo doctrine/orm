@@ -1,4 +1,23 @@
 <?php
+/*
+ *  $Id$
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\DBAL\Types;
 
@@ -33,7 +52,6 @@ abstract class Type
         'object' => 'Doctrine\DBAL\Types\ObjectType',
         'boolean' => 'Doctrine\DBAL\Types\BooleanType',
         'integer' => 'Doctrine\DBAL\Types\IntegerType',
-        'int' => 'Doctrine\DBAL\Types\IntegerType',
         'smallint' => 'Doctrine\DBAL\Types\SmallIntType',
         'bigint' => 'Doctrine\DBAL\Types\BigIntType',
         'string' => 'Doctrine\DBAL\Types\StringType',
@@ -41,12 +59,11 @@ abstract class Type
         'datetime' => 'Doctrine\DBAL\Types\DateTimeType',
         'date' => 'Doctrine\DBAL\Types\DateType',
         'time' => 'Doctrine\DBAL\Types\TimeType',
-        'decimal' => 'Doctrine\DBAL\Types\DecimalType',
-        'double' => 'Doctrine\DBAL\Types\DoubleType'
+        'decimal' => 'Doctrine\DBAL\Types\DecimalType'
     );
 
     /* Prevent instantiation and force use of the factory method. */
-    private function __construct() {}
+    final private function __construct() {}
 
     /**
      * Converts a value from its PHP representation to its database representation
@@ -125,7 +142,6 @@ abstract class Type
             if ( ! isset(self::$_typesMap[$name])) {
                 throw DBALException::unknownColumnType($name);
             }
-
             self::$_typeObjects[$name] = new self::$_typesMap[$name]();
         }
 
@@ -136,8 +152,7 @@ abstract class Type
      * Adds a custom type to the type map.
      *
      * @static
-     * @param string $name Name of the type. This should correspond to what
-     *                           getName() returns.
+     * @param string $name Name of the type. This should correspond to what getName() returns.
      * @param string $className The class name of the custom type.
      * @throws DBALException
      */

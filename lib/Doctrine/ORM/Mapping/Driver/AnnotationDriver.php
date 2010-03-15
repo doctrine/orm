@@ -78,7 +78,6 @@ class AnnotationDriver implements Driver
     public function __construct(AnnotationReader $reader, $paths = null)
     {
         $this->_reader = $reader;
-        
         if ($paths) {
             $this->addPaths((array) $paths);
         }
@@ -292,6 +291,7 @@ class AnnotationDriver implements Driver
                 $mapping['targetEntity'] = $oneToOneAnnot->targetEntity;
                 $mapping['joinColumns'] = $joinColumns;
                 $mapping['mappedBy'] = $oneToOneAnnot->mappedBy;
+                $mapping['inversedBy'] = $oneToOneAnnot->inversedBy;
                 $mapping['cascade'] = $oneToOneAnnot->cascade;
                 $mapping['orphanRemoval'] = $oneToOneAnnot->orphanRemoval;
                 $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $oneToOneAnnot->fetch);
@@ -311,6 +311,7 @@ class AnnotationDriver implements Driver
             } else if ($manyToOneAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\ManyToOne')) {
                 $mapping['joinColumns'] = $joinColumns;
                 $mapping['cascade'] = $manyToOneAnnot->cascade;
+                $mapping['inversedBy'] = $manyToOneAnnot->inversedBy;
                 $mapping['targetEntity'] = $manyToOneAnnot->targetEntity;
                 $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $manyToOneAnnot->fetch);
                 $metadata->mapManyToOne($mapping);
@@ -351,6 +352,7 @@ class AnnotationDriver implements Driver
                 $mapping['joinTable'] = $joinTable;
                 $mapping['targetEntity'] = $manyToManyAnnot->targetEntity;
                 $mapping['mappedBy'] = $manyToManyAnnot->mappedBy;
+                $mapping['inversedBy'] = $manyToManyAnnot->inversedBy;
                 $mapping['cascade'] = $manyToManyAnnot->cascade;
                 $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $manyToManyAnnot->fetch);
 
@@ -362,7 +364,7 @@ class AnnotationDriver implements Driver
             }
         }
 
-        // Evaluate HasLifecycleCallbacks annotation
+        // Evaluate @HasLifecycleCallbacks annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\HasLifecycleCallbacks'])) {
             foreach ($class->getMethods() as $method) {
                 if ($method->isPublic()) {

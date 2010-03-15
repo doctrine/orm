@@ -70,12 +70,12 @@ class YamlExporter extends AbstractExporter
             $array['schema'] = $metadata->primaryTable['schema'];
         }
 
-        $inheritanceType = $metadata->getInheritanceType();
+        $inheritanceType = $metadata->inheritanceType;
         if ($inheritanceType !== ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
             $array['inheritanceType'] = $this->_getInheritanceTypeString($inheritanceType);
         }
 
-        if ($column = $metadata->getDiscriminatorColumn()) {
+        if ($column = $metadata->discriminatorColumn) {
             $array['discriminatorColumn'] = $column;
         }
 
@@ -158,7 +158,7 @@ class YamlExporter extends AbstractExporter
                     $newJoinColumns[$joinColumn['name']]['referencedColumnName'] = $joinColumn['referencedColumnName'];
                 }
                 $oneToOneMappingArray = array(
-                    'mappedBy'      => $associationMapping->mappedByFieldName,
+                    'mappedBy'      => $associationMapping->mappedBy,
                     'joinColumns'   => $newJoinColumns,
                     'orphanRemoval' => $associationMapping->orphanRemoval,
                 );
@@ -167,7 +167,7 @@ class YamlExporter extends AbstractExporter
                 $array['oneToOne'][$name] = $associationMappingArray;
             } else if ($associationMapping instanceof OneToManyMapping) {
                 $oneToManyMappingArray = array(
-                    'mappedBy'      => $associationMapping->mappedByFieldName,
+                    'mappedBy'      => $associationMapping->mappedBy,
                     'orphanRemoval' => $associationMapping->orphanRemoval,
                 );
 
@@ -175,7 +175,7 @@ class YamlExporter extends AbstractExporter
                 $array['oneToMany'][$name] = $associationMappingArray;
             } else if ($associationMapping instanceof ManyToManyMapping) {
                 $manyToManyMappingArray = array(
-                    'mappedBy'  => $associationMapping->mappedByFieldName,
+                    'mappedBy'  => $associationMapping->mappedBy,
                     'joinTable' => $associationMapping->joinTable,
                 );
                 

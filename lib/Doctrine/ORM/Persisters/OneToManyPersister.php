@@ -32,8 +32,7 @@ use Doctrine\ORM\PersistentCollection;
  *
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
- * @todo Complete implementation when the support for uni-directional one-to-many mappings
- *       on a foreign key gets added.
+ * @todo Remove
  */
 class OneToManyPersister extends AbstractCollectionPersister
 {
@@ -51,10 +50,10 @@ class OneToManyPersister extends AbstractCollectionPersister
         $targetClass = $this->_em->getClassMetadata($mapping->getTargetEntityName());
         $table = $targetClass->getTableName();
 
-        $ownerMapping = $targetClass->getAssociationMapping($mapping->getMappedByFieldName());
+        $ownerMapping = $targetClass->getAssociationMapping($mapping->mappedBy);
 
         $setClause = '';
-        foreach ($ownerMapping->getSourceToTargetKeyColumns() as $sourceCol => $targetCol) {
+        foreach ($ownerMapping->sourceToTargetKeyColumns as $sourceCol => $targetCol) {
             if ($setClause != '') $setClause .= ', ';
             $setClause .= "$sourceCol = NULL";
         }

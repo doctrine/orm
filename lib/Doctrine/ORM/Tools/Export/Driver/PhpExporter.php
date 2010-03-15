@@ -104,7 +104,7 @@ class PhpExporter extends AbstractExporter
             if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToOneMapping) {
                 $method = 'mapOneToOne';
                 $oneToOneMappingArray = array(
-                    'mappedBy'      => $associationMapping->mappedByFieldName,
+                    'mappedBy'      => $associationMapping->mappedBy,
                     'joinColumns'   => $associationMapping->joinColumns,
                     'orphanRemoval' => $associationMapping->orphanRemoval,
                 );
@@ -113,7 +113,7 @@ class PhpExporter extends AbstractExporter
             } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToManyMapping) {
                 $method = 'mapOneToMany';
                 $oneToManyMappingArray = array(
-                    'mappedBy'      => $associationMapping->mappedByFieldName,
+                    'mappedBy'      => $associationMapping->mappedBy,
                     'orphanRemoval' => $associationMapping->orphanRemoval,
                 );
                 
@@ -121,7 +121,7 @@ class PhpExporter extends AbstractExporter
             } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\ManyToManyMapping) {
                 $method = 'mapManyToMany';
                 $manyToManyMappingArray = array(
-                    'mappedBy'  => $associationMapping->mappedByFieldName,
+                    'mappedBy'  => $associationMapping->mappedBy,
                     'joinTable' => $associationMapping->joinTable,
                 );
                 

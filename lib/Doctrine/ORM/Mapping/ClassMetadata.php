@@ -208,6 +208,17 @@ class ClassMetadata extends ClassMetadataInfo
     }
 
     /**
+     * Gets the specified field's value off the given entity.
+     *
+     * @param object $entity
+     * @param string $field
+     */
+    public function getFieldValue($entity, $field)
+    {
+        return $this->reflFields[$field]->getValue($entity);
+    }
+
+    /**
      * Sets the field mapped to the specified column to the specified value on the given entity.
      *
      * @param object $entity
@@ -235,21 +246,7 @@ class ClassMetadata extends ClassMetadataInfo
 	    $refProp->setAccessible(true);
 	    $this->reflFields[$sourceFieldName] = $refProp;
     }
-    
-    /**
-     * Dispatches the lifecycle event of the given entity to the registered
-     * lifecycle callbacks and lifecycle listeners.
-     *
-     * @param string $event  The lifecycle event.
-     * @param Entity $entity  The Entity on which the event occured.
-     */
-    public function invokeLifecycleCallbacks($lifecycleEvent, $entity)
-    {
-        foreach ($this->lifecycleCallbacks[$lifecycleEvent] as $callback) {
-            $entity->$callback();
-        }
-    }
-    
+
     /**
      * Gets the (possibly quoted) column name of a mapped field for safe use
      * in an SQL statement.
@@ -316,7 +313,7 @@ class ClassMetadata extends ClassMetadataInfo
             'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.
             'inheritanceType',
             'inheritedAssociationFields',
-            'inverseMappings', //TODO: Remove!
+            'inverseMappings', //TODO: Remove! DDC-193
             'isIdentifierComposite',
             'isMappedSuperclass',
             'isVersioned',

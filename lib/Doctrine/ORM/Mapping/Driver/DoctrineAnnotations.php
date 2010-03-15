@@ -70,9 +70,9 @@ final class Column extends Annotation {
 final class OneToOne extends Annotation {
     public $targetEntity;
     public $mappedBy;
+    public $inversedBy;
     public $cascade;
     public $fetch = 'LAZY';
-    public $optional;
     public $orphanRemoval = false;
 }
 final class OneToMany extends Annotation {
@@ -86,11 +86,12 @@ final class ManyToOne extends Annotation {
     public $targetEntity;
     public $cascade;
     public $fetch = 'LAZY';
-    public $optional;
+    public $inversedBy;
 }
 final class ManyToMany extends Annotation {
     public $targetEntity;
     public $mappedBy;
+    public $inversedBy;
     public $cascade;
     public $fetch = 'LAZY';
 }

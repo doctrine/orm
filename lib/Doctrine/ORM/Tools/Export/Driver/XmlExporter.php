@@ -127,7 +127,7 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->getIdGeneratorType())) {
+        if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
             $id[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
         }
 
@@ -190,8 +190,8 @@ class XmlExporter extends AbstractExporter
             $associationMappingXml->addAttribute('field', $associationMapping->sourceFieldName);
             $associationMappingXml->addAttribute('target-entity', $associationMapping->targetEntityName);
 
-            if (isset($associationMapping->mappedByFieldName)) {
-                $associationMappingXml->addAttribute('mapped-by', $associationMapping->mappedByFieldName);
+            if (isset($associationMapping->mappedBy)) {
+                $associationMappingXml->addAttribute('mapped-by', $associationMapping->mappedBy);
             }
             if (isset($associationMapping->orphanRemoval)) {
                 $associationMappingXml->addAttribute('orphan-removal', $associationMapping->orphanRemoval);

@@ -38,7 +38,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function __construct()
     {
         parent::__construct();
-
         $this->_attributes = array_merge($this->_attributes, array(
             'resultCacheImpl' => null,
             'queryCacheImpl' => null,
@@ -46,11 +45,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'metadataDriverImpl' => null,
             'proxyDir' => null,
             'useCExtension' => false,
-            'namedQueries' => array(),
-            'namedNativeQueries' => array(),
             'autoGenerateProxyClasses' => true,
-            'proxyNamespace' => null,
-            'entityNamespaces' => array()
+            'proxyNamespace' => null
         ));
     }
 
@@ -96,11 +92,21 @@ class Configuration extends \Doctrine\DBAL\Configuration
         $this->_attributes['autoGenerateProxyClasses'] = $bool;
     }
 
+    /**
+     * Gets the namespace where proxy classes reside.
+     * 
+     * @return string
+     */
     public function getProxyNamespace()
     {
         return $this->_attributes['proxyNamespace'];
     }
 
+    /**
+     * Sets the namespace where proxy classes reside.
+     * 
+     * @param string $ns
+     */
     public function setProxyNamespace($ns)
     {
         $this->_attributes['proxyNamespace'] = $ns;
@@ -119,7 +125,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Add a namespace alias for entities.
+     * Adds a namespace under a certain alias.
      *
      * @param string $alias
      * @param string $namespace
@@ -130,7 +136,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Get the namespace of a given entity namespace
+     * Resolves a registered namespace alias to the full namespace.
      *
      * @param string $entityNamespaceAlias 
      * @return string
@@ -138,11 +144,11 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getEntityNamespace($entityNamespaceAlias)
     {
-        if (isset($this->_attributes['entityNamespaces'][$entityNamespaceAlias])) {
-            return trim($this->_attributes['entityNamespaces'][$entityNamespaceAlias], '\\');
+        if ( ! isset($this->_attributes['entityNamespaces'][$entityNamespaceAlias])) {
+            throw ORMException::unknownEntityNamespace($entityNamespaceAlias);
         }
 
-        throw ORMException::unknownEntityNamespace($entityNamespaceAlias);
+        return trim($this->_attributes['entityNamespaces'][$entityNamespaceAlias], '\\');
     }
 
     /**
@@ -153,7 +159,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setEntityNamespaces(array $entityNamespaces)
     {
-      $this->_attributes['entityNamespaces'] = $entityNamespaces;
+        $this->_attributes['entityNamespaces'] = $entityNamespaces;
     }
 
     /**
@@ -273,6 +279,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getNamedQuery($name)
     {
+        if ( ! isset($this->_attributes['namedQueries'][$name])) {
+            throw ORMException::namedQueryNotFound($name);
+        }
         return $this->_attributes['namedQueries'][$name];
     }
 
@@ -297,6 +306,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getNamedNativeQuery($name)
     {
+        if ( ! isset($this->_attributes['namedNativeQueries'][$name])) {
+            throw ORMException::namedNativeQueryNotFound($name);
+        }
         return $this->_attributes['namedNativeQueries'][$name];
     }
 
@@ -318,5 +330,80 @@ class Configuration extends \Doctrine\DBAL\Configuration
         if ($this->_attributes['autoGenerateProxyClasses']) {
             throw ORMException::proxyClassesAlwaysRegenerating();
         }
+    }
+
+    /**
+     * Registers a custom DQL function that produces a string value.
+     * Such a function can then be used in any DQL statement in any place where string
+     * functions are allowed.
+     *
+     * @param string $name
+     * @param string $className
+     */
+    public function addCustomStringFunction($name, $className)
+    {
+        $this->_attributes['customStringFunctions'][strtolower($name)] = $className;
+    }
+
+    /**
+     * Gets the implementation class name of a registered custom string DQL function.
+     * 
+     * @param string $name
+     * @return string
+     */
+    public function getCustomStringFunction($name)
+    {
+        return isset($this->_attributes['customStringFunctions'][$name]) ?
+                $this->_attributes['customStringFunctions'][$name] : null;
+    }
+
+    /**
+     * Registers a custom DQL function that produces a numeric value.
+     * Such a function can then be used in any DQL statement in any place where numeric
+     * functions are allowed.
+     *
+     * @param string $name
+     * @param string $className
+     */
+    public function addCustomNumericFunction($name, $className)
+    {
+        $this->_attributes['customNumericFunctions'][strtolower($name)] = $className;
+    }
+
+    /**
+     * Gets the implementation class name of a registered custom numeric DQL function.
+     * 
+     * @param string $name
+     * @return string
+     */
+    public function getCustomNumericFunction($name)
+    {
+        return isset($this->_attributes['customNumericFunctions'][$name]) ?
+                $this->_attributes['customNumericFunctions'][$name] : null;
+    }
+
+    /**
+     * Registers a custom DQL function that produces a date/time value.
+     * Such a function can then be used in any DQL statement in any place where date/time
+     * functions are allowed.
+     *
+     * @param string $name
+     * @param string $className
+     */
+    public function addCustomDatetimeFunction($name, $className)
+    {
+        $this->_attributes['customDatetimeFunctions'][strtolower($name)] = $className;
+    }
+
+    /**
+     * Gets the implementation class name of a registered custom date/time DQL function.
+     * 
+     * @param string $name
+     * @return string
+     */
+    public function getCustomDatetimeFunction($name)
+    {
+        return isset($this->_attributes['customDatetimeFunctions'][$name]) ?
+                $this->_attributes['customDatetimeFunctions'][$name] : null;
     }
 }

@@ -55,7 +55,7 @@ class SizeFunction extends FunctionNode
         
         if ($assoc->isOneToMany()) {
             $targetClass = $sqlWalker->getEntityManager()->getClassMetadata($assoc->targetEntityName);
-            $targetAssoc = $targetClass->associationMappings[$assoc->mappedByFieldName];
+            $targetAssoc = $targetClass->associationMappings[$assoc->mappedBy];
             
             $targetTableAlias = $sqlWalker->getSqlTableAlias($targetClass->primaryTable['name']);
             $sourceTableAlias = $sqlWalker->getSqlTableAlias($qComp['metadata']->primaryTable['name'], $dqlAlias);

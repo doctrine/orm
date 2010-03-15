@@ -7,6 +7,7 @@ namespace Doctrine\DBAL\Logging;
  * 
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
+ * @todo Rename: EchoSQLLogger
  */
 class EchoSqlLogger implements SqlLogger
 {

@@ -39,8 +39,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
     protected function _getDeleteRowSql(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
-        $joinTable = $mapping->getJoinTable();
-        $columns = $mapping->getJoinTableColumnNames();
+        $joinTable = $mapping->joinTable;
+        $columns = $mapping->joinTableColumns;
         return 'DELETE FROM ' . $joinTable['name'] . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
     }
 
@@ -74,7 +74,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     protected function _getInsertRowSql(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
-        $joinTable = $mapping->getJoinTable();
+        $joinTable = $mapping->joinTable;
         $columns = $mapping->joinTableColumns;
         return 'INSERT INTO ' . $joinTable['name'] . ' (' . implode(', ', $columns) . ')'
                 . ' VALUES (' . implode(', ', array_fill(0, count($columns), '?')) . ')';
@@ -141,7 +141,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     protected function _getDeleteSql(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
-        $joinTable = $mapping->getJoinTable();
+        $joinTable = $mapping->joinTable;
         $whereClause = '';
         foreach ($mapping->relationToSourceKeyColumns as $relationColumn => $srcColumn) {
             if ($whereClause !== '') $whereClause .= ' AND ';

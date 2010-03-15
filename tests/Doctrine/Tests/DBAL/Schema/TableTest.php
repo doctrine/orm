@@ -297,10 +297,10 @@ class TableTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException("Doctrine\DBAL\Schema\SchemaException");
 
         $table = new Table("foo");
-        $table->addColumn("id", 'int');
+        $table->addColumn("id", 'integer');
 
         $foreignTable = new Table("bar");
-        $foreignTable->addColumn("id", 'int');
+        $foreignTable->addColumn("id", 'integer');
 
         $table->addForeignKeyConstraint($foreignTable, array("foo"), array("id"));
     }

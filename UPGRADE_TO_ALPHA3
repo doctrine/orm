@@ -1,0 +1,35 @@
+# Upgrade from 2.0-ALPHA2 to 2.0-ALPHA3
+
+This section details the changes made to Doctrine 2.0-ALPHA3 to make it easier for you
+to upgrade your projects to use this version.  
+
+## CLI Changes
+
+The $args variable used in the cli-config.php for configuring the Doctrine CLI has been renamed to $globalArguments.
+
+## Proxy class changes
+
+You are now required to make supply some minimalist configuration with regards to proxy objects. That involves 2 new configuration options. First, the directory where generated proxy classes should be placed needs to be specified. Secondly, you need to configure the namespace used for proxy classes. The following snippet shows an example:
+
+    [php]
+    // step 1: configure directory for proxy classes
+    // $config instanceof Doctrine\ORM\Configuration
+    $config->setProxyDir('/path/to/myproject/lib/MyProject/Generated/Proxies');
+    $config->setProxyNamespace('MyProject\Generated\Proxies');
+
+Note that proxy classes behave exactly like any other classes when it comes to class loading. Therefore you need to make sure the proxy classes can be loaded by some class loader. If you place the generated proxy classes in a namespace and directory under your projects class files, like in the example above, it would be sufficient to register the MyProject namespace on a class loader. Since the proxy classes are contained in that namespace and adhere to the standards for class loading, no additional work is required.
+Generating the proxy classes into a namespace within your class library is the recommended setup.
+
+Entities with initialized proxy objects can now be serialized and unserialized properly from within the same application.
+
+For more details refer to the Configuration section of the manual.
+
+## Removed allowPartialObjects configuration option
+
+The allowPartialObjects configuration option together with the `Configuration#getAllowPartialObjects` and `Configuration#setAllowPartialObjects` methods have been removed.
+The new behavior is as if the option were set to FALSE all the time, basically disallowing partial objects globally. However, you can still use the `Query::HINT_FORCE_PARTIAL_LOAD` query hint to force a query to return partial objects for optimization purposes.
+
+## Renamed Methods
+
+* Doctrine\ORM\Configuration#getCacheDir() to getProxyDir()
+* Doctrine\ORM\Configuration#setCacheDir($dir) to setProxyDir($dir)

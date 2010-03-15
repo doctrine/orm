@@ -21,7 +21,8 @@
 
 namespace Doctrine\DBAL\Platforms;
 
-use Doctrine\DBAL\Schema\TableDiff;
+use Doctrine\DBAL\Schema\TableDiff,
+    Doctrine\DBAL\Schema\Table;
 
 /**
  * PostgreSqlPlatform.
@@ -30,6 +31,7 @@ use Doctrine\DBAL\Schema\TableDiff;
  * @author Roman Borschel <roman@code-factory.org>
  * @author Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)
  * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @todo Rename: PostgreSQLPlatform
  */
 class PostgreSqlPlatform extends AbstractPlatform
 {
@@ -281,7 +283,7 @@ class PostgreSqlPlatform extends AbstractPlatform
     {
         return 'CREATE DATABASE ' . $name;
     }
-    
+
     /**
      * drop an existing database
      *
@@ -293,9 +295,8 @@ class PostgreSqlPlatform extends AbstractPlatform
     {
         return 'DROP DATABASE ' . $name;
     }
-    
+
     /**
-     * getAdvancedForeignKeyOptions
      * Return the FOREIGN KEY query section dealing with non-standard options
      * as MATCH, INITIALLY DEFERRED, ON UPDATE, ...
      *

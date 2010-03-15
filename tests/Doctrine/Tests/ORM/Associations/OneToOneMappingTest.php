@@ -17,12 +17,12 @@ class OneToOneMappingTest extends \Doctrine\Tests\OrmTestCase
         
         $oneToOneMapping = new \Doctrine\ORM\Mapping\OneToOneMapping($owningSideMapping);
         
-        $this->assertEquals(array('address_id' => 'id'), $oneToOneMapping->getSourceToTargetKeyColumns());
-        $this->assertEquals(array('id' => 'address_id'), $oneToOneMapping->getTargetToSourceKeyColumns());
-        $this->assertEquals('Address', $oneToOneMapping->getTargetEntityName());
-        $this->assertEquals('Person', $oneToOneMapping->getSourceEntityName());
-        $this->assertEquals('address', $oneToOneMapping->getSourceFieldName());
-        $this->assertTrue($oneToOneMapping->isOwningSide());
+        $this->assertEquals(array('address_id' => 'id'), $oneToOneMapping->sourceToTargetKeyColumns);
+        $this->assertEquals(array('id' => 'address_id'), $oneToOneMapping->targetToSourceKeyColumns);
+        $this->assertEquals('Address', $oneToOneMapping->targetEntityName);
+        $this->assertEquals('Person', $oneToOneMapping->sourceEntityName);
+        $this->assertEquals('address', $oneToOneMapping->sourceFieldName);
+        $this->assertTrue($oneToOneMapping->isOwningSide);
 
         $inverseSideMapping = array(
             'fieldName' => 'person',
@@ -32,9 +32,9 @@ class OneToOneMappingTest extends \Doctrine\Tests\OrmTestCase
         );
         
         $oneToOneMapping = new \Doctrine\ORM\Mapping\OneToOneMapping($inverseSideMapping);
-        $this->assertEquals('address', $oneToOneMapping->getMappedByFieldName());
-        $this->assertEquals('Address', $oneToOneMapping->getSourceEntityName());
-        $this->assertEquals('Person', $oneToOneMapping->getTargetEntityName());
+        $this->assertEquals('address', $oneToOneMapping->mappedBy);
+        $this->assertEquals('Address', $oneToOneMapping->sourceEntityName);
+        $this->assertEquals('Person', $oneToOneMapping->targetEntityName);
         $this->assertTrue($oneToOneMapping->isInverseSide());
     }
 }

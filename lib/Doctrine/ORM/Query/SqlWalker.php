@@ -696,7 +696,7 @@ class SqlWalker implements TreeWalker
 
         // Ensure we got the owning side, since it has all mapping info
         if ( ! $relation->isOwningSide) {
-            $assoc = $targetClass->associationMappings[$relation->mappedByFieldName];
+            $assoc = $targetClass->associationMappings[$relation->mappedBy];
         } else {
             $assoc = $relation;
         }
@@ -728,7 +728,7 @@ class SqlWalker implements TreeWalker
             }
         } else if ($assoc->isManyToMany()) {
             // Join relation table
-            $joinTable = $assoc->getJoinTable();
+            $joinTable = $assoc->joinTable;
             $joinTableAlias = $this->getSqlTableAlias($joinTable['name'], $joinedDqlAlias);
             $sql .= $assoc->getQuotedJoinTableName($this->_platform) . ' ' . $joinTableAlias . ' ON ';
 
@@ -1304,7 +1304,7 @@ class SqlWalker implements TreeWalker
             $sql .= $targetClass->getQuotedTableName($this->_platform)
                   . ' ' . $targetTableAlias . ' WHERE ';
                     
-            $owningAssoc = $targetClass->associationMappings[$assoc->mappedByFieldName];
+            $owningAssoc = $targetClass->associationMappings[$assoc->mappedBy];
             
             $first = true;
             
@@ -1329,7 +1329,7 @@ class SqlWalker implements TreeWalker
         } else { // many-to-many
             $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
             
-            $owningAssoc = $assoc->isOwningSide ? $assoc : $targetClass->associationMappings[$assoc->mappedByFieldName];
+            $owningAssoc = $assoc->isOwningSide ? $assoc : $targetClass->associationMappings[$assoc->mappedBy];
             $joinTable = $assoc->isOwningSide ? $assoc->joinTable : $owningAssoc->joinTable;
             
             // SQL table aliases

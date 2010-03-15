@@ -1177,7 +1177,8 @@ class UnitOfWork implements PropertyChangedListener
      * This method is internally called during save() cascades as it tracks
      * the already visited entities to prevent infinite recursions.
      * 
-     * NOTE: This method always considers entities with a manually assigned identifier as NEW.
+     * NOTE: This method always considers entities that are not yet known to
+     * this UnitOfWork as NEW.
      *
      * @param object $entity The entity to persist.
      * @param array $visited The already visited entities.
@@ -1405,7 +1406,7 @@ class UnitOfWork implements PropertyChangedListener
             } else {
                 $prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->unwrap()->add($managedCopy);
                 if ($assoc->isOneToMany()) {
-                    $class->reflFields[$assoc->mappedByFieldName]->setValue($managedCopy, $prevManagedCopy);
+                    $class->reflFields[$assoc->mappedBy]->setValue($managedCopy, $prevManagedCopy);
                 }
             }
         }
@@ -1627,6 +1628,7 @@ class UnitOfWork implements PropertyChangedListener
             if ( ! $assoc->isCascadeRemove) {
                 continue;
             }
+            //TODO: If $entity instanceof Proxy => Initialize ?
             $relatedEntities = $class->reflFields[$assoc->sourceFieldName]->getValue($entity);
             if ($relatedEntities instanceof Collection || is_array($relatedEntities)) {
                 // If its a PersistentCollection initialization is intended! No unwrap!

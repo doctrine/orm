@@ -21,9 +21,9 @@
 
 namespace Doctrine\DBAL\Schema;
 
-use \Doctrine\DBAL\Types;
-use \Doctrine\DBAL\DBALException;
-use \Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types;
+use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
  * Base class for schema managers. Schema managers are used to inspect and/or

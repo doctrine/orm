@@ -38,7 +38,7 @@ use Doctrine\ORM\Query;
  */
 class Parser
 {
-    /** Maps registered string function names to class names. */
+    /** Maps BUILT-IN string function names to AST class names. */
     private static $_STRING_FUNCTIONS = array(
         'concat'    => 'Doctrine\ORM\Query\AST\Functions\ConcatFunction',
         'substring' => 'Doctrine\ORM\Query\AST\Functions\SubstringFunction',
@@ -47,7 +47,7 @@ class Parser
         'upper'     => 'Doctrine\ORM\Query\AST\Functions\UpperFunction'
     );
 
-    /** Maps registered numeric function names to class names. */
+    /** Maps BUILT-IN numeric function names to AST class names. */
     private static $_NUMERIC_FUNCTIONS = array(
         'length' => 'Doctrine\ORM\Query\AST\Functions\LengthFunction',
         'locate' => 'Doctrine\ORM\Query\AST\Functions\LocateFunction',
@@ -57,7 +57,7 @@ class Parser
         'size'   => 'Doctrine\ORM\Query\AST\Functions\SizeFunction'
     );
 
-    /** Maps registered datetime function names to class names. */
+    /** Maps BUILT-IN datetime function names to AST class names. */
     private static $_DATETIME_FUNCTIONS = array(
         'current_date'      => 'Doctrine\ORM\Query\AST\Functions\CurrentDateFunction',
         'current_time'      => 'Doctrine\ORM\Query\AST\Functions\CurrentTimeFunction',
@@ -194,39 +194,6 @@ class Parser
     }
 
     /**
-     * Registers a custom function that returns strings.
-     *
-     * @param string $name The function name.
-     * @param string $class The class name of the function implementation.
-     */
-    public static function registerStringFunction($name, $class)
-    {
-        self::$_STRING_FUNCTIONS[strtolower($name)] = $class;
-    }
-
-    /**
-     * Registers a custom function that returns numerics.
-     *
-     * @param string $name The function name.
-     * @param string $class The class name of the function implementation.
-     */
-    public static function registerNumericFunction($name, $class)
-    {
-        self::$_NUMERIC_FUNCTIONS[strtolower($name)] = $class;
-    }
-
-    /**
-     * Registers a custom function that returns date/time values.
-     *
-     * @param string $name The function name.
-     * @param string $class The class name of the function implementation.
-     */
-    public static function registerDatetimeFunction($name, $class)
-    {
-        self::$_DATETIME_FUNCTIONS[strtolower($name)] = $class;
-    }
-
-    /**
      * Attempts to match the given token with the current lookahead token.
      *
      * If they match, updates the lookahead token; otherwise raises a syntax
@@ -358,7 +325,7 @@ class Parser
             $message .= "'{$token['value']}'";
         }
 
-        throw \Doctrine\ORM\Query\QueryException::syntaxError($message);
+        throw QueryException::syntaxError($message);
     }
 
     /**
@@ -426,39 +393,6 @@ class Parser
 
         // We deny the COUNT(SELECT * FROM User u) here. COUNT won't be considered a function
         return ($peek['value'] === '(' && $nextpeek['type'] !== Lexer::T_SELECT);
-    }
-
-    /**
-     * Checks whether the function with the given name is a string function
-     * (a function that returns strings).
-     *
-     * @return boolean TRUE if the token type is a string function, FALSE otherwise.
-     */
-    private function _isStringFunction($funcName)
-    {
-        return isset(self::$_STRING_FUNCTIONS[strtolower($funcName)]);
-    }
-
-    /**
-     * Checks whether the function with the given name is a numeric function
-     * (a function that returns numerics).
-     *
-     * @return boolean TRUE if the token type is a numeric function, FALSE otherwise.
-     */
-    private function _isNumericFunction($funcName)
-    {
-        return isset(self::$_NUMERIC_FUNCTIONS[strtolower($funcName)]);
-    }
-
-    /**
-     * Checks whether the function with the given name is a datetime function
-     * (a function that returns date/time values).
-     *
-     * @return boolean TRUE if the token type is a datetime function, FALSE otherwise.
-     */
-    private function _isDatetimeFunction($funcName)
-    {
-        return isset(self::$_DATETIME_FUNCTIONS[strtolower($funcName)]);
     }
 
     /**
@@ -2624,17 +2558,27 @@ class Parser
      */
     public function FunctionDeclaration()
     {
-        $funcName = $this->_lexer->lookahead['value'];
+        $funcName = strtolower($this->_lexer->lookahead['value']);
 
-        if ($this->_isStringFunction($funcName)) {
+        // Check for built-in functions first!
+        if (isset(self::$_STRING_FUNCTIONS[$funcName])) {
             return $this->FunctionsReturningStrings();
-        } else if ($this->_isNumericFunction($funcName)) {
+        } else if (isset(self::$_NUMERIC_FUNCTIONS[$funcName])) {
             return $this->FunctionsReturningNumerics();
-        } else if ($this->_isDatetimeFunction($funcName)) {
+        } else if (isset(self::$_DATETIME_FUNCTIONS[$funcName])) {
+            return $this->FunctionsReturningDatetime();
+        }
+        // Check for custom functions afterwards
+        $config = $this->_em->getConfiguration();
+        if ($config->getCustomStringFunction($funcName) !== null) {
+            return $this->FunctionsReturningStrings();
+        } else if ($config->getCustomNumericFunction($funcName) !== null) {
+            return $this->FunctionsReturningNumerics();
+        } else if ($config->getCustomDatetimeFunction($funcName) !== null) {
             return $this->FunctionsReturningDatetime();
         }
 
-        $this->syntaxError('Known function.');
+        $this->syntaxError('Known function.', $funcName);
     }
 
     /**
@@ -2681,6 +2625,7 @@ class Parser
     {
         $funcNameLower = strtolower($this->_lexer->lookahead['value']);
         $funcClass = self::$_STRING_FUNCTIONS[$funcNameLower];
+        //$funcClass = $this->_em->getConfiguration()->getDQLStringFunctionClassName($funcNameLower);
         $function = new $funcClass($funcNameLower);
         $function->parse($this);
 

@@ -66,7 +66,7 @@ class Connection
      */
     const FETCH_ASSOC       = 2;
     const FETCH_BOTH        = 4;
-    const FETCH_COLUMN      = 7;
+    //const FETCH_COLUMN      = 7; Apparently not used.
     const FETCH_NUM         = 3;
     const ATTR_AUTOCOMMIT   = 0;
 

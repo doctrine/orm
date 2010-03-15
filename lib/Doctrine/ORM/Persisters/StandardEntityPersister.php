@@ -446,7 +446,7 @@ class StandardEntityPersister
         
         return $this->_createEntity($result, $entity, $hints);
     }
-    
+
     /**
      * Refreshes an entity.
      * 
@@ -457,11 +457,11 @@ class StandardEntityPersister
     {
         $sql = $this->_getSelectEntitiesSQL($id);
         $params = array_values($id);
-        
+
         if ($this->_sqlLogger !== null) {
             $this->_sqlLogger->logSql($sql, $params);
         }
-        
+
         $stmt = $this->_conn->prepare($sql);
         $stmt->execute($params);
         $result = $stmt->fetch(Connection::FETCH_ASSOC);
@@ -573,7 +573,7 @@ class StandardEntityPersister
      */
     public function loadOneToManyCollection($assoc, array $criteria, PersistentCollection $coll)
     {
-        $owningAssoc = $this->_class->associationMappings[$coll->getMapping()->mappedByFieldName];
+        $owningAssoc = $this->_class->associationMappings[$coll->getMapping()->mappedBy];
         
         $sql = $this->_getSelectEntitiesSQL($criteria, $owningAssoc, $assoc->orderBy);
 
@@ -782,7 +782,7 @@ class StandardEntityPersister
             $owningAssoc = $manyToMany;
             $joinClauses = $manyToMany->relationToTargetKeyColumns;
         } else {
-            $owningAssoc = $this->_em->getClassMetadata($manyToMany->targetEntityName)->associationMappings[$manyToMany->mappedByFieldName];
+            $owningAssoc = $this->_em->getClassMetadata($manyToMany->targetEntityName)->associationMappings[$manyToMany->mappedBy];
             $joinClauses = $owningAssoc->relationToSourceKeyColumns;
         }
         
@@ -969,7 +969,7 @@ class StandardEntityPersister
         }
         $tableAlias = $class->primaryTable['name'][0] . $this->_sqlAliasCounter++;
         $this->_sqlTableAliases[$class->name] = $tableAlias;
-        
+
         return $tableAlias;
     }
 }

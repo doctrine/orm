@@ -28,7 +28,7 @@ namespace Doctrine\ORM\Mapping;
  * <b>IMPORTANT NOTE:</b>
  *
  * The fields of this class are only public for 2 reasons:
- * 1) To allow fast, internal READ access.
+ * 1) To allow fast READ access.
  * 2) To drastically reduce the size of a serialized instance (private/protected members
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
@@ -43,17 +43,17 @@ namespace Doctrine\ORM\Mapping;
 class ManyToManyMapping extends AssociationMapping
 {
     /**
-     * Maps the columns in the relational table to the columns in the source table.
+     * READ-ONLY: Maps the columns in the relational table to the columns in the source table.
      */
     public $relationToSourceKeyColumns = array();
 
     /**
-     * Maps the columns in the relation table to the columns in the target table.
+     * READ-ONLY: Maps the columns in the relation table to the columns in the target table.
      */
     public $relationToTargetKeyColumns = array();
 
     /**
-     * List of aggregated column names on the join table.
+     * READ-ONLY: List of aggregated column names on the join table.
      */
     public $joinTableColumns = array();
     
@@ -61,24 +61,14 @@ class ManyToManyMapping extends AssociationMapping
     //public $keyColumn;
 
     /**
-     * Order this collection by the given DQL snippet.
+     * READ-ONLY: Order this collection by the given DQL snippet.
      * 
      * Only simple unqualified field names and ASC|DESC are allowed
      *
      * @var array
      */
-    public $orderBy = null;
-    
-    /**
-     * Initializes a new ManyToManyMapping.
-     *
-     * @param array $mapping The mapping definition.
-     */
-    public function __construct(array $mapping)
-    {
-        parent::__construct($mapping);
-    }
-    
+    public $orderBy;
+
     /**
      * Validates and completes the mapping.
      *
@@ -145,22 +135,6 @@ class ManyToManyMapping extends AssociationMapping
         }
     }
 
-    public function getJoinTableColumnNames()
-    {
-        return $this->joinTableColumns;
-        //return array_merge(array_keys($this->relationToSourceKeyColumns), array_keys($this->relationToTargetKeyColumns));
-    }
-    
-    public function getRelationToSourceKeyColumns()
-    {
-        return $this->relationToSourceKeyColumns;
-    }
-
-    public function getRelationToTargetKeyColumns()
-    {
-        return $this->relationToTargetKeyColumns;
-    }
-
     /**
      * Loads entities in $targetCollection using $em.
      * The data of $sourceEntity are used to restrict the collection
@@ -186,7 +160,7 @@ class ManyToManyMapping extends AssociationMapping
                 }
             }
         } else {
-            $owningAssoc = $em->getClassMetadata($this->targetEntityName)->associationMappings[$this->mappedByFieldName];
+            $owningAssoc = $em->getClassMetadata($this->targetEntityName)->associationMappings[$this->mappedBy];
             // TRICKY: since the association is inverted source and target are flipped
             foreach ($owningAssoc->relationToTargetKeyColumns as $relationKeyColumn => $sourceKeyColumn) {
                 // getting id

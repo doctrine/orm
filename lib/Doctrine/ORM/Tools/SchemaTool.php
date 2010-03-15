@@ -213,7 +213,7 @@ class SchemaTool
             $processedClasses[$class->name] = true;
 
             if ($class->isIdGeneratorSequence() && $class->name == $class->rootEntityName) {
-                $seqDef = $class->getSequenceGeneratorDefinition();
+                $seqDef = $class->sequenceGeneratorDefinition;
 
                 if (!$schema->hasSequence($seqDef['sequenceName'])) {
                     $schema->createSequence(
@@ -322,7 +322,7 @@ class SchemaTool
         }
 
         if ($table->hasColumn($columnName)) {
-            // required in some inheritence scenarios
+            // required in some inheritance scenarios
             $table->changeColumn($columnName, $options);
         } else {
             $table->addColumn($columnName, $columnType, $options);
@@ -355,13 +355,13 @@ class SchemaTool
             if ($mapping->isOneToOne() && $mapping->isOwningSide) {
                 $primaryKeyColumns = $uniqueConstraints = array(); // unnecessary for this relation-type
 
-                $this->_gatherRelationJoinColumns($mapping->getJoinColumns(), $table, $foreignClass, $mapping, $primaryKeyColumns, $uniqueConstraints);
+                $this->_gatherRelationJoinColumns($mapping->joinColumns, $table, $foreignClass, $mapping, $primaryKeyColumns, $uniqueConstraints);
             } else if ($mapping->isOneToMany() && $mapping->isOwningSide) {
                 //... create join table, one-many through join table supported later
                 throw ORMException::notSupported();
             } else if ($mapping->isManyToMany() && $mapping->isOwningSide) {
                 // create join table
-                $joinTable = $mapping->getJoinTable();
+                $joinTable = $mapping->joinTable;
 
                 $theJoinTable = $schema->createTable($mapping->getQuotedJoinTableName($this->_platform));
 

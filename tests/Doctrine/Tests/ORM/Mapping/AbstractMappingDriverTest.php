@@ -30,7 +30,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     public function testEntityTableNameAndInheritance($class)
     {
         $this->assertEquals('cms_users', $class->getTableName());
-        $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $class->getInheritanceType());
+        $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $class->inheritanceType);
 
         return $class;
     }
@@ -61,7 +61,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     public function testIdentifier($class)
     {
         $this->assertEquals(array('id'), $class->identifier);
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $class->getIdGeneratorType(), "ID-Generator is not ClassMetadata::GENERATOR_TYPE_AUTO");
+        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $class->generatorType, "ID-Generator is not ClassMetadata::GENERATOR_TYPE_AUTO");
 
         return $class;
     }
