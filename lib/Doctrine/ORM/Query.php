@@ -166,6 +166,19 @@ final class Query extends AbstractQuery
     }
 
     /**
+     * Returns the correspondent AST for this Query.
+     *
+     * @return \Doctrine\ORM\Query\AST\SelectStatement |
+     *         \Doctrine\ORM\Query\AST\UpdateStatement |
+     *         \Doctrine\ORM\Query\AST\DeleteStatement
+     */
+    public function getAST()
+    {
+        $parser = new Parser($this);
+        return $parser->getAST();
+    }
+
+    /**
      * Parses the DQL query, if necessary, and stores the parser result.
      * 
      * Note: Populates $this->_parserResult as a side-effect.

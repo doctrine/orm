@@ -194,6 +194,34 @@ class Parser
     }
 
     /**
+     * Parse and build AST for the given Query.
+     *
+     * @return \Doctrine\ORM\Query\AST\SelectStatement |
+     *         \Doctrine\ORM\Query\AST\UpdateStatement |
+     *         \Doctrine\ORM\Query\AST\DeleteStatement
+     */
+    public function getAST()
+    {
+        // Parse & build AST
+        $AST = $this->QueryLanguage();
+
+        // Process any deferred validations of some nodes in the AST.
+        // This also allows post-processing of the AST for modification purposes.
+        $this->_processDeferredIdentificationVariables();
+        if ($this->_deferredPartialObjectExpressions) {
+            $this->_processDeferredPartialObjectExpressions();
+        }
+        if ($this->_deferredPathExpressions) {
+            $this->_processDeferredPathExpressions($AST);
+        }
+        if ($this->_deferredResultVariables) {
+            $this->_processDeferredResultVariables();
+        }
+
+        return $AST;
+    }
+
+    /**
      * Attempts to match the given token with the current lookahead token.
      *
      * If they match, updates the lookahead token; otherwise raises a syntax
@@ -239,21 +267,7 @@ class Parser
      */
     public function parse()
     {
-        // Parse & build AST
-        $AST = $this->QueryLanguage();
-
-        // Process any deferred validations of some nodes in the AST.
-        // This also allows post-processing of the AST for modification purposes.
-        $this->_processDeferredIdentificationVariables();
-        if ($this->_deferredPartialObjectExpressions) {
-            $this->_processDeferredPartialObjectExpressions();
-        }
-        if ($this->_deferredPathExpressions) {
-            $this->_processDeferredPathExpressions($AST);
-        }
-        if ($this->_deferredResultVariables) {
-            $this->_processDeferredResultVariables();
-        }
+        $AST = $this->getAST();
 
         if ($customWalkers = $this->_query->getHint(Query::HINT_CUSTOM_TREE_WALKERS)) {
             $this->_customTreeWalkers = $customWalkers;
