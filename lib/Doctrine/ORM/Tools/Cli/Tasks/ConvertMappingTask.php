@@ -25,7 +25,10 @@ use Doctrine\Common\Cli\Tasks\AbstractTask,
     Doctrine\Common\Cli\CliException,
     Doctrine\Common\Cli\Option,
     Doctrine\Common\Cli\OptionGroup,
-    Doctrine\ORM\Tools\Export\ClassMetadataExporter;
+    Doctrine\ORM\Tools\Export\ClassMetadataExporter,
+    Doctrine\ORM\Mapping\Driver\DriverChain,
+    Doctrine\ORM\Mapping\Driver\AnnotationDriver,
+    Doctrine\ORM\Mapping\Driver\Driver;
 
 /**
  * CLI Task to convert your mapping information between the various formats
@@ -242,23 +245,43 @@ class ConvertMappingTask extends AbstractTask
         // If source is annotation then lets try and find the existing annotation
         // driver for the source instead of re-creating a new instance
         } else if ($type == 'annotation') {
-            $source = realpath($source);
             $em = $this->getConfiguration()->getAttribute('em');
             $metadataDriverImpl = $em->getConfiguration()->getMetadataDriverImpl();
-            if ($metadataDriverImpl instanceof \Doctrine\ORM\Mapping\Driver\DriverChain) {
+            // Find the annotation driver in the chain of drivers
+            if ($metadataDriverImpl instanceof DriverChain) {
                 foreach ($metadataDriverImpl->getDrivers() as $namespace => $driver) {
-                    if ($driver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
-                        $paths = $driver->getPaths();
-                        if (in_array($source, $paths)) {
-                            return $driver;
-                        }
+                    if ($this->_isAnnotationDriverForPath($driver, $source)) {
+                        return $driver;
                     }
                 }
-            } else if ($metadataDriverImpl instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
+            } else if ($this->_isAnnotationDriverForPath($metadataDriverImpl, $source)) {
                 return $metadataDriverImpl;
+            } else {
+                return $source;
             }
         } else {
             return $source;
+        }
+    }
+
+    /**
+     * Check to see if the given metadata driver is the annotation driver for the
+     * given directory path
+     *
+     * @param Driver $driver
+     * @param string $path 
+     * @return boolean
+     */
+    private function _isAnnotationDriverForPath(Driver $driver, $path)
+    {
+        if ( ! $driver instanceof AnnotationDriver) {
+            return false;
+        }
+
+        if (in_array(realpath($path), $driver->getPaths())) {
+            return true;
+        } else {
+            return false;
         }
     }
 }
