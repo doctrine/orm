@@ -527,6 +527,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    public function testSupportResultVariableInWherePart()
+    {
+        $this->assertSqlGeneration(
+            "SELECT p.phonenumber, COUNT(p.user) AS total FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE total > 0 GROUP BY p.user",
+            "SELECT c0_.phonenumber AS phonenumber0, COUNT(c0_.user_id) AS sclr1 FROM cms_phonenumbers c0_ WHERE sclr1 > 0 GROUP BY c0_.user_id"
+        );
+    }
+
     public function testSingleValuedAssociationNullCheckOnOwningSide()
     {
         $this->assertSqlGeneration(
