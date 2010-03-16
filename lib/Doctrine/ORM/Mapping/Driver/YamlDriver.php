@@ -24,13 +24,6 @@ namespace Doctrine\ORM\Mapping\Driver;
 use Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\MappingException;
 
-if ( ! class_exists('sfYaml', false)) {
-    require_once __DIR__ . '/../../../../vendor/sfYaml/sfYaml.class.php';
-    require_once __DIR__ . '/../../../../vendor/sfYaml/sfYamlDumper.class.php';
-    require_once __DIR__ . '/../../../../vendor/sfYaml/sfYamlInline.class.php';
-    require_once __DIR__ . '/../../../../vendor/sfYaml/sfYamlParser.class.php';
-}
-
 /**
  * The YamlDriver reads the mapping metadata from yaml schema files.
  *
@@ -434,6 +427,6 @@ class YamlDriver extends AbstractFileDriver
      */
     protected function _loadMappingFile($file)
     {
-        return \sfYaml::load($file);
+        return \Symfony\Components\Yaml\Yaml::load($file);
     }
 }

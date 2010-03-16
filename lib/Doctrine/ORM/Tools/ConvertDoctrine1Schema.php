@@ -25,13 +25,6 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Tools\Export\Driver\AbstractExporter,
     Doctrine\Common\Util\Inflector;
 
-if ( ! class_exists('sfYaml', false)) {
-    require_once __DIR__ . '/../../../vendor/sfYaml/sfYaml.class.php';
-    require_once __DIR__ . '/../../../vendor/sfYaml/sfYamlDumper.class.php';
-    require_once __DIR__ . '/../../../vendor/sfYaml/sfYamlInline.class.php';
-    require_once __DIR__ . '/../../../vendor/sfYaml/sfYamlParser.class.php';
-}
-
 /**
  * Class to help with converting Doctrine 1 schema files to Doctrine 2 mapping files
  *
@@ -76,10 +69,10 @@ class ConvertDoctrine1Schema
             if (is_dir($path)) {
                 $files = glob($path . '/*.yml');
                 foreach ($files as $file) {
-                    $schema = array_merge($schema, (array) \sfYaml::load($file));
+                    $schema = array_merge($schema, (array) \Symfony\Components\Yaml\Yaml::load($file));
                 }
             } else {
-                $schema = array_merge($schema, (array) \sfYaml::load($path));
+                $schema = array_merge($schema, (array) \Symfony\Components\Yaml\Yaml::load($path));
             }
         }
 

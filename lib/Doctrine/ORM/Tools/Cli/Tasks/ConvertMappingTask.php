@@ -180,17 +180,10 @@ class ConvertMappingTask extends AbstractTask
 
     private function _isDoctrine1Schema(array $from)
     {
-        if ( ! class_exists('sfYaml', false)) {
-            require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYaml.class.php';
-            require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlDumper.class.php';
-            require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlInline.class.php';
-            require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlParser.class.php';
-        }
-        
         $files = glob(current($from) . '/*.yml');
         
         if ($files) {
-            $array = \sfYaml::load($files[0]);
+            $array = \Symfony\Components\Yaml\Yaml::load($files[0]);
             $first = current($array);
             
             // We're dealing with a Doctrine 1 schema if you have
