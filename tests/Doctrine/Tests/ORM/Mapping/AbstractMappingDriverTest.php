@@ -157,7 +157,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      * @depends testManyToManyAssociationWithCascadeAll
      * @param ClassMetadata $class
      */
-    public function testLifecycleCallbacksSupportMultipleMethodNames($class) {
+    public function testLifecycleCallbacksSupportMultipleMethodNames($class)
+    {
         $this->assertEquals(count($class->lifecycleCallbacks['prePersist']), 2);
         $this->assertEquals($class->lifecycleCallbacks['prePersist'][1], 'doOtherStuffOnPrePersistToo');
 

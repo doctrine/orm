@@ -80,6 +80,14 @@ class PhpExporter extends AbstractExporter
             $lines[] = '$metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_' . $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy) . ');';
         }
 
+        if ($metadata->lifecycleCallbacks) {
+            foreach ($metadata->lifecycleCallbacks as $event => $callbacks) {
+                foreach ($callbacks as $callback) {
+                    $lines[] = "\$metadata->addLifecycleCallback('$callback', '$event');";
+                }
+            }
+        }
+
         foreach ($metadata->fieldMappings as $fieldMapping) {
             $lines[] = '$metadata->mapField(' . $this->_varExport($fieldMapping) . ');';
         }
@@ -89,16 +97,16 @@ class PhpExporter extends AbstractExporter
         }
 
         foreach ($metadata->associationMappings as $associationMapping) {
+            $cascade = array('remove', 'persist', 'refresh', 'merge', 'detach');
+            foreach ($cascade as $key => $value) {
+                if ( ! $associationMapping->{'isCascade'.ucfirst($value)}) {
+                    unset($cascade[$key]);
+                }
+            }
             $associationMappingArray = array(
                 'fieldName'    => $associationMapping->sourceFieldName,
                 'targetEntity' => $associationMapping->targetEntityName,
-                'cascade'     => array(
-                    'remove'  => $associationMapping->isCascadeRemove,
-                    'persist' => $associationMapping->isCascadePersist,
-                    'refresh' => $associationMapping->isCascadeRefresh,
-                    'merge'   => $associationMapping->isCascadeMerge,
-                    'detach'  => $associationMapping->isCascadeDetach,
-                ),
+                'cascade'     => $cascade,
             );
             
             if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToOneMapping) {
@@ -115,6 +123,7 @@ class PhpExporter extends AbstractExporter
                 $oneToManyMappingArray = array(
                     'mappedBy'      => $associationMapping->mappedBy,
                     'orphanRemoval' => $associationMapping->orphanRemoval,
+                    'orderBy' => $associationMapping->orderBy
                 );
                 
                 $associationMappingArray = array_merge($associationMappingArray, $oneToManyMappingArray);
@@ -123,10 +132,12 @@ class PhpExporter extends AbstractExporter
                 $manyToManyMappingArray = array(
                     'mappedBy'  => $associationMapping->mappedBy,
                     'joinTable' => $associationMapping->joinTable,
+                    'orderBy' => $associationMapping->orderBy
                 );
                 
                 $associationMappingArray = array_merge($associationMappingArray, $manyToManyMappingArray);
             }
+            
             $lines[] = '$metadata->' . $method . '(' . $this->_varExport($associationMappingArray) . ');';
         }
 

@@ -23,6 +23,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\XmlMappingDriverTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\YamlMappingDriverTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\AnnotationDriverTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\PhpMappingDriverTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\ClassMetadataFactoryTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\ClassMetadataLoadEventTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\BasicInheritanceMappingTest');
