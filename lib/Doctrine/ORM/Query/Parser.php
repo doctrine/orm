@@ -2558,7 +2558,8 @@ class Parser
      */
     public function FunctionDeclaration()
     {
-        $funcName = strtolower($this->_lexer->lookahead['value']);
+        $token = $this->_lexer->lookahead;
+        $funcName = strtolower($token['value']);
 
         // Check for built-in functions first!
         if (isset(self::$_STRING_FUNCTIONS[$funcName])) {
@@ -2568,17 +2569,25 @@ class Parser
         } else if (isset(self::$_DATETIME_FUNCTIONS[$funcName])) {
             return $this->FunctionsReturningDatetime();
         }
+
         // Check for custom functions afterwards
         $config = $this->_em->getConfiguration();
-        if ($config->getCustomStringFunction($funcName) !== null) {
+
+        if (($func = $config->getCustomStringFunction($funcName)) !== null) {
+            self::$_STRING_FUNCTIONS[$funcName] = $func;
+
             return $this->FunctionsReturningStrings();
-        } else if ($config->getCustomNumericFunction($funcName) !== null) {
+        } else if (($func = $config->getCustomNumericFunction($funcName)) !== null) {
+            self::$_NUMERIC_FUNCTIONS[$funcName] = $func;
+
             return $this->FunctionsReturningNumerics();
-        } else if ($config->getCustomDatetimeFunction($funcName) !== null) {
+        } else if (($func = $config->getCustomDatetimeFunction($funcName)) !== null) {
+            self::$_DATETIME_FUNCTIONS[$funcName] = $func;
+
             return $this->FunctionsReturningDatetime();
         }
 
-        $this->syntaxError('Known function.', $funcName);
+        $this->syntaxError('known function', $token);
     }
 
     /**

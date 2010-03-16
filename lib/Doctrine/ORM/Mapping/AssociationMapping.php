@@ -302,10 +302,10 @@ abstract class AssociationMapping
     public function hasCascades()
     {
         return $this->isCascadePersist ||
-                $this->isCascadeRemove ||
-                $this->isCascadeRefresh ||
-                $this->isCascadeMerge ||
-                $this->isCascadeDetach;
+               $this->isCascadeRemove ||
+               $this->isCascadeRefresh ||
+               $this->isCascadeMerge ||
+               $this->isCascadeDetach;
     }
 
     /**
@@ -328,9 +328,9 @@ abstract class AssociationMapping
      */
     public function getQuotedJoinTableName($platform)
     {
-        return isset($this->joinTable['quoted']) ?
-                $platform->quoteIdentifier($this->joinTable['name']) :
-                $this->joinTable['name'];
+        return isset($this->joinTable['quoted'])
+            ? $platform->quoteIdentifier($this->joinTable['name'])
+            : $this->joinTable['name'];
     }
     
 }
