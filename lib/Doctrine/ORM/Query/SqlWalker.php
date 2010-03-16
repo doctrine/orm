@@ -1640,9 +1640,7 @@ class SqlWalker implements TreeWalker
         } else if ($primary instanceof AST\Node) {
             $sql .= $primary->dispatch($this);
         } else if (is_string($primary)) {
-            $columnName = $this->_queryComponents[$primary]['token']['value'];
-
-            $sql .= $this->_scalarResultAliasMap[$columnName];
+            // We need to deal with IdentificationVariable here
         }
 
         return $sql;

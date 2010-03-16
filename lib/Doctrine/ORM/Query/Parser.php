@@ -2129,7 +2129,7 @@ class Parser
     /**
      * ArithmeticPrimary ::= SingleValuedPathExpression | Literal | "(" SimpleArithmeticExpression ")"
      *          | FunctionsReturningNumerics | AggregateExpression | FunctionsReturningStrings
-     *          | FunctionsReturningDatetime | ResultVariable
+     *          | FunctionsReturningDatetime | IdentificationVariable
      */
     public function ArithmeticPrimary()
     {
@@ -2154,7 +2154,7 @@ class Parser
                     return $this->SingleValuedPathExpression();
                 }
 
-                return $this->ResultVariable();
+                return $this->IdentificationVariable();
 
             case Lexer::T_INPUT_PARAMETER:
                 return $this->InputParameter();
