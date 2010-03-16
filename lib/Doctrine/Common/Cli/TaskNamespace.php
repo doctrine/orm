@@ -240,7 +240,7 @@ class TaskNamespace extends AbstractNamespace
             $printer->writeln($message, 'ERROR');
 
             // Unable instantiate task or task is not valid
-            if ($task !== null) {
+            if (isset($task) && $task !== null) {
                 $printer->write(PHP_EOL);
                 $task->basicHelp(); // Fallback of not-valid task arguments
             }
