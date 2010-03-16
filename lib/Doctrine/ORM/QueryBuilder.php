@@ -113,7 +113,7 @@ class QueryBuilder
      *         ->from('User', 'u')
      *         ->where($qb->expr()->eq('u.id', 1));
      *
-     * @return ExpressionBuilder
+     * @return Expr
      */
     public function expr()
     {
