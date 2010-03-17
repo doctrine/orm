@@ -80,7 +80,7 @@ abstract class AbstractExporter
     public function export()
     {
         if ( ! is_dir($this->_outputDir)) {
-            mkdir($this->_outputDir, 0777);
+            mkdir($this->_outputDir, 0777, true);
         }
 
         foreach ($this->_metadatas as $metadata) {

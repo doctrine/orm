@@ -232,17 +232,40 @@ class AnnotationExporter extends AbstractExporter
 
     private function _getEntityAnnotation($metadata)
     {
-        if ($metadata->isMappedSuperclass) {
-            return '@MappedSupperClass';
+        $lines = array();
+        $lines[] = '/**';
+
+        $methods = array(
+            '_getTableAnnotation',
+            '_getInheritanceAnnotation',
+            '_getDiscriminatorColumnAnnotation',
+            '_getDiscriminatorMapAnnotation'
+        );
+
+        foreach ($methods as $method) {
+            if ($code = $this->$method($metadata)) {
+                $lines[] = ' * ' . $code;
+            }
         }
 
-        $str = '@Entity';
+        if ($metadata->isMappedSuperclass) {
+            $lines[] = ' * @MappedSupperClass';
+        } else {
+            $lines[] = ' * @Entity';
+        }
 
         if ($metadata->customRepositoryClassName) {
-            $str .= '(repositoryClass="' . $metadata->customRepositoryClassName . '")';
+            $lines[count($lines) - 1] .= '(repositoryClass="' . $metadata->customRepositoryClassName . '")';
         }
 
-        return $str;
+        if (isset($metadata->lifecycleCallbacks) && $metadata->lifecycleCallbacks) {
+            $lines[] = ' * @HasLifecycleCallbacks';
+        }
+
+        $lines[] = ' */';
+        $lines[] = '';
+
+        return implode("\n", $lines);
     }
 
     private function _getTableAnnotation($metadata)
@@ -350,6 +373,23 @@ class AnnotationExporter extends AbstractExporter
         $methods[] = implode("\n", $method);
     }
 
+    private function _addLifecycleCallbackMethod($name, $methodName, $metadata, array &$methods)
+    {
+        if ($this->_hasMethod($methodName, $metadata)) {
+            return false;
+        }
+
+        $method = array();
+        $method[] = $this->_spaces . '/**';
+        $method[] = $this->_spaces . ' * @'.$name;
+        $method[] = $this->_spaces . ' */';
+        $method[] = $this->_spaces . 'public function ' . $methodName . '()';
+        $method[] = $this->_spaces . '{';
+        $method[] = $this->_spaces . '}';
+
+        $methods[] = implode("\n", $method)."\n\n";
+    }
+
     private function _getMethods($metadata)
     {
       $methods = array();
@@ -380,6 +420,14 @@ class AnnotationExporter extends AbstractExporter
           }
       }
 
+      if (isset($metadata->lifecycleCallbacks) && $metadata->lifecycleCallbacks) {
+          foreach ($metadata->lifecycleCallbacks as $name => $callbacks) {
+              foreach ($callbacks as $callback) {
+                  $this->_addLifecycleCallbackMethod($name, $callback, $metadata, $methods);
+              }
+          }
+      }
+
       return $methods;
     }
 
@@ -403,6 +451,9 @@ class AnnotationExporter extends AbstractExporter
         }
         if (isset($joinColumn['onUpdate'])) {
             $joinColumnAnnot[] = 'onUpdate=' . ($joinColumn['onUpdate'] ? 'true' : 'false');
+        }
+        if (isset($joinColumn['columnDefinition'])) {
+            $joinColumnAnnot[] = 'columnDefinition="' . $joinColumn['columnDefinition'] . '"';
         }
         return '@JoinColumn(' . implode(', ', $joinColumnAnnot) . ')';
     }
@@ -472,6 +523,15 @@ class AnnotationExporter extends AbstractExporter
             $lines[] = $this->_spaces . ' * )';
         }
 
+        if (isset($associationMapping->orderBy)) {
+            $lines[] = $this->_spaces . ' * @OrderBy({';
+            foreach ($associationMapping->orderBy as $name => $direction) {
+                $lines[] = $this->_spaces . ' *     "' . $name . '"="' . $direction . '",'; 
+            }
+            $lines[count($lines) - 1] = substr($lines[count($lines) - 1], 0, strlen($lines[count($lines) - 1]) - 1);
+            $lines[] = $this->_spaces . ' * })';
+        }
+
         $lines[] = $this->_spaces . ' */';
 
         return implode("\n", $lines);
@@ -500,6 +560,9 @@ class AnnotationExporter extends AbstractExporter
         }
         if (isset($fieldMapping['nullable'])) {
             $column[] = 'nullable=' .  var_export($fieldMapping['nullable'], true);
+        }
+        if (isset($fieldMapping['columnDefinition'])) {
+            $column[] = 'columnDefinition="' . $fieldMapping['columnDefinition'] . '"';
         }
         if (isset($fieldMapping['options'])) {
             $options = array();

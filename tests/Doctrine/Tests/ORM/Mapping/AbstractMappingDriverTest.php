@@ -210,7 +210,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
  */
 class User
 {
-    /** @Id @Column(type="int") @generatedValue(strategy="AUTO") */
+    /** @Id @Column(type="integer") @generatedValue(strategy="AUTO") */
     public $id;
 
     /**

@@ -20,7 +20,10 @@ class AllTests
     {
         $suite = new \Doctrine\Tests\DoctrineTestSuite('Doctrine Orm Tools');
 
-        $suite->addTestSuite('Doctrine\Tests\ORM\Tools\Export\ClassMetadataExporterTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Tools\Export\YamlClassMetadataExporterTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Tools\Export\XmlClassMetadataExporterTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Tools\Export\PhpClassMetadataExporterTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Tools\Export\AnnotationClassMetadataExporterTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Tools\ConvertDoctrine1SchemaTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Tools\SchemaToolTest');
 

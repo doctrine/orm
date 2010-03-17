@@ -66,6 +66,6 @@ class PhpDriver extends AbstractFileDriver
     protected function _loadMappingFile($file)
     {
         $metadata = $this->_metadata;
-        require_once $file;
+        include $file;
     }
 }

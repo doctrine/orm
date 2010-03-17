@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+                              
+    <entity name="Doctrine\Tests\ORM\Tools\Export\User" table="cms_users">
+        
+        <lifecycle-callbacks>
+            <lifecycle-callback type="prePersist" method="doStuffOnPrePersist"/>
+            <lifecycle-callback type="prePersist" method="doOtherStuffOnPrePersistToo"/>
+            <lifecycle-callback type="postPersist" method="doStuffOnPostPersist"/>
+        </lifecycle-callbacks>
+
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+        
+        <field name="name" column="name" type="string" length="50" nullable="true" unique="true" />
+        <field name="email" column="user_email" type="string" column-definition="CHAR(32) NOT NULL" />
+        
+        <one-to-one field="address" target-entity="Doctrine\Tests\ORM\Tools\Export\Address">
+            <cascade><cascade-remove /></cascade>
+            <join-column name="address_id" referenced-column-name="id" on-delete="CASCADE" on-update="CASCADE"/>
+        </one-to-one>
+        
+        <one-to-many field="phonenumbers" target-entity="Doctrine\Tests\ORM\Tools\Export\Phonenumber" mapped-by="user">
+            <order-by>
+                <order-by-field name="number" direction="ASC" />
+            </order-by>
+            <cascade>
+                <cascade-persist/>
+            </cascade>
+        </one-to-many>
+        
+        <many-to-many field="groups" target-entity="Doctrine\Tests\ORM\Tools\Export\Group">
+            <cascade>
+                <cascade-all/>
+            </cascade>
+            <join-table name="cms_users_groups">
+                <join-columns>
+                    <join-column name="user_id" referenced-column-name="id" nullable="false" unique="false" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="group_id" referenced-column-name="id" column-definition="INT NULL" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+        
+    </entity>
+
+</doctrine-mapping>

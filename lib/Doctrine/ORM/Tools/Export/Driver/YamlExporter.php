@@ -133,15 +133,25 @@ class YamlExporter extends AbstractExporter
 
         $associations = array();
         foreach ($metadata->associationMappings as $name => $associationMapping) {
+            $cascade = array();
+            if ($associationMapping->isCascadeRemove) {
+                $cascade[] = 'remove';
+            }
+            if ($associationMapping->isCascadePersist) {
+                $cascade[] = 'persist';
+            }
+            if ($associationMapping->isCascadeRefresh) {
+                $cascade[] = 'refresh';
+            }
+            if ($associationMapping->isCascadeMerge) {
+                $cascade[] = 'merge';
+            }
+            if ($associationMapping->isCascadeDetach) {
+                $cascade[] = 'detach';
+            }
             $associationMappingArray = array(
                 'targetEntity' => $associationMapping->targetEntityName,
-                'cascade'     => array(
-                    'remove'  => $associationMapping->isCascadeRemove,
-                    'persist' => $associationMapping->isCascadePersist,
-                    'refresh' => $associationMapping->isCascadeRefresh,
-                    'merge'   => $associationMapping->isCascadeMerge,
-                    'detach'  => $associationMapping->isCascadeDetach,
-                ),
+                'cascade'     => $cascade,
             );
             
             if ($associationMapping instanceof OneToOneMapping) {
@@ -149,6 +159,12 @@ class YamlExporter extends AbstractExporter
                 $newJoinColumns = array();
                 foreach ($joinColumns as $joinColumn) {
                     $newJoinColumns[$joinColumn['name']]['referencedColumnName'] = $joinColumn['referencedColumnName'];
+                    if (isset($joinColumn['onDelete'])) {
+                        $newJoinColumns[$joinColumn['name']]['onDelete'] = $joinColumn['onDelete'];
+                    }
+                    if (isset($joinColumn['onUpdate'])) {
+                        $newJoinColumns[$joinColumn['name']]['onUpdate'] = $joinColumn['onUpdate'];
+                    }
                 }
                 $oneToOneMappingArray = array(
                     'mappedBy'      => $associationMapping->mappedBy,
@@ -162,6 +178,7 @@ class YamlExporter extends AbstractExporter
                 $oneToManyMappingArray = array(
                     'mappedBy'      => $associationMapping->mappedBy,
                     'orphanRemoval' => $associationMapping->orphanRemoval,
+                    'orderBy' => $associationMapping->orderBy
                 );
 
                 $associationMappingArray = array_merge($associationMappingArray, $oneToManyMappingArray);
@@ -170,11 +187,15 @@ class YamlExporter extends AbstractExporter
                 $manyToManyMappingArray = array(
                     'mappedBy'  => $associationMapping->mappedBy,
                     'joinTable' => $associationMapping->joinTable,
+                    'orderBy' => $associationMapping->orderBy
                 );
                 
                 $associationMappingArray = array_merge($associationMappingArray, $manyToManyMappingArray);
                 $array['manyToMany'][$name] = $associationMappingArray;
             }
+        }
+        if (isset($metadata->lifecycleCallbacks)) {
+            $array['lifecycleCallbacks'] = $metadata->lifecycleCallbacks;
         }
 
         return \Symfony\Components\Yaml\Yaml::dump(array($metadata->name => $array), 10);

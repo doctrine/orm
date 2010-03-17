@@ -1,0 +1,53 @@
+Doctrine\Tests\ORM\Tools\Export\User:
+  type: entity
+  table: cms_users
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    name:
+      type: string
+      length: 50
+      nullable: true
+      unique: true
+    email:
+      type: string
+      column: user_email
+      columnDefinition: CHAR(32) NOT NULL
+  oneToOne:
+    address:
+      targetEntity: Doctrine\Tests\ORM\Tools\Export\Address
+      joinColumn:
+        name: address_id
+        referencedColumnName: id
+        onDelete: CASCADE
+        onUpdate: CASCADE
+      cascade: [ remove ]
+  oneToMany:
+    phonenumbers:
+      targetEntity: Doctrine\Tests\ORM\Tools\Export\Phonenumber
+      mappedBy: user
+      orderBy:
+        number: ASC
+      cascade: [ persist ]
+  manyToMany:
+    groups:
+      targetEntity: Doctrine\Tests\ORM\Tools\Export\Group
+      joinTable:
+        name: cms_users_groups
+        joinColumns:
+          user_id:
+            referencedColumnName: id
+            nullable: false
+            unique: false
+        inverseJoinColumns:
+          group_id:
+            referencedColumnName: id
+            columnDefinition: INT NULL
+      cascade:
+        - all
+  lifecycleCallbacks:
+    prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersistToo ] 
+    postPersist: [ doStuffOnPostPersist ] 
