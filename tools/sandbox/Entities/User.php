@@ -3,7 +3,8 @@
 namespace Entities;
 
 /** @Entity @Table(name="users") */
-class User {
+class User
+{
     /**
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -17,23 +18,28 @@ class User {
      */
     private $address;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
     }
 
-    public function getAddress() {
+    public function getAddress()
+    {
         return $this->address;
     }
 
-    public function setAddress(Address $address) {
+    public function setAddress(Address $address)
+    {
         if ($this->address !== $address) {
             $this->address = $address;
             $address->setUser($this);
