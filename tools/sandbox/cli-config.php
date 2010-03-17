@@ -22,6 +22,9 @@ $classLoader->register();
 $classLoader = new \Doctrine\Common\ClassLoader('Proxies', __DIR__);
 $classLoader->register();
 
+$classLoader = new \Doctrine\Common\ClassLoader('Symfony', __DIR__ . '/../../lib/vendor');
+$classLoader->register();
+
 $config = new \Doctrine\ORM\Configuration();
 $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache);
 $config->setProxyDir(__DIR__ . '/Proxies');
