@@ -22,7 +22,7 @@
         
         <one-to-one field="address" target-entity="Address">
             <cascade><cascade-remove /></cascade>
-            <join-column name="address_id" referenced-column-name="id"/>
+            <join-column name="address_id" referenced-column-name="id" on-delete="CASCADE" on-update="CASCADE"/>
         </one-to-one>
         
         <one-to-many field="phonenumbers" target-entity="Phonenumber" mapped-by="user">
