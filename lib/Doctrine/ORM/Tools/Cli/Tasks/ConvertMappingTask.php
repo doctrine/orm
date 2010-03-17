@@ -129,36 +129,29 @@ class ConvertMappingTask extends AbstractTask
 
         $from = (array) $arguments['from'];
 
-        if ($this->_isDoctrine1Schema($from)) {
-            $printer->writeln('Converting Doctrine 1 schema to Doctrine 2 mapping files', 'INFO');
-
-            $converter = new \Doctrine\ORM\Tools\ConvertDoctrine1Schema($from);
-            $metadatas = $converter->getMetadatasFromSchema();
-        } else {
-            foreach ($from as $source) {
-                $sourceArg = $source;
-                $type = $this->_determineSourceType($sourceArg);
-                
-                if ( ! $type) {
-                    throw new CliException(
-                        "Invalid mapping source type '$sourceArg'."
-                    );
-                }
-                
-                $source = $this->_getSourceByType($type, $sourceArg);
-                
-                $printer->writeln(
-                    sprintf(
-                        'Adding "%s" mapping source which contains the "%s" format', 
-                        $printer->format($sourceArg, 'KEYWORD'), $printer->format($type, 'KEYWORD')
-                    )
+        foreach ($from as $source) {
+            $sourceArg = $source;
+            $type = $this->_determineSourceType($sourceArg);
+            
+            if ( ! $type) {
+                throw new CliException(
+                    "Invalid mapping source type '$sourceArg'."
                 );
-
-                $cme->addMappingSource($source, $type);
             }
             
-            $metadatas = $cme->getMetadatasForMappingSources();
+            $source = $this->_getSourceByType($type, $sourceArg);
+            
+            $printer->writeln(
+                sprintf(
+                    'Adding "%s" mapping source which contains the "%s" format', 
+                    $printer->format($sourceArg, 'KEYWORD'), $printer->format($type, 'KEYWORD')
+                )
+            );
+
+            $cme->addMappingSource($source, $type);
         }
+        
+        $metadatas = $cme->getMetadatasForMappingSources();
 
         foreach ($metadatas as $metadata) {
             $printer->writeln(
@@ -176,22 +169,6 @@ class ConvertMappingTask extends AbstractTask
 
         $exporter->setMetadatas($metadatas);
         $exporter->export();
-    }
-
-    private function _isDoctrine1Schema(array $from)
-    {
-        $files = glob(current($from) . '/*.yml');
-        
-        if ($files) {
-            $array = \Symfony\Components\Yaml\Yaml::load($files[0]);
-            $first = current($array);
-            
-            // We're dealing with a Doctrine 1 schema if you have
-            // a columns index in the first model array
-            return isset($first['columns']);
-        } else {
-            return false;
-        }
     }
 
     private function _determineSourceType($source)

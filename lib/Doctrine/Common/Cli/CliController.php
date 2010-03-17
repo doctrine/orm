@@ -82,7 +82,8 @@ class CliController extends AbstractNamespace
              ->addTask('generate-proxies', $ns . '\GenerateProxiesTask')
              ->addTask('run-dql', $ns . '\RunDqlTask')
              ->addTask('schema-tool', $ns . '\SchemaToolTask')
-             ->addTask('version', $ns . '\VersionTask');
+             ->addTask('version', $ns . '\VersionTask')
+             ->addTask('convert-d1-schema', $ns . '\ConvertDoctrine1SchemaTask');
 
         $ns = 'Doctrine\DBAL\Tools\Cli\Tasks';
         $this->addNamespace('Dbal')
