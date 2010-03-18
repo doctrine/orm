@@ -71,6 +71,12 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
         
+        $guilherme = $this->_em->getRepository(get_class($employee))->findOneBy(array('name' => 'Guilherme Blanco'));
+        $this->assertTrue($guilherme instanceof CompanyEmployee);
+        $this->assertEquals('Guilherme Blanco', $guilherme->getName());
+
+        $this->_em->clear();
+        
         $query = $this->_em->createQuery("update Doctrine\Tests\Models\Company\CompanyEmployee p set p.name = ?1, p.department = ?2 where p.name='Guilherme Blanco' and p.salary = ?3");
         $query->setParameter(1, 'NewName');
         $query->setParameter(2, 'NewDepartment');

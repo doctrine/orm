@@ -398,7 +398,11 @@ class JoinedSubclassPersister extends StandardEntityPersister
         $conditionSql = '';
         foreach ($criteria as $field => $value) {
             if ($conditionSql != '') $conditionSql .= ' AND ';
-            $conditionSql .= $baseTableAlias . '.';
+            if (isset($this->_class->fieldMappings[$field]['inherited'])) {
+                $conditionSql .= $this->_getSQLTableAlias($this->_em->getClassMetadata($this->_class->fieldMappings[$field]['inherited'])) . '.';
+            } else {
+                $conditionSql .= $baseTableAlias . '.';
+            }
             if (isset($this->_class->columnNames[$field])) {
                 $conditionSql .= $this->_class->getQuotedColumnName($field, $this->_platform);
             } else if ($assoc !== null) {
