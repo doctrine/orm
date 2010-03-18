@@ -36,6 +36,68 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $this->assertEquals('string', $cm->fieldMappings['id']['type']);
     }
 
+    /**
+     * @group DDC-318
+     */
+    public function testGetAllClassNamesIsIdempotent()
+    {
+        $annotationDriver = $this->_loadDriverForCMSModels();
+        $original = $annotationDriver->getAllClassNames();
+
+        $annotationDriver = $this->_loadDriverForCMSModels();
+        $afterTestReset = $annotationDriver->getAllClassNames();
+
+        $this->assertEquals($original, $afterTestReset);
+    }
+
+    /**
+     * @group DDC-318
+     */
+    public function testGetAllClassNamesIsIdempotentEvenWithDifferentDriverInstances()
+    {
+        $annotationDriver = $this->_loadDriverForCMSModels();
+        $original = $annotationDriver->getAllClassNames();
+
+        $annotationDriver = $this->_loadDriverForCMSModels();
+        $afterTestReset = $annotationDriver->getAllClassNames();
+
+        $this->assertEquals($original, $afterTestReset);
+    }
+
+    /**
+     * @group DDC-318
+     */
+    public function testGetAllClassNamesReturnsAlreadyLoadedClassesIfAppropriate()
+    {
+        $rightClassName = 'Doctrine\Tests\Models\CMS\CmsUser';
+        $this->_ensureIsLoaded($rightClassName);
+
+        $annotationDriver = $this->_loadDriverForCMSModels();
+        $classes = $annotationDriver->getAllClassNames();
+
+        $this->assertContains($rightClassName, $classes);
+    }
+
+    /**
+     * @group DDC-318
+     */
+    public function testGetClassNamesReturnsOnlyTheAppropriateClasses()
+    {
+        $extraneousClassName = 'Doctrine\Tests\Models\ECommerce\ECommerceCart';
+        $this->_ensureIsLoaded($extraneousClassName);
+
+        $annotationDriver = $this->_loadDriverForCMSModels();
+        $classes = $annotationDriver->getAllClassNames();
+
+        $this->assertNotContains($extraneousClassName, $classes);
+    }
+
+    protected function _loadDriverForCMSModels()
+    {
+        $annotationDriver = $this->_loadDriver();
+        $annotationDriver->addPaths(array(__DIR__ . '/../../Models/CMS/'));
+        return $annotationDriver;
+    }
 
     protected function _loadDriver()
     {
@@ -43,6 +105,11 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $reader = new \Doctrine\Common\Annotations\AnnotationReader($cache);
         $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
         return new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
+    }
+
+    protected function _ensureIsLoaded($entityClassName)
+    {
+        new $entityClassName;
     }
 }
 

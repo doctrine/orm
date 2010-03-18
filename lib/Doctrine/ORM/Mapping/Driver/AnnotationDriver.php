@@ -431,7 +431,7 @@ class AnnotationDriver implements Driver
         $classes = array();
 
         if ($this->_paths) {
-            $declared = get_declared_classes();
+            $includedFiles = array();
 
             foreach ((array) $this->_paths as $path) {
                 if ( ! is_dir($path)) {
@@ -447,15 +447,19 @@ class AnnotationDriver implements Driver
                     if (($fileName = $file->getBasename($this->_fileExtension)) == $file->getBasename()) {
                         continue;
                     }
-
-                    require_once $file->getPathName();
+                    
+                    $sourceFile = realpath($file->getPathName());
+                    require_once $sourceFile;
+                    $includedFiles[] = $sourceFile;
                 }
             }
 
-            $declared = array_diff(get_declared_classes(), $declared);
+            $declared = get_declared_classes();
 
             foreach ($declared as $className) {
-                if ( ! $this->isTransient($className)) {
+                $rc = new \ReflectionClass($className);
+                $sourceFile = $rc->getFileName();
+                if (in_array($sourceFile, $includedFiles) && ! $this->isTransient($className)) {
                     $classes[] = $className;
                 }
             }
