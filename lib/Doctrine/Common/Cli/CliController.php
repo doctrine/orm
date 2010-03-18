@@ -233,7 +233,7 @@ class CliController extends AbstractNamespace
                     $value = (strpos($value, ' ') !== false) ? $value : array_values(array_filter(
                         explode(',', $value), function ($v) { return trim($v) != ''; }
                     ));
-                    $out[$key] = ( ! is_array($value) || (is_array($value) && count($value) > 1)) 
+                    $out[$key] = ( ! is_array($value) || empty($value) || (is_array($value) && count($value) > 1))
                         ? $value : $value[0];
                 }
             // -k=value -abc
