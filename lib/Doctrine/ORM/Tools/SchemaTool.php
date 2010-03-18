@@ -24,7 +24,9 @@ namespace Doctrine\ORM\Tools;
 use Doctrine\ORM\ORMException,
     Doctrine\DBAL\Types\Type,
     Doctrine\ORM\EntityManager,
-    Doctrine\ORM\Internal\CommitOrderCalculator;
+    Doctrine\ORM\Internal\CommitOrderCalculator,
+    Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs,
+    Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 
 /**
  * The SchemaTool is a tool to create/drop/update database schemas based on
@@ -116,6 +118,8 @@ class SchemaTool
 
         $sm = $this->_em->getConnection()->getSchemaManager();
         $schema = new \Doctrine\DBAL\Schema\Schema(array(), array(), $metadataSchemaConfig);
+
+        $evm = $this->_em->getEventManager();
 
         foreach ($classes as $class) {
             if (isset($processedClasses[$class->name]) || $class->isMappedSuperclass) {
@@ -223,6 +227,14 @@ class SchemaTool
                     );
                 }
             }
+
+            if ($evm->hasListeners(ToolEvents::postGenerateSchemaTable)) {
+                $evm->dispatchEvent(ToolEvents::postGenerateSchemaTable, new GenerateSchemaTableEventArgs($class, $schema, $table));
+            }
+        }
+
+        if ($evm->hasListeners(ToolEvents::postGenerateSchema)) {
+            $evm->dispatchEvent(ToolEvents::postGenerateSchema, new GenerateSchemaEventArgs($this->_em, $schema));
         }
 
         return $schema;
