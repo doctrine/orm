@@ -195,7 +195,7 @@ class AnnotationDriver implements Driver
         // Evaluate DoctrineChangeTrackingPolicy annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\ChangeTrackingPolicy'])) {
             $changeTrackingAnnot = $classAnnotations['Doctrine\ORM\Mapping\ChangeTrackingPolicy'];
-            $metadata->setChangeTrackingPolicy($changeTrackingAnnot->value);
+            $metadata->setChangeTrackingPolicy(constant('\Doctrine\ORM\Mapping\ClassMetadata::CHANGETRACKING_' . $inheritanceTypeAnnot->value));
         }
 
         // Evaluate annotations on properties/fields
