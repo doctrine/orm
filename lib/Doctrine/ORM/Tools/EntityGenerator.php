@@ -54,8 +54,8 @@ class EntityGenerator
     /** Whether or not the current ClassMetadataInfo instance is new or old */
     private $_isNew;
 
-    /** If $_isNew is false then current code contains the current code from disk */
-    private $_currentCode;
+    /** If isNew is false then this variable contains instance of ReflectionClass for current entity */
+    private $_reflection;
 
     /** Number of spaces to use for indention in generated code */
     private $_numSpaces = 4;
@@ -119,6 +119,11 @@ class EntityGenerator
 
         $this->_isNew = ! file_exists($path);
 
+        if ( ! $this->_isNew) {
+            require_once $path;
+            $this->_reflection = new \ReflectionClass($metadata->name);
+        }
+
         // If entity doesn't exist or we're re-generating the entities entirely
         if ($this->_isNew || ( ! $this->_isNew && $this->_regenerateEntityIfExists)) {
             file_put_contents($path, $this->generateEntityClass($metadata));
@@ -166,12 +171,12 @@ class EntityGenerator
      */
     public function generateUpdatedEntityClass(ClassMetadataInfo $metadata, $path)
     {
-        $this->_currentCode = file_get_contents($path);
+        $currentCode = file_get_contents($path);
 
         $body = $this->_generateEntityBody($metadata);
         
-        $last = strrpos($this->_currentCode, '}');
-        $code = substr($this->_currentCode, 0, $last) . $body . '}';
+        $last = strrpos($currentCode, '}');
+        $code = substr($currentCode, 0, $last) . $body . '}';
         return $code;
     }
 
@@ -300,7 +305,7 @@ class EntityGenerator
         if ($this->_isNew) {
             return false;
         } else {
-            return strpos($this->_currentCode, '$' . $property) !== false ? true : false;
+            return $this->_reflection->hasProperty($property);
         }
     }
 
@@ -309,7 +314,7 @@ class EntityGenerator
         if ($this->_isNew) {
             return false;
         } else {
-            return strpos($this->_currentCode, 'function ' . $method) !== false ? true : false;
+            return $this->_reflection->hasMethod($method);
         }
     }
 
@@ -394,7 +399,9 @@ class EntityGenerator
     private function _generateTableAnnotation($metadata)
     {
         $table = array();
-        $table[] = 'name="' . $metadata->primaryTable['name'] . '"';
+        if ($metadata->primaryTable['name']) {
+            $table[] = 'name="' . $metadata->primaryTable['name'] . '"';
+        }
 
         if (isset($metadata->primaryTable['schema'])) {
             $table[] = 'schema="' . $metadata->primaryTable['schema'] . '"';

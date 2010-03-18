@@ -11,6 +11,17 @@ require_once __DIR__ . '/../../TestInit.php';
 
 class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
 {
+    private $_generator;
+
+    public function setUp()
+    {
+        $this->_generator = new EntityGenerator();
+        $this->_generator->setGenerateAnnotations(true);
+        $this->_generator->setGenerateStubMethods(true);
+        $this->_generator->setRegenerateEntityIfExists(false);
+        $this->_generator->setUpdateEntityIfExists(true);
+    }
+
     public function testWriteEntityClass()
     {
         $metadata = new ClassMetadataInfo('EntityGeneratorBook');
@@ -33,22 +44,20 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         ));
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
 
-        $generator = new EntityGenerator();
-        $generator->setGenerateAnnotations(true);
-        $generator->setGenerateStubMethods(true);
-        $generator->setRegenerateEntityIfExists(false);
-        $generator->setUpdateEntityIfExists(true);
-        $generator->writeEntityClass($metadata, __DIR__);
+        $this->_generator->writeEntityClass($metadata, __DIR__);
 
         $path = __DIR__ . '/EntityGeneratorBook.php';
         $this->assertTrue(file_exists($path));
         require_once $path;
+
+        return $metadata;
     }
 
     /**
      * @depends testWriteEntityClass
+     * @param ClassMetadata $metadata
      */
-    public function testGeneratedEntityClassMethods()
+    public function testGeneratedEntityClassMethods($metadata)
     {
         $this->assertTrue(method_exists('\EntityGeneratorBook', 'getId'));
         $this->assertTrue(method_exists('\EntityGeneratorBook', 'setName'));
@@ -73,6 +82,24 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $book->addAuthor('Test');
         $this->assertEquals(array('Test'), $book->getAuthor());
+
+        return $metadata;
+    }
+
+    /**
+     * @depends testGeneratedEntityClassMethods
+     * @param ClassMetadata $metadata
+     */
+    public function testEntityUpdatingWorks($metadata)
+    {
+        $metadata->mapField(array('fieldName' => 'test', 'type' => 'varchar'));
+        $this->_generator->writeEntityClass($metadata, __DIR__);
+
+        $code = file_get_contents(__DIR__ . '/EntityGeneratorBook.php');
+        $this->assertTrue(strstr($code, 'private $test;') !== false);
+        $this->assertTrue(strstr($code, 'private $test;') !== false);
+        $this->assertTrue(strstr($code, 'public function getTest(') !== false);
+        $this->assertTrue(strstr($code, 'public function setTest(') !== false);
 
         unlink(__DIR__ . '/EntityGeneratorBook.php');
     }

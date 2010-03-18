@@ -84,7 +84,7 @@ class CliController extends AbstractNamespace
              ->addTask('schema-tool', $ns . '\SchemaToolTask')
              ->addTask('version', $ns . '\VersionTask')
              ->addTask('convert-d1-schema', $ns . '\ConvertDoctrine1SchemaTask')
-             ->addTask('generate-entity-stubs', $ns . '\GenerateEntityStubsTask');
+             ->addTask('generate-entities', $ns . '\GenerateEntitiesTask');
 
         $ns = 'Doctrine\DBAL\Tools\Cli\Tasks';
         $this->addNamespace('Dbal')

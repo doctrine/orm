@@ -40,7 +40,7 @@ use Doctrine\Common\Cli\Tasks\AbstractTask,
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class GenerateEntityStubsTask extends ConvertMappingTask
+class GenerateEntitiesTask extends ConvertMappingTask
 {
     /**
      * @inheritdoc
@@ -53,7 +53,7 @@ class GenerateEntityStubsTask extends ConvertMappingTask
         ));
 
         $doc = $this->getDocumentation();
-        $doc->setName('generate-entity-stubs')
+        $doc->setName('generate-entities')
             ->setDescription('Generate entity classes and method stubs from your mapping information.')
             ->getOptionGroup()
                 ->addOption($options);
@@ -82,7 +82,7 @@ class GenerateEntityStubsTask extends ConvertMappingTask
         $dest = realpath($arguments['dest']);
 
         $generator = new EntityGenerator();
-        $generator->setGenerateAnnotations(true);
+        $generator->setGenerateAnnotations(false);
         $generator->setGenerateStubMethods(true);
         $generator->setRegenerateEntityIfExists(false);
         $generator->setUpdateEntityIfExists(true);
