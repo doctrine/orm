@@ -264,7 +264,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->_orphanRemovals)) {
             return; // Nothing to do.
         }
-        
+
         if ($this->_orphanRemovals) {
             foreach ($this->_orphanRemovals as $orphan) {
                 $this->remove($orphan);
@@ -371,70 +371,7 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Method can be used to compute the change-set of any entity.
-     *
-     * @Internal
-     *
-     * @Todo inline _computeEntityChanges to here?
-     * 
-     * @param ClassMetadata $class
-     * @param object $entity
-     * @return void
-     */
-    public function computeChangeSet($class, $entity)
-    {
-        $this->_computeEntityChanges($class, $entity);
-        // Look for changes in associations of the entity
-        foreach ($class->associationMappings as $assoc) {
-            $val = $class->reflFields[$assoc->sourceFieldName]->getValue($entity);
-            if ($val !== null) {
-                $this->_computeAssociationChanges($assoc, $val);
-            }
-        }
-    }
-
-    /**
-     * Computes all the changes that have been done to entities and collections
-     * since the last commit and stores these changes in the _entityChangeSet map
-     * temporarily for access by the persisters, until the UoW commit is finished.
-     */
-    public function computeChangeSets()
-    {
-        // Compute changes for INSERTed entities first. This must always happen.
-        foreach ($this->_entityInsertions as $entity) {
-            $class = $this->_em->getClassMetadata(get_class($entity));
-            $this->computeChangeSet($class, $entity);
-        }
-
-        // Compute changes for other MANAGED entities. Change tracking policies take effect here.
-        foreach ($this->_identityMap as $className => $entities) {
-            $class = $this->_em->getClassMetadata($className);
-
-            // Skip class if change tracking happens through notification
-            if ($class->isChangeTrackingNotify() /* || $class->isReadOnly*/) {
-                continue;
-            }
-
-            // If change tracking is explicit, then only compute changes on explicitly saved entities
-            $entitiesToProcess = $class->isChangeTrackingDeferredExplicit() ?
-                    $this->_scheduledForDirtyCheck[$className] : $entities;
-
-            foreach ($entitiesToProcess as $entity) {
-                // Ignore uninitialized proxy objects
-                if (/* $entity is readOnly || */ $entity instanceof Proxy && ! $entity->__isInitialized__) {
-                    continue;
-                }
-                // Only MANAGED entities that are NOT SCHEDULED FOR INSERTION are processed here.
-                $oid = spl_object_hash($entity);
-                if ( ! isset($this->_entityInsertions[$oid]) && isset($this->_entityStates[$oid])) {
-                    $this->computeChangeSet($class, $entity);
-                }
-            }
-        }
-    }
-
-    /**
-     * Computes the changes done to a single entity.
+     * Computes the changes that happened to a single entity.
      *
      * Modifies/populates the following properties:
      *
@@ -461,13 +398,13 @@ class UnitOfWork implements PropertyChangedListener
      * @param ClassMetadata $class The class descriptor of the entity.
      * @param object $entity The entity for which to compute the changes.
      */
-    private function _computeEntityChanges($class, $entity)
+    public function computeChangeSet(Mapping\ClassMetadata $class, $entity)
     {
-        $oid = spl_object_hash($entity);
-
         if ( ! $class->isInheritanceTypeNone()) {
             $class = $this->_em->getClassMetadata(get_class($entity));
         }
+        
+        $oid = spl_object_hash($entity);
 
         $actualData = array();
         foreach ($class->reflFields as $name => $refProp) {
@@ -547,6 +484,54 @@ class UnitOfWork implements PropertyChangedListener
 
                 if ($entityIsDirty) {
                     $this->_entityUpdates[$oid] = $entity;
+                }
+            }
+        }
+        
+        // Look for changes in associations of the entity
+        foreach ($class->associationMappings as $assoc) {
+            $val = $class->reflFields[$assoc->sourceFieldName]->getValue($entity);
+            if ($val !== null) {
+                $this->_computeAssociationChanges($assoc, $val);
+            }
+        }
+    }
+
+    /**
+     * Computes all the changes that have been done to entities and collections
+     * since the last commit and stores these changes in the _entityChangeSet map
+     * temporarily for access by the persisters, until the UoW commit is finished.
+     */
+    public function computeChangeSets()
+    {
+        // Compute changes for INSERTed entities first. This must always happen.
+        foreach ($this->_entityInsertions as $entity) {
+            $class = $this->_em->getClassMetadata(get_class($entity));
+            $this->computeChangeSet($class, $entity);
+        }
+
+        // Compute changes for other MANAGED entities. Change tracking policies take effect here.
+        foreach ($this->_identityMap as $className => $entities) {
+            $class = $this->_em->getClassMetadata($className);
+
+            // Skip class if change tracking happens through notification
+            if ($class->isChangeTrackingNotify() /* || $class->isReadOnly*/) {
+                continue;
+            }
+
+            // If change tracking is explicit, then only compute changes on explicitly saved entities
+            $entitiesToProcess = $class->isChangeTrackingDeferredExplicit() ?
+                    $this->_scheduledForDirtyCheck[$className] : $entities;
+
+            foreach ($entitiesToProcess as $entity) {
+                // Ignore uninitialized proxy objects
+                if (/* $entity is readOnly || */ $entity instanceof Proxy && ! $entity->__isInitialized__) {
+                    continue;
+                }
+                // Only MANAGED entities that are NOT SCHEDULED FOR INSERTION are processed here.
+                $oid = spl_object_hash($entity);
+                if ( ! isset($this->_entityInsertions[$oid]) && isset($this->_entityStates[$oid])) {
+                    $this->computeChangeSet($class, $entity);
                 }
             }
         }
