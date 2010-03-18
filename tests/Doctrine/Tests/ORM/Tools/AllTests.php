@@ -26,6 +26,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Tools\Export\AnnotationClassMetadataExporterTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Tools\ConvertDoctrine1SchemaTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Tools\SchemaToolTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Tools\EntityGeneratorTest');
 
         return $suite;
     }

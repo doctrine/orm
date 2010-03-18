@@ -171,7 +171,7 @@ class ConvertMappingTask extends AbstractTask
         $exporter->export();
     }
 
-    private function _determineSourceType($source)
+    protected function _determineSourceType($source)
     {
         // If the --from=<VALUE> is a directory lets determine if it is
         // annotations, yaml, xml, etc.
@@ -204,7 +204,7 @@ class ConvertMappingTask extends AbstractTask
         }
     }
 
-    private function _getSourceByType($type, $source)
+    protected function _getSourceByType($type, $source)
     {
         // If --from==database then the source is an instance of SchemaManager
         // for the current EntityMAnager
