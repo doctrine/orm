@@ -63,7 +63,7 @@ class CliController extends AbstractNamespace
      * @param Configuration $config
      * @param AbstractPrinter $printer CLI Output printer
      */
-    public function __construct(Configuration $config, AbstractPrinter $printer = null)
+    public function __construct(Configuration $config, Printers\AbstractPrinter $printer = null)
     {
         $this->setPrinter($printer);
         $this->setConfiguration($config);
