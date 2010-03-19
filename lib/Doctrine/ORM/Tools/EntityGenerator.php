@@ -83,6 +83,7 @@ class EntityGenerator
 '<?php
 
 <namespace><use>
+
 <entityAnnotation>
 <entityClassName>
 {
@@ -91,10 +92,10 @@ class EntityGenerator
 
     private static $_getMethodTemplate =
 '/**
-  * <description>
-  *
-  * @return <variableType>$<variableName>
-  */
+ * <description>
+ *
+ * @return <variableType>$<variableName>
+ */
 public function <methodName>()
 {
     return $this-><fieldName>;
@@ -102,10 +103,10 @@ public function <methodName>()
 
     private static $_setMethodTemplate =
 '/**
-  * <description>
-  *
-  * @param <variableType>$<variableName>
-  */
+ * <description>
+ *
+ * @param <variableType>$<variableName>
+ */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
     $this-><fieldName> = $<variableName>;
@@ -113,10 +114,10 @@ public function <methodName>(<methodTypeHint>$<variableName>)
 
     private static $_addMethodTemplate =
 '/**
-  * <description>
-  *
-  * @param <variableType>$<variableName>
-  */
+ * <description>
+ *
+ * @param <variableType>$<variableName>
+ */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
     $this-><fieldName>[] = $<variableName>;
@@ -124,8 +125,8 @@ public function <methodName>(<methodTypeHint>$<variableName>)
 
     private static $_lifecycleCallbackMethodTemplate =
 '/**
-  * @<name>
-  */
+ * @<name>
+ */
 public function <methodName>()
 {
     // Add your code here
