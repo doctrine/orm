@@ -52,7 +52,7 @@ class EntityGenerator
     private $_extension = '.php';
 
     /** Whether or not the current ClassMetadataInfo instance is new or old */
-    private $_isNew;
+    private $_isNew = true;
 
     /** If isNew is false then this variable contains instance of ReflectionClass for current entity */
     private $_reflection;
@@ -70,7 +70,7 @@ class EntityGenerator
     private $_generateAnnotations = false;
 
     /** Whether or not to generated sub methods */
-    private $_generateStubMethods = false;
+    private $_generateEntityStubMethods = false;
 
     /** Whether or not to update the entity class if it exists already */
     private $_updateEntityIfExists = false;
@@ -254,7 +254,7 @@ class EntityGenerator
      */
     public function setGenerateStubMethods($bool)
     {
-        $this->_generateStubMethods = $bool;
+        $this->_generateEntityStubMethods = $bool;
     }
 
     private function _generateEntityNamespace(ClassMetadataInfo $metadata)
@@ -281,7 +281,7 @@ class EntityGenerator
     {
         $fieldMappingProperties  = $this->_generateEntityFieldMappingProperties($metadata);
         $associationMappingProperties = $this->_generateEntityAssociationMappingProperties($metadata);
-        $stubMethods = $this->_generateStubMethods ? $this->_generateEntityStubMethods($metadata) : null;
+        $stubMethods = $this->_generateEntityStubMethods ? $this->_generateEntityStubMethods($metadata) : null;
         $lifecycleCallbackMethods = $this->_generateEntityLifecycleCallbackMethods($metadata);
 
         $code = '';
@@ -448,45 +448,45 @@ class EntityGenerator
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
             if ( ! isset($fieldMapping['id']) || ! $fieldMapping['id']) {
-                if ($code = $this->_generateStubMethod('set', $fieldMapping['fieldName'], $metadata)) {
+                if ($code = $this->_generateEntityStubMethod('set', $fieldMapping['fieldName'], $metadata)) {
                     $methods[] = $code;
                 }
             }
 
-            if ($code = $this->_generateStubMethod('get', $fieldMapping['fieldName'], $metadata)) {
+            if ($code = $this->_generateEntityStubMethod('get', $fieldMapping['fieldName'], $metadata)) {
                 $methods[] = $code;
             }
         }
 
         foreach ($metadata->associationMappings as $associationMapping) {
             if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToOneMapping) {
-                if ($code = $this->_generateStubMethod('set', $associationMapping->sourceFieldName, $metadata)) {
+                if ($code = $this->_generateEntityStubMethod('set', $associationMapping->sourceFieldName, $metadata)) {
                     $methods[] = $code;
                 }
-                if ($code = $this->_generateStubMethod('get', $associationMapping->sourceFieldName, $metadata)) {
+                if ($code = $this->_generateEntityStubMethod('get', $associationMapping->sourceFieldName, $metadata)) {
                     $methods[] = $code;
                 }
             } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\OneToManyMapping) {
                 if ($associationMapping->isOwningSide) {
-                    if ($code = $this->_generateStubMethod('set', $associationMapping->sourceFieldName, $metadata)) {
+                    if ($code = $this->_generateEntityStubMethod('set', $associationMapping->sourceFieldName, $metadata)) {
                         $methods[] = $code;
                     }
-                    if ($code = $this->_generateStubMethod('get', $associationMapping->sourceFieldName, $metadata)) {
+                    if ($code = $this->_generateEntityStubMethod('get', $associationMapping->sourceFieldName, $metadata)) {
                         $methods[] = $code;
                     }
                 } else {
-                    if ($code = $this->_generateStubMethod('add', $associationMapping->sourceFieldName, $metadata)) {
+                    if ($code = $this->_generateEntityStubMethod('add', $associationMapping->sourceFieldName, $metadata)) {
                         $methods[] = $code;
                     }
-                    if ($code = $this->_generateStubMethod('get', $associationMapping->sourceFieldName, $metadata)) {
+                    if ($code = $this->_generateEntityStubMethod('get', $associationMapping->sourceFieldName, $metadata)) {
                         $methods[] = $code;                
                     }
                 }
             } else if ($associationMapping instanceof \Doctrine\ORM\Mapping\ManyToManyMapping) {
-                if ($code = $this->_generateStubMethod('add', $associationMapping->sourceFieldName, $metadata)) {
+                if ($code = $this->_generateEntityStubMethod('add', $associationMapping->sourceFieldName, $metadata)) {
                     $methods[] = $code;
                 }
-                if ($code = $this->_generateStubMethod('get', $associationMapping->sourceFieldName, $metadata)) {
+                if ($code = $this->_generateEntityStubMethod('get', $associationMapping->sourceFieldName, $metadata)) {
                     $methods[] = $code;
                 }
             }
@@ -542,7 +542,7 @@ class EntityGenerator
         return $code;
     }
 
-    private function _generateStubMethod($type, $fieldName, ClassMetadataInfo $metadata)
+    private function _generateEntityStubMethod($type, $fieldName, ClassMetadataInfo $metadata)
     {
         $methodName = $type . ucfirst($fieldName);
         if ($this->_hasMethod($methodName, $metadata)) {

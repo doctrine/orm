@@ -89,9 +89,9 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function extractClassMetadata($className)
     {
         $cm = new ClassMetadataExporter();
-        $cm->addMappingSource($this->_sm, 'database');
+        $cm->addMappingSource($this->_sm);
         $exporter = $cm->getExporter('yaml');
-        $metadatas = $cm->getMetadatasForMappingSources();
+        $metadatas = $cm->getMetadatas();
 
         $output = false;
         

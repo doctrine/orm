@@ -44,14 +44,14 @@ class ConvertDoctrine1SchemaTest extends \Doctrine\Tests\OrmTestCase
         $converter = new ConvertDoctrine1Schema(__DIR__ . '/doctrine1schema');
 
         $exporter = $cme->getExporter('yml', __DIR__ . '/convert');
-        $exporter->setMetadatas($converter->getMetadatasFromSchema());
+        $exporter->setMetadatas($converter->getMetadatas());
         $exporter->export();
 
         $this->assertTrue(file_exists(__DIR__ . '/convert/User.dcm.yml'));
         $this->assertTrue(file_exists(__DIR__ . '/convert/Profile.dcm.yml'));
 
-        $cme->addMappingSource(__DIR__ . '/convert', 'yml');
-        $metadatas = $cme->getMetadatasForMappingSources();
+        $cme->addMappingSource(__DIR__ . '/convert');
+        $metadatas = $cme->getMetadatas();
 
         $this->assertEquals(2, count($metadatas));
         $this->assertEquals('Profile', $metadatas['Profile']->name);

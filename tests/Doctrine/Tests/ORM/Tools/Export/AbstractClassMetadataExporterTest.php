@@ -65,7 +65,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     {
         $type = $this->_getType();
         $cme = $this->_loadClassMetadataExporter();
-        $metadataInstances = $cme->getMetadatasForMappingSources();
+        $metadataInstances = $cme->getMetadatas();
 
         $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\User', $metadataInstances['Doctrine\Tests\ORM\Tools\Export\User']->name);
 
@@ -81,7 +81,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $type = $this->_getType();
         $exporter = $cme->getExporter($type, __DIR__ . '/export/' . $type);
         $this->_extension = $exporter->getExtension();
-        $metadatas = $cme->getMetadatasForMappingSources();
+        $metadatas = $cme->getMetadatas();
         if ($type == 'annotation') {
             $metadatas['Doctrine\Tests\ORM\Tools\Export\User']->name = $this->_getTestEntityName();
         }
@@ -104,7 +104,8 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $type = $this->_getType();
         $cme = new ClassMetadataExporter();
         $cme->addMappingSource(__DIR__ . '/export/' . $type, $type);
-        $metadataInstances = $cme->getMetadatasForMappingSources();
+
+        $metadataInstances = $cme->getMetadatas();
         $metadata = current($metadataInstances);
     
         $this->assertEquals($this->_getTestEntityName(), $metadata->name);

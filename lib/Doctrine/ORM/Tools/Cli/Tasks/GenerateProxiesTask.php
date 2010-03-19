@@ -87,13 +87,21 @@ class GenerateProxiesTask extends AbstractTask
         if (empty($classes)) {
             $printer->writeln('No classes to process.', 'INFO');
         } else {
+            foreach ($classes as $class) {
+                $printer->writeln(
+                    sprintf('Processing entity "%s"', $printer->format($class->name, 'KEYWORD'))
+                );
+            }
+
             $factory->generateProxyClasses(
                 $classes, isset($arguments['to-dir']) ? $arguments['to-dir'] : null
             );
-        
+
+            $printer->writeln('');
+
             $printer->writeln(
-                'Proxy classes generated to: ' . (isset($arguments['to-dir']) 
-                    ? $arguments['to-dir'] : $em->getConfiguration()->getProxyDir())
+                sprintf('Proxy classes generated to "%s"',
+                $printer->format(isset($arguments['to-dir']) ? $arguments['to-dir'] : $em->getConfiguration()->getProxyDir(), 'KEYWORD'))
             );
         }
     }

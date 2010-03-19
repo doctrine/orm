@@ -45,11 +45,31 @@ abstract class AbstractExporter
         $this->_outputDir = $dir;
     }
 
+    /**
+     * Converts a single ClassMetadata instance to the exported format
+     * and returns it
+     *
+     * @param ClassMetadataInfo $metadata 
+     * @return mixed $exported
+     */
+    abstract public function exportClassMetadata(ClassMetadataInfo $metadata);
+
+    /**
+     * Set the array of ClassMetadataInfo instances to export
+     *
+     * @param array $metadatas 
+     * @return void
+     */
     public function setMetadatas(array $metadatas)
     {
         $this->_metadatas = $metadatas;
     }
 
+    /**
+     * Get the extension used to generated the path to a class
+     *
+     * @return string $extension
+     */
     public function getExtension()
     {
         return $this->_extension;
@@ -84,10 +104,25 @@ abstract class AbstractExporter
         }
 
         foreach ($this->_metadatas as $metadata) {
-            $outputPath = $this->_outputDir . '/' . str_replace('\\', '.', $metadata->name) . $this->_extension;
             $output = $this->exportClassMetadata($metadata);
-            file_put_contents($outputPath, $output);
+            $path = $this->_generateOutputPath($metadata);
+            $dir = dirname($path);
+            if ( ! is_dir($dir)) {
+                mkdir($dir, 0777, true);
+            }
+            file_put_contents($path, $output);
         }
+    }
+
+    /**
+     * Generate the path to write the class for the given ClassMetadataInfo instance
+     *
+     * @param ClassMetadataInfo $metadata 
+     * @return string $path
+     */
+    protected function _generateOutputPath(ClassMetadataInfo $metadata)
+    {
+        return $this->_outputDir . '/' . str_replace('\\', '.', $metadata->name) . $this->_extension;
     }
 
     /**
@@ -105,15 +140,6 @@ abstract class AbstractExporter
     {
         $this->_extension = $extension;
     }
-
-    /**
-     * Converts a single ClassMetadata instance to the exported format
-     * and returns it
-     *
-     * @param ClassMetadataInfo $metadata 
-     * @return mixed $exported
-     */
-    abstract public function exportClassMetadata(ClassMetadataInfo $metadata);
 
     protected function _getInheritanceTypeString($type)
     {

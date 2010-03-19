@@ -62,7 +62,7 @@ class ConvertDoctrine1Schema
      *
      * @return array $metadatas  An array of ClassMetadataInfo instances
      */
-    public function getMetadatasFromSchema()
+    public function getMetadatas()
     {
         $schema = array();
         foreach ($this->_from as $path) {

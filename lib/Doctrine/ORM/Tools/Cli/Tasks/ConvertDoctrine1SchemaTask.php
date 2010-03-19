@@ -91,7 +91,7 @@ class ConvertDoctrine1SchemaTask extends AbstractTask
         $exporter = $cme->getExporter($arguments['to'], $arguments['dest']);
 
         $converter = new ConvertDoctrine1Schema($arguments['from']);
-        $metadatas = $converter->getMetadatasFromSchema();
+        $metadatas = $converter->getMetadatas();
 
         foreach ($metadatas as $metadata) {
             $printer->writeln(

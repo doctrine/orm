@@ -59,7 +59,13 @@ class AnnotationExporter extends AbstractExporter
         $this->_generator->setGenerateStubMethods(false);
         $this->_generator->setRegenerateEntityIfExists(false);
         $this->_generator->setUpdateEntityIfExists(false);
-        $this->_generator->writeEntityClass($metadata, $this->_outputDir);
+
+        return $this->_generator->generateEntityClass($metadata);
+    }
+
+    protected function _generateOutputPath(ClassMetadataInfo $metadata)
+    {
+        return $this->_outputDir . '/' . str_replace('\\', '/', $metadata->name) . $this->_extension;
     }
 
     /**

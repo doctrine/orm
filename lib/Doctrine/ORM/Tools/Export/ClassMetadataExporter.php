@@ -22,10 +22,8 @@
 
 namespace Doctrine\ORM\Tools\Export;
 
-use Doctrine\ORM\EntityManager,
-    Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Tools\ClassMetadataReader,
+    Doctrine\ORM\EntityManager;
 
 /**
  * Class used for converting your mapping information between the
@@ -36,14 +34,14 @@ use Doctrine\ORM\EntityManager,
  *     // and convert it to a single set of yaml files.
  *
  *     $cme = new Doctrine\ORM\Tools\Export\ClassMetadataExporter();
- *     $cme->addMappingSource(__DIR__ . '/Entities', 'php');
- *     $cme->addMappingSource(__DIR__ . '/xml', 'xml');
- *     $cme->addMappingSource(__DIR__ . '/yaml', 'yaml');
+ *     $cme->addMappingSource(__DIR__ . '/Entities');
+ *     $cme->addMappingSource(__DIR__ . '/xml');
+ *     $cme->addMappingSource(__DIR__ . '/yaml');
  *
  *     $exporter = $cme->getExporter('yaml');
  *     $exporter->setOutputDir(__DIR__ . '/new_yaml');
  *
- *     $exporter->setMetadatas($cme->getMetadatasForMappingSources());
+ *     $exporter->setMetadatas($cme->getMetadatas());
  *     $exporter->export();
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -54,7 +52,7 @@ use Doctrine\ORM\EntityManager,
  */
 class ClassMetadataExporter
 {
-    private $_exporterDrivers = array(
+    private static $_exporterDrivers = array(
         'xml' => 'Doctrine\ORM\Tools\Export\Driver\XmlExporter',
         'yaml' => 'Doctrine\ORM\Tools\Export\Driver\YamlExporter',
         'yml' => 'Doctrine\ORM\Tools\Export\Driver\YamlExporter',
@@ -62,119 +60,32 @@ class ClassMetadataExporter
         'annotation' => 'Doctrine\ORM\Tools\Export\Driver\AnnotationExporter'
     );
 
-    private $_mappingDrivers = array(
-        'annotation' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-        'yaml' => 'Doctrine\ORM\Mapping\Driver\YamlDriver',
-        'yml' => 'Doctrine\ORM\Mapping\Driver\YamlDriver',
-        'xml'  => 'Doctrine\ORM\Mapping\Driver\XmlDriver',
-        'php' => 'Doctrine\ORM\Mapping\Driver\PhpDriver',
-        'database' => 'Doctrine\ORM\Mapping\Driver\DatabaseDriver'
-    );
-
-    private $_mappingSources = array();
+    public function __construct()
+    {
+        $this->_reader = new ClassMetadataReader();
+    }
 
     /**
-     * Add a new mapping directory to the array of directories to convert and export
-     * to another format
+     * Register a new exporter driver class under a specified name
      *
-     *     [php]
-     *     $cme = new Doctrine\ORM\Tools\Export\ClassMetadataExporter();
-     *     $cme->addMappingSource(__DIR__ . '/yaml', 'yaml');
-     *     $cme->addMappingSource($schemaManager, 'database');
+     * @param string $name
+     * @param string $class
+     */
+    public static function registerExportDriver($name, $class)
+    {
+        self::$_exporterDrivers[$name] = $class;
+    }
+
+    /**
+     * Optionally set the EntityManager instance to get the AnnotationDriver
+     * from instead of creating a new instance of the AnnotationDriver
      *
-     * @param string $source   The source for the mapping
-     * @param string $type  The type of mapping files (yml, xml, etc.)
+     * @param EntityManager $em
      * @return void
      */
-    public function addMappingSource($source, $type)
+    public function setEntityManager(EntityManager $em)
     {
-        if ( ! isset($this->_mappingDrivers[$type])) {
-            throw ExportException::invalidMappingDriverType($type);
-        }
-
-        $driver = $this->getMappingDriver($type, $source);
-        $this->_mappingSources[] = array($source, $driver);
-    }
-
-    /**
-     * Get an instance of a mapping driver
-     *
-     * @param string $type   The type of mapping driver (yaml, xml, annotation, etc.)
-     * @param string $source The source for the driver
-     * @return AbstractDriver $driver
-     */
-    public function getMappingDriver($type, $source = null)
-    {
-        if ($source instanceof \Doctrine\ORM\Mapping\Driver\Driver) {
-            return $source;
-        }
-
-        if ( ! isset($this->_mappingDrivers[$type])) {
-            return false;
-        }
-
-        $class = $this->_mappingDrivers[$type];
-
-        if (is_subclass_of($class, 'Doctrine\ORM\Mapping\Driver\AbstractFileDriver')) {
-            if (is_null($source)) {
-                throw MappingException::fileMappingDriversRequireConfiguredDirectoryPath();
-            }
-
-            $driver = new $class($source);
-        } else if ($class == 'Doctrine\ORM\Mapping\Driver\AnnotationDriver') {
-            $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
-            $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-
-            $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader, $source);
-        } else {
-            $driver = new $class($source);
-        }
-
-        return $driver;
-    }
-
-    /**
-     * Get the array of added mapping directories
-     *
-     * @return array $mappingDirectories
-     */
-    public function getMappingSources()
-    {
-        return $this->_mappingSources;
-    }
-
-    /**
-     * Get an array of ClassMetadataInfo instances for all the configured mapping
-     * directories. Reads the mapping directories and populates ClassMetadataInfo
-     * instances.
-     *
-     * @return array $classes
-     */
-    public function getMetadatasForMappingSources()
-    {
-        $classes = array();
-
-        foreach ($this->_mappingSources as $d) {
-            list($source, $driver) = $d;
-
-            $allClasses = $driver->getAllClassNames();
-
-            foreach ($allClasses as $className) {
-                if (class_exists($className, false)) {
-                    $metadata = new ClassMetadata($className);
-                } else {
-                    $metadata = new ClassMetadataInfo($className);
-                }
-
-                $driver->loadMetadataForClass($className, $metadata);
-
-                if ( ! $metadata->isMappedSuperclass) {
-                    $classes[$metadata->name] = $metadata;
-                }
-            }
-        }
-
-        return $classes;
+        $this->_reader->setEntityManager($em);
     }
 
     /**
@@ -186,12 +97,42 @@ class ClassMetadataExporter
      */
     public function getExporter($type, $source = null)
     {
-        if ( ! isset($this->_exporterDrivers[$type])) {
+        if ( ! isset(self::$_exporterDrivers[$type])) {
             throw ExportException::invalidExporterDriverType($type);
         }
 
-        $class = $this->_exporterDrivers[$type];
+        $class = self::$_exporterDrivers[$type];
 
         return new $class($source);
+    }
+
+    /**
+     * Add a new mapping directory to the array of directories to convert and export
+     * to another format
+     *
+     *     [php]
+     *     $cme = new Doctrine\ORM\Tools\Export\ClassMetadataExporter();
+     *     $cme->addMappingSource(__DIR__ . '/yaml');
+     *     $cme->addMappingSource($schemaManager);
+     *
+     * @param string $source   The source for the mapping files
+     * @param string $type  The type of mapping files (yml, xml, etc.)
+     * @return void
+     */
+    public function addMappingSource($source, $type = null)
+    {
+        $this->_reader->addMappingSource($source, $type);
+    }
+
+    /**
+     * Get an array of ClassMetadataInfo instances for all the configured mapping
+     * directories. Reads the mapping directories and populates ClassMetadataInfo
+     * instances.
+     *
+     * @return array $classes
+     */
+    public function getMetadatas()
+    {
+        return $this->_reader->getMetadatas();
     }
 }

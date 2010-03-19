@@ -19,10 +19,10 @@ class PhpMappingDriverTest extends AbstractMappingDriverTest
         // Uncomment this code if the YAML changes and you want to update the PHP code
         // for the same mapping information
         $cme = new ClassMetadataExporter();
-        $cme->addMappingSource(__DIR__ . DIRECTORY_SEPARATOR . 'yaml', 'yaml');
+        $cme->addMappingSource(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
 
         $exporter = $cme->getExporter('php', $path);
-        $exporter->setMetadatas($cme->getMetadatasForMappingSources());
+        $exporter->setMetadatas($cme->getMetadatas());
         $exporter->export();
         */
 

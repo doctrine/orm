@@ -114,6 +114,7 @@ class ConvertMappingTask extends AbstractTask
     {
         $arguments = $this->getArguments();
         $cme = new ClassMetadataExporter();
+        $cme->setEntityManager($this->getConfiguration()->getAttribute('em'));
         $printer = $this->getPrinter();
         
         // Get exporter and configure it
@@ -130,28 +131,10 @@ class ConvertMappingTask extends AbstractTask
         $from = (array) $arguments['from'];
 
         foreach ($from as $source) {
-            $sourceArg = $source;
-            $type = $this->_determineSourceType($sourceArg);
-            
-            if ( ! $type) {
-                throw new CliException(
-                    "Invalid mapping source type '$sourceArg'."
-                );
-            }
-            
-            $source = $this->_getSourceByType($type, $sourceArg);
-            
-            $printer->writeln(
-                sprintf(
-                    'Adding "%s" mapping source which contains the "%s" format', 
-                    $printer->format($sourceArg, 'KEYWORD'), $printer->format($type, 'KEYWORD')
-                )
-            );
-
-            $cme->addMappingSource($source, $type);
+            $cme->addMappingSource($source);
         }
-        
-        $metadatas = $cme->getMetadatasForMappingSources();
+
+        $metadatas = $cme->getMetadatas();
 
         foreach ($metadatas as $metadata) {
             $printer->writeln(
@@ -159,9 +142,10 @@ class ConvertMappingTask extends AbstractTask
             );
         }
 
+        $printer->writeln('');
         $printer->writeln(
             sprintf(
-                'Exporting "%s" mapping information to directory "%s"',
+                'Exporting "%s" mapping information to "%s"',
                 $printer->format($arguments['to'], 'KEYWORD'), 
                 $printer->format($arguments['dest'], 'KEYWORD')
             )
@@ -169,89 +153,5 @@ class ConvertMappingTask extends AbstractTask
 
         $exporter->setMetadatas($metadatas);
         $exporter->export();
-    }
-
-    protected function _determineSourceType($source)
-    {
-        // If the --from=<VALUE> is a directory lets determine if it is
-        // annotations, yaml, xml, etc.
-        if (is_dir($source)) {
-            // Find the files in the directory
-            $files = glob($source . '/*.*');
-            
-            if ( ! $files) {
-                throw new \InvalidArgumentException(
-                    sprintf('No mapping files found in "%s"', $source)
-                );
-            }
-
-            // Get the contents of the first file
-            $contents = file_get_contents($files[0]);
-
-            // Check if it has a class definition in it for annotations
-            if (preg_match("/class (.*)/", $contents)) {
-                return 'annotation';
-            // Otherwise lets determine the type based on the extension of the 
-            // first file in the directory (yml, xml, etc)
-            } else {
-                $info = pathinfo($files[0]);
-
-                return $info['extension'];
-            }
-        // Nothing special for database
-        } else if ($source == 'database') {
-            return 'database';
-        }
-    }
-
-    protected function _getSourceByType($type, $source)
-    {
-        // If --from==database then the source is an instance of SchemaManager
-        // for the current EntityMAnager
-        if ($type == 'database') {
-            $em = $this->getConfiguration()->getAttribute('em');
-            
-            return $em->getConnection()->getSchemaManager();
-        // If source is annotation then lets try and find the existing annotation
-        // driver for the source instead of re-creating a new instance
-        } else if ($type == 'annotation') {
-            $em = $this->getConfiguration()->getAttribute('em');
-            $metadataDriverImpl = $em->getConfiguration()->getMetadataDriverImpl();
-            // Find the annotation driver in the chain of drivers
-            if ($metadataDriverImpl instanceof DriverChain) {
-                foreach ($metadataDriverImpl->getDrivers() as $namespace => $driver) {
-                    if ($this->_isAnnotationDriverForPath($driver, $source)) {
-                        return $driver;
-                    }
-                }
-            } else if ($this->_isAnnotationDriverForPath($metadataDriverImpl, $source)) {
-                return $metadataDriverImpl;
-            } else {
-                return $source;
-            }
-        } else {
-            return $source;
-        }
-    }
-
-    /**
-     * Check to see if the given metadata driver is the annotation driver for the
-     * given directory path
-     *
-     * @param Driver $driver
-     * @param string $path 
-     * @return boolean
-     */
-    private function _isAnnotationDriverForPath(Driver $driver, $path)
-    {
-        if ( ! $driver instanceof AnnotationDriver) {
-            return false;
-        }
-
-        if (in_array(realpath($path), $driver->getPaths())) {
-            return true;
-        } else {
-            return false;
-        }
     }
 }
