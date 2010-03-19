@@ -62,10 +62,10 @@ abstract class AbstractPrinter
     {
         $this->_stream = $stream;
         $this->_maxColumnSize = 80;
-        
+
         $this->_initStyles();
     }
-    
+
     /**
      * Initializes Printer Styles
      *
@@ -100,7 +100,7 @@ abstract class AbstractPrinter
             $this->addStyle($name, $style);
         }
     }
-    
+
     /**
      * Add a single Style to Printer.
      * Example of inclusion to support a new Style:
@@ -115,7 +115,7 @@ abstract class AbstractPrinter
     {
         $this->_styles[strtoupper($name)] = $style;
     }
-    
+
     /**
      * Retrieves a defined Style.
      *
@@ -126,11 +126,11 @@ abstract class AbstractPrinter
         if (is_string($name)) {
             $name = strtoupper($name);
             return isset($this->_styles[$name]) ? $this->_styles[$name] : null;
-        } else {
-            return $name;
         }
+
+        return $name;
     }
-    
+
     /**
      * Sets the maximum column size (defines the CLI margin).
      *
@@ -140,7 +140,7 @@ abstract class AbstractPrinter
     {
         $this->_maxColumnSize = $maxColumnSize;
     }
-    
+
     /**
      * Writes to the output stream.
      *
@@ -149,7 +149,7 @@ abstract class AbstractPrinter
     public function output($message)
     {
         fwrite($this->_stream, $message);
-        
+
         return $this;
     }
 
@@ -162,10 +162,10 @@ abstract class AbstractPrinter
     public function write($message, $style = 'NONE')
     {
         $this->output($this->format($message, $style));
-        
+
         return $this;
     }
-    
+
     /**
      * Writes a line to the output stream, formatting it by applying the defined style.
      *
@@ -174,9 +174,11 @@ abstract class AbstractPrinter
      */
     public function writeln($message, $style = 'NONE')
     {
-        return $this->write($message . PHP_EOL, $style);
+        $this->output($this->format($message, $style) . PHP_EOL);
+
+        return $this;
     }
-    
+
     /**
      * Formats the given message with the defined style.
      *

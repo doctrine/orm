@@ -53,7 +53,7 @@ class AnsiColorPrinter extends AbstractPrinter
             'NONE'    => new Style(),
         ));
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -62,31 +62,32 @@ class AnsiColorPrinter extends AbstractPrinter
         if ( ! $this->_supportsColor()) {
             return $message;
         }
-        
+
         $style = $this->getStyle($style);
-        $str = $this->_getForegroundString($style->getForeground()) 
-             . $this->_getBackgroundString($style->getBackground()) 
-             . $this->_getOptionsString($style->getOptions());
+        $str = $this->_getForegroundString($style) 
+             . $this->_getBackgroundString($style);
         $styleSet = ($str != '');
-        
+
         return $str . $message . ($styleSet ? chr(27) . '[0m' : '');
     }
-    
+
     /**
      * Retrieves the ANSI string representation of requested color name
      *
-     * @param string $background Background color name
+     * @param Style $style Style
      * @return string
      */
-    protected function _getBackgroundString($background)
+    protected function _getBackgroundString(Style $style)
     {
+        $background = $style->getBackground();
+
         if (empty($background)) {
             return '';
         }
-    
+
         $esc = chr(27);
-        
-        switch ($background) {
+
+        switch (strtoupper($background)) {
             case 'BLACK': 
                 return $esc . '[40m';
             case 'RED': 
@@ -112,79 +113,82 @@ class AnsiColorPrinter extends AbstractPrinter
     /**
      * Retrieves the ANSI string representation of requested color name
      *
-     * @param string $foreground Foreground color name
+     * @param Style $style Style
      * @return string
      */
-    protected function _getForegroundString($foreground)
+    protected function _getForegroundString(Style $style)
     {
+        $foreground = $style->getForeground();
+
         if (empty($foreground)) {
             return '';
         }
-    
-        $esc = chr(27);
-        
-        switch ($foreground) {
+
+        $str = chr(27) . '[' . $this->_getOptionsString($style);
+
+        switch (strtoupper($foreground)) {
             case 'BLACK': 
-                return $esc . '[30m';
+                return $str . '30m';
             case 'RED': 
-                return $esc . '[31m';
+                return $str . '31m';
             case 'GREEN': 
-                return $esc . '[32m';
+                return $str . '32m';
             case 'YELLOW': 
-                return $esc . '[33m';
+                return $str . '33m';
             case 'BLUE': 
-                return $esc . '[34m';
+                return $str . '34m';
             case 'MAGENTA': 
-                return $esc . '[35m'; 
+                return $str . '35m';
             case 'CYAN': 
-                return $esc . '[36m';
+                return $str . '36m';
             case 'WHITE': 
-                return $esc . '[37m';
+                return $str . '37m';
             case 'DEFAULT_FGU': 
-                return $esc . '[38m';
+                return $str . '38m';
             case 'DEFAULT': 
             default:
-                return $esc . '[39m';
+                return $str . '39m';
         }
     }
-    
+
     /**
      * Retrieves the ANSI string representation of requested options
      *
-     * @param array $options Options
+     * @param Style $style Style
      * @return string
      */
-    protected function _getOptionsString($options)
+    protected function _getOptionsString(Style $style)
     {
+        $options = $style->getOptions();
+
         if (empty($options)) {
             return '';
         }
-        
-        $esc = chr(27);
+
         $str = '';
-    
+
         foreach ($options as $name => $value) {
             if ($value) {
                 $name = strtoupper($name);
-            
+
                 switch ($name) {
                     case 'BOLD':
-                        $str .= $esc . '[1m';
+                        $str .= '1;';
                         break;
                     case 'HALF': 
-                        $str .= $esc . '[2m';
+                        $str .= '2;';
                         break;
                     case 'UNDERLINE': 
-                        $str .= $esc . '[4m';
+                        $str .= '4;';
                         break;
                     case 'BLINK': 
-                        $str .= $esc . '[5m';
+                        $str .= '5;';
                         break;
                     case 'REVERSE': 
-                        $str .= $esc . '[7m';
+                        $str .= '7;';
                         break;
                     case 'CONCEAL':
-                        $str .= $esc . '[8m';
+                        $str .= '8;';
                         break;
                     default:
                         // Ignore unknown option
@@ -192,10 +196,10 @@ class AnsiColorPrinter extends AbstractPrinter
                 }
             }
         }
-        
+
         return $str;
     }
-    
+
     /**
      * Checks if the current Output Stream supports ANSI Colors
      *
