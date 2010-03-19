@@ -194,6 +194,17 @@ abstract class Type
         self::$_typesMap[$name] = $className;
     }
 
+    /**
+     * Get the types array map which holds all registered types and the corresponding
+     * type class
+     *
+     * @return array $typesMap
+     */
+    public static function getTypesMap()
+    {
+        return self::$_typesMap;
+    }
+
     public function __toString()
     {
         $e = explode('\\', get_class($this));

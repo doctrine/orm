@@ -26,20 +26,20 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
     {
         $metadata = new ClassMetadataInfo('EntityGeneratorBook');
         $metadata->primaryTable['name'] = 'book';
-        $metadata->mapField(array('fieldName' => 'name', 'type' => 'varchar'));
+        $metadata->mapField(array('fieldName' => 'name', 'type' => 'string'));
+        $metadata->mapField(array('fieldName' => 'status', 'type' => 'string', 'default' => 'published'));
         $metadata->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
-        $metadata->mapOneToOne(array('fieldName' => 'other', 'targetEntity' => 'Other', 'mappedBy' => 'this'));
+        $metadata->mapOneToOne(array('fieldName' => 'author', 'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', 'mappedBy' => 'book'));
         $joinColumns = array(
-            array('name' => 'other_id', 'referencedColumnName' => 'id')
+            array('name' => 'author_id', 'referencedColumnName' => 'id')
         );
-        $metadata->mapOneToOne(array('fieldName' => 'association', 'targetEntity' => 'Other', 'joinColumns' => $joinColumns));
         $metadata->mapManyToMany(array(
-            'fieldName' => 'author',
-            'targetEntity' => 'Author',
+            'fieldName' => 'comments',
+            'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorComment',
             'joinTable' => array(
-                'name' => 'book_author',
-                'joinColumns' => array(array('name' => 'bar_id', 'referencedColumnName' => 'id')),
-                'inverseJoinColumns' => array(array('name' => 'baz_id', 'referencedColumnName' => 'id')),
+                'name' => 'book_comment',
+                'joinColumns' => array(array('name' => 'book_id', 'referencedColumnName' => 'id')),
+                'inverseJoinColumns' => array(array('name' => 'comment_id', 'referencedColumnName' => 'id')),
             ),
         ));
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
@@ -57,45 +57,44 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
      * @depends testWriteEntityClass
      * @param ClassMetadata $metadata
      */
-    public function testGeneratedEntityClassMethods($metadata)
+    public function testGeneratedEntityClass($metadata)
     {
         $this->assertTrue(method_exists('\EntityGeneratorBook', 'getId'));
         $this->assertTrue(method_exists('\EntityGeneratorBook', 'setName'));
         $this->assertTrue(method_exists('\EntityGeneratorBook', 'getName'));
-        $this->assertTrue(method_exists('\EntityGeneratorBook', 'setOther'));
-        $this->assertTrue(method_exists('\EntityGeneratorBook', 'getOther'));
-        $this->assertTrue(method_exists('\EntityGeneratorBook', 'setAssociation'));
-        $this->assertTrue(method_exists('\EntityGeneratorBook', 'getAssociation'));
+        $this->assertTrue(method_exists('\EntityGeneratorBook', 'setAuthor'));
         $this->assertTrue(method_exists('\EntityGeneratorBook', 'getAuthor'));
-        $this->assertTrue(method_exists('\EntityGeneratorBook', 'addAuthor'));
+        $this->assertTrue(method_exists('\EntityGeneratorBook', 'getComments'));
+        $this->assertTrue(method_exists('\EntityGeneratorBook', 'addComments'));
 
         $book = new \EntityGeneratorBook();
+        $this->assertEquals('published', $book->getStatus());
 
         $book->setName('Jonathan H. Wage');
         $this->assertEquals('Jonathan H. Wage', $book->getName());
 
-        $book->setOther('Other');
-        $this->assertEquals('Other', $book->getOther());
+        $author = new EntityGeneratorAuthor();
+        $book->setAuthor($author);
+        $this->assertEquals($author, $book->getAuthor());
 
-        $book->setAssociation('Test');
-        $this->assertEquals('Test', $book->getAssociation());
-
-        $book->addAuthor('Test');
-        $this->assertEquals(array('Test'), $book->getAuthor());
+        $comment = new EntityGeneratorComment();
+        $book->addComments($comment);
+        $this->assertEquals(array($comment), $book->getComments());
 
         return $metadata;
     }
 
     /**
-     * @depends testGeneratedEntityClassMethods
+     * @depends testGeneratedEntityClass
      * @param ClassMetadata $metadata
      */
     public function testEntityUpdatingWorks($metadata)
     {
-        $metadata->mapField(array('fieldName' => 'test', 'type' => 'varchar'));
+        $metadata->mapField(array('fieldName' => 'test', 'type' => 'string'));
         $this->_generator->writeEntityClass($metadata, __DIR__);
 
         $code = file_get_contents(__DIR__ . '/EntityGeneratorBook.php');
+
         $this->assertTrue(strstr($code, 'private $test;') !== false);
         $this->assertTrue(strstr($code, 'private $test;') !== false);
         $this->assertTrue(strstr($code, 'public function getTest(') !== false);
@@ -104,3 +103,6 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         unlink(__DIR__ . '/EntityGeneratorBook.php');
     }
 }
+
+class EntityGeneratorAuthor {}
+class EntityGeneratorComment {}
