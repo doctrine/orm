@@ -73,9 +73,9 @@ class XcacheCache extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    protected function _doSave($id, $data, $lifeTime = false)
+    protected function _doSave($id, $data, $lifeTime = 0)
     {
-        return xcache_set($id, serialize($data), $lifeTime);
+        return xcache_set($id, serialize($data), (int) $lifeTime);
     }
 
     /**

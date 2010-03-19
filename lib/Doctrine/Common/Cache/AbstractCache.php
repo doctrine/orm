@@ -70,7 +70,7 @@ abstract class AbstractCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function save($id, $data, $lifeTime = false)
+    public function save($id, $data, $lifeTime = 0)
     {
         $id = $this->_getNamespacedId($id);
         return $this->_doSave($id, $data, $lifeTime);

@@ -107,9 +107,9 @@ class MemcacheCache extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    protected function _doSave($id, $data, $lifeTime = false)
+    protected function _doSave($id, $data, $lifeTime = 0)
     {
-        return $this->_memcache->set($id, $data, 0, $lifeTime ?: 0);
+        return $this->_memcache->set($id, $data, 0, (int) $lifeTime);
     }
 
     /**

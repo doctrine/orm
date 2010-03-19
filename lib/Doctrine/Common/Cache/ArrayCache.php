@@ -70,7 +70,7 @@ class ArrayCache extends AbstractCache
     /**
      * {@inheritdoc}
      */
-    protected function _doSave($id, $data, $lifeTime = false)
+    protected function _doSave($id, $data, $lifeTime = 0)
     {
         $this->data[$id] = $data;
         return true;

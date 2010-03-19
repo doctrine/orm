@@ -199,7 +199,7 @@ final class Query extends AbstractQuery
                 // Cache miss.
                 $parser = new Parser($this);
                 $this->_parserResult = $parser->parse();
-                $queryCache->save($hash, $this->_parserResult, null);
+                $queryCache->save($hash, $this->_parserResult, $this->_queryCacheTTL);
             } else {
                 // Cache hit.
                 $this->_parserResult = $cached;
