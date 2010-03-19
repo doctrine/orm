@@ -23,7 +23,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\Common\Cli\OptionTest');
         $suite->addTestSuite('Doctrine\Tests\Common\Cli\OptionGroupTest');
         $suite->addTestSuite('Doctrine\Tests\Common\Cli\StyleTest');
-        $suite->addTestSuite('Doctrine\Tests\Common\Cli\CliControllerTest');
+        //$suite->addTestSuite('Doctrine\Tests\Common\Cli\CliControllerTest');
 
         return $suite;
     }
