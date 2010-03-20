@@ -519,9 +519,11 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            // If change tracking is explicit, then only compute changes on explicitly saved entities
+            // If change tracking is explicit, then only compute changes on explicitly persisted entities
             $entitiesToProcess = $class->isChangeTrackingDeferredExplicit() ?
-                    $this->_scheduledForDirtyCheck[$className] : $entities;
+                    (isset($this->_scheduledForDirtyCheck[$className]) ?
+                        $this->_scheduledForDirtyCheck[$className] : array())
+                    : $entities;
 
             foreach ($entitiesToProcess as $entity) {
                 // Ignore uninitialized proxy objects
@@ -1927,7 +1929,7 @@ class UnitOfWork implements PropertyChangedListener
     public function scheduleForDirtyCheck($entity)
     {
         $rootClassName = $this->_em->getClassMetadata(get_class($entity))->rootEntityName;
-        $this->_scheduledForDirtyCheck[$rootClassName] = $entity;
+        $this->_scheduledForDirtyCheck[$rootClassName][] = $entity;
     }
 
     /**
