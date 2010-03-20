@@ -39,6 +39,19 @@ class AdvancedDqlQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(600000, $result[1]['avgSalary']);
     }
 
+    public function testUnnamedScalarResultsAreOneBased()
+    {
+        $dql = 'SELECT p.department, AVG(p.salary) '.
+               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p '.
+               'GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department';
+
+        $result = $this->_em->createQuery($dql)->getScalarResult();
+
+        $this->assertEquals(2, count($result));
+        $this->assertEquals(150000, $result[0][1]);
+        $this->assertEquals(600000, $result[1][1]);
+    }
+
     public function testOrderByResultVariableCollectionSize()
     {
         $dql = 'SELECT p.name, size(p.friends) AS friends ' .

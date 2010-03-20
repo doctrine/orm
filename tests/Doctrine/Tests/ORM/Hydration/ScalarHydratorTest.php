@@ -44,4 +44,28 @@ class ScalarHydratorTest extends HydrationTestCase
         $this->assertEquals('jwage', $result[1]['u_name']);
         $this->assertEquals(2, $result[1]['u_id']);
     }
+
+    /**
+     * @group DDC-407
+     */
+    public function testHydrateScalarResults()
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('foo1', 'foo');
+        $rsm->addScalarResult('bar2', 'bar');
+        $rsm->addScalarResult('baz3', 'baz');
+
+        $resultSet = array(
+            array(
+                'foo1' => 'A',
+                'bar2' => 'B',
+                'baz3' => 'C',
+            ),
+        );
+
+        $stmt = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this->_em);
+
+        $result = $hydrator->hydrateAll($stmt, $rsm);
+    }
 }
