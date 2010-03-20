@@ -38,13 +38,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo,
 class AnnotationExporter extends AbstractExporter
 {
     protected $_extension = '.php';
-    private $_generator;
-
-    public function __construct($dir = null)
-    {
-        parent::__construct($dir);
-        $this->_generator = new EntityGenerator();
-    }
+    private $_entityGenerator;
 
     /**
      * Converts a single ClassMetadata instance to the exported format
@@ -55,12 +49,12 @@ class AnnotationExporter extends AbstractExporter
      */
     public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
-        $this->_generator->setGenerateAnnotations(true);
-        $this->_generator->setGenerateStubMethods(false);
-        $this->_generator->setRegenerateEntityIfExists(false);
-        $this->_generator->setUpdateEntityIfExists(false);
+        $this->_entityGenerator->setGenerateAnnotations(true);
+        $this->_entityGenerator->setGenerateStubMethods(false);
+        $this->_entityGenerator->setRegenerateEntityIfExists(false);
+        $this->_entityGenerator->setUpdateEntityIfExists(false);
 
-        return $this->_generator->generateEntityClass($metadata);
+        return $this->_entityGenerator->generateEntityClass($metadata);
     }
 
     protected function _generateOutputPath(ClassMetadataInfo $metadata)
@@ -68,24 +62,8 @@ class AnnotationExporter extends AbstractExporter
         return $this->_outputDir . '/' . str_replace('\\', '/', $metadata->name) . $this->_extension;
     }
 
-    /**
-     * Set the number of spaces the exported class should have
-     *
-     * @param integer $numSpaces 
-     * @return void
-     */
-    public function setNumSpaces($numSpaces)
+    public function setEntityGenerator(EntityGenerator $entityGenerator)
     {
-        $this->_generator->setNumSpaces($numSpaces);
-    }
-
-    /**
-     * Set the name of the class the generated classes should extend from
-     *
-     * @return void
-     */
-    public function setClassToExtend($classToExtend)
-    {
-        $this->_generator->setClassToExtend($classToExtend);
+        $this->_entityGenerator = $entityGenerator;
     }
 }

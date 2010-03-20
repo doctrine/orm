@@ -83,18 +83,18 @@ class GenerateEntitiesTask extends AbstractTask
         $from = $arguments['from'];
         $dest = realpath($arguments['dest']);
 
-        $generator = new EntityGenerator();
-        $generator->setGenerateAnnotations(false);
-        $generator->setGenerateStubMethods(true);
-        $generator->setRegenerateEntityIfExists(false);
-        $generator->setUpdateEntityIfExists(true);
+        $entityGenerator = new EntityGenerator();
+        $entityGenerator->setGenerateAnnotations(false);
+        $entityGenerator->setGenerateStubMethods(true);
+        $entityGenerator->setRegenerateEntityIfExists(false);
+        $entityGenerator->setUpdateEntityIfExists(true);
 
         if (isset($arguments['extend']) && $arguments['extend']) {
-            $generator->setClassToExtend($arguments['extend']);
+            $entityGenerator->setClassToExtend($arguments['extend']);
         }
         
         if (isset($arguments['num-spaces']) && $arguments['extend']) {
-            $generator->setNumSpaces($arguments['num-spaces']);
+            $entityGenerator->setNumSpaces($arguments['num-spaces']);
         }
 
         $reader = new ClassMetadataReader();
@@ -108,7 +108,7 @@ class GenerateEntitiesTask extends AbstractTask
             );
         }
 
-        $generator->generate($metadatas, $dest);
+        $entityGenerator->generate($metadatas, $dest);
 
         $printer->writeln('');
         $printer->writeln(

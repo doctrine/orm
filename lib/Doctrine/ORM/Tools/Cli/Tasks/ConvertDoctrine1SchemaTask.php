@@ -26,7 +26,8 @@ use Doctrine\Common\Cli\Tasks\AbstractTask,
     Doctrine\Common\Cli\CliException,
     Doctrine\Common\Cli\Option,
     Doctrine\Common\Cli\OptionGroup,
-    Doctrine\ORM\Tools\ConvertDoctrine1Schema;
+    Doctrine\ORM\Tools\ConvertDoctrine1Schema,
+    Doctrine\ORM\Tools\EntityGenerator;
 
 /**
  * CLI Task to convert a Doctrine 1 schema to a Doctrine 2 mapping file
@@ -89,6 +90,11 @@ class ConvertDoctrine1SchemaTask extends AbstractTask
 
         $cme = new ClassMetadataExporter();
         $exporter = $cme->getExporter($arguments['to'], $arguments['dest']);
+
+        if ($arguments['to'] === 'annotation') {
+            $entityGenerator = new EntityGenerator();
+            $exporter->setEntityGenerator($entityGenerator);
+        }
 
         $converter = new ConvertDoctrine1Schema($arguments['from']);
         $metadatas = $converter->getMetadatas();

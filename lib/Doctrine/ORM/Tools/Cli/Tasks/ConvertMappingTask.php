@@ -120,12 +120,17 @@ class ConvertMappingTask extends AbstractTask
         // Get exporter and configure it
         $exporter = $cme->getExporter($arguments['to'], $arguments['dest']);
 
-        if (isset($arguments['extend']) && $arguments['extend']) {
-            $exporter->setClassToExtend($arguments['extend']);
-        }
-        
-        if (isset($arguments['num-spaces']) && $arguments['extend']) {
-            $exporter->setNumSpaces($arguments['num-spaces']);
+        if ($arguments['to'] === 'annotation') {
+            $entityGenerator = new EntityGenerator();
+            $exporter->setEntityGenerator($entityGenerator);
+
+            if (isset($arguments['extend']) && $arguments['extend']) {
+                $entityGenerator->setClassToExtend($arguments['extend']);
+            }
+
+            if (isset($arguments['num-spaces']) && $arguments['extend']) {
+                $entityGenerator->setNumSpaces($arguments['num-spaces']);
+            }
         }
 
         $from = (array) $arguments['from'];

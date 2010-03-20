@@ -22,7 +22,8 @@
 namespace Doctrine\Tests\ORM\Tools\Export;
 
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter,
-    Doctrine\ORM\Mapping\ClassMetadataInfo;
+    Doctrine\ORM\Mapping\ClassMetadataInfo,
+    Doctrine\ORM\Tools\EntityGenerator;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
@@ -80,6 +81,10 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     {
         $type = $this->_getType();
         $exporter = $cme->getExporter($type, __DIR__ . '/export/' . $type);
+        if ($type === 'annotation') {
+            $entityGenerator = new EntityGenerator();
+            $exporter->setEntityGenerator($entityGenerator);
+        }
         $this->_extension = $exporter->getExtension();
         $metadatas = $cme->getMetadatas();
         if ($type == 'annotation') {
