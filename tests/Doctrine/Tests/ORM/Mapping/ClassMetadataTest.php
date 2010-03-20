@@ -166,4 +166,49 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
         $cm->addAssociationMapping($a2);
     }
+
+    public function testDuplicateColumnName_ThrowsMappingException()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->mapField(array('fieldName' => 'name', 'columnName' => 'name'));
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $cm->mapField(array('fieldName' => 'username', 'columnName' => 'name'));
+    }
+
+    public function testDuplicateColumnName_DiscriminatorColumn_ThrowsMappingException()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->mapField(array('fieldName' => 'name', 'columnName' => 'name'));
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $cm->setDiscriminatorColumn(array('name' => 'name'));
+    }
+
+    public function testDuplicateColumnName_DiscriminatorColumn2_ThrowsMappingException()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->setDiscriminatorColumn(array('name' => 'name'));
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $cm->mapField(array('fieldName' => 'name', 'columnName' => 'name'));
+    }
+
+    public function testDuplicateFieldAndAssocationMapping1_ThrowsException()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->mapField(array('fieldName' => 'name', 'columnName' => 'name'));
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $cm->mapOneToOne(array('fieldName' => 'name', 'targetEntity' => 'CmsUser'));
+    }
+
+    public function testDuplicateFieldAndAssocationMapping2_ThrowsException()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->mapOneToOne(array('fieldName' => 'name', 'targetEntity' => 'CmsUser'));
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $cm->mapField(array('fieldName' => 'name', 'columnName' => 'name'));
+    }
 }
