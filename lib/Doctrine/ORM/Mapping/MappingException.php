@@ -185,4 +185,14 @@ class MappingException extends \Doctrine\ORM\ORMException
             "does not exist."
         );
     }
+
+    /**
+     * @param  string $className
+     * @param  string $columnName
+     * @return self
+     */
+    public static function duplicateColumnName($className, $columnName)
+    {
+        return new self("Duplicate definition of column '".$columnName."' on entity '".$className."' in a field or discriminator column mapping.");
+    }
 }

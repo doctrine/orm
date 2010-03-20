@@ -609,6 +609,10 @@ class ClassMetadataInfo
         }
 
         $this->columnNames[$mapping['fieldName']] = $mapping['columnName'];
+        if (isset($this->fieldNames[$mapping['columnName']]) || ($this->discriminatorColumn != null && $this->discriminatorColumn['name'] == $mapping['columnName'])) {
+            throw MappingException::duplicateColumnName($this->name, $mapping['columnName']);
+        }
+
         $this->fieldNames[$mapping['columnName']] = $mapping['fieldName'];
 
         // Complete id mapping
@@ -1033,7 +1037,7 @@ class ClassMetadataInfo
     public function mapField(array $mapping)
     {
         $this->_validateAndCompleteFieldMapping($mapping);
-        if (isset($this->fieldMappings[$mapping['fieldName']])) {
+        if (isset($this->fieldMappings[$mapping['fieldName']]) || isset($this->associationMappings[$mapping['fieldName']])) {
             throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
         }
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
@@ -1145,7 +1149,7 @@ class ClassMetadataInfo
     protected function _storeAssociationMapping(AssociationMapping $assocMapping)
     {
         $sourceFieldName = $assocMapping->sourceFieldName;
-        if (isset($this->associationMappings[$sourceFieldName])) {
+        if (isset($this->fieldMappings[$sourceFieldName]) || isset($this->associationMappings[$sourceFieldName])) {
             throw MappingException::duplicateFieldMapping($this->name, $sourceFieldName);
         }
         $this->associationMappings[$sourceFieldName] = $assocMapping;
@@ -1232,6 +1236,10 @@ class ClassMetadataInfo
     public function setDiscriminatorColumn($columnDef)
     {
         if ($columnDef !== null) {
+            if (isset($this->fieldNames[$columnDef['name']])) {
+                throw MappingException::duplicateColumnName($this->name, $columnDef['name']);
+            }
+
             if ( ! isset($columnDef['name'])) {
                 throw MappingException::nameIsMandatoryForDiscriminatorColumns($this->name, $columnDef);
             }
