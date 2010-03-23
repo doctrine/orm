@@ -123,6 +123,11 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN (1, 2)');
     }
+ 
+    public function testInExpressionWithoutSpacesSupportedInWherePart()
+    {
+        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN (1,2,3)');
+    }
 
     public function testNotInExpressionSupportedInWherePart()
     {
