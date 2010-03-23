@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\ORM\Query\AbstractQuery;
+
 /**
  * Represents a native SQL query.
  *

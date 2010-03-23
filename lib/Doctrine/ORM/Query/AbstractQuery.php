@@ -19,7 +19,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM;
+namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\Query\QueryException;
 
@@ -123,7 +123,7 @@ abstract class AbstractQuery
      *
      * @param Doctrine\ORM\EntityManager $entityManager
      */
-    public function __construct(EntityManager $entityManager)
+    public function __construct(\Doctrine\ORM\EntityManager $entityManager)
     {
         $this->_em = $entityManager;
     }
@@ -222,12 +222,12 @@ abstract class AbstractQuery
      * Defines a cache driver to be used for caching result sets.
      *
      * @param Doctrine\Common\Cache\Cache $driver Cache driver
-     * @return Doctrine\ORM\AbstractQuery
+     * @return Doctrine\ORM\Query\AbstractQuery
      */
     public function setResultCacheDriver($resultCacheDriver = null)
     {
         if ($resultCacheDriver !== null && ! ($resultCacheDriver instanceof \Doctrine\Common\Cache\Cache)) {
-            throw ORMException::invalidResultCacheDriver();
+            throw \Doctrine\ORM\ORMException::invalidResultCacheDriver();
         }
         $this->_resultCacheDriver = $resultCacheDriver;
         if ($resultCacheDriver) {
@@ -270,7 +270,7 @@ abstract class AbstractQuery
      * Defines how long the result cache will be active before expire.
      *
      * @param integer $timeToLive How long the cache entry is valid
-     * @return Doctrine\ORM\AbstractQuery
+     * @return Doctrine\ORM\Query\AbstractQuery
      */
     public function setResultCacheLifetime($timeToLive)
     {
@@ -296,7 +296,7 @@ abstract class AbstractQuery
      * Defines if the result cache is active or not.
      *
      * @param boolean $expire Whether or not to force resultset cache expiration.
-     * @return Doctrine\ORM\AbstractQuery
+     * @return Doctrine\ORM\Query\AbstractQuery
      */
     public function expireResultCache($expire = true)
     {
@@ -319,7 +319,7 @@ abstract class AbstractQuery
      *
      * @param integer $hydrationMode Doctrine processing mode to be used during hydration process.
      *                               One of the Query::HYDRATE_* constants.
-     * @return Doctrine\ORM\AbstractQuery
+     * @return Doctrine\ORM\Query\AbstractQuery
      */
     public function setHydrationMode($hydrationMode)
     {
@@ -383,25 +383,25 @@ abstract class AbstractQuery
      *
      * @param integer $hydrationMode
      * @return mixed
-     * @throws QueryException If the query result is not unique.
-     * @throws NoResultException If the query returned no result.
+     * @throws Doctrine\ORM\NonUniqueResultException If the query result is not unique.
+     * @throws Doctrine\ORM\NoResultException If the query returned no result.
      */
     public function getSingleResult($hydrationMode = null)
     {
         $result = $this->execute(array(), $hydrationMode);
 
         if ($this->_hydrationMode !== self::HYDRATE_SINGLE_SCALAR && ! $result) {
-            throw new NoResultException;
+            throw new \Doctrine\ORM\NoResultException;
         }
 
         if (is_array($result)) {
             if (count($result) > 1) {
-                throw new NonUniqueResultException;
+                throw new \Doctrine\ORM\NonUniqueResultException;
             }
             return array_shift($result);
         } else if (is_object($result)) {
             if (count($result) > 1) {
-                throw new NonUniqueResultException;
+                throw new \Doctrine\ORM\NonUniqueResultException;
             }
             return $result->first();
         }
@@ -415,7 +415,8 @@ abstract class AbstractQuery
      * Alias for getSingleResult(HYDRATE_SINGLE_SCALAR).
      *
      * @return mixed
-     * @throws QueryException If the query result is not unique.
+     * @throws Doctrine\ORM\NonUniqueResultException If the query result is not unique.
+     * @throws Doctrine\ORM\NoResultException If the query returned no result.
      */
     public function getSingleScalarResult()
     {
@@ -427,7 +428,7 @@ abstract class AbstractQuery
      *
      * @param string $name The name of the hint.
      * @param mixed $value The value of the hint.
-     * @return Doctrine\ORM\AbstractQuery
+     * @return Doctrine\ORM\Query\AbstractQuery
      */
     public function setHint($name, $value)
     {
@@ -528,7 +529,7 @@ abstract class AbstractQuery
      * generated for you.
      *
      * @param string $id
-     * @return Doctrine\ORM\AbstractQuery
+     * @return Doctrine\ORM\Query\AbstractQuery
      */
     public function setResultCacheId($id)
     {
