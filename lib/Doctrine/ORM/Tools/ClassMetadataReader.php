@@ -26,7 +26,8 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\MappingException,
     Doctrine\ORM\Mapping\Driver\Driver,
     Doctrine\ORM\Mapping\Driver\AnnotationDriver,
-    Doctrine\ORM\EntityManager;
+    Doctrine\ORM\EntityManager,
+    Doctrine\ORM\Tools\Export\ExportException;
 
 /**
  * Class to read metadata mapping information from multiple sources into an array
@@ -92,9 +93,15 @@ class ClassMetadataReader
      * directories. Reads the mapping directories and populates ClassMetadataInfo
      * instances.
      *
+     * If you specify $autoload = true then this method will return ClassMetadata
+     * instances instead of ClassMetadataInfo instances. Keep in mind that if you
+     * specify it to autoload and it doesn't find the class your autoloader may 
+     * throw an error.
+     *
+     * @param bool $autoload Whether or to try and autoload the classes
      * @return array $classes
      */
-    public function getMetadatas()
+    public function getMetadatas($autoload = false)
     {
         $classes = array();
 
@@ -104,7 +111,7 @@ class ClassMetadataReader
             $allClasses = $driver->getAllClassNames();
 
             foreach ($allClasses as $className) {
-                if (class_exists($className, false)) {
+                if (class_exists($className, $autoload)) {
                     $metadata = new ClassMetadata($className);
                 } else {
                     $metadata = new ClassMetadataInfo($className);
@@ -183,9 +190,12 @@ class ClassMetadataReader
 
     private function _determineSourceType($source)
     {
+        if ($source instanceof \Doctrine\ORM\Mapping\Driver\Driver) {
+            $type = array_search(get_class($source), self::$_mappingDrivers);
+            return $type;
         // If the --from=<VALUE> is a directory lets determine if it is
         // annotations, yaml, xml, etc.
-        if (is_dir($source)) {
+        } else if (is_dir($source)) {
             $source = realpath($source);
 
             // Find the files in the directory
@@ -218,12 +228,14 @@ class ClassMetadataReader
 
     private function _getSourceByType($type, $source)
     {
-        $source = realpath($source);
-
         // If --from==database then the source is an instance of SchemaManager
-        // for the current EntityMAnager
-        if ($type == 'database' && $this->_em) {
-            return $this->_em->getConnection()->getSchemaManager();
+        // for the current EntityManager
+        if ($type == 'database') {
+            if ($source instanceof \Doctrine\ORM\Mapping\Driver\DatabaseDriver) {
+                return $source;
+            } else if ($this->_em) {
+                return $this->_em->getConnection()->getSchemaManager();
+            }
         // If source is annotation then lets try and find the existing annotation
         // driver for the source instead of re-creating a new instance
         } else if ($type == 'annotation') {

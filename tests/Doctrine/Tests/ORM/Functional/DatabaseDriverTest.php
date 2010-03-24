@@ -4,7 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
+use Doctrine\ORM\Tools\ClassMetadataReader;
 
 class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -88,9 +88,8 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     protected function extractClassMetadata($className)
     {
-        $cm = new ClassMetadataExporter();
-        $cm->addMappingSource($this->_sm);
-        $exporter = $cm->getExporter('yaml');
+        $cm = new ClassMetadataReader();
+        $cm->addMappingSource(new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($this->_sm));
         $metadatas = $cm->getMetadatas();
 
         $output = false;

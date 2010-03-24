@@ -23,6 +23,7 @@
 namespace Doctrine\ORM\Tools\Export;
 
 use Doctrine\ORM\Tools\ClassMetadataReader,
+    Doctrine\ORM\Tools\Export\ExportException,
     Doctrine\ORM\EntityManager;
 
 /**
