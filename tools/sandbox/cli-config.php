@@ -37,5 +37,5 @@ $connectionOptions = array(
 
 $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);
 
-$configuration = new \Doctrine\Common\Cli\Configuration();
+$configuration = new \Doctrine\Common\CLI\Configuration();
 $configuration->setAttribute('em', $em);

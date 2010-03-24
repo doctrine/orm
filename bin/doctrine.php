@@ -18,14 +18,14 @@ if (file_exists($configFile)) {
     require $configFile;
     
     foreach ($GLOBALS as $configCandidate) {
-        if ($configCandidate instanceof \Doctrine\Common\Cli\Configuration) {
+        if ($configCandidate instanceof \Doctrine\Common\CLI\Configuration) {
             $configuration = $configCandidate;
             break;
         }
     }
 }
 
-$configuration = ($configuration) ?: new \Doctrine\Common\Cli\Configuration();
+$configuration = ($configuration) ?: new \Doctrine\Common\CLI\Configuration();
 
-$cli = new \Doctrine\Common\Cli\CliController($configuration);
+$cli = new \Doctrine\Common\CLI\CLIController($configuration);
 $cli->run($_SERVER['argv']);
