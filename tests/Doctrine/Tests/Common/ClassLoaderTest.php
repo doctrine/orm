@@ -2,33 +2,21 @@
 
 namespace Doctrine\Tests\Common;
 
-use Doctrine\Common\GlobalClassLoader,
-    Doctrine\Common\IsolatedClassLoader;
+use Doctrine\Common\ClassLoader;
 
 require_once __DIR__ . '/../TestInit.php';
 
 class ClassLoaderTest extends \Doctrine\Tests\DoctrineTestCase
 {
-    public function testGlobalClassLoaderThrowsExceptionIfPutInChain()
+    public function testClassLoader()
     {
-        $this->setExpectedException('Doctrine\Common\CommonException');
-
-        $classLoader1 = new IsolatedClassLoader('Foo');
-        $classLoader1->register();
-
-        $globalClassLoader = new GlobalClassLoader;
-        $globalClassLoader->register();
-    }
-
-    /*public function testIsolatedClassLoaderReturnsFalseOnClassExists()
-    {
-        $classLoader = new IsolatedClassLoader('ClassLoaderTest');
-        $classLoader->setBasePath( __DIR__);
+        $classLoader = new ClassLoader('ClassLoaderTest');
+        $classLoader->setIncludePath(__DIR__);
         $classLoader->setFileExtension('.class.php');
         $classLoader->setNamespaceSeparator('_');
 
         $this->assertEquals($classLoader->loadClass('ClassLoaderTest_ClassA'), true);
-        $this->assertEquals($classLoader->loadClass('ClassLoaderTest_ClassA'), false);
+        $this->assertEquals($classLoader->loadClass('ClassLoaderTest_ClassB'), true);
         $this->assertEquals($classLoader->loadClass('ClassLoaderTest_ClassC'), true);
-    }*/
+    }
 }
