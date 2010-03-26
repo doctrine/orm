@@ -1349,33 +1349,33 @@ class SqlWalker implements TreeWalker
             
             // join conditions
             $joinColumns = $assoc->isOwningSide 
-                ? $joinTable['joinColumns'] 
-                : $joinTable['inverseJoinColumns'];
+                ? $joinTable['inverseJoinColumns']
+                : $joinTable['joinColumns'];
             
-            $referencedColumnClass = $assoc->isOwningSide ? $class : $targetClass; 
+            //$referencedColumnClass = $assoc->isOwningSide ? $targetClass : $class; 
             $first = true;
             foreach ($joinColumns as $joinColumn) {
                 if ($first) $first = false; else $sql .= ' AND ';
 
                 $sql .= $joinTableAlias . '.' . $joinColumn['name'] . ' = '
-                        . $sourceTableAlias . '.' . $referencedColumnClass->getQuotedColumnName(
-                                $referencedColumnClass->fieldNames[$joinColumn['referencedColumnName']],
+                        . $targetTableAlias . '.' . $targetClass->getQuotedColumnName(
+                                $targetClass->fieldNames[$joinColumn['referencedColumnName']],
                                 $this->_platform);
             }
             
             $sql .= ' WHERE ';
             
             $joinColumns = $assoc->isOwningSide 
-                ? $joinTable['inverseJoinColumns'] 
-                : $joinTable['joinColumns'];
+                ? $joinTable['joinColumns']
+                : $joinTable['inverseJoinColumns'];
             
             $first = true;
             foreach ($joinColumns as $joinColumn) {
                 if ($first) $first = false; else $sql .= ' AND ';
-                
+
                 $sql .= $joinTableAlias . '.' . $joinColumn['name'] . ' = ' 
-                      . $targetTableAlias . '.' . $referencedColumnClass->getQuotedColumnName(
-                              $referencedColumnClass->fieldNames[$joinColumn['referencedColumnName']],
+                      . $sourceTableAlias . '.' . $class->getQuotedColumnName(
+                              $class->fieldNames[$joinColumn['referencedColumnName']],
                               $this->_platform);
             }
             
