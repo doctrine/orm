@@ -57,7 +57,7 @@ class XmlDriver extends AbstractFileDriver
         } else if ($xmlRoot->getName() == 'mapped-superclass') {
             $metadata->isMappedSuperclass = true;
         } else {
-            throw MappingException::classIsNotAValidEntityOrMapperSuperClass($className);
+            throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
         }
 
         // Evaluate <entity...> attributes
