@@ -136,7 +136,7 @@ public function <methodName>()
      * Generate and write entity classes for the given array of ClassMetadataInfo instances
      *
      * @param array $metadatas
-     * @param string $outputDirectory
+     * @param string $outputDirectory 
      * @return void
      */
     public function generate(array $metadatas, $outputDirectory)
@@ -150,13 +150,14 @@ public function <methodName>()
      * Generated and write entity class to disk for the given ClassMetadataInfo instance
      *
      * @param ClassMetadataInfo $metadata
-     * @param string $outputDirectory
+     * @param string $outputDirectory 
      * @return void
      */
     public function writeEntityClass(ClassMetadataInfo $metadata, $outputDirectory)
     {
         $path = $outputDirectory . '/' . str_replace('\\', DIRECTORY_SEPARATOR, $metadata->name) . $this->_extension;
         $dir = dirname($path);
+
         if ( ! is_dir($dir)) {
             mkdir($dir, 0777, true);
         }
@@ -165,13 +166,13 @@ public function <methodName>()
 
         if ( ! $this->_isNew) {
             require_once $path;
+
             $this->_reflection = new \ReflectionClass($metadata->name);
         }
 
         // If entity doesn't exist or we're re-generating the entities entirely
         if ($this->_isNew || ( ! $this->_isNew && $this->_regenerateEntityIfExists)) {
             file_put_contents($path, $this->generateEntityClass($metadata));
-
         // If entity exists and we're allowed to update the entity class
         } else if ( ! $this->_isNew && $this->_updateEntityIfExists) {
             file_put_contents($path, $this->generateUpdatedEntityClass($metadata, $path));
@@ -181,7 +182,7 @@ public function <methodName>()
     /**
      * Generate a PHP5 Doctrine 2 entity class from the given ClassMetadataInfo instance
      *
-     * @param ClassMetadataInfo $metadata
+     * @param ClassMetadataInfo $metadata 
      * @return string $code
      */
     public function generateEntityClass(ClassMetadataInfo $metadata)
@@ -202,15 +203,14 @@ public function <methodName>()
             $this->_generateEntityBody($metadata)
         );
 
-        $code = str_replace($placeHolders, $replacements, self::$_classTemplate);
-        return $code;
+        return str_replace($placeHolders, $replacements, self::$_classTemplate);
     }
 
     /**
      * Generate the updated code for the given ClassMetadataInfo and entity at path
      *
-     * @param ClassMetadataInfo $metadata
-     * @param string $path
+     * @param ClassMetadataInfo $metadata 
+     * @param string $path 
      * @return string $code;
      */
     public function generateUpdatedEntityClass(ClassMetadataInfo $metadata, $path)
@@ -218,16 +218,15 @@ public function <methodName>()
         $currentCode = file_get_contents($path);
 
         $body = $this->_generateEntityBody($metadata);
-
         $last = strrpos($currentCode, '}');
-        $code = substr($currentCode, 0, $last) . $body . '}';
-        return $code;
+
+        return substr($currentCode, 0, $last) . $body . '}';
     }
 
     /**
      * Set the number of spaces the exported class should have
      *
-     * @param integer $numSpaces
+     * @param integer $numSpaces 
      * @return void
      */
     public function setNumSpaces($numSpaces)
@@ -239,7 +238,7 @@ public function <methodName>()
     /**
      * Set the extension to use when writing php files to disk
      *
-     * @param string $extension
+     * @param string $extension 
      * @return void
      */
     public function setExtension($extension)
@@ -260,7 +259,7 @@ public function <methodName>()
     /**
      * Set whether or not to generate annotations for the entity
      *
-     * @param bool $bool
+     * @param bool $bool 
      * @return void
      */
     public function setGenerateAnnotations($bool)
@@ -271,7 +270,7 @@ public function <methodName>()
     /**
      * Set whether or not to try and update the entity if it already exists
      *
-     * @param bool $bool
+     * @param bool $bool 
      * @return void
      */
     public function setUpdateEntityIfExists($bool)
@@ -311,7 +310,7 @@ public function <methodName>()
     private function _generateEntityUse(ClassMetadataInfo $metadata)
     {
         if ($this->_extendsClass()) {
-            return "\n\nuse " . $this->_getClassToExtendNamespace().";\n";
+            return "\n\nuse " . $this->_getClassToExtendNamespace() . ";\n";
         }
     }
 
@@ -328,38 +327,35 @@ public function <methodName>()
         $stubMethods = $this->_generateEntityStubMethods ? $this->_generateEntityStubMethods($metadata) : null;
         $lifecycleCallbackMethods = $this->_generateEntityLifecycleCallbackMethods($metadata);
 
-        $code = '';
+        $code = array();
+
         if ($fieldMappingProperties) {
-            $code .= $fieldMappingProperties . "\n";
+            $code[] = $fieldMappingProperties;
         }
+
         if ($associationMappingProperties) {
-            $code .= $associationMappingProperties . "\n";
+            $code[] = $associationMappingProperties;
         }
+
         if ($stubMethods) {
-            $code .= $stubMethods . "\n";
+            $code[] = $stubMethods;
         }
+
         if ($lifecycleCallbackMethods) {
-            $code .= $lifecycleCallbackMethods . "\n";
+            $code[] = $lifecycleCallbackMethods;
         }
-        return $code;
+
+        return implode("\n", $code);
     }
 
     private function _hasProperty($property, ClassMetadataInfo $metadata)
     {
-        if ($this->_isNew) {
-            return false;
-        } else {
-            return $this->_reflection->hasProperty($property);
-        }
+        return ($this->_isNew) ? false : $this->_reflection->hasProperty($property);
     }
 
     private function _hasMethod($method, ClassMetadataInfo $metadata)
     {
-        if ($this->_isNew) {
-            return false;
-        } else {
-            return $this->_reflection->hasMethod($method);
-        }
+        return ($this->_isNew) ? false : $this->_reflection->hasMethod($method);
     }
 
     private function _hasNamespace(ClassMetadataInfo $metadata)
@@ -380,22 +376,21 @@ public function <methodName>()
     private function _getClassToExtendName()
     {
         $refl = new \ReflectionClass($this->_getClassToExtend());
+
         return $refl->getShortName();
     }
 
     private function _getClassToExtendNamespace()
     {
         $refl = new \ReflectionClass($this->_getClassToExtend());
-        return $refl->getNamespaceName() ? $refl->getNamespaceName():$refl->getShortName();
+
+        return $refl->getNamespaceName() ? $refl->getNamespaceName():$refl->getShortName();        
     }
 
     private function _getClassName(ClassMetadataInfo $metadata)
     {
-        if ($pos = strrpos($metadata->name, '\\')) {
-            return substr($metadata->name, $pos + 1, strlen($metadata->name));
-        } else {
-            return $metadata->name;
-        }
+        return ($pos = strrpos($metadata->name, '\\'))
+            ? substr($metadata->name, $pos + 1, strlen($metadata->name)) : $metadata->name;
     }
 
     private function _getNamespace(ClassMetadataInfo $metadata)
@@ -527,7 +522,7 @@ public function <methodName>()
                     if ($code = $this->_generateEntityStubMethod($metadata, 'add', $associationMapping->sourceFieldName, $associationMapping->targetEntityName)) {
                         $methods[] = $code;
                     }
-                    if ($code = $this->_generateEntityStubMethod($metadata, 'get', $associationMapping->sourceFieldName, '\Doctrine\Common\Collections\Collection')) {
+                    if ($code = $this->_generateEntityStubMethod($metadata, 'get', $associationMapping->sourceFieldName, 'Doctrine\Common\Collections\Collection')) {
                         $methods[] = $code;
                     }
                 }
@@ -535,7 +530,7 @@ public function <methodName>()
                 if ($code = $this->_generateEntityStubMethod($metadata, 'add', $associationMapping->sourceFieldName, $associationMapping->targetEntityName)) {
                     $methods[] = $code;
                 }
-                if ($code = $this->_generateEntityStubMethod($metadata, 'get', $associationMapping->sourceFieldName, '\Doctrine\Common\Collections\Collection')) {
+                if ($code = $this->_generateEntityStubMethod($metadata, 'get', $associationMapping->sourceFieldName, 'Doctrine\Common\Collections\Collection')) {
                     $methods[] = $code;
                 }
             }
@@ -548,6 +543,7 @@ public function <methodName>()
     {
         if (isset($metadata->lifecycleCallbacks) && $metadata->lifecycleCallbacks) {
             $methods = array();
+
             foreach ($metadata->lifecycleCallbacks as $name => $callbacks) {
                 foreach ($callbacks as $callback) {
                     if ($code = $this->_generateLifecycleCallbackMethod($name, $callback, $metadata)) {
@@ -555,6 +551,7 @@ public function <methodName>()
                     }
                 }
             }
+
             return implode('', $methods);
         }
     }
@@ -562,34 +559,41 @@ public function <methodName>()
     private function _generateEntityAssociationMappingProperties(ClassMetadataInfo $metadata)
     {
         $lines = array();
+
         foreach ($metadata->associationMappings as $associationMapping) {
             if ($this->_hasProperty($associationMapping->sourceFieldName, $metadata)) {
                 continue;
             }
+
             $lines[] = $this->_generateAssociationMappingPropertyDocBlock($associationMapping, $metadata);
-            $lines[] = $this->_spaces . 'private $' . $associationMapping->sourceFieldName . ($associationMapping->isManyToMany() ? ' = array()' : null) . ";\n";
+            $lines[] = $this->_spaces . 'private $' . $associationMapping->sourceFieldName
+                     . ($associationMapping->isManyToMany() ? ' = array()' : null) . ";\n";
         }
-        $code = implode("\n", $lines);
-        return $code;
+
+        return implode("\n", $lines)
     }
 
     private function _generateEntityFieldMappingProperties(ClassMetadataInfo $metadata)
     {
         $lines = array();
+
         foreach ($metadata->fieldMappings as $fieldMapping) {
             if ($this->_hasProperty($fieldMapping['fieldName'], $metadata)) {
                 continue;
             }
+
             $lines[] = $this->_generateFieldMappingPropertyDocBlock($fieldMapping, $metadata);
-            $lines[] = $this->_spaces . 'private $' . $fieldMapping['fieldName'] . (isset($fieldMapping['default']) ? ' = ' . var_export($fieldMapping['default'], true) : null) . ";\n";
+            $lines[] = $this->_spaces . 'private $' . $fieldMapping['fieldName']
+                     . (isset($fieldMapping['default']) ? ' = ' . var_export($fieldMapping['default'], true) : null) . ";\n";
         }
-        $code = implode("\n", $lines);
-        return $code;
+
+        return implode("\n", $lines);
     }
 
     private function _generateEntityStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null)
     {
         $methodName = $type . Inflector::classify($fieldName);
+
         if ($this->_hasMethod($methodName, $metadata)) {
             return;
         }
@@ -636,33 +640,42 @@ public function <methodName>()
             array_values($replacements),
             self::$_lifecycleCallbackMethodTemplate
         );
+
         return $this->_prefixCodeWithSpaces($method);
     }
 
     private function _generateJoinColumnAnnotation(array $joinColumn)
     {
         $joinColumnAnnot = array();
+
         if (isset($joinColumn['name'])) {
             $joinColumnAnnot[] = 'name="' . $joinColumn['name'] . '"';
         }
+
         if (isset($joinColumn['referencedColumnName'])) {
             $joinColumnAnnot[] = 'referencedColumnName="' . $joinColumn['referencedColumnName'] . '"';
         }
+
         if (isset($joinColumn['unique']) && $joinColumn['unique']) {
             $joinColumnAnnot[] = 'unique=' . ($joinColumn['unique'] ? 'true' : 'false');
         }
+
         if (isset($joinColumn['nullable'])) {
             $joinColumnAnnot[] = 'nullable=' . ($joinColumn['nullable'] ? 'true' : 'false');
         }
+
         if (isset($joinColumn['onDelete'])) {
             $joinColumnAnnot[] = 'onDelete=' . ($joinColumn['onDelete'] ? 'true' : 'false');
         }
+
         if (isset($joinColumn['onUpdate'])) {
             $joinColumnAnnot[] = 'onUpdate=' . ($joinColumn['onUpdate'] ? 'true' : 'false');
         }
+
         if (isset($joinColumn['columnDefinition'])) {
             $joinColumnAnnot[] = 'columnDefinition="' . $joinColumn['columnDefinition'] . '"';
         }
+
         return '@JoinColumn(' . implode(', ', $joinColumnAnnot) . ')';
     }
 
@@ -678,21 +691,27 @@ public function <methodName>()
             $e = explode('\\', get_class($associationMapping));
             $type = str_replace('Mapping', '', end($e));
             $typeOptions = array();
+
             if (isset($associationMapping->targetEntityName)) {
                 $typeOptions[] = 'targetEntity="' . $associationMapping->targetEntityName . '"';
             }
+
             if (isset($associationMapping->mappedBy)) {
                 $typeOptions[] = 'mappedBy="' . $associationMapping->mappedBy . '"';
             }
+
             if ($associationMapping->hasCascades()) {
                 $cascades = array();
+
                 if ($associationMapping->isCascadePersist) $cascades[] = '"persist"';
                 if ($associationMapping->isCascadeRemove) $cascades[] = '"remove"';
                 if ($associationMapping->isCascadeDetach) $cascades[] = '"detach"';
                 if ($associationMapping->isCascadeMerge) $cascades[] = '"merge"';
                 if ($associationMapping->isCascadeRefresh) $cascades[] = '"refresh"';
-                $typeOptions[] = 'cascade={' . implode(',', $cascades) . '}';
+
+                $typeOptions[] = 'cascade={' . implode(',', $cascades) . '}';            
             }
+
             if (isset($associationMapping->orphanRemoval) && $associationMapping->orphanRemoval) {
                 $typeOptions[] = 'orphanRemoval=' . ($associationMapping->orphanRemoval ? 'true' : 'false');
             }
@@ -703,11 +722,13 @@ public function <methodName>()
                 $lines[] = $this->_spaces . ' * @JoinColumns({';
 
                 $joinColumnsLines = array();
+
                 foreach ($associationMapping->joinColumns as $joinColumn) {
                     if ($joinColumnAnnot = $this->_generateJoinColumnAnnotation($joinColumn)) {
                         $joinColumnsLines[] = $this->_spaces . ' *   ' . $joinColumnAnnot;
                     }
                 }
+
                 $lines[] = implode(",\n", $joinColumnsLines);
                 $lines[] = $this->_spaces . ' * })';
             }
@@ -715,32 +736,36 @@ public function <methodName>()
             if (isset($associationMapping->joinTable) && $associationMapping->joinTable) {
                 $joinTable = array();
                 $joinTable[] = 'name="' . $associationMapping->joinTable['name'] . '"';
+
                 if (isset($associationMapping->joinTable['schema'])) {
                     $joinTable[] = 'schema="' . $associationMapping->joinTable['schema'] . '"';
                 }
 
                 $lines[] = $this->_spaces . ' * @JoinTable(' . implode(', ', $joinTable) . ',';
-
                 $lines[] = $this->_spaces . ' *   joinColumns={';
+
                 foreach ($associationMapping->joinTable['joinColumns'] as $joinColumn) {
                     $lines[] = $this->_spaces . ' *     ' . $this->_generateJoinColumnAnnotation($joinColumn);
                 }
-                $lines[] = $this->_spaces . ' *   },';
 
+                $lines[] = $this->_spaces . ' *   },';
                 $lines[] = $this->_spaces . ' *   inverseJoinColumns={';
+
                 foreach ($associationMapping->joinTable['inverseJoinColumns'] as $joinColumn) {
                     $lines[] = $this->_spaces . ' *     ' . $this->_generateJoinColumnAnnotation($joinColumn);
                 }
-                $lines[] = $this->_spaces . ' *   }';
 
+                $lines[] = $this->_spaces . ' *   }';
                 $lines[] = $this->_spaces . ' * )';
             }
 
             if (isset($associationMapping->orderBy)) {
                 $lines[] = $this->_spaces . ' * @OrderBy({';
+
                 foreach ($associationMapping->orderBy as $name => $direction) {
-                    $lines[] = $this->_spaces . ' *     "' . $name . '"="' . $direction . '",';
+                    $lines[] = $this->_spaces . ' *     "' . $name . '"="' . $direction . '",'; 
                 }
+
                 $lines[count($lines) - 1] = substr($lines[count($lines) - 1], 0, strlen($lines[count($lines) - 1]) - 1);
                 $lines[] = $this->_spaces . ' * })';
             }
@@ -764,58 +789,77 @@ public function <methodName>()
             if (isset($fieldMapping['columnName'])) {
                 $column[] = 'name="' . $fieldMapping['columnName'] . '"';
             }
+
             if (isset($fieldMapping['type'])) {
                 $column[] = 'type="' . $fieldMapping['type'] . '"';
             }
+
             if (isset($fieldMapping['length'])) {
                 $column[] = 'length=' . $fieldMapping['length'];
             }
+
             if (isset($fieldMapping['precision'])) {
                 $column[] = 'precision=' .  $fieldMapping['precision'];
             }
+
             if (isset($fieldMapping['scale'])) {
                 $column[] = 'scale=' . $fieldMapping['scale'];
             }
+
             if (isset($fieldMapping['nullable'])) {
                 $column[] = 'nullable=' .  var_export($fieldMapping['nullable'], true);
             }
+
             if (isset($fieldMapping['columnDefinition'])) {
                 $column[] = 'columnDefinition="' . $fieldMapping['columnDefinition'] . '"';
             }
+
             if (isset($fieldMapping['options'])) {
                 $options = array();
+
                 foreach ($fieldMapping['options'] as $key => $value) {
                     $value = var_export($value, true);
                     $value = str_replace("'", '"', $value);
                     $options[] = ! is_numeric($key) ? $key . '=' . $value:$value;
                 }
+
                 if ($options) {
                     $column[] = 'options={' . implode(', ', $options) . '}';
                 }
             }
+
             if (isset($fieldMapping['unique'])) {
                 $column[] = 'unique=' . var_export($fieldMapping['unique'], true);
             }
+
             $lines[] = $this->_spaces . ' * @Column(' . implode(', ', $column) . ')';
+
             if (isset($fieldMapping['id']) && $fieldMapping['id']) {
                 $lines[] = $this->_spaces . ' * @Id';
+
                 if ($generatorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
                     $lines[] = $this->_spaces.' * @GeneratedValue(strategy="' . $generatorType . '")';
                 }
+
                 if ($metadata->sequenceGeneratorDefinition) {
                     $sequenceGenerator = array();
+
                     if (isset($metadata->sequenceGeneratorDefinition['sequenceName'])) {
                         $sequenceGenerator[] = 'sequenceName="' . $metadata->sequenceGeneratorDefinition['sequenceName'] . '"';
                     }
+
                     if (isset($metadata->sequenceGeneratorDefinition['allocationSize'])) {
                         $sequenceGenerator[] = 'allocationSize="' . $metadata->sequenceGeneratorDefinition['allocationSize'] . '"';
                     }
+
                     if (isset($metadata->sequenceGeneratorDefinition['initialValue'])) {
                         $sequenceGenerator[] = 'initialValue="' . $metadata->sequenceGeneratorDefinition['initialValue'] . '"';
                     }
+
                     $lines[] = $this->_spaces . ' * @SequenceGenerator(' . implode(', ', $sequenceGenerator) . ')';
                 }
             }
+
             if (isset($fieldMapping['version']) && $fieldMapping['version']) {
                 $lines[] = $this->_spaces . ' * @Version';
             }
@@ -829,71 +873,68 @@ public function <methodName>()
     private function _prefixCodeWithSpaces($code, $num = 1)
     {
         $lines = explode("\n", $code);
+
         foreach ($lines as $key => $value) {
-          $lines[$key] = str_repeat($this->_spaces, $num) . $lines[$key];
+            $lines[$key] = str_repeat($this->_spaces, $num) . $lines[$key];
         }
+
         return implode("\n", $lines);
     }
 
     private function _getInheritanceTypeString($type)
     {
-        switch ($type)
-        {
+        switch ($type) {
             case ClassMetadataInfo::INHERITANCE_TYPE_NONE:
                 return 'NONE';
-            break;
 
             case ClassMetadataInfo::INHERITANCE_TYPE_JOINED:
                 return 'JOINED';
-            break;
 
             case ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_TABLE:
                 return 'SINGLE_TABLE';
-            break;
 
             case ClassMetadataInfo::INHERITANCE_TYPE_TABLE_PER_CLASS:
                 return 'PER_CLASS';
-            break;
+
+            default:
+                throw new \InvalidArgumentException('Invalid provided InheritanceType: ' . $type);
         }
     }
 
     private function _getChangeTrackingPolicyString($policy)
     {
-        switch ($policy)
-        {
+        switch ($policy) {
             case ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT:
                 return 'DEFERRED_IMPLICIT';
-            break;
 
             case ClassMetadataInfo::CHANGETRACKING_DEFERRED_EXPLICIT:
                 return 'DEFERRED_EXPLICIT';
-            break;
 
             case ClassMetadataInfo::CHANGETRACKING_NOTIFY:
                 return 'NOTIFY';
-            break;
+
+            default:
+                throw new \InvalidArgumentException('Invalid provided ChangeTrackingPolicy: ' . $policy);
         }
     }
 
     private function _getIdGeneratorTypeString($type)
     {
-        switch ($type)
-        {
+        switch ($type) {
             case ClassMetadataInfo::GENERATOR_TYPE_AUTO:
                 return 'AUTO';
-            break;
 
             case ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE:
                 return 'SEQUENCE';
-            break;
 
             case ClassMetadataInfo::GENERATOR_TYPE_TABLE:
                 return 'TABLE';
-            break;
 
             case ClassMetadataInfo::GENERATOR_TYPE_IDENTITY:
                 return 'IDENTITY';
-            break;
+
+            default:
+                throw new \InvalidArgumentException('Invalid provided IdGeneratorType: ' . $type);
         }
     }
 }
