@@ -56,7 +56,7 @@ class ConvertDoctrine1SchemaTask extends AbstractTask
 
         $doc = $this->getDocumentation();
         $doc->setName('convert-10-schema')
-            ->setDescription('Displays the current installed Doctrine version.')
+            ->setDescription('Converts a Doctrine 1.X schema into a Doctrine 2.X schema.')
             ->getOptionGroup()
                 ->addOption($options);
     }
