@@ -318,7 +318,7 @@ public function <methodName>()
     private function _generateEntityClassName(ClassMetadataInfo $metadata)
     {
         return 'class ' . $this->_getClassName($metadata) .
-            ($this->_extendsClass() ? 'extends ' . $this->_getClassToExtendName() : null);
+            ($this->_extendsClass() ? ' extends ' . $this->_getClassToExtendName() : null);
     }
 
     private function _generateEntityBody(ClassMetadataInfo $metadata)
