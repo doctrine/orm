@@ -544,7 +544,7 @@ class Expr
      */
     public function between($val, $x, $y)
     {
-        return new Expr\Func('BETWEEN', array($val, $x, $y));
+        return $val . ' BETWEEN ' . $x . ' AND ' . $y;
     }
 
     /**

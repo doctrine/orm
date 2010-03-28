@@ -232,7 +232,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
 
     public function testBetweenExpr()
     {
-        $this->assertEquals('BETWEEN(u.id, 3, 6)', (string) $this->_expr->between('u.id', 3, 6));
+        $this->assertEquals('u.id BETWEEN 3 AND 6', (string) $this->_expr->between('u.id', 3, 6));
     }
 
     public function testTrimExpr()
