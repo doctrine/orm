@@ -98,7 +98,7 @@ class CollectionTest extends \Doctrine\Tests\DoctrineTestCase
     public function testSearch()
     {
         $this->_coll[0] = 'test';
-        $this->assertEquals(0, $this->_coll->search('test'));
+        $this->assertEquals(0, $this->_coll->indexOf('test'));
     }
 
     public function testGet()

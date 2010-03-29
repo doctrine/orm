@@ -22,7 +22,8 @@
 namespace Doctrine\ORM;
 
 use Doctrine\ORM\Mapping\AssociationMapping,
-    \Closure;
+    Doctrine\Common\Collections\Collection,
+    Closure;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
@@ -40,7 +41,7 @@ use Doctrine\ORM\Mapping\AssociationMapping,
  * @author    Roman Borschel <roman@code-factory.org>
  * @author    Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
-final class PersistentCollection implements \Doctrine\Common\Collections\Collection
+final class PersistentCollection implements Collection
 {
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
@@ -443,10 +444,10 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
     /**
      * {@inheritdoc}
      */
-    public function search($element)
+    public function indexOf($element)
     {
         $this->_initialize();
-        return $this->_coll->search($element);
+        return $this->_coll->indexOf($element);
     }
 
     /**

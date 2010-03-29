@@ -247,7 +247,7 @@ class ArrayCollection implements Collection
      * @param mixed $element The element to search for.
      * @return mixed The key/index of the element or FALSE if the element was not found.
      */
-    public function search($element)
+    public function indexOf($element)
     {
         return array_search($element, $this->_elements, true);
     }
