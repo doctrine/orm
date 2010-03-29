@@ -35,7 +35,7 @@ class SingleScalarHydrator extends AbstractHydrator
     protected function _hydrateAll()
     {
         $cache = array();
-        $result = $this->_stmt->fetchAll(Connection::FETCH_ASSOC);
+        $result = $this->_stmt->fetchAll(\PDO::FETCH_ASSOC);
         if (count($result) > 1 || count($result[key($result)]) > 1) {
             throw new \Doctrine\ORM\NonUniqueResultException;
         }

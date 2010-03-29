@@ -294,8 +294,9 @@ class ClassMetadataInfo
      * uniqueConstraints => array
      *
      * @var array
+     * @todo Rename to just $table
      */
-    public $primaryTable;
+    public $table;
 
     /**
      * READ-ONLY: The registered lifecycle callbacks for entities of this class.
@@ -862,7 +863,7 @@ class ClassMetadataInfo
      */
     public function getTableName()
     {
-        return $this->primaryTable['name'];
+        return $this->table['name'];
     }
 
     /**
@@ -872,7 +873,7 @@ class ClassMetadataInfo
      */
     public function getTemporaryIdTableName()
     {
-        return $this->primaryTable['name'] . '_id_tmp';
+        return $this->table['name'] . '_id_tmp';
     }
 
     /**
@@ -966,7 +967,7 @@ class ClassMetadataInfo
      */
     public function setTableName($tableName)
     {
-        $this->primaryTable['name'] = $tableName;
+        $this->table['name'] = $tableName;
     }
 
     /**
@@ -981,7 +982,7 @@ class ClassMetadataInfo
      */
     public function setPrimaryTable(array $primaryTableDefinition)
     {
-        $this->primaryTable = $primaryTableDefinition;
+        $this->table = $primaryTableDefinition;
     }
 
     /**
@@ -1101,7 +1102,7 @@ class ClassMetadataInfo
      */
     private function _registerMappingIfInverse(AssociationMapping $assoc)
     {
-        if ($assoc->isInverseSide()) {
+        if ( ! $assoc->isOwningSide) {
             $this->inverseMappings[$assoc->targetEntityName][$assoc->mappedBy] = $assoc;
         }
     }

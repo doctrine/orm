@@ -21,7 +21,7 @@
 
 namespace Doctrine\DBAL\Driver;
 
-use Doctrine\DBAL\Connection as DBALConnection;
+use \PDO;
 
 /**
  * Statement interface.
@@ -38,18 +38,6 @@ use Doctrine\DBAL\Connection as DBALConnection;
  */
 interface Statement
 {
-    /**
-     * Bind a column to a PHP variable
-     *
-     * @param mixed $column         Number of the column (1-indexed) or name of the column in the result set.
-     *                              If using the column name, be aware that the name should match
-     *                              the case of the column, as returned by the driver.
-     * @param string $param         Name of the PHP variable to which the column will be bound.
-     * @param integer $type         Data type of the parameter, specified by the PDO::PARAM_* constants.
-     * @return boolean              Returns TRUE on success or FALSE on failure
-     */
-    function bindColumn($column, &$param, $type = null);
-
     /**
      * Binds a value to a corresponding named or positional
      * placeholder in the SQL statement that was used to prepare the statement.
@@ -85,13 +73,9 @@ interface Statement
      * @param integer $type         Explicit data type for the parameter using the PDO::PARAM_* constants. To return
      *                              an INOUT parameter from a stored procedure, use the bitwise OR operator to set the
      *                              PDO::PARAM_INPUT_OUTPUT bits for the data_type parameter.
-     *
-     * @param integer $length       Length of the data type. To indicate that a parameter is an OUT parameter
-     *                              from a stored procedure, you must explicitly set the length.
-     * @param mixed $driverOptions
      * @return boolean              Returns TRUE on success or FALSE on failure.
      */
-    function bindParam($column, &$variable, $type = null, $length = null, $driverOptions = array());
+    function bindParam($column, &$variable, $type = null);
 
     /**
      * Closes the cursor, enabling the statement to be executed again.
@@ -142,7 +126,7 @@ interface Statement
      *                                  bound parameters in the SQL statement being executed.
      * @return boolean                  Returns TRUE on success or FALSE on failure.
      */
-    function execute($params = array());
+    function execute($params = null);
 
     /**
      * fetch
@@ -171,7 +155,7 @@ interface Statement
      *
      * @return mixed
      */
-    function fetch($fetchStyle = DBALConnection::FETCH_BOTH);
+    function fetch($fetchStyle = PDO::FETCH_BOTH);
 
     /**
      * Returns an array containing all of the result set rows
@@ -185,7 +169,7 @@ interface Statement
      *
      * @return array
      */
-    function fetchAll($fetchStyle = DBALConnection::FETCH_BOTH);
+    function fetchAll($fetchStyle = PDO::FETCH_BOTH);
 
     /**
      * fetchColumn

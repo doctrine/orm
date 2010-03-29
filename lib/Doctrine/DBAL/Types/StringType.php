@@ -21,6 +21,8 @@
 
 namespace Doctrine\DBAL\Types;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+
 /**
  * Type that maps an SQL VARCHAR to a PHP string.
  *
@@ -29,13 +31,13 @@ namespace Doctrine\DBAL\Types;
 class StringType extends Type
 {
     /** @override */
-    public function getSqlDeclaration(array $fieldDeclaration, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
         return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 
     /** @override */
-    public function getDefaultLength(\Doctrine\DBAL\Platforms\AbstractPlatform $platform)
+    public function getDefaultLength(AbstractPlatform $platform)
     {
         return $platform->getVarcharDefaultLength();
     }
@@ -43,6 +45,6 @@ class StringType extends Type
     /** @override */
     public function getName()
     {
-        return 'string';
+        return Type::STRING;
     }
 }

@@ -250,16 +250,6 @@ abstract class AssociationMapping
     }
 
     /**
-     * Whether the source entity of this association represents the inverse side.
-     *
-     * @return boolean
-     */
-    public function isInverseSide()
-    {
-        return ! $this->isOwningSide;
-    }
-
-    /**
      * Whether the association is a one-to-one association.
      *
      * @return boolean
@@ -298,7 +288,12 @@ abstract class AssociationMapping
     {
         return (bool) $this->joinTable;
     }
-    
+
+    /**
+     * Checks whether the association has any cascades configured.
+     * 
+     * @return boolean
+     */
     public function hasCascades()
     {
         return $this->isCascadePersist ||

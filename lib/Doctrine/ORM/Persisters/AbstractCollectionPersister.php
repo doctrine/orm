@@ -61,14 +61,6 @@ abstract class AbstractCollectionPersister
         $this->_conn = $em->getConnection();
     }
 
-    /*public function recreate(PersistentCollection $coll)
-    {
-        if ($coll->getRelation()->isInverseSide()) {
-            return;
-        }
-        //...
-    }*/
-
     /**
      * Deletes the persistent state represented by the given collection.
      *
@@ -76,7 +68,7 @@ abstract class AbstractCollectionPersister
      */
     public function delete(PersistentCollection $coll)
     {
-        if ($coll->getMapping()->isInverseSide()) {
+        if ( ! $coll->getMapping()->isOwningSide) {
             return; // ignore inverse side
         }
         $sql = $this->_getDeleteSql($coll);
@@ -106,7 +98,7 @@ abstract class AbstractCollectionPersister
      */
     public function update(PersistentCollection $coll)
     {
-        if ($coll->getMapping()->isInverseSide()) {
+        if ( ! $coll->getMapping()->isOwningSide) {
             return; // ignore inverse side
         }
         $this->deleteRows($coll);

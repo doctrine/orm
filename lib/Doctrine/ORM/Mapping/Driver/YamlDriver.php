@@ -62,11 +62,11 @@ class YamlDriver extends AbstractFileDriver
 
         // Evaluate root level properties
         if (isset($element['table'])) {
-            $metadata->primaryTable['name'] = $element['table'];
+            $metadata->table['name'] = $element['table'];
         }
 
         if (isset($element['schema'])) {
-            $metadata->primaryTable['schema'] = $element['schema'];
+            $metadata->table['schema'] = $element['schema'];
         }
 
         if (isset($element['inheritanceType'])) {
@@ -107,7 +107,7 @@ class YamlDriver extends AbstractFileDriver
                     $columns = $index['columns'];
                 }
 
-                $metadata->primaryTable['indexes'][$index['name']] = array(
+                $metadata->table['indexes'][$index['name']] = array(
                     'columns' => $columns
                 );
             }
@@ -126,7 +126,7 @@ class YamlDriver extends AbstractFileDriver
                     $columns = $unique['columns'];
                 }
 
-                $metadata->primaryTable['uniqueConstraints'][$unique['name']] = array(
+                $metadata->table['uniqueConstraints'][$unique['name']] = array(
                     'columns' => $columns
                 );
             }

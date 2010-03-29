@@ -32,14 +32,14 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testGetParameters()
     {
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1");
-        $this->assertEquals(array(1 => 42), $query->getParameters(array(1 => 42)));
+        $this->assertEquals(array(), $query->getParameters());
     }
 
     public function testGetParameters_HasSomeAlready()
     {
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1");
         $query->setParameter(2, 84);
-        $this->assertEquals(array(2 => 84, 1 => 42), $query->getParameters(array(1 => 42)));
+        $this->assertEquals(array(2 => 84), $query->getParameters());
     }
 
     public function testSimpleQueries()

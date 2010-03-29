@@ -46,7 +46,7 @@ interface Driver
     public function getName();
 
     /**
-     * Get the name of the database connected to for this driver instance
+     * Get the name of the database connected to for this driver.
      *
      * @param  Doctrine\DBAL\Connection $conn
      * @return string $database

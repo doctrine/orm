@@ -21,8 +21,7 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\ORM\Query\AbstractQuery,
-    Doctrine\ORM\Query\Parser,
+use Doctrine\ORM\Query\Parser,
     Doctrine\ORM\Query\QueryException;
 
 /**
@@ -124,7 +123,7 @@ final class Query extends AbstractQuery
     private $_maxResults = null;
 
     /**
-     * @var CacheDriver  The cache driver used for caching queries.
+     * @var CacheDriver The cache driver used for caching queries.
      */
     private $_queryCache;
 
@@ -161,17 +160,17 @@ final class Query extends AbstractQuery
      * @return mixed The built sql query or an array of all sql queries.
      * @override
      */
-    public function getSql()
+    public function getSQL()
     {
         return $this->_parse()->getSqlExecutor()->getSqlStatements();
     }
 
     /**
-     * Returns the correspondent AST for this Query.
+     * Returns the corresponding AST for this DQL query.
      *
-     * @return \Doctrine\ORM\Query\AST\SelectStatement |
-     *         \Doctrine\ORM\Query\AST\UpdateStatement |
-     *         \Doctrine\ORM\Query\AST\DeleteStatement
+     * @return Doctrine\ORM\Query\AST\SelectStatement |
+     *         Doctrine\ORM\Query\AST\UpdateStatement |
+     *         Doctrine\ORM\Query\AST\DeleteStatement
      */
     public function getAST()
     {
@@ -216,62 +215,51 @@ final class Query extends AbstractQuery
 
     /**
      * {@inheritdoc}
-     *
-     * @param array $params
-     * @return Statement The resulting Statement.
-     * @override
      */
-    protected function _doExecute(array $params)
+    protected function _doExecute()
     {
         $executor = $this->_parse()->getSqlExecutor();
-        $params = $this->_prepareParams($params);
-        if ( ! $this->_resultSetMapping) {
-            $this->_resultSetMapping = $this->_parserResult->getResultSetMapping();
-        }
 
-        return $executor->execute($this->_em->getConnection(), $params);
-    }
-    
-    /**
-     * {@inheritdoc}
-     *
-     * @override
-     */
-    protected function _prepareParams(array $params)
-    {
-        $sqlParams = array();
-        
+        // Prepare parameters
         $paramMappings = $this->_parserResult->getParameterMappings();
 
-        if (count($paramMappings) != count($params)) {
+        if (count($paramMappings) != count($this->_params)) {
             throw QueryException::invalidParameterNumber();
         }
 
-        foreach ($params as $key => $value) {
+        $sqlParams = $types = array();
+
+        foreach ($this->_params as $key => $value) {
             if ( ! isset($paramMappings[$key])) {
                 throw QueryException::unknownParameter($key);
             }
+            if (isset($this->_paramTypes[$key])) {
+                foreach ($paramMappings[$key] as $position) {
+                    $types[$position] = $this->_paramTypes[$key];
+                }
+            }
 
-            if (is_object($value)) {
-                //$values = $this->_em->getClassMetadata(get_class($value))->getIdentifierValues($value);
+            if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(get_class($value))) {
                 $values = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
-                //var_dump($this->_em->getUnitOfWork()->getEntityIdentifier($value));
                 $sqlPositions = $paramMappings[$key];
                 $sqlParams = array_merge($sqlParams, array_combine((array)$sqlPositions, $values));
-            } else if (is_bool($value)) {
-                $boolValue = $this->_em->getConnection()->getDatabasePlatform()->convertBooleans($value);
-                foreach ($paramMappings[$key] as $position) {
-                    $sqlParams[$position] = $boolValue;
-                }
             } else {
                 foreach ($paramMappings[$key] as $position) {
                     $sqlParams[$position] = $value;
                 }
             }
         }
-        ksort($sqlParams);
-        
-        return array_values($sqlParams);
+
+        if ($sqlParams) {
+            ksort($sqlParams);
+            $sqlParams = array_values($sqlParams);
+        }
+
+        if ($this->_resultSetMapping === null) {
+            $this->_resultSetMapping = $this->_parserResult->getResultSetMapping();
+        }
+
+        return $executor->execute($this->_em->getConnection(), $sqlParams, $types);
     }
 
     /**

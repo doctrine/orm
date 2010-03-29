@@ -290,7 +290,12 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     private function _changed()
     {
-        $this->_isDirty = true;
+        if ( ! $this->_isDirty) {
+            $this->_isDirty = true;
+            //if ($this->_isNotifyRequired) {
+                //$this->_em->getUnitOfWork()->scheduleCollectionUpdate($this);
+            //}
+        }
     }
 
     /**

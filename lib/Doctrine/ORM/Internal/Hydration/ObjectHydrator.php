@@ -21,7 +21,8 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\ORM\PersistentCollection,
+use PDO,
+    Doctrine\ORM\PersistentCollection,
     Doctrine\ORM\Query,
     Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\Collections\Collection;
@@ -102,7 +103,7 @@ class ObjectHydrator extends AbstractHydrator
             }
         }
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -122,8 +123,9 @@ class ObjectHydrator extends AbstractHydrator
     {
         $result = array();
         $cache = array();
-        while ($data = $this->_stmt->fetch(\Doctrine\DBAL\Connection::FETCH_ASSOC)) {
-            $this->_hydrateRow($data, $cache, $result);
+
+        while ($row = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
+            $this->_hydrateRow($row, $cache, $result);
         }
 
         // Take snapshots from all newly initialized collections
@@ -189,7 +191,6 @@ class ObjectHydrator extends AbstractHydrator
             $className = $this->_ce[$className]->discriminatorMap[$data[$discrColumn]];
             unset($data[$discrColumn]);
         }
-        
         return $this->_uow->createEntity($className, $data, $this->_hints);
     }
     
@@ -244,7 +245,7 @@ class ObjectHydrator extends AbstractHydrator
      * @param array $cache
      * @param array $result
      */
-    protected function _hydrateRow(array &$data, array &$cache, array &$result)
+    protected function _hydrateRow(array $data, array &$cache, array &$result)
     {
         // Initialize
         $id = $this->_idTemplate; // initialize the id-memory
@@ -263,12 +264,11 @@ class ObjectHydrator extends AbstractHydrator
 
         // Hydrate the data chunks
         foreach ($rowData as $dqlAlias => $data) {
-            $index = false;
             $entityName = $this->_rsm->aliasMap[$dqlAlias];
             
             if (isset($this->_rsm->parentAliasMap[$dqlAlias])) {
                 // It's a joined result
-                
+
                 $parentAlias = $this->_rsm->parentAliasMap[$dqlAlias];
 
                 // Get a reference to the parent object to which the joined element belongs.

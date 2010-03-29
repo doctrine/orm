@@ -21,8 +21,10 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\DBAL\Connection,
-    Doctrine\DBAL\Types\Type;
+use PDO,
+    Doctrine\DBAL\Connection,
+    Doctrine\DBAL\Types\Type,
+    Doctrine\ORM\EntityManager;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
@@ -54,7 +56,7 @@ abstract class AbstractHydrator
 
     /** @var Statement The statement that provides the data to hydrate. */
     protected $_stmt;
-    
+
     /** @var array The query hints. */
     protected $_hints;
 
@@ -63,7 +65,7 @@ abstract class AbstractHydrator
      *
      * @param Doctrine\ORM\EntityManager $em The EntityManager to use.
      */
-    public function __construct(\Doctrine\ORM\EntityManager $em)
+    public function __construct(EntityManager $em)
     {
         $this->_em = $em;
         $this->_platform = $em->getConnection()->getDatabasePlatform();
@@ -112,18 +114,18 @@ abstract class AbstractHydrator
      */
     public function hydrateRow()
     {
-        $row = $this->_stmt->fetch(Connection::FETCH_ASSOC);
+        $row = $this->_stmt->fetch(PDO::FETCH_ASSOC);
         if ( ! $row) {
             $this->_cleanup();
             return false;
         }
-        $result = $this->_getRowContainer();
+        $result = array();
         $this->_hydrateRow($row, $this->_cache, $result);
         return $result;
     }
 
     /**
-     * Excutes one-time preparation tasks once each time hydration is started
+     * Excutes one-time preparation tasks, once each time hydration is started
      * through {@link hydrateAll} or {@link iterate()}.
      */
     protected function _prepare()
@@ -149,7 +151,7 @@ abstract class AbstractHydrator
      * @param array $cache The cache to use.
      * @param mixed $result The result to fill.
      */
-    protected function _hydrateRow(array &$data, array &$cache, array &$result)
+    protected function _hydrateRow(array $data, array &$cache, array &$result)
     {
         throw new HydrationException("_hydrateRow() not implemented by this hydrator.");
     }
@@ -158,14 +160,6 @@ abstract class AbstractHydrator
      * Hydrates all rows from the current statement instance at once.
      */
     abstract protected function _hydrateAll();
-
-    /**
-     * Gets the row container used during row-by-row hydration through {@link iterate()}.
-     */
-    protected function _getRowContainer()
-    {
-        return array();        
-    }
 
     /**
      * Processes a row of the result set.
@@ -178,7 +172,7 @@ abstract class AbstractHydrator
      * @return array  An array with all the fields (name => value) of the data row,
      *                grouped by their component alias.
      */
-    protected function _gatherRowData(&$data, &$cache, &$id, &$nonemptyComponents)
+    protected function _gatherRowData(array $data, array &$cache, array &$id, array &$nonemptyComponents)
     {
         $rowData = array();
 

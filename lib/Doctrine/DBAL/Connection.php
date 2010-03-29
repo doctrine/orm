@@ -21,7 +21,11 @@
 
 namespace Doctrine\DBAL;
 
-use Doctrine\Common\EventManager,
+use PDO, Closure,
+    Doctrine\DBAL\Types\Type,
+    Doctrine\DBAL\Driver\Statement as DriverStatement,
+    Doctrine\DBAL\Driver\Connection as DriverConnection,
+    Doctrine\Common\EventManager,
     Doctrine\DBAL\DBALException;
 
 /**
@@ -39,7 +43,7 @@ use Doctrine\Common\EventManager,
  * @author  Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author  Lukas Smith <smith@pooteeweet.org> (MDB2 library)
  */
-class Connection
+class Connection implements DriverConnection
 {
     /**
      * Constant for transaction isolation level READ UNCOMMITTED.
@@ -62,15 +66,6 @@ class Connection
     const TRANSACTION_SERIALIZABLE = 4;
 
     /**
-     * Derived PDO constants
-     */
-    const FETCH_ASSOC       = 2;
-    const FETCH_BOTH        = 4;
-    //const FETCH_COLUMN      = 7; Apparently not used.
-    const FETCH_NUM         = 3;
-    const ATTR_AUTOCOMMIT   = 0;
-
-    /**
      * The wrapped driver connection.
      *
      * @var Doctrine\DBAL\Driver\Connection
@@ -78,15 +73,11 @@ class Connection
     protected $_conn;
 
     /**
-     * The Configuration.
-     *
      * @var Doctrine\DBAL\Configuration
      */
     protected $_config;
 
     /**
-     * The EventManager.
-     *
      * @var Doctrine\Common\EventManager
      */
     protected $_eventManager;
@@ -308,7 +299,7 @@ class Connection
         $this->_isConnected = true;
 
         if ($this->_eventManager->hasListeners(Events::postConnect)) {
-            $eventArgs = new \Doctrine\DBAL\Event\ConnectionEventArgs($this);
+            $eventArgs = new Event\ConnectionEventArgs($this);
             $this->_eventManager->dispatchEvent(Events::postConnect, $eventArgs);
         }
 
@@ -326,7 +317,7 @@ class Connection
      */
     public function fetchRow($statement, array $params = array())
     {
-        return $this->execute($statement, $params)->fetch(Connection::FETCH_ASSOC);
+        return $this->execute($statement, $params)->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -339,7 +330,7 @@ class Connection
      */
     public function fetchArray($statement, array $params = array())
     {
-        return $this->execute($statement, $params)->fetch(Connection::FETCH_NUM);
+        return $this->execute($statement, $params)->fetch(PDO::FETCH_NUM);
     }
 
     /**
@@ -367,20 +358,30 @@ class Connection
     }
 
     /**
-     * Deletes table row(s) matching the specified identifier.
+     * Checks whether a transaction is currently active.
+     * 
+     * @return boolean TRUE if a transaction is currently active, FALSE otherwise.
+     */
+    public function isTransactionActive()
+    {
+        return $this->_transactionNestingLevel > 0;
+    }
+
+    /**
+     * Executes an SQL DELETE statement on a table.
      *
-     * @param string $table         The table to delete data from.
-     * @param array $identifier     An associateve array containing identifier fieldname-value pairs.
-     * @return integer              The number of affected rows
+     * @param string $table The name of the table on which to delete.
+     * @param array $identifier The deletion criteria. An associateve array containing column-value pairs.
+     * @return integer The number of affected rows.
      */
     public function delete($tableName, array $identifier)
     {
         $this->connect();
-        
+
         $criteria = array();
-        
-        foreach (array_keys($identifier) as $id) {
-            $criteria[] = $id . ' = ?';
+
+        foreach (array_keys($identifier) as $columnName) {
+            $criteria[] = $columnName . ' = ?';
         }
 
         $query = 'DELETE FROM ' . $tableName . ' WHERE ' . implode(' AND ', $criteria);
@@ -423,24 +424,16 @@ class Connection
     }
 
     /**
-     * Updates table row(s) with specified data
+     * Executes an SQL UPDATE statement on a table.
      *
-     * @throws Doctrine\DBAL\ConnectionException    if something went wrong at the database level
-     * @param string $table     The table to insert data into
-     * @param array $values     An associateve array containing column-value pairs.
-     * @return mixed            boolean false if empty value array was given,
-     *                          otherwise returns the number of affected rows
+     * @param string $table The name of the table to update.
+     * @param array $identifier The update criteria. An associative array containing column-value pairs.
+     * @return integer The number of affected rows.
      */
     public function update($tableName, array $data, array $identifier)
     {
         $this->connect();
-        
-        if (empty($data)) {
-            return false;
-        }
-
         $set = array();
-        
         foreach ($data as $columnName => $value) {
             $set[] = $columnName . ' = ?';
         }
@@ -457,39 +450,34 @@ class Connection
     /**
      * Inserts a table row with specified data.
      *
-     * @param string $table     The table to insert data into.
-     * @param array $fields     An associateve array containing fieldname-value pairs.
-     * @return mixed            boolean false if empty value array was given,
-     *                          otherwise returns the number of affected rows
+     * @param string $table The name of the table to insert data into.
+     * @param array $data An associative array containing column-value pairs.
+     * @return integer The number of affected rows.
      */
     public function insert($tableName, array $data)
     {
         $this->connect();
-        
-        if (empty($data)) {
-            return false;
-        }
 
         // column names are specified as array keys
         $cols = array();
-        $a = array();
+        $placeholders = array();
         
         foreach ($data as $columnName => $value) {
             $cols[] = $columnName;
-            $a[] = '?';
+            $placeholders[] = '?';
         }
 
         $query = 'INSERT INTO ' . $tableName
                . ' (' . implode(', ', $cols) . ')'
-               . ' VALUES (' . implode(', ', $a) . ')';
+               . ' VALUES (' . implode(', ', $placeholders) . ')';
 
         return $this->executeUpdate($query, array_values($data));
     }
 
     /**
-     * Set the charset on the current connection
+     * Sets the given charset on the current connection.
      *
-     * @param string    charset
+     * @param string $charset The charset to set.
      */
     public function setCharset($charset)
     {
@@ -502,12 +490,12 @@ class Connection
      *
      * Delimiting style depends on the underlying database platform that is being used.
      *
-     * NOTE: Just because you CAN use delimited identifiers doesn't mean
-     * you SHOULD use them.  In general, they end up causing way more
+     * NOTE: Just because you CAN use quoted identifiers does not mean
+     * you SHOULD use them. In general, they end up causing way more
      * problems than they solve.
      *
-     * @param string $str           identifier name to be quoted
-     * @return string               quoted identifier string
+     * @param string $str The name to be quoted.
+     * @return string The quoted name.
      */
     public function quoteIdentifier($str)
     {
@@ -517,9 +505,9 @@ class Connection
     /**
      * Quotes a given input parameter.
      *
-     * @param mixed $input  Parameter to be quoted.
-     * @param string $type  Type of the parameter.
-     * @return string  The quoted parameter.
+     * @param mixed $input Parameter to be quoted.
+     * @param string $type Type of the parameter.
+     * @return string The quoted parameter.
      */
     public function quote($input, $type = null)
     {
@@ -537,106 +525,146 @@ class Connection
      */
     public function fetchAll($sql, array $params = array())
     {
-        return $this->execute($sql, $params)->fetchAll(Connection::FETCH_ASSOC);
+        return $this->execute($sql, $params)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
      * Prepares an SQL statement.
      *
      * @param string $statement The SQL statement to prepare.
-     * @return Statement The prepared statement.
+     * @return Doctrine\DBAL\Driver\Statement The prepared statement.
      */
     public function prepare($statement)
     {
         $this->connect();
-        
-        return $this->_conn->prepare($statement);
+
+        return new Statement($statement, $this);
     }
 
     /**
-     * Prepares and executes an SQL query.
+     * Executes an, optionally parameterized, SQL query.
      *
-     * @param string $query The SQL query to prepare and execute.
-     * @param array $params The parameters, if any.
-     * @return Statement The prepared and executed statement.
+     * If the query is parameterized, a prepared statement is used.
+     * If an SQLLogger is configured, the execution is logged.
+     *
+     * @param string $query The SQL query to execute.
+     * @param array $params The parameters to bind to the query, if any.
+     * @return Doctrine\DBAL\Driver\Statement The executed statement.
+     * @todo Rename to executeQuery ?
+     * @internal PERF: Directly prepares a driver statement, not a wrapper.
      */
-    public function execute($query, array $params = array())
+    public function execute($query, array $params = array(), $types = array())
     {
         $this->connect();
 
-        if ($this->_config->getSqlLogger()) {
-            $this->_config->getSqlLogger()->logSql($query, $params);
+        if ($this->_config->getSQLLogger() !== null) {
+            $this->_config->getSQLLogger()->logSQL($query, $params);
         }
-        
-        if ( ! empty($params)) {
+
+        if ($params) {
             $stmt = $this->_conn->prepare($query);
-            $stmt->execute($params);
+            if ($types) {
+                $this->_bindTypedValues($stmt, $params, $types);
+                $stmt->execute();
+            } else {
+                $stmt->execute($params);
+            }
         } else {
             $stmt = $this->_conn->query($query);
         }
-        
+
         return $stmt;
     }
-    
+
     /**
-     * Prepares and executes an SQL query and returns the result, optionally applying a
-     * transformation on the rows of the result.
+     * Executes an, optionally parameterized, SQL query and returns the result,
+     * applying a given projection/transformation function on each row of the result.
      *
      * @param string $query The SQL query to execute.
      * @param array $params The parameters, if any.
      * @param Closure $mapper The transformation function that is applied on each row.
      *                        The function receives a single paramater, an array, that
      *                        represents a row of the result set.
-     * @return mixed The (possibly transformed) result of the query.
+     * @return mixed The projected result of the query.
      */
-    public function query($query, array $params = array(), \Closure $mapper = null)
+    public function project($query, array $params = array(), Closure $function)
     {
         $result = array();
         $stmt = $this->execute($query, $params);
-        
+
         while ($row = $stmt->fetch()) {
-            if ($mapper === null) {
-                $result[] = $row;
-            } else {
-                $result[] = $mapper($row);
-            }
+            $result[] = $function($row);
         }
-        
+
         $stmt->closeCursor();
-        
+
         return $result;
     }
 
     /**
-     * Executes an SQL INSERT/UPDATE/DELETE query with the given parameters.
-     *
-     * @param string $query     sql query
-     * @param array $params     query parameters
-     * @return integer
+     * Executes an SQL statement, returning a result set as a Statement object.
+     * 
+     * @param string $statement
+     * @param integer $fetchType
+     * @return Doctrine\DBAL\Driver\Statement
      */
-    public function executeUpdate($query, array $params = array())
+    public function query()
+    {
+        return call_user_func_array(array($this->_conn, 'query'), func_get_args());
+    }
+
+    /**
+     * Executes an SQL INSERT/UPDATE/DELETE query with the given parameters
+     * and returns the number of affected rows.
+     * 
+     * This method supports PDO binding types as well as DBAL mapping types.
+     *
+     * @param string $query The SQL query.
+     * @param array $params The query parameters.
+     * @param array $types The parameter types.
+     * @return integer The number of affected rows.
+     * @internal PERF: Directly prepares a driver statement, not a wrapper.
+     */
+    public function executeUpdate($query, array $params = array(), array $types = array())
     {
         $this->connect();
 
-        if ($this->_config->getSqlLogger()) {
-            $this->_config->getSqlLogger()->logSql($query, $params);
+        if ($this->_config->getSQLLogger() !== null) {
+            $this->_config->getSQLLogger()->logSQL($query, $params);
         }
 
-        if ( ! empty($params)) {
+        if ($params) {
             $stmt = $this->_conn->prepare($query);
-            $stmt->execute($params);
+            if ($types) {
+                $this->_bindTypedValues($stmt, $params, $types);
+                $stmt->execute();
+            } else {
+                $stmt->execute($params);
+            }
             $result = $stmt->rowCount();
         } else {
             $result = $this->_conn->exec($query);
         }
-        
+
         return $result;
+    }
+
+    /**
+     * Execute an SQL statement and return the number of affected rows.
+     * 
+     * @param string $statement
+     * @return integer The number of affected rows.
+     */
+    public function exec($statement)
+    {
+        $this->connect();
+        return $this->_conn->exec($statement);
     }
 
     /**
      * Returns the current transaction nesting level.
      *
-     * @return integer The nesting level. A value of 0 means theres no active transaction.
+     * @return integer The nesting level. A value of 0 means there's no active transaction.
      */
     public function getTransactionNestingLevel()
     {
@@ -644,26 +672,24 @@ class Connection
     }
 
     /**
-     * Fetch the SQLSTATE associated with the last operation on the database handle
+     * Fetch the SQLSTATE associated with the last database operation.
      *
-     * @return integer
+     * @return integer The last error code.
      */
     public function errorCode()
     {
         $this->connect();
-        
         return $this->_conn->errorCode();
     }
 
     /**
-     * Fetch extended error information associated with the last operation on the database handle
+     * Fetch extended error information associated with the last database operation.
      *
-     * @return array
+     * @return array The last error information.
      */
     public function errorInfo()
     {
         $this->connect();
-        
         return $this->_conn->errorInfo();
     }
 
@@ -672,31 +698,31 @@ class Connection
      * depending on the underlying driver.
      *
      * Note: This method may not return a meaningful or consistent result across different drivers,
-     * because the underlying database may not even support the notion of auto-increment fields or sequences.
+     * because the underlying database may not even support the notion of AUTO_INCREMENT/IDENTITY
+     * columns or sequences.
      *
-     * @param string $table     Name of the table into which a new row was inserted.
-     * @param string $field     Name of the field into which a new row was inserted.
+     * @param string $seqName Name of the sequence object from which the ID should be returned.
+     * @return string A string representation of the last inserted ID.
      */
     public function lastInsertId($seqName = null)
     {
         $this->connect();
-        
         return $this->_conn->lastInsertId($seqName);
     }
 
     /**
-     * Start a transaction by suspending auto-commit mode.
+     * Starts a transaction by suspending auto-commit mode.
      *
      * @return void
      */
     public function beginTransaction()
     {
         $this->connect();
-        
+
         if ($this->_transactionNestingLevel == 0) {
             $this->_conn->beginTransaction();
         }
-        
+
         ++$this->_transactionNestingLevel;
     }
 
@@ -721,15 +747,12 @@ class Connection
         if ($this->_transactionNestingLevel == 1) {
             $this->_conn->commit();
         }
-        
+
         --$this->_transactionNestingLevel;
     }
 
     /**
-     * Cancel any database changes done during a transaction or since a specific
-     * savepoint that is in progress. This function may only be called when
-     * auto-committing is disabled, otherwise it will fail. Therefore, a new
-     * transaction is implicitly started after canceling the pending changes.
+     * Cancel any database changes done during the current transaction.
      *
      * this method can be listened with onPreTransactionRollback and onTransactionRollback
      * eventlistener methods
@@ -762,7 +785,7 @@ class Connection
     public function getWrappedConnection()
     {
         $this->connect();
-        
+
         return $this->_conn;
     }
 
@@ -777,15 +800,15 @@ class Connection
         if ( ! $this->_schemaManager) {
             $this->_schemaManager = $this->_driver->getSchemaManager($this);
         }
-        
+
         return $this->_schemaManager;
     }
-    
+
     /**
      * Marks the current transaction so that the only possible
      * outcome for the transaction to be rolled back.
      * 
-     * @throws BadMethodCallException If no transaction is active.
+     * @throws ConnectionException If no transaction is active.
      */
     public function setRollbackOnly()
     {
@@ -794,12 +817,12 @@ class Connection
         }
         $this->_isRollbackOnly = true;
     }
-    
+
     /**
      * Check whether the current transaction is marked for rollback only.
      * 
      * @return boolean
-     * @throws BadMethodCallException If no transaction is active.
+     * @throws ConnectionException If no transaction is active.
      */
     public function getRollbackOnly()
     {
@@ -807,5 +830,87 @@ class Connection
             throw ConnectionException::noActiveTransaction();
         }
         return $this->_isRollbackOnly;
+    }
+
+    /**
+     * Converts a given value to its database representation according to the conversion
+     * rules of a specific DBAL mapping type.
+     * 
+     * @param mixed $value The value to convert.
+     * @param string $type The name of the DBAL mapping type.
+     * @return mixed The converted value.
+     */
+    public function convertToDatabaseValue($value, $type)
+    {
+        return Type::getType($type)->convertToDatabaseValue($value, $this->_platform);
+    }
+
+    /**
+     * Converts a given value to its PHP representation according to the conversion
+     * rules of a specific DBAL mapping type.
+     * 
+     * @param mixed $value The value to convert.
+     * @param string $type The name of the DBAL mapping type.
+     * @return mixed The converted type.
+     */
+    public function convertToPHPValue($value, $type)
+    {
+        return Type::getType($type)->convertToPHPValue($value, $this->_platform);
+    }
+
+    /**
+     * Binds a set of parameters, some or all of which are typed with a PDO binding type
+     * or DBAL mapping type, to a given statement.
+     * 
+     * @param DriverStatement $stmt The statement to bind the values to.
+     * @param array $params The map/list of named/positional parameters.
+     * @param array $types The parameter types (PDO binding types or DBAL mapping types).
+     */
+    private function _bindTypedValues(DriverStatement $stmt, array $params, array $types)
+    {
+        // Check whether parameters are positional or named. Mixing is not allowed, just like in PDO.
+        if (is_int(key($params))) {
+            // Positional parameters
+            $typeOffset = isset($types[0]) ? -1 : 0;
+            $bindIndex = 1;
+            foreach ($params as $position => $value) {
+                $typeIndex = $bindIndex + $typeOffset;
+                if (isset($types[$typeIndex])) {
+                    $type = $types[$typeIndex];
+                    if (is_string($type)) {
+                        $type = Type::getType($type);
+                    }
+                    if ($type instanceof Type) {
+                        $value = $type->convertToDatabaseValue($value, $this->_platform);
+                        $bindingType = $type->getBindingType();
+                    } else {
+                        $bindingType = $type; // PDO::PARAM_* constants
+                    }
+                    $stmt->bindValue($bindIndex, $value, $bindingType);
+                } else {
+                    $stmt->bindValue($bindIndex, $value);
+                }
+                ++$bindIndex;
+            }
+        } else {
+            // Named parameters
+            foreach ($params as $name => $value) {
+                if (isset($types[$name])) {
+                    $type = $types[$name];
+                    if (is_string($type)) {
+                        $type = Type::getType($type);
+                    }
+                    if ($type instanceof Type) {
+                        $value = $type->convertToDatabaseValue($value, $this->_platform);
+                        $bindingType = $type->getBindingType();
+                    } else {
+                        $bindingType = $type; // PDO::PARAM_* constants
+                    }
+                    $stmt->bindValue($name, $value, $bindingType);
+                } else {
+                    $stmt->bindValue($name, $value);
+                }
+            }
+        }
     }
 }

@@ -6,7 +6,7 @@ class DriverConnectionMock implements \Doctrine\DBAL\Driver\Connection
 {
     public function prepare($prepareString) {}
     public function query() {}
-    public function quote($input) {}
+    public function quote($input, $type=\PDO::PARAM_STR) {}
     public function exec($statement) {}
     public function lastInsertId($name = null) {}
     public function beginTransaction() {}

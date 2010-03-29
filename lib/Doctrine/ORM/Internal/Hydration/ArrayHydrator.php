@@ -21,7 +21,7 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\DBAL\Connection;
+use PDO, Doctrine\DBAL\Connection;
 
 /**
  * The ArrayHydrator produces a nested array "graph" that is often (not always)
@@ -60,7 +60,7 @@ class ArrayHydrator extends AbstractHydrator
     {
         $result = array();
         $cache = array();
-        while ($data = $this->_stmt->fetch(Connection::FETCH_ASSOC)) {
+        while ($data = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
             $this->_hydrateRow($data, $cache, $result);
         }
 
@@ -68,7 +68,7 @@ class ArrayHydrator extends AbstractHydrator
     }
 
     /** @override */
-    protected function _hydrateRow(array &$data, array &$cache, array &$result)
+    protected function _hydrateRow(array $data, array &$cache, array &$result)
     {
         // 1) Initialize
         $id = $this->_idTemplate; // initialize the id-memory

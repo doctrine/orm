@@ -21,25 +21,22 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\ORM\ORMException,
-    Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\DBAL\Connection,
+use PDO,
+    Doctrine\ORM\ORMException,
+    Doctrine\ORM\OptimisticLockException,
     Doctrine\DBAL\Types\Type,
     Doctrine\ORM\EntityManager,
     Doctrine\ORM\Query,
     Doctrine\ORM\PersistentCollection,
-    Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Events;
+    Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
- * Base class for all EntityPersisters. An EntityPersister is a class that knows
- * how to persist and load entities of a specific type.
+ * A basic entity persister that maps an entity with no (mapped) inheritance to a single table
+ * in the relational database.
  *
  * @author      Roman Borschel <roman@code-factory.org>
  * @author      Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @version     $Revision: 3406 $
- * @link        www.doctrine-project.org
  * @since       2.0
  * @todo Rename: BasicEntityPersister
  */
@@ -72,13 +69,6 @@ class StandardEntityPersister
      * @var Doctrine\ORM\EntityManager
      */
     protected $_em;
-    
-    /**
-     * The SqlLogger to use, if any.
-     * 
-     * @var Doctrine\DBAL\Logging\SqlLogger
-     */
-    protected $_sqlLogger;
 
     /**
      * Queued inserts.
@@ -88,15 +78,27 @@ class StandardEntityPersister
     protected $_queuedInserts = array();
 
     /**
-     * Mappings of column names as they appear in an SQL result set to
-     * column names as they are defined in the mapping.
+     * Case-sensitive mappings of column names as they appear in an SQL result set
+     * to column names as they are defined in the mapping. This is necessary because different
+     * RDBMS vendors return column names in result sets in different casings.
      * 
      * @var array
      */
     protected $_resultColumnNames = array();
 
     /**
+     * The map of column names to DBAL mapping types of all prepared columns used when INSERTing
+     * or UPDATEing an entity.
+     * 
+     * @var array
+     * @see _prepareInsertData($entity)
+     * @see _prepareUpdateData($entity)
+     */
+    protected $_columnTypes = array();
+
+    /**
      * The INSERT SQL statement used for entities handled by this persister.
+     * This SQL is only generated once per request, if at all.
      * 
      * @var string
      */
@@ -104,17 +106,11 @@ class StandardEntityPersister
 
     /**
      * The SELECT column list SQL fragment used for querying entities by this persister.
+     * This SQL fragment is only generated once per request, if at all.
      * 
      * @var string
      */
     protected $_selectColumnListSql;
-
-    /**
-     * Map from column names to class names that declare the field the column is mapped to.
-     * 
-     * @var array
-     */
-    protected $_declaringClassMap = array();
 
     /**
      * Counter for creating unique SQL table and column aliases.
@@ -124,7 +120,7 @@ class StandardEntityPersister
     protected $_sqlAliasCounter = 0;
 
     /**
-     * Map from class names to the corresponding generated SQL table aliases.
+     * Map from class names (FQCN) to the corresponding generated SQL table aliases.
      * 
      * @var array
      */
@@ -132,17 +128,16 @@ class StandardEntityPersister
 
     /**
      * Initializes a new <tt>StandardEntityPersister</tt> that uses the given EntityManager
-     * and persists instances of the class described by the given class metadata descriptor.
+     * and persists instances of the class described by the given ClassMetadata descriptor.
      * 
-     * @param EntityManager $em
-     * @param ClassMetadata $class
+     * @param Doctrine\ORM\EntityManager $em
+     * @param Doctrine\ORM\Mapping\ClassMetadata $class
      */
     public function __construct(EntityManager $em, ClassMetadata $class)
     {
         $this->_em = $em;
         $this->_class = $class;
         $this->_conn = $em->getConnection();
-        $this->_sqlLogger = $this->_conn->getConfiguration()->getSqlLogger();
         $this->_platform = $this->_conn->getDatabasePlatform();
     }
 
@@ -158,9 +153,13 @@ class StandardEntityPersister
     }
 
     /**
-     * Executes all queued inserts.
+     * Executes all queued entity insertions and returns any generated post-insert
+     * identifiers that were created as a result of the insertions.
+     * 
+     * If no inserts are queued, invoking this method is a NOOP.
      *
-     * @return array An array of any generated post-insert IDs.
+     * @return array An array of any generated post-insert IDs. This will be an empty array
+     *               if the entity class does not use the IDENTITY generation strategy.
      */
     public function executeInserts()
     {
@@ -168,37 +167,23 @@ class StandardEntityPersister
             return;
         }
 
-        $isVersioned = $this->_class->isVersioned;
-
         $postInsertIds = array();
         $idGen = $this->_class->idGenerator;
         $isPostInsertId = $idGen->isPostInsertGenerator();
 
         $stmt = $this->_conn->prepare($this->getInsertSQL());
-        $primaryTableName = $this->_class->primaryTable['name'];
+        $tableName = $this->_class->table['name'];
 
         foreach ($this->_queuedInserts as $entity) {
-            $insertData = array();
-            $this->_prepareData($entity, $insertData, true);
+            $insertData = $this->_prepareInsertData($entity);
 
-            if (isset($insertData[$primaryTableName])) {
+            if (isset($insertData[$tableName])) {
                 $paramIndex = 1;
-                if ($this->_sqlLogger !== null) {
-                    $params = array();
-                    foreach ($insertData[$primaryTableName] as $value) {
-                        $params[$paramIndex] = $value;
-                        $stmt->bindValue($paramIndex++, $value);
-                    }
-                    $this->_sqlLogger->logSql($this->getInsertSQL(), $params);
-                } else {
-                    foreach ($insertData[$primaryTableName] as $value) {
-                        $stmt->bindValue($paramIndex++, $value);
-                    }
+                foreach ($insertData[$tableName] as $column => $value) {
+                    $stmt->bindValue($paramIndex++, $value, $this->_columnTypes[$column]);
                 }
-            } else if ($this->_sqlLogger !== null) {
-                $this->_sqlLogger->logSql($this->getInsertSQL());
             }
-            
+
             $stmt->execute();
 
             if ($isPostInsertId) {
@@ -208,11 +193,11 @@ class StandardEntityPersister
                 $id = $this->_class->getIdentifierValues($entity);
             }
 
-            if ($isVersioned) {
+            if ($this->_class->isVersioned) {
                 $this->_assignDefaultVersionValue($this->_class, $entity, $id);
             }
         }
-        
+
         $stmt->closeCursor();
         $this->_queuedInserts = array();
 
@@ -220,11 +205,13 @@ class StandardEntityPersister
     }
 
     /**
-     * This function retrieves the default version value which was created
-     * by the DBMS INSERT statement. The value is assigned back in to the 
-     * $entity versionField property.
+     * Retrieves the default version value which was created
+     * by the preceding INSERT statement and assigns it back in to the 
+     * entities version field.
      *
-     * @return void
+     * @param $class
+     * @param $entity
+     * @param $id
      */
     protected function _assignDefaultVersionValue($class, $entity, $id)
     {
@@ -245,60 +232,65 @@ class StandardEntityPersister
      */
     public function update($entity)
     {
-        $updateData = array();
-        $this->_prepareData($entity, $updateData);
-        $id = array_combine(
-            $this->_class->getIdentifierColumnNames(),
-            $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
-        );
-        $tableName = $this->_class->primaryTable['name'];
-
+        $updateData = $this->_prepareUpdateData($entity);
+        $tableName = $this->_class->table['name'];
         if (isset($updateData[$tableName]) && $updateData[$tableName]) {
-            $this->_doUpdate($entity, $tableName, $updateData[$tableName], $id);
+            $this->_updateTable($entity, $tableName, $updateData[$tableName], $this->_class->isVersioned);
         }
     }
 
     /**
-     * Perform UPDATE statement for an entity. This function has support for
-     * optimistic locking if the entities ClassMetadata has versioning enabled.
+     * Performs an UPDATE statement for an entity on a specific table.
+     * The UPDATE can be optionally versioned, which requires the entity to have a version field.
      *
-     * @param object $entity        The entity object being updated
-     * @param string $tableName     The name of the table being updated
-     * @param array $data           The array of data to set
-     * @param array $where          The condition used to update
-     * @return void
+     * @param object $entity The entity object being updated.
+     * @param string $tableName The name of the table to apply the UPDATE on.
+     * @param array $updateData The map of columns to update (column => value).
+     * @param boolean $versioned Whether the UPDATE should be versioned.
      */
-    protected function _doUpdate($entity, $tableName, $data, $where)
+    protected function _updateTable($entity, $tableName, $updateData, $versioned = false)
     {
-        // Note: $tableName and column names in $data are already quoted for SQL.
-        $set = array();
-        foreach ($data as $columnName => $value) {
-            $set[] = $columnName . ' = ?';
+        $set = $params = $types = array();
+
+        foreach ($updateData as $columnName => $value) {
+            if (isset($this->_class->fieldNames[$columnName])) {
+                $set[] = $this->_class->getQuotedColumnName($this->_class->fieldNames[$columnName], $this->_platform) . ' = ?';
+            } else {
+                $set[] = $columnName . ' = ?';
+            }
+            $params[] = $value;
+            $types[] = $this->_columnTypes[$columnName];
+        }
+        
+        $where = array();
+        $id = $this->_em->getUnitOfWork()->getEntityIdentifier($entity);
+        foreach ($this->_class->identifier as $idField) {
+            $where[] = $this->_class->getQuotedColumnName($idField, $this->_platform);
+            $params[] = $id[$idField];
+            $types[] = $this->_class->fieldMappings[$idField]['type'];
         }
 
-        if ($isVersioned = $this->_class->isVersioned) {
+        if ($versioned) {
             $versionField = $this->_class->versionField;
             $versionFieldType = $this->_class->getTypeOfField($versionField);
-            $where[$versionField] = Type::getType($versionFieldType)
-                    ->convertToDatabaseValue($this->_class->reflFields[$versionField]->getValue($entity), $this->_platform);
-            $versionFieldColumnName = $this->_class->getQuotedColumnName($versionField, $this->_platform);
-            if ($versionFieldType == 'integer') {
-                $set[] = $versionFieldColumnName . ' = ' . $versionFieldColumnName . ' + 1';
-            } else if ($versionFieldType == 'datetime') {
-                $set[] = $versionFieldColumnName . ' = CURRENT_TIMESTAMP';
+            $versionColumn = $this->_class->getQuotedColumnName($versionField, $this->_platform);
+            if ($versionFieldType == Type::INTEGER) {
+                $set[] = $versionColumn . ' = ' . $versionColumn . ' + 1';
+            } else if ($versionFieldType == Type::DATETIME) {
+                $set[] = $versionColumn . ' = CURRENT_TIMESTAMP';
             }
+            $where[] = $versionColumn;
+            $params[] = $this->_class->reflFields[$versionField]->getValue($entity);
+            $types[] = $this->_class->fieldMappings[$versionField]['type'];
         }
 
-        $params = array_merge(array_values($data), array_values($where));
+        $sql = 'UPDATE ' . $tableName . ' SET ' . implode(', ', $set)
+            . ' WHERE ' . implode(' = ? AND ', $where) . ' = ?';
 
-        $sql  = 'UPDATE ' . $tableName
-                . ' SET ' . implode(', ', $set)
-                . ' WHERE ' . implode(' = ? AND ', array_keys($where)) . ' = ?';
+        $result = $this->_conn->executeUpdate($sql, $params, $types);
 
-        $result = $this->_conn->executeUpdate($sql, $params);
-
-        if ($isVersioned && ! $result) {
-            throw \Doctrine\ORM\OptimisticLockException::lockFailed();
+        if ($this->_class->isVersioned && ! $result) {
+            throw OptimisticLockException::lockFailed();
         }
     }
 
@@ -313,7 +305,7 @@ class StandardEntityPersister
             $this->_class->getIdentifierColumnNames(),
             $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
         );
-        $this->_conn->delete($this->_class->primaryTable['name'], $id);
+        $this->_conn->delete($this->_class->table['name'], $id);
     }
 
     /**
@@ -327,7 +319,7 @@ class StandardEntityPersister
     }
 
     /**
-     * Prepares the data changeset of an entity for database insertion (INSERT/UPDATE).
+     * Prepares the data changeset of an entity for database insertion.
      * 
      * During this preparation the array that is passed as the second parameter is filled with
      * <columnName> => <value> pairs, grouped by table name.
@@ -344,11 +336,11 @@ class StandardEntityPersister
      * Notes to inheritors: Be sure to call <code>parent::_prepareData($entity, $result, $isInsert);</code>
      *
      * @param object $entity The entity for which to prepare the data.
-     * @param array $result The reference to the data array.
-     * @param boolean $isInsert Whether the preparation is for an INSERT (or UPDATE, if FALSE).
+     * @return array The prepared data.
      */
-    protected function _prepareData($entity, array &$result, $isInsert = false)
+    protected function _prepareUpdateData($entity)
     {
+        $result = array();
         $uow = $this->_em->getUnitOfWork();
 
         if ($versioned = $this->_class->isVersioned) {
@@ -359,7 +351,7 @@ class StandardEntityPersister
             if ($versioned && $versionField == $field) {
                 continue;
             }
-            
+
             $oldVal = $change[0];
             $newVal = $change[1];
 
@@ -382,31 +374,34 @@ class StandardEntityPersister
                         $newVal = null;
                     }
                 }
-                
+
                 if ($newVal !== null) {
                     $newValId = $uow->getEntityIdentifier($newVal);
                 }
-                
+
                 $targetClass = $this->_em->getClassMetadata($assocMapping->targetEntityName);
                 $owningTable = $this->getOwningTable($field);
-                
+
                 foreach ($assocMapping->sourceToTargetKeyColumns as $sourceColumn => $targetColumn) {
                     if ($newVal === null) {
                         $result[$owningTable][$sourceColumn] = null;
                     } else {
                         $result[$owningTable][$sourceColumn] = $newValId[$targetClass->fieldNames[$targetColumn]];
                     }
+                    $this->_columnTypes[$sourceColumn] = $targetClass->getTypeOfColumn($targetColumn);
                 }
-            } else if ($newVal === null) {
-                $columnName = $this->_class->getQuotedColumnName($field, $this->_platform);
-                $result[$this->getOwningTable($field)][$columnName] = null;
             } else {
-                $columnName = $this->_class->getQuotedColumnName($field, $this->_platform);
-                $result[$this->getOwningTable($field)][$columnName] = Type::getType(
-                        $this->_class->fieldMappings[$field]['type'])
-                        ->convertToDatabaseValue($newVal, $this->_platform);
+                $columnName = $this->_class->columnNames[$field];
+                $this->_columnTypes[$columnName] = $this->_class->fieldMappings[$field]['type'];
+                $result[$this->getOwningTable($field)][$columnName] = $newVal;
             }
         }
+        return $result;
+    }
+
+    protected function _prepareInsertData($entity)
+    {
+        return $this->_prepareUpdateData($entity);
     }
 
     /**
@@ -417,7 +412,7 @@ class StandardEntityPersister
      */
     public function getOwningTable($fieldName)
     {
-        return $this->_class->getQuotedTableName($this->_platform);
+        return $this->_class->table['name'];
     }
 
     /**
@@ -434,16 +429,10 @@ class StandardEntityPersister
     {
         $sql = $this->_getSelectEntitiesSQL($criteria, $assoc);
         $params = array_values($criteria);
-        
-        if ($this->_sqlLogger !== null) {
-            $this->_sqlLogger->logSql($sql, $params);
-        }
-
-        $stmt = $this->_conn->prepare($sql);
-        $stmt->execute($params);
-        $result = $stmt->fetch(Connection::FETCH_ASSOC);
+        $stmt = $this->_conn->execute($sql, $params);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
-        
+
         return $this->_createEntity($result, $entity, $hints);
     }
 
@@ -453,37 +442,31 @@ class StandardEntityPersister
      * @param array $id The identifier of the entity as an associative array from column names to values.
      * @param object $entity The entity to refresh.
      */
-    final public function refresh(array $id, $entity)
+    public function refresh(array $id, $entity)
     {
         $sql = $this->_getSelectEntitiesSQL($id);
         $params = array_values($id);
 
-        if ($this->_sqlLogger !== null) {
-            $this->_sqlLogger->logSql($sql, $params);
-        }
-
-        $stmt = $this->_conn->prepare($sql);
-        $stmt->execute($params);
-        $result = $stmt->fetch(Connection::FETCH_ASSOC);
+        $stmt = $this->_conn->execute($sql, $params);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
-        
+
         $metaColumns = array();
         $newData = array();
-        
+
         // Refresh simple state
         foreach ($result as $column => $value) {
             $column = $this->_resultColumnNames[$column];
             if (isset($this->_class->fieldNames[$column])) {
                 $fieldName = $this->_class->fieldNames[$column];
-                $type = Type::getType($this->_class->fieldMappings[$fieldName]['type']);
-                $newValue = $type->convertToPHPValue($value, $this->_platform);
+                $newValue = $this->_conn->convertToPHPValue($value, $this->_class->fieldMappings[$fieldName]['type']);
                 $this->_class->reflFields[$fieldName]->setValue($entity, $newValue);
                 $newData[$fieldName] = $newValue;
             } else {
                 $metaColumns[$column] = $value;
             }
         }
-        
+
         // Refresh associations
         foreach ($this->_class->associationMappings as $field => $assoc) {
             $value = $this->_class->reflFields[$field]->getValue($entity);
@@ -531,12 +514,12 @@ class StandardEntityPersister
                 $newData[$field] = $value;
             }
         }
-        
+
         $this->_em->getUnitOfWork()->setOriginalEntityData($entity, $newData);
     }
-    
+
     /**
-     * Loads all entities by a list of field criteria.
+     * Loads a list of entities by a list of field criteria.
      * 
      * @param array $criteria
      * @return array
@@ -547,23 +530,17 @@ class StandardEntityPersister
         
         $sql = $this->_getSelectEntitiesSQL($criteria);
         $params = array_values($criteria);
-        
-        if ($this->_sqlLogger !== null) {
-            $this->_sqlLogger->logSql($sql, $params);
-        }
-        
-        $stmt = $this->_conn->prepare($sql);
-        $stmt->execute($params);
-        $result = $stmt->fetchAll(Connection::FETCH_ASSOC);
+        $stmt = $this->_conn->execute($sql, $params);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
-        
+
         foreach ($result as $row) {
             $entities[] = $this->_createEntity($row);
         }
-        
+
         return $entities;
     }
-    
+
     /**
      * Loads a collection of entities in a one-to-many association.
      *
@@ -574,23 +551,15 @@ class StandardEntityPersister
     public function loadOneToManyCollection($assoc, array $criteria, PersistentCollection $coll)
     {
         $owningAssoc = $this->_class->associationMappings[$coll->getMapping()->mappedBy];
-        
         $sql = $this->_getSelectEntitiesSQL($criteria, $owningAssoc, $assoc->orderBy);
-
         $params = array_values($criteria);
-        
-        if ($this->_sqlLogger !== null) {
-            $this->_sqlLogger->logSql($sql, $params);
-        }
-        
-        $stmt = $this->_conn->prepare($sql);
-        $stmt->execute($params);
-        while ($result = $stmt->fetch(Connection::FETCH_ASSOC)) {
+        $stmt = $this->_conn->execute($sql, $params);
+        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $coll->hydrateAdd($this->_createEntity($result));
         }
         $stmt->closeCursor();
     }
-    
+
     /**
      * Loads a collection of entities of a many-to-many association.
      *
@@ -602,19 +571,13 @@ class StandardEntityPersister
     {
         $sql = $this->_getSelectManyToManyEntityCollectionSQL($assoc, $criteria);
         $params = array_values($criteria);
-        
-        if ($this->_sqlLogger !== null) {
-            $this->_sqlLogger->logSql($sql, $params);
-        }
-        
-        $stmt = $this->_conn->prepare($sql);
-        $stmt->execute($params);
-        while ($result = $stmt->fetch(Connection::FETCH_ASSOC)) {
+        $stmt = $this->_conn->execute($sql, $params);
+        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $coll->hydrateAdd($this->_createEntity($result));
         }
         $stmt->closeCursor();
     }
-    
+
     /**
      * Creates or fills a single entity object from an SQL result.
      * 
@@ -629,8 +592,8 @@ class StandardEntityPersister
             return null;
         }
 
-        list($entityName, $data) = $this->_processSqlResult($result);
-        
+        list($entityName, $data) = $this->_processSQLResult($result);
+
         if ($entity !== null) {
             $hints[Query::HINT_REFRESH] = true;
             $id = array();
@@ -643,17 +606,17 @@ class StandardEntityPersister
             }
             $this->_em->getUnitOfWork()->registerManaged($entity, $id, $data);
         }
-        
+
         return $this->_em->getUnitOfWork()->createEntity($entityName, $data, $hints);
     }
-    
+
     /**
      * Processes an SQL result set row that contains data for an entity of the type
      * this persister is responsible for.
      * 
      * @param array $sqlResult The SQL result set row to process.
      * @return array A tuple where the first value is the actual type of the entity and
-     *               the second value the data of the entity.
+     *               the second value the prepared data of the entity.
      */
     protected function _processSQLResult(array $sqlResult)
     {
@@ -715,9 +678,10 @@ class StandardEntityPersister
     }
 
     /**
-     * Generate ORDER BY Sql Snippet for ordered collections
+     * Generate ORDER BY SQL snippet for ordered collections.
      * 
      * @param array $orderBy
+     * @param string $baseTableAlias
      * @return string
      */
     protected function _getCollectionOrderBySQL(array $orderBy, $baseTableAlias)
@@ -819,30 +783,8 @@ class StandardEntityPersister
              . ' WHERE ' . $conditionSql . $orderBySql;
     }
 
-    final protected function _processSQLResultInheritanceAware(array $sqlResult)
-    {
-        $data = array();
-        $entityName = $this->_class->discriminatorMap[$sqlResult[$this->_class->discriminatorColumn['name']]];
-        unset($sqlResult[$this->_class->discriminatorColumn['name']]);
-        foreach ($sqlResult as $column => $value) {
-            $realColumnName = $this->_resultColumnNames[$column];
-            if (isset($this->_declaringClassMap[$column])) {
-                $class = $this->_declaringClassMap[$column];
-                if ($class->name == $entityName || is_subclass_of($entityName, $class->name)) {
-                    $field = $class->fieldNames[$realColumnName];
-                    $data[$field] = Type::getType($class->fieldMappings[$field]['type'])
-                            ->convertToPHPValue($value, $this->_platform);
-                }
-            } else {
-                $data[$realColumnName] = $value;
-            }
-        }
-        
-        return array($entityName, $data);
-    }
-    
     /**
-     * Gets the INSERT SQL used by the persister to persist entities.
+     * Gets the INSERT SQL used by the persister to persist a new entity.
      * 
      * @return string
      */
@@ -851,10 +793,9 @@ class StandardEntityPersister
         if ($this->_insertSql === null) {
             $this->_insertSql = $this->_generateInsertSQL();
         }
-        
         return $this->_insertSql;
     }
-    
+
     /**
      * Gets the list of columns to put in the INSERT SQL statement.
      * 
@@ -880,10 +821,10 @@ class StandardEntityPersister
                 $columns[] = $this->_class->getQuotedColumnName($name, $this->_platform);
             }
         }
-        
+
         return $columns;
     }
-    
+
     /**
      * Generates the INSERT SQL used by the persister to persist entities.
      * 
@@ -907,7 +848,7 @@ class StandardEntityPersister
                     . ' (' . implode(', ', $columns) . ') '
                     . 'VALUES (' . implode(', ', $values) . ')';
         }
-        
+
         return $insertSql;
     }
 
@@ -915,7 +856,7 @@ class StandardEntityPersister
      * Gets the SQL snippet of a qualified column name for the given field name.
      *
      * @param string $field The field name.
-     * @param ClassMetadata $class The class that declares this field. The table this class if
+     * @param ClassMetadata $class The class that declares this field. The table this class is
      *                             mapped to must own the column for the given field.
      */
     protected function _getSelectColumnSQL($field, ClassMetadata $class)
@@ -925,7 +866,6 @@ class StandardEntityPersister
         $columnAlias = $this->_platform->getSQLResultCasing($columnName . $this->_sqlAliasCounter++);
         if ( ! isset($this->_resultColumnNames[$columnAlias])) {
             $this->_resultColumnNames[$columnAlias] = $columnName;
-            $this->_declaringClassMap[$columnAlias] = $class;
         }
 
         return "$sql AS $columnAlias";
@@ -967,7 +907,7 @@ class StandardEntityPersister
         if (isset($this->_sqlTableAliases[$class->name])) {
             return $this->_sqlTableAliases[$class->name];
         }
-        $tableAlias = $class->primaryTable['name'][0] . $this->_sqlAliasCounter++;
+        $tableAlias = $class->table['name'][0] . $this->_sqlAliasCounter++;
         $this->_sqlTableAliases[$class->name] = $tableAlias;
 
         return $tableAlias;

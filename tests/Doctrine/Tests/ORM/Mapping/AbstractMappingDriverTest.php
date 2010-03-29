@@ -106,7 +106,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($class->associationMappings['phonenumbers'] instanceof \Doctrine\ORM\Mapping\OneToManyMapping);
         $this->assertTrue(isset($class->associationMappings['phonenumbers']));
         $this->assertFalse($class->associationMappings['phonenumbers']->isOwningSide);
-        $this->assertTrue($class->associationMappings['phonenumbers']->isInverseSide());
         $this->assertTrue($class->associationMappings['phonenumbers']->isCascadePersist);
         $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeRemove);
         $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeRefresh);

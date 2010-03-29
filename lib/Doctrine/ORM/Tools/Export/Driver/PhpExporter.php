@@ -64,8 +64,8 @@ class PhpExporter extends AbstractExporter
             $lines[] = "\$metadata->customRepositoryClassName = '" . $metadata->customRepositoryClassName . "';";
         }
 
-        if ($metadata->primaryTable) {
-            $lines[] = '$metadata->setPrimaryTable(' . $this->_varExport($metadata->primaryTable) . ');';
+        if ($metadata->table) {
+            $lines[] = '$metadata->setPrimaryTable(' . $this->_varExport($metadata->table) . ');';
         }
 
         if ($metadata->discriminatorColumn) {

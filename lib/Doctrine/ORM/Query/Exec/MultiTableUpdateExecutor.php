@@ -21,7 +21,9 @@
 
 namespace Doctrine\ORM\Query\Exec;
 
-use Doctrine\ORM\Query\AST;
+use Doctrine\DBAL\Connection,
+    Doctrine\DBAL\Types\Type,
+    Doctrine\ORM\Query\AST;
 
 /**
  * Executes the SQL statements for bulk DQL UPDATE statements on classes in
@@ -69,7 +71,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         // 1. Create an INSERT INTO temptable ... SELECT identifiers WHERE $AST->getWhereClause()
         $this->_insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ')'
                 . ' SELECT t0.' . implode(', t0.', $idColumnNames);
-        $sqlWalker->setSqlTableAlias($primaryClass->primaryTable['name'] . $updateClause->aliasIdentificationVariable, 't0');
+        $sqlWalker->setSqlTableAlias($primaryClass->table['name'] . $updateClause->aliasIdentificationVariable, 't0');
         $rangeDecl = new AST\RangeVariableDeclaration($primaryClass->name, $updateClause->aliasIdentificationVariable);
         $fromClause = new AST\FromClause(array(new AST\IdentificationVariableDeclaration($rangeDecl, null, array())));
         $this->_insertSql .= $sqlWalker->walkFromClause($fromClause);
@@ -101,6 +103,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
                     $updateSql .= $sqlWalker->walkUpdateItem($updateItem);
                     
                     //FIXME: parameters can be more deeply nested. traverse the tree.
+                    //FIXME (URGENT): With query cache the parameter is out of date. Move to execute() stage.
                     if ($newValue instanceof AST\InputParameter) {
                         $paramKey = $newValue->name;
                         $this->_sqlParameters[$i][] = $sqlWalker->getQuery()->getParameter($paramKey);
@@ -124,7 +127,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         foreach ($idColumnNames as $idColumnName) {
             $columnDefinitions[$idColumnName] = array(
                 'notnull' => true,
-                'type' => \Doctrine\DBAL\Types\Type::getType($rootClass->getTypeOfColumn($idColumnName))
+                'type' => Type::getType($rootClass->getTypeOfColumn($idColumnName))
             );
         }
         $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
@@ -134,13 +137,13 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
     }
 
     /**
-     * Executes all sql statements.
+     * Executes all SQL statements.
      *
-     * @param Doctrine_Connection $conn  The database connection that is used to execute the queries.
-     * @param array $params  The parameters.
+     * @param Connection $conn The database connection that is used to execute the queries.
+     * @param array $params The parameters.
      * @override
      */
-    public function execute(\Doctrine\DBAL\Connection $conn, array $params)
+    public function execute(Connection $conn, array $params, array $types)
     {
         $numUpdated = 0;
 
@@ -148,7 +151,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         $conn->executeUpdate($this->_createTempTableSql);
 
         // Insert identifiers. Parameters from the update clause are cut off.
-        $numUpdated = $conn->executeUpdate($this->_insertSql, array_slice($params, $this->_numParametersInUpdateClause));
+        $numUpdated = $conn->executeUpdate($this->_insertSql, array_slice($params, $this->_numParametersInUpdateClause), $types);
 
         // Execute UPDATE statements
         for ($i=0, $count=count($this->_sqlStatements); $i<$count; ++$i) {

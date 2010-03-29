@@ -57,8 +57,8 @@ class SizeFunction extends FunctionNode
             $targetClass = $sqlWalker->getEntityManager()->getClassMetadata($assoc->targetEntityName);
             $targetAssoc = $targetClass->associationMappings[$assoc->mappedBy];
             
-            $targetTableAlias = $sqlWalker->getSqlTableAlias($targetClass->primaryTable['name']);
-            $sourceTableAlias = $sqlWalker->getSqlTableAlias($qComp['metadata']->primaryTable['name'], $dqlAlias);
+            $targetTableAlias = $sqlWalker->getSqlTableAlias($targetClass->table['name']);
+            $sourceTableAlias = $sqlWalker->getSqlTableAlias($qComp['metadata']->table['name'], $dqlAlias);
             
             $whereSql = '';
 
@@ -68,10 +68,10 @@ class SizeFunction extends FunctionNode
                            . $sourceTableAlias . '.' . $targetKeyColumn;
             }
 
-            $tableName = $targetClass->primaryTable['name'];
+            $tableName = $targetClass->table['name'];
         } else if ($assoc->isManyToMany()) {
             $targetTableAlias = $sqlWalker->getSqlTableAlias($assoc->joinTable['name']);
-            $sourceTableAlias = $sqlWalker->getSqlTableAlias($qComp['metadata']->primaryTable['name'], $dqlAlias);
+            $sourceTableAlias = $sqlWalker->getSqlTableAlias($qComp['metadata']->table['name'], $dqlAlias);
             
             $whereSql = '';
 

@@ -57,10 +57,10 @@ class YamlExporter extends AbstractExporter
         } else {
             $array['type'] = 'entity';
         }
-        $array['table'] = $metadata->primaryTable['name'];
+        $array['table'] = $metadata->table['name'];
 
-        if (isset($metadata->primaryTable['schema'])) {
-            $array['schema'] = $metadata->primaryTable['schema'];
+        if (isset($metadata->table['schema'])) {
+            $array['schema'] = $metadata->table['schema'];
         }
 
         $inheritanceType = $metadata->inheritanceType;
@@ -80,12 +80,12 @@ class YamlExporter extends AbstractExporter
             $array['changeTrackingPolicy'] = $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy);
         }
 
-        if (isset($metadata->primaryTable['indexes'])) {
-            $array['indexes'] = $metadata->primaryTable['indexes'];
+        if (isset($metadata->table['indexes'])) {
+            $array['indexes'] = $metadata->table['indexes'];
         }
 
-        if (isset($metadata->primaryTable['uniqueConstraints'])) {
-            $array['uniqueConstraints'] = $metadata->primaryTable['uniqueConstraints'];
+        if (isset($metadata->table['uniqueConstraints'])) {
+            $array['uniqueConstraints'] = $metadata->table['uniqueConstraints'];
         }
         
         $fieldMappings = $metadata->fieldMappings;

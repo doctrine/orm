@@ -25,7 +25,7 @@ namespace Doctrine\DBAL\Driver;
  * Connection interface.
  * Driver connections must implement this interface.
  *
- * This resembles the PDO interface.
+ * This resembles (a subset of) the PDO interface.
  * 
  * @since 2.0
  */
@@ -33,7 +33,7 @@ interface Connection
 {
     function prepare($prepareString);
     function query();
-    function quote($input);
+    function quote($input, $type=\PDO::PARAM_STR);
     function exec($statement);
     function lastInsertId($name = null);
     function beginTransaction();

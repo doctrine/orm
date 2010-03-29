@@ -34,32 +34,36 @@ use Doctrine\DBAL\Platforms\AbstractPlatform,
  */
 abstract class Type
 {
-    /* The following constants represent type codes and mirror the PDO::PARAM_X constants
-     * to decouple ourself from PDO.
-     */
-    const CODE_BOOL = 5;
-    const CODE_NULL = 0;
-    const CODE_INT = 1;
-    const CODE_STR = 2;
-    const CODE_LOB = 3;
+    const TARRAY = 'array';
+    const BIGINT = 'bigint';
+    const BOOLEAN = 'boolean';
+    const DATETIME = 'datetime';
+    const DATE = 'date';
+    const TIME = 'time';
+    const DECIMAL = 'decimal';
+    const INTEGER = 'integer';
+    const OBJECT = 'object';
+    const SMALLINT = 'smallint';
+    const STRING = 'string';
+    const TEXT = 'text';
 
     /** Map of already instantiated type objects. One instance per type (flyweight). */
     private static $_typeObjects = array();
 
     /** The map of supported doctrine mapping types. */
     private static $_typesMap = array(
-        'array' => 'Doctrine\DBAL\Types\ArrayType',
-        'object' => 'Doctrine\DBAL\Types\ObjectType',
-        'boolean' => 'Doctrine\DBAL\Types\BooleanType',
-        'integer' => 'Doctrine\DBAL\Types\IntegerType',
-        'smallint' => 'Doctrine\DBAL\Types\SmallIntType',
-        'bigint' => 'Doctrine\DBAL\Types\BigIntType',
-        'string' => 'Doctrine\DBAL\Types\StringType',
-        'text' => 'Doctrine\DBAL\Types\TextType',
-        'datetime' => 'Doctrine\DBAL\Types\DateTimeType',
-        'date' => 'Doctrine\DBAL\Types\DateType',
-        'time' => 'Doctrine\DBAL\Types\TimeType',
-        'decimal' => 'Doctrine\DBAL\Types\DecimalType'
+        self::TARRAY => 'Doctrine\DBAL\Types\ArrayType',
+        self::OBJECT => 'Doctrine\DBAL\Types\ObjectType',
+        self::BOOLEAN => 'Doctrine\DBAL\Types\BooleanType',
+        self::INTEGER => 'Doctrine\DBAL\Types\IntegerType',
+        self::SMALLINT => 'Doctrine\DBAL\Types\SmallIntType',
+        self::BIGINT => 'Doctrine\DBAL\Types\BigIntType',
+        self::STRING => 'Doctrine\DBAL\Types\StringType',
+        self::TEXT => 'Doctrine\DBAL\Types\TextType',
+        self::DATETIME => 'Doctrine\DBAL\Types\DateTimeType',
+        self::DATE => 'Doctrine\DBAL\Types\DateType',
+        self::TIME => 'Doctrine\DBAL\Types\TimeType',
+        self::DECIMAL => 'Doctrine\DBAL\Types\DecimalType'
     );
 
     /* Prevent instantiation and force use of the factory method. */
@@ -116,16 +120,6 @@ abstract class Type
      * @todo Needed?
      */
     abstract public function getName();
-
-    /**
-     * Gets the type code of this type.
-     *
-     * @return integer
-     */
-    public function getTypeCode()
-    {
-        return self::CODE_STR;
-    }
 
     /**
      * Factory method to create type instances.
@@ -192,6 +186,25 @@ abstract class Type
         }
 
         self::$_typesMap[$name] = $className;
+    }
+
+    /**
+     * Gets the (preferred) binding type for values of this type that
+     * can be used when binding parameters to prepared statements.
+     * 
+     * This method should return one of the PDO::PARAM_* constants, that is, one of:
+     * 
+     * PDO::PARAM_BOOL
+     * PDO::PARAM_NULL
+     * PDO::PARAM_INT
+     * PDO::PARAM_STR
+     * PDO::PARAM_LOB
+     * 
+     * @return integer
+     */
+    public function getBindingType()
+    {
+        return \PDO::PARAM_STR;
     }
 
     /**

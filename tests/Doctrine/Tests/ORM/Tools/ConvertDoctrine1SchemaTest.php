@@ -65,7 +65,7 @@ class ConvertDoctrine1SchemaTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('Profile', $metadatas['Profile']->associationMappings['User']->sourceEntityName);
         $this->assertEquals('User', $metadatas['Profile']->associationMappings['User']->targetEntityName);
 
-        $this->assertEquals('username', $metadatas['User']->primaryTable['uniqueConstraints']['username']['columns'][0]);
+        $this->assertEquals('username', $metadatas['User']->table['uniqueConstraints']['username']['columns'][0]);
 
         unlink(__DIR__ . '/convert/User.dcm.yml');
         unlink(__DIR__ . '/convert/Profile.dcm.yml');

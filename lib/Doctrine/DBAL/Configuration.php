@@ -33,7 +33,6 @@ use Doctrine\DBAL\Types\Type;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
- *
  * @internal When adding a new configuration option just write a getter/setter
  *           pair and add the option to the _attributes array with a proper default value.
  */
@@ -61,6 +60,7 @@ class Configuration
      * Sets the SQL logger to use. Defaults to NULL which means SQL logging is disabled.
      *
      * @param SqlLogger $logger
+     * @todo Rename to setSQLLogger()
      */
     public function setSqlLogger($logger)
     {
@@ -71,6 +71,7 @@ class Configuration
      * Gets the SQL logger that is used.
      * 
      * @return SqlLogger
+     * @todo Rename to getSQLLogger()
      */
     public function getSqlLogger()
     {

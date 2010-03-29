@@ -25,60 +25,51 @@ use Doctrine\ORM\ORMException;
 
 /**
  * The joined subclass persister maps a single entity instance to several tables in the
- * database as it is defined by <tt>Class Table Inheritance</tt>.
+ * database as it is defined by the <tt>Class Table Inheritance</tt> strategy.
  *
- * @author      Roman Borschel <roman@code-factory.org>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @version     $Revision$
- * @link        www.doctrine-project.org
- * @since       2.0
+ * @author Roman Borschel <roman@code-factory.org>
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link www.doctrine-project.org
+ * @since 2.0
+ * @see http://martinfowler.com/eaaCatalog/classTableInheritance.html
  */
-class JoinedSubclassPersister extends StandardEntityPersister
+class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 {
-    /** Map that maps column names to the table names that own them.
-     *  This is mainly a temporary cache, used during a single request.
+    /**
+     * Map that maps column names to the table names that own them.
+     * This is mainly a temporary cache, used during a single request.
      */
     private $_owningTableMap = array();
 
     /**
      * {@inheritdoc}
-     *
-     * @override
      */
-    protected function _prepareData($entity, array &$result, $isInsert = false)
+    protected function _getDiscriminatorColumnTableName()
     {
-        parent::_prepareData($entity, $result, $isInsert);
-        // Populate the discriminator column
-        if ($isInsert) {
-            $discColumn = $this->_class->discriminatorColumn;
-            $rootClass = $this->_em->getClassMetadata($this->_class->rootEntityName);
-            $result[$rootClass->primaryTable['name']][$discColumn['name']] = $this->_class->discriminatorValue;
+        if ($this->_class->name == $this->_class->rootEntityName) {
+            return $this->_class->table['name'];
+        } else {
+            return $this->_em->getClassMetadata($this->_class->rootEntityName)->table['name'];
         }
     }
 
     /**
-     * This function finds the ClassMetadata instance in a inheritance hierarchy
+     * This function finds the ClassMetadata instance in an inheritance hierarchy
      * that is responsible for enabling versioning.
      *
-     * @return mixed ClassMetadata instance or false if versioning is not enabled.
+     * @return Doctrine\ORM\Mapping\ClassMetadata
      */
     private function _getVersionedClassMetadata()
     {
-        if ($this->_class->isVersioned) {
-            if (isset($this->_class->fieldMappings[$this->_class->versionField]['inherited'])) {
-                $definingClassName = $this->_class->fieldMappings[$this->_class->versionField]['inherited'];
-                $versionedClass = $this->_em->getClassMetadata($definingClassName);
-            } else {
-                $versionedClass = $this->_class;
-            }
-            return $versionedClass;
+        if (isset($this->_class->fieldMappings[$this->_class->versionField]['inherited'])) {
+            $definingClassName = $this->_class->fieldMappings[$this->_class->versionField]['inherited'];
+            return $this->_em->getClassMetadata($definingClassName);
         }
-        return false;
+        return $this->_class;
     }
 
     /**
      * Gets the name of the table that owns the column the given field is mapped to.
-     * Does only look upwards in the hierarchy, not downwards.
      *
      * @param string $fieldName
      * @return string
@@ -91,16 +82,16 @@ class JoinedSubclassPersister extends StandardEntityPersister
                 if (isset($this->_class->inheritedAssociationFields[$fieldName])) {
                     $this->_owningTableMap[$fieldName] = $this->_em->getClassMetadata(
                         $this->_class->inheritedAssociationFields[$fieldName]
-                        )->primaryTable['name'];
+                        )->table['name'];
                 } else {
-                    $this->_owningTableMap[$fieldName] = $this->_class->primaryTable['name'];
+                    $this->_owningTableMap[$fieldName] = $this->_class->table['name'];
                 }
             } else if (isset($this->_class->fieldMappings[$fieldName]['inherited'])) {
                 $this->_owningTableMap[$fieldName] = $this->_em->getClassMetadata(
                     $this->_class->fieldMappings[$fieldName]['inherited']
-                    )->primaryTable['name'];
+                    )->table['name'];
             } else {
-                $this->_owningTableMap[$fieldName] = $this->_class->primaryTable['name'];
+                $this->_owningTableMap[$fieldName] = $this->_class->table['name'];
             }
         }
 
@@ -109,8 +100,6 @@ class JoinedSubclassPersister extends StandardEntityPersister
 
     /**
      * {@inheritdoc}
-     *
-     * @override
      */
     public function executeInserts()
     {
@@ -118,7 +107,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
             return;
         }
 
-        if ($isVersioned = $this->_class->isVersioned) {
+        if ($this->_class->isVersioned) {
             $versionedClass = $this->_getVersionedClassMetadata();
         }
 
@@ -130,53 +119,33 @@ class JoinedSubclassPersister extends StandardEntityPersister
         $rootClass = $this->_class->name == $this->_class->rootEntityName ?
                 $this->_class : $this->_em->getClassMetadata($this->_class->rootEntityName);
         $rootPersister = $this->_em->getUnitOfWork()->getEntityPersister($rootClass->name);
-        $rootTableName = $rootClass->primaryTable['name'];
+        $rootTableName = $rootClass->table['name'];
         $rootTableStmt = $this->_conn->prepare($rootPersister->getInsertSQL());
-        if ($this->_sqlLogger !== null) {
-            $sql = array();
-            $sql[$rootTableName] = $rootPersister->getInsertSQL();
-        }
-        
+
         // Prepare statements for sub tables.
         $subTableStmts = array();
         if ($rootClass !== $this->_class) {
-            $subTableStmts[$this->_class->primaryTable['name']] = $this->_conn->prepare($this->getInsertSQL());
-            if ($this->_sqlLogger !== null) {
-                $sql[$this->_class->primaryTable['name']] = $this->getInsertSQL();
-            }
+            $subTableStmts[$this->_class->table['name']] = $this->_conn->prepare($this->getInsertSQL());
         }
         foreach ($this->_class->parentClasses as $parentClassName) {
             $parentClass = $this->_em->getClassMetadata($parentClassName);
-            $parentTableName = $parentClass->primaryTable['name'];
+            $parentTableName = $parentClass->table['name'];
             if ($parentClass !== $rootClass) {
                 $parentPersister = $this->_em->getUnitOfWork()->getEntityPersister($parentClassName);
                 $subTableStmts[$parentTableName] = $this->_conn->prepare($parentPersister->getInsertSQL());
-                if ($this->_sqlLogger !== null) {
-                    $sql[$parentTableName] = $parentPersister->getInsertSQL();
-                }
             }
         }
-        
+
         // Execute all inserts. For each entity:
         // 1) Insert on root table
         // 2) Insert on sub tables
         foreach ($this->_queuedInserts as $entity) {
-            $insertData = array();
-            $this->_prepareData($entity, $insertData, true);
+            $insertData = $this->_prepareInsertData($entity);
 
             // Execute insert on root table
             $paramIndex = 1;
-            if ($this->_sqlLogger !== null) {
-                $params = array();
-                foreach ($insertData[$rootTableName] as $columnName => $value) {
-                    $params[$paramIndex] = $value;
-                    $rootTableStmt->bindValue($paramIndex++, $value);
-                }
-                $this->_sqlLogger->logSql($sql[$rootTableName], $params);
-            } else {
-                foreach ($insertData[$rootTableName] as $columnName => $value) {
-                    $rootTableStmt->bindValue($paramIndex++, $value);
-                }
+            foreach ($insertData[$rootTableName] as $columnName => $value) {
+                $rootTableStmt->bindValue($paramIndex++, $value, $this->_columnTypes[$columnName]);
             }
             $rootTableStmt->execute();
 
@@ -192,24 +161,11 @@ class JoinedSubclassPersister extends StandardEntityPersister
             foreach ($subTableStmts as $tableName => $stmt) {
                 $data = isset($insertData[$tableName]) ? $insertData[$tableName] : array();
                 $paramIndex = 1;
-                if ($this->_sqlLogger !== null) {
-                    $params = array();
-                    foreach ((array) $id as $idVal) {
-                        $params[$paramIndex] = $idVal;
-                        $stmt->bindValue($paramIndex++, $idVal);
-                    }
-                    foreach ($data as $columnName => $value) {
-                        $params[$paramIndex] = $value;
-                        $stmt->bindValue($paramIndex++, $value);
-                    }
-                    $this->_sqlLogger->logSql($sql[$tableName], $params);
-                } else {
-                    foreach ((array) $id as $idVal) {
-                        $stmt->bindValue($paramIndex++, $idVal);
-                    }
-                    foreach ($data as $columnName => $value) {
-                        $stmt->bindValue($paramIndex++, $value);
-                    }
+                foreach ((array) $id as $idVal) {
+                    $stmt->bindValue($paramIndex++, $idVal);
+                }
+                foreach ($data as $columnName => $value) {
+                    $stmt->bindValue($paramIndex++, $value, $this->_columnTypes[$columnName]);
                 }
                 $stmt->execute();
             }
@@ -220,7 +176,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
             $stmt->closeCursor();
         }
 
-        if ($isVersioned) {
+        if (isset($versionedClass)) {
             $this->_assignDefaultVersionValue($versionedClass, $entity, $id);
         }
 
@@ -230,45 +186,30 @@ class JoinedSubclassPersister extends StandardEntityPersister
     }
 
     /**
-     * Updates an entity.
-     *
-     * @param object $entity The entity to update.
-     * @override
+     * {@inheritdoc}
      */
     public function update($entity)
     {
-        $updateData = array();
-        $this->_prepareData($entity, $updateData);
-
-        $id = array_combine(
-            $this->_class->getIdentifierColumnNames(),
-            $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
-        );
+        $updateData = $this->_prepareUpdateData($entity);
 
         if ($isVersioned = $this->_class->isVersioned) {
-            $versionedClass = $this->_getVersionedClassMetadata();
-            $versionedTable = $versionedClass->primaryTable['name'];
+            $versionedTable = $this->_getVersionedClassMetadata()->table['name'];
         }
 
         if ($updateData) {
             foreach ($updateData as $tableName => $data) {
-                if ($isVersioned && $versionedTable == $tableName) {
-                    $this->_doUpdate($entity, $tableName, $data, $id);
-                } else {
-                    $this->_conn->update($tableName, $data, $id);
-                }
+                $this->_updateTable($entity, $tableName, $data, $isVersioned && $versionedTable == $tableName);
             }
+            // Make sure the table with the version column is updated even if no columns on that
+            // table were affected.
             if ($isVersioned && ! isset($updateData[$versionedTable])) {
-                $this->_doUpdate($entity, $versionedTable, array(), $id);
+                $this->_updateTable($entity, $versionedTable, array(), true);
             }
         }
     }
 
     /**
-     * Deletes an entity.
-     *
-     * @param object $entity The entity to delete.
-     * @override
+     * {@inheritdoc}
      */
     public function delete($entity)
     {
@@ -279,26 +220,20 @@ class JoinedSubclassPersister extends StandardEntityPersister
 
         // If the database platform supports FKs, just
         // delete the row from the root table. Cascades do the rest.
-        if ($this->_conn->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+        if ($this->_platform->supportsForeignKeyConstraints()) {
             $this->_conn->delete($this->_em->getClassMetadata($this->_class->rootEntityName)
-                    ->primaryTable['name'], $id);
+                    ->getQuotedTableName($this->_platform), $id);
         } else {
             // Delete from all tables individually, starting from this class' table up to the root table.
-            $this->_conn->delete($this->_class->primaryTable['name'], $id);
+            $this->_conn->delete($this->_class->getQuotedTableName($this->_platform), $id);
             foreach ($this->_class->parentClasses as $parentClass) {
-                $this->_conn->delete($this->_em->getClassMetadata($parentClass)->primaryTable['name'], $id);
+                $this->_conn->delete($this->_em->getClassMetadata($parentClass)->getQuotedTableName($this->_platform), $id);
             }
         }
     }
 
     /**
-     * Gets the SELECT SQL to select one or more entities by a set of field criteria.
-     *
-     * @param array $criteria
-     * @param AssociationMapping $assoc
-     * @param string $orderBy
-     * @return string
-     * @override
+     * {@inheritdoc}
      */
     protected function _getSelectEntitiesSQL(array &$criteria, $assoc = null, $orderBy = null)
     {
@@ -331,7 +266,7 @@ class JoinedSubclassPersister extends StandardEntityPersister
                 }
             }
 
-            // Add discriminator column (DO NOT ALIAS THIS COLUMN).
+            // Add discriminator column (DO NOT ALIAS THIS COLUMN, see StandardEntityPersister#_processSQLResultInheritanceAware).
             $discrColumn = $this->_class->discriminatorColumn['name'];
             if ($this->_class->rootEntityName == $this->_class->name) {
                 $columnList .= ", $baseTableAlias.$discrColumn";
@@ -428,19 +363,13 @@ class JoinedSubclassPersister extends StandardEntityPersister
                 . ($conditionSql != '' ? ' WHERE ' . $conditionSql : '') . $orderBySql;
     }
     
-    /** Ensure this is never called. This persister overrides _getSelectEntitiesSQL directly. */
+    /** Ensure this method is never called. This persister overrides _getSelectEntitiesSQL directly. */
     protected function _getSelectColumnListSQL()
     {
         throw new \BadMethodCallException("Illegal invocation of ".__METHOD__." on JoinedSubclassPersister.");
     }
     
-    /** @override */
-    protected function _processSQLResult(array $sqlResult)
-    {
-        return $this->_processSQLResultInheritanceAware($sqlResult);
-    }
-    
-    /** @override */
+    /** {@inheritdoc} */
     protected function _getInsertColumnList()
     {
         // Identifier columns must always come first in the column list of subclasses.

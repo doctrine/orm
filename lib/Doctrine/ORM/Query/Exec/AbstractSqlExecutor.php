@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Query\Exec;
 
+use Doctrine\DBAL\Connection;
+
 /**
  * Base class for SQL statement executors.
  *
@@ -28,7 +30,7 @@ namespace Doctrine\ORM\Query\Exec;
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.doctrine-project.org
  * @since       2.0
- * @version     $Revision$
+ * @todo Rename: AbstractSQLExecutor
  */
 abstract class AbstractSqlExecutor
 {
@@ -47,8 +49,9 @@ abstract class AbstractSqlExecutor
     /**
      * Executes all sql statements.
      *
-     * @param Doctrine_Connection $conn  The database connection that is used to execute the queries.
+     * @param Doctrine\DBAL\Connection $conn The database connection that is used to execute the queries.
      * @param array $params  The parameters.
+     * @return Doctrine\DBAL\Driver\Statement
      */
-    abstract public function execute(\Doctrine\DBAL\Connection $conn, array $params);    
+    abstract public function execute(Connection $conn, array $params, array $types);    
 }

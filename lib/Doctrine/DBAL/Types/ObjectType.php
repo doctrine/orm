@@ -26,6 +26,6 @@ class ObjectType extends Type
 
     public function getName()
     {
-        return 'Object';
+        return Type::OBJECT;
     }
 }

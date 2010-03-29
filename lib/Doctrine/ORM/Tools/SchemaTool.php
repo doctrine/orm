@@ -112,11 +112,9 @@ class SchemaTool
     {
         $processedClasses = array(); // Reminder for processed classes, used for hierarchies
 
-        $metadataSchemaConfig = new \Doctrine\DBAL\Schema\SchemaConfig();
-        $metadataSchemaConfig->setExplicitForeignKeyIndexes(false);
-        $metadataSchemaConfig->setMaxIdentifierLength(63);
-
         $sm = $this->_em->getConnection()->getSchemaManager();
+        $metadataSchemaConfig = $sm->createSchemaConfig();
+        $metadataSchemaConfig->setExplicitForeignKeyIndexes(false);
         $schema = new \Doctrine\DBAL\Schema\Schema(array(), array(), $metadataSchemaConfig);
 
         $evm = $this->_em->getEventManager();
@@ -202,14 +200,14 @@ class SchemaTool
                 $this->_gatherRelationsSql($class, $table, $schema);
             }
 
-            if (isset($class->primaryTable['indexes'])) {
-                foreach ($class->primaryTable['indexes'] AS $indexName => $indexData) {
+            if (isset($class->table['indexes'])) {
+                foreach ($class->table['indexes'] AS $indexName => $indexData) {
                     $table->addIndex($indexData['columns'], $indexName);
                 }
             }
 
-            if (isset($class->primaryTable['uniqueConstraints'])) {
-                foreach ($class->primaryTable['uniqueConstraints'] AS $indexName => $indexData) {
+            if (isset($class->table['uniqueConstraints'])) {
+                foreach ($class->table['uniqueConstraints'] AS $indexName => $indexData) {
                     $table->addUniqueIndex($indexData['columns'], $indexName);
                 }
             }

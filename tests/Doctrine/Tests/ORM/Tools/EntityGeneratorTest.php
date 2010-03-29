@@ -25,7 +25,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
     public function testWriteEntityClass()
     {
         $metadata = new ClassMetadataInfo('EntityGeneratorBook');
-        $metadata->primaryTable['name'] = 'book';
+        $metadata->table['name'] = 'book';
         $metadata->mapField(array('fieldName' => 'name', 'type' => 'string'));
         $metadata->mapField(array('fieldName' => 'status', 'type' => 'string', 'default' => 'published'));
         $metadata->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));

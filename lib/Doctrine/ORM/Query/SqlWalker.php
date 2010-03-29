@@ -240,12 +240,12 @@ class SqlWalker implements TreeWalker
     {
         $sql = '';
 
-        $baseTableAlias = $this->getSqlTableAlias($class->primaryTable['name'], $dqlAlias);
+        $baseTableAlias = $this->getSqlTableAlias($class->table['name'], $dqlAlias);
 
         // INNER JOIN parent class tables
         foreach ($class->parentClasses as $parentClassName) {
             $parentClass = $this->_em->getClassMetadata($parentClassName);
-            $tableAlias = $this->getSqlTableAlias($parentClass->primaryTable['name'], $dqlAlias);
+            $tableAlias = $this->getSqlTableAlias($parentClass->table['name'], $dqlAlias);
             $sql .= ' INNER JOIN ' . $parentClass->getQuotedTableName($this->_platform)
                   . ' ' . $tableAlias . ' ON ';
             $first = true;
@@ -264,7 +264,7 @@ class SqlWalker implements TreeWalker
         if ( ! $this->_query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
             foreach ($class->subClasses as $subClassName) {
                 $subClass = $this->_em->getClassMetadata($subClassName);
-                $tableAlias = $this->getSqlTableAlias($subClass->primaryTable['name'], $dqlAlias);
+                $tableAlias = $this->getSqlTableAlias($subClass->table['name'], $dqlAlias);
                 $sql .= ' LEFT JOIN ' . $subClass->getQuotedTableName($this->_platform)
                         . ' ' . $tableAlias . ' ON ';
 
@@ -295,7 +295,7 @@ class SqlWalker implements TreeWalker
                     if ($qComp['metadata']->isInheritanceTypeJoined()) {
                         $tableName = $this->_em->getUnitOfWork()->getEntityPersister($class->name)->getOwningTable($fieldName);
                     } else {
-                        $tableName = $qComp['metadata']->primaryTable['name'];
+                        $tableName = $qComp['metadata']->table['name'];
                     }
 
                     if ($sql != '') {
@@ -331,7 +331,7 @@ class SqlWalker implements TreeWalker
                 }
 
                 $sql .= (($this->_useSqlTableAliases)
-                    ? $this->getSqlTableAlias($class->primaryTable['name'], $dqlAlias) . '.' : ''
+                    ? $this->getSqlTableAlias($class->table['name'], $dqlAlias) . '.' : ''
                 ) . $class->discriminatorColumn['name']
                 . ' IN (' . implode(', ', $values) . ')';
             }
@@ -432,7 +432,7 @@ class SqlWalker implements TreeWalker
             $class = $this->_em->getClassMetadata($class->fieldMappings[$fieldName]['inherited']);
         }
 
-        return $this->getSqlTableAlias($class->primaryTable['name'], $identificationVariable);
+        return $this->getSqlTableAlias($class->table['name'], $identificationVariable);
     }
 
     /**
@@ -519,7 +519,7 @@ class SqlWalker implements TreeWalker
             if ($class->isInheritanceTypeSingleTable() || $class->isInheritanceTypeJoined()) {
                 // Add discriminator columns to SQL
                 $rootClass = $this->_em->getClassMetadata($class->rootEntityName);
-                $tblAlias = $this->getSqlTableAlias($rootClass->primaryTable['name'], $dqlAlias);
+                $tblAlias = $this->getSqlTableAlias($rootClass->table['name'], $dqlAlias);
                 $discrColumn = $rootClass->discriminatorColumn;
                 $columnAlias = $this->getSqlColumnAlias($discrColumn['name']);
                 $sql .= ", $tblAlias." . $discrColumn['name'] . ' AS ' . $columnAlias;
@@ -535,9 +535,9 @@ class SqlWalker implements TreeWalker
                         if ($assoc->isOwningSide && $assoc->isOneToOne()) {
                             if (isset($class->inheritedAssociationFields[$assoc->sourceFieldName])) {
                                 $owningClass = $this->_em->getClassMetadata($class->inheritedAssociationFields[$assoc->sourceFieldName]);
-                                $sqlTableAlias = $this->getSqlTableAlias($owningClass->primaryTable['name'], $dqlAlias);
+                                $sqlTableAlias = $this->getSqlTableAlias($owningClass->table['name'], $dqlAlias);
                             } else {
-                                $sqlTableAlias = $this->getSqlTableAlias($class->primaryTable['name'], $dqlAlias);
+                                $sqlTableAlias = $this->getSqlTableAlias($class->table['name'], $dqlAlias);
                             }
                             
                             foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
@@ -552,7 +552,7 @@ class SqlWalker implements TreeWalker
             } else {
                 // Add foreign key columns to SQL, if necessary
                 if ($addMetaColumns) {
-                    $sqlTableAlias = $this->getSqlTableAlias($class->primaryTable['name'], $dqlAlias);
+                    $sqlTableAlias = $this->getSqlTableAlias($class->table['name'], $dqlAlias);
                     foreach ($class->associationMappings as $assoc) {
                         if ($assoc->isOwningSide && $assoc->isOneToOne()) {
                             foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
@@ -587,7 +587,7 @@ class SqlWalker implements TreeWalker
 
         $class = $this->_em->getClassMetadata($rangeDecl->abstractSchemaName);
         $sql .= $class->getQuotedTableName($this->_platform) . ' '
-              . $this->getSqlTableAlias($class->primaryTable['name'], $dqlAlias);
+              . $this->getSqlTableAlias($class->table['name'], $dqlAlias);
 
         if ($class->isInheritanceTypeJoined()) {
             $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
@@ -908,9 +908,9 @@ class SqlWalker implements TreeWalker
                 }
 
                 if (isset($mapping['inherited'])) {
-                    $tableName = $this->_em->getClassMetadata($mapping['inherited'])->primaryTable['name'];
+                    $tableName = $this->_em->getClassMetadata($mapping['inherited'])->table['name'];
                 } else {
-                    $tableName = $class->primaryTable['name'];
+                    $tableName = $class->table['name'];
                 }
 
                 if ($beginning) $beginning = false; else $sql .= ', ';
@@ -931,7 +931,7 @@ class SqlWalker implements TreeWalker
             if ($class->isInheritanceTypeSingleTable() || ! $this->_query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
                 foreach ($class->subClasses as $subClassName) {
                     $subClass = $this->_em->getClassMetadata($subClassName);
-                    $sqlTableAlias = $this->getSqlTableAlias($subClass->primaryTable['name'], $dqlAlias);
+                    $sqlTableAlias = $this->getSqlTableAlias($subClass->table['name'], $dqlAlias);
                     foreach ($subClass->fieldMappings as $fieldName => $mapping) {
                         if (isset($mapping['inherited']) || $partialFieldSet && !in_array($fieldName, $partialFieldSet)) {
                             continue;
@@ -1016,7 +1016,7 @@ class SqlWalker implements TreeWalker
 
         $class = $this->_em->getClassMetadata($rangeDecl->abstractSchemaName);
         $sql = ' FROM ' . $class->getQuotedTableName($this->_platform) . ' '
-             . $this->getSqlTableAlias($class->primaryTable['name'], $dqlAlias);
+             . $this->getSqlTableAlias($class->table['name'], $dqlAlias);
 
         if ($class->isInheritanceTypeJoined()) {
             $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
@@ -1302,8 +1302,8 @@ class SqlWalker implements TreeWalker
         
         if ($assoc->isOneToMany()) {
             $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
-            $targetTableAlias = $this->getSqlTableAlias($targetClass->primaryTable['name']);
-            $sourceTableAlias = $this->getSqlTableAlias($class->primaryTable['name'], $dqlAlias);
+            $targetTableAlias = $this->getSqlTableAlias($targetClass->table['name']);
+            $sourceTableAlias = $this->getSqlTableAlias($class->table['name'], $dqlAlias);
             
             $sql .= $targetClass->getQuotedTableName($this->_platform)
                   . ' ' . $targetTableAlias . ' WHERE ';
@@ -1338,8 +1338,8 @@ class SqlWalker implements TreeWalker
             
             // SQL table aliases
             $joinTableAlias = $this->getSqlTableAlias($joinTable['name']);
-            $targetTableAlias = $this->getSqlTableAlias($targetClass->primaryTable['name']);
-            $sourceTableAlias = $this->getSqlTableAlias($class->primaryTable['name'], $dqlAlias);
+            $targetTableAlias = $this->getSqlTableAlias($targetClass->table['name']);
+            $sourceTableAlias = $this->getSqlTableAlias($class->table['name'], $dqlAlias);
             
             // join to target table
             $sql .= $assoc->getQuotedJoinTableName($this->_platform)
@@ -1351,8 +1351,7 @@ class SqlWalker implements TreeWalker
             $joinColumns = $assoc->isOwningSide 
                 ? $joinTable['inverseJoinColumns']
                 : $joinTable['joinColumns'];
-            
-            //$referencedColumnClass = $assoc->isOwningSide ? $targetClass : $class; 
+
             $first = true;
             foreach ($joinColumns as $joinColumn) {
                 if ($first) $first = false; else $sql .= ' AND ';
@@ -1362,13 +1361,13 @@ class SqlWalker implements TreeWalker
                                 $targetClass->fieldNames[$joinColumn['referencedColumnName']],
                                 $this->_platform);
             }
-            
+
             $sql .= ' WHERE ';
-            
+
             $joinColumns = $assoc->isOwningSide 
                 ? $joinTable['joinColumns']
                 : $joinTable['inverseJoinColumns'];
-            
+
             $first = true;
             foreach ($joinColumns as $joinColumn) {
                 if ($first) $first = false; else $sql .= ' AND ';

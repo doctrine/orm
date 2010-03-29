@@ -123,6 +123,16 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $userId = $this->_em->getConnection()->execute("SELECT user_id FROM cms_addresses WHERE id=?",
                 array($address->id))->fetchColumn();
         $this->assertTrue(is_numeric($userId));
+        
+        $this->_em->clear();
+        
+        $user2 = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.id=?1')
+                ->setParameter(1, $userId)
+                ->getSingleResult();
+        
+        // Address has been eager-loaded because it cant be lazy
+        $this->assertTrue($user2->address instanceof CmsAddress);
+        $this->assertFalse($user2->address instanceof \Doctrine\ORM\Proxy\Proxy);
     }
 
     public function testBasicManyToMany()

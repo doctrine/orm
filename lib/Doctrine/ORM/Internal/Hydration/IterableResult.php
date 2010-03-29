@@ -31,18 +31,17 @@ namespace Doctrine\ORM\Internal\Hydration;
 class IterableResult implements \Iterator
 {
     /**
-     *
-     * @var \Doctrine\ORM\Internal\Hydration\AbstractHydrator
+     * @var Doctrine\ORM\Internal\Hydration\AbstractHydrator
      */
     private $_hydrator;
 
     /**
-     * @var bool
+     * @var boolean
      */
     private $_rewinded = false;
 
     /**
-     * @var int
+     * @var integer
      */
     private $_key = -1;
 
@@ -52,8 +51,7 @@ class IterableResult implements \Iterator
     private $_current = null;
 
     /**
-     *
-     * @param \Doctrine\ORM\Internal\Hydration\AbstractHydrator $hydrator
+     * @param Doctrine\ORM\Internal\Hydration\AbstractHydrator $hydrator
      */
     public function __construct($hydrator)
     {
@@ -62,7 +60,7 @@ class IterableResult implements \Iterator
 
     public function rewind()
     {
-        if($this->_rewinded == true) {
+        if ($this->_rewinded == true) {
             throw new HydrationException("Can only iterate a Result once.");
         } else {
             $this->_current = $this->next();

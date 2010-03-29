@@ -114,7 +114,7 @@ class ProxyFactory
     }
 
     /**
-     * Generates a (reference or association) proxy class.
+     * Generates a proxy class file.
      *
      * @param $class
      * @param $originalClassName

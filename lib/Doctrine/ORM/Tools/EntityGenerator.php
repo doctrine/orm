@@ -443,12 +443,12 @@ public function <methodName>()
     private function _generateTableAnnotation($metadata)
     {
         $table = array();
-        if ($metadata->primaryTable['name']) {
-            $table[] = 'name="' . $metadata->primaryTable['name'] . '"';
+        if ($metadata->table['name']) {
+            $table[] = 'name="' . $metadata->table['name'] . '"';
         }
 
-        if (isset($metadata->primaryTable['schema'])) {
-            $table[] = 'schema="' . $metadata->primaryTable['schema'] . '"';
+        if (isset($metadata->table['schema'])) {
+            $table[] = 'schema="' . $metadata->table['schema'] . '"';
         }
 
         return '@Table(' . implode(', ', $table) . ')';
@@ -570,7 +570,7 @@ public function <methodName>()
                      . ($associationMapping->isManyToMany() ? ' = array()' : null) . ";\n";
         }
 
-        return implode("\n", $lines)
+        return implode("\n", $lines);
     }
 
     private function _generateEntityFieldMappingProperties(ClassMetadataInfo $metadata)

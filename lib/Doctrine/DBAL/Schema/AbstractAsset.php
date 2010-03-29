@@ -80,6 +80,7 @@ abstract class AbstractAsset
             return substr($columnName, -floor(($maxSize-$postfixLen)/$columnCount - 1));
         }, $columnNames);
         $parts[] = $postfix;
+
         return trim(implode("_", $parts), '_');
     }
 }

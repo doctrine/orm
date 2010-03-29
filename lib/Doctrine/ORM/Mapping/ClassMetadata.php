@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use ReflectionClass, ReflectionProperty;
+
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
  * of an entity and it's associations.
@@ -73,7 +75,7 @@ class ClassMetadata extends ClassMetadataInfo
         $this->name = $entityName;
         $this->reflClass = new \ReflectionClass($entityName);
         $this->namespace = $this->reflClass->getNamespaceName();
-        $this->primaryTable['name'] = $this->reflClass->getShortName();
+        $this->table['name'] = $this->reflClass->getShortName();
         $this->rootEntityName = $entityName;
     }
 
@@ -271,9 +273,9 @@ class ClassMetadata extends ClassMetadataInfo
      */
     public function getQuotedTableName($platform)
     {
-        return isset($this->primaryTable['quoted']) ?
-                $platform->quoteIdentifier($this->primaryTable['name']) :
-                $this->primaryTable['name'];
+        return isset($this->table['quoted']) ?
+                $platform->quoteIdentifier($this->table['name']) :
+                $this->table['name'];
     }
 
     /**
@@ -306,8 +308,8 @@ class ClassMetadata extends ClassMetadataInfo
             'discriminatorColumn',
             'discriminatorValue',
             'discriminatorMap',
-            'fieldMappings',
-            'fieldNames', //TODO: Not all of this stuff needs to be serialized. Only type, columnName and fieldName.
+            'fieldMappings',//TODO: Not all of this stuff needs to be serialized. Only type, columnName and fieldName.
+            'fieldNames', 
             'generatorType',
             'identifier',
             'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.
@@ -320,13 +322,13 @@ class ClassMetadata extends ClassMetadataInfo
             'lifecycleCallbacks',
             'name',
             'parentClasses',
-            'primaryTable',
+            'table',
             'rootEntityName',
             'subClasses',
             'versionField'
         );
     }
-    
+
     /**
      * Restores some state that can not be serialized/unserialized.
      * 
@@ -335,22 +337,21 @@ class ClassMetadata extends ClassMetadataInfo
     public function __wakeup()
     {
         // Restore ReflectionClass and properties
-        $this->reflClass = new \ReflectionClass($this->name);
+        $this->reflClass = new ReflectionClass($this->name);
         
         foreach ($this->fieldMappings as $field => $mapping) {
 	        if (isset($mapping['inherited'])) {
-	            $reflField = new \ReflectionProperty($mapping['inherited'], $field);
+	            $reflField = new ReflectionProperty($mapping['inherited'], $field);
 	        } else {
 	            $reflField = $this->reflClass->getProperty($field);
 	        }
-	            
             $reflField->setAccessible(true);
             $this->reflFields[$field] = $reflField;
         }
-        
+
         foreach ($this->associationMappings as $field => $mapping) {
             if (isset($this->inheritedAssociationFields[$field])) {
-                $reflField = new \ReflectionProperty($this->inheritedAssociationFields[$field], $field);
+                $reflField = new ReflectionProperty($this->inheritedAssociationFields[$field], $field);
             } else {
                 $reflField = $this->reflClass->getProperty($field);
             }

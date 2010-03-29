@@ -81,7 +81,7 @@ class SqliteSchemaManager extends AbstractSchemaManager
 
         // fetch primary
         $stmt = $this->_conn->execute( "PRAGMA TABLE_INFO ('$tableName')" );
-        $indexArray = $stmt->fetchAll(\Doctrine\DBAL\Connection::FETCH_ASSOC);
+        $indexArray = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         foreach($indexArray AS $indexColumnRow) {
             if($indexColumnRow['pk'] == "1") {
                 $indexBuffer[] = array(
@@ -102,7 +102,7 @@ class SqliteSchemaManager extends AbstractSchemaManager
             $idx['non_unique'] = $tableIndex['unique']?false:true;
 
             $stmt = $this->_conn->execute( "PRAGMA INDEX_INFO ( '{$keyName}' )" );
-            $indexArray = $stmt->fetchAll(\Doctrine\DBAL\Connection::FETCH_ASSOC);
+            $indexArray = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
             foreach ( $indexArray as $indexColumnRow ) {
                 $idx['column_name'] = $indexColumnRow['name'];

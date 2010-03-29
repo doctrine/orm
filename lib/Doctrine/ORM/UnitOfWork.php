@@ -280,7 +280,7 @@ class UnitOfWork implements PropertyChangedListener
         $commitOrder = $this->_getCommitOrder();
 
         $conn = $this->_em->getConnection();
-        
+
         $conn->beginTransaction();
         try {            
             if ($this->_entityInsertions) {
@@ -645,7 +645,7 @@ class UnitOfWork implements PropertyChangedListener
                 $actualData[$name] = $refProp->getValue($entity);
             }
         }
-        
+
         $originalData = $this->_originalEntityData[$oid];
         $changeSet = array();
 
@@ -693,7 +693,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $postInsertIds = $persister->executeInserts();
-        
+
         if ($postInsertIds) {
             // Persister returned post-insert IDs
             foreach ($postInsertIds as $id => $entity) {

@@ -1,6 +1,43 @@
 
 # Upgrade from 2.0-ALPHA4 to 2.0-BETA1
 
+## New inversedBy attribute
+
+It is now *mandatory* that the owning side of a bidirectional association specifies the
+'inversedBy' attribute that points to the name of the field on the inverse side that completes
+the association. Example:
+
+    [php]
+    // BEFORE (ALPHA4 AND EARLIER)
+    class User
+    {
+        //...
+        /** @OneToOne(targetEntity="Address", mappedBy="user") */
+        private $address;
+        //...
+    }
+    class Address
+    {
+        //...
+        /** @OneToOne(targetEntity="User") */
+        private $address;
+        //...
+    }
+    
+    // SINCE BETA1
+    // User class DOES NOT CHANGE
+    class Address
+    {
+        //...
+        /** @OneToOne(targetEntity="User", inversedBy="address") */
+        private $user;
+        //...
+    }
+    
+Thus, the inversedBy attribute is the counterpart to the mappedBy attribute. This change
+was necessary to enable some simplifications and further performance improvements. We
+apologize for the inconvenience.
+
 ## Default Property for Field Mappings
 
 The "default" option for database column defaults has been removed. If desired, database column defaults can

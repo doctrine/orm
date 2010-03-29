@@ -101,10 +101,10 @@ class ConvertDoctrine1Schema
         if (isset($model['tableName']) && $model['tableName']) {
             $e = explode('.', $model['tableName']);
             if (count($e) > 1) {
-                $metadata->primaryTable['schema'] = $e[0];
-                $metadata->primaryTable['name'] = $e[1];
+                $metadata->table['schema'] = $e[0];
+                $metadata->table['name'] = $e[1];
             } else {
-                $metadata->primaryTable['name'] = $e[0];
+                $metadata->table['name'] = $e[0];
             }
         }
     }
@@ -208,7 +208,7 @@ class ConvertDoctrine1Schema
                 $type = (isset($index['type']) && $index['type'] == 'unique')
                     ? 'uniqueConstraints' : 'indexes';
 
-                $metadata->primaryTable[$type][$name] = array(
+                $metadata->table[$type][$name] = array(
                     'columns' => $index['fields']
                 );
             }

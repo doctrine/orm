@@ -23,10 +23,11 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp() {
         $this->useModelSet('company');
         parent::setUp();
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSqlLogger);
     }
 
     public function testCRUD()
-    {        
+    {
         $person = new CompanyPerson;
         $person->setName('Roman S. Borschel');
         
@@ -78,7 +79,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
         
         $query = $this->_em->createQuery("update Doctrine\Tests\Models\Company\CompanyEmployee p set p.name = ?1, p.department = ?2 where p.name='Guilherme Blanco' and p.salary = ?3");
-        $query->setParameter(1, 'NewName');
+        $query->setParameter(1, 'NewName', 'string');
         $query->setParameter(2, 'NewDepartment');
         $query->setParameter(3, 100000);
         $query->getSql();

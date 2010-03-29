@@ -67,16 +67,16 @@ class XmlExporter extends AbstractExporter
 
         $root->addAttribute('name', $metadata->name);
 
-        if (isset($metadata->primaryTable['name'])) {
-            $root->addAttribute('table', $metadata->primaryTable['name']);
+        if (isset($metadata->table['name'])) {
+            $root->addAttribute('table', $metadata->table['name']);
         }
 
-        if (isset($metadata->primaryTable['schema'])) {
-            $root->addAttribute('schema', $metadata->primaryTable['schema']);
+        if (isset($metadata->table['schema'])) {
+            $root->addAttribute('schema', $metadata->table['schema']);
         }
 
-        if (isset($metadata->primaryTable['inheritance-type'])) {
-            $root->addAttribute('inheritance-type', $metadata->primaryTable['inheritance-type']);
+        if (isset($metadata->table['inheritance-type'])) {
+            $root->addAttribute('inheritance-type', $metadata->table['inheritance-type']);
         }
 
         if ($metadata->discriminatorColumn) {
@@ -97,20 +97,20 @@ class XmlExporter extends AbstractExporter
 
         $root->addChild('change-tracking-policy', $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy));
 
-        if (isset($metadata->primaryTable['indexes'])) {
+        if (isset($metadata->table['indexes'])) {
             $indexesXml = $root->addChild('indexes');
             
-            foreach ($metadata->primaryTable['indexes'] as $name => $index) {
+            foreach ($metadata->table['indexes'] as $name => $index) {
                 $indexXml = $indexesXml->addChild('index');
                 $indexXml->addAttribute('name', $name);
                 $indexXml->addAttribute('columns', implode(',', $index['columns']));
             }
         }
 
-        if (isset($metadata->primaryTable['uniqueConstraints'])) {
+        if (isset($metadata->table['uniqueConstraints'])) {
             $uniqueConstraintsXml = $root->addChild('unique-constraints');
             
-            foreach ($metadata->primaryTable['uniqueConstraints'] as $unique) {
+            foreach ($metadata->table['uniqueConstraints'] as $unique) {
                 $uniqueConstraintXml = $uniqueConstraintsXml->addChild('unique-constraint');
                 $uniqueConstraintXml->addAttribute('name', $name);
                 $uniqueConstraintXml->addAttribute('columns', implode(',', $unique['columns']));

@@ -27,27 +27,20 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  * Persister for entities that participate in a hierarchy mapped with the
  * SINGLE_TABLE strategy.
  *
- * @author      Roman Borschel <roman@code-factory.org>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @version     $Revision: 3406 $
- * @link        www.doctrine-project.org
- * @since       2.0
+ * @author Roman Borschel <roman@code-factory.org>
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @since 2.0
+ * @link http://martinfowler.com/eaaCatalog/singleTableInheritance.html
  */
-class SingleTablePersister extends StandardEntityPersister
+class SingleTablePersister extends AbstractEntityInheritancePersister
 {
-    /** @override */
-    protected function _prepareData($entity, array &$result, $isInsert = false)
+    /** {@inheritdoc} */
+    protected function _getDiscriminatorColumnTableName()
     {
-        parent::_prepareData($entity, $result, $isInsert);
-        // Populate the discriminator column
-        if ($isInsert) {
-            $discColumn = $this->_class->discriminatorColumn['name'];
-            $result[$this->_class->getQuotedTableName($this->_platform)][$discColumn] =
-                    $this->_class->discriminatorValue;
-        }
+        return $this->_class->table['name'];
     }
-    
-    /** @override */
+
+    /** {@inheritdoc} */
     protected function _getSelectColumnListSQL()
     {
         $columnList = parent::_getSelectColumnListSQL();
@@ -86,7 +79,7 @@ class SingleTablePersister extends StandardEntityPersister
         return $columnList;
     }
 
-    /** @override */
+    /** {@inheritdoc} */
     protected function _getInsertColumnList()
     {
         $columns = parent::_getInsertColumnList();
@@ -96,19 +89,13 @@ class SingleTablePersister extends StandardEntityPersister
         return $columns;
     }
 
-    /** @override */
-    protected function _processSQLResult(array $sqlResult)
-    {
-        return $this->_processSQLResultInheritanceAware($sqlResult);
-    }
-
-    /** @override */
+    /** {@inheritdoc} */
     protected function _getSQLTableAlias(ClassMetadata $class)
     {
         if (isset($this->_sqlTableAliases[$class->rootEntityName])) {
             return $this->_sqlTableAliases[$class->rootEntityName];
         }
-        $tableAlias = $this->_em->getClassMetadata($class->rootEntityName)->primaryTable['name'][0] . $this->_sqlAliasCounter++;
+        $tableAlias = $this->_em->getClassMetadata($class->rootEntityName)->table['name'][0] . $this->_sqlAliasCounter++;
         $this->_sqlTableAliases[$class->rootEntityName] = $tableAlias;
 
         return $tableAlias;

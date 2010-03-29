@@ -21,7 +21,8 @@
 
 namespace Doctrine\ORM\Query\Exec;
 
-use Doctrine\ORM\Query\AST;
+use Doctrine\DBAL\Connection,
+    Doctrine\ORM\Query\AST;
 
 /**
  * Executor that executes the SQL statements for DQL DELETE/UPDATE statements on classes
@@ -45,8 +46,8 @@ class SingleTableDeleteUpdateExecutor extends AbstractSqlExecutor
         }
     }
     
-    public function execute(\Doctrine\DBAL\Connection $conn, array $params)
+    public function execute(Connection $conn, array $params, array $types)
     {
-        return $conn->executeUpdate($this->_sqlStatements, $params);
+        return $conn->executeUpdate($this->_sqlStatements, $params, $types);
     }
 }

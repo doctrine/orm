@@ -38,7 +38,7 @@ use Doctrine\ORM\Query;
  */
 class Parser
 {
-    /** Maps BUILT-IN string function names to AST class names. */
+    /** READ-ONLY: Maps BUILT-IN string function names to AST class names. */
     private static $_STRING_FUNCTIONS = array(
         'concat'    => 'Doctrine\ORM\Query\AST\Functions\ConcatFunction',
         'substring' => 'Doctrine\ORM\Query\AST\Functions\SubstringFunction',
@@ -47,7 +47,7 @@ class Parser
         'upper'     => 'Doctrine\ORM\Query\AST\Functions\UpperFunction'
     );
 
-    /** Maps BUILT-IN numeric function names to AST class names. */
+    /** READ-ONLY: Maps BUILT-IN numeric function names to AST class names. */
     private static $_NUMERIC_FUNCTIONS = array(
         'length' => 'Doctrine\ORM\Query\AST\Functions\LengthFunction',
         'locate' => 'Doctrine\ORM\Query\AST\Functions\LocateFunction',
@@ -57,7 +57,7 @@ class Parser
         'size'   => 'Doctrine\ORM\Query\AST\Functions\SizeFunction'
     );
 
-    /** Maps BUILT-IN datetime function names to AST class names. */
+    /** READ-ONLY: Maps BUILT-IN datetime function names to AST class names. */
     private static $_DATETIME_FUNCTIONS = array(
         'current_date'      => 'Doctrine\ORM\Query\AST\Functions\CurrentDateFunction',
         'current_time'      => 'Doctrine\ORM\Query\AST\Functions\CurrentTimeFunction',
@@ -2587,18 +2587,12 @@ class Parser
         // Check for custom functions afterwards
         $config = $this->_em->getConfiguration();
 
-        if (($func = $config->getCustomStringFunction($funcName)) !== null) {
-            self::$_STRING_FUNCTIONS[$funcName] = $func;
-
-            return $this->FunctionsReturningStrings();
-        } else if (($func = $config->getCustomNumericFunction($funcName)) !== null) {
-            self::$_NUMERIC_FUNCTIONS[$funcName] = $func;
-
-            return $this->FunctionsReturningNumerics();
-        } else if (($func = $config->getCustomDatetimeFunction($funcName)) !== null) {
-            self::$_DATETIME_FUNCTIONS[$funcName] = $func;
-
-            return $this->FunctionsReturningDatetime();
+        if ($config->getCustomStringFunction($funcName) !== null) {
+            return $this->CustomFunctionsReturningStrings();
+        } else if ($config->getCustomNumericFunction($funcName) !== null) {
+            return $this->CustomFunctionsReturningNumerics();
+        } else if ($config->getCustomDatetimeFunction($funcName) !== null) {
+            return $this->CustomFunctionsReturningDatetime();
         }
 
         $this->syntaxError('known function', $token);
@@ -2623,6 +2617,16 @@ class Parser
         return $function;
     }
 
+    public function CustomFunctionsReturningNumerics()
+    {
+        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
+        $funcClass = $this->_em->getConfiguration()->getCustomNumericFunction($funcNameLower);
+        $function = new $funcClass($funcNameLower);
+        $function->parse($this);
+
+        return $function;
+    }
+
     /**
      * FunctionsReturningDateTime ::= "CURRENT_DATE" | "CURRENT_TIME" | "CURRENT_TIMESTAMP"
      */
@@ -2630,6 +2634,16 @@ class Parser
     {
         $funcNameLower = strtolower($this->_lexer->lookahead['value']);
         $funcClass = self::$_DATETIME_FUNCTIONS[$funcNameLower];
+        $function = new $funcClass($funcNameLower);
+        $function->parse($this);
+
+        return $function;
+    }
+
+    public function CustomFunctionsReturningDatetime()
+    {
+        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
+        $funcClass = $this->_em->getConfiguration()->getCustomDatetimeFunction($funcNameLower);
         $function = new $funcClass($funcNameLower);
         $function->parse($this);
 
@@ -2648,7 +2662,16 @@ class Parser
     {
         $funcNameLower = strtolower($this->_lexer->lookahead['value']);
         $funcClass = self::$_STRING_FUNCTIONS[$funcNameLower];
-        //$funcClass = $this->_em->getConfiguration()->getDQLStringFunctionClassName($funcNameLower);
+        $function = new $funcClass($funcNameLower);
+        $function->parse($this);
+
+        return $function;
+    }
+
+    public function CustomFunctionsReturningStrings()
+    {
+        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
+        $funcClass = $this->_em->getConfiguration()->getCustomStringFunction($funcNameLower);
         $function = new $funcClass($funcNameLower);
         $function->parse($this);
 

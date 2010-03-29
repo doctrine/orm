@@ -21,7 +21,8 @@
 
 namespace Doctrine\ORM\Query\Exec;
 
-use Doctrine\ORM\Query\AST;
+use Doctrine\DBAL\Connection,
+    Doctrine\ORM\Query\AST;
 
 /**
  * Executes the SQL statements for bulk DQL DELETE statements on classes in
@@ -52,11 +53,11 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         $em = $sqlWalker->getEntityManager();
         $conn = $em->getConnection();
         $platform = $conn->getDatabasePlatform();
-        
+
         $primaryClass = $em->getClassMetadata($AST->deleteClause->abstractSchemaName);
         $primaryDqlAlias = $AST->deleteClause->aliasIdentificationVariable;
         $rootClass = $em->getClassMetadata($primaryClass->rootEntityName);
-        
+
         $tempTable = $rootClass->getTemporaryIdTableName();
         $idColumnNames = $rootClass->getIdentifierColumnNames();
         $idColumnList = implode(', ', $idColumnNames);
@@ -64,17 +65,17 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         // 1. Create an INSERT INTO temptable ... SELECT identifiers WHERE $AST->getWhereClause()
         $this->_insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ')'
                 . ' SELECT t0.' . implode(', t0.', $idColumnNames);
-        $sqlWalker->setSqlTableAlias($primaryClass->primaryTable['name'] . $primaryDqlAlias, 't0');
+        $sqlWalker->setSqlTableAlias($primaryClass->table['name'] . $primaryDqlAlias, 't0');
         $rangeDecl = new AST\RangeVariableDeclaration($primaryClass->name, $primaryDqlAlias);
         $fromClause = new AST\FromClause(array(new AST\IdentificationVariableDeclaration($rangeDecl, null, array())));
         $this->_insertSql .= $sqlWalker->walkFromClause($fromClause);
-        
+
         // Append WHERE clause, if there is one.
         if ($AST->whereClause) {
             $this->_insertSql .= $sqlWalker->walkWhereClause($AST->whereClause);
         }
 
-        // 2. Create ID subselect statement used in DELETE .... WHERE ... IN (subselect)
+        // 2. Create ID subselect statement used in DELETE ... WHERE ... IN (subselect)
         $idSubselect = 'SELECT ' . $idColumnList . ' FROM ' . $tempTable;
 
         // 3. Create and store DELETE statements
@@ -106,24 +107,24 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
      * @param array $params The parameters.
      * @override
      */
-    public function execute(\Doctrine\DBAL\Connection $conn, array $params)
+    public function execute(Connection $conn, array $params, array $types)
     {
         $numDeleted = 0;
-        
+
         // Create temporary id table
         $conn->executeUpdate($this->_createTempTableSql);
-        
+
         // Insert identifiers
-        $numDeleted = $conn->executeUpdate($this->_insertSql, $params);
+        $numDeleted = $conn->executeUpdate($this->_insertSql, $params, $types);
 
         // Execute DELETE statements
         foreach ($this->_sqlStatements as $sql) {
             $conn->executeUpdate($sql);
         }
-        
+
         // Drop temporary table
         $conn->executeUpdate($this->_dropTempTableSql);
-        
+
         return $numDeleted;
     }
 }

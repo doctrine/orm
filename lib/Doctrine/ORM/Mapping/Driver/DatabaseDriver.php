@@ -63,7 +63,7 @@ class DatabaseDriver implements Driver
         $className = Inflector::classify($tableName);
 
         $metadata->name = $className;
-        $metadata->primaryTable['name'] = $tableName;
+        $metadata->table['name'] = $tableName;
 
         $columns = $this->_sm->listTableColumns($tableName);
         

@@ -62,11 +62,11 @@ class XmlDriver extends AbstractFileDriver
 
         // Evaluate <entity...> attributes
         if (isset($xmlRoot['table'])) {
-            $metadata->primaryTable['name'] = (string)$xmlRoot['table'];
+            $metadata->table['name'] = (string)$xmlRoot['table'];
         }
         
         if (isset($xmlRoot['schema'])) {
-            $metadata->primaryTable['schema'] = (string)$xmlRoot['schema'];
+            $metadata->table['schema'] = (string)$xmlRoot['schema'];
         }
         
         if (isset($xmlRoot['inheritance-type'])) {
@@ -108,7 +108,7 @@ class XmlDriver extends AbstractFileDriver
                     $columns = $index['columns'];
                 }
                 
-                $metadata->primaryTable['indexes'][$index['name']] = array(
+                $metadata->table['indexes'][$index['name']] = array(
                     'columns' => $columns
                 );
             }
@@ -123,7 +123,7 @@ class XmlDriver extends AbstractFileDriver
                     $columns = $unique['columns'];
                 }
                 
-                $metadata->primaryTable['uniqueConstraints'][$unique['name']] = array(
+                $metadata->table['uniqueConstraints'][$unique['name']] = array(
                     'columns' => $columns
                 );
             }

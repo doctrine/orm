@@ -35,6 +35,6 @@ class OneToOneMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('address', $oneToOneMapping->mappedBy);
         $this->assertEquals('Address', $oneToOneMapping->sourceEntityName);
         $this->assertEquals('Person', $oneToOneMapping->targetEntityName);
-        $this->assertTrue($oneToOneMapping->isInverseSide());
+        $this->assertTrue( ! $oneToOneMapping->isOwningSide);
     }
 }
