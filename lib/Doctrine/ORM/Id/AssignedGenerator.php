@@ -27,11 +27,16 @@ use Doctrine\ORM\ORMException;
 /**
  * Special generator for application-assigned identifiers (doesnt really generate anything).
  *
- * @since 2.0
- * @author Roman Borschel <roman@code-factory.org>
- * @todo Rename: AssignedGenerator?
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
-class Assigned extends AbstractIdGenerator
+class AssignedGenerator extends AbstractIdGenerator
 {
     /**
      * Returns the identifier assigned to the given entity.

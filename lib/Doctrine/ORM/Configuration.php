@@ -25,10 +25,13 @@ namespace Doctrine\ORM;
  * Configuration container for all configuration options of Doctrine.
  * It combines all configuration options from DBAL & ORM.
  *
- * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  * @internal When adding a new configuration option just write a getter/setter
  * pair and add the option to the _attributes array with a proper default value.
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class Configuration extends \Doctrine\DBAL\Configuration
 {

@@ -2,16 +2,16 @@
 
 namespace Doctrine\Tests\ORM\Id;
 
-use Doctrine\ORM\Id\Assigned;
+use Doctrine\ORM\Id\AssignedGenerator;
 
 require_once __DIR__ . '/../../TestInit.php';
 
 /**
- * AssignedIdTest
+ * AssignedGeneratorTest
  *
  * @author robo
  */
-class AssignedIdTest extends \Doctrine\Tests\OrmTestCase
+class AssignedGeneratorTest extends \Doctrine\Tests\OrmTestCase
 {
     private $_em;
     private $_assignedGen;
@@ -19,7 +19,7 @@ class AssignedIdTest extends \Doctrine\Tests\OrmTestCase
     protected function setUp()
     {
         $this->_em = $this->_getTestEntityManager();
-        $this->_assignedGen = new Assigned;
+        $this->_assignedGen = new AssignedGenerator;
     }
 
     public function testThrowsExceptionIfIdNotAssigned()

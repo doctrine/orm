@@ -27,13 +27,15 @@ use Doctrine\DBAL\Types\Type,
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
- * @since       1.0
- * @version     $Revision: 1393 $
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @author      Roman Borschel <roman@code-factory.org>
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
+ * @author  Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
 abstract class AbstractQuery
 {

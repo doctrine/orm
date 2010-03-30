@@ -7,8 +7,14 @@ use Doctrine\ORM\EntityManager;
 /**
  * Id generator that uses a single-row database table and a hi/lo algorithm.
  *
- * @since 2.0
- * @todo Implementation
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class TableGenerator extends AbstractIdGenerator
 {

@@ -37,6 +37,9 @@ use Doctrine\Common\Collections\ArrayCollection,
  * @link        www.doctrine-project.org
  * @since       2.0
  * @version     $Revision$
+ * @author      Benjamin Eberlei <kontakt@beberlei.de>
+ * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author      Jonathan Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  * @internal    This class contains performance-critical code.
  */
@@ -585,7 +588,7 @@ class UnitOfWork implements PropertyChangedListener
                 $idGen = $targetClass->idGenerator;
                 if ( ! $idGen->isPostInsertGenerator()) {
                     $idValue = $idGen->generate($this->_em, $entry);
-                    if ( ! $idGen instanceof \Doctrine\ORM\Id\Assigned) {
+                    if ( ! $idGen instanceof \Doctrine\ORM\Id\AssignedGenerator) {
                         $this->_entityIdentifiers[$oid] = array($targetClass->identifier[0] => $idValue);
                         $targetClass->getSingleIdReflectionProperty()->setValue($entry, $idValue);
                     } else {
@@ -1200,7 +1203,7 @@ class UnitOfWork implements PropertyChangedListener
                 $idGen = $class->idGenerator;
                 if ( ! $idGen->isPostInsertGenerator()) {
                     $idValue = $idGen->generate($this->_em, $entity);
-                    if ( ! $idGen instanceof \Doctrine\ORM\Id\Assigned) {
+                    if ( ! $idGen instanceof \Doctrine\ORM\Id\AssignedGenerator) {
                         $this->_entityIdentifiers[$oid] = array($class->identifier[0] => $idValue);
                         $class->setIdentifierValues($entity, $idValue);
                     } else {

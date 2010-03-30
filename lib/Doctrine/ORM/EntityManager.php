@@ -31,12 +31,13 @@ use Doctrine\Common\EventManager,
  * The EntityManager is the central access point to ORM functionality.
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link www.doctrine-project.org
- * @since 2.0
+ * @link    www.doctrine-project.org
+ * @since   2.0
  * @version $Revision$
- * @author Roman Borschel <roman@code-factory.org>
- * @todo Remove flush modes. They dont seem to be of much use. Manual flushing should
- *       be enough.
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 class EntityManager
 {

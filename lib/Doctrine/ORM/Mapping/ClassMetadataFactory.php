@@ -33,7 +33,8 @@ use Doctrine\ORM\ORMException,
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision: 3938 $
+ * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
@@ -388,7 +389,7 @@ class ClassMetadataFactory
                 $class->setIdGenerator($sequenceGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_NONE:
-                $class->setIdGenerator(new \Doctrine\ORM\Id\Assigned());
+                $class->setIdGenerator(new \Doctrine\ORM\Id\AssignedGenerator());
                 break;
             case ClassMetadata::GENERATOR_TYPE_TABLE:
                 throw new ORMException("TableGenerator not yet implemented.");
