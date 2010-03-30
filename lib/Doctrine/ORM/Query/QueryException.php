@@ -116,9 +116,11 @@ class QueryException extends \Doctrine\ORM\ORMException
         );
     }
 
-    // TODO: Add the $assoc to the error message
     public static function iterateWithFetchJoinNotAllowed($assoc) {
-        return new self("Iterate with fetch join not allowed");
+        return new self(
+            "Iterate with fetch join in class " . $assoc->sourceEntityName .
+            " using association " . $assoc->sourceFieldName . " not allowed."
+        );
     }
 
     public static function associationPathCompositeKeyNotSupported()
