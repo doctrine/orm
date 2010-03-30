@@ -106,10 +106,9 @@ class AnnotationReader
     {
         $cacheKey = $class->getName() . self::$CACHE_SALT;
 
-        //FIXME: Just use ->fetch(), otherwise some drivers, i.e. APC will fetch twice because they
-        // implement contains() in terms of fetch(), *sigh*.
-        if ($this->_cache->contains($cacheKey)) {
-            return $this->_cache->fetch($cacheKey);
+        // Attempt to grab data from cache
+        if (($data = $this->_cache->fetch($cacheKey)) !== false) {
+            return $data;
         }
         
         $annotations = $this->_parser->parse($class->getDocComment(), "class ".$class->getName());
@@ -143,12 +142,11 @@ class AnnotationReader
     {
         $cacheKey = $property->getDeclaringClass()->getName() . '$' . $property->getName() . self::$CACHE_SALT;
 
-        //FIXME: Just use ->fetch(), otherwise some drivers, i.e. APC will fetch twice because they
-        // implement contains() in terms of fetch(), *sigh*.
-        if ($this->_cache->contains($cacheKey)) {
-            return $this->_cache->fetch($cacheKey);
+        // Attempt to grab data from cache
+        if (($data = $this->_cache->fetch($cacheKey)) !== false) {
+            return $data;
         }
-
+        
         $context = "property ".$property->getDeclaringClass()->getName()."::\$".$property->getName();
         $annotations = $this->_parser->parse($property->getDocComment(), $context);
         $this->_cache->save($cacheKey, $annotations, null);
@@ -181,10 +179,9 @@ class AnnotationReader
     {
         $cacheKey = $method->getDeclaringClass()->getName() . '#' . $method->getName() . self::$CACHE_SALT;
 
-        //FIXME: Just use ->fetch(), otherwise some drivers, i.e. APC will fetch twice because they
-        // implement contains() in terms of fetch(), *sigh*.
-        if ($this->_cache->contains($cacheKey)) {
-            return $this->_cache->fetch($cacheKey);
+        // Attempt to grab data from cache
+        if (($data = $this->_cache->fetch($cacheKey)) !== false) {
+            return $data;
         }
 
         $context = "method ".$method->getDeclaringClass()->getName()."::".$method->getName()."()";
