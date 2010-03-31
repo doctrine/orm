@@ -23,7 +23,6 @@ namespace Doctrine\DBAL;
 
 use PDO, Closure,
     Doctrine\DBAL\Types\Type,
-    Doctrine\DBAL\Driver\Statement as DriverStatement,
     Doctrine\DBAL\Driver\Connection as DriverConnection,
     Doctrine\Common\EventManager,
     Doctrine\DBAL\DBALException;
@@ -862,11 +861,13 @@ class Connection implements DriverConnection
      * Binds a set of parameters, some or all of which are typed with a PDO binding type
      * or DBAL mapping type, to a given statement.
      * 
-     * @param DriverStatement $stmt The statement to bind the values to.
+     * @param $stmt The statement to bind the values to.
      * @param array $params The map/list of named/positional parameters.
      * @param array $types The parameter types (PDO binding types or DBAL mapping types).
+     * @internal Duck-typing used on the $stmt parameter to support driver statements as well as
+     *           raw PDOStatement instances.
      */
-    private function _bindTypedValues(DriverStatement $stmt, array $params, array $types)
+    private function _bindTypedValues($stmt, array $params, array $types)
     {
         // Check whether parameters are positional or named. Mixing is not allowed, just like in PDO.
         if (is_int(key($params))) {
