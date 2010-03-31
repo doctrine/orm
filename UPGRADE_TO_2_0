@@ -20,7 +20,7 @@ the association. Example:
     {
         //...
         /** @OneToOne(targetEntity="User") */
-        private $address;
+        private $user;
         //...
     }
     
