@@ -144,7 +144,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
     }
 
     public function assertCartForeignKeyIs($value) {
-        $foreignKey = $this->_em->getConnection()->execute('SELECT customer_id FROM ecommerce_carts WHERE id=?', array($this->cart->getId()))->fetchColumn();
+        $foreignKey = $this->_em->getConnection()->executeQuery('SELECT customer_id FROM ecommerce_carts WHERE id=?', array($this->cart->getId()))->fetchColumn();
         $this->assertEquals($value, $foreignKey);
     }
 }

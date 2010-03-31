@@ -27,13 +27,12 @@ class AbstractManyToManyAssociationTestCase extends \Doctrine\Tests\OrmFunctiona
 
     protected function _countForeignKeys($firstId, $secondId)
     {
-        return count($this->_em->getConnection()
-                     ->execute("SELECT {$this->_firstField}
-                                FROM {$this->_table}
-                                WHERE {$this->_firstField}=?
-                                  AND {$this->_secondField}=?",
-                               array($firstId, $secondId))
-                     ->fetchAll());
+        return count($this->_em->getConnection()->executeQuery("
+            SELECT {$this->_firstField}
+              FROM {$this->_table}
+             WHERE {$this->_firstField} = ?
+               AND {$this->_secondField} = ?
+        ", array($firstId, $secondId))->fetchAll());
     }
 
     public function assertCollectionEquals(Collection $first, Collection $second)

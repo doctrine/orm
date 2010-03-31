@@ -316,7 +316,7 @@ class Connection implements DriverConnection
      */
     public function fetchRow($statement, array $params = array())
     {
-        return $this->execute($statement, $params)->fetch(PDO::FETCH_ASSOC);
+        return $this->executeQuery($statement, $params)->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -329,7 +329,7 @@ class Connection implements DriverConnection
      */
     public function fetchArray($statement, array $params = array())
     {
-        return $this->execute($statement, $params)->fetch(PDO::FETCH_NUM);
+        return $this->executeQuery($statement, $params)->fetch(PDO::FETCH_NUM);
     }
 
     /**
@@ -343,7 +343,7 @@ class Connection implements DriverConnection
      */
     public function fetchColumn($statement, array $params = array(), $colnum = 0)
     {
-        return $this->execute($statement, $params)->fetchColumn($colnum);
+        return $this->executeQuery($statement, $params)->fetchColumn($colnum);
     }
 
     /**
@@ -524,7 +524,7 @@ class Connection implements DriverConnection
      */
     public function fetchAll($sql, array $params = array())
     {
-        return $this->execute($sql, $params)->fetchAll(PDO::FETCH_ASSOC);
+        return $this->executeQuery($sql, $params)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -549,10 +549,9 @@ class Connection implements DriverConnection
      * @param string $query The SQL query to execute.
      * @param array $params The parameters to bind to the query, if any.
      * @return Doctrine\DBAL\Driver\Statement The executed statement.
-     * @todo Rename to executeQuery ?
      * @internal PERF: Directly prepares a driver statement, not a wrapper.
      */
-    public function execute($query, array $params = array(), $types = array())
+    public function executeQuery($query, array $params = array(), $types = array())
     {
         $this->connect();
 
@@ -589,7 +588,7 @@ class Connection implements DriverConnection
     public function project($query, array $params = array(), Closure $function)
     {
         $result = array();
-        $stmt = $this->execute($query, $params);
+        $stmt = $this->executeQuery($query, $params);
 
         while ($row = $stmt->fetch()) {
             $result[] = $function($row);

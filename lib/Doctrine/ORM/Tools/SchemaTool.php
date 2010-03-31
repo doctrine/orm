@@ -85,7 +85,7 @@ class SchemaTool
         $conn = $this->_em->getConnection();
 
         foreach ($createSchemaSql as $sql) {
-            $conn->execute($sql);
+            $conn->executeQuery($sql);
         }
     }
 
@@ -482,7 +482,7 @@ class SchemaTool
         $conn = $this->_em->getConnection();
 
         foreach ($dropSchemaSql as $sql) {
-            $conn->execute($sql);
+            $conn->executeQuery($sql);
         }
     }
 
@@ -570,7 +570,7 @@ class SchemaTool
         $conn = $this->_em->getConnection();
 
         foreach ($updateSchemaSql as $sql) {
-            $conn->execute($sql);
+            $conn->executeQuery($sql);
         }
     }
 

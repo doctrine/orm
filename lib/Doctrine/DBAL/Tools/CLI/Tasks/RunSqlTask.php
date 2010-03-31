@@ -157,7 +157,7 @@ class RunSqlTask extends AbstractTask
             $em = $this->getConfiguration()->getAttribute('em');
             
             if (preg_match('/^select/i', $arguments['sql'])) {
-                $stmt = $em->getConnection()->execute($arguments['sql']);
+                $stmt = $em->getConnection()->executeQuery($arguments['sql']);
                 $resultSet = $stmt->fetchAll(\Doctrine\DBAL\Connection::FETCH_ASSOC);
             } else {
                 $resultSet = $em->getConnection()->executeUpdate($arguments['sql']);

@@ -120,8 +120,9 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         // Check that the foreign key has been set
-        $userId = $this->_em->getConnection()->execute("SELECT user_id FROM cms_addresses WHERE id=?",
-                array($address->id))->fetchColumn();
+        $userId = $this->_em->getConnection()->executeQuery(
+            "SELECT user_id FROM cms_addresses WHERE id=?", array($address->id)
+        )->fetchColumn();
         $this->assertTrue(is_numeric($userId));
         
         $this->_em->clear();
@@ -158,8 +159,9 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         // Check that the link in the association table has been deleted
-        $count = $this->_em->getConnection()->execute("SELECT COUNT(*) FROM cms_users_groups",
-                array())->fetchColumn();
+        $count = $this->_em->getConnection()->executeQuery(
+            "SELECT COUNT(*) FROM cms_users_groups", array()
+        )->fetchColumn();
         $this->assertEquals(0, $count);
     }
 
@@ -182,8 +184,9 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         
         // Check that there are indeed 10 links in the association table
-        $count = $this->_em->getConnection()->execute("SELECT COUNT(*) FROM cms_users_groups",
-                array())->fetchColumn();
+        $count = $this->_em->getConnection()->executeQuery(
+            "SELECT COUNT(*) FROM cms_users_groups", array()
+        )->fetchColumn();
         $this->assertEquals(10, $count);
 
         $user->groups->clear();
@@ -192,8 +195,9 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         // Check that the links in the association table have been deleted
-        $count = $this->_em->getConnection()->execute("SELECT COUNT(*) FROM cms_users_groups",
-                array())->fetchColumn();
+        $count = $this->_em->getConnection()->executeQuery(
+            "SELECT COUNT(*) FROM cms_users_groups", array()
+        )->fetchColumn();
         $this->assertEquals(0, $count);
     }
     
@@ -220,8 +224,9 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         // Check that there are just 2 phonenumbers left
-        $count = $this->_em->getConnection()->execute("SELECT COUNT(*) FROM cms_phonenumbers",
-                array())->fetchColumn();
+        $count = $this->_em->getConnection()->executeQuery(
+            "SELECT COUNT(*) FROM cms_phonenumbers", array()
+        )->fetchColumn();
         $this->assertEquals(2, $count); // only 2 remaining
     }
 

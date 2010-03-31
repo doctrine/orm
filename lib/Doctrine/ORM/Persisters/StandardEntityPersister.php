@@ -429,7 +429,7 @@ class StandardEntityPersister
     {
         $sql = $this->_getSelectEntitiesSQL($criteria, $assoc);
         $params = array_values($criteria);
-        $stmt = $this->_conn->execute($sql, $params);
+        $stmt = $this->_conn->executeQuery($sql, $params);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
 
@@ -447,7 +447,7 @@ class StandardEntityPersister
         $sql = $this->_getSelectEntitiesSQL($id);
         $params = array_values($id);
 
-        $stmt = $this->_conn->execute($sql, $params);
+        $stmt = $this->_conn->executeQuery($sql, $params);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
 
@@ -530,7 +530,7 @@ class StandardEntityPersister
         
         $sql = $this->_getSelectEntitiesSQL($criteria);
         $params = array_values($criteria);
-        $stmt = $this->_conn->execute($sql, $params);
+        $stmt = $this->_conn->executeQuery($sql, $params);
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
 
@@ -553,7 +553,7 @@ class StandardEntityPersister
         $owningAssoc = $this->_class->associationMappings[$coll->getMapping()->mappedBy];
         $sql = $this->_getSelectEntitiesSQL($criteria, $owningAssoc, $assoc->orderBy);
         $params = array_values($criteria);
-        $stmt = $this->_conn->execute($sql, $params);
+        $stmt = $this->_conn->executeQuery($sql, $params);
         while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $coll->hydrateAdd($this->_createEntity($result));
         }
@@ -571,7 +571,7 @@ class StandardEntityPersister
     {
         $sql = $this->_getSelectManyToManyEntityCollectionSQL($assoc, $criteria);
         $params = array_values($criteria);
-        $stmt = $this->_conn->execute($sql, $params);
+        $stmt = $this->_conn->executeQuery($sql, $params);
         while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $coll->hydrateAdd($this->_createEntity($result));
         }

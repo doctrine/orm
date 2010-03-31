@@ -51,7 +51,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // Manually update/increment the version so we can try and save the same
         // $test and make sure the exception is thrown saying the record was 
         // changed or updated since you read it
-        $this->_conn->execute('UPDATE optimistic_joined_parent SET version = ? WHERE id = ?', array(2, $test->id));
+        $this->_conn->executeQuery('UPDATE optimistic_joined_parent SET version = ? WHERE id = ?', array(2, $test->id));
 
         // Now lets change a property and try and save it again
         $test->whatever = 'ok';
@@ -80,7 +80,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // Manually update/increment the version so we can try and save the same
         // $test and make sure the exception is thrown saying the record was 
         // changed or updated since you read it
-        $this->_conn->execute('UPDATE optimistic_joined_parent SET version = ? WHERE id = ?', array(2, $test->id));
+        $this->_conn->executeQuery('UPDATE optimistic_joined_parent SET version = ? WHERE id = ?', array(2, $test->id));
 
         // Now lets change a property and try and save it again
         $test->name = 'WHATT???';
@@ -109,7 +109,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // Manually update/increment the version so we can try and save the same
         // $test and make sure the exception is thrown saying the record was 
         // changed or updated since you read it
-        $this->_conn->execute('UPDATE optimistic_standard SET version = ? WHERE id = ?', array(2, $test->id));
+        $this->_conn->executeQuery('UPDATE optimistic_standard SET version = ? WHERE id = ?', array(2, $test->id));
 
         // Now lets change a property and try and save it again
         $test->name = 'WHATT???';
@@ -139,7 +139,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // Manually increment the version datetime column
         $format = $this->_em->getConnection()->getDatabasePlatform()->getDateTimeFormatString();
-        $this->_conn->execute('UPDATE optimistic_timestamp SET version = ? WHERE id = ?', array(date($format, strtotime($test->version->format($format)) + 3600), $test->id));
+        $this->_conn->executeQuery('UPDATE optimistic_timestamp SET version = ? WHERE id = ?', array(date($format, strtotime($test->version->format($format)) + 3600), $test->id));
 
         // Try and update the record and it should throw an exception
         $test->name = 'Testing again';

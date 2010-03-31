@@ -128,7 +128,7 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
             $columnNameSql = "SELECT attnum, attname FROM pg_attribute
                 WHERE attrelid={$row['indrelid']} AND attnum $colNumbersSql ORDER BY attnum ASC;";
                 
-            $stmt = $this->_conn->execute($columnNameSql);
+            $stmt = $this->_conn->executeQuery($columnNameSql);
             $indexColumns = $stmt->fetchAll();
 
             // required for getting the order of the columns right.

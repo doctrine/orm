@@ -110,7 +110,7 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
     }
 
     public function assertForeignKeyIs($value) {
-        $foreignKey = $this->_em->getConnection()->execute('SELECT mentor_id FROM ecommerce_customers WHERE id=?', array($this->customer->getId()))->fetchColumn();
+        $foreignKey = $this->_em->getConnection()->executeQuery('SELECT mentor_id FROM ecommerce_customers WHERE id=?', array($this->customer->getId()))->fetchColumn();
         $this->assertEquals($value, $foreignKey);
     }
 
