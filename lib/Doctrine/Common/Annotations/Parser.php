@@ -410,12 +410,11 @@ class Parser
         $this->match(Lexer::T_CLOSE_CURLY_BRACES);
 
         foreach ($values as $value) {
-            $key = key($value);
-
-            if (is_string($key)) {
-                $array[$key] = $value[$key];
+            list ($key, $val) = $value;
+            if ($key !== null) {
+                $array[$key] = $val;
             } else {
-                $array[] = $value[$key];
+                $array[] = $val;
             }
         }
 
@@ -441,9 +440,9 @@ class Parser
             $key = $this->_lexer->token['value'];
             $this->match(Lexer::T_EQUALS);
 
-            return array($key => $this->PlainValue());
+            return array($key, $this->PlainValue());
         }
 
-        return array($this->Value());
+        return array(null, $this->Value());
     }
 }

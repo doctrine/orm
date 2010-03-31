@@ -25,6 +25,16 @@ class ParserTest extends \Doctrine\Tests\DoctrineTestCase
         $this->assertNull($annot->value);
         $this->assertTrue(is_array($annot->foo));
         $this->assertTrue(isset($annot->foo['key1']));
+
+        // Numerical arrays
+        $result = $parser->parse('@Name({2="foo", 4="bar"})');
+        $annot = $result['Doctrine\Tests\Common\Annotations\Name'];
+        $this->assertTrue(is_array($annot->value));
+        $this->assertEquals('foo', $annot->value[2]);
+        $this->assertEquals('bar', $annot->value[4]);
+        $this->assertFalse(isset($annot->value[0]));
+        $this->assertFalse(isset($annot->value[1]));
+        $this->assertFalse(isset($annot->value[3]));
         
         // Nested arrays with nested annotations
         $result = $parser->parse('@Name(foo={1,2, {"key"=@Name}})');
