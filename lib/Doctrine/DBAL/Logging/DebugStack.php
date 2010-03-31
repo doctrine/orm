@@ -21,13 +21,30 @@
 
 namespace Doctrine\DBAL\Logging;
 
-class DebugStack implements SqlLogger
+/**
+ * Includes executed SQLs in a Debug Stack
+ *
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
+ */
+class DebugStack implements SQLLogger
 {
+    /** @var array $queries Executed SQL queries. */
     public $queries = array();
 
+    /** @var boolean $enabled If Debug Stack is enabled (log queries) or not. */
     public $enabled = true;
 
-    public function logSql($sql, array $params = null)
+    /**
+     * {@inheritdoc}
+     */
+    public function logSQL($sql, array $params = null)
     {
         if ($this->enabled) {
             $this->queries[] = array('sql' => $sql, 'params' => $params);

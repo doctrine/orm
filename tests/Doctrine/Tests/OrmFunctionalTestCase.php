@@ -222,7 +222,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         
         $conn = $this->sharedFixture['conn'];
-        $conn->getConfiguration()->setSqlLogger($this->_sqlLoggerStack);
+        $conn->getConfiguration()->setSQLLogger($this->_sqlLoggerStack);
         
         return \Doctrine\ORM\EntityManager::create($conn, $config);
     }

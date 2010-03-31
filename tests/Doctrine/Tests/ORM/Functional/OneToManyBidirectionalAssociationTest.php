@@ -123,7 +123,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     
     public function testLazyLoadsObjectsOnTheInverseSide2()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(new \Doctrine\DBAL\Logging\EchoSqlLogger);
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->_createFixture();
 
         $query = $this->_em->createQuery('select f,p from Doctrine\Tests\Models\ECommerce\ECommerceFeature f join f.product p');
@@ -141,7 +141,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         //$this->assertTrue($product->getFeatures()->contains($features[0]));
         //$this->assertTrue($product->getFeatures()->contains($features[1]));
         
-        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(null);
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(null);
     }
     
     public function testJoinFromOwningSide()

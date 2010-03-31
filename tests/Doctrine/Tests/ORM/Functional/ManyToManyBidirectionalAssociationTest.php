@@ -68,7 +68,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
 
     public function testEagerLoadFromInverseSideAndLazyLoadFromOwningSide()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(new \Doctrine\DBAL\Logging\EchoSqlLogger);
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->_createLoadingFixture();
         $categories = $this->_findCategories();
         $this->assertLazyLoadFromOwningSide($categories);
@@ -76,7 +76,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
 
     public function testEagerLoadFromOwningSideAndLazyLoadFromInverseSide()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(new \Doctrine\DBAL\Logging\EchoSqlLogger);
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->_createLoadingFixture();
         $products = $this->_findProducts();
         $this->assertLazyLoadFromInverseSide($products);

@@ -18,7 +18,7 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testJoinedSubclassPersisterRequiresSpecificOrderOfMetadataReflFieldsArray()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(new \Doctrine\DBAL\Logging\EchoSqlLogger);
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyEmployee');
         ksort($metadata->reflFields);

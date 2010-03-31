@@ -578,7 +578,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($article);
         $this->_em->persist($user);
         
-        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(new \Doctrine\DBAL\Logging\EchoSqlLogger);
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         
         $this->_em->flush();
         $this->_em->clear();
@@ -589,14 +589,14 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(1, count($user2->articles));
         $this->assertTrue($user2->address instanceof CmsAddress);
         
-        $oldLogger = $this->_em->getConnection()->getConfiguration()->getSqlLogger();
+        $oldLogger = $this->_em->getConnection()->getConfiguration()->getSQLLogger();
         $debugStack = new \Doctrine\DBAL\Logging\DebugStack;
-        $this->_em->getConnection()->getConfiguration()->setSqlLogger($debugStack);
+        $this->_em->getConnection()->getConfiguration()->setSQLLogger($debugStack);
         
         $this->_em->flush();
         $this->assertEquals(0, count($debugStack->queries));
         
-        $this->_em->getConnection()->getConfiguration()->setSqlLogger($oldLogger);
+        $this->_em->getConnection()->getConfiguration()->setSQLLogger($oldLogger);
     }
     
     public function testRemoveEntityByReference()
@@ -606,7 +606,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->username = 'gblanco';
         $user->status = 'developer';
         
-        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(new \Doctrine\DBAL\Logging\EchoSqlLogger);
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         
         $this->_em->persist($user);
         $this->_em->flush();
@@ -619,7 +619,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $this->assertEquals(0, $this->_em->getConnection()->fetchColumn("select count(*) from cms_users"));
         
-        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(null);
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(null);
     }
     
     /**
@@ -643,7 +643,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
         
-        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(new \Doctrine\DBAL\Logging\EchoSqlLogger);
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         
         $userRef = $this->_em->getReference('Doctrine\Tests\Models\CMS\CmsUser', $user->getId());
         $address2 = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsAddress a where a.user = :user')

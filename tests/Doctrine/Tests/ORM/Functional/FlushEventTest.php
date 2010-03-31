@@ -23,7 +23,7 @@ class FlushEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testPersistNewEntitiesOnPreFlush()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(new \Doctrine\DBAL\Logging\EchoSqlLogger);
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->_em->getEventManager()->addEventListener(Events::onFlush, new OnFlushListener);
         
         $user = new CmsUser;

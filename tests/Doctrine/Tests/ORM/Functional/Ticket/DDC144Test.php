@@ -9,7 +9,7 @@ class DDC144Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp() {
         parent::setUp();
         
-        //$this->_em->getConnection()->getConfiguration()->setSqlLogger(new \Doctrine\DBAL\Logging\EchoSqlLogger);
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         
         $this->_schemaTool->createSchema(array(
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC144FlowElement'),

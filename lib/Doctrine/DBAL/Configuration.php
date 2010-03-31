@@ -59,10 +59,9 @@ class Configuration
     /**
      * Sets the SQL logger to use. Defaults to NULL which means SQL logging is disabled.
      *
-     * @param SqlLogger $logger
-     * @todo Rename to setSQLLogger()
+     * @param SQLLogger $logger
      */
-    public function setSqlLogger($logger)
+    public function setSQLLogger($logger)
     {
         $this->_attributes['sqlLogger'] = $logger;
     }
@@ -70,10 +69,9 @@ class Configuration
     /**
      * Gets the SQL logger that is used.
      * 
-     * @return SqlLogger
-     * @todo Rename to getSQLLogger()
+     * @return SQLLogger
      */
-    public function getSqlLogger()
+    public function getSQLLogger()
     {
         return $this->_attributes['sqlLogger'];
     }
