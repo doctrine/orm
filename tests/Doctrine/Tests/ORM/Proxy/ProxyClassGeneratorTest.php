@@ -141,6 +141,18 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(1, substr_count($classCode, 'function __sleep'));
     }
+
+    public function testNoConfigDir_ThrowsException()
+    {
+        $this->setExpectedException('Doctrine\ORM\Proxy\ProxyException');
+        new ProxyFactory($this->_getTestEntityManager(), null, null);
+    }
+
+    public function testNoNamespace_ThrowsException()
+    {
+        $this->setExpectedException('Doctrine\ORM\Proxy\ProxyException');
+        new ProxyFactory($this->_getTestEntityManager(), __DIR__ . '/generated', null);
+    }
     
     protected function _getMockPersister()
     {
