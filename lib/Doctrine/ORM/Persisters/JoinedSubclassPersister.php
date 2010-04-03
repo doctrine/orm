@@ -402,4 +402,17 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         return $columns;
     }
+
+    /**
+     * Gets the SQL to select a collection of entities in a many-many association.
+     *
+     * @param ManyToManyMapping $manyToMany
+     * @param array $criteria
+     * @return string
+     */
+    protected function _getSelectManyToManyEntityCollectionSQL($manyToMany, array &$criteria)
+    {
+        // @todo
+        throw new \BadMethodCallException("Not yet implemented, see http://www.doctrine-project.org/jira/browse/DDC-342");
+    }
 }
