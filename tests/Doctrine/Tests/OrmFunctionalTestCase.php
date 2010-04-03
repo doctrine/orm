@@ -78,6 +78,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Routing\RoutingRoute',
             'Doctrine\Tests\Models\Routing\RoutingRouteBooking',
         ),
+        'navigation' => array(
+            'Doctrine\Tests\Models\Navigation\NavCountry',
+            'Doctrine\Tests\Models\Navigation\NavPhotos',
+            'Doctrine\Tests\Models\Navigation\NavTour',
+            'Doctrine\Tests\Models\Navigation\NavPointOfInterest',
+        ),
     );
 
     protected function useModelSet($setName)
@@ -142,6 +148,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM RoutingRoute');
             $conn->executeUpdate('DELETE FROM RoutingLeg');
             $conn->executeUpdate('DELETE FROM RoutingLocation');
+        }
+
+        if(isset($this->_usedModelSets['navigation'])) {
+            $conn->executeUpdate('DELETE FROM navigation_tour_pois');
+            $conn->executeUpdate('DELETE FROM navigation_photos');
+            $conn->executeUpdate('DELETE FROM navigation_pois');
+            $conn->executeUpdate('DELETE FROM navigation_tours');
+            $conn->executeUpdate('DELETE FROM navigation_countries');
         }
 
         $this->_em->clear();
