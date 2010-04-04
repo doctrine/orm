@@ -43,10 +43,33 @@ abstract class TreeWalkerAdapter implements TreeWalker
         $this->_parserResult = $parserResult;
         $this->_queryComponents = $queryComponents;
     }
-    
+
+    /**
+     * @return array
+     */
     protected function _getQueryComponents()
     {
         return $this->_queryComponents;
+    }
+
+    /**
+     * Retrieve Query Instance reponsible for the current walkers execution.
+     *
+     * @return Doctrine\ORM\Query
+     */
+    protected function _getQuery()
+    {
+        return $this->_query;
+    }
+
+    /**
+     * Retrieve ParserResult
+     *
+     * @return Doctrine\ORM\Query\ParserResult
+     */
+    protected function _getParserResult()
+    {
+        return $this->_parserResult;
     }
     
     /**
