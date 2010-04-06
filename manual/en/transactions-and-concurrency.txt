@@ -1,0 +1,124 @@
+++ Transaction Demarcation
+
+Transaction demarcation is the task of defining your transaction boundaries. Proper transaction demarcation is very important because if not done properly it can have a negative effect on the performance of your application. Many databases and database abstraction layers like PDO by default operate in auto-commit mode, which means that every single SQL statement is wrapped in a small transaction that is immediately committed. Without any explicit transaction demarcation from your side, this quickly results in poor performance because transactions are not cheap and many small transactions degrade the performance of your application.
+
+For the most part, Doctrine 2 already takes care of proper transaction demarcation for you: All the write operations (INSERT/UPDATE/DELETE) are queued until `EntityManager#flush()` is invoked which wraps all of these changes in a single, small transaction. This is a strategy called "transactional write-behind" that is frequently used in ORM solutions to increase efficiency.
+
+However, Doctrine 2 also allows you to take over and control transaction demarcation yourself, thereby "widening" the transaction boundaries. This is possible due to transparent nesting of transactions that is described in the following section.
+
+++ Transaction Nesting 
+
+Each `Doctrine\DBAL\Driver\Connection` instance is wrapped in a `Doctrine\DBAL\Connection` that adds support for transparent nesting of transactions. For that purpose, the Connection class keeps an internal counter that represents the nesting level and is increased/decreased as beginTransaction(), commit() and rollback() are invoked. beginTransaction() increases the nesting level whilst commit() and rollback() decrease the nesting level. The nesting level starts at 0. Whenever the nesting level transitions from 0 to 1, beginTransaction() is invoked on the underlying driver and whenever the nesting level transitions from 1 to 0, commit() or rollback() is invoked on the underlying driver, depending on whether the transition was caused by `Connection#commit()` or `Connection#rollback()`.
+
+Lets visualize what that means in practice. It means that the first call to `Doctrine\DBAL\Connection#beginTransaction()` will increase the nesting level from 0 to 1 and invoke beginTransaction() on the underlying driver, effectively starting a "real" transaction by suspending auto-commit mode. Any subsequent, nested calls to `Doctrine\DBAL\Connection#beginTransaction()` would only increase the nesting level.
+
+Here is an example to help visualize how this works:
+
+    [php]
+    // $conn instanceof Doctrine\DBAL\Connection
+    try {
+        $conn->beginTransaction(); // 0 => 1, "real" transaction started
+        
+        ...
+        
+        try {
+            $conn->beginTransaction(); // 1 => 2
+            
+            ...
+            
+            $conn->commit(); // 2 => 1
+        } catch (Exception $e) {
+            $conn->rollback(); // 2 => 1
+            throw $e;
+        }
+        
+        ...
+        
+        $conn->commit(); // 1 => 0, "real" transaction committed
+    } catch (Exception $e) {
+        $conn->rollback(); // 1 => 0, "real" transaction rollback
+        throw $e;
+    }
+
+What is the benefit of this? It allows reliable and transparent widening of transaction boundaries. Given the following code snippet, without any explicit transaction demarcation:
+
+    [php]
+    // $em instanceof EntityManager
+    $user = new User;
+    $user->setName('George');
+    $em->persist($user);
+    $em->flush();
+    
+Inside `EntityManager#flush()` something like this happens:
+
+    [php]
+    try {
+        $conn->beginTransaction(); // suspend auto-commit
+        
+        ... commit all changes to the database ...
+        
+        $conn->commit();
+    } catch (Exception $e) {
+        $conn->rollback();
+        throw $e;
+    }
+    
+Since we do not do any custom transaction demarcation in the first snippet, `EntityManager#flush()` will begin and commit/rollback a "real" transaction. Now, if we want to widen the transaction boundaries, say, because we want to include some manual work with a `Doctrine\DBAL\Connection` in the same transaction, we can simply do this:
+
+    [php]
+    // $em instanceof EntityManager
+    $conn = $em->getConnection();
+    try {
+        $conn->beginTransaction(); // suspend auto-commit
+        
+        // Direct use of the Connection
+        $conn->insert(...);
+        
+        $user = new User;
+        $user->setName('George');
+        $em->persist($user);
+        $em->flush();
+        
+        $conn->commit();
+    } catch (Exception $e) {
+        $conn->rollback();
+        // handle or rethrow
+    }
+    
+Now, our own code controls the "real" transaction and the transaction demarcation that happens inside `EntityManager#flush()` will merely affect the nesting level. When flush() returns, either by throwing an exception or regularly, the nesting level is the same as before the invocation of flush(), in this case 1, and thus our own $conn->commit() / $conn->rollback() affect the "real" transaction as expected, since we were the ones who started the transaction.
+
+> **CAUTION**
+> Directly invoking `PDO#beginTransaction()`, `PDO#commit()` or `PDO#rollback()` or the
+> corresponding methods on the particular `Doctrine\DBAL\Driver\Connection` instance in
+> use bybasses the transparent transaction nesting that is provided by
+> `Doctrine\DBAL\Connection` and can therefore corrupt the nesting level, causing errors
+> with broken transaction boundaries that may be hard to debug.
+
+++ Optimistic Locking
+
+Database transactions are fine for concurrency control during a single request. However, a database transaction should not span across requests, the so-called "user think time". Therefore a long-running "business transaction" that spans multiple requests needs to involve several database transactions. Thus, database transactions alone can no longer control concurrency during such a long-running business transaction. Concurrency control becomes the partial responsibility of the application itself.
+
+Doctrine has integrated support for automatic optimistic locking via a version field. In this approach any entity that should be protected against concurrent modifications during long-running business transactions gets a version field that is either a simple number (mapping type: integer) or a timestamp (mapping type: datetime). When changes to such an entity are persisted at the end of a long-running conversation the version of the entity is compared to the version in the database and if they dont match, an `OptimisticLockException` is thrown, indicating that the entity has been modified by someone else already.
+
+You designate a version field in an entity as follows. In this example we'll use an integer.
+
+    [php]
+    class User
+    {
+        // ...
+        /** @Version @Column(type="integer") */
+        private $version;
+        // ...
+    }
+
+You could also just as easily use a datetime column and instead of incrementing an integer, a timestamp will be kept up to date.
+
+
+    [php]
+    class User
+    {
+        // ...
+        /** @Version @Column(type="integer") */
+        private $version;
+        // ...
+    }

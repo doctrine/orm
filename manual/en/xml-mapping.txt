@@ -1,0 +1,83 @@
+The XML mapping driver enables you to provide the ORM metadata in form of XML documents.
+
+The XML driver is backed by an XML Schema document that describes the structure of a mapping document. The most recent version of the XML Schema document is available online at [http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd](http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd). In order to point to the latest version of the document of a particular stable release branch, just append the release number, i.e.: doctrine-mapping-2.0.xsd  The most convenient way to work with XML mapping files is to use an IDE/editor that can provide code-completion based on such an XML Schema document. The following is an outline of a XML mapping document with the proper xmlns/xsi setup for the latest code in trunk.
+
+    [xml]
+    <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    
+        ...
+    
+    </doctrine-mapping>
+    
+The XML mapping document of a class is loaded on-demand the first time it is requested and subsequently stored in the metadata cache. In order to work, this requires certain conventions:
+
+ * Each entity/mapped superclass must get its own dedicated XML mapping document.
+ * The name of the mapping document must consist of the fully qualified name of the class, where namespace separators are replaced by dots (.).
+ * All mapping documents should get the extension ".dcm.xml" to identify it as a Doctrine mapping file. This is more of a convention and you are not forced to do this. You can change the file extension easily enough.
+ 
+-
+
+    [php]
+    $driver->setFileExtension('.xml');
+
+It is recommended to put all XML mapping documents in a single folder but you can spread the documents over several folders if you want to. In order to tell the XmlDriver where to look for your mapping documents, supply an array of paths as the first argument of the constructor, like this:
+
+    [php]
+    // $config instanceof Doctrine\ORM\Configuration
+    $driver = new XmlDriver(array('/path/to/files'));
+    $config->setMetadataDriverImpl($driver);
+
+
+++ Example
+
+As a quick start, here is a small example document that makes use of several common elements:
+
+    [xml]
+    // Doctrine.Tests.ORM.Mapping.User.dcm.xml
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                              /Users/robo/dev/php/Doctrine/doctrine-mapping.xsd">
+
+        <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
+
+            <lifecycle-callbacks>
+                <lifecycle-callback type="prePersist" method="onPrePersist" />
+            </lifecycle-callbacks>
+
+            <id name="id" type="integer" column="id">
+                <generator strategy="AUTO"/>
+            </id>
+
+            <field name="name" column="name" type="string" length="50"/>
+
+            <one-to-one field="address" target-entity="Address">
+                <join-column name="address_id" referenced-column-name="id"/>
+            </one-to-one>
+
+            <one-to-many field="phonenumbers" target-entity="Phonenumber" mapped-by="user">
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </one-to-many>
+
+            <many-to-many field="groups" target-entity="Group">
+                <join-table name="cms_users_groups">
+                    <join-columns>
+                        <join-column name="user_id" referenced-column-name="id"/>
+                    </join-columns>
+                    <inverse-join-columns>
+                        <join-column name="group_id" referenced-column-name="id"/>
+                    </inverse-join-columns>
+                </join-table>
+            </many-to-many>
+
+        </entity>
+    </doctrine-mapping>
+
+ Be aware that class-names specified in the XML files should be fully qualified.
