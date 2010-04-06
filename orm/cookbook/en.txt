@@ -1,8 +1,0 @@
-+ Getting Started XML-Edition
-+ Implementing ArrayAccess for domain objects
-+ Implementing the NOTIFY changetracking policy
-+ Validation of Entities
-+ Implementing wakeup or clone
-+ Integrating with CodeIgniter
-+ DQL Custom Walkers
-+ DQL User Defined Functions
