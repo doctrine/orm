@@ -1,0 +1,245 @@
+The Doctrine 2 database layer can be used independently of the object-relational mapping. It offers a leightweight abstraction layer around a PDO like API and allows optional access to lots of convenience functionality aswell as the ability to generate platform independent DQL and DDL statements.
+
+++ Configuration
+
+You can create a Doctrine Connection by using the `Doctrine\DBAL\DriverManager` class.
+
+    [php]
+    $config = new \Doctrine\DBAL\Configuration();
+    //..
+
+    $connectionParams = array(
+        'dbname' => 'mydb',
+        'user' => 'user',
+        'password' => 'secret',
+        'host' => 'locahlost',
+        'driver' => 'pdo_mysql',
+    );
+    $conn = DriverManager::getConnection($connectionParams);
+
+The `DriverManager` returns an instance of `Doctrine\DBAL\Connection` which is a wrapper around any configured database driver, for example the PDO Mysql driver in the previous example.
+
++++ Connection Options
+
+The `$connectionOptions` passed as the first argument to `EntityManager::create()` has to be either an array
+or an instance of `Doctrine\DBAL\Connection`. If an array is passed it is directly passed along to the
+DBAL Factory `Doctrine\DBAL\DriverManager::getConnection()`. The following option keys can be specified
+to create your connection:
+
+++++ Driver Management Options:
+
+* driver - Allows to specify the default drivers shipped with Doctrine 2, 'pdo_mysql', 'pdo_sqlite', 'pdo_pgsql, and 'oci'.
+* driverClass - If no 'driver' is specified this allows usage of a userland implementation of Doctrine\DBAL\Driver.
+* pdo - If PDO is already instantiated for Mysql, SqLite or PgSQL this key can be used to pass this instance into Doctrine.
+* wrapperClass - By default Doctrine\DBAL\Connection is wrapped around each driver, however this option allows to specify a userland sub-class.
+
+++++ Driver Configuration Options:
+
+Common Configuration Options across all database drivers:
+
+* platform - An instance of `Doctrine\DBAL\Platforms\AbstractPlatform`. This is only required for userland implementations, each driver shipped with Doctrine 2 has a default platform.
+* user - Username required to connect to the database.
+* password - Password required to connect to the database.
+* driverOptions - Array of options passed to the driver instance on calling to Driver::connect.
+
+Driver Configuration Options are different for each Database Driver, here are some of the db specific ones:
+
+* host - Database host (Mysql, Pgsql, Oracle)
+* port - Database port (Mysql, Pgsql, Oracle)
+* dbname - Name of the database/schema to connect to. (Mysql, Pgsql, Oracle)
+* unix_socket - Name of the socket used to connect to the database. (Mysql)
+* charset - The charset used when connecting to the database. (Oracle)
+* path - The filesystem path to the database (Sqlite)
+* memory - True if the sqlite database should be in memory. (Sqlite)
+
++++ DBAL Events
+
+Both `Doctrine\DBAL\DriverManager` and `Doctrine\DBAL\Connection` accept an instance of `Doctrine\Common\EventManager`.
+The EventManager has a couple of events inside the DBAL layer that are triggered for the user to listen to:
+
+++++ PostConnect Event
+
+`Doctrine\DBAL\Events::postConnect` is triggered right after the connection to the database is established. It allows
+to specify any relevant connection specific options and gives access to the `Doctrine\DBAL\Connection` instance
+that is responsible for the connection management via an instance of `Doctrine\DBAL\Event\ConnectionEventArgs`
+event arguments instance.
+
+Doctrine is already shipped with two implementations for the "PostConnect" event:
+
+* `Doctrine\DBAL\Event\Listeners\OracleSessionInit` allows to specify any number of Oracle Session related enviroment variables that are set right after the connection is established.
+* `Doctrine\DBAL\Event\Listeners\MysqlSessionInit` allows to specify the Charset and Collation of the Client Connection if these options are not configured correctly on the MySQL server side.
+
+You can register events by subscribing them to the `EventManager` instance passed to the Connection factory:
+
+    [php]
+    $evm = new EventManager(),
+    $evm->addEventSubscriber(new MysqlSessionInit('UTF-8'));
+
+    $conn = DriverManager::getConnection($connectionParams, null, $evm);
+
+++ DBAL API
+
++++ DBAL Architecture
+
+The DBAL is seperated into several different packages that perfectly seperate responsibilities of the different RDBMS layers.
+
+* **Drivers** abstract a PHP specific database API by enforcing two interfaces `\Doctrine\DBAL\Driver\Driver` and `\Doctrine\DBAL\Driver\Statement` which require exactly the same methods as PDO.
+* **Platforms** abstract the generation of queries and which database features a platform supports. The `\Doctrine\DBAL\Platforms\AbstractPlatform` defines the common denominator of what a database platform has to publish to the userland, to be fully supportable by Doctrine. This includes the SchemaTool, Transaction Isolation and many other features. The Database platform for MySQL for example can be used by all 3 mysql extensions, PDO, Mysqli and ext/mysql.
+* **Logging** holds the interface and some implementations for debugging of Doctrine SQL query execution during a request.
+* **Schema** offers an API for each database platform to execute DDL statements against your platform or retrieve metadata about it. It also holds the Schema Abstraction Layer which is used by the different Schema Management facilities of Doctrine DBAL and ORM.
+* **Types** offers an abstraction layer for the converting and generation of types between Databases and PHP.
+
++++ Data Retrieval and Manipulation
+
+ The following methods exist for executing queries against your configured database, three very generic methods and some advanced retrievial methods:
+
+* `prepare($sql)` - Prepare a given sql statement and return the `\Doctrine\DBAL\Driver\Statement` instance.
+* `executeUpdate($sql, array $params)` - Executes a prepared statement with the given sql and parameters and returns the affected rows count.
+* `execute($sql, array $params)` - Creates a prepared statement for the given sql and passes the parameters to the execute method, then returning the statement.
+* `fetchAll($sql, array $params)` - Execute the query and fetch all results into an array.
+* `fetchArray($sql, array $params)` - Numeric index retrieval of first result row of the given query.
+* `fetchBoth($sql, array $params)` - Both numeric and assoc column name retrieval of the first result row.
+* `fetchColumn($sql, array $params, $colnum)` - Retrieve only the given column of the first result row.
+* `fetchRow($sql, array $params)` - Retrieve assoc row of the first result row.
+* `select($sql, $limit, $offset)` - Modify the given query with a limit clause.
+
+There are also convenience methods for data manipulation queries:
+
+* `delete($tableName, array $identifier)` - Delete all rows of a table matching the given identifier, where keys are column names.
+* `insert($tableName, array $data)` - Insert a row into the given table name using the key value pairs of data.
+* `update($tableName, array $data, array $identifier)` - Update all rows for the matching key value identifiers with the given data.
+
+By default the Doctrine DBAL does no escaping. Escaping is a very tricky business to do automagically, therefore there is none by default. The ORM internally escapes all your values, because it has lots of metadata available about the current context. When you use the Doctrine DBAL as standalone, you have to take care of this yourself. The following methods help you with it:
+
+* `quote($input, $type=null)` - Quote a value
+* `quoteIdentifier($identifier)`- Quote an identifier according to the platform details.
+
++++ Transactions
+
+Doctrine handles transactions with a PDO like API, having methods for `beginTransaction()`, `commit()` and `rollBack()`. For consistency across different drivers Doctrine also handles the nesting of transactions internally. You can call `beginTransaction()` more than once, and only a matching amount of calls to `commit()` triggers the commit to the database. The Doctrine connectionalso has a method to set the transaction isolation level of the connection as supported by the underlying database.
+
+    [php]
+    class Connection
+    {
+        /**
+         * Constant for transaction isolation level READ UNCOMMITTED.
+         */
+        const TRANSACTION_READ_UNCOMMITTED = 1;
+        
+        /**
+         * Constant for transaction isolation level READ COMMITTED.
+         */
+        const TRANSACTION_READ_COMMITTED = 2;
+        
+        /**
+         * Constant for transaction isolation level REPEATABLE READ.
+         */
+        const TRANSACTION_REPEATABLE_READ = 3;
+        
+        /**
+         * Constant for transaction isolation level SERIALIZABLE.
+         */
+        const TRANSACTION_SERIALIZABLE = 4;
+    }
+
+A transaction with Doctrine DBAL might then look like:
+
+    [php]
+    $conn->setTransactionIsolationLevel(Connection::TRANSACTION_SERIALIZABLE);
+
+    try{
+        $conn->beginTransaction();
+        // do stuff
+        $conn->commit();
+    } catch(\Exception $e) {
+        $conn->rollback();
+    }
+
+++ Schema Representation
+
+Doctrine has a very powerful abstraction of database schemas. It offers an object-oriented representation of a database schema with support for all the details of Tables, Sequences, Indexes and Foreign Keys. These Schema instances generate a representation that is equal for all the supported platforms. Internally this functionality is used by the ORM Schema Tool to offer you create, drop and update database schema methods from your Doctrine ORM Metadata model. Up to very specific functionality of your database system this allows you to generate SQL code that makes your Domain model work.
+
+You will be pleased to hear, that Schema representation is completly decoupled from the Doctrine ORM though, that is you can also use it in any other project to implement database migrations or for SQL schema generation for any metadata model that your application has. You can easily generate a Schema, as a simple example shows:
+
+    [php]
+    $schema = new \Doctrine\DBAL\Schema\Schema();
+    $myTable = $schema->createTable("my_table");
+    $myTable->addColumn("id", "integer", array("unsigned" => true));
+    $myTable->addColumn("username", "string", array("length" => 32));
+    $myTable->setPrimaryKey(array("id"));
+    $myTable->addUniqueIndex(array("username"));
+    $schema->createSequence("my_table_seq");
+
+    $myForeign = $schema->createTable("my_foreign");
+    $myForeign->addColumn("id", "integer");
+    $myForeign->addColumn("user_id", "integer");
+    $myForeign->addForeignKeyConstraint($myTable, array("user_id"), array("id"), array("onUpdate" => "CASCADE"));
+
+    $queries = $schema->toSql($myPlatform); // get queries to create this schema.
+    $dropSchema = $schema->toDropSql($myPlatform); // get queries to safely delete this schema.
+
+Now if you want to compare this schema with another schema, you can use the `Comparator` class to get instances of `SchemaDiff`, `TableDiff` and `ColumnDiff`, aswell as information about other foreign key, sequence and index changes.
+
+    [php]
+    $comparator = new \Doctrine\DBAL\Schema\Comparator();
+    $schemaDiff = $comparator->compare($fromSchema, $toSchema);
+
+    $queries = $schemaDiff->toSql($myPlatform); // queries to get from one to another schema.
+    $saveQueries = $schemaDiff->toSaveSql($myPlatform);
+
+The Save Diff mode is a specific mode that prevents the deletion of tables and sequences that might occour when making a diff of your schema. This is often necessary when your target schema is not complete but only describes a subset of your application.
+
+All methods that generate SQL queries for you make much effort to get the order of generation correct, so that no problems will ever occour with missing links of foreign keys.
+
+++ Platforms
+
+Platforms abstract query generation and specifics of the RDBMS featuresets. In most cases you don't need to interact with this package alot, but there might be certain cases when you are programming database independent where you want to access the platform to generate queries for you.
+
+The platform can be accessed from any `Doctrine\DBAL\Connection` instance by calling the `getDatabasePlatform()` method.
+
+You can use your own platform by specifying the 'platform' key with an instance of your own platform:
+
+    [php]
+    $myPlatform = new MyPlatform();
+    $options = array(
+        'driver' => 'pdo_sqlite',
+        'path' => 'database.sqlite',
+        'platform' => $myPlatform
+    );
+
+This way you can optimize your schema or generated SQL code with features that might not be portable for instance,
+however are required for your special needs.
+
+++ Schema Manager
+
+A Schema Manager instance helps you with the abstraction of the generation of SQL assets such as Tables, Sequences, Foreign Keys and Indexes. You can use any of the Schema Asset classes `Table`, `Sequence`, `ForeignKeyConstraint` and `Index` for use with the methods of the style `dropAndCreate(AssetName)($asset)`, `drop(AssetName)($asset)` and `create(AssetName)($asset)`.
+
+You also have methods to retrieve instances of those types from the current database you are connected to. These methods are:
+
+* `listDatabases()`
+* `listSequences()`
+* `listTableColumns($tableName)`
+* `listTableDetails($tableName)`
+* `listTableForeignKeys($tableName)`
+* `listTableIndexes($tableName)`
+* `listTables()`
+* `listUsers()`
+* `listViews()`
+
+For a complete representation of the current database you can use the `createSchema()` method which returns an instance of Schema, which you can use in conjunction with the SchemaTool or Schema Comparator.
+
+++ Supporting other Databases
+
+To support a database which is not currently shipped with Doctrine you have to implement the following interfaces and abstract classes:
+
+* `\Doctrine\DBAL\Driver\Driver`
+* `\Doctrine\DBAL\Driver\Statement`
+* `\Doctrine\DBAL\Platforms\AbstractPlatform`
+* `\Doctrine\DBAL\Schema\AbstractSchemaManager`
+
+For an already supported platform but unsupported driver you only need to implement the first two interfaces, since the SQL Generation and Schema Management is already supported by the respective platform and schema instances. You can also make use of several Abstract Unittests in the `\Doctrine\Tests\DBAL` package to check if your platform behaves like all the others which is necessary for SchemaTool support, namely:
+
+* `\Doctrine\Tests\DBAL\Platforms\AbstractPlatformTestCase`
+* `\Doctrine\Tests\DBAL\Functional\Schema\AbstractSchemaManagerTestCase`
+
+We would be very happy if any support for new databases would be contributed back to Doctrine to make it an even better product.

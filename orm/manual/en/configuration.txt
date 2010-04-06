@@ -1,0 +1,407 @@
+++ Bootstrapping
+
+Bootstrapping Doctrine is a relatively simple procedure that roughly exists of 
+just 2 steps:
+
+* Making sure Doctrine class files can be loaded on demand.
+* Obtaining an EntityManager instance.
+
++++ Class loading
+
+Lets start with the class loading setup. We need to set up some class loaders 
+(often called "autoloader") so that Doctrine class files are loaded on demand. 
+The Doctrine\Common namespace contains a very fast and minimalistic class loader 
+that can be used for Doctrine and any other libraries where the coding standards 
+ensure that a class's location in the directory tree is reflected by its name 
+and namespace and where there is a common root namespace.
+
+> **NOTE**
+> You are not forced to use the Doctrine class loader to load Doctrine
+> classes. Doctrine does not care how the classes are loaded, if you want to use a
+> different class loader or your own to load Doctrine classes, just do that.
+> Along the same lines, the class loader in the Doctrine\Common namespace is not
+> meant to be only used for Doctrine classes, too. It is a generic class loader that can
+> be used for any classes that follow some basic naming standards as described above.
+
+The following example shows the setup of a `ClassLoader`
+
+> **NOTE**
+> This assumes you've created some kind of script to test the following code in.
+> Something like a `test.php` file.
+
+    [php]
+    // test.php
+
+    require '/path/to/lib/Doctrine/Common/ClassLoader.php';
+    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine', '/path/to/Doctrine2/lib);
+    $classLoader->register(); // register on SPL autoload stack
+
+For best class loading performance it is recommended that you keep your include_path short, ideally it should only contain the path to the PEAR libraries, and any other class libraries should be registered with their full base path.
+
++++ Obtaining an EntityManager
+
+Once you have prepared the class loading, you acquire an EntityManager instance 
+with the following minimalist configuration:
+
+    [php]
+    use Doctrine\ORM\EntityManager,
+        Doctrine\ORM\Configuration;
+    
+    // ...
+    
+    $config = new Configuration;
+    $cache = new \Doctrine\Common\Cache\ApcCache;
+    $config->setMetadataCacheImpl($cache);
+    $config->setQueryCacheImpl($cache);
+    $config->setProxyDir('/path/to/myproject/lib/MyProject/Proxies');
+    $config->setProxyNamespace('MyProject\Proxies');
+    $connectionOptions = array(
+        'driver' => 'pdo_sqlite',
+        'path' => 'database.sqlite'
+    );
+    
+    $em = EntityManager::create($connectionOptions, $config);
+
+> **CAUTION**
+> Do not use Doctrine without a metadata and query cache! Doctrine is highly
+> optimized for working with caches. The main parts in Doctrine that are optimized
+> for caching are the metadata mapping information with the metadata cache and the 
+> DQL to SQL conversions with the query cache. These 2 caches require only an absolute
+> minimum of memory yet they heavily improve the runtime performance of Doctrine.
+> The recommended cache driver to use with Doctrine is [APC](http://www.php.net/apc). 
+> APC provides you with an opcode-cache (which is highly recommended anyway) and 
+> a very fast in-memory cache storage that you can use for the metadata and query
+> caches as seen in the previous code snippet.
+
+An EntityManager is your central access point to ORM functionality provided by Doctrine.
+
+++ Configuration Options
+
+The following sections describe all the configuration options available on a `Doctrine\ORM\Configuration` instance.
+
++++ Proxy Directory (***REQUIRED***)
+
+    [php]
+    $config->setProxyDir($dir);
+    $config->getProxyDir();
+
+Gets or sets the directory where Doctrine generates any proxy classes. For a detailed explanation on proxy classes and how they are used in Doctrine, refer to the "Proxy Objects" section further down.
+
++++ Proxy Namespace (***REQUIRED***)
+
+    [php]
+    $config->setProxyNamespace($namespace);
+    $config->getProxyNamespace();
+
+Gets or sets the namespace to use for generated proxy classes. For a detailed explanation on proxy classes and how they are used in Doctrine, refer to the "Proxy Objects" section further down.
+
++++ Metadata Driver (***REQUIRED***)
+
+    [php]
+    $config->setMetadataDriverImpl($driver);
+    $config->getMetadataDriverImpl();
+
+Gets or sets the metadata driver implementation that is used by Doctrine to acquire the object-relational metadata for your classes.
+
+There are currently 4 available implementations:
+
+ * `Doctrine\ORM\Mapping\Driver\AnnotationDriver`
+ * `Doctrine\ORM\Mapping\Driver\XmlDriver`
+ * `Doctrine\ORM\Mapping\Driver\YamlDriver`
+ * `Doctrine\ORM\Mapping\Driver\DriverChain`
+ 
+Throughout the most part of this manual the AnnotationDriver is used in the examples. For information on the usage of the XmlDriver or YamlDriver please refer to the dedicated chapters `XML Mapping` and `YAML Mapping`.
+
+The annotation driver is configured as the default metadata driver, using Annotations as Metadata source
+does not require you to set this option explicitly.
+
++++ Metadata Cache (***RECOMMENDED***)
+
+    [php]
+    $config->setMetadataCacheImpl($cache);
+    $config->getMetadataCacheImpl();
+    
+Gets or sets the cache implementation to use for caching metadata information, that is, all the information you supply via annotations, xml or yaml, so that they do not need to be parsed and loaded from scratch on every single request which is a waste of resources.
+The cache implementation must implement the `Doctrine\Common\Cache\Cache` interface.
+
+Usage of a metadata cache is highly recommended.
+
+The recommended implementations are:
+
+ * `Doctrine\Common\Cache\ApcCache`
+ * `Doctrine\Common\Cache\MemcacheCache`
+ * `Doctrine\Common\Cache\XcacheCache`
+
++++ Query Cache (***RECOMMENDED***)
+
+    [php]
+    $config->setQueryCacheImpl($cache);
+    $config->getQueryCacheImpl();
+    
+Gets or sets the cache implementation to use for caching DQL queries, that is, the result of a DQL parsing process that includes the final SQL as well as meta information about how to process the SQL result set of a query. Note that the query cache does not affect query results. You do not get stale data. This is a pure optimization cache without any negative side-effects (except some minimal memory usage in your cache).
+
+Usage of a query cache is highly recommended.
+
+The recommended implementations are:
+
+ * `Doctrine\Common\Cache\ApcCache`
+ * `Doctrine\Common\Cache\MemcacheCache`
+ * `Doctrine\Common\Cache\XcacheCache`
+
++++ SQL Logger (***Optional***)
+
+     [php]
+     $config->setSqlLogger($logger);
+     $config->getSqlLogger();
+
+Gets or sets the logger to use for logging all SQL statements executed by Doctrine. The logger class must implement the `Doctrine\DBAL\Logging\SqlLogger` interface. A simple default implementation that logs to the standard output using `echo` and `var_dump` can be found at `Doctrine\DBAL\Logging\EchoSqlLogger`.
+
++++ Auto-generating Proxy Classes (***OPTIONAL***)
+
+    [php]
+    $config->setAutoGenerateProxyClasses($bool);
+    $config->getAutoGenerateProxyClasses();
+
+Gets or sets whether proxy classes should be generated automatically at runtime by Doctrine. If set to `FALSE`, proxy classes must be generated manually through the doctrine command line task `generate-proxies`. The strongly recommended value for a production environment is `FALSE`.
+
+++ Connection Options
+
+The `$connectionOptions` passed as the first argument to `EntityManager::create()` has to be either an array
+or an instance of `Doctrine\DBAL\Connection`. If an array is passed it is directly passed along to the
+DBAL Factory `Doctrine\DBAL\DriverManager::getConnection()`. The DBAL configuration is explained
+in the [DBAL section](./../dbal).
+
+++ Change Tracking Policies
+
+Change tracking is the process of determining what has changed in managed 
+entities since the last time they were synchronized with the database.
+
+Doctrine provides 3 different change tracking policies, each having its 
+particular advantages and disadvantages. The change tracking policy can 
+be defined on a per-class basis (or more precisely, per-hierarchy).
+
++++ Deferred Implicit
+
+The deferred implicit policy is the default change tracking policy and the most
+ convenient one. With this policy, Doctrine detects the changes by a 
+ property-by-property comparison at commit time and also detects changes 
+ to entities or new entities that are referenced by other managed entities 
+ ("persistence by reachability"). Although the most convenient policy, it can 
+ have negative effects on performance if you are dealing with large units of 
+ work (see "Understanding the Unit of Work"). Since Doctrine can't know what 
+ has changed, it needs to check all managed entities for changes every time you 
+ invoke EntityManager#flush(), making this operation rather costly.
+
++++ Deferred Explicit
+
+The deferred explicit policy is similar to the deferred implicit policy in that 
+it detects changes through a property-by-property comparison at commit time. The 
+difference is that only entities are considered that have been explicitly marked 
+for change detection through a call to EntityManager#persist(entity) or through 
+a save cascade. All other entities are skipped. This policy therefore gives 
+improved performance for larger units of work while sacrificing the behavior 
+of "automatic dirty checking". 
+
+Therefore, flush() operations are potentially cheaper with this policy. The 
+negative aspect this has is that if you have a rather large application and 
+you pass your objects through several layers for processing purposes and 
+business tasks you may need to track yourself which entities have changed 
+on the way so you can pass them to EntityManager#persist().
+
+This policy can be configured as follows:
+
+    /**
+     * @Entity
+     * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
+     */
+    class User
+    {
+        // ...
+    }
+
++++ Notify
+
+This policy is based on the assumption that the entities notify interested 
+listeners of changes to their properties. For that purpose, a class that 
+wants to use this policy needs to implement the NotifyPropertyChanged? 
+interface from the Doctrine\Common namespace. As a guideline, such an 
+implementation should look as follows:
+
+    [php]
+    use Doctrine\Common\NotifyPropertyChanged,
+        Doctrine\Common\PropertyChangedListener;
+    
+    /**
+     * @Entity
+     * @ChangeTrackingPolicy("NOTIFY")
+     */
+    class MyEntity implements NotifyPropertyChanged
+    {
+        // ...
+
+        private $_listeners = array();
+
+        public function addPropertyChangedListener(PropertyChangedListener $listener)
+        {
+            $this->_listeners[] = $listener;
+        }
+
+        protected function _onPropertyChanged($propName, $oldValue, $newValue)
+        {
+            if ($this->_listeners) {
+                foreach ($this->_listeners as $listener) {
+                    $listener->propertyChanged($this, $propName, $oldValue, $newValue);
+                }
+            }
+        }
+    }
+
+Then, in each property setter of this class or derived classes, you need to 
+invoke `_onPropertyChanged` as follows to notify listeners:
+
+    [php]
+    <?php
+    // ...
+
+    class MyEntity implements NotifyPropertyChanged
+    {
+        // ...
+
+        public function setData($data)
+        {
+            if ($data != $this->data) {
+                $this->_onPropertyChanged('data', $this->data, $data);
+                $this->data = $data;
+            }
+        }
+    }
+
+The check whether the new value is different from the old one is not mandatory 
+but recommended. That way you also have full control over when you consider a 
+property changed.
+
+The negative point of this policy is obvious: You need implement an interface 
+and write some plumbing code. But also note that we tried hard to keep this 
+notification functionality abstract. Strictly speaking, it has nothing to do 
+with the persistence layer and the Doctrine ORM or DBAL. You may find that 
+property notification events come in handy in many other scenarios as well. 
+As mentioned earlier, the `Doctrine\Common` namespace is not that evil and 
+consists solely of very small classes and interfaces that have almost no 
+external dependencies (none to the DBAL and none to the ORM) and that you 
+can easily take with you should you want to swap out the persistence layer. 
+This change tracking policy does not introduce a dependency on the Doctrine 
+DBAL/ORM or the persistence layer.
+
+The positive point and main advantage of this policy is its effectiveness. It 
+has the best performance characteristics of the 3 policies with larger units of 
+work and a flush() operation is very cheap when nothing has changed.
+
+++ Partial Objects
+
+A partial object is an object whose state is not fully initialized after being 
+reconstituted from the database and that is disconnected from the rest of its data. The following section will describe why partial objects are problematic and what the approach of Doctrine2 to this problem is.
+
+> **NOTE**
+> The partial object problem in general does not apply to methods or
+> queries where you do not retrieve the query result as objects. Examples are:
+> `Query#getArrayResult()`, `Query#getScalarResult()`, `Query#getSingleScalarResult()`,
+> etc.
+
++++ What is the problem?
+
+In short, partial objects are problematic because they are usually objects with 
+broken invariants. As such, code that uses these partial objects tends to be 
+very fragile and either needs to "know" which fields or methods can be safely 
+accessed or add checks around every field access or method invocation. The same 
+holds true for the internals, i.e. the method implementations, of such objects. 
+You usually simply assume the state you need in the method is available, after 
+all you properly constructed this object before you pushed it into the database, 
+right? These blind assumptions can quickly lead to null reference errors when 
+working with such partial objects.
+
+It gets worse with the scenario of an optional association (0..1 to 1). When 
+the associated field is NULL, you dont know whether this object does not have 
+an associated object or whether it was simply not loaded when the owning object 
+was loaded from the database. 
+
+These are reasons why many ORMs do not allow partial objects at all and instead 
+you always have to load an object with all its fields (associations being proxied). 
+One secure way to allow partial objects is if the programming language/platform 
+allows the ORM tool to hook deeply into the object and instrument it in such a 
+way that individual fields (not only associations) can be loaded lazily on first 
+access. This is possible in Java, for example, through bytecode instrumentation. 
+In PHP though this is not possible, so there is no way to have "secure" partial 
+objects in an ORM with transparent persistence.
+
+Doctrine, by default, does not allow partial objects. That means, any query that only selects partial object data and wants to retrieve the result as objects 
+(i.e. `Query#getResult()`) will raise an exception telling you that 
+partial objects are dangerous. If you want to force a query to return you partial objects, possibly as a performance tweak, you can use the `Query#HINT_FORCE_PARTIAL_LOAD` query hint as follows:
+
+    [php]
+    $q = $em->createQuery("select u.id, u.name from MyApp\Domain\User u");
+    $q->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+
++++ When should I force partial objects?
+
+Mainly for optimization purposes, especially since the stateless nature of PHP 
+applications means that any fields or objects that are loaded unnecessarily in 
+a request are useless (though often minimal) overhead. Be careful of premature optimization. Only force partial objects if it proves to provide an improvement to a performance problem.
+
+++ Proxy Objects
+
+A proxy object is an object that is put in place or used instead of the "real" object. A proxy object can add behavior to the object being proxied without that object being aware of it. In Doctrine 2, proxy objects are used to realize several features but mainly for transparent lazy-loading.
+
+Proxy objects with their lazy-loading facilities help to keep the subset of objects that are already in memory connected to the rest of the objects. This is an essential property as without it there would always be fragile partial objects at the outer edges of your object graph.
+
+Doctrine 2 implements a variant of the proxy pattern where it generates classes that extend your entity classes and adds lazy-loading capabilities to them. Doctrine can then give you an instance of such a proxy class whenever you request an object of the class being proxied. This happens in two situations:
+
+**Reference Proxies**
+
+The method `EntityManager#getReference($entityName, $identifier)` lets you obtain a reference to an entity for which the identifier is known, without loading that entity from the database. This is useful, for example, as a performance enhancement, when you want to establish an association to an entity for which you have the identifier. You could simply do this:
+
+    [php]
+    // $em instanceof EntityManager, $cart instanceof MyProject\Model\Cart
+    // $itemId comes from somewhere, probably a request parameter
+    $item = $em->getReference('MyProject\Model\Item', $itemId);
+    $cart->addItem($item);
+
+Here, we added an Item to a Cart without loading the Item from the database. If you invoke any method on the Item instance, it would fully initialize its state transparently from the database. Here $item is actually an instance of the proxy class that was generated for the Item class but your code does not need to care. In fact it **should not care**. Proxy objects should be transparent to your code.
+
+**Association proxies**
+
+The second most important situation where Doctrine uses proxy objects is when querying for objects. Whenever you query for an object that has a single-valued association to another object that is configured LAZY, without joining that association in the same query, Doctrine puts proxy objects in place where normally the associated object would be.
+Just like other proxies it will transparently initialize itself on first access.
+
+> **NOTE**
+> Joining an association in a DQL or native query essentially means eager loading of that
+> association in that query. This will override the 'fetch' option specified in
+> the mapping for that association, but only for that query.
+
++++ Generating Proxy classes
+
+Proxy classes can either be generated manually through the Doctrine CLI or automatically by Doctrine. The configuration option that controls this behavior is:
+
+    [php]
+    $config->setAutoGenerateProxyClasses($bool);
+    $config->getAutoGenerateProxyClasses();
+    
+The default value is `TRUE` for convenient development. However, this setting is not optimal for performance and therefore not recommended for a production environment.
+To eliminate the overhead of proxy class generation during runtime, set this configuration option to `FALSE`. When you do this in a development environment, note that you may get class/file not found errors if certain proxy classes are not available or failing lazy-loads if new methods were added to the entity class that are not yet in the proxy class. In such a case, simply use the Doctrine CLI to (re)generate the proxy classes like so:
+
+    doctrine orm:generate-proxies
+
+++ Multiple Metadata Sources
+
+When using different components using Doctrine 2 you may end up with them using two different metadata drivers,
+for example XML and YAML. You can use the DriverChain Metadata implementations to aggregate these drivers
+based on namespaces:
+
+    [php]
+    $chain = new DriverChain();
+    $chain->addDriver($xmlDriver, 'Doctrine\Tests\Models\Company');
+    $chain->addDriver($yamlDriver, 'Doctrine\Tests\ORM\Mapping');
+
+Based on the namespace of the entity the loading of entities is delegated to the appropriate driver. The chain
+semantics come from the fact that the driver loops through all namespaces and matches the entity class name
+against the namespace using a `strpos() === 0` call. This means you need to order the drivers correctly if
+sub-namespaces use different metadata driver implementations.
