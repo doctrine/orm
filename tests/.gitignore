@@ -1,2 +1,3 @@
 Doctrine/Tests/Proxies/
 Doctrine/Tests/ORM/Proxy/generated/
+Doctrine/Tests/ORM/Tools/Export/export
