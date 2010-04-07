@@ -1691,6 +1691,16 @@ abstract class AbstractPlatform
     }
 
     /**
+     * Some databases don't allow to create and drop databases at all or only with certain tools.
+     *
+     * @return bool
+     */
+    public function supportsCreateDropDatabase()
+    {
+        return true;
+    }
+
+    /**
      * @return bool
      */
     public function createsExplicitIndexForForeignKeys()
