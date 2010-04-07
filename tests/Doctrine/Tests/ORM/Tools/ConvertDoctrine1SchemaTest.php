@@ -40,6 +40,10 @@ class ConvertDoctrine1SchemaTest extends \Doctrine\Tests\OrmTestCase
 {
     public function testTest()
     {
+        if (!class_exists('Symfony\Components\Yaml\Yaml', true)) {
+            $this->markTestSkipped('Please install Symfony YAML Component into the include path of your PHP installation.');
+        }
+
         $cme = new ClassMetadataExporter();
         $converter = new ConvertDoctrine1Schema(__DIR__ . '/doctrine1schema');
 
