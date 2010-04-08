@@ -21,7 +21,11 @@
 
 namespace Doctrine\DBAL\Platforms;
 
-class IbmDb2Platform extends AbstractPlatform
+use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Schema\Index;
+use Doctrine\DBAL\Schema\TableDiff;
+
+class Db2Platform extends AbstractPlatform
 {
     /**
      * Gets the SQL snippet used to declare a VARCHAR column type.
@@ -122,6 +126,42 @@ class IbmDb2Platform extends AbstractPlatform
         
     }
 
+    /**
+     * Obtain DBMS specific SQL to be used to create datetime fields in
+     * statements like CREATE TABLE
+     *
+     * @param array $fieldDeclaration
+     * @return string
+     */
+    public function getDateTimeTypeDeclarationSQL(array $fieldDeclaration)
+    {
+        return 'TIMESTAMP(0)';
+    }
+
+    /**
+     * Obtain DBMS specific SQL to be used to create date fields in statements
+     * like CREATE TABLE.
+     *
+     * @param array $fieldDeclaration
+     * @return string
+     */
+    public function getDateTypeDeclarationSQL(array $fieldDeclaration)
+    {
+        return 'DATE';
+    }
+
+    /**
+     * Obtain DBMS specific SQL to be used to create time fields in statements
+     * like CREATE TABLE.
+     *
+     * @param array $fieldDeclaration
+     * @return string
+     */
+    public function getTimeTypeDeclarationSQL(array $fieldDeclaration)
+    {
+        return 'TIME';
+    }
+
     public function getListDatabasesSQL()
     {
         throw DBALException::notSupported(__METHOD__);
@@ -137,6 +177,13 @@ class IbmDb2Platform extends AbstractPlatform
         throw DBALException::notSupported(__METHOD__);
     }
 
+    /**
+     * This code fragment is originally from the Zend_Db_Adapter_Db2 class.
+     *
+     * @license New BSD License
+     * @param  string $table
+     * @return string
+     */
     public function getListTableColumnsSQL($table)
     {
         return "SELECT DISTINCT c.tabschema, c.tabname, c.colname, c.colno,
@@ -155,7 +202,7 @@ class IbmDb2Platform extends AbstractPlatform
 
     public function getListTablesSQL()
     {
-        return "SELECT 'NAME' FROM SYSIBM.TABLES";
+        return "SELECT NAME FROM SYSIBM.SYSTABLES WHERE TYPE = 'T'";
     }
 
     public function getListUsersSQL()
@@ -176,13 +223,13 @@ class IbmDb2Platform extends AbstractPlatform
 
     public function getListTableIndexesSQL($table)
     {
-        throw DBALException::notSupported(__METHOD__);
+        return "SELECT NAME, COLNAMES, UNIQUERULE FROM SYSIBM.SYSINDEXES WHERE TBNAME = UPPER('" . $table . "')";
     }
 
     public function getListTableForeignKeysSQL($table)
     {
-        return "SELECT TBNAME, RELNAME, REFTBNAME, 'DELETE_RULE', 'UPDATE_RULE', FKCOLNAMES, PKCOLNAMES ".
-               "FROM SYSIBM.SYSRELS WHERE TBNAME = '".$table."'";
+        return "SELECT TBNAME, RELNAME, REFTBNAME, DELETERULE, UPDATERULE, FKCOLNAMES, PKCOLNAMES ".
+               "FROM SYSIBM.SYSRELS WHERE TBNAME = UPPER('".$table."')";
     }
 
     public function getCreateViewSQL($name, $sql)
@@ -218,5 +265,136 @@ class IbmDb2Platform extends AbstractPlatform
     public function supportsCreateDropDatabase()
     {
         return false;
+    }
+
+    /**
+     * Gets the SQL specific for the platform to get the current date.
+     *
+     * @return string
+     */
+    public function getCurrentDateSQL()
+    {
+        return 'current date';
+    }
+
+    /**
+     * Gets the SQL specific for the platform to get the current time.
+     *
+     * @return string
+     */
+    public function getCurrentTimeSQL()
+    {
+        return 'current time';
+    }
+
+    /**
+     * Gets the SQL specific for the platform to get the current timestamp
+     *
+     * @return string
+     */
+    public function getCurrentTimestampSQL()
+    {
+        return 'current timestamp';
+    }
+
+    /**
+     * Obtain DBMS specific SQL code portion needed to set an index
+     * declaration to be used in statements like CREATE TABLE.
+     *
+     * @param string $name          name of the index
+     * @param Index $index          index definition
+     * @return string               DBMS specific SQL code portion needed to set an index
+     */
+    public function getIndexDeclarationSQL($name, Index $index)
+    {
+        return $this->getUniqueConstraintDeclarationSQL($name, $index);
+    }
+
+    /**
+     * @param string $tableName
+     * @param array $columns
+     * @param array $options
+     * @return array
+     */
+    protected function _getCreateTableSQL($tableName, array $columns, array $options = array())
+    {
+        $indexes = array();
+        if (isset($options['indexes'])) {
+            $indexes = $options['indexes'];
+        }
+        $options['indexes'] = array();
+        
+        $sqls = parent::_getCreateTableSQL($tableName, $columns, $options);
+
+        foreach ($indexes as $index => $definition) {
+            $sqls[] = $this->getCreateIndexSQL($definition, $tableName);
+        }
+        return $sqls;
+    }
+
+    /**
+     * Gets the SQL to alter an existing table.
+     *
+     * @param TableDiff $diff
+     * @return array
+     */
+    public function getAlterTableSQL(TableDiff $diff)
+    {
+        $sql = array();
+
+        $queryParts = array();
+        foreach ($diff->addedColumns AS $fieldName => $column) {
+            $queryParts[] = 'ADD COLUMN ' . $this->getColumnDeclarationSQL($column->getName(), $column->toArray());
+        }
+
+        foreach ($diff->removedColumns AS $column) {
+            $queryParts[] =  'DROP COLUMN ' . $column->getName();
+        }
+
+        foreach ($diff->changedColumns AS $columnDiff) {
+            /* @var $columnDiff Doctrine\DBAL\Schema\ColumnDiff */
+            $column = $columnDiff->column;
+            $queryParts[] =  'ALTER ' . ($columnDiff->oldColumnName) . ' '
+                    . $this->getColumnDeclarationSQL($column->getName(), $column->toArray());
+        }
+
+        foreach ($diff->renamedColumns AS $oldColumnName => $column) {
+            $queryParts[] =  'RENAME ' . $oldColumnName . ' TO ' . $column->getName();
+        }
+
+        if (count($queryParts) > 0) {
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . implode(" ", $queryParts);
+        }
+
+        $sql = array_merge($sql, $this->_getAlterTableIndexForeignKeySQL($diff));
+
+        if ($diff->newName !== false) {
+            $sql[] =  'RENAME TABLE TO ' . $diff->newName;
+        }
+
+        return $sql;
+    }
+
+    public function getDefaultValueDeclarationSQL($field)
+    {
+        if (isset($field['notnull']) && $field['notnull'] && !isset($field['default'])) {
+            if (in_array((string)$field['type'], array("Integer", "BigInteger", "SmallInteger"))) {
+                $field['default'] = 0;
+            } else {
+                $field['default'] = '';
+            }
+        }
+
+        return parent::getDefaultValueDeclarationSQL($field);
+    }
+
+    public function supportsIdentityColumns()
+    {
+        return true;
+    }
+
+    public function prefersIdentityColumns()
+    {
+        return true;
     }
 }

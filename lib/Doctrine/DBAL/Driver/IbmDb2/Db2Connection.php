@@ -25,12 +25,14 @@ class Db2Connection implements \Doctrine\DBAL\Driver\Connection
 {
     private $_conn = null;
 
-    public function __construct($dbname, $username, $password, $driverOptions = array(), $isPersistant = false)
+    public function __construct(array $params, $username, $password, $driverOptions = array())
     {
+        $isPersistant = (isset($params['persistent']) && $params['persistent'] == true);
+
         if ($isPersistant) {
-            $this->_conn = db2_pconnect($dbname, $username, $password, $driverOptions);
+            $this->_conn = db2_pconnect($params['dbname'], $username, $password, $driverOptions);
         } else {
-            $this->_conn = db2_connect($dbname, $username, $password, $driverOptions);
+            $this->_conn = db2_connect($params['dbname'], $username, $password, $driverOptions);
         }
         if (!$this->_conn) {
             throw new Db2Exception(db2_conn_errormsg());

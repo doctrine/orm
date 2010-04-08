@@ -46,9 +46,13 @@ class Db2Driver implements Driver
      */
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
     {
+        if ( !isset($params['schema']) ) {
+            
+        }
+
         if ($params['host'] !== 'localhost' && $params['host'] != '127.0.0.1') {
             // if the host isn't localhost, use extended connection params
-            $dbname = 'DRIVER={IBM DB2 ODBC DRIVER}' .
+            $params['dbname'] = 'DRIVER={IBM DB2 ODBC DRIVER}' .
                      ';DATABASE=' . $params['dbname'] .
                      ';HOSTNAME=' . $params['host'] .
                      ';PORT='     . $params['port'] .
@@ -57,13 +61,9 @@ class Db2Driver implements Driver
                      ';PWD='      . $password .';';
             $username = null;
             $password = null;
-        } else {
-            $dbname = $params['dbname'];
         }
 
-        $isPersistant = (isset($params['persistent']) && $params['persistent'] == true);
-
-        return new Db2Connection($dbname, $username, $password, $driverOptions, $isPersistant);
+        return new Db2Connection($params, $username, $password, $driverOptions);
     }
 
     /**
@@ -74,7 +74,7 @@ class Db2Driver implements Driver
      */
     public function getDatabasePlatform()
     {
-        return new \Doctrine\DBAL\Platforms\IbmDb2Platform;
+        return new \Doctrine\DBAL\Platforms\Db2Platform;
     }
 
     /**
@@ -86,7 +86,7 @@ class Db2Driver implements Driver
      */
     public function getSchemaManager(Connection $conn)
     {
-        return new \Doctrine\DBAL\Schema\IbmDb2SchemaManager($conn);
+        return new \Doctrine\DBAL\Schema\Db2SchemaManager($conn);
     }
 
     /**

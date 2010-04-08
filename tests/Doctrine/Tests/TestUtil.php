@@ -68,7 +68,13 @@ class TestUtil
 
                 $tmpConn->close();
             } else {
-                // wipe everything?
+                $sm = $realConn->getSchemaManager();
+
+                $tableNames = $sm->listTableNames();
+                
+                foreach ($tableNames AS $tableName) {
+                    $sm->dropTable($tableName);
+                }
             }
 
             $eventManager = null;

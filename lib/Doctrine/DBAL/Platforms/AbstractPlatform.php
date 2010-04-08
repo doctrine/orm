@@ -1095,7 +1095,7 @@ abstract class AbstractPlatform
             throw \InvalidArgumentException("Incomplete definition. 'columns' required.");
         }
         
-        return 'CONSTRAINT' . $name . ' UNIQUE ('
+        return 'CONSTRAINT ' . $name . ' UNIQUE ('
              . $this->getIndexFieldDeclarationListSQL($index->getColumns()) 
              . ')';
     }
