@@ -22,9 +22,6 @@ $classLoader->register();
 $classLoader = new \Doctrine\Common\ClassLoader('Proxies', __DIR__);
 $classLoader->register();
 
-$classLoader = new \Doctrine\Common\ClassLoader('Symfony', __DIR__ . '/../../lib/vendor');
-$classLoader->register();
-
 $config = new \Doctrine\ORM\Configuration();
 $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache);
 $config->setProxyDir(__DIR__ . '/Proxies');
@@ -37,5 +34,7 @@ $connectionOptions = array(
 
 $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);
 
-$configuration = new \Doctrine\Common\CLI\Configuration();
-$configuration->setAttribute('em', $em);
+$helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
+    'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
+    'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
+));

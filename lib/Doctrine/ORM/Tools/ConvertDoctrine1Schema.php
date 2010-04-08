@@ -48,7 +48,7 @@ class ConvertDoctrine1Schema
      * Constructor passes the directory or array of directories
      * to convert the Doctrine 1 schema files from
      *
-     * @param string $from
+     * @param array $from
      * @author Jonathan Wage
      */
     public function __construct($from)
