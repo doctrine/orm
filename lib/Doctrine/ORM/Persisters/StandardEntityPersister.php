@@ -423,11 +423,12 @@ class StandardEntityPersister
      *        a new entity is created.
      * @param $assoc The association that connects the entity to load to another entity, if any.
      * @param array $hints Hints for entity creation.
+     * @param int $lockMode
      * @return The loaded entity instance or NULL if the entity/the data can not be found.
      */
-    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array())
+    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0)
     {
-        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc);
+        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, null, $lockMode);
         $params = array_values($criteria);
         $stmt = $this->_conn->executeQuery($sql, $params);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -641,9 +642,10 @@ class StandardEntityPersister
      * @param array $criteria
      * @param AssociationMapping $assoc
      * @param string $orderBy
+     * @param int $lockMode
      * @return string
      */
-    protected function _getSelectEntitiesSQL(array &$criteria, $assoc = null, $orderBy = null)
+    protected function _getSelectEntitiesSQL(array &$criteria, $assoc = null, $orderBy = null, $lockMode = 0)
     {
         // Construct WHERE conditions
         $conditionSql = '';
@@ -671,10 +673,17 @@ class StandardEntityPersister
             );
         }
 
+        $lockSql = '';
+        if ($lockMode == \Doctrine\ORM\LockMode::PESSIMISTIC_READ) {
+            $lockSql = ' ' . $this->_platform->getReadLockSql();
+        } else if ($lockMode == \Doctrine\ORM\LockMode::PESSIMISTIC_WRITE) {
+            $lockSql = ' ' . $this->_platform->getWriteLockSql();
+        }
+
         return 'SELECT ' . $this->_getSelectColumnListSQL() 
              . ' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' '
              . $this->_getSQLTableAlias($this->_class)
-             . ($conditionSql ? ' WHERE ' . $conditionSql : '') . $orderBySql;
+             . ($conditionSql ? ' WHERE ' . $conditionSql : '') . $orderBySql . $lockSql;
     }
 
     /**
@@ -911,5 +920,46 @@ class StandardEntityPersister
         $this->_sqlTableAliases[$class->name] = $tableAlias;
 
         return $tableAlias;
+    }
+
+    /**
+     * Lock all rows of this entity matching the given criteria with the specified pessimistic lock mode
+     *
+     * @param array $criteria
+     * @param int $lockMode
+     * @return void
+     */
+    public function lock(array $criteria, $lockMode)
+    {
+        // @todo Extract method to remove duplicate code from _getSelectEntitiesSQL()?
+        $conditionSql = '';
+        foreach ($criteria as $field => $value) {
+            if ($conditionSql != '') {
+                $conditionSql .= ' AND ';
+            }
+
+            if (isset($this->_class->columnNames[$field])) {
+                $conditionSql .= $this->_class->getQuotedColumnName($field, $this->_platform);
+            } else if (isset($this->_class->fieldNames[$field])) {
+                $conditionSql .= $this->_class->getQuotedColumnName($this->_class->fieldNames[$field], $this->_platform);
+            } else if ($assoc !== null) {
+                $conditionSql .= $field;
+            } else {
+                throw ORMException::unrecognizedField($field);
+            }
+            $conditionSql .= ' = ?';
+        }
+
+        if ($lockMode == \Doctrine\ORM\LockMode::PESSIMISTIC_READ) {
+            $lockSql = $this->_platform->getReadLockSql();
+        } else if ($lockMode == \Doctrine\ORM\LockMode::PESSIMISTIC_WRITE) {
+            $lockSql = $this->_platform->getWriteLockSql();
+        }
+
+        $sql = 'SELECT 1 FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' '
+             . $this->_getSQLTableAlias($this->_class)
+             . ($conditionSql ? ' WHERE ' . $conditionSql : '') . ' ' . $lockSql;
+        $params = array_values($criteria);
+        $this->_conn->executeQuery($query, $params);
     }
 }

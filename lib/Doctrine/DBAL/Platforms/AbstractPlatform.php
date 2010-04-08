@@ -488,9 +488,46 @@ abstract class AbstractPlatform
         return 'COS(' . $value . ')';
     }
 
-    public function getForUpdateSql()
+    public function getForUpdateSQL()
     {
         return 'FOR UPDATE';
+    }
+
+    /**
+     * Honors that some SQL vendors such as MsSql use table hints for locking instead of the ANSI SQL FOR UPDATE specification.
+     *
+     * @param  string $fromClause
+     * @param  int $lockMode
+     * @return string
+     */
+    public function appendLockHint($fromClause, $lockMode)
+    {
+        return $fromClause;
+    }
+
+    /**
+     * Get the sql snippet to append to any SELECT statement which locks rows in shared read lock.
+     *
+     * This defaults to the ASNI SQL "FOR UPDATE", which is an exclusive lock (Write). Some database
+     * vendors allow to lighten this constraint up to be a real read lock.
+     *
+     * @return string
+     */
+    public function getReadLockSQL()
+    {
+        return $this->getForUpdateSQL();
+    }
+
+    /**
+     * Get the SQL snippet to append to any SELECT statement which obtains an exclusive lock on the rows.
+     *
+     * The semantics of this lock mode should equal the SELECT .. FOR UPDATE of the ASNI SQL standard.
+     *
+     * @return string
+     */
+    public function getWriteLockSQL()
+    {
+        return $this->getForUpdateSQL();
     }
 
     public function getDropDatabaseSQL($database)

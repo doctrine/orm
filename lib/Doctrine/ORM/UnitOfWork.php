@@ -1632,6 +1632,48 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Acquire a lock on the given entity.
+     *
+     * @param object $entity
+     * @param int $lockMode
+     * @param int $lockVersion
+     */
+    public function lock($entity, $lockMode, $lockVersion = null)
+    {
+        $entityName = get_class($entity);
+        $class = $this->_em->getClassMetadata($entityName);
+
+        if ($lockMode == LockMode::OPTIMISTIC) {
+            if (!$class->isVersioned) {
+                throw OptimisticLockException::notVersioned($entityName);
+            }
+
+            if ($lockVersion != null) {
+                $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
+                if ($entityVersion != $lockVersion) {
+                    throw OptimisticLockException::lockFailed();
+                }
+            }
+        } else if ($lockMode == LockMode::PESSIMISTIC_READ || $lockMode == LockMode::PESSIMISTIC_WRITE) {
+
+            if (!$this->_em->getConnection()->isTransactionActive()) {
+                throw TransactionRequiredException::transactionRequired();
+            }
+            
+            if ($this->getEntityState($entity) == self::STATE_MANAGED) {
+                $oid = spl_object_hash($entity);
+
+                $this->getEntityPersister($class->name)->lock(
+                    array_combine($class->getIdentifierColumnNames(), $this->_entityIdentifiers[$oid]),
+                    $entity
+                );
+            } else {
+                throw new \InvalidArgumentException("Entity is not MANAGED.");
+            }
+        }
+    }
+
+    /**
      * Gets the CommitOrderCalculator used by the UnitOfWork to order commits.
      *
      * @return Doctrine\ORM\Internal\CommitOrderCalculator

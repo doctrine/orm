@@ -235,7 +235,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    protected function _getSelectEntitiesSQL(array &$criteria, $assoc = null, $orderBy = null)
+    protected function _getSelectEntitiesSQL(array &$criteria, $assoc = null, $orderBy = null, $lockMode = 0)
     {
         $idColumns = $this->_class->getIdentifierColumnNames();
         $baseTableAlias = $this->_getSQLTableAlias($this->_class);

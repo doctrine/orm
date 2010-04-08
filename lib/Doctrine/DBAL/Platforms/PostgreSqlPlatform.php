@@ -637,4 +637,9 @@ class PostgreSqlPlatform extends AbstractPlatform
     {
         return 'TRUNCATE '.$tableName.' '.($cascade)?'CASCADE':'';
     }
+
+    public function getReadLockSQL()
+    {
+        return 'FOR SHARE';
+    }
 }

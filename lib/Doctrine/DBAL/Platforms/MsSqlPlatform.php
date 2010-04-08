@@ -483,4 +483,32 @@ class MsSqlPlatform extends AbstractPlatform
     {
         return 'TRUNCATE TABLE '.$tableName;
     }
+
+    /**
+     * MsSql uses Table Hints for locking strategies instead of the ANSI SQL FOR UPDATE like hints.
+     *
+     * @return string
+     */
+    public function getForUpdateSQL()
+    {
+        return '';
+    }
+
+    /**
+     * @license LGPL
+     * @author Hibernate
+     * @param  string $fromClause
+     * @param  int $lockMode
+     * @return string
+     */
+    public function appendLockHint($fromClause, $lockMode)
+    {
+        if ($lockMode == \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE) {
+            return $fromClause . " WITH (UPDLOCK, ROWLOCK)";
+        } else if ( $lockMode == \Doctrine\DBAL\LockMode::PESSIMISTIC_READ ) {
+            return $fromClause . " WITH (HOLDLOCK, ROWLOCK)";
+        } else {
+            return $fromClause;
+        }
+    }
 }

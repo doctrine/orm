@@ -17,28 +17,24 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
- */
+*/
 
 namespace Doctrine\ORM;
 
 /**
- * OptimisticLockException
+ * Is thrown when a transaction is required for the current operation, but there is none open.
  *
- * @author      Roman Borschel <roman@code-factory.org>
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
- * @since       2.0
+ * @link        www.doctrine-project.com
+ * @since       1.0
  * @version     $Revision$
+ * @author      Benjamin Eberlei <kontakt@beberlei.de>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
-class OptimisticLockException extends ORMException
+class TransactionRequiredException extends ORMException
 {
-    public static function lockFailed()
+    static public function transactionRequired()
     {
-        return new self("The optimistic lock failed.");
-    }
-
-    public static function notVersioned($className)
-    {
-        return new self("Cannot obtain optimistic lock on unversioned entity ".$className);
+        return new self('An open transaction is required for this operation.');
     }
 }

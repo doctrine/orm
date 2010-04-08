@@ -15,12 +15,15 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->_em = $this->_getTestEntityManager();
     }
 
-    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed)
+    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed, array $queryHints = array())
     {
         try {
             $query = $this->_em->createQuery($dqlToBeTested);
             $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true)
                     ->useQueryCache(false);
+            foreach ($queryHints AS $name => $value) {
+                $query->setHint($name, $value);
+            }
             parent::assertEquals($sqlToBeConfirmed, $query->getSql());
             $query->free();
         } catch (\Exception $e) {
@@ -582,6 +585,72 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             "SELECT u.name, (SELECT COUNT(p.phonenumber) FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234) pcount FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = 'jon'",
             "SELECT c0_.name AS name0, (SELECT COUNT(c1_.phonenumber) AS dctrn__1 FROM cms_phonenumbers c1_ WHERE c1_.phonenumber = 1234) AS sclr1 FROM cms_users c0_ WHERE c0_.name = 'jon'"
+        );
+    }
+
+    /**
+     * @group locking
+     * @group DDC-178
+     */
+    public function testPessimisticWriteLockQueryHint()
+    {
+        if ($this->_em->getConnection()->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\SqlitePlatform) {
+            $this->markTestSkipped('SqLite does not support Row locking at all.');
+        }
+
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 ".
+            "FROM cms_users c0_ WHERE c0_.username = 'gblanco' FOR UPDATE",
+            array(Query::HINT_LOCK_MODE => \Doctrine\ORM\LockMode::PESSIMISTIC_WRITE)
+        );
+    }
+
+    /**
+     * @group locking
+     * @group DDC-178
+     */
+    public function testPessimisticReadLockQueryHintPostgreSql()
+    {
+        $this->_em->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\PostgreSqlPlatform);
+
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 ".
+            "FROM cms_users c0_ WHERE c0_.username = 'gblanco' FOR SHARE",
+            array(Query::HINT_LOCK_MODE => \Doctrine\ORM\LockMode::PESSIMISTIC_READ)
+        );
+    }
+
+    /**
+     * @group locking
+     * @group DDC-178
+     */
+    public function testPessimisticReadLockQueryHintMySql()
+    {
+        $this->_em->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\MySqlPlatform);
+
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 ".
+            "FROM cms_users c0_ WHERE c0_.username = 'gblanco' LOCK IN SHARE MODE",
+            array(Query::HINT_LOCK_MODE => \Doctrine\ORM\LockMode::PESSIMISTIC_READ)
+        );
+    }
+
+    /**
+     * @group locking
+     * @group DDC-178
+     */
+    public function testPessimisticReadLockQueryHintOracle()
+    {
+        $this->_em->getConnection()->setDatabasePlatform(new \Doctrine\DBAL\Platforms\OraclePlatform);
+
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 ".
+            "FROM cms_users c0_ WHERE c0_.username = 'gblanco' FOR UPDATE",
+            array(Query::HINT_LOCK_MODE => \Doctrine\ORM\LockMode::PESSIMISTIC_READ)
         );
     }
 }
