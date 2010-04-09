@@ -379,14 +379,14 @@ Just like other proxies it will transparently initialize itself on first access.
 
 +++ Generating Proxy classes
 
-Proxy classes can either be generated manually through the Doctrine CLI or automatically by Doctrine. The configuration option that controls this behavior is:
+Proxy classes can either be generated manually through the Doctrine Console or automatically by Doctrine. The configuration option that controls this behavior is:
 
     [php]
     $config->setAutoGenerateProxyClasses($bool);
     $config->getAutoGenerateProxyClasses();
     
 The default value is `TRUE` for convenient development. However, this setting is not optimal for performance and therefore not recommended for a production environment.
-To eliminate the overhead of proxy class generation during runtime, set this configuration option to `FALSE`. When you do this in a development environment, note that you may get class/file not found errors if certain proxy classes are not available or failing lazy-loads if new methods were added to the entity class that are not yet in the proxy class. In such a case, simply use the Doctrine CLI to (re)generate the proxy classes like so:
+To eliminate the overhead of proxy class generation during runtime, set this configuration option to `FALSE`. When you do this in a development environment, note that you may get class/file not found errors if certain proxy classes are not available or failing lazy-loads if new methods were added to the entity class that are not yet in the proxy class. In such a case, simply use the Doctrine Console to (re)generate the proxy classes like so:
 
     doctrine orm:generate-proxies
 

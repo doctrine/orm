@@ -89,17 +89,39 @@ available on your system. Now when you run the `doctrine` command you will
 see what you can do with it.
 
     $ doctrine
-    Doctrine Command Line Interface
-    Available Tasks:
-    core:help
-    dbal:run-sql (--file=<path> | --sql=<SQL>) --depth=<DEPTH>
-    orm:clear-cache (--query | --metadata | --result [--id=<ID>] [--regex=<REGEX>] [--prefix=<PREFIX>] [--suffix=<SUFFIX>])
-    orm:convert-mapping (--from=<SOURCE> | --from-database) --to=<TYPE> --dest=<PATH>
-    orm:ensure-production-settings
-    orm:generate-proxies --class-dir=<PATH> [--to-dir=<PATH>]
-    orm:run-dql --dql=<DQL> --depth=<DEPTH>
-    orm:schema-tool (--create | --drop | --update | --complete-update | --re-create) [--dump-sql] [--class-dir=<PATH>]
-    orm:version
+    Doctrine Command Line Interface version 2.0-DEV
+
+    Usage:
+      [options] command [arguments]
+
+    Options:
+      --help           -h Display this help message.
+      --quiet          -q Do not output any message.
+      --verbose        -v Increase verbosity of messages.
+      --version        -V Display this program version.
+      --color          -c Force ANSI color output.
+      --no-interaction -n Do not ask any interactive question.
+
+    Available commands:
+      help                         Displays help for a command (?)
+      list                         Lists commands
+    dbal
+      :import                      Import SQL file(s) directly to Database.
+      :run-sql                     Executes arbitrary SQL directly from the command line.
+    orm
+      :clear-cache:metadata        Clear all metadata cache of the various cache drivers.
+      :clear-cache:query           Clear all query cache of the various cache drivers.
+      :clear-cache:result          Clear result cache of the various cache drivers.
+      :convert-d1-schema           Converts Doctrine 1.X schema into a Doctrine 2.X schema.
+      :convert-mapping             Convert mapping information between supported formats.
+      :ensure-production-settings  Verify that Doctrine is properly configured for a production environment.
+      :generate-entities           Generate entity classes and method stubs from your mapping information.
+      :generate-proxies            Generates proxy classes for entity classes.
+      :generate-repositories       Generate repository classes from your mapping information.
+      :run-dql                     Executes arbitrary DQL directly from the command line.
+      :schema-tool:create          Processes the schema and either create it directly on EntityManager Storage Connection or generate the SQL output.
+      :schema-tool:drop            Processes the schema and either drop the database schema of EntityManager Storage Connection or generate the SQL output.
+      :schema-tool:update          Processes the schema and either update the database schema of EntityManager Storage Connection or generate the SQL output.
 
 +++ Package Download
 
@@ -145,7 +167,7 @@ Here is a short overview of the purpose of these folders and files:
  * The `Entities` folder is where any model classes are created. Two example entities are already there.
  * The `xml` folder is where any XML mapping files are created (if you want to use XML mapping). Two example mapping documents for the 2 example entities are already there.
  * The `yaml` folder is where any YAML mapping files are created (if you want to use YAML mapping). Two example mapping documents for the 2 example entities are already there.
- * The `cli-config.php` contains bootstrap code for a configuration that is used by the CLI tool `doctrine` whenever you execute a task.
+ * The `cli-config.php` contains bootstrap code for a configuration that is used by the Console tool `doctrine` whenever you execute a task.
  * `doctrine`/`doctrine.php` is a command-line tool.
  * `index.php` is a basic classical bootstrap file of a php application that uses Doctrine 2.
 
@@ -154,9 +176,9 @@ Here is a short overview of the purpose of these folders and files:
 1) From within the tools/sandbox folder, run the following command and you should
 see the same output.
 
-    $ php doctrine orm:schema-tool --create
+    $ php doctrine orm:schema-tool:create ./Entities
     Creating database schema...
-    Database schema created successfully.
+    Database schema created successfully!
     
 2) Take another look into the tools/sandbox folder. A SQLite database should 
 have been created with the name `database.sqlite`.
@@ -181,7 +203,7 @@ the output "User saved!".
 5) Inspect the SQLite database. Again from within the tools/sandbox folder, 
 execute the following command:
 
-    $ php doctrine dbal:run-sql --sql="select * from users"
+    $ php doctrine dbal:run-sql "select * from users"
     
 You should get the following output:
 

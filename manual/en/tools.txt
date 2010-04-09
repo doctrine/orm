@@ -1,6 +1,6 @@
-++ The Doctrine CLI
+++ The Doctrine Console
 
-The Doctrine CLI (Command Line Interface) is a tool for simplifying many common tasks during the development of a project that uses Doctrine.
+The Doctrine Console is a Command Line Interface tool for simplifying many common commands during the development of a project that uses Doctrine.
 
 +++ Installation
 
@@ -11,62 +11,102 @@ In addition you may need to edit `doctrine.php` and adjust some paths to the new
 
 +++ Getting Help
 
-Type `doctrine` on the command line and you should see an overview of the available tasks or use the --help flag to get information on the available tasks. If you want to know more about the use of the schema tool for example you can call:
+Type `doctrine` on the command line and you should see an overview of the available commands or use the --help flag to get information on the available commands. If you want to know more about the use of generate entities for example, you can call:
 
-    doctrine orm:schema-tool --help
+    doctrine orm:generate-entities --help
 
 +++ Configuration
 
-Whenever the `doctrine` command line tool is invoked it requires an instance of `Doctrine\Common\Cli\CliConfiguration` to be able to correctly work. When using ORM package, it is required to define an attribute inside Configuration: `em`. `em` must be an `EntityManager` instance that is used by ORM command-line tasks.
+Whenever the `doctrine` command line tool is invoked, it is only able to access Commands that were defined by developer. Dependency Injection (DI) is the responsable to inject support into this utility, but it is up to the developer define it.
 
-Many tasks of the Doctrine CLI require the `em` attribute to be an `EntityManager` in order to execute. The `EntityManager` instance implicitly defines a database connection.
-If you invoke a task that requires an EntityManager (and/or a database connection) and the `em` attribute is not defined in your CLI Configuration instance, the task invoking will report an error for you.
-
-CLI COnfiguration instance can be in a separate file (ie. `cli-config.php`) that contains typical Doctrine bootstrap code and predefines the needed attributes mentioned above. A typical `cli-config.php` file looks as follows:
+To include a new command on Doctrine Console, you need to do:
 
     [php]
-    require_once '/path/to/lib/Doctrine/Common/ClassLoader.php';
+    $cli->addCommand(new \MyProject\Tools\Console\Commands\MyCustomCommand());
 
-    $classLoader = new \Doctrine\Common\ClassLoader('MyProject', '/path/to/myproject/lib');
+Additionally, include multiple commands (and overriding previously defined ones) is possible through the command:
+
+    [php]
+    $cli->addCommands(array(
+        new \MyProject\Tools\Console\Commands\MyCustomCommand(),
+        new \MyProject\Tools\Console\Commands\SomethingCommand(),
+        new \MyProject\Tools\Console\Commands\AnotherCommand(),
+        new \MyProject\Tools\Console\Commands\OneMoreCommand(),
+    ));
+
+Many commands of the Doctrine Console requires either the `db` or the `em` helpers to be defined in order to work correctly. Doctrine Console requires the definition of a HelperSet that is the DI tool to be injected in the Console.
+In case of a project that is dealing exclusvely with DBAL, the ConnectionHelper is required:
+
+    [php]
+    $helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
+        'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($conn)
+    ));
+    $cli->setHelperSet($helperSet);
+
+When dealing with the ORM package, the EntityManagerHelper is required:
+
+    [php]
+    $helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
+        'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
+    ));
+    $cli->setHelperSet($helperSet);
+
+The HelperSet instance can be in a separate file (ie. `cli-config.php`) that contains typical Doctrine bootstrap code and predefines the needed HelperSet attributes mentioned above. A typical `cli-config.php` file looks as follows:
+
+    [php]
+    require_once __DIR__ . '/../../lib/Doctrine/Common/ClassLoader.php';
+
+    $classLoader = new \Doctrine\Common\ClassLoader('Entities', __DIR__);
     $classLoader->register();
 
-    $ormConfig = new \Doctrine\ORM\Configuration();
-    $ormConfig->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache);
-    $ormConfig->setProxyDir('/path/to/myproject/lib/MyProject/Proxies');
-    $ormConfig->setProxyNamespace('MyProject\Proxies');
+    $classLoader = new \Doctrine\Common\ClassLoader('Proxies', __DIR__);
+    $classLoader->register();
+
+    $config = new \Doctrine\ORM\Configuration();
+    $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache);
+    $config->setProxyDir(__DIR__ . '/Proxies');
+    $config->setProxyNamespace('Proxies');
 
     $connectionOptions = array(
         'driver' => 'pdo_sqlite',
         'path' => 'database.sqlite'
     );
 
-    $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $ormConfig);
+    $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);
 
-    $cliConfig = new \Doctrine\Common\Cli\Configuration();
-    $cliConfig->setAttribute('em', $em);
-    $cliConfig->setAttribute('globalArguments', array(
-        'class-dir' => '/path/to/myproject/lib/MyProject/Models/'
+    $helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
+        'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
+        'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
     ));
 
-It is important to define an instance of Doctrine\Common\Cli\Configuration that the doctrine.php script will ultimately use. For the required name of this variable, check the doctrine.php included in your package; the most new ones will automatically find the variable no matter what its name is, as long as it is an instance of the right class.
-The CLI Configuration should contain at least the 'em' attribute, set to the EntityManager. To use many tasks a 'globalOptions' array should be set.
-The `globalArguments` content will be passed to every command line task. For instance, to use the orm:schema-tool task to generate database tables from annotations, the class-dir global option must be set as in the example.
+It is important to define a correct HelperSet that doctrine.php script will ultimately use. For the required name of this variable, check the doctrine.php included in your package; the most new ones will automatically find the variable no matter what its name is, as long as it is an instance of the right class.
 
-+++ Task Overview
++++ Command Overview
 
-The following tasks are currently available:
+The following Commands are currently available:
 
- * `dbal:run-sql`: Used to run arbitrary SQL on the command-line.
- * `orm:convert-mapping`: Used to convert between annotations/xml/yaml mapping informations as well as for class generating from xml/yaml mapping documents or for reverse engineering.
- * `orm:generate-proxies`: Used to generate proxy classes used by Doctrine.
- * `orm:run-dql`: Used to run arbitrary DQL on the command-line.
- * `orm:schema-tool`: Used to forward-engineer the relational database schema from existing classes and mappings.
- * `orm:version`: Used to show the current version of the CLI and Doctrine.
+ * `help`                            Displays help for a command (?)
+ * `list`                            Lists commands
+ * `dbal:import`                     Import SQL file(s) directly to Database.
+ * `dbal:run-sql`                    Executes arbitrary SQL directly from the command line.
+ * `orm:clear-cache:metadata`        Clear all metadata cache of the various cache drivers.
+ * `orm:clear-cache:query`           Clear all query cache of the various cache drivers.
+ * `orm:clear-cache:result`          Clear result cache of the various cache drivers.
+ * `orm:convert-d1-schema`           Converts Doctrine 1.X schema into a Doctrine 2.X schema.
+ * `orm:convert-mapping`             Convert mapping information between supported formats.
+ * `orm:ensure-production-settings`  Verify that Doctrine is properly configured for a production environment.
+ * `orm:generate-entities`           Generate entity classes and method stubs from your mapping information.
+ * `orm:generate-proxies`            Generates proxy classes for entity classes.
+ * `orm:generate-repositories`       Generate repository classes from your mapping information.
+ * `orm:run-dql`                     Executes arbitrary DQL directly from the command line.
+ * `orm:schema-tool:create`          Processes the schema and either create it directly on EntityManager Storage Connection or generate the SQL output.
+ * `orm:schema-tool:drop`            Processes the schema and either drop the database schema of EntityManager Storage Connection or generate the SQL output.
+ * `orm:schema-tool:update`          Processes the schema and either update the database schema of EntityManager Storage Connection or generate the SQL output.
 
 ++ Database Schema Generation
 
 To generate your database schema from your Doctrine mapping files you can use the
-`SchemaTool` class or the `schema-tool` CLI task.
+`SchemaTool` class or the `schema-tool` Console Command.
 
 When using the SchemaTool class directly, create your schema using the `createSchema()` method. First create an instance of the `SchemaTool` and pass it an instance of the `EntityManager` that you want to use to create the schema. This method receives an array of `ClassMetadataInfo` instances.
 
@@ -99,30 +139,31 @@ passed array of `ClassMetdataInfo` instances.
     $tool->updateSchema($classes);
 
 If you want to use this functionality from the command line you can use the
-`schema-tool` task.
+`schema-tool` command.
 
-To create the schema use the `--create` option:
+To create the schema use the `create` command:
 
-    $ php doctrine orm:schema-tool --create
+    $ php doctrine orm:schema-tool:create /path/to/mapping-path
 
-To drop the scheme use the `--drop` option:
+To drop the schema use the `drop` command:
 
-    $ php doctrine orm:schema-tool --drop
+    $ php doctrine orm:schema-tool:drop /path/to/mapping-path
 
 If you want to drop and then recreate the schema then use both options:
 
-    $ php doctrine orm:schema-tool --drop --create
+    $ php doctrine orm:schema-tool:drop /path/to/mapping-path
+    $ php doctrine orm:schema-tool:create /path/to/mapping-path
 
-As you would think, if you want to update your schema use the `--update` option:
+As you would think, if you want to update your schema use the `update` command:
 
-    $ php doctrine orm:schema-tool --update
+    $ php doctrine orm:schema-tool:update /path/to/mapping-path
 
-All of the above tasks also accept a `--dump-sql` option that will output the SQL
+All of the above commands also accept a `--dump-sql` option that will output the SQL
 for the ran operation.
 
-    $ php doctrine orm:schema-tool --create --dump-sql
+    $ php doctrine orm:schema-tool:create --dump-sql /path/to/mapping-path
 
-Before using the orm:schema-tool task, remember to configure your cli-config.php properly.
+Before using the orm:schema-tool commands, remember to configure your cli-config.php properly.
 
 ++ Convert Mapping Information
 
@@ -162,7 +203,11 @@ Now to convert the added mapping sources you can do so by using the exporter dri
 This functionality functionality is also available from the command line to for 
 example convert some YAML mapping files to XML.
 
-    $ php doctrine orm:convert-mapping --from=/path/to/yml --to=xml --dest=/path/to/xml
+    $ php doctrine orm:convert-mapping /path/to/mapping-path xml /path/to/mapping-path-converted-to-xml
+
+It is even possible to define more than one path as source:
+
+    $ php doctrine orm:convert-mapping --from /path/to/mapping-path1 --from /path/to/mapping-path2 /path/to/mapping-path3 xml /path/to/mapping-path-converted-to-xml
 
 ++ Reverse Engineering
 
@@ -182,7 +227,7 @@ generate YAML, XML, etc. from your existing databases.
 From the command line it is very simple to do something like reverse engineer
 your existing database to set of YAML mapping files.
 
-    $ php doctrine orm:convert-mapping --from=database --to=yml --dest=/path/to/yml
+    $ php doctrine orm:convert-mapping database yml /path/to/mapping-path-converted-to-yml
 
 > **CAUTION**
 > Reverse Engineering is not always working perfectly depending on special cases.
