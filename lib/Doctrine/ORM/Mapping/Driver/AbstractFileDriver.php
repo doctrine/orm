@@ -55,7 +55,7 @@ abstract class AbstractFileDriver implements Driver
      * @var string
      */
     protected $_fileExtension;
-    
+
     /** 
      * Initializes a new FileDriver that looks in the given path(s) for mapping 
      * documents and operates in the specified operating mode. 
@@ -76,7 +76,7 @@ abstract class AbstractFileDriver implements Driver
     {
         $this->_paths = array_unique(array_merge($this->_paths, $paths));
     }
-    
+
     /**
      * Retrieve the defined metadata lookup paths.
      *
@@ -107,7 +107,7 @@ abstract class AbstractFileDriver implements Driver
     {
         $this->_fileExtension = $fileExtension;
     }
-    
+
     /**
      * Get the element of schema meta data for the class from the mapping file.
      * This will lazily load the mapping file if it is not loaded yet
@@ -132,7 +132,7 @@ abstract class AbstractFileDriver implements Driver
     public function isTransient($className)
     {
         $fileName = str_replace('\\', '.', $className) . $this->_fileExtension;
-        
+
         // Check whether file exists
         foreach ((array) $this->_paths as $path) {
             if (file_exists($path . DIRECTORY_SEPARATOR . $fileName)) {
@@ -142,7 +142,7 @@ abstract class AbstractFileDriver implements Driver
 
         return true;
     }
-    
+
     /**
      * Gets the names of all mapped classes known to this driver.
      * 
@@ -151,7 +151,7 @@ abstract class AbstractFileDriver implements Driver
     public function getAllClassNames()
     {
         $classes = array();
-    
+
         if ($this->_paths) {
             foreach ((array) $this->_paths as $path) {
                 if ( ! is_dir($path)) {

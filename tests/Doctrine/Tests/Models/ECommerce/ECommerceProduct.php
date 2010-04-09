@@ -10,14 +10,14 @@ use Doctrine\Common\Collections\ArrayCollection;
  *
  * @author Giorgio Sironi
  * @Entity
- * @Table(name="ecommerce_products",indexes={@index(name="name_idx", columns={"name"})})
+ * @Table(name="ecommerce_products",indexes={@Index(name="name_idx", columns={"name"})})
  */
 class ECommerceProduct
 {
     /**
      * @Column(type="integer")
      * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @GeneratedValue
      */
     private $id;
 
@@ -38,7 +38,7 @@ class ECommerceProduct
     private $features;
 
     /**
-     * @ManyToMany(targetEntity="ECommerceCategory", cascade={"persist"})
+     * @ManyToMany(targetEntity="ECommerceCategory", cascade={"persist"}, inversedBy="products")
      * @JoinTable(name="ecommerce_products_categories",
      *      joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="category_id", referencedColumnName="id")})
@@ -50,8 +50,8 @@ class ECommerceProduct
      * simplicity.
      * @ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
      * @JoinTable(name="ecommerce_products_related",
-            joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
-            inverseJoinColumns={@JoinColumn(name="related_id", referencedColumnName="id")})
+     *      joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@JoinColumn(name="related_id", referencedColumnName="id")})
      */
     private $related;
 

@@ -50,7 +50,7 @@ abstract class AbstractCollectionPersister
     protected $_uow;
 
     /**
-     * Initializes a new instance of a class derived from {@link AbstractCollectionPersister}.
+     * Initializes a new instance of a class derived from AbstractCollectionPersister.
      *
      * @param Doctrine\ORM\EntityManager $em
      */

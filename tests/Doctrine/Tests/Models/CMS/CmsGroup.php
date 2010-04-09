@@ -18,11 +18,11 @@ class CmsGroup
     /**
      * @Id
      * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @GeneratedValue
      */
     public $id;
     /**
-     * @Column(type="string", length=50)
+     * @Column(length=50)
      */
     public $name;
     /**

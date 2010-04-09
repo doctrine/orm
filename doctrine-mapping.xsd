@@ -217,7 +217,7 @@
   </xs:complexType>
 
   <xs:complexType name="order-by-field">
-      <xs:attribute name="field" type="XS:NMTOKEN" use="required" />
+      <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
       <xs:attribute name="direction" type="orm:order-by-direction" default="ASC" />
   </xs:complexType>
 
@@ -237,6 +237,7 @@
     <xs:attribute name="target-entity" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
+    <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
   </xs:complexType>
 
@@ -246,7 +247,7 @@
       <xs:element name="order-by" type="orm:order-by" minOccurs="0" />
     </xs:sequence>
     <xs:attribute name="target-entity" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
+    <xs:attribute name="mapped-by" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
@@ -264,6 +265,7 @@
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
+    <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
   </xs:complexType>
   
   <xs:complexType name="one-to-one">
@@ -274,9 +276,10 @@
         <xs:element name="join-columns" type="orm:join-columns"/>
       </xs:choice>
     </xs:sequence>
+    <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="target-entity" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
-    <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
     <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
   </xs:complexType>

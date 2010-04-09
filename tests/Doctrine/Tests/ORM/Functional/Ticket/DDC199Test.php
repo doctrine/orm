@@ -79,7 +79,7 @@ class DDC199ParentClass
 class DDC199ChildClass extends DDC199ParentClass
 {
     /**
-     * @Column(type="string")
+     * @Column
      */
     public $childData;
 }
@@ -87,13 +87,13 @@ class DDC199ChildClass extends DDC199ParentClass
 /** @Entity @Table(name="ddc199_relatedclass") */
 class DDC199RelatedClass
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
-    /** @Column(type="string") */
+    /** @Column */
     public $relatedData;
     
     /**
-     * @ManyToOne(targetEntity="DDC199ParentClass")
+     * @ManyToOne(targetEntity="DDC199ParentClass", inversedBy="relatedEntities")
      * @JoinColumn(name="parent_id", referencedColumnName="id")
      */
     public $parent;

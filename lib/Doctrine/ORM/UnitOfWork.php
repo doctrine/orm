@@ -1336,12 +1336,12 @@ class UnitOfWork implements PropertyChangedListener
                 // We need to fetch the managed copy in order to merge.
                 $managedCopy = $this->_em->find($class->name, $id);
             }
-            
+
             if ($managedCopy === null) {
                 throw new \InvalidArgumentException('New entity detected during merge.'
                         . ' Persist the new entity before merging.');
             }
-            
+
             if ($class->isVersioned) {
                 $managedCopyVersion = $class->reflFields[$class->versionField]->getValue($managedCopy);
                 $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
@@ -1350,7 +1350,7 @@ class UnitOfWork implements PropertyChangedListener
                     throw OptimisticLockException::lockFailed();
                 }
             }
-    
+
             // Merge state of $entity into existing (managed) entity
             foreach ($class->reflFields as $name => $prop) {
                 if ( ! isset($class->associationMappings[$name])) {
@@ -1359,7 +1359,7 @@ class UnitOfWork implements PropertyChangedListener
                     $assoc2 = $class->associationMappings[$name];
                     if ($assoc2->isOneToOne()) {
                         if ( ! $assoc2->isCascadeMerge) {
-                            $other = $class->reflFields[$name]->getValue($entity);
+                            $other = $class->reflFields[$name]->getValue($entity); //TODO: Just $prop->getValue($entity)?
                             if ($other !== null) {
                                 $targetClass = $this->_em->getClassMetadata($assoc2->targetEntityName);
                                 $id = $targetClass->getIdentifierValues($other);

@@ -26,7 +26,7 @@ namespace Doctrine\Common;
  *
  * This class contains no event data. It is used by events that do not pass state
  * information to an event handler when an event is raised. The single empty EventArgs
- * instance can be obtained through {@link getEmptyInstance()}.
+ * instance can be obtained through {@link getEmptyInstance}.
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org

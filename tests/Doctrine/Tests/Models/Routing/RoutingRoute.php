@@ -11,7 +11,7 @@ class RoutingRoute
 {
     /**
      * @Id
-     * @generatedValue(strategy="AUTO")
+     * @GeneratedValue
      * @column(type="integer")
      */
     public $id;

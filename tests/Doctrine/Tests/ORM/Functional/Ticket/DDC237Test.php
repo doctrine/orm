@@ -68,7 +68,7 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC237EntityX
 { 
     /**
-     * @Id @Column(type="integer") @GeneratedValue(strategy="AUTO")
+     * @Id @Column(type="integer") @GeneratedValue
      */
     public $id;
     /**
@@ -87,7 +87,7 @@ class DDC237EntityX
 class DDC237EntityY
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue(strategy="AUTO")
+     * @Id @Column(type="integer") @GeneratedValue
      */
     public $id;
     /**
@@ -99,7 +99,7 @@ class DDC237EntityY
 /** @Entity @Table(name="ddc237_z") */
 class DDC237EntityZ
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
     /** @Column(type="string") */
     public $data;

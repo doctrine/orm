@@ -11,12 +11,12 @@ namespace Doctrine\Tests\Models\Company;
 class CompanyEvent {
    /**
      * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @GeneratedValue
      */
     private $id;
 
     /**
-     * @ManyToOne(targetEntity="CompanyOrganization",cascade={"persist"})
+     * @ManyToOne(targetEntity="CompanyOrganization", inversedBy="events", cascade={"persist"})
      * @JoinColumn(name="org_id", referencedColumnName="id")
      */
      private $organization;

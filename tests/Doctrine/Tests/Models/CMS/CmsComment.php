@@ -23,7 +23,7 @@ class CmsComment
      */
     public $text;
     /**
-     * @ManyToOne(targetEntity="CmsArticle")
+     * @ManyToOne(targetEntity="CmsArticle", inversedBy="comments")
      * @JoinColumn(name="article_id", referencedColumnName="id")
      */
     public $article;

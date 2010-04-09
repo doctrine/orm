@@ -54,7 +54,7 @@ class DDC309Country
     /**
      * @Id
      * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @GeneratedValue
      */
     public $id;
 }
@@ -67,7 +67,7 @@ class DDC309User
     /**
      * @Id
      * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @GeneratedValue
      */
     public $id;
 }

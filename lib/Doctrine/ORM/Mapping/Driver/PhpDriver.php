@@ -49,7 +49,6 @@ class PhpDriver extends AbstractFileDriver
      * {@inheritdoc}
      */
     protected $_fileExtension = '.php';
-
     protected $_metadata;
 
     /**

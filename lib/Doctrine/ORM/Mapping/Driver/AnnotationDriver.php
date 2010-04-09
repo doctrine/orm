@@ -173,7 +173,7 @@ class AnnotationDriver implements Driver
         // Evaluate InheritanceType annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\InheritanceType'])) {
             $inheritanceTypeAnnot = $classAnnotations['Doctrine\ORM\Mapping\InheritanceType'];
-            $metadata->setInheritanceType(constant('\Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
+            $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
         }
 
         // Evaluate DiscriminatorColumn annotation
@@ -195,7 +195,7 @@ class AnnotationDriver implements Driver
         // Evaluate DoctrineChangeTrackingPolicy annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\ChangeTrackingPolicy'])) {
             $changeTrackingAnnot = $classAnnotations['Doctrine\ORM\Mapping\ChangeTrackingPolicy'];
-            $metadata->setChangeTrackingPolicy(constant('\Doctrine\ORM\Mapping\ClassMetadata::CHANGETRACKING_' . $changeTrackingAnnot->value));
+            $metadata->setChangeTrackingPolicy(constant('Doctrine\ORM\Mapping\ClassMetadata::CHANGETRACKING_' . $changeTrackingAnnot->value));
         }
 
         // Evaluate annotations on properties/fields

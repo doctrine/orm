@@ -13,23 +13,22 @@ class CmsAddress
 {
     /**
      * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @Id @GeneratedValue
      */
     public $id;
 
     /**
-     * @Column(type="string", length=50)
+     * @Column(length=50)
      */
     public $country;
 
     /**
-     * @Column(type="string", length=50)
+     * @Column(length=50)
      */
     public $zip;
 
     /**
-     * @Column(type="string", length=50)
+     * @Column(length=50)
      */
     public $city;
 
@@ -39,8 +38,7 @@ class CmsAddress
     public $street;
 
     /**
-     * @OneToOne(targetEntity="CmsUser")
-//     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @OneToOne(targetEntity="CmsUser", inversedBy="address")
      */
     public $user;
 

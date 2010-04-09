@@ -70,10 +70,7 @@ class ManyToManyMapping extends AssociationMapping
     public $orderBy;
 
     /**
-     * Validates and completes the mapping.
-     *
-     * @param array $mapping
-     * @override
+     * {@inheritdoc}
      */
     protected function _validateAndCompleteMapping(array $mapping)
     {
@@ -89,13 +86,15 @@ class ManyToManyMapping extends AssociationMapping
                     'joinColumns' => array(
                         array(
                             'name' => $sourceShortName . '_id',
-                            'referencedColumnName' => 'id'
+                            'referencedColumnName' => 'id',
+                            'onDelete' => 'CASCADE'
                         )
                     ),
                     'inverseJoinColumns' => array(
                         array(
                             'name' => $targetShortName . '_id',
-                            'referencedColumnName' => 'id'
+                            'referencedColumnName' => 'id',
+                            'onDelete' => 'CASCADE'
                         )
                     )
                 );
@@ -178,6 +177,7 @@ class ManyToManyMapping extends AssociationMapping
         $persister->loadManyToManyCollection($this, $joinTableConditions, $targetCollection);
     }
 
+    /** {@inheritdoc} */
     public function isManyToMany()
     {
         return true;

@@ -37,7 +37,6 @@ final class DiscriminatorColumn extends Annotation {
     public $length;
 }
 final class DiscriminatorMap extends Annotation {}
-/*final class SubClasses extends Annotation {}*/
 final class Id extends Annotation {}
 final class GeneratedValue extends Annotation {
     public $strategy = 'AUTO';
@@ -124,7 +123,6 @@ final class SequenceGenerator extends Annotation {
     public $initialValue = 1;
 }
 final class ChangeTrackingPolicy extends Annotation {}
-
 final class OrderBy extends Annotation {}
 
 /* Annotations for lifecycle callbacks */

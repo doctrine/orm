@@ -100,8 +100,8 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($assoc instanceof \Doctrine\ORM\Mapping\ManyToManyMapping);
         $this->assertEquals(array(
             'name' => 'CmsUser_CmsGroup',
-            'joinColumns' => array(array('name' => 'CmsUser_id', 'referencedColumnName' => 'id')),
-            'inverseJoinColumns' => array(array('name' => 'CmsGroup_id', 'referencedColumnName' => 'id'))
+            'joinColumns' => array(array('name' => 'CmsUser_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE')),
+            'inverseJoinColumns' => array(array('name' => 'CmsGroup_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE'))
         ), $assoc->joinTable);
     }
 

@@ -141,18 +141,14 @@ class OneToOneMapping extends AssociationMapping
         $targetClass = $em->getClassMetadata($this->targetEntityName);
 
         if ($this->isOwningSide) {
-            $inverseField = isset($targetClass->inverseMappings[$this->sourceEntityName][$this->sourceFieldName]) ?
-                    $targetClass->inverseMappings[$this->sourceEntityName][$this->sourceFieldName]->sourceFieldName
-                    : false;
-            
             // Mark inverse side as fetched in the hints, otherwise the UoW would
             // try to load it in a separate query (remember: to-one inverse sides can not be lazy). 
             $hints = array();
-            if ($inverseField) {
-                $hints['fetched'][$targetClass->name][$inverseField] = true;
+            if ($this->inversedBy) {
+                $hints['fetched'][$targetClass->name][$this->inversedBy] = true;
                 if ($targetClass->subClasses) {
                     foreach ($targetClass->subClasses as $targetSubclassName) {
-                        $hints['fetched'][$targetSubclassName][$inverseField] = true;
+                        $hints['fetched'][$targetSubclassName][$this->inversedBy] = true;
                     }
                 }
             }
@@ -164,8 +160,8 @@ class OneToOneMapping extends AssociationMapping
 
             $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($joinColumnValues, $targetEntity, $this, $hints);
             
-            if ($targetEntity !== null && $inverseField && ! $targetClass->isCollectionValuedAssociation($inverseField)) {
-                $targetClass->reflFields[$inverseField]->setValue($targetEntity, $sourceEntity);
+            if ($targetEntity !== null && $this->inversedBy && ! $targetClass->isCollectionValuedAssociation($this->inversedBy)) {
+                $targetClass->reflFields[$this->inversedBy]->setValue($targetEntity, $sourceEntity);
             }
         } else {
             $conditions = array();

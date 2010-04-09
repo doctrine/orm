@@ -230,6 +230,10 @@ class YamlDriver extends AbstractFileDriver
                 if (isset($oneToOneElement['mappedBy'])) {
                     $mapping['mappedBy'] = $oneToOneElement['mappedBy'];
                 } else {
+                    if (isset($oneToOneElement['inversedBy'])) {
+                        $mapping['inversedBy'] = $oneToOneElement['inversedBy'];
+                    }
+
                     $joinColumns = array();
 
                     if (isset($oneToOneElement['joinColumn'])) {
@@ -292,6 +296,10 @@ class YamlDriver extends AbstractFileDriver
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $manyToOneElement['fetch']);
                 }
 
+                if (isset($manyToOneElement['inversedBy'])) {
+                    $mapping['inversedBy'] = $manyToOneElement['inversedBy'];
+                }
+
                 $joinColumns = array();
 
                 if (isset($manyToOneElement['joinColumn'])) {
@@ -331,6 +339,10 @@ class YamlDriver extends AbstractFileDriver
                 if (isset($manyToManyElement['mappedBy'])) {
                     $mapping['mappedBy'] = $manyToManyElement['mappedBy'];
                 } else if (isset($manyToManyElement['joinTable'])) {
+                    if (isset($manyToManyElement['inversedBy'])) {
+                        $mapping['inversedBy'] = $manyToManyElement['inversedBy'];
+                    }
+
                     $joinTableElement = $manyToManyElement['joinTable'];
                     $joinTable = array(
                         'name' => $joinTableElement['name']
@@ -375,7 +387,7 @@ class YamlDriver extends AbstractFileDriver
         if (isset($element['lifecycleCallbacks'])) {
             foreach ($element['lifecycleCallbacks'] as $type => $methods) {
                 foreach ($methods as $method) {
-                    $metadata->addLifecycleCallback($method, constant('\Doctrine\ORM\Events::' . $type));
+                    $metadata->addLifecycleCallback($method, constant('Doctrine\ORM\Events::' . $type));
                 }
             }
         }

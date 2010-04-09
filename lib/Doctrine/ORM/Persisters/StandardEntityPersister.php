@@ -492,8 +492,8 @@ class StandardEntityPersister
                         if ($found = $this->_em->getUnitOfWork()->tryGetById($joinColumnValues, $targetClass->rootEntityName)) {
                             $this->_class->reflFields[$field]->setValue($entity, $found);
                             // Complete inverse side, if necessary.
-                            if (isset($targetClass->inverseMappings[$this->_class->name][$field])) {
-                                $inverseAssoc = $targetClass->inverseMappings[$this->_class->name][$field];
+                            if ($assoc->inversedBy) {
+                                $inverseAssoc = $targetClass->associationMappings[$assoc->inversedBy];
                                 $targetClass->reflFields[$inverseAssoc->sourceFieldName]->setValue($found, $entity);
                             }
                             $newData[$field] = $found;

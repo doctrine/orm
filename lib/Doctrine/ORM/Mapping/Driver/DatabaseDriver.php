@@ -29,7 +29,7 @@ use Doctrine\Common\Cache\ArrayCache,
     Doctrine\Common\Util\Inflector;
 
 /**
- * The DatabaseDriver reverse engineers the mapping metadata from a database
+ * The DatabaseDriver reverse engineers the mapping metadata from a database.
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -67,7 +67,7 @@ class DatabaseDriver implements Driver
 
         $columns = $this->_sm->listTableColumns($tableName);
         
-        if($this->_sm->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+        if ($this->_sm->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $foreignKeys = $this->_sm->listTableForeignKeys($tableName);
         } else {
             $foreignKeys = array();
