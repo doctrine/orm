@@ -18,11 +18,14 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
  */
- 
-namespace Doctrine\Common;
+
+namespace Doctrine\ORM\Tools\Console\Helper;
+
+use Symfony\Components\Console\Helper\Helper,
+    Doctrine\ORM\EntityManager;
 
 /**
- * Class to store and retrieve the version of Doctrine
+ * Doctrine CLI Connection Helper.
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -33,25 +36,39 @@ namespace Doctrine\Common;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class Version
+class EntityManagerHelper extends Helper
 {
     /**
-     * Current Doctrine Version
+     * Doctrine ORM EntityManager
+     * @var EntityManager
      */
-    const VERSION = '2.0-DEV';
+    protected $_em;
 
     /**
-     * Compares a Doctrine version with the current one.
+     * Constructor
      *
-     * @param string $version Doctrine version to compare.
-     * @return int Returns -1 if older, 0 if it is the same, 1 if version 
-     *             passed as argument is newer.
+     * @param Connection $connection Doctrine Database Connection
      */
-    public static function compare($version)
+    public function __construct(EntityManager $em)
     {
-        $currentVersion = str_replace(' ', '', strtolower(self::VERSION));
-        $version = str_replace(' ', '', $version);
+        $this->_em = $em;
+    }
 
-        return version_compare($version, $currentVersion);
+    /**
+     * Retrieves Doctrine ORM EntityManager
+     *
+     * @return EntityManager
+     */
+    public function getEntityManager()
+    {
+        return $this->_em;
+    }
+
+    /**
+     * @see Helper
+     */
+    public function getName()
+    {
+        return 'entityManager';
     }
 }

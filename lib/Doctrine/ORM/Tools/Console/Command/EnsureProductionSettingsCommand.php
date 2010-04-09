@@ -18,11 +18,15 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
  */
- 
-namespace Doctrine\Common;
+
+namespace Doctrine\ORM\Tools\Console\Command;
+
+use Symfony\Components\Console\Input\InputArgument,
+    Symfony\Components\Console\Input\InputOption,
+    Symfony\Components\Console;
 
 /**
- * Class to store and retrieve the version of Doctrine
+ * Command to ensure that Doctrine is properly configured for a production environment.
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -33,25 +37,40 @@ namespace Doctrine\Common;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class Version
+class EnsureProductionSettingsCommand extends Console\Command\Command
 {
     /**
-     * Current Doctrine Version
+     * @see Console\Command\Command
      */
-    const VERSION = '2.0-DEV';
+    protected function configure()
+    {
+        $this
+        ->setName('orm:ensure-production-settings')
+        ->setDescription('Verify that Doctrine is properly configured for a production environment.')
+        ->setDefinition(array(
+            new InputOption(
+                'complete', null, InputOption::PARAMETER_NONE,
+                'Flag to also inspect database connection existance.'
+            )
+        ))
+        ->setHelp(<<<EOT
+Verify that Doctrine is properly configured for a production environment.
+EOT
+        );
+    }
 
     /**
-     * Compares a Doctrine version with the current one.
-     *
-     * @param string $version Doctrine version to compare.
-     * @return int Returns -1 if older, 0 if it is the same, 1 if version 
-     *             passed as argument is newer.
+     * @see Console\Command\Command
      */
-    public static function compare($version)
+    protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
-        $currentVersion = str_replace(' ', '', strtolower(self::VERSION));
-        $version = str_replace(' ', '', $version);
+        $em = $this->getHelper('em')->getEntityManager();
+        $em->getConfiguration()->ensureProductionSettings();
 
-        return version_compare($version, $currentVersion);
+        if ($input->getOption('complete') !== null) {
+            $em->getConnection()->connect();
+        }
+
+        $output->write('Environment is correctly configured for production.');
     }
 }

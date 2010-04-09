@@ -44,15 +44,6 @@ use Doctrine\ORM\ORMException,
 class SchemaTool
 {
     /**
-     * @var string
-     */
-    const DROP_METADATA = "metadata";
-    /**
-     * @var string
-     */
-    const DROP_DATABASE = "database";
-
-    /**
      * @var \Doctrine\ORM\EntityManager
      */
     private $_em;
@@ -473,12 +464,11 @@ class SchemaTool
      * issued for all classes of the schema and some probably just don't exist.
      *
      * @param array $classes
-     * @param string $mode
      * @return void
      */
-    public function dropSchema(array $classes, $mode=self::DROP_METADATA)
+    public function dropSchema(array $classes)
     {
-        $dropSchemaSql = $this->getDropSchemaSql($classes, $mode);
+        $dropSchemaSql = $this->getDropSchemaSql($classes);
         $conn = $this->_em->getConnection();
 
         foreach ($dropSchemaSql as $sql) {
@@ -490,7 +480,6 @@ class SchemaTool
      * Gets the SQL needed to drop the database schema for the given classes.
      *
      * @param array $classes
-     * @param string $mode
      * @return array
      */
     public function getDropSchemaSql(array $classes)
