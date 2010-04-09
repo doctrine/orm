@@ -76,8 +76,7 @@ EOT
         }
         
         if (preg_match('/^select/i', $sql)) {
-            $stmt = $conn->execute($sql);
-            $resultSet = $stmt->fetchAll(\Doctrine\DBAL\Connection::FETCH_ASSOC);
+           $resultSet = $conn->fetchAll($sql);
         } else {
             $resultSet = $em->getConnection()->executeUpdate($sql);
         }

@@ -117,7 +117,7 @@ EOT
             $query->setMaxResult((int) $maxResult);
         }
 
-        $resultSet = $query->execute(array(), $hydrationMode);
+        $resultSet = $query->execute(array(), constant($hydrationMode));
 
         \Doctrine\Common\Util\Debug::dump($resultSet, $input->getOption('depth'));
     }

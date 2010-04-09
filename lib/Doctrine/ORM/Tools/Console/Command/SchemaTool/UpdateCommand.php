@@ -82,7 +82,7 @@ EOT
     {
         $em = $this->getHelper('em')->getEntityManager();
 
-        $reader = new ClassMetadataReader();
+        $reader = new \Doctrine\ORM\Tools\ClassMetadataReader();
         $reader->setEntityManager($em);
 
         // Process source directories
