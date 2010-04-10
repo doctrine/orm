@@ -50,36 +50,7 @@ abstract class AbstractCommand extends Command
         /* @var $em \Doctrine\ORM\EntityManager */
         $em = $emHelper->getEntityManager();
 
-        $reader = new \Doctrine\ORM\Tools\ClassMetadataReader();
-        $reader->setEntityManager($em);
-
-        $metadataDriver = $em->getConfiguration()->getMetadataDriverImpl();
-        if ($metadataDriver instanceof AbstractFileDriver) {
-            $reader->addMappingSource($metadataDriver);
-        }
-
-        // Process source directories
-        if ($emHelper->hasAdditionalMappingPathInformation()) {
-
-            foreach ($emHelper->getMappingPaths() as $dirName) {
-                $dirName = realpath($dirName);
-
-                if ( ! file_exists($dirName)) {
-                    throw new \InvalidArgumentException(
-                        sprintf("Mapping directory '<info>%s</info>' does not exist.", $dirName)
-                    );
-                } else if ( ! is_readable($dirName)) {
-                    throw new \InvalidArgumentException(
-                        sprintf("Mapping directory '<info>%s</info>' does not have read permissions.", $dirName)
-                    );
-                }
-
-                $reader->addMappingSource($dirName);
-            }
-        }
-
-        // Retrieving ClassMetadatas, autoloading required since we need access to the Reflection stuff.
-        $metadatas = $reader->getMetadatas(true);
+        $metadatas = $em->getMetadataFactory()->getAllMetadata();
 
         if ( ! empty($metadatas)) {
             // Create SchemaTool

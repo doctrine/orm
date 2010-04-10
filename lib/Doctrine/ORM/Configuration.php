@@ -21,6 +21,9 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\Cache\Cache,
+    Doctrine\ORM\Mapping\Driver\Driver;
+
 /**
  * Configuration container for all configuration options of Doctrine.
  * It combines all configuration options from DBAL & ORM.
@@ -118,11 +121,11 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Sets the cache driver implementation that is used for metadata caching.
      *
-     * @param object $driverImpl
+     * @param Driver $driverImpl
      * @todo Force parameter to be a Closure to ensure lazy evaluation
      *       (as soon as a metadata cache is in effect, the driver never needs to initialize).
      */
-    public function setMetadataDriverImpl($driverImpl)
+    public function setMetadataDriverImpl(Driver $driverImpl)
     {
         $this->_attributes['metadataDriverImpl'] = $driverImpl;
     }
@@ -168,14 +171,13 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the cache driver implementation that is used for the mapping metadata.
      *
-     * @return object
+     * @throws ORMException
+     * @return Mapping\Driver\Driver
      */
     public function getMetadataDriverImpl()
     {
         if ($this->_attributes['metadataDriverImpl'] == null) {
-            $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
-            $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-            $this->_attributes['metadataDriverImpl'] = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
+            throw ORMException::missingMappingDriverImpl();
         }
 
         return $this->_attributes['metadataDriverImpl'];
@@ -184,7 +186,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the cache driver implementation that is used for query result caching.
      *
-     * @return object
+     * @return \Doctrine\Common\Cache\Cache
      */
     public function getResultCacheImpl()
     {
@@ -194,9 +196,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Sets the cache driver implementation that is used for query result caching.
      *
-     * @param object $cacheImpl
+     * @param \Doctrine\Common\Cache\Cache $cacheImpl
      */
-    public function setResultCacheImpl($cacheImpl)
+    public function setResultCacheImpl(Cache $cacheImpl)
     {
         $this->_attributes['resultCacheImpl'] = $cacheImpl;
     }
@@ -204,7 +206,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the cache driver implementation that is used for the query cache (SQL cache).
      *
-     * @return object
+     * @return \Doctrine\Common\Cache\Cache
      */
     public function getQueryCacheImpl()
     {
@@ -214,9 +216,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Sets the cache driver implementation that is used for the query cache (SQL cache).
      *
-     * @param object $cacheImpl
+     * @param \Doctrine\Common\Cache\Cache $cacheImpl
      */
-    public function setQueryCacheImpl($cacheImpl)
+    public function setQueryCacheImpl(Cache $cacheImpl)
     {
         $this->_attributes['queryCacheImpl'] = $cacheImpl;
     }
@@ -224,7 +226,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the cache driver implementation that is used for metadata caching.
      *
-     * @return object
+     * @return \Doctrine\Common\Cache\Cache
      */
     public function getMetadataCacheImpl()
     {
@@ -234,9 +236,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Sets the cache driver implementation that is used for metadata caching.
      *
-     * @param object $cacheImpl
+     * @param \Doctrine\Common\Cache\Cache $cacheImpl
      */
-    public function setMetadataCacheImpl($cacheImpl)
+    public function setMetadataCacheImpl(Cache $cacheImpl)
     {
         $this->_attributes['metadataCacheImpl'] = $cacheImpl;
     }

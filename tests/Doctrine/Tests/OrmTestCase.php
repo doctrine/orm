@@ -30,6 +30,10 @@ abstract class OrmTestCase extends DoctrineTestCase
         } else {
             $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache);
         }
+        
+        $driverImpl = \Doctrine\ORM\Mapping\Driver\AnnotationDriver::create();
+        $config->setMetadataDriverImpl($driverImpl);
+
         $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');

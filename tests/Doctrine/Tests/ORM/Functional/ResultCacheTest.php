@@ -82,7 +82,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertTrue($cache->contains('testing_result_cache_id'));
 
-        $this->_em->getConfiguration()->setResultCacheImpl(null);
+        $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
     }
 
     public function testNativeQueryResultCaching()

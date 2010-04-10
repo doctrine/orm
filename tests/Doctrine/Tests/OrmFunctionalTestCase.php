@@ -221,7 +221,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (is_null(self::$_queryCacheImpl)) {
-        	self::$_queryCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
+            self::$_queryCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
         }
 
         $this->_sqlLoggerStack = new \Doctrine\DBAL\Logging\DebugStack();
@@ -234,6 +234,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $config->setQueryCacheImpl(self::$_queryCacheImpl);
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
+
+        $driverImpl = \Doctrine\ORM\Mapping\Driver\AnnotationDriver::create();
+        $config->setMetadataDriverImpl($driverImpl);
         
         $conn = $this->sharedFixture['conn'];
         $conn->getConfiguration()->setSQLLogger($this->_sqlLoggerStack);
