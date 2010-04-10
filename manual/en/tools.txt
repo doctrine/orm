@@ -18,24 +18,10 @@ Type `doctrine` on the command line and you should see an overview of the availa
 +++ Configuration
 
 Whenever the `doctrine` command line tool is invoked, it is only able to access Commands that were defined by developer. Dependency Injection (DI) is the responsable to inject support into this utility, but it is up to the developer define it.
+The Doctrine CLI tool from the bin/ folder already defines all the DBAL and ORM commands shipped with Doctrine.
 
-To include a new command on Doctrine Console, you need to do:
-
-    [php]
-    $cli->addCommand(new \MyProject\Tools\Console\Commands\MyCustomCommand());
-
-Additionally, include multiple commands (and overriding previously defined ones) is possible through the command:
-
-    [php]
-    $cli->addCommands(array(
-        new \MyProject\Tools\Console\Commands\MyCustomCommand(),
-        new \MyProject\Tools\Console\Commands\SomethingCommand(),
-        new \MyProject\Tools\Console\Commands\AnotherCommand(),
-        new \MyProject\Tools\Console\Commands\OneMoreCommand(),
-    ));
-
-Many commands of the Doctrine Console requires either the `db` or the `em` helpers to be defined in order to work correctly. Doctrine Console requires the definition of a HelperSet that is the DI tool to be injected in the Console.
-In case of a project that is dealing exclusvely with DBAL, the ConnectionHelper is required:
+All the commands of the Doctrine Console require either the `db` or the `em` helpers to be defined in order to work correctly. Doctrine Console requires the definition of a HelperSet that is the DI tool to be injected in the Console.
+In case of a project that is dealing exclusively with DBAL, the ConnectionHelper is required:
 
     [php]
     $helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
@@ -51,7 +37,8 @@ When dealing with the ORM package, the EntityManagerHelper is required:
     ));
     $cli->setHelperSet($helperSet);
 
-The HelperSet instance can be in a separate file (ie. `cli-config.php`) that contains typical Doctrine bootstrap code and predefines the needed HelperSet attributes mentioned above. A typical `cli-config.php` file looks as follows:
+The HelperSet instance has to be generated in a separate file (ie. `cli-config.php`) that contains typical Doctrine
+bootstrap code and predefines the needed HelperSet attributes mentioned above. A typical `cli-config.php` file looks as follows:
 
     [php]
     require_once __DIR__ . '/../../lib/Doctrine/Common/ClassLoader.php';
@@ -79,7 +66,24 @@ The HelperSet instance can be in a separate file (ie. `cli-config.php`) that con
         'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
     ));
 
-It is important to define a correct HelperSet that doctrine.php script will ultimately use. For the required name of this variable, check the doctrine.php included in your package; the most new ones will automatically find the variable no matter what its name is, as long as it is an instance of the right class.
+It is important to define a correct HelperSet that doctrine.php script will ultimately use. The Doctrine Binary
+will automatically find the first instance of HelperSet in the global variable namespace and use this.
+
+You can also add your own commands on-top of the Doctrine supported tools.
+To include a new command on Doctrine Console, you need to do:
+
+    [php]
+    $cli->addCommand(new \MyProject\Tools\Console\Commands\MyCustomCommand());
+
+Additionally, include multiple commands (and overriding previously defined ones) is possible through the command:
+
+    [php]
+    $cli->addCommands(array(
+        new \MyProject\Tools\Console\Commands\MyCustomCommand(),
+        new \MyProject\Tools\Console\Commands\SomethingCommand(),
+        new \MyProject\Tools\Console\Commands\AnotherCommand(),
+        new \MyProject\Tools\Console\Commands\OneMoreCommand(),
+    ));
 
 +++ Command Overview
 
@@ -143,25 +147,25 @@ If you want to use this functionality from the command line you can use the
 
 To create the schema use the `create` command:
 
-    $ php doctrine orm:schema-tool:create /path/to/mapping-path
+    $ php doctrine orm:schema-tool:create
 
 To drop the schema use the `drop` command:
 
-    $ php doctrine orm:schema-tool:drop /path/to/mapping-path
+    $ php doctrine orm:schema-tool:drop
 
 If you want to drop and then recreate the schema then use both options:
 
-    $ php doctrine orm:schema-tool:drop /path/to/mapping-path
-    $ php doctrine orm:schema-tool:create /path/to/mapping-path
+    $ php doctrine orm:schema-tool:drop
+    $ php doctrine orm:schema-tool:create
 
 As you would think, if you want to update your schema use the `update` command:
 
-    $ php doctrine orm:schema-tool:update /path/to/mapping-path
+    $ php doctrine orm:schema-tool:update
 
 All of the above commands also accept a `--dump-sql` option that will output the SQL
 for the ran operation.
 
-    $ php doctrine orm:schema-tool:create --dump-sql /path/to/mapping-path
+    $ php doctrine orm:schema-tool:create --dump-sql
 
 Before using the orm:schema-tool commands, remember to configure your cli-config.php properly.
 
