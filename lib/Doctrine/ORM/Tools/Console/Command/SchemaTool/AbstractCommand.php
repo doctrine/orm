@@ -27,7 +27,8 @@ use Symfony\Components\Console\Input\InputArgument,
     Symfony\Components\Console\Output\OutputInterface,
     Symfony\Components\Console\Command\Command,
     Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper,
-    Doctrine\ORM\Tools\SchemaTool;
+    Doctrine\ORM\Tools\SchemaTool,
+    Doctrine\ORM\Mapping\Driver\AbstractFileDriver;
 
 abstract class AbstractCommand extends Command
 {
@@ -51,7 +52,11 @@ abstract class AbstractCommand extends Command
 
         $reader = new \Doctrine\ORM\Tools\ClassMetadataReader();
         $reader->setEntityManager($em);
-        $reader->addMappingSource($em->getConfiguration()->getMetadataDriverImpl());
+
+        $metadataDriver = $em->getConfiguration()->getMetadataDriverImpl();
+        if ($metadataDriver instanceof AbstractFileDriver) {
+            $reader->addMappingSource($metadataDriver);
+        }
 
         // Process source directories
         if ($emHelper->hasAdditionalMappingPathInformation()) {
