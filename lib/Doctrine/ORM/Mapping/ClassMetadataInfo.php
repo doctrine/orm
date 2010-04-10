@@ -127,9 +127,9 @@ class ClassMetadataInfo
     public $namespace;
 
     /**
-     * READ-ONLY: The name of the entity class that is at the root of the entity inheritance
-     * hierarchy. If the entity is not part of an inheritance hierarchy this is the same
-     * as $_entityName.
+     * READ-ONLY: The name of the entity class that is at the root of the mapped entity inheritance
+     * hierarchy. If the entity is not part of a mapped inheritance hierarchy this is the same
+     * as {@link $entityName}.
      *
      * @var string
      */
@@ -311,14 +311,6 @@ class ClassMetadataInfo
      * @var array
      */
     public $associationMappings = array();
-
-    /**
-     * READ-ONLY: List of inverse association mappings, indexed by mappedBy field name.
-     *
-     * @var array
-     * @todo Remove! See http://www.doctrine-project.org/jira/browse/DDC-193
-     */
-    public $inverseMappings = array();
 
     /**
      * READ-ONLY: Flag indicating whether the identifier/primary key of the class is composite.
@@ -529,34 +521,6 @@ class ClassMetadataInfo
             throw MappingException::mappingNotFound($this->name, $fieldName);
         }
         return $this->associationMappings[$fieldName];
-    }
-
-    /**
-     * Gets the inverse association mapping for the given target class name and
-     * owning fieldname.
-     *
-     * @param string $mappedByFieldName The field on the
-     * @return Doctrine\ORM\Mapping\AssociationMapping The mapping or NULL if there is no such
-     *          inverse association mapping.
-     */
-    public function getInverseAssociationMapping($targetClassName, $mappedByFieldName)
-    {
-        return isset($this->inverseMappings[$targetClassName][$mappedByFieldName]) ?
-                $this->inverseMappings[$targetClassName][$mappedByFieldName] : null;
-    }
-
-    /**
-     * Checks whether the class has an inverse association mapping that points to the
-     * specified class and ha the specified mappedBy field.
-     *
-     * @param string $targetClassName The name of the target class.
-     * @param string $mappedByFieldName The name of the mappedBy field that points to the field on
-     *          the target class that owns the association.
-     * @return boolean
-     */
-    public function hasInverseAssociationMapping($targetClassName, $mappedByFieldName)
-    {
-        return isset($this->inverseMappings[$targetClassName][$mappedByFieldName]);
     }
 
     /**
@@ -1063,7 +1027,6 @@ class ClassMetadataInfo
         if ($owningClassName !== null) {
             $this->inheritedAssociationFields[$sourceFieldName] = $owningClassName;
         }
-        $this->_registerMappingIfInverse($mapping);
     }
 
     /**
@@ -1091,20 +1054,6 @@ class ClassMetadataInfo
         $mapping = $this->_completeAssociationMapping($mapping);
         $oneToOneMapping = new OneToOneMapping($mapping);
         $this->_storeAssociationMapping($oneToOneMapping);
-    }
-
-    /**
-     * Registers the mapping as an inverse mapping, if it is a mapping on the
-     * inverse side of an association mapping.
-     *
-     * @param AssociationMapping The mapping to register as inverse if it is a mapping
-     *      for the inverse side of an association.
-     */
-    private function _registerMappingIfInverse(AssociationMapping $assoc)
-    {
-        if ( ! $assoc->isOwningSide) {
-            $this->inverseMappings[$assoc->targetEntityName][$assoc->mappedBy] = $assoc;
-        }
     }
 
     /**
@@ -1154,7 +1103,6 @@ class ClassMetadataInfo
             throw MappingException::duplicateFieldMapping($this->name, $sourceFieldName);
         }
         $this->associationMappings[$sourceFieldName] = $assocMapping;
-        $this->_registerMappingIfInverse($assocMapping);
     }
 
     /**

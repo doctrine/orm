@@ -68,7 +68,7 @@ abstract class DDC279EntityXAbstract
 {
     /**
      * @Id
-     * @generatedValue(strategy="AUTO")
+     * @GeneratedValue
      * @Column(name="id", type="integer")
      */
     public $id;
@@ -98,8 +98,7 @@ class DDC279EntityX extends DDC279EntityXAbstract
 class DDC279EntityY
 {
     /**
-     * @Id
-     * @generatedValue(strategy="AUTO")
+     * @Id @GeneratedValue
      * @Column(name="id", type="integer")
      */
     public $id;
@@ -122,8 +121,7 @@ class DDC279EntityY
 class DDC279EntityZ
 {
     /**
-     * @Id
-     * @generatedValue(strategy="AUTO")
+     * @Id @GeneratedValue
      * @Column(name="id", type="integer")
      */
     public $id;

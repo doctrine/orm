@@ -10,12 +10,12 @@ class RoutingRouteBooking
     /**
      * @Id
      * @Column(type="integer")
-     * @generatedValue(strategy="AUTO")
+     * @GeneratedValue
      */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="RoutingRoute")
+     * @ManyToOne(targetEntity="RoutingRoute", inversedBy="bookings")
      * @JoinColumn(name="route_id", referencedColumnName="id")
      */
     public $route;

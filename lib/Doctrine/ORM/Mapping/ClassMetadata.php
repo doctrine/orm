@@ -315,7 +315,6 @@ class ClassMetadata extends ClassMetadataInfo
             'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.
             'inheritanceType',
             'inheritedAssociationFields',
-            'inverseMappings', //TODO: Remove! DDC-193
             'isIdentifierComposite',
             'isMappedSuperclass',
             'isVersioned',

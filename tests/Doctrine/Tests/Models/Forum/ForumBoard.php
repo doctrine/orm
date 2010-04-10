@@ -21,7 +21,7 @@ class ForumBoard
      */
     public $position;
     /**
-     * @ManyToOne(targetEntity="ForumCategory")
+     * @ManyToOne(targetEntity="ForumCategory", inversedBy="boards")
      * @JoinColumn(name="category_id", referencedColumnName="id")
      */
     public $category;

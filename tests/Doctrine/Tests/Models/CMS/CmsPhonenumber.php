@@ -9,11 +9,11 @@ namespace Doctrine\Tests\Models\CMS;
 class CmsPhonenumber
 {
     /**
-     * @Id @Column(type="string", length=50)
+     * @Id @Column(length=50)
      */
     public $phonenumber;
     /**
-     * @ManyToOne(targetEntity="CmsUser")
+     * @ManyToOne(targetEntity="CmsUser", inversedBy="phonenumbers")
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;

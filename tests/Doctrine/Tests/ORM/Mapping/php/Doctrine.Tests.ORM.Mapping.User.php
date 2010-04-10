@@ -39,6 +39,7 @@ $metadata->mapOneToOne(array(
    0 => 'remove',
    ),
    'mappedBy' => NULL,
+   'inversedBy' => 'user',
    'joinColumns' => 
    array(
    0 => 

@@ -212,7 +212,7 @@ class Relation {
 
     /**
      * @var Lemma
-     * @ManyToOne(targetEntity="Lemma")
+     * @ManyToOne(targetEntity="Lemma", inversedBy="relations")
      * @JoinColumn(name="relation_parent_id", referencedColumnName="lemma_id")
      */
     private $parent;
@@ -226,7 +226,7 @@ class Relation {
 
     /**
      * @var RelationType
-     * @ManyToOne(targetEntity="RelationType")
+     * @ManyToOne(targetEntity="RelationType", inversedBy="relations")
      * @JoinColumn(name="relation_type_id", referencedColumnName="relation_type_id")
      */
     private $type;

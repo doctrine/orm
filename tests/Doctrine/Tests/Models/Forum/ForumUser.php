@@ -10,8 +10,7 @@ class ForumUser
 {
     /**
      * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @Id @GeneratedValue
      */
     public $id;
     /**

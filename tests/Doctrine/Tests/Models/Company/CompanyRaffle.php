@@ -4,7 +4,7 @@ namespace Doctrine\Tests\Models\Company;
 
 /** @Entity @Table(name="company_raffles") */
 class CompanyRaffle extends CompanyEvent {
-    /** @Column(type="string") */
+    /** @Column */
     private $data;
     
     public function setData($data) {

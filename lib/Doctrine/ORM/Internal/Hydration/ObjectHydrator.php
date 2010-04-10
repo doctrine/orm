@@ -87,8 +87,8 @@ class ObjectHydrator extends AbstractHydrator
                     if ($assoc->mappedBy) {
                         $this->_hints['fetched'][$className][$assoc->mappedBy] = true;
                     } else {
-                        if (isset($class->inverseMappings[$sourceClassName][$assoc->sourceFieldName])) {
-                            $inverseAssoc = $class->inverseMappings[$sourceClassName][$assoc->sourceFieldName];
+                        if ($assoc->inversedBy) {
+                            $inverseAssoc = $class->associationMappings[$assoc->inversedBy];
                             if ($inverseAssoc->isOneToOne()) {
                                 $this->_hints['fetched'][$className][$inverseAssoc->sourceFieldName] = true;
                                 if ($class->subClasses) {
@@ -346,9 +346,10 @@ class ObjectHydrator extends AbstractHydrator
                             $this->_uow->setOriginalEntityProperty($oid, $relationField, $element);
                             $targetClass = $this->_ce[$relation->targetEntityName];
                             if ($relation->isOwningSide) {
+                                //TODO: Just check hints['fetched'] here?
                                 // If there is an inverse mapping on the target class its bidirectional
-                                if (isset($targetClass->inverseMappings[$relation->sourceEntityName][$relationField])) {
-                                    $inverseAssoc = $targetClass->inverseMappings[$relation->sourceEntityName][$relationField];
+                                if ($relation->inversedBy) {
+                                    $inverseAssoc = $targetClass->associationMappings[$relation->inversedBy];
                                     if ($inverseAssoc->isOneToOne()) {
                                         $targetClass->reflFields[$inverseAssoc->sourceFieldName]->setValue($element, $parentObject);
                                         $this->_uow->setOriginalEntityProperty(spl_object_hash($element), $inverseAssoc->sourceFieldName, $parentObject);

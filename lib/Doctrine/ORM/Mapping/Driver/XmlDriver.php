@@ -21,7 +21,8 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo,
+use SimpleXMLElement,
+    Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\MappingException;
 
 /**
@@ -226,6 +227,9 @@ class XmlDriver extends AbstractFileDriver
                 if (isset($oneToOneElement['mapped-by'])) {
                     $mapping['mappedBy'] = (string)$oneToOneElement['mapped-by'];
                 } else {
+                    if (isset($oneToOneElement['inversed-by'])) {
+                        $mapping['inversedBy'] = (string)$oneToOneElement['inversed-by'];
+                    }
                     $joinColumns = array();
                     
                     if (isset($oneToOneElement->{'join-column'})) {
@@ -295,9 +299,13 @@ class XmlDriver extends AbstractFileDriver
                 if (isset($manyToOneElement['fetch'])) {
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . (string)$manyToOneElement['fetch']);
                 }
-                
+
+                if (isset($manyToOneElement['inversed-by'])) {
+                    $mapping['inversedBy'] = (string)$manyToOneElement['inversed-by'];
+                }
+
                 $joinColumns = array();
-                
+
                 if (isset($manyToOneElement->{'join-column'})) {
                     $joinColumns[] = $this->_getJoinColumnMapping($manyToOneElement->{'join-column'});
                 } else if (isset($manyToOneElement->{'join-columns'})) {
@@ -305,13 +313,12 @@ class XmlDriver extends AbstractFileDriver
                         if (!isset($joinColumnElement['name'])) {
                             $joinColumnElement['name'] = $name;
                         }
-                        
                         $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
                     }
                 }
-                
+
                 $mapping['joinColumns'] = $joinColumns;
-                
+
                 if (isset($manyToOneElement->cascade)) {
                     $mapping['cascade'] = $this->_getCascadeMappings($manyToOneElement->cascade);
                 }
@@ -339,11 +346,15 @@ class XmlDriver extends AbstractFileDriver
                 if (isset($manyToManyElement['mapped-by'])) {
                     $mapping['mappedBy'] = (string)$manyToManyElement['mapped-by'];
                 } else if (isset($manyToManyElement->{'join-table'})) {
+                    if (isset($manyToManyElement['inversed-by'])) {
+                        $mapping['inversedBy'] = (string)$manyToManyElement['inversed-by'];
+                    }
+
                     $joinTableElement = $manyToManyElement->{'join-table'};
                     $joinTable = array(
                         'name' => (string)$joinTableElement['name']
                     );
-                    
+
                     if (isset($joinTableElement['schema'])) {
                         $joinTable['schema'] = (string)$joinTableElement['schema'];
                     }
@@ -382,7 +393,7 @@ class XmlDriver extends AbstractFileDriver
         // Evaluate <lifecycle-callbacks...>
         if (isset($xmlRoot->{'lifecycle-callbacks'})) {
             foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} as $lifecycleCallback) {
-                $metadata->addLifecycleCallback((string)$lifecycleCallback['method'], constant('\Doctrine\ORM\Events::' . (string)$lifecycleCallback['type']));
+                $metadata->addLifecycleCallback((string)$lifecycleCallback['method'], constant('Doctrine\ORM\Events::' . (string)$lifecycleCallback['type']));
             }
         }
     }
@@ -394,7 +405,7 @@ class XmlDriver extends AbstractFileDriver
      * @param $joinColumnElement The XML element.
      * @return array The mapping array.
      */
-    private function _getJoinColumnMapping(\SimpleXMLElement $joinColumnElement)
+    private function _getJoinColumnMapping(SimpleXMLElement $joinColumnElement)
     {
         $joinColumn = array(
             'name' => (string)$joinColumnElement['name'],

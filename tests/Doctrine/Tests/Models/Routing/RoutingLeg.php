@@ -8,20 +8,19 @@ namespace Doctrine\Tests\Models\Routing;
 class RoutingLeg
 {
     /**
-     * @Id
-     * @generatedValue(strategy="AUTO")
+     * @Id @generatedValue
      * @column(type="integer")
      */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="Doctrine\Tests\Models\Routing\RoutingLocation")
+     * @ManyToOne(targetEntity="RoutingLocation")
      * @JoinColumn(name="from_id", referencedColumnName="id")
      */
     public $fromLocation;
 
     /**
-     * @ManyToOne(targetEntity="Doctrine\Tests\Models\Routing\RoutingLocation")
+     * @ManyToOne(targetEntity="RoutingLocation")
      * @JoinColumn(name="to_id", referencedColumnName="id")
      */
     public $toLocation;

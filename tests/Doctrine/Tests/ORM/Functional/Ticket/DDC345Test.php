@@ -118,13 +118,13 @@ class DDC345Membership
     public $id;
 
     /**
-     * @OneToOne(targetEntity="DDC345User")
+     * @OneToOne(targetEntity="DDC345User", inversedBy="Memberships")
      * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      */
     public $user;
 
     /**
-     * @OneToOne(targetEntity="DDC345Group")
+     * @OneToOne(targetEntity="DDC345Group", inversedBy="Memberships")
      * @JoinColumn(name="group_id", referencedColumnName="id", nullable=false)
      */
     public $group;

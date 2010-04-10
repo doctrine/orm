@@ -65,7 +65,7 @@ class DDC211User
     protected $name;
 
     /**
-    * @ManyToMany(targetEntity="DDC211Group")
+    * @ManyToMany(targetEntity="DDC211Group", inversedBy="users")
     *   @JoinTable(name="user_groups",
     *       joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
     *       inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}

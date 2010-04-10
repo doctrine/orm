@@ -10,7 +10,7 @@ class DateTimeModel
 {
     /**
      * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @GeneratedValue
      */
     public $id;
     /**

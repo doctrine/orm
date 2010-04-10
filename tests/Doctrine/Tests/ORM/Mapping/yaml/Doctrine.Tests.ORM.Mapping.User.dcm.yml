@@ -19,6 +19,7 @@ Doctrine\Tests\ORM\Mapping\User:
   oneToOne:
     address:
       targetEntity: Address
+      inversedBy: user
       joinColumn:
         name: address_id
         referencedColumnName: id

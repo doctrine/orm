@@ -73,7 +73,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     public function testAssocations($class)
     {
         $this->assertEquals(3, count($class->associationMappings));
-        $this->assertEquals(1, count($class->inverseMappings));
 
         return $class;
     }
@@ -87,6 +86,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($class->associationMappings['address'] instanceof \Doctrine\ORM\Mapping\OneToOneMapping);
         $this->assertTrue(isset($class->associationMappings['address']));
         $this->assertTrue($class->associationMappings['address']->isOwningSide);
+        $this->assertEquals('user', $class->associationMappings['address']->inversedBy);
         // Check cascading
         $this->assertTrue($class->associationMappings['address']->isCascadeRemove);
         $this->assertFalse($class->associationMappings['address']->isCascadePersist);
@@ -223,13 +223,12 @@ class User
     public $email;
 
     /**
-     * @OneToOne(targetEntity="Address", cascade={"remove"})
+     * @OneToOne(targetEntity="Address", cascade={"remove"}, inversedBy="user")
      * @JoinColumn(onDelete="CASCADE", onUpdate="CASCADE")
      */
     public $address;
 
     /**
-     *
      * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist"})
      * @OrderBy({"number"="ASC"})
      */

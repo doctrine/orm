@@ -14,7 +14,7 @@ class ECommerceShipping
 {
     /**
      * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @GeneratedValue
      */
     private $id;
 
