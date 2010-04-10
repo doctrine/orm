@@ -73,8 +73,8 @@ abstract class AbstractCommand extends Command
             }
         }
 
-        // Retrieving ClassMetadatas
-        $metadatas = $reader->getMetadatas();
+        // Retrieving ClassMetadatas, autoloading required since we need access to the Reflection stuff.
+        $metadatas = $reader->getMetadatas(true);
 
         if ( ! empty($metadatas)) {
             // Create SchemaTool
