@@ -23,7 +23,9 @@ namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
 use Symfony\Components\Console\Input\InputArgument,
     Symfony\Components\Console\Input\InputOption,
-    Symfony\Components\Console;
+    Symfony\Components\Console\Input\InputInterface,
+    Symfony\Components\Console\Output\OutputInterface,
+    Doctrine\ORM\Tools\SchemaTool;
 
 /**
  * Command to update the database schema for a set of classes based on their mappings.
@@ -37,7 +39,7 @@ use Symfony\Components\Console\Input\InputArgument,
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class UpdateCommand extends Console\Command\Command
+class UpdateCommand extends AbstractCommand
 {
     /**
      * @see Console\Command\Command
@@ -50,14 +52,6 @@ class UpdateCommand extends Console\Command\Command
             'Processes the schema and either update the database schema of EntityManager Storage Connection or generate the SQL output.'
         )
         ->setDefinition(array(
-            new InputArgument(
-                'from-path', InputArgument::REQUIRED, 'The path of mapping information.'
-            ),
-            new InputOption(
-                'from', null, InputOption::PARAMETER_REQUIRED | InputOption::PARAMETER_IS_ARRAY,
-                'Optional paths of mapping information.',
-                array()
-            ),
             new InputOption(
                 'complete', null, InputOption::PARAMETER_NONE,
                 'If defined, all assets of the database which are not relevant to the current metadata will be dropped.'
@@ -75,55 +69,18 @@ EOT
         );
     }
 
-    /**
-     * @see Console\Command\Command
-     */
-    protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
+    protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
     {
-        $em = $this->getHelper('em')->getEntityManager();
-
-        $reader = new \Doctrine\ORM\Tools\ClassMetadataReader();
-        $reader->setEntityManager($em);
-
-        // Process source directories
-        $fromPaths = array_merge(array($input->getArgument('from-path')), $input->getOption('from'));
-
-        foreach ($fromPaths as $dirName) {
-            $dirName = realpath($dirName);
-
-            if ( ! file_exists($dirName)) {
-                throw new \InvalidArgumentException(
-                    sprintf("Mapping directory '<info>%s</info>' does not exist.", $dirName)
-                );
-            } else if ( ! is_readable($dirName)) {
-                throw new \InvalidArgumentException(
-                    sprintf("Mapping directory '<info>%s</info>' does not have read permissions.", $dirName)
-                );
-            }
-
-            $reader->addMappingSource($dirName);
-        }
-
         // Defining if update is complete or not (--complete not defined means $saveMode = true)
-        $saveMode = ($input->getOption('complete') === null);
+        $saveMode = ($input->getOption('complete') === true);
 
-        // Retrieving ClassMetadatas
-        $metadatas = $reader->getMetadatas();
-
-        if ( ! empty($metadatas)) {
-            // Create SchemaTool
-            $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
-
-            if ($input->getOption('dump-sql') === null) {
-                $sqls = $tool->getUpdateSchemaSql($metadatas, $saveMode);
-                $output->write(implode(';' . PHP_EOL, $sqls));
-            } else {
-                $output->write('Updating database schema...' . PHP_EOL);
-                $tool->updateSchema($metadatas, $saveMode);
-                $output->write('Database schema updated successfully!' . PHP_EOL);
-            }
+        if ($input->getOption('dump-sql') === true) {
+            $sqls = $schemaTool->getUpdateSchemaSql($metadatas, $saveMode);
+            $output->write(implode(';' . PHP_EOL, $sqls) . PHP_EOL);
         } else {
-            $output->write('No Metadata Classes to process.' . PHP_EOL);
+            $output->write('Updating database schema...' . PHP_EOL);
+            $schemaTool->updateSchema($metadatas, $saveMode);
+            $output->write('Database schema updated successfully!' . PHP_EOL);
         }
     }
 }

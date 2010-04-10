@@ -45,13 +45,19 @@ class EntityManagerHelper extends Helper
     protected $_em;
 
     /**
+     * @var array
+     */
+    protected $_mappingPaths = array();
+
+    /**
      * Constructor
      *
      * @param Connection $connection Doctrine Database Connection
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $em, $mappingPaths = array())
     {
         $this->_em = $em;
+        $this->_mappingPaths = $mappingPaths;
     }
 
     /**
@@ -62,6 +68,16 @@ class EntityManagerHelper extends Helper
     public function getEntityManager()
     {
         return $this->_em;
+    }
+
+    public function hasAdditionalMappingPathInformation()
+    {
+        return count($this->_mappingPaths);
+    }
+
+    public function getMappingPaths()
+    {
+        return $this->_mappingPaths;
     }
 
     /**
