@@ -145,8 +145,9 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $userId = $user->id;
 
-        $this->setExpectedException('Doctrine\ORM\OptimisticLockException');
         $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $userId);
+        
+        $this->setExpectedException('Doctrine\ORM\OptimisticLockException');
         $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $userId, \Doctrine\ORM\LockMode::OPTIMISTIC);
     }
 }

@@ -960,6 +960,6 @@ class StandardEntityPersister
              . $this->_getSQLTableAlias($this->_class)
              . ($conditionSql ? ' WHERE ' . $conditionSql : '') . ' ' . $lockSql;
         $params = array_values($criteria);
-        $this->_conn->executeQuery($query, $params);
+        $this->_conn->executeQuery($sql, $params);
     }
 }

@@ -59,7 +59,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a ORDER BY a.user.name ASC',
-            'SELECT c0_.id AS id0, c0_.topic AS topic1, c0_.text AS text2 FROM cms_articles c0_ INNER JOIN cms_users c1_ ON c0_.user_id = c1_.id ORDER BY c1_.name ASC'
+            'SELECT c0_.id AS id0, c0_.topic AS topic1, c0_.text AS text2, c0_.version AS version3 FROM cms_articles c0_ INNER JOIN cms_users c1_ ON c0_.user_id = c1_.id ORDER BY c1_.name ASC'
         );
     }
 
@@ -183,11 +183,11 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testSupportsMultipleEntitesInFromClause()
+    public function testSupportsMultipleEntitiesInFromClause()
     {
         $this->assertSqlGeneration(
             'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a WHERE u.id = a.user.id',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c1_.id AS id4, c1_.topic AS topic5, c1_.text AS text6 FROM cms_users c0_ INNER JOIN cms_users c2_ ON c1_.user_id = c2_.id WHERE c0_.id = c2_.id'
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c1_.id AS id4, c1_.topic AS topic5, c1_.text AS text6, c1_.version AS version7 FROM cms_users c0_ INNER JOIN cms_users c2_ ON c1_.user_id = c2_.id WHERE c0_.id = c2_.id'
         );
     }
 

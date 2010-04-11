@@ -458,7 +458,7 @@ class EntityManager
      * @throws OptimisticLockException
      * @throws PessimisticLockException
      */
-    public function lock($entity, $lockMode, $lockVersion)
+    public function lock($entity, $lockMode, $lockVersion = null)
     {
         $this->_unitOfWork->lock($entity, $lockMode, $lockVersion);
     }

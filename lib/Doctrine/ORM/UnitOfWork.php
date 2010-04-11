@@ -1347,7 +1347,7 @@ class UnitOfWork implements PropertyChangedListener
                 $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
                 // Throw exception if versions dont match.
                 if ($managedCopyVersion != $entityVersion) {
-                    throw OptimisticLockException::lockFailed();
+                    throw OptimisticLockException::lockFailedVersionMissmatch($entityVersion, $managedCopyVersion);
                 }
             }
 
@@ -1640,6 +1640,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function lock($entity, $lockMode, $lockVersion = null)
     {
+        if ($this->getEntityState($entity) != self::STATE_MANAGED) {
+            throw new \InvalidArgumentException("Entity is not MANAGED.");
+        }
+        
         $entityName = get_class($entity);
         $class = $this->_em->getClassMetadata($entityName);
 
@@ -1651,7 +1655,7 @@ class UnitOfWork implements PropertyChangedListener
             if ($lockVersion != null) {
                 $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
                 if ($entityVersion != $lockVersion) {
-                    throw OptimisticLockException::lockFailed();
+                    throw OptimisticLockException::lockFailedVersionMissmatch($lockVersion, $entityVersion);
                 }
             }
         } else if ($lockMode == LockMode::PESSIMISTIC_READ || $lockMode == LockMode::PESSIMISTIC_WRITE) {
@@ -1660,16 +1664,12 @@ class UnitOfWork implements PropertyChangedListener
                 throw TransactionRequiredException::transactionRequired();
             }
             
-            if ($this->getEntityState($entity) == self::STATE_MANAGED) {
-                $oid = spl_object_hash($entity);
+            $oid = spl_object_hash($entity);
 
-                $this->getEntityPersister($class->name)->lock(
-                    array_combine($class->getIdentifierColumnNames(), $this->_entityIdentifiers[$oid]),
-                    $entity
-                );
-            } else {
-                throw new \InvalidArgumentException("Entity is not MANAGED.");
-            }
+            $this->getEntityPersister($class->name)->lock(
+                array_combine($class->getIdentifierColumnNames(), $this->_entityIdentifiers[$oid]),
+                $lockMode
+            );
         }
     }
 
