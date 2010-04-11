@@ -118,7 +118,7 @@ You could also just as easily use a datetime column and instead of incrementing 
     class User
     {
         // ...
-        /** @Version @Column(type="integer") */
+        /** @Version @Column(type="datetime") */
         private $version;
         // ...
     }
