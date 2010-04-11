@@ -23,7 +23,9 @@ namespace Doctrine\ORM\Tools\Console\Command;
 
 use Symfony\Components\Console\Input\InputArgument,
     Symfony\Components\Console\Input\InputOption,
-    Symfony\Components\Console;
+    Symfony\Components\Console,
+    Doctrine\ORM\Tools\Console\MetadataFilter,
+    Doctrine\ORM\Tools\EntityGenerator;
 
 /**
  * Command to generate entity classes and method stubs from your mapping information.
@@ -48,16 +50,12 @@ class GenerateEntitiesCommand extends Console\Command\Command
         ->setName('orm:generate-entities')
         ->setDescription('Generate entity classes and method stubs from your mapping information.')
         ->setDefinition(array(
-            new InputArgument(
-                'from-path', InputArgument::REQUIRED, 'The path of mapping information.'
+            new InputOption(
+                'filter', null, InputOption::PARAMETER_REQUIRED | InputOption::PARAMETER_IS_ARRAY,
+                'A string pattern used to match entities that should be processed.'
             ),
             new InputArgument(
                 'dest-path', InputArgument::REQUIRED, 'The path to generate your entity classes.'
-            ),
-            new InputOption(
-                'from', null, InputOption::PARAMETER_REQUIRED | InputOption::PARAMETER_IS_ARRAY,
-                'Optional paths of mapping information.',
-                array()
             ),
             new InputOption(
                 'generate-annotations', null, InputOption::PARAMETER_OPTIONAL,
@@ -96,29 +94,10 @@ EOT
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $em = $this->getHelper('em')->getEntityManager();
-
-        $reader = new ClassMetadataReader();
-        $reader->setEntityManager($em);
-
-        // Process source directories
-        $fromPaths = array_merge(array($input->getArgument('from-path')), $input->getOption('from'));
-
-        foreach ($fromPaths as $dirName) {
-            $dirName = realpath($dirName);
-
-            if ( ! file_exists($dirName)) {
-                throw new \InvalidArgumentException(
-                    sprintf("Mapping directory '<info>%s</info>' does not exist.", $dirName)
-                );
-            } else if ( ! is_readable($dirName)) {
-                throw new \InvalidArgumentException(
-                    sprintf("Mapping directory '<info>%s</info>' does not have read permissions.", $dirName)
-                );
-            }
-
-            $reader->addMappingSource($dirName);
-        }
-
+        
+        $metadatas = $em->getMetadataFactory()->getAllMetadata();
+        $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
+        
         // Process destination directory
         $destPath = realpath($input->getArgument('dest-path'));
 
@@ -132,23 +111,20 @@ EOT
             );
         }
 
-        // Create EntityGenerator
-        $entityGenerator = new EntityGenerator();
+        if ( count($metadatas)) {
+            // Create EntityGenerator
+            $entityGenerator = new EntityGenerator();
 
-        $entityGenerator->setGenerateAnnotations($input->getOption('generate-annotations'));
-        $entityGenerator->setGenerateStubMethods($input->getOption('generate-methods'));
-        $entityGenerator->setRegenerateEntityIfExists($input->getOption('regenerate-entities'));
-        $entityGenerator->setUpdateEntityIfExists($input->getOption('update-entities'));
-        $entityGenerator->setNumSpaces($input->getOption('num-spaces'));
+            $entityGenerator->setGenerateAnnotations($input->getOption('generate-annotations'));
+            $entityGenerator->setGenerateStubMethods($input->getOption('generate-methods'));
+            $entityGenerator->setRegenerateEntityIfExists($input->getOption('regenerate-entities'));
+            $entityGenerator->setUpdateEntityIfExists($input->getOption('update-entities'));
+            $entityGenerator->setNumSpaces($input->getOption('num-spaces'));
 
-        if (($extend = $input->getOption('extend')) !== null) {
-            $entityGenerator->setClassToExtend($extend);
-        }
+            if (($extend = $input->getOption('extend')) !== null) {
+                $entityGenerator->setClassToExtend($extend);
+            }
 
-        // Retrieving ClassMetadatas
-        $metadatas = $reader->getMetadatas();
-
-        if ( ! empty($metadatas)) {
             foreach ($metadatas as $metadata) {
                 $output->write(
                     sprintf('Processing entity "<info>%s</info>"', $metadata->name) . PHP_EOL
