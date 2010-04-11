@@ -235,8 +235,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
 
-        $driverImpl = \Doctrine\ORM\Mapping\Driver\AnnotationDriver::create();
-        $config->setMetadataDriverImpl($driverImpl);
+        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver());
         
         $conn = $this->sharedFixture['conn'];
         $conn->getConfiguration()->setSQLLogger($this->_sqlLoggerStack);

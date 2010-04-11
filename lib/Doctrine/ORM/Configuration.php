@@ -131,6 +131,20 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
+     * Add a new default annotation driver with a correctly configured annotation reader.
+     * 
+     * @param array $paths
+     * @return Mapping\Driver\AnnotationDriver
+     */
+    public function newDefaultAnnotationDriver($paths = array())
+    {
+        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+        $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
+        
+        return new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader, (array)$paths);
+    }
+
+    /**
      * Adds a namespace under a certain alias.
      *
      * @param string $alias
