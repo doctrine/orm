@@ -428,7 +428,7 @@ class AnnotationDriver implements Driver
             return $this->_classNames;
         }
 
-        if (count($this->_paths) == 0) {
+        if (!$this->_paths) {
             throw MappingException::pathRequired();
         }
 
