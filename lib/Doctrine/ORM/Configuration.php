@@ -176,10 +176,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getMetadataDriverImpl()
     {
-        if ($this->_attributes['metadataDriverImpl'] == null) {
-            throw ORMException::missingMappingDriverImpl();
-        }
-
         return $this->_attributes['metadataDriverImpl'];
     }
 

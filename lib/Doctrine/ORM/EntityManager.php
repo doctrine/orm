@@ -595,7 +595,9 @@ class EntityManager
      */
     public static function create($conn, Configuration $config, EventManager $eventManager = null)
     {
-        $config->getMetadataDriverImpl(); // assert this is set
+        if (!$config->getMetadataDriverImpl()) {
+            throw ORMException::missingMappingDriverImpl();
+        }
 
         if (is_array($conn)) {
             $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, ($eventManager ?: new EventManager()));
