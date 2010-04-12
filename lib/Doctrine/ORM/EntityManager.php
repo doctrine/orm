@@ -593,9 +593,11 @@ class EntityManager
      * @param EventManager $eventManager The EventManager instance to use.
      * @return EntityManager The created EntityManager.
      */
-    public static function create($conn, Configuration $config = null, EventManager $eventManager = null)
+    public static function create($conn, Configuration $config, EventManager $eventManager = null)
     {
-        $config = $config ?: new Configuration();
+        if (!$config->getMetadataDriverImpl()) {
+            throw ORMException::missingMappingDriverImpl();
+        }
 
         if (is_array($conn)) {
             $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, ($eventManager ?: new EventManager()));

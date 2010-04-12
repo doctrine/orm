@@ -28,6 +28,12 @@ namespace Doctrine\ORM\Mapping;
  */
 class MappingException extends \Doctrine\ORM\ORMException
 {
+    public static function pathRequired()
+    {
+        return new self("Specifying the paths to your entities is required ".
+            "in the AnnotationDriver to retrieve all class names.");
+    }
+
     public static function identifierRequired($entityName)
     {
         return new self("No identifier/primary key specified for Entity '$entityName'."

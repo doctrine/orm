@@ -23,7 +23,9 @@ namespace Doctrine\ORM\Tools\Console\Command;
 
 use Symfony\Components\Console\Input\InputArgument,
     Symfony\Components\Console\Input\InputOption,
-    Symfony\Components\Console;
+    Symfony\Components\Console,
+    Doctrine\ORM\Tools\Export\ClassMetadataExporter,
+    Doctrine\ORM\Tools\ConvertDoctrine1Schema;
 
 /**
  * Command to convert a Doctrine 1 schema to a Doctrine 2 mapping file.

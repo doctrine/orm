@@ -23,7 +23,8 @@ namespace Doctrine\ORM\Tools\Console\Command;
 
 use Symfony\Components\Console\Input\InputArgument,
     Symfony\Components\Console\Input\InputOption,
-    Symfony\Components\Console;
+    Symfony\Components\Console,
+    Doctrine\ORM\Tools\Console\MetadataFilter;
 
 /**
  * Command to (re)generate the proxy classes used by doctrine.
@@ -48,18 +49,14 @@ class GenerateProxiesCommand extends Console\Command\Command
         ->setName('orm:generate-proxies')
         ->setDescription('Generates proxy classes for entity classes.')
         ->setDefinition(array(
-            new InputArgument(
-                'from-path', InputArgument::REQUIRED, 'The path of mapping information.'
+            new InputOption(
+                'filter', null, InputOption::PARAMETER_REQUIRED | InputOption::PARAMETER_IS_ARRAY,
+                'A string pattern used to match entities that should be processed.'
             ),
             new InputArgument(
                 'dest-path', InputArgument::OPTIONAL,
                 'The path to generate your proxy classes. If none is provided, it will attempt to grab from configuration.'
             ),
-            new InputOption(
-                'from', null, InputOption::PARAMETER_REQUIRED | InputOption::PARAMETER_IS_ARRAY,
-                'Optional paths of mapping information.',
-                array()
-            )
         ))
         ->setHelp(<<<EOT
 Generates proxy classes for entity classes.
@@ -73,28 +70,9 @@ EOT
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $em = $this->getHelper('em')->getEntityManager();
-
-        $reader = new ClassMetadataReader();
-        $reader->setEntityManager($em);
-
-        // Process source directories
-        $fromPaths = array_merge(array($input->getArgument('from-path')), $input->getOption('from'));
-
-        foreach ($fromPaths as $dirName) {
-            $dirName = realpath($dirName);
-
-            if ( ! file_exists($dirName)) {
-                throw new \InvalidArgumentException(
-                    sprintf("Mapping directory '<info>%s</info>' does not exist.", $dirName)
-                );
-            } else if ( ! is_readable($dirName)) {
-                throw new \InvalidArgumentException(
-                    sprintf("Mapping directory '<info>%s</info>' does not have read permissions.", $dirName)
-                );
-            }
-
-            $reader->addMappingSource($dirName);
-        }
+        
+        $metadatas = $em->getMetadataFactory()->getAllMetadata();
+        $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
 
         // Process destination directory
         if (($destPath = $input->getArgument('dest-path')) === null) {
@@ -113,10 +91,7 @@ EOT
             );
         }
 
-        // Retrieving ClassMetadatas
-        $metadatas = $reader->getMetadatas();
-
-        if ( ! empty($metadatas)) {
+        if ( count($metadatas)) {
             foreach ($metadatas as $metadata) {
                 $output->write(
                     sprintf('Processing entity "<info>%s</info>"', $metadata->name) . PHP_EOL
