@@ -51,6 +51,20 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(empty($class->inheritedAssociationFields));
         $this->assertTrue(isset($class->associationMappings['mappedRelated1']));
     }
+
+    /**
+     * @group DDC-388
+     */
+    public function testSerializationWithPrivateFieldsFromMappedSuperclass()
+    {
+
+        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\EntitySubClass2');
+
+        $class2 = unserialize(serialize($class));
+
+        $this->assertTrue(isset($class2->reflFields['mapped1']));
+        $this->assertTrue(isset($class2->reflFields['mapped2']));
+    }
 }
 
 class TransientBaseClass {

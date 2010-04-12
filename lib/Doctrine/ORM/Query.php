@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -27,13 +25,10 @@ use Doctrine\ORM\Query\Parser,
 /**
  * A Query object represents a DQL query.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
- * @since       1.0
- * @version     $Revision: 3938 $
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @author      Roman Borschel <roman@code-factory.org>
+ * @since   1.0
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
 final class Query extends AbstractQuery
 {
@@ -62,6 +57,7 @@ final class Query extends AbstractQuery
      * partial objects.
      * 
      * @var string
+     * @todo Rename: HINT_OPTIMIZE
      */
     const HINT_FORCE_PARTIAL_LOAD = 'doctrine.forcePartialLoad';
     /**
@@ -149,10 +145,10 @@ final class Query extends AbstractQuery
      *
      * @param Doctrine\ORM\EntityManager $entityManager
      */
-    public function __construct(EntityManager $entityManager)
+    /*public function __construct(EntityManager $entityManager)
     {
         parent::__construct($entityManager);
-    }
+    }*/
 
     /**
      * Gets the SQL query/queries that correspond to this DQL query.
@@ -162,7 +158,7 @@ final class Query extends AbstractQuery
      */
     public function getSQL()
     {
-        return $this->_parse()->getSqlExecutor()->getSqlStatements();
+        return $this->_parse()->getSQLExecutor()->getSQLStatements();
     }
 
     /**
@@ -366,7 +362,7 @@ final class Query extends AbstractQuery
      * @param string $dqlQuery DQL Query
      * @return Doctrine\ORM\AbstractQuery
      */
-    public function setDql($dqlQuery)
+    public function setDQL($dqlQuery)
     {
         if ($dqlQuery !== null) {
             $this->_dql = $dqlQuery;
@@ -380,7 +376,7 @@ final class Query extends AbstractQuery
      *
      * @return string DQL query
      */
-    public function getDql()
+    public function getDQL()
     {
         return $this->_dql;
     }
@@ -408,7 +404,7 @@ final class Query extends AbstractQuery
      */
     public function contains($dql)
     {
-        return stripos($this->getDql(), $dql) === false ? false : true;
+        return stripos($this->getDQL(), $dql) === false ? false : true;
     }
     
     /**

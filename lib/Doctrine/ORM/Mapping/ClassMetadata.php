@@ -339,11 +339,11 @@ class ClassMetadata extends ClassMetadataInfo
         $this->reflClass = new ReflectionClass($this->name);
         
         foreach ($this->fieldMappings as $field => $mapping) {
-	        if (isset($mapping['inherited'])) {
-	            $reflField = new ReflectionProperty($mapping['inherited'], $field);
-	        } else {
-	            $reflField = $this->reflClass->getProperty($field);
-	        }
+            if (isset($mapping['inherited'])) {
+                $reflField = new ReflectionProperty($mapping['inherited'], $field);
+            } else {
+                $reflField = $this->reflClass->getProperty($field);
+            }
             $reflField->setAccessible(true);
             $this->reflFields[$field] = $reflField;
         }

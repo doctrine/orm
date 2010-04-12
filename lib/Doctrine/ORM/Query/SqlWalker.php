@@ -432,7 +432,7 @@ class SqlWalker implements TreeWalker
             $class = $this->_em->getClassMetadata($class->fieldMappings[$fieldName]['inherited']);
         }
 
-        return $this->getSqlTableAlias($class->table['name'], $identificationVariable);
+        return $this->getSQLTableAlias($class->table['name'], $identificationVariable);
     }
 
     /**
@@ -789,6 +789,7 @@ class SqlWalker implements TreeWalker
             $sql .= ' AND ' . $discrSql;
         }
 
+        //FIXME: these should either be nested or all forced to be left joins (DDC-XXX)
         if ($targetClass->isInheritanceTypeJoined()) {
             $sql .= $this->_generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
         }

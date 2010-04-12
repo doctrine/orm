@@ -168,7 +168,7 @@ class QueryBuilder
      *
      * @return string The DQL string
      */
-    public function getDql()
+    public function getDQL()
     {
         if ($this->_dql !== null && $this->_state === self::STATE_CLEAN) {
             return $this->_dql;
@@ -178,16 +178,16 @@ class QueryBuilder
 
         switch ($this->_type) {
             case self::DELETE:
-                $dql = $this->_getDqlForDelete();
+                $dql = $this->_getDQLForDelete();
                 break;
 
             case self::UPDATE:
-                $dql = $this->_getDqlForUpdate();
+                $dql = $this->_getDQLForUpdate();
                 break;
 
             case self::SELECT:
             default:
-                $dql = $this->_getDqlForSelect();
+                $dql = $this->_getDQLForSelect();
                 break;
         }
 
@@ -211,7 +211,7 @@ class QueryBuilder
      */
     public function getQuery()
     {
-        return $this->_em->createQuery($this->getDql())
+        return $this->_em->createQuery($this->getDQL())
                 ->setParameters($this->_params)
                 ->setFirstResult($this->_firstResult)
                 ->setMaxResults($this->_maxResults);
@@ -613,7 +613,7 @@ class QueryBuilder
      */
     public function andWhere($where)
     {
-        $where = $this->getDqlPart('where');
+        $where = $this->getDQLPart('where');
         $args = func_get_args();
         
         if ($where instanceof Expr\Andx) {
@@ -744,7 +744,7 @@ class QueryBuilder
             array_unshift($args, $having);
             $having = new Expr\Orx($args);
         }
-        
+
         return $this->add('having', $having);
     }
 
@@ -779,7 +779,7 @@ class QueryBuilder
      * @param string $queryPartName
      * @return mixed $queryPart
      */
-    public function getDqlPart($queryPartName)
+    public function getDQLPart($queryPartName)
     {
         return $this->_dqlParts[$queryPartName];
     }
@@ -789,43 +789,43 @@ class QueryBuilder
      *
      * @return array $dqlParts
      */
-    public function getDqlParts()
+    public function getDQLParts()
     {
         return $this->_dqlParts;
     }
 
-    private function _getDqlForDelete()
+    private function _getDQLForDelete()
     {
          return 'DELETE'
-              . $this->_getReducedDqlQueryPart('from', array('pre' => ' ', 'separator' => ', '))
-              . $this->_getReducedDqlQueryPart('where', array('pre' => ' WHERE '))
-              . $this->_getReducedDqlQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '));
+              . $this->_getReducedDQLQueryPart('from', array('pre' => ' ', 'separator' => ', '))
+              . $this->_getReducedDQLQueryPart('where', array('pre' => ' WHERE '))
+              . $this->_getReducedDQLQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '));
     }
 
-    private function _getDqlForUpdate()
+    private function _getDQLForUpdate()
     {
          return 'UPDATE'
-              . $this->_getReducedDqlQueryPart('from', array('pre' => ' ', 'separator' => ', '))
-              . $this->_getReducedDqlQueryPart('set', array('pre' => ' SET ', 'separator' => ', '))
-              . $this->_getReducedDqlQueryPart('where', array('pre' => ' WHERE '))
-              . $this->_getReducedDqlQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '));
+              . $this->_getReducedDQLQueryPart('from', array('pre' => ' ', 'separator' => ', '))
+              . $this->_getReducedDQLQueryPart('set', array('pre' => ' SET ', 'separator' => ', '))
+              . $this->_getReducedDQLQueryPart('where', array('pre' => ' WHERE '))
+              . $this->_getReducedDQLQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '));
     }
 
-    private function _getDqlForSelect()
+    private function _getDQLForSelect()
     {
          return 'SELECT' 
-              . $this->_getReducedDqlQueryPart('select', array('pre' => ' ', 'separator' => ', '))
-              . $this->_getReducedDqlQueryPart('from', array('pre' => ' FROM ', 'separator' => ', '))
-              . $this->_getReducedDqlQueryPart('join', array('pre' => ' ', 'separator' => ' '))
-              . $this->_getReducedDqlQueryPart('where', array('pre' => ' WHERE '))
-              . $this->_getReducedDqlQueryPart('groupBy', array('pre' => ' GROUP BY ', 'separator' => ', '))
-              . $this->_getReducedDqlQueryPart('having', array('pre' => ' HAVING '))
-              . $this->_getReducedDqlQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '));
+              . $this->_getReducedDQLQueryPart('select', array('pre' => ' ', 'separator' => ', '))
+              . $this->_getReducedDQLQueryPart('from', array('pre' => ' FROM ', 'separator' => ', '))
+              . $this->_getReducedDQLQueryPart('join', array('pre' => ' ', 'separator' => ' '))
+              . $this->_getReducedDQLQueryPart('where', array('pre' => ' WHERE '))
+              . $this->_getReducedDQLQueryPart('groupBy', array('pre' => ' GROUP BY ', 'separator' => ', '))
+              . $this->_getReducedDQLQueryPart('having', array('pre' => ' HAVING '))
+              . $this->_getReducedDQLQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '));
     }
 
-    private function _getReducedDqlQueryPart($queryPartName, $options = array())
+    private function _getReducedDQLQueryPart($queryPartName, $options = array())
     {
-        $queryPart = $this->getDqlPart($queryPartName);
+        $queryPart = $this->getDQLPart($queryPartName);
         
         if (empty($queryPart)) {
             return (isset($options['empty']) ? $options['empty'] : '');
@@ -838,11 +838,6 @@ class QueryBuilder
 
     public function __toString()
     {
-        return $this->getDql();
+        return $this->getDQL();
     }
-
-    /*public function __clone()
-    {
-        $this->_q = clone $this->_q;
-    }*/
 }

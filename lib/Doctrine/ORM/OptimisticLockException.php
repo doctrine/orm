@@ -24,11 +24,8 @@ namespace Doctrine\ORM;
 /**
  * OptimisticLockException
  *
- * @author      Roman Borschel <roman@code-factory.org>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
- * @since       2.0
- * @version     $Revision$
+ * @author Roman Borschel <roman@code-factory.org>
+ * @since 2.0
  */
 class OptimisticLockException extends ORMException
 {
