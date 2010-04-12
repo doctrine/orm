@@ -52,6 +52,8 @@ with the following minimalist configuration:
     $config = new Configuration;
     $cache = new \Doctrine\Common\Cache\ApcCache;
     $config->setMetadataCacheImpl($cache);
+    $driverImpl = $config->newDefaultAnnotationDriver('/path/to/lib/MyProject/Entities');
+    $config->setMetadataDriverImpl($driverImpl);
     $config->setQueryCacheImpl($cache);
     $config->setProxyDir('/path/to/myproject/lib/MyProject/Proxies');
     $config->setProxyNamespace('MyProject\Proxies');
@@ -112,8 +114,14 @@ There are currently 4 available implementations:
  
 Throughout the most part of this manual the AnnotationDriver is used in the examples. For information on the usage of the XmlDriver or YamlDriver please refer to the dedicated chapters `XML Mapping` and `YAML Mapping`.
 
-The annotation driver is configured as the default metadata driver, using Annotations as Metadata source
-does not require you to set this option explicitly.
+The annotation driver can be configured with a factory method on the `Doctrine\ORM\Configuration`:
+
+    [php]
+    $driverImpl = $config->newDefaultAnnotationDriver('/path/to/lib/MyProject/Entities');
+    $config->setMetadataDriverImpl($driverImpl);
+
+The path information to the entities is requied for the annotation driver, because otherwise
+mass-operations on all entities through the console could not work correctly.
 
 +++ Metadata Cache (***RECOMMENDED***)
 
@@ -151,8 +159,8 @@ The recommended implementations are:
 +++ SQL Logger (***Optional***)
 
      [php]
-     $config->setSqlLogger($logger);
-     $config->getSqlLogger();
+     $config->setSQLLogger($logger);
+     $config->getSQLLogger();
 
 Gets or sets the logger to use for logging all SQL statements executed by Doctrine. The logger class must implement the `Doctrine\DBAL\Logging\SqlLogger` interface. A simple default implementation that logs to the standard output using `echo` and `var_dump` can be found at `Doctrine\DBAL\Logging\EchoSqlLogger`.
 
