@@ -1,6 +1,62 @@
 
 # Upgrade from 2.0-ALPHA4 to 2.0-BETA1
 
+## Console migrated to Symfony Console
+
+The Doctrine Cli has been replaced by Symfony Console Configuration
+
+Instead of having to specifiy:
+
+    [php]
+    $cliConfig = new CliConfiguration();
+    $cliConfig->setAttribute('em', $entityManager);
+
+You now have to configure the script like:
+
+    [php]
+    $helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
+        'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
+        'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
+    ));
+
+## Console: No need for Mapping Paths anymore
+
+In previous versions you had to specify the --from and --from-path options
+to show where your mapping paths are from the console. However this information
+is already known from the Mapping Driver configuration, so the requirement
+for this options were dropped.
+
+Instead for each console command all the entities are loaded and to
+restrict the operation to one or more sub-groups you can use the --filter flag.
+
+## AnnotationDriver is not a default mapping driver anymore
+
+In conjunction with the recent changes to Console we realized that the
+annotations driver being a default metadata driver lead to lots of glue
+code in the console components to detect where entities lie and how to load
+them for batch updates like SchemaTool and other commands. However the
+annotations driver being a default driver does not really help that much
+anyways.
+
+Therefore we decided to break backwards compability in this issue and drop
+the support for Annotations as Default Driver and require our users to
+specify the driver explicitly (which allows us to ask for the path to all
+entities).
+
+If you are using the annotations metadata driver as default driver, you
+have to add the following lines to your bootstrap code:
+
+    $driverImpl = $config->newDefaultAnnotationDriver(array(__DIR__."/Entities"));
+    $config->setMetadataDriverImpl($driverImpl);
+
+You have to specify the path to your entities as either string of a single
+path or array of multiple paths
+to your entities. This information will be used by all console commands to
+access all entities.
+
+Xml and Yaml Drivers work as before!
+
+
 ## New inversedBy attribute
 
 It is now *mandatory* that the owning side of a bidirectional association specifies the

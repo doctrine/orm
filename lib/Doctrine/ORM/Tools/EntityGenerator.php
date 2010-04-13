@@ -933,6 +933,9 @@ public function <methodName>()
             case ClassMetadataInfo::GENERATOR_TYPE_IDENTITY:
                 return 'IDENTITY';
 
+            case ClassMetadataInfo::GENERATOR_TYPE_NONE:
+                return 'NONE';
+
             default:
                 throw new \InvalidArgumentException('Invalid provided IdGeneratorType: ' . $type);
         }
