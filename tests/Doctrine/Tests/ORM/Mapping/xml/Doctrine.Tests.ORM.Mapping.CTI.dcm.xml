@@ -3,7 +3,7 @@
               xsi="http://www.w3.org/2001/XMLSchema-instance"
               schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
     <entity name="Doctrine\Tests\ORM\Mapping\CTI">
-        <discriminiator-column name="discr" type="string" length=""/>
+        <discriminator-column name="discr" type="string" length=""/>
         <discriminator-map>
             <discriminator-mapping value="foo" class="CTIFoo"/>
             <discriminator-mapping value="bar" class="CTIBar"/>
