@@ -79,6 +79,10 @@ EOT
             $destPath = $em->getConfiguration()->getProxyDir();
         }
 
+        if ( ! is_dir($destPath)) {
+            mkdir($destPath, 0777, true);
+        }
+
         $destPath = realpath($destPath);
 
         if ( ! file_exists($destPath)) {
