@@ -65,12 +65,21 @@ EOT
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $em = $this->getHelper('em')->getEntityManager();
-        $em->getConfiguration()->ensureProductionSettings();
 
-        if ($input->getOption('complete') !== null) {
-            $em->getConnection()->connect();
+        $error = false;
+        try {
+            $em->getConfiguration()->ensureProductionSettings();
+
+            if ($input->getOption('complete') !== null) {
+                $em->getConnection()->connect();
+            }
+        } catch (\Exception $e) {
+            $error = true;
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
         }
 
-        $output->write('Environment is correctly configured for production.');
+        if ($error === false) {
+            $output->write('<info>Environment is correctly configured for production.</info>' . PHP_EOL);
+        }
     }
 }
