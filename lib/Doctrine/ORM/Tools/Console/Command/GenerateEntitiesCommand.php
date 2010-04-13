@@ -25,7 +25,8 @@ use Symfony\Components\Console\Input\InputArgument,
     Symfony\Components\Console\Input\InputOption,
     Symfony\Components\Console,
     Doctrine\ORM\Tools\Console\MetadataFilter,
-    Doctrine\ORM\Tools\EntityGenerator;
+    Doctrine\ORM\Tools\EntityGenerator,
+    Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 
 /**
  * Command to generate entity classes and method stubs from your mapping information.
@@ -95,7 +96,8 @@ EOT
     {
         $em = $this->getHelper('em')->getEntityManager();
         
-        $metadatas = $em->getMetadataFactory()->getAllMetadata();
+        $cmf = new DisconnectedClassMetadataFactory($em);
+        $metadatas = $cmf->getAllMetadata();
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
         
         // Process destination directory

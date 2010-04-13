@@ -191,6 +191,20 @@ class ClassMetadataFactory
         $this->_loadedMetadata[$className] = $class;
     }
     
+    protected function _getParentClasses($name)
+    {
+        // Collect parent classes, ignoring transient (not-mapped) classes.
+        //TODO: Evaluate whether we can use class_parents() here.
+        $parentClass = $name;
+        $parentClasses = array();
+        while ($parentClass = get_parent_class($parentClass)) {
+            if ( ! $this->_driver->isTransient($parentClass)) {
+                $parentClasses[] = $parentClass;
+            }
+        }
+        return array_reverse($parentClasses);
+    }
+    
     /**
      * Loads the metadata of the class in question and all it's ancestors whose metadata
      * is still not loaded.
@@ -205,17 +219,8 @@ class ClassMetadataFactory
         }
         
         $loaded = array();
-
-        // Collect parent classes, ignoring transient (not-mapped) classes.
-        //TODO: Evaluate whether we can use class_parents() here.
-        $parentClass = $name;
-        $parentClasses = array();
-        while ($parentClass = get_parent_class($parentClass)) {
-            if ( ! $this->_driver->isTransient($parentClass)) {
-                $parentClasses[] = $parentClass;
-            }
-        }
-        $parentClasses = array_reverse($parentClasses);
+        
+        $parentClasses = $this->_getParentClasses($name);
         $parentClasses[] = $name;
 
         // Move down the hierarchy of parent classes, starting from the topmost class
@@ -354,7 +359,7 @@ class ClassMetadataFactory
      *
      * @param Doctrine\ORM\Mapping\ClassMetadata $class
      */
-    private function _completeIdGeneratorMapping(ClassMetadata $class)
+    private function _completeIdGeneratorMapping(ClassMetadataInfo $class)
     {
         $idGenType = $class->generatorType;
         if ($idGenType == ClassMetadata::GENERATOR_TYPE_AUTO) {
