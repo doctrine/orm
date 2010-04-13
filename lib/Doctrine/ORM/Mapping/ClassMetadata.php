@@ -243,10 +243,10 @@ class ClassMetadata extends ClassMetadataInfo
 
         // Store ReflectionProperty of mapped field
         $sourceFieldName = $assocMapping->sourceFieldName;
-        
-	    $refProp = $this->reflClass->getProperty($sourceFieldName);
-	    $refProp->setAccessible(true);
-	    $this->reflFields[$sourceFieldName] = $refProp;
+
+        $refProp = $this->reflClass->getProperty($sourceFieldName);
+        $refProp->setAccessible(true);
+        $this->reflFields[$sourceFieldName] = $refProp;
     }
 
     /**
