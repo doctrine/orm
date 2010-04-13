@@ -191,6 +191,12 @@ class ClassMetadataFactory
         $this->_loadedMetadata[$className] = $class;
     }
     
+    /**
+     * Get array of parent classes for the given entity class
+     *
+     * @param string $name
+     * @return array $parentClasses
+     */
     protected function _getParentClasses($name)
     {
         // Collect parent classes, ignoring transient (not-mapped) classes.
