@@ -61,8 +61,8 @@ class ConvertMappingCommand extends Console\Command\Command
                 'dest-path', InputArgument::REQUIRED,
                 'The path to generate your entities classes.'
             ),
-            new InputArgument(
-                'from-database', InputArgument::OPTIONAL, 'The path of mapping information.'
+            new InputOption(
+                'from-database', null, null, 'Whether or not to convert mapping information from existing database.'
             ),
             new InputOption(
                 'extend', null, InputOption::PARAMETER_OPTIONAL,
@@ -86,10 +86,7 @@ EOT
     {
         $em = $this->getHelper('em')->getEntityManager();
 
-        $metadatas = $em->getMetadataFactory()->getAllMetadata();
-        $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
-
-        if ($input->getArgument('from-database') === true) {
+        if ($input->getOption('from-database') === true) {
             $em->getConfiguration()->setMetadataDriverImpl(
                 new \Doctrine\ORM\Mapping\Driver\DatabaseDriver(
                     $em->getConnection()->getSchemaManager()
@@ -97,8 +94,14 @@ EOT
             );
         }
 
+        $metadatas = $em->getMetadataFactory()->getAllMetadata();
+        $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
+
         // Process destination directory
-        $destPath = realpath($input->getArgument('dest-path'));
+        if ( ! is_dir($destPath = $input->getArgument('dest-path'))) {
+            mkdir($destPath, 0777, true);
+        }
+        $destPath = realpath($destPath);
 
         if ( ! file_exists($destPath)) {
             throw new \InvalidArgumentException(
