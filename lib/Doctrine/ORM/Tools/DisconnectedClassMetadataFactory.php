@@ -25,7 +25,7 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
- * The ClassMetadataFactory is used to create ClassMetadataInfo objects
+ * The DisconnectedClassMetadataFactory is used to create ClassMetadataInfo objects
  * that do not require the entity class actually exist. This allows us to 
  * load some mapping information and use it to do things like generate code
  * from the mapping information.
