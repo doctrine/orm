@@ -40,12 +40,12 @@ use Symfony\Components\Console\Input\InputArgument,
  */
 class GenerateRepositoriesCommand extends Console\Command\Command
 {
-    private static $_template =
+    protected static $_template =
 '<?php
 
 namespace <namespace>;
 
-use \Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * <className>
@@ -103,7 +103,7 @@ EOT
             );
         }
 
-        if ( count($metadatas)) {
+        if (count($metadatas)) {
             $numRepositories = 0;
 
             foreach ($metadatas as $metadata) {
@@ -112,7 +112,7 @@ EOT
                         sprintf('Processing repository "<info>%s</info>"', $metadata->customRepositoryClassName) . PHP_EOL
                     );
 
-                    $this->_generateRepositoryClass($metadata, $destPath);
+                    $this->_writeRepositoryClass($metadata, $destPath);
 
                     $numRepositories++;
                 }
@@ -129,9 +129,23 @@ EOT
         }
     }
 
-    private function _generateRepositoryClass($metadata, $destPath)
+    protected function _generateRepositoryClass($metadata)
     {
-        $code = $this->_generateRepositoryClass($metadata->customRepositoryClassName);
+        fullClassName = $metadata->customRepositoryClassName;
+        $namespace = substr($fullClassName, 0, strrpos($fullClassName, '\\'));
+        $className = substr($fullClassName, strrpos($fullClassName, '\\') + 1, strlen($fullClassName));
+
+        $variables = array(
+            '<namespace>' => $namespace,
+            '<className>' => $className
+        );
+        $code = str_replace(array_keys($variables), array_values($variables), self::$_template);
+        return $code;
+    }
+
+    protected function _writeRepositoryClass($metadata, $destPath)
+    {
+        $code = $this->_generateRepositoryClass($metadata);
 
         $path = $destPath . DIRECTORY_SEPARATOR
               . str_replace('\\', \DIRECTORY_SEPARATOR, $metadata->customRepositoryClassName) . '.php';
