@@ -1,0 +1,239 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:03 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>AbstractCache (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/common/cache/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/common/cache/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/common/cache/abstractcache.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\Common\Cache\AbstractCache</div>
+<div class="location">/Doctrine/Common/Cache/AbstractCache.php at line 35</div>
+
+<h1>Class AbstractCache</h1>
+
+<pre class="tree"><strong>AbstractCache</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public abstract  class <strong>AbstractCache</strong></p>
+
+<div class="comment" id="overview_description"><p>Base class for cache driver implementations.</p></div>
+
+<dl>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision: 3938 $</dd>
+<dt>Author:</dt>
+<dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
+<dd>Jonathan Wage <jonwage@gmail.com></dd>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+</dl>
+<hr>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#contains()">contains</a>(mixed id)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#delete()">delete</a>(mixed id)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#deleteAll()">deleteAll</a>()</p><p class="description">Delete all cache entries.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#deleteByPrefix()">deleteByPrefix</a>(string prefix)</p><p class="description">Delete cache entries where the id has the passed prefix</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#deleteByRegex()">deleteByRegex</a>(string regex)</p><p class="description">Delete cache entries where the id matches a PHP regular expressions</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#deleteBySuffix()">deleteBySuffix</a>(string suffix)</p><p class="description">Delete cache entries where the id has the passed suffix</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#fetch()">fetch</a>(mixed id)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type">abstract  array</td>
+<td class="description"><p class="name"><a href="#getIds()">getIds</a>()</p><p class="description">Get an array of all the cache ids stored</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#save()">save</a>(mixed id, mixed data, mixed lifeTime)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setNamespace()">setNamespace</a>(string namespace)</p><p class="description">Set the namespace to prefix all cache ids with.</p></td>
+</tr>
+</table>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/Common/Cache/AbstractCache.php at line 65</div>
+<h3 id="contains()">contains</h3>
+<code class="signature">public  void <strong>contains</strong>(mixed id)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Cache/AbstractCache.php at line 82</div>
+<h3 id="delete()">delete</h3>
+<code class="signature">public  void <strong>delete</strong>(mixed id)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Cache/AbstractCache.php at line 98</div>
+<h3 id="deleteAll()">deleteAll</h3>
+<code class="signature">public  array <strong>deleteAll</strong>()</code>
+<div class="details">
+<p>Delete all cache entries.</p><dl>
+<dt>Returns:</dt>
+<dd>$deleted Array of the deleted cache ids</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Cache/AbstractCache.php at line 132</div>
+<h3 id="deleteByPrefix()">deleteByPrefix</h3>
+<code class="signature">public  array <strong>deleteByPrefix</strong>(string prefix)</code>
+<div class="details">
+<p>Delete cache entries where the id has the passed prefix</p><dl>
+<dt>Returns:</dt>
+<dd>$deleted Array of the deleted cache ids</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Cache/AbstractCache.php at line 113</div>
+<h3 id="deleteByRegex()">deleteByRegex</h3>
+<code class="signature">public  array <strong>deleteByRegex</strong>(string regex)</code>
+<div class="details">
+<p>Delete cache entries where the id matches a PHP regular expressions</p><dl>
+<dt>Returns:</dt>
+<dd>$deleted Array of the deleted cache ids</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Cache/AbstractCache.php at line 151</div>
+<h3 id="deleteBySuffix()">deleteBySuffix</h3>
+<code class="signature">public  array <strong>deleteBySuffix</strong>(string suffix)</code>
+<div class="details">
+<p>Delete cache entries where the id has the passed suffix</p><dl>
+<dt>Returns:</dt>
+<dd>$deleted Array of the deleted cache ids</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Cache/AbstractCache.php at line 57</div>
+<h3 id="fetch()">fetch</h3>
+<code class="signature">public  void <strong>fetch</strong>(mixed id)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Cache/AbstractCache.php at line 218</div>
+<h3 id="getIds()">getIds</h3>
+<code class="signature">public abstract  array <strong>getIds</strong>()</code>
+<div class="details">
+<p>Get an array of all the cache ids stored</p><dl>
+<dt>Returns:</dt>
+<dd>$ids</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Cache/AbstractCache.php at line 73</div>
+<h3 id="save()">save</h3>
+<code class="signature">public  void <strong>save</strong>(mixed id, mixed data, mixed lifeTime)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Cache/AbstractCache.php at line 49</div>
+<h3 id="setNamespace()">setNamespace</h3>
+<code class="signature">public  void <strong>setNamespace</strong>(string namespace)</code>
+<div class="details">
+<p>Set the namespace to prefix all cache ids with.</p></div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/common/cache/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/common/cache/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/common/cache/abstractcache.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

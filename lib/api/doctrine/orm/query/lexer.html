@@ -1,0 +1,1009 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>Lexer (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/query/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/query/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/query/lexer.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Query\Lexer</div>
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 35</div>
+
+<h1>Class Lexer</h1>
+
+<pre class="tree">Class:Lexer - Superclass: Doctrine
+Doctrine<br>&lfloor;&nbsp;<strong>Lexer</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>Lexer</strong><br>extends Doctrine
+
+</p>
+
+<div class="comment" id="overview_description"><p>Scans a DQL query for tokens.</p></div>
+
+<dl>
+<dt>Author:</dt>
+<dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
+<dd>Janne Vanhala <jpvanhal@cc.hut.fi></dd>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision$</dd>
+</dl>
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_ALL">T_ALL</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_AND">T_AND</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_ANY">T_ANY</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_AS">T_AS</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_ASC">T_ASC</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_AVG">T_AVG</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_BETWEEN">T_BETWEEN</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_BOTH">T_BOTH</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_BY">T_BY</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_CLOSE_CURLY_BRACE">T_CLOSE_CURLY_BRACE</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_CLOSE_PARENTHESIS">T_CLOSE_PARENTHESIS</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_COMMA">T_COMMA</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_COUNT">T_COUNT</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_DELETE">T_DELETE</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_DESC">T_DESC</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_DISTINCT">T_DISTINCT</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_DIVIDE">T_DIVIDE</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_DOT">T_DOT</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_EMPTY">T_EMPTY</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_EQUALS">T_EQUALS</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_ESCAPE">T_ESCAPE</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_EXISTS">T_EXISTS</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_FALSE">T_FALSE</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_FLOAT">T_FLOAT</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_FROM">T_FROM</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_GREATER_THAN">T_GREATER_THAN</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_GROUP">T_GROUP</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_HAVING">T_HAVING</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_IDENTIFIER">T_IDENTIFIER</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_IN">T_IN</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_INDEX">T_INDEX</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_INNER">T_INNER</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_INPUT_PARAMETER">T_INPUT_PARAMETER</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_INTEGER">T_INTEGER</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_IS">T_IS</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_JOIN">T_JOIN</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_LEADING">T_LEADING</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_LEFT">T_LEFT</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_LIKE">T_LIKE</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_LIMIT">T_LIMIT</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_LOWER_THAN">T_LOWER_THAN</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_MAX">T_MAX</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_MEMBER">T_MEMBER</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_MIN">T_MIN</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_MINUS">T_MINUS</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_MOD">T_MOD</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_MULTIPLY">T_MULTIPLY</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_NEGATE">T_NEGATE</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_NONE">T_NONE</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_NOT">T_NOT</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_NULL">T_NULL</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_OF">T_OF</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_OFFSET">T_OFFSET</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_OPEN_CURLY_BRACE">T_OPEN_CURLY_BRACE</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_OPEN_PARENTHESIS">T_OPEN_PARENTHESIS</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_OR">T_OR</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_ORDER">T_ORDER</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_OUTER">T_OUTER</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_PARTIAL">T_PARTIAL</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_PLUS">T_PLUS</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_SELECT">T_SELECT</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_SET">T_SET</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_SIZE">T_SIZE</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_SOME">T_SOME</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_STRING">T_STRING</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_SUM">T_SUM</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_TRAILING">T_TRAILING</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_TRUE">T_TRUE</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_UPDATE">T_UPDATE</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_WHERE">T_WHERE</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#T_WITH">T_WITH</a></p></td>
+</tr>
+</table>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#Lexer()">Lexer</a>(string input)</p><p class="description">Creates a new query scanner object.</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type">protected  void</td>
+<td class="description"><p class="name"><a href="#getCatchablePatterns()">getCatchablePatterns</a>()</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  void</td>
+<td class="description"><p class="name"><a href="#getNonCatchablePatterns()">getNonCatchablePatterns</a>()</p><p class="description"></p></td>
+</tr>
+</table>
+
+<h2 id="detail_field">Field Detail</h2>
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 44</div>
+<h3 id="T_ALL">T_ALL</h3>
+<code class="signature">public final  int <strong>T_ALL</strong> = 101</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 45</div>
+<h3 id="T_AND">T_AND</h3>
+<code class="signature">public final  int <strong>T_AND</strong> = 102</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 46</div>
+<h3 id="T_ANY">T_ANY</h3>
+<code class="signature">public final  int <strong>T_ANY</strong> = 103</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 47</div>
+<h3 id="T_AS">T_AS</h3>
+<code class="signature">public final  int <strong>T_AS</strong> = 104</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 48</div>
+<h3 id="T_ASC">T_ASC</h3>
+<code class="signature">public final  int <strong>T_ASC</strong> = 105</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 49</div>
+<h3 id="T_AVG">T_AVG</h3>
+<code class="signature">public final  int <strong>T_AVG</strong> = 106</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 50</div>
+<h3 id="T_BETWEEN">T_BETWEEN</h3>
+<code class="signature">public final  int <strong>T_BETWEEN</strong> = 107</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 51</div>
+<h3 id="T_BOTH">T_BOTH</h3>
+<code class="signature">public final  int <strong>T_BOTH</strong> = 108</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 52</div>
+<h3 id="T_BY">T_BY</h3>
+<code class="signature">public final  int <strong>T_BY</strong> = 109</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 108</div>
+<h3 id="T_CLOSE_CURLY_BRACE">T_CLOSE_CURLY_BRACE</h3>
+<code class="signature">public final  int <strong>T_CLOSE_CURLY_BRACE</strong> = 166</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 53</div>
+<h3 id="T_CLOSE_PARENTHESIS">T_CLOSE_PARENTHESIS</h3>
+<code class="signature">public final  int <strong>T_CLOSE_PARENTHESIS</strong> = 110</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 54</div>
+<h3 id="T_COMMA">T_COMMA</h3>
+<code class="signature">public final  int <strong>T_COMMA</strong> = 111</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 55</div>
+<h3 id="T_COUNT">T_COUNT</h3>
+<code class="signature">public final  int <strong>T_COUNT</strong> = 112</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 56</div>
+<h3 id="T_DELETE">T_DELETE</h3>
+<code class="signature">public final  int <strong>T_DELETE</strong> = 113</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 57</div>
+<h3 id="T_DESC">T_DESC</h3>
+<code class="signature">public final  int <strong>T_DESC</strong> = 114</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 58</div>
+<h3 id="T_DISTINCT">T_DISTINCT</h3>
+<code class="signature">public final  int <strong>T_DISTINCT</strong> = 115</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 59</div>
+<h3 id="T_DIVIDE">T_DIVIDE</h3>
+<code class="signature">public final  int <strong>T_DIVIDE</strong> = 116</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 60</div>
+<h3 id="T_DOT">T_DOT</h3>
+<code class="signature">public final  int <strong>T_DOT</strong> = 117</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 61</div>
+<h3 id="T_EMPTY">T_EMPTY</h3>
+<code class="signature">public final  int <strong>T_EMPTY</strong> = 118</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 62</div>
+<h3 id="T_EQUALS">T_EQUALS</h3>
+<code class="signature">public final  int <strong>T_EQUALS</strong> = 119</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 63</div>
+<h3 id="T_ESCAPE">T_ESCAPE</h3>
+<code class="signature">public final  int <strong>T_ESCAPE</strong> = 120</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 64</div>
+<h3 id="T_EXISTS">T_EXISTS</h3>
+<code class="signature">public final  int <strong>T_EXISTS</strong> = 121</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 65</div>
+<h3 id="T_FALSE">T_FALSE</h3>
+<code class="signature">public final  int <strong>T_FALSE</strong> = 122</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 42</div>
+<h3 id="T_FLOAT">T_FLOAT</h3>
+<code class="signature">public final  int <strong>T_FLOAT</strong> = 6</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 66</div>
+<h3 id="T_FROM">T_FROM</h3>
+<code class="signature">public final  int <strong>T_FROM</strong> = 123</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 67</div>
+<h3 id="T_GREATER_THAN">T_GREATER_THAN</h3>
+<code class="signature">public final  int <strong>T_GREATER_THAN</strong> = 124</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 68</div>
+<h3 id="T_GROUP">T_GROUP</h3>
+<code class="signature">public final  int <strong>T_GROUP</strong> = 125</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 69</div>
+<h3 id="T_HAVING">T_HAVING</h3>
+<code class="signature">public final  int <strong>T_HAVING</strong> = 126</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 38</div>
+<h3 id="T_IDENTIFIER">T_IDENTIFIER</h3>
+<code class="signature">public final  int <strong>T_IDENTIFIER</strong> = 2</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 70</div>
+<h3 id="T_IN">T_IN</h3>
+<code class="signature">public final  int <strong>T_IN</strong> = 127</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 71</div>
+<h3 id="T_INDEX">T_INDEX</h3>
+<code class="signature">public final  int <strong>T_INDEX</strong> = 128</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 72</div>
+<h3 id="T_INNER">T_INNER</h3>
+<code class="signature">public final  int <strong>T_INNER</strong> = 129</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 41</div>
+<h3 id="T_INPUT_PARAMETER">T_INPUT_PARAMETER</h3>
+<code class="signature">public final  int <strong>T_INPUT_PARAMETER</strong> = 5</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 39</div>
+<h3 id="T_INTEGER">T_INTEGER</h3>
+<code class="signature">public final  int <strong>T_INTEGER</strong> = 3</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 73</div>
+<h3 id="T_IS">T_IS</h3>
+<code class="signature">public final  int <strong>T_IS</strong> = 130</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 74</div>
+<h3 id="T_JOIN">T_JOIN</h3>
+<code class="signature">public final  int <strong>T_JOIN</strong> = 131</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 75</div>
+<h3 id="T_LEADING">T_LEADING</h3>
+<code class="signature">public final  int <strong>T_LEADING</strong> = 132</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 76</div>
+<h3 id="T_LEFT">T_LEFT</h3>
+<code class="signature">public final  int <strong>T_LEFT</strong> = 133</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 77</div>
+<h3 id="T_LIKE">T_LIKE</h3>
+<code class="signature">public final  int <strong>T_LIKE</strong> = 134</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 78</div>
+<h3 id="T_LIMIT">T_LIMIT</h3>
+<code class="signature">public final  int <strong>T_LIMIT</strong> = 135</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 79</div>
+<h3 id="T_LOWER_THAN">T_LOWER_THAN</h3>
+<code class="signature">public final  int <strong>T_LOWER_THAN</strong> = 136</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 80</div>
+<h3 id="T_MAX">T_MAX</h3>
+<code class="signature">public final  int <strong>T_MAX</strong> = 137</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 81</div>
+<h3 id="T_MEMBER">T_MEMBER</h3>
+<code class="signature">public final  int <strong>T_MEMBER</strong> = 138</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 82</div>
+<h3 id="T_MIN">T_MIN</h3>
+<code class="signature">public final  int <strong>T_MIN</strong> = 139</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 83</div>
+<h3 id="T_MINUS">T_MINUS</h3>
+<code class="signature">public final  int <strong>T_MINUS</strong> = 140</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 84</div>
+<h3 id="T_MOD">T_MOD</h3>
+<code class="signature">public final  int <strong>T_MOD</strong> = 141</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 85</div>
+<h3 id="T_MULTIPLY">T_MULTIPLY</h3>
+<code class="signature">public final  int <strong>T_MULTIPLY</strong> = 142</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 86</div>
+<h3 id="T_NEGATE">T_NEGATE</h3>
+<code class="signature">public final  int <strong>T_NEGATE</strong> = 143</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 37</div>
+<h3 id="T_NONE">T_NONE</h3>
+<code class="signature">public final  int <strong>T_NONE</strong> = 1</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 87</div>
+<h3 id="T_NOT">T_NOT</h3>
+<code class="signature">public final  int <strong>T_NOT</strong> = 144</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 88</div>
+<h3 id="T_NULL">T_NULL</h3>
+<code class="signature">public final  int <strong>T_NULL</strong> = 145</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 89</div>
+<h3 id="T_OF">T_OF</h3>
+<code class="signature">public final  int <strong>T_OF</strong> = 146</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 90</div>
+<h3 id="T_OFFSET">T_OFFSET</h3>
+<code class="signature">public final  int <strong>T_OFFSET</strong> = 147</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 107</div>
+<h3 id="T_OPEN_CURLY_BRACE">T_OPEN_CURLY_BRACE</h3>
+<code class="signature">public final  int <strong>T_OPEN_CURLY_BRACE</strong> = 165</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 91</div>
+<h3 id="T_OPEN_PARENTHESIS">T_OPEN_PARENTHESIS</h3>
+<code class="signature">public final  int <strong>T_OPEN_PARENTHESIS</strong> = 149</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 92</div>
+<h3 id="T_OR">T_OR</h3>
+<code class="signature">public final  int <strong>T_OR</strong> = 150</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 93</div>
+<h3 id="T_ORDER">T_ORDER</h3>
+<code class="signature">public final  int <strong>T_ORDER</strong> = 151</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 94</div>
+<h3 id="T_OUTER">T_OUTER</h3>
+<code class="signature">public final  int <strong>T_OUTER</strong> = 152</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 106</div>
+<h3 id="T_PARTIAL">T_PARTIAL</h3>
+<code class="signature">public final  int <strong>T_PARTIAL</strong> = 164</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 95</div>
+<h3 id="T_PLUS">T_PLUS</h3>
+<code class="signature">public final  int <strong>T_PLUS</strong> = 153</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 96</div>
+<h3 id="T_SELECT">T_SELECT</h3>
+<code class="signature">public final  int <strong>T_SELECT</strong> = 154</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 97</div>
+<h3 id="T_SET">T_SET</h3>
+<code class="signature">public final  int <strong>T_SET</strong> = 155</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 98</div>
+<h3 id="T_SIZE">T_SIZE</h3>
+<code class="signature">public final  int <strong>T_SIZE</strong> = 156</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 99</div>
+<h3 id="T_SOME">T_SOME</h3>
+<code class="signature">public final  int <strong>T_SOME</strong> = 157</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 40</div>
+<h3 id="T_STRING">T_STRING</h3>
+<code class="signature">public final  int <strong>T_STRING</strong> = 4</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 100</div>
+<h3 id="T_SUM">T_SUM</h3>
+<code class="signature">public final  int <strong>T_SUM</strong> = 158</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 101</div>
+<h3 id="T_TRAILING">T_TRAILING</h3>
+<code class="signature">public final  int <strong>T_TRAILING</strong> = 159</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 102</div>
+<h3 id="T_TRUE">T_TRUE</h3>
+<code class="signature">public final  int <strong>T_TRUE</strong> = 160</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 103</div>
+<h3 id="T_UPDATE">T_UPDATE</h3>
+<code class="signature">public final  int <strong>T_UPDATE</strong> = 161</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 104</div>
+<h3 id="T_WHERE">T_WHERE</h3>
+<code class="signature">public final  int <strong>T_WHERE</strong> = 162</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 105</div>
+<h3 id="T_WITH">T_WITH</h3>
+<code class="signature">public final  int <strong>T_WITH</strong> = 163</code>
+<div class="details">
+</div>
+
+<hr>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 115</div>
+<h3 id="Lexer()">Lexer</h3>
+<code class="signature">public <strong>Lexer</strong>(string input)</code>
+<div class="details">
+<p>Creates a new query scanner object.</p><dl>
+<dt>Parameters:</dt>
+<dd>input - a query string</dd>
+</dl>
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 123</div>
+<h3 id="getCatchablePatterns()">getCatchablePatterns</h3>
+<code class="signature">protected  void <strong>getCatchablePatterns</strong>()</code>
+<div class="details">
+<p></p><dl>
+<dt>Inheritdoc.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Lexer.php at line 136</div>
+<h3 id="getNonCatchablePatterns()">getNonCatchablePatterns</h3>
+<code class="signature">protected  void <strong>getNonCatchablePatterns</strong>()</code>
+<div class="details">
+<p></p><dl>
+<dt>Inheritdoc.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/query/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/query/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/query/lexer.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

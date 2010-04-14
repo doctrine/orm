@@ -1,0 +1,1635 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>ClassMetadataInfo (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/mapping/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/mapping/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/mapping/classmetadatainfo.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Mapping\ClassMetadataInfo</div>
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 40</div>
+
+<h1>Class ClassMetadataInfo</h1>
+
+<pre class="tree"><strong>ClassMetadataInfo</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>ClassMetadataInfo</strong></p>
+
+<div class="comment" id="overview_description"><p>A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
+of an entity and it's associations.</p><p>Once populated, ClassMetadata instances are usually cached in a serialized form.</p><p><b>IMPORTANT NOTE:</b></p><p>The fields of this class are only public for 2 reasons:
+1) To allow fast READ access.
+2) To drastically reduce the size of a serialized instance (private/protected members
+get the whole class name, namespace inclusive, prepended to every property in
+the serialized representation).</p></div>
+
+<dl>
+<dt>Author:</dt>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dd>Jonathan H. Wage <jonwage@gmail.com></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+</dl>
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#CHANGETRACKING_DEFERRED_EXPLICIT">CHANGETRACKING_DEFERRED_EXPLICIT</a></p><p class="description">DEFERRED_EXPLICIT means that changes of entities are calculated at commit-time
+by doing a property-by-property comparison with the original data. </p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#CHANGETRACKING_DEFERRED_IMPLICIT">CHANGETRACKING_DEFERRED_IMPLICIT</a></p><p class="description">DEFERRED_IMPLICIT means that changes of entities are calculated at commit-time
+by doing a property-by-property comparison with the original data. </p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#CHANGETRACKING_NOTIFY">CHANGETRACKING_NOTIFY</a></p><p class="description">NOTIFY means that Doctrine relies on the entities sending out notifications
+when their properties change. </p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#GENERATOR_TYPE_AUTO">GENERATOR_TYPE_AUTO</a></p><p class="description">AUTO means the generator type will depend on what the used platform prefers.
+</p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#GENERATOR_TYPE_IDENTITY">GENERATOR_TYPE_IDENTITY</a></p><p class="description">IDENTITY means an identity column is used for id generation. </p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#GENERATOR_TYPE_NONE">GENERATOR_TYPE_NONE</a></p><p class="description">NONE means the class does not have a generated id. </p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#GENERATOR_TYPE_SEQUENCE">GENERATOR_TYPE_SEQUENCE</a></p><p class="description">SEQUENCE means a separate sequence object will be used. </p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#GENERATOR_TYPE_TABLE">GENERATOR_TYPE_TABLE</a></p><p class="description">TABLE means a separate table is used for id generation.
+</p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#INHERITANCE_TYPE_JOINED">INHERITANCE_TYPE_JOINED</a></p><p class="description">JOINED means the class will be persisted according to the rules of
+Class Table Inheritance.</p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#INHERITANCE_TYPE_NONE">INHERITANCE_TYPE_NONE</a></p><p class="description">NONE means the class does not participate in an inheritance hierarchy
+and therefore does not need an inheritance mapping type.</p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#INHERITANCE_TYPE_SINGLE_TABLE">INHERITANCE_TYPE_SINGLE_TABLE</a></p><p class="description">SINGLE_TABLE means the class will be persisted according to the rules of
+Single Table Inheritance.</p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#INHERITANCE_TYPE_TABLE_PER_CLASS">INHERITANCE_TYPE_TABLE_PER_CLASS</a></p><p class="description">TABLE_PER_CLASS means the class will be persisted according to the rules
+of Concrete Table Inheritance.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#associationMappings">$associationMappings</a></p><p class="description">READ-ONLY: The association mappings of this class.</p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#changeTrackingPolicy">$changeTrackingPolicy</a></p><p class="description">READ-ONLY: The policy used for change-tracking on entities of this class.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#columnNames">$columnNames</a></p><p class="description">READ-ONLY: A map of field names to column names. </p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#customRepositoryClassName">$customRepositoryClassName</a></p><p class="description">The name of the custom repository class used for the entity class.
+</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#discriminatorColumn">$discriminatorColumn</a></p><p class="description">READ-ONLY: The definition of the descriminator column used in JOINED and SINGLE_TABLE
+inheritance mappings.</p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#discriminatorMap">$discriminatorMap</a></p><p class="description">READ-ONLY: The discriminator map of all mapped classes in the hierarchy.
+</p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#discriminatorValue">$discriminatorValue</a></p><p class="description">READ-ONLY: The discriminator value of this class.
+</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#fieldMappings">$fieldMappings</a></p><p class="description">READ-ONLY: The field mappings of the class.
+</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#fieldNames">$fieldNames</a></p><p class="description">READ-ONLY: An array of field names. </p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#generatorType">$generatorType</a></p><p class="description">READ-ONLY: The Id generator type used by the class.</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/orm/id/abstractidgenerator.html">AbstractIdGenerator</a></td>
+<td class="description"><p class="name"><a href="#idGenerator">$idGenerator</a></p><p class="description">READ-ONLY: The ID generator used for generating IDs for this class.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#identifier">$identifier</a></p><p class="description">READ-ONLY: The field names of all fields that are part of the identifier/primary key
+of the mapped entity class.</p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#inheritanceType">$inheritanceType</a></p><p class="description">READ-ONLY: The inheritance mapping type used by the class.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isIdentifierComposite">$isIdentifierComposite</a></p><p class="description">READ-ONLY: Flag indicating whether the identifier/primary key of the class is composite.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isMappedSuperclass">$isMappedSuperclass</a></p><p class="description">READ-ONLY: Whether this class describes the mapping of a mapped superclass.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean $isVersioned</td>
+<td class="description"><p class="name"><a href="#isVersioned">$isVersioned</a></p><p class="description">READ-ONLY: A flag for whether or not instances of this class are to be versioned
+with optimistic locking.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#lifecycleCallbacks">$lifecycleCallbacks</a></p><p class="description">READ-ONLY: The registered lifecycle callbacks for entities of this class.</p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#name">$name</a></p><p class="description">READ-ONLY: The name of the entity class.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#namespace">$namespace</a></p><p class="description">READ-ONLY: The namespace the entity class is contained in.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#parentClasses">$parentClasses</a></p><p class="description">READ-ONLY: The names of the parent classes (ancestors).</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#rootEntityName">$rootEntityName</a></p><p class="description">READ-ONLY: The name of the entity class that is at the root of the mapped entity inheritance
+hierarchy. </p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#sequenceGeneratorDefinition">$sequenceGeneratorDefinition</a></p><p class="description">READ-ONLY: The definition of the sequence generator of this class. </p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#subClasses">$subClasses</a></p><p class="description">READ-ONLY: The names of all subclasses (descendants).</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#table">$table</a></p><p class="description">READ-ONLY: The primary table definition. </p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#tableGeneratorDefinition">$tableGeneratorDefinition</a></p><p class="description">READ-ONLY: The definition of the table generator of this class. </p></td>
+</tr>
+<tr>
+<td class="type"> mixed $versionField</td>
+<td class="description"><p class="name"><a href="#versionField">$versionField</a></p><p class="description">READ-ONLY: The name of the field which is used for versioning in optimistic locking (if any).</p></td>
+</tr>
+</table>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#ClassMetadataInfo()">ClassMetadataInfo</a>(string entityName)</p><p class="description">Initializes a new ClassMetadata instance that will hold the object-relational mapping
+metadata of the class with the given name.</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#addInheritedAssociationMapping()">addInheritedAssociationMapping</a>(<a href="../../../doctrine/orm/mapping/associationmapping.html">AssociationMapping</a> mapping, string owningClassName)</p><p class="description">INTERNAL:
+Adds an association mapping without completing/validating it.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#addInheritedFieldMapping()">addInheritedFieldMapping</a>(mixed fieldMapping, array mapping)</p><p class="description">INTERNAL:
+Adds a field mapping without completing/validating it.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#addLifecycleCallback()">addLifecycleCallback</a>(string callback, string event)</p><p class="description">Adds a lifecycle callback for entities of this class.
+</p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\ORM\Mapping\AssociationMapping</td>
+<td class="description"><p class="name"><a href="#getAssociationMapping()">getAssociationMapping</a>(string fieldName)</p><p class="description">Gets the mapping of an association.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getAssociationMappings()">getAssociationMappings</a>()</p><p class="description">Gets all association mappings of the class.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getColumnName()">getColumnName</a>(string fieldName)</p><p class="description">Gets a column name for a field name.
+</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getColumnNames()">getColumnNames</a>(mixed fieldNames)</p><p class="description">Gets an array containing all the column names.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getFieldMapping()">getFieldMapping</a>(string fieldName)</p><p class="description">Gets the mapping of a (regular) field that holds some data but not a
+reference to another object.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getFieldName()">getFieldName</a>(string columnName)</p><p class="description">Gets the field name for a column name.
+</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getIdentifierColumnNames()">getIdentifierColumnNames</a>()</p><p class="description">Returns an array with all the identifier column names.</p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#getIdentifierFieldNames()">getIdentifierFieldNames</a>()</p><p class="description">Gets the identifier (primary key) field names of the class.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getLifecycleCallbacks()">getLifecycleCallbacks</a>(string event)</p><p class="description">Gets the registered lifecycle callbacks for an event.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getSingleIdentifierColumnName()">getSingleIdentifierColumnName</a>()</p><p class="description">Gets the column name of the single id column. </p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getSingleIdentifierFieldName()">getSingleIdentifierFieldName</a>()</p><p class="description">Gets the name of the single id field. </p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getTableName()">getTableName</a>()</p><p class="description">Gets the name of the primary table.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getTemporaryIdTableName()">getTemporaryIdTableName</a>()</p><p class="description">Gets the table name to use for temporary identifier tables of this class.</p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\DBAL\Types\Type</td>
+<td class="description"><p class="name"><a href="#getTypeOfColumn()">getTypeOfColumn</a>(mixed columnName)</p><p class="description">Gets the type of a column.</p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\DBAL\Types\Type</td>
+<td class="description"><p class="name"><a href="#getTypeOfField()">getTypeOfField</a>(string fieldName)</p><p class="description">Gets the type of a field.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#hasAssociation()">hasAssociation</a>(string fieldName)</p><p class="description">Checks whether the class has a mapped association with the given field name.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#hasField()">hasField</a>(mixed fieldName)</p><p class="description">Checks whether the class has a (mapped) field with a certain name.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#hasLifecycleCallbacks()">hasLifecycleCallbacks</a>(string lifecycleEvent)</p><p class="description">Whether the class has any attached lifecycle listeners or callbacks for a lifecycle event.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#invokeLifecycleCallbacks()">invokeLifecycleCallbacks</a>(mixed lifecycleEvent, <a href="../../../doctrine/orm/mapping/entity.html">Entity</a> entity, string event)</p><p class="description">Dispatches the lifecycle event of the given entity to the registered
+lifecycle callbacks and lifecycle listeners.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isChangeTrackingDeferredExplicit()">isChangeTrackingDeferredExplicit</a>()</p><p class="description">Whether the change tracking policy of this class is "deferred explicit".</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isChangeTrackingDeferredImplicit()">isChangeTrackingDeferredImplicit</a>()</p><p class="description">Whether the change tracking policy of this class is "deferred implicit".</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isChangeTrackingNotify()">isChangeTrackingNotify</a>()</p><p class="description">Whether the change tracking policy of this class is "notify".</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isCollectionValuedAssociation()">isCollectionValuedAssociation</a>(string fieldName)</p><p class="description">Checks whether the class has a mapped association for the specified field
+and if yes, checks whether it is a collection-valued association (to-many).</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isIdGeneratorIdentity()">isIdGeneratorIdentity</a>()</p><p class="description">Checks whether the class uses an identity column for the Id generation.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isIdGeneratorSequence()">isIdGeneratorSequence</a>()</p><p class="description">Checks whether the class uses a sequence for id generation.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isIdGeneratorTable()">isIdGeneratorTable</a>()</p><p class="description">Checks whether the class uses a table for id generation.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isIdentifier()">isIdentifier</a>(string fieldName)</p><p class="description">Checks whether a field is part of the identifier/primary key field(s).</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isIdentifierNatural()">isIdentifierNatural</a>()</p><p class="description">Checks whether the class has a natural identifier/pk (which means it does
+not use any Id generator.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isInheritanceTypeJoined()">isInheritanceTypeJoined</a>()</p><p class="description">Checks whether the mapped class uses the JOINED inheritance mapping strategy.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isInheritanceTypeNone()">isInheritanceTypeNone</a>()</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isInheritanceTypeSingleTable()">isInheritanceTypeSingleTable</a>()</p><p class="description">Checks whether the mapped class uses the SINGLE_TABLE inheritance mapping strategy.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isInheritanceTypeTablePerClass()">isInheritanceTypeTablePerClass</a>()</p><p class="description">Checks whether the mapped class uses the TABLE_PER_CLASS inheritance mapping strategy.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isInheritedAssociation()">isInheritedAssociation</a>(string fieldName)</p><p class="description">Checks whether a mapped association field is inherited from a superclass.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isInheritedField()">isInheritedField</a>(mixed fieldName)</p><p class="description">Checks whether a mapped field is inherited from an entity superclass.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isNullable()">isNullable</a>(string fieldName)</p><p class="description">Check if the field is not null.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isSingleValuedAssociation()">isSingleValuedAssociation</a>(string fieldName)</p><p class="description">Checks whether the class has a mapped association for the specified field
+and if yes, checks whether it is a single-valued association (to-one).</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isUniqueField()">isUniqueField</a>(string fieldName)</p><p class="description">Check if the field is unique.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#mapField()">mapField</a>(array mapping)</p><p class="description">Adds a mapped field to the class.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#mapManyToMany()">mapManyToMany</a>(array mapping)</p><p class="description">Adds a many-to-many mapping.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#mapManyToOne()">mapManyToOne</a>(array mapping)</p><p class="description">Adds a many-to-one mapping.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#mapOneToMany()">mapOneToMany</a>(array mapping)</p><p class="description">Adds a one-to-many mapping.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#mapOneToOne()">mapOneToOne</a>(array mapping)</p><p class="description">Adds a one-to-one mapping.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setChangeTrackingPolicy()">setChangeTrackingPolicy</a>(integer policy)</p><p class="description">Sets the change tracking policy used by this class.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setCustomRepositoryClass()">setCustomRepositoryClass</a>(mixed repositoryClassName, string mapperClassName)</p><p class="description">Registers a custom repository class for the entity class.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setDiscriminatorColumn()">setDiscriminatorColumn</a>(array columnDef)</p><p class="description">Sets the discriminator column definition.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setDiscriminatorMap()">setDiscriminatorMap</a>(array map)</p><p class="description">Sets the discriminator values used by this class.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setIdGenerator()">setIdGenerator</a>(<a href="../../../doctrine/orm/id/abstractidgenerator.html">AbstractIdGenerator</a> generator)</p><p class="description">Sets the ID generator used to generate IDs for instances of this class.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setIdGeneratorType()">setIdGeneratorType</a>(mixed generatorType)</p><p class="description">Sets the type of Id generator to use for the mapped class.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setIdentifier()">setIdentifier</a>(array identifier)</p><p class="description">INTERNAL:
+Sets the mapped identifier/primary key fields of this class.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setInheritanceType()">setInheritanceType</a>(integer type)</p><p class="description">Sets the inheritance type used by the class and it's subclasses.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setLifecycleCallbacks()">setLifecycleCallbacks</a>(array callbacks)</p><p class="description">Sets the lifecycle callbacks for entities of this class.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setParentClasses()">setParentClasses</a>(mixed classNames)</p><p class="description">Sets the parent class names.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setPrimaryTable()">setPrimaryTable</a>(array primaryTableDefinition)</p><p class="description">Sets the primary table definition. </p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setSequenceGeneratorDefinition()">setSequenceGeneratorDefinition</a>(array definition)</p><p class="description">Sets the definition of the sequence ID generator for this class.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setSubclasses()">setSubclasses</a>(array subclasses)</p><p class="description">Sets the mapped subclasses of this class.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setTableName()">setTableName</a>(string tableName)</p><p class="description">Sets the name of the primary table the class is mapped to.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setVersionField()">setVersionField</a>(string versionField)</p><p class="description">Sets the name of the field that is to be used for versioning if this class is
+versioned for optimistic locking.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setVersionMapping()">setVersionMapping</a>(array mapping)</p><p class="description">Sets the version field mapping used for versioning. </p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setVersioned()">setVersioned</a>(boolean bool)</p><p class="description">Sets whether this class is to be versioned for optimistic locking.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#usesIdGenerator()">usesIdGenerator</a>()</p><p class="description">Checks whether the mapped class uses an Id generator.</p></td>
+</tr>
+</table>
+
+<h2 id="detail_field">Field Detail</h2>
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 106</div>
+<h3 id="CHANGETRACKING_DEFERRED_EXPLICIT">CHANGETRACKING_DEFERRED_EXPLICIT</h3>
+<code class="signature">public final  int <strong>CHANGETRACKING_DEFERRED_EXPLICIT</strong> = 2</code>
+<div class="details">
+<p>DEFERRED_EXPLICIT means that changes of entities are calculated at commit-time
+by doing a property-by-property comparison with the original data. This will
+be done only for entities that were explicitly saved (through persist() or a cascade).</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 100</div>
+<h3 id="CHANGETRACKING_DEFERRED_IMPLICIT">CHANGETRACKING_DEFERRED_IMPLICIT</h3>
+<code class="signature">public final  int <strong>CHANGETRACKING_DEFERRED_IMPLICIT</strong> = 1</code>
+<div class="details">
+<p>DEFERRED_IMPLICIT means that changes of entities are calculated at commit-time
+by doing a property-by-property comparison with the original data. This will
+be done for all entities that are in MANAGED state at commit-time.</p><p>This is the default change tracking policy.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 112</div>
+<h3 id="CHANGETRACKING_NOTIFY">CHANGETRACKING_NOTIFY</h3>
+<code class="signature">public final  int <strong>CHANGETRACKING_NOTIFY</strong> = 3</code>
+<div class="details">
+<p>NOTIFY means that Doctrine relies on the entities sending out notifications
+when their properties change. Such entity classes must implement
+the <tt>NotifyPropertyChanged</tt> interface.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 69</div>
+<h3 id="GENERATOR_TYPE_AUTO">GENERATOR_TYPE_AUTO</h3>
+<code class="signature">public final  int <strong>GENERATOR_TYPE_AUTO</strong> = 1</code>
+<div class="details">
+<p>AUTO means the generator type will depend on what the used platform prefers.
+Offers full portability.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 87</div>
+<h3 id="GENERATOR_TYPE_IDENTITY">GENERATOR_TYPE_IDENTITY</h3>
+<code class="signature">public final  int <strong>GENERATOR_TYPE_IDENTITY</strong> = 4</code>
+<div class="details">
+<p>IDENTITY means an identity column is used for id generation. The database
+will fill in the id column on insertion. Platforms that do not support
+native identity columns may emulate them. Full portability is currently
+not guaranteed.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 92</div>
+<h3 id="GENERATOR_TYPE_NONE">GENERATOR_TYPE_NONE</h3>
+<code class="signature">public final  int <strong>GENERATOR_TYPE_NONE</strong> = 5</code>
+<div class="details">
+<p>NONE means the class does not have a generated id. That means the class
+must have a natural, manually assigned id.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 75</div>
+<h3 id="GENERATOR_TYPE_SEQUENCE">GENERATOR_TYPE_SEQUENCE</h3>
+<code class="signature">public final  int <strong>GENERATOR_TYPE_SEQUENCE</strong> = 2</code>
+<div class="details">
+<p>SEQUENCE means a separate sequence object will be used. Platforms that do
+not have native sequence support may emulate it. Full portability is currently
+not guaranteed.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 80</div>
+<h3 id="GENERATOR_TYPE_TABLE">GENERATOR_TYPE_TABLE</h3>
+<code class="signature">public final  int <strong>GENERATOR_TYPE_TABLE</strong> = 3</code>
+<div class="details">
+<p>TABLE means a separate table is used for id generation.
+Offers full portability.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 52</div>
+<h3 id="INHERITANCE_TYPE_JOINED">INHERITANCE_TYPE_JOINED</h3>
+<code class="signature">public final  int <strong>INHERITANCE_TYPE_JOINED</strong> = 2</code>
+<div class="details">
+<p>JOINED means the class will be persisted according to the rules of
+<tt>Class Table Inheritance</tt>.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 47</div>
+<h3 id="INHERITANCE_TYPE_NONE">INHERITANCE_TYPE_NONE</h3>
+<code class="signature">public final  int <strong>INHERITANCE_TYPE_NONE</strong> = 1</code>
+<div class="details">
+<p>NONE means the class does not participate in an inheritance hierarchy
+and therefore does not need an inheritance mapping type.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 57</div>
+<h3 id="INHERITANCE_TYPE_SINGLE_TABLE">INHERITANCE_TYPE_SINGLE_TABLE</h3>
+<code class="signature">public final  int <strong>INHERITANCE_TYPE_SINGLE_TABLE</strong> = 3</code>
+<div class="details">
+<p>SINGLE_TABLE means the class will be persisted according to the rules of
+<tt>Single Table Inheritance</tt>.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 62</div>
+<h3 id="INHERITANCE_TYPE_TABLE_PER_CLASS">INHERITANCE_TYPE_TABLE_PER_CLASS</h3>
+<code class="signature">public final  int <strong>INHERITANCE_TYPE_TABLE_PER_CLASS</strong> = 4</code>
+<div class="details">
+<p>TABLE_PER_CLASS means the class will be persisted according to the rules
+of <tt>Concrete Table Inheritance</tt>.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 305</div>
+<h3 id="associationMappings">associationMappings</h3>
+<code class="signature">public  array <strong>$associationMappings</strong> = array()</code>
+<div class="details">
+<p>READ-ONLY: The association mappings of this class.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 352</div>
+<h3 id="changeTrackingPolicy">changeTrackingPolicy</h3>
+<code class="signature">public  integer <strong>$changeTrackingPolicy</strong> = self::CHANGETRACKING_DEFERRED_IMPLICIT</code>
+<div class="details">
+<p>READ-ONLY: The policy used for change-tracking on entities of this class.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 247</div>
+<h3 id="columnNames">columnNames</h3>
+<code class="signature">public  array <strong>$columnNames</strong> = array()</code>
+<div class="details">
+<p>READ-ONLY: A map of field names to column names. Keys are field names and values column names.
+Used to look up column names from field names.
+This is the reverse lookup map of $_fieldNames.</p><dl>
+<dt>Todo:</dt>
+<dd>We could get rid of this array by just using $fieldMappings[$fieldName]['columnName'].</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 142</div>
+<h3 id="customRepositoryClassName">customRepositoryClassName</h3>
+<code class="signature">public  string <strong>$customRepositoryClassName</strong></code>
+<div class="details">
+<p>The name of the custom repository class used for the entity class.
+(Optional).</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 277</div>
+<h3 id="discriminatorColumn">discriminatorColumn</h3>
+<code class="signature">public  array <strong>$discriminatorColumn</strong></code>
+<div class="details">
+<p>READ-ONLY: The definition of the descriminator column used in JOINED and SINGLE_TABLE
+inheritance mappings.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 269</div>
+<h3 id="discriminatorMap">discriminatorMap</h3>
+<code class="signature">public  mixed <strong>$discriminatorMap</strong> = array()</code>
+<div class="details">
+<p>READ-ONLY: The discriminator map of all mapped classes in the hierarchy.</p><p><b>This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
+where a discriminator column is used.</b></p><dl>
+<dt>See Also:</dt>
+<dd><a href="../../../doctrine/orm/mapping/classmetadatainfo.html#discriminatorColumn">discriminatorColumn</a></dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 258</div>
+<h3 id="discriminatorValue">discriminatorValue</h3>
+<code class="signature">public  mixed <strong>$discriminatorValue</strong></code>
+<div class="details">
+<p>READ-ONLY: The discriminator value of this class.</p><p><b>This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
+where a discriminator column is used.</b></p><dl>
+<dt>See Also:</dt>
+<dd><a href="../../../doctrine/orm/mapping/classmetadatainfo.html#discriminatorColumn">discriminatorColumn</a></dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 228</div>
+<h3 id="fieldMappings">fieldMappings</h3>
+<code class="signature">public  array <strong>$fieldMappings</strong> = array()</code>
+<div class="details">
+<p>READ-ONLY: The field mappings of the class.
+Keys are field names and values are mapping definitions.</p><p>The mapping definition array has the following values:</p><p>- <b>fieldName</b> (string)
+The name of the field in the Entity.</p><p>- <b>type</b> (string)
+The type name of the mapped field. Can be one of Doctrine's mapping types
+or a custom mapping type.</p><p>- <b>columnName</b> (string, optional)
+The column name. Optional. Defaults to the field name.</p><p>- <b>length</b> (integer, optional)
+The database length of the column. Optional. Default value taken from
+the type.</p><p>- <b>id</b> (boolean, optional)
+Marks the field as the primary key of the entity. Multiple fields of an
+entity can have the id attribute, forming a composite key.</p><p>- <b>nullable</b> (boolean, optional)
+Whether the column is nullable. Defaults to FALSE.</p><p>- <b>columnDefinition</b> (string, optional, schema-only)
+The SQL fragment that is used when generating the DDL for the column.</p><p>- <b>precision</b> (integer, optional, schema-only)
+The precision of a decimal column. Only valid if the column type is decimal.</p><p>- <b>scale</b> (integer, optional, schema-only)
+The scale of a decimal column. Only valid if the column type is decimal.</p><p>- <b>unique (string, optional, schema-only)</b>
+Whether a unique constraint should be generated for the column.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 237</div>
+<h3 id="fieldNames">fieldNames</h3>
+<code class="signature">public  array <strong>$fieldNames</strong> = array()</code>
+<div class="details">
+<p>READ-ONLY: An array of field names. Used to look up field names from column names.
+Keys are column names and values are field names.
+This is the reverse lookup map of $_columnNames.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 185</div>
+<h3 id="generatorType">generatorType</h3>
+<code class="signature">public  string <strong>$generatorType</strong> = self::GENERATOR_TYPE_NONE</code>
+<div class="details">
+<p>READ-ONLY: The Id generator type used by the class.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 320</div>
+<h3 id="idGenerator">idGenerator</h3>
+<code class="signature">public  <a href="../../../doctrine/orm/id/abstractidgenerator.html">AbstractIdGenerator</a> <strong>$idGenerator</strong></code>
+<div class="details">
+<p>READ-ONLY: The ID generator used for generating IDs for this class.</p><dl>
+<dt>Todo:</dt>
+<dd>Remove</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 171</div>
+<h3 id="identifier">identifier</h3>
+<code class="signature">public  array <strong>$identifier</strong> = array()</code>
+<div class="details">
+<p>READ-ONLY: The field names of all fields that are part of the identifier/primary key
+of the mapped entity class.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 178</div>
+<h3 id="inheritanceType">inheritanceType</h3>
+<code class="signature">public  integer <strong>$inheritanceType</strong> = self::INHERITANCE_TYPE_NONE</code>
+<div class="details">
+<p>READ-ONLY: The inheritance mapping type used by the class.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 312</div>
+<h3 id="isIdentifierComposite">isIdentifierComposite</h3>
+<code class="signature">public  boolean <strong>$isIdentifierComposite</strong> = false</code>
+<div class="details">
+<p>READ-ONLY: Flag indicating whether the identifier/primary key of the class is composite.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 149</div>
+<h3 id="isMappedSuperclass">isMappedSuperclass</h3>
+<code class="signature">public  boolean <strong>$isMappedSuperclass</strong> = false</code>
+<div class="details">
+<p>READ-ONLY: Whether this class describes the mapping of a mapped superclass.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 360</div>
+<h3 id="isVersioned">isVersioned</h3>
+<code class="signature">public  boolean $isVersioned <strong>$isVersioned</strong></code>
+<div class="details">
+<p>READ-ONLY: A flag for whether or not instances of this class are to be versioned
+with optimistic locking.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 298</div>
+<h3 id="lifecycleCallbacks">lifecycleCallbacks</h3>
+<code class="signature">public  array <strong>$lifecycleCallbacks</strong> = array()</code>
+<div class="details">
+<p>READ-ONLY: The registered lifecycle callbacks for entities of this class.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 117</div>
+<h3 id="name">name</h3>
+<code class="signature">public  mixed <strong>$name</strong></code>
+<div class="details">
+<p>READ-ONLY: The name of the entity class.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 125</div>
+<h3 id="namespace">namespace</h3>
+<code class="signature">public  string <strong>$namespace</strong></code>
+<div class="details">
+<p>READ-ONLY: The namespace the entity class is contained in.</p><dl>
+<dt>Todo:</dt>
+<dd>Not really needed. Usage could be localized.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 156</div>
+<h3 id="parentClasses">parentClasses</h3>
+<code class="signature">public  array <strong>$parentClasses</strong> = array()</code>
+<div class="details">
+<p>READ-ONLY: The names of the parent classes (ancestors).</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 134</div>
+<h3 id="rootEntityName">rootEntityName</h3>
+<code class="signature">public  string <strong>$rootEntityName</strong></code>
+<div class="details">
+<p>READ-ONLY: The name of the entity class that is at the root of the mapped entity inheritance
+hierarchy. If the entity is not part of a mapped inheritance hierarchy this is the same
+as <code>$entityName</code>.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 337</div>
+<h3 id="sequenceGeneratorDefinition">sequenceGeneratorDefinition</h3>
+<code class="signature">public  array <strong>$sequenceGeneratorDefinition</strong></code>
+<div class="details">
+<p>READ-ONLY: The definition of the sequence generator of this class. Only used for the
+SEQUENCE generation strategy.</p><p>The definition has the following structure:
+<code>
+array(
+'sequenceName' => 'name',
+'allocationSize' => 20,
+'initialValue' => 1
+)
+</code></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 163</div>
+<h3 id="subClasses">subClasses</h3>
+<code class="signature">public  array <strong>$subClasses</strong> = array()</code>
+<div class="details">
+<p>READ-ONLY: The names of all subclasses (descendants).</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 291</div>
+<h3 id="table">table</h3>
+<code class="signature">public  array <strong>$table</strong></code>
+<div class="details">
+<p>READ-ONLY: The primary table definition. The definition is an array with the
+following entries:</p><p>name => <tableName>
+schema => <schemaName>
+indexes => array
+uniqueConstraints => array</p><dl>
+<dt>Todo:</dt>
+<dd>Rename to just $table</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 345</div>
+<h3 id="tableGeneratorDefinition">tableGeneratorDefinition</h3>
+<code class="signature">public  array <strong>$tableGeneratorDefinition</strong></code>
+<div class="details">
+<p>READ-ONLY: The definition of the table generator of this class. Only used for the
+TABLE generation strategy.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 367</div>
+<h3 id="versionField">versionField</h3>
+<code class="signature">public  mixed $versionField <strong>$versionField</strong></code>
+<div class="details">
+<p>READ-ONLY: The name of the field which is used for versioning in optimistic locking (if any).</p></div>
+
+<hr>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 375</div>
+<h3 id="ClassMetadataInfo()">ClassMetadataInfo</h3>
+<code class="signature">public <strong>ClassMetadataInfo</strong>(string entityName)</code>
+<div class="details">
+<p>Initializes a new ClassMetadata instance that will hold the object-relational mapping
+metadata of the class with the given name.</p><dl>
+<dt>Parameters:</dt>
+<dd>entityName - The name of the entity class the new instance is used for.</dd>
+</dl>
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 957</div>
+<h3 id="addInheritedAssociationMapping()">addInheritedAssociationMapping</h3>
+<code class="signature">public  void <strong>addInheritedAssociationMapping</strong>(<a href="../../../doctrine/orm/mapping/associationmapping.html">AssociationMapping</a> mapping, string owningClassName)</code>
+<div class="details">
+<p>INTERNAL:
+Adds an association mapping without completing/validating it.
+This is mainly used to add inherited association mappings to derived classes.</p><dl>
+<dt>Parameters:</dt>
+<dd></dd>
+<dd>owningClassName - The name of the class that defined this mapping.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 973</div>
+<h3 id="addInheritedFieldMapping()">addInheritedFieldMapping</h3>
+<code class="signature">public  void <strong>addInheritedFieldMapping</strong>(mixed fieldMapping, array mapping)</code>
+<div class="details">
+<p>INTERNAL:
+Adds a field mapping without completing/validating it.
+This is mainly used to add inherited field mappings to derived classes.</p><dl>
+<dt>Todo:</dt>
+<dd>Rename: addInheritedFieldMapping</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1096</div>
+<h3 id="addLifecycleCallback()">addLifecycleCallback</h3>
+<code class="signature">public  void <strong>addLifecycleCallback</strong>(string callback, string event)</code>
+<div class="details">
+<p>Adds a lifecycle callback for entities of this class.</p><p>Note: If the same callback is registered more than once, the old one
+will be overridden.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 502</div>
+<h3 id="getAssociationMapping()">getAssociationMapping</h3>
+<code class="signature">public  Doctrine\ORM\Mapping\AssociationMapping <strong>getAssociationMapping</strong>(string fieldName)</code>
+<div class="details">
+<p>Gets the mapping of an association.</p><dl>
+<dt>Parameters:</dt>
+<dd>fieldName - The field name that represents the association in the object model.</dd>
+<dt>Returns:</dt>
+<dd>The mapping.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 515</div>
+<h3 id="getAssociationMappings()">getAssociationMappings</h3>
+<code class="signature">public  array <strong>getAssociationMappings</strong>()</code>
+<div class="details">
+<p>Gets all association mappings of the class.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 474</div>
+<h3 id="getColumnName()">getColumnName</h3>
+<code class="signature">public  string <strong>getColumnName</strong>(string fieldName)</code>
+<div class="details">
+<p>Gets a column name for a field name.
+If the column name for the field cannot be found, the given field name
+is returned.</p><dl>
+<dt>Parameters:</dt>
+<dd>fieldName - The field name.</dd>
+<dt>Returns:</dt>
+<dd>The column name.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 643</div>
+<h3 id="getColumnNames()">getColumnNames</h3>
+<code class="signature">public  array <strong>getColumnNames</strong>(mixed fieldNames)</code>
+<div class="details">
+<p>Gets an array containing all the column names.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 487</div>
+<h3 id="getFieldMapping()">getFieldMapping</h3>
+<code class="signature">public  array <strong>getFieldMapping</strong>(string fieldName)</code>
+<div class="details">
+<p>Gets the mapping of a (regular) field that holds some data but not a
+reference to another object.</p><dl>
+<dt>Parameters:</dt>
+<dd>fieldName - The field name.</dd>
+<dt>Returns:</dt>
+<dd>The field mapping.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 527</div>
+<h3 id="getFieldName()">getFieldName</h3>
+<code class="signature">public  string <strong>getFieldName</strong>(string columnName)</code>
+<div class="details">
+<p>Gets the field name for a column name.
+If no field name can be found the column name is returned.</p><dl>
+<dt>Parameters:</dt>
+<dd>columnName - column name</dd>
+<dt>Returns:</dt>
+<dd>column alias</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 661</div>
+<h3 id="getIdentifierColumnNames()">getIdentifierColumnNames</h3>
+<code class="signature">public  array <strong>getIdentifierColumnNames</strong>()</code>
+<div class="details">
+<p>Returns an array with all the identifier column names.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 584</div>
+<h3 id="getIdentifierFieldNames()">getIdentifierFieldNames</h3>
+<code class="signature">public  mixed <strong>getIdentifierFieldNames</strong>()</code>
+<div class="details">
+<p>Gets the identifier (primary key) field names of the class.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1082</div>
+<h3 id="getLifecycleCallbacks()">getLifecycleCallbacks</h3>
+<code class="signature">public  array <strong>getLifecycleCallbacks</strong>(string event)</code>
+<div class="details">
+<p>Gets the registered lifecycle callbacks for an event.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 611</div>
+<h3 id="getSingleIdentifierColumnName()">getSingleIdentifierColumnName</h3>
+<code class="signature">public  string <strong>getSingleIdentifierColumnName</strong>()</code>
+<div class="details">
+<p>Gets the column name of the single id column. Note that this only works on
+entity classes that have a single-field pk.</p><dl>
+<dt>Throws:</dt>
+<dd><a href="../../../doctrine/orm/mapping/mappingexception.html">If the class has a composite primary key.</a></dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 596</div>
+<h3 id="getSingleIdentifierFieldName()">getSingleIdentifierFieldName</h3>
+<code class="signature">public  string <strong>getSingleIdentifierFieldName</strong>()</code>
+<div class="details">
+<p>Gets the name of the single id field. Note that this only works on
+entity classes that have a single-field pk.</p><dl>
+<dt>Throws:</dt>
+<dd><a href="../../../doctrine/orm/mapping/mappingexception.html">If the class has a composite primary key.</a></dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 801</div>
+<h3 id="getTableName()">getTableName</h3>
+<code class="signature">public  string <strong>getTableName</strong>()</code>
+<div class="details">
+<p>Gets the name of the primary table.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 811</div>
+<h3 id="getTemporaryIdTableName()">getTemporaryIdTableName</h3>
+<code class="signature">public  string <strong>getTemporaryIdTableName</strong>()</code>
+<div class="details">
+<p>Gets the table name to use for temporary identifier tables of this class.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 791</div>
+<h3 id="getTypeOfColumn()">getTypeOfColumn</h3>
+<code class="signature">public  Doctrine\DBAL\Types\Type <strong>getTypeOfColumn</strong>(mixed columnName)</code>
+<div class="details">
+<p>Gets the type of a column.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 780</div>
+<h3 id="getTypeOfField()">getTypeOfField</h3>
+<code class="signature">public  Doctrine\DBAL\Types\Type <strong>getTypeOfField</strong>(string fieldName)</code>
+<div class="details">
+<p>Gets the type of a field.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1167</div>
+<h3 id="hasAssociation()">hasAssociation</h3>
+<code class="signature">public  boolean <strong>hasAssociation</strong>(string fieldName)</code>
+<div class="details">
+<p>Checks whether the class has a mapped association with the given field name.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 633</div>
+<h3 id="hasField()">hasField</h3>
+<code class="signature">public  boolean <strong>hasField</strong>(mixed fieldName)</code>
+<div class="details">
+<p>Checks whether the class has a (mapped) field with a certain name.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1071</div>
+<h3 id="hasLifecycleCallbacks()">hasLifecycleCallbacks</h3>
+<code class="signature">public  boolean <strong>hasLifecycleCallbacks</strong>(string lifecycleEvent)</code>
+<div class="details">
+<p>Whether the class has any attached lifecycle listeners or callbacks for a lifecycle event.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1058</div>
+<h3 id="invokeLifecycleCallbacks()">invokeLifecycleCallbacks</h3>
+<code class="signature">public  void <strong>invokeLifecycleCallbacks</strong>(mixed lifecycleEvent, <a href="../../../doctrine/orm/mapping/entity.html">Entity</a> entity, string event)</code>
+<div class="details">
+<p>Dispatches the lifecycle event of the given entity to the registered
+lifecycle callbacks and lifecycle listeners.</p><dl>
+<dt>Parameters:</dt>
+<dd>event - The lifecycle event.</dd>
+<dd>entity - The Entity on which the event occured.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 396</div>
+<h3 id="isChangeTrackingDeferredExplicit()">isChangeTrackingDeferredExplicit</h3>
+<code class="signature">public  boolean <strong>isChangeTrackingDeferredExplicit</strong>()</code>
+<div class="details">
+<p>Whether the change tracking policy of this class is "deferred explicit".</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 406</div>
+<h3 id="isChangeTrackingDeferredImplicit()">isChangeTrackingDeferredImplicit</h3>
+<code class="signature">public  boolean <strong>isChangeTrackingDeferredImplicit</strong>()</code>
+<div class="details">
+<p>Whether the change tracking policy of this class is "deferred implicit".</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 416</div>
+<h3 id="isChangeTrackingNotify()">isChangeTrackingNotify</h3>
+<code class="signature">public  boolean <strong>isChangeTrackingNotify</strong>()</code>
+<div class="details">
+<p>Whether the change tracking policy of this class is "notify".</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1192</div>
+<h3 id="isCollectionValuedAssociation()">isCollectionValuedAssociation</h3>
+<code class="signature">public  boolean <strong>isCollectionValuedAssociation</strong>(string fieldName)</code>
+<div class="details">
+<p>Checks whether the class has a mapped association for the specified field
+and if yes, checks whether it is a collection-valued association (to-many).</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE if the association exists and is collection-valued, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 738</div>
+<h3 id="isIdGeneratorIdentity()">isIdGeneratorIdentity</h3>
+<code class="signature">public  boolean <strong>isIdGeneratorIdentity</strong>()</code>
+<div class="details">
+<p>Checks whether the class uses an identity column for the Id generation.</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE if the class uses the IDENTITY generator, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 748</div>
+<h3 id="isIdGeneratorSequence()">isIdGeneratorSequence</h3>
+<code class="signature">public  boolean <strong>isIdGeneratorSequence</strong>()</code>
+<div class="details">
+<p>Checks whether the class uses a sequence for id generation.</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE if the class uses the SEQUENCE generator, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 758</div>
+<h3 id="isIdGeneratorTable()">isIdGeneratorTable</h3>
+<code class="signature">public  boolean <strong>isIdGeneratorTable</strong>()</code>
+<div class="details">
+<p>Checks whether the class uses a table for id generation.</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE if the class uses the TABLE generator, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 428</div>
+<h3 id="isIdentifier()">isIdentifier</h3>
+<code class="signature">public  boolean <strong>isIdentifier</strong>(string fieldName)</code>
+<div class="details">
+<p>Checks whether a field is part of the identifier/primary key field(s).</p><dl>
+<dt>Parameters:</dt>
+<dd>fieldName - The field name</dd>
+<dt>Returns:</dt>
+<dd>TRUE if the field is part of the table identifier/primary key field(s), FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 769</div>
+<h3 id="isIdentifierNatural()">isIdentifierNatural</h3>
+<code class="signature">public  boolean <strong>isIdentifierNatural</strong>()</code>
+<div class="details">
+<p>Checks whether the class has a natural identifier/pk (which means it does
+not use any Id generator.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 706</div>
+<h3 id="isInheritanceTypeJoined()">isInheritanceTypeJoined</h3>
+<code class="signature">public  boolean <strong>isInheritanceTypeJoined</strong>()</code>
+<div class="details">
+<p>Checks whether the mapped class uses the JOINED inheritance mapping strategy.</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE if the class participates in a JOINED inheritance mapping, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 695</div>
+<h3 id="isInheritanceTypeNone()">isInheritanceTypeNone</h3>
+<code class="signature">public  boolean <strong>isInheritanceTypeNone</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 717</div>
+<h3 id="isInheritanceTypeSingleTable()">isInheritanceTypeSingleTable</h3>
+<code class="signature">public  boolean <strong>isInheritanceTypeSingleTable</strong>()</code>
+<div class="details">
+<p>Checks whether the mapped class uses the SINGLE_TABLE inheritance mapping strategy.</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE if the class participates in a SINGLE_TABLE inheritance mapping, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 728</div>
+<h3 id="isInheritanceTypeTablePerClass()">isInheritanceTypeTablePerClass</h3>
+<code class="signature">public  boolean <strong>isInheritanceTypeTablePerClass</strong>()</code>
+<div class="details">
+<p>Checks whether the mapped class uses the TABLE_PER_CLASS inheritance mapping strategy.</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE if the class participates in a TABLE_PER_CLASS inheritance mapping, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 874</div>
+<h3 id="isInheritedAssociation()">isInheritedAssociation</h3>
+<code class="signature">public  boolean <strong>isInheritedAssociation</strong>(string fieldName)</code>
+<div class="details">
+<p>Checks whether a mapped association field is inherited from a superclass.</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE if the field is inherited, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 863</div>
+<h3 id="isInheritedField()">isInheritedField</h3>
+<code class="signature">public  boolean <strong>isInheritedField</strong>(mixed fieldName)</code>
+<div class="details">
+<p>Checks whether a mapped field is inherited from an entity superclass.</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE if the field is inherited, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 457</div>
+<h3 id="isNullable()">isNullable</h3>
+<code class="signature">public  boolean <strong>isNullable</strong>(string fieldName)</code>
+<div class="details">
+<p>Check if the field is not null.</p><dl>
+<dt>Parameters:</dt>
+<dd>fieldName - The field name</dd>
+<dt>Returns:</dt>
+<dd>TRUE if the field is not null, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1179</div>
+<h3 id="isSingleValuedAssociation()">isSingleValuedAssociation</h3>
+<code class="signature">public  boolean <strong>isSingleValuedAssociation</strong>(string fieldName)</code>
+<div class="details">
+<p>Checks whether the class has a mapped association for the specified field
+and if yes, checks whether it is a single-valued association (to-one).</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE if the association exists and is single-valued, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 442</div>
+<h3 id="isUniqueField()">isUniqueField</h3>
+<code class="signature">public  boolean <strong>isUniqueField</strong>(string fieldName)</code>
+<div class="details">
+<p>Check if the field is unique.</p><dl>
+<dt>Parameters:</dt>
+<dd>fieldName - The field name</dd>
+<dt>Returns:</dt>
+<dd>TRUE if the field is unique, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 940</div>
+<h3 id="mapField()">mapField</h3>
+<code class="signature">public  void <strong>mapField</strong>(array mapping)</code>
+<div class="details">
+<p>Adds a mapped field to the class.</p><dl>
+<dt>Parameters:</dt>
+<dd>mapping - The field mapping.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1020</div>
+<h3 id="mapManyToMany()">mapManyToMany</h3>
+<code class="signature">public  void <strong>mapManyToMany</strong>(array mapping)</code>
+<div class="details">
+<p>Adds a many-to-many mapping.</p><dl>
+<dt>Parameters:</dt>
+<dd>mapping - The mapping.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1009</div>
+<h3 id="mapManyToOne()">mapManyToOne</h3>
+<code class="signature">public  void <strong>mapManyToOne</strong>(array mapping)</code>
+<div class="details">
+<p>Adds a many-to-one mapping.</p><dl>
+<dt>Parameters:</dt>
+<dd>mapping - The mapping.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 997</div>
+<h3 id="mapOneToMany()">mapOneToMany</h3>
+<code class="signature">public  void <strong>mapOneToMany</strong>(array mapping)</code>
+<div class="details">
+<p>Adds a one-to-many mapping.</p><dl>
+<dt>Parameters:</dt>
+<dd>mapping - The mapping.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 985</div>
+<h3 id="mapOneToOne()">mapOneToOne</h3>
+<code class="signature">public  void <strong>mapOneToOne</strong>(array mapping)</code>
+<div class="details">
+<p>Adds a one-to-one mapping.</p><dl>
+<dt>Parameters:</dt>
+<dd>mapping - The mapping.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 386</div>
+<h3 id="setChangeTrackingPolicy()">setChangeTrackingPolicy</h3>
+<code class="signature">public  void <strong>setChangeTrackingPolicy</strong>(integer policy)</code>
+<div class="details">
+<p>Sets the change tracking policy used by this class.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1046</div>
+<h3 id="setCustomRepositoryClass()">setCustomRepositoryClass</h3>
+<code class="signature">public  void <strong>setCustomRepositoryClass</strong>(mixed repositoryClassName, string mapperClassName)</code>
+<div class="details">
+<p>Registers a custom repository class for the entity class.</p><dl>
+<dt>Parameters:</dt>
+<dd>mapperClassName - The class name of the custom mapper.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1118</div>
+<h3 id="setDiscriminatorColumn()">setDiscriminatorColumn</h3>
+<code class="signature">public  void <strong>setDiscriminatorColumn</strong>(array columnDef)</code>
+<div class="details">
+<p>Sets the discriminator column definition.</p><dl>
+<dt>See Also:</dt>
+<dd>getDiscriminatorColumn()</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1141</div>
+<h3 id="setDiscriminatorMap()">setDiscriminatorMap</h3>
+<code class="signature">public  void <strong>setDiscriminatorMap</strong>(array map)</code>
+<div class="details">
+<p>Sets the discriminator values used by this class.
+Used for JOINED and SINGLE_TABLE inheritance mapping strategies.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1203</div>
+<h3 id="setIdGenerator()">setIdGenerator</h3>
+<code class="signature">public  void <strong>setIdGenerator</strong>(<a href="../../../doctrine/orm/id/abstractidgenerator.html">AbstractIdGenerator</a> generator)</code>
+<div class="details">
+<p>Sets the ID generator used to generate IDs for instances of this class.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 677</div>
+<h3 id="setIdGeneratorType()">setIdGeneratorType</h3>
+<code class="signature">public  void <strong>setIdGeneratorType</strong>(mixed generatorType)</code>
+<div class="details">
+<p>Sets the type of Id generator to use for the mapped class.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 623</div>
+<h3 id="setIdentifier()">setIdentifier</h3>
+<code class="signature">public  void <strong>setIdentifier</strong>(array identifier)</code>
+<div class="details">
+<p>INTERNAL:
+Sets the mapped identifier/primary key fields of this class.
+Mainly used by the ClassMetadataFactory to assign inherited identifiers.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 850</div>
+<h3 id="setInheritanceType()">setInheritanceType</h3>
+<code class="signature">public  void <strong>setInheritanceType</strong>(integer type)</code>
+<div class="details">
+<p>Sets the inheritance type used by the class and it's subclasses.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1107</div>
+<h3 id="setLifecycleCallbacks()">setLifecycleCallbacks</h3>
+<code class="signature">public  void <strong>setLifecycleCallbacks</strong>(array callbacks)</code>
+<div class="details">
+<p>Sets the lifecycle callbacks for entities of this class.
+Any previously registered callbacks are overwritten.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 837</div>
+<h3 id="setParentClasses()">setParentClasses</h3>
+<code class="signature">public  void <strong>setParentClasses</strong>(mixed classNames)</code>
+<div class="details">
+<p>Sets the parent class names.
+Assumes that the class names in the passed array are in the order:
+directParent -> directParentParent -> directParentParentParent ... -> root.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 900</div>
+<h3 id="setPrimaryTable()">setPrimaryTable</h3>
+<code class="signature">public  void <strong>setPrimaryTable</strong>(array primaryTableDefinition)</code>
+<div class="details">
+<p>Sets the primary table definition. The provided array must have the
+following structure:</p><p>name => <tableName>
+schema => <schemaName>
+catalog => <catalogName></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1222</div>
+<h3 id="setSequenceGeneratorDefinition()">setSequenceGeneratorDefinition</h3>
+<code class="signature">public  void <strong>setSequenceGeneratorDefinition</strong>(array definition)</code>
+<div class="details">
+<p>Sets the definition of the sequence ID generator for this class.</p><p>The definition must have the following structure:
+<code>
+array(
+'sequenceName' => 'name',
+'allocationSize' => 20,
+'initialValue' => 1
+)
+</code></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 821</div>
+<h3 id="setSubclasses()">setSubclasses</h3>
+<code class="signature">public  void <strong>setSubclasses</strong>(array subclasses)</code>
+<div class="details">
+<p>Sets the mapped subclasses of this class.</p><dl>
+<dt>Parameters:</dt>
+<dd>subclasses - The names of all mapped subclasses.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 885</div>
+<h3 id="setTableName()">setTableName</h3>
+<code class="signature">public  void <strong>setTableName</strong>(string tableName)</code>
+<div class="details">
+<p>Sets the name of the primary table the class is mapped to.</p><dl>
+<dt>Parameters:</dt>
+<dd>tableName - The table name.</dd>
+<dt>Deprecated.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1265</div>
+<h3 id="setVersionField()">setVersionField</h3>
+<code class="signature">public  void <strong>setVersionField</strong>(string versionField)</code>
+<div class="details">
+<p>Sets the name of the field that is to be used for versioning if this class is
+versioned for optimistic locking.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1233</div>
+<h3 id="setVersionMapping()">setVersionMapping</h3>
+<code class="signature">public  void <strong>setVersionMapping</strong>(array mapping)</code>
+<div class="details">
+<p>Sets the version field mapping used for versioning. Sets the default
+value to use depending on the column type.</p><dl>
+<dt>Parameters:</dt>
+<dd>mapping - The version field mapping array</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 1254</div>
+<h3 id="setVersioned()">setVersioned</h3>
+<code class="signature">public  void <strong>setVersioned</strong>(boolean bool)</code>
+<div class="details">
+<p>Sets whether this class is to be versioned for optimistic locking.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataInfo.php at line 687</div>
+<h3 id="usesIdGenerator()">usesIdGenerator</h3>
+<code class="signature">public  boolean <strong>usesIdGenerator</strong>()</code>
+<div class="details">
+<p>Checks whether the mapped class uses an Id generator.</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE if the mapped class uses an Id generator, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/mapping/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/mapping/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/mapping/classmetadatainfo.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>JoinedSubclassPersister (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/persisters/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/persisters/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/persisters/joinedsubclasspersister.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Persisters\JoinedSubclassPersister</div>
+<div class="location">/Doctrine/ORM/Persisters/JoinedSubclassPersister.php at line 36</div>
+
+<h1>Class JoinedSubclassPersister</h1>
+
+<pre class="tree">Class:JoinedSubclassPersister - Superclass: AbstractEntityInheritancePersister
+Class:AbstractEntityInheritancePersister - Superclass: StandardEntityPersister
+<a href="../../../doctrine/orm/persisters/standardentitypersister.html">StandardEntityPersister</a><br>   &lfloor;&nbsp;<a href="../../../doctrine/orm/persisters/abstractentityinheritancepersister.html">AbstractEntityInheritancePersister</a><br>      &lfloor;&nbsp;<strong>JoinedSubclassPersister</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>JoinedSubclassPersister</strong><br>extends <a href="../../../doctrine/orm/persisters/abstractentityinheritancepersister.html">AbstractEntityInheritancePersister</a>
+
+</p>
+
+<div class="comment" id="overview_description"><p>The joined subclass persister maps a single entity instance to several tables in the
+database as it is defined by the <tt>Class Table Inheritance</tt> strategy.</p></div>
+
+<dl>
+<dt>Author:</dt>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>See Also:</dt>
+<dd><a href="http://martinfowler.com/eaaCatalog/classTableInheritance.html">http://martinfowler.com/eaaCatalog/classTableInheritance.html</a></dd>
+<dt>Todo:</dt>
+<dd>Rename: BasicEntityPersister</dd>
+</dl>
+<hr>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#delete()">delete</a>(object entity)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#executeInserts()">executeInserts</a>()</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getOwningTable()">getOwningTable</a>(string fieldName)</p><p class="description">Gets the name of the table that owns the column the given field is mapped to.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#update()">update</a>(object entity)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+</table>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Persisters/JoinedSubclassPersister.php at line 210</div>
+<h3 id="delete()">delete</h3>
+<code class="signature">public  void <strong>delete</strong>(object entity)</code>
+<div class="details">
+<p></p><dl>
+<dt>Parameters:</dt>
+<dd>entity - The entity to delete.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Persisters/JoinedSubclassPersister.php at line 100</div>
+<h3 id="executeInserts()">executeInserts</h3>
+<code class="signature">public  array <strong>executeInserts</strong>()</code>
+<div class="details">
+<p></p><dl>
+<dt>Returns:</dt>
+<dd>An array of any generated post-insert IDs. This will be an empty array if the entity class does not use the IDENTITY generation strategy.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Persisters/JoinedSubclassPersister.php at line 78</div>
+<h3 id="getOwningTable()">getOwningTable</h3>
+<code class="signature">public  string <strong>getOwningTable</strong>(string fieldName)</code>
+<div class="details">
+<p>Gets the name of the table that owns the column the given field is mapped to.</p><dl>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Persisters/JoinedSubclassPersister.php at line 187</div>
+<h3 id="update()">update</h3>
+<code class="signature">public  void <strong>update</strong>(object entity)</code>
+<div class="details">
+<p></p><dl>
+<dt>Parameters:</dt>
+<dd>entity - The entity to update.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/persisters/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/persisters/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/persisters/joinedsubclasspersister.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>
