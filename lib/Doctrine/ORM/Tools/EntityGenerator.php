@@ -98,7 +98,7 @@ class EntityGenerator
  */
 public function <methodName>()
 {
-    return $this-><fieldName>;
+<spaces>return $this-><fieldName>;
 }';
 
     private static $_setMethodTemplate =
@@ -109,7 +109,7 @@ public function <methodName>()
  */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
-    $this-><fieldName> = $<variableName>;
+<spaces>$this-><fieldName> = $<variableName>;
 }';
 
     private static $_addMethodTemplate =
@@ -120,7 +120,7 @@ public function <methodName>(<methodTypeHint>$<variableName>)
  */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
-    $this-><fieldName>[] = $<variableName>;
+<spaces>$this-><fieldName>[] = $<variableName>;
 }';
 
     private static $_lifecycleCallbackMethodTemplate =
@@ -129,7 +129,7 @@ public function <methodName>(<methodTypeHint>$<variableName>)
  */
 public function <methodName>()
 {
-    // Add your code here
+<spaces>// Add your code here
 }';
 
     /**
@@ -192,7 +192,8 @@ public function <methodName>()
             '<use>',
             '<entityAnnotation>',
             '<entityClassName>',
-            '<entityBody>'
+            '<entityBody>',
+            '<spaces>'
         );
 
         $replacements = array(
@@ -200,7 +201,8 @@ public function <methodName>()
             $this->_generateEntityUse($metadata),
             $this->_generateEntityDocBlock($metadata),
             $this->_generateEntityClassName($metadata),
-            $this->_generateEntityBody($metadata)
+            $this->_generateEntityBody($metadata),
+            $this->_spaces
         );
 
         return str_replace($placeHolders, $replacements, self::$_classTemplate);
