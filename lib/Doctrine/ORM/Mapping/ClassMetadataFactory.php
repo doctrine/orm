@@ -203,19 +203,16 @@ class ClassMetadataFactory
         if ( ! $this->_initialized) {
             $this->_initialize();
         }
-        
+
         $loaded = array();
 
         // Collect parent classes, ignoring transient (not-mapped) classes.
-        //TODO: Evaluate whether we can use class_parents() here.
-        $parentClass = $name;
         $parentClasses = array();
-        while ($parentClass = get_parent_class($parentClass)) {
+        foreach (array_reverse(class_parents($name)) as $parentClass) {
             if ( ! $this->_driver->isTransient($parentClass)) {
                 $parentClasses[] = $parentClass;
             }
         }
-        $parentClasses = array_reverse($parentClasses);
         $parentClasses[] = $name;
 
         // Move down the hierarchy of parent classes, starting from the topmost class
@@ -231,7 +228,7 @@ class ClassMetadataFactory
             }
 
             $class = $this->_newClassMetadataInstance($className);
-            
+
             if ($parent) {
                 $class->setInheritanceType($parent->inheritanceType);
                 $class->setDiscriminatorColumn($parent->discriminatorColumn);
@@ -262,8 +259,8 @@ class ClassMetadataFactory
                 } else if ($parent->isIdGeneratorTable()) {
                     $class->getTableGeneratorDefinition($parent->tableGeneratorDefinition);
                 }
-                if ($generatorType = $parent->generatorType) {
-                    $class->setIdGeneratorType($generatorType);
+                if ($parent->generatorType) {
+                    $class->setIdGeneratorType($parent->generatorType);
                 }
                 if ($parent->idGenerator) {
                     $class->setIdGenerator($parent->idGenerator);
@@ -282,18 +279,18 @@ class ClassMetadataFactory
                 $eventArgs = new \Doctrine\ORM\Event\LoadClassMetadataEventArgs($class);
                 $this->_evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
             }
-            
+
             $this->_loadedMetadata[$className] = $class;
-            
+
             $parent = $class;
-            
+
             if ( ! $class->isMappedSuperclass) {
                 array_unshift($visited, $className);
             }
-            
+
             $loaded[] = $className;
         }
-        
+
         return $loaded;
     }
 
