@@ -192,8 +192,7 @@ public function <methodName>()
             '<use>',
             '<entityAnnotation>',
             '<entityClassName>',
-            '<entityBody>',
-            '<spaces>'
+            '<entityBody>'
         );
 
         $replacements = array(
@@ -201,11 +200,11 @@ public function <methodName>()
             $this->_generateEntityUse($metadata),
             $this->_generateEntityDocBlock($metadata),
             $this->_generateEntityClassName($metadata),
-            $this->_generateEntityBody($metadata),
-            $this->_spaces
+            $this->_generateEntityBody($metadata)
         );
 
-        return str_replace($placeHolders, $replacements, self::$_classTemplate);
+        $code = str_replace($placeHolders, $replacements, self::$_classTemplate);
+        return str_replace('<spaces>', $this->_spaces, $code);
     }
 
     /**
@@ -220,9 +219,10 @@ public function <methodName>()
         $currentCode = file_get_contents($path);
 
         $body = $this->_generateEntityBody($metadata);
+        $body = str_replace('<spaces>', $this->_spaces, $body);
         $last = strrpos($currentCode, '}');
 
-        return substr($currentCode, 0, $last) . $body . '}';
+        return substr($currentCode, 0, $last) . $body . "\n}";
     }
 
     /**
