@@ -446,6 +446,17 @@ class SqlWalker implements TreeWalker
         $sql = '';
 
         switch ($pathExpr->type) {
+            case AST\PathExpression::TYPE_IDENTIFICATION_VARIABLE:
+                $dqlAlias = $pathExpr->identificationVariable;
+                $class = $this->_queryComponents[$dqlAlias]['metadata'];
+
+                if ($this->_useSqlTableAliases) {
+                    $sql .= $this->walkIdentificationVariable($dqlAlias) . '.';
+                }
+
+                $sql .= $class->getQuotedColumnName($class->identifier[0], $this->_platform);
+                break;
+
             case AST\PathExpression::TYPE_STATE_FIELD:
                 $parts = $pathExpr->parts;
                 $fieldName = array_pop($parts);
@@ -458,6 +469,7 @@ class SqlWalker implements TreeWalker
 
                 $sql .= $class->getQuotedColumnName($fieldName, $this->_platform);
                 break;
+
             case AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION:
                 // 1- the owning side:
                 //    Just use the foreign key, i.e. u.group_id
@@ -484,6 +496,7 @@ class SqlWalker implements TreeWalker
                     throw QueryException::associationPathInverseSideNotSupported();
                 }
                 break;
+                
             default:
                 throw QueryException::invalidPathExpression($pathExpr);
         }

@@ -565,7 +565,8 @@ class Parser
             $aliasIdentificationVariable = $pathExpression->identificationVariable;
             $parentField = $pathExpression->identificationVariable;
             $class = $qComp['metadata'];
-            $fieldType = null;
+            $fieldType = ($pathExpression->expectedType == AST\PathExpression::TYPE_IDENTIFICATION_VARIABLE)
+                ? AST\PathExpression::TYPE_IDENTIFICATION_VARIABLE : null;
             $curIndex = 0;
 
             foreach ($parts as $field) {
@@ -602,8 +603,8 @@ class Parser
                     $class = $this->_em->getClassMetadata($assoc->targetEntityName);
 
                     if (
-                    ($curIndex != $numParts - 1) &&
-                    ! isset($this->_queryComponents[$aliasIdentificationVariable . '.' . $field])
+                        ($curIndex != $numParts - 1) &&
+                        ! isset($this->_queryComponents[$aliasIdentificationVariable . '.' . $field])
                     ) {
                         // Building queryComponent
                         $joinQueryComponent = array(
@@ -617,13 +618,13 @@ class Parser
 
                         // Create AST node
                         $joinVariableDeclaration = new AST\JoinVariableDeclaration(
-                        new AST\Join(
-                        AST\Join::JOIN_TYPE_INNER,
-                        new AST\JoinAssociationPathExpression($aliasIdentificationVariable, $field),
-                        $aliasIdentificationVariable . '.' . $field,
-                        false
-                        ),
-                        null
+                            new AST\Join(
+                                AST\Join::JOIN_TYPE_INNER,
+                                new AST\JoinAssociationPathExpression($aliasIdentificationVariable, $field),
+                                $aliasIdentificationVariable . '.' . $field,
+                                false
+                            ),
+                            null
                         );
                         $AST->fromClause->identificationVariableDeclarations[0]->joinVariableDeclarations[] = $joinVariableDeclaration;
 
@@ -648,6 +649,11 @@ class Parser
             if ( ! ($expectedType & $fieldType)) {
                 // We need to recognize which was expected type(s)
                 $expectedStringTypes = array();
+
+                // Validate state field type
+                if ($expectedType & AST\PathExpression::TYPE_IDENTIFICATION_VARIABLE) {
+                    $expectedStringTypes[] = 'IdentificationVariable';
+                }
 
                 // Validate state field type
                 if ($expectedType & AST\PathExpression::TYPE_STATE_FIELD) {
@@ -915,12 +921,12 @@ class Parser
         $identVariable = $this->IdentificationVariable();
         $parts = array();
 
-        do {
+        while ($this->_lexer->isNextToken(Lexer::T_DOT)) {
             $this->match(Lexer::T_DOT);
             $this->match(Lexer::T_IDENTIFIER);
 
             $parts[] = $this->_lexer->token['value'];
-        } while ($this->_lexer->isNextToken(Lexer::T_DOT));
+        }
 
         // Creating AST node
         $pathExpr = new AST\PathExpression($expectedTypes, $identVariable, $parts);
@@ -2168,7 +2174,7 @@ class Parser
                     return $this->SingleValuedPathExpression();
                 }
 
-                return $this->IdentificationVariable();
+                return $this->PathExpression(AST\PathExpression::TYPE_IDENTIFICATION_VARIABLE);
 
             case Lexer::T_INPUT_PARAMETER:
                 return $this->InputParameter();

@@ -21,6 +21,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             $query = $this->_em->createQuery($dqlToBeTested);
             $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true)
                     ->useQueryCache(false);
+
             parent::assertEquals($sqlToBeConfirmed, $query->getSql());
             $query->free();
         } catch (\Exception $e) {
@@ -385,7 +386,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('SELECT d0_.id AS id0 FROM date_time_model d0_ WHERE d0_.col_datetime > CURRENT_TIMESTAMP', $q->getSql());
     }
 
-    /*public function testExistsExpressionInWhereCorrelatedSubqueryAssocCondition()
+    public function testExistsExpressionInWhereCorrelatedSubqueryAssocCondition()
     {
         $this->assertSqlGeneration(
             // DQL
@@ -402,7 +403,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
                     . ')'
 
         );
-    }*/
+    }
 
     public function testLimitFromQueryClass()
     {

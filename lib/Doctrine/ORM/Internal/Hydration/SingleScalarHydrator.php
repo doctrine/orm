@@ -43,6 +43,7 @@ class SingleScalarHydrator extends AbstractHydrator
         } else if ($num > 1 || count($result[key($result)]) > 1) {
             throw new \Doctrine\ORM\NonUniqueResultException;
         }
+        
         $result = $this->_gatherScalarRowData($result[key($result)], $cache);
         
         return array_shift($result);
