@@ -36,7 +36,11 @@ class SingleScalarHydrator extends AbstractHydrator
     {
         $cache = array();
         $result = $this->_stmt->fetchAll(\PDO::FETCH_ASSOC);
-        if (count($result) > 1 || count($result[key($result)]) > 1) {
+        $num = count($result);
+
+        if ($num == 0) {
+            throw new \Doctrine\ORM\NoResultException;
+        } else if ($num > 1 || count($result[key($result)]) > 1) {
             throw new \Doctrine\ORM\NonUniqueResultException;
         }
         $result = $this->_gatherScalarRowData($result[key($result)], $cache);
