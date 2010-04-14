@@ -432,7 +432,7 @@ class SqlWalker implements TreeWalker
             $class = $this->_em->getClassMetadata($class->fieldMappings[$fieldName]['inherited']);
         }
 
-        return $this->getSqlTableAlias($class->table['name'], $identificationVariable);
+        return $this->getSQLTableAlias($class->table['name'], $identificationVariable);
     }
 
     /**
@@ -466,8 +466,8 @@ class SqlWalker implements TreeWalker
                 $dqlAlias = $pathExpr->identificationVariable;
                 $class = $this->_queryComponents[$dqlAlias]['metadata'];
 
-                if (isset($class->inheritedAssociationFields[$fieldName])) {
-                    $class = $this->_em->getClassMetadata($class->inheritedAssociationFields[$fieldName]);
+                if (isset($class->associationMappings[$fieldName]->inherited)) {
+                    $class = $this->_em->getClassMetadata($class->associationMappings[$fieldName]->inherited);
                 }
 
                 $assoc = $class->associationMappings[$fieldName];
@@ -538,8 +538,8 @@ class SqlWalker implements TreeWalker
                     //FIXME: Include foreign key columns of child classes also!!??
                     foreach ($class->associationMappings as $assoc) {
                         if ($assoc->isOwningSide && $assoc->isOneToOne()) {
-                            if (isset($class->inheritedAssociationFields[$assoc->sourceFieldName])) {
-                                $owningClass = $this->_em->getClassMetadata($class->inheritedAssociationFields[$assoc->sourceFieldName]);
+                            if ($assoc->inherited) {
+                                $owningClass = $this->_em->getClassMetadata($assoc->inherited);
                                 $sqlTableAlias = $this->getSqlTableAlias($owningClass->table['name'], $dqlAlias);
                             } else {
                                 $sqlTableAlias = $this->getSqlTableAlias($class->table['name'], $dqlAlias);
@@ -786,6 +786,7 @@ class SqlWalker implements TreeWalker
             $sql .= ' AND ' . $discrSql;
         }
 
+        //FIXME: these should either be nested or all forced to be left joins (DDC-XXX)
         if ($targetClass->isInheritanceTypeJoined()) {
             $sql .= $this->_generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
         }
@@ -957,7 +958,7 @@ class SqlWalker implements TreeWalker
                     // Add join columns (foreign keys) of the subclass
                     //TODO: Probably better do this in walkSelectClause to honor the INCLUDE_META_COLUMNS hint
                     foreach ($subClass->associationMappings as $fieldName => $assoc) {
-                        if ($assoc->isOwningSide && $assoc->isOneToOne() && ! isset($subClass->inheritedAssociationFields[$fieldName])) {
+                        if ($assoc->isOwningSide && $assoc->isOneToOne() && ! $assoc->inherited) {
                             foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
                                 if ($beginning) $beginning = false; else $sql .= ', ';
                                 $columnAlias = $this->getSqlColumnAlias($srcColumn);

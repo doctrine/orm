@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:03 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>MemcacheCache (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/common/cache/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/common/cache/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/common/cache/memcachecache.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\Common\Cache\MemcacheCache</div>
+<div class="location">/Doctrine/Common/Cache/MemcacheCache.php at line 39</div>
+
+<h1>Class MemcacheCache</h1>
+
+<pre class="tree">Class:MemcacheCache - Superclass: AbstractCache
+<a href="../../../doctrine/common/cache/abstractcache.html">AbstractCache</a><br>   &lfloor;&nbsp;<strong>MemcacheCache</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>MemcacheCache</strong><br>extends <a href="../../../doctrine/common/cache/abstractcache.html">AbstractCache</a>
+
+</p>
+
+<div class="comment" id="overview_description"><p>Memcache cache driver.</p></div>
+
+<dl>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision: 3938 $</dd>
+<dt>Author:</dt>
+<dd>Benjamin Eberlei <kontakt@beberlei.de></dd>
+<dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
+<dd>Jonathan Wage <jonwage@gmail.com></dd>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dd>David Abdemoulaie <dave@hobodave.com></dd>
+</dl>
+<hr>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getIds()">getIds</a>()</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> Memcache</td>
+<td class="description"><p class="name"><a href="#getMemcache()">getMemcache</a>()</p><p class="description">Gets the memcache instance used by the cache.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setMemcache()">setMemcache</a>(Memcache memcache)</p><p class="description">Sets the memcache instance to use.</p></td>
+</tr>
+</table>
+
+<table class="inherit">
+<tr><th colspan="2">Methods inherited from Doctrine\Common\Cache\AbstractCache</th></tr>
+<tr><td><a href="../../../doctrine/common/cache/abstractcache.html#contains()">contains</a>, <a href="../../../doctrine/common/cache/abstractcache.html#delete()">delete</a>, <a href="../../../doctrine/common/cache/abstractcache.html#deleteAll()">deleteAll</a>, <a href="../../../doctrine/common/cache/abstractcache.html#deleteByPrefix()">deleteByPrefix</a>, <a href="../../../doctrine/common/cache/abstractcache.html#deleteByRegex()">deleteByRegex</a>, <a href="../../../doctrine/common/cache/abstractcache.html#deleteBySuffix()">deleteBySuffix</a>, <a href="../../../doctrine/common/cache/abstractcache.html#fetch()">fetch</a>, <a href="../../../doctrine/common/cache/abstractcache.html#getIds()">getIds</a>, <a href="../../../doctrine/common/cache/abstractcache.html#save()">save</a>, <a href="../../../doctrine/common/cache/abstractcache.html#setNamespace()">setNamespace</a></td></tr></table>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/Common/Cache/MemcacheCache.php at line 69</div>
+<h3 id="getIds()">getIds</h3>
+<code class="signature">public  array <strong>getIds</strong>()</code>
+<div class="details">
+<p></p><dl>
+<dt>Returns:</dt>
+<dd>$ids</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Cache/MemcacheCache.php at line 61</div>
+<h3 id="getMemcache()">getMemcache</h3>
+<code class="signature">public  Memcache <strong>getMemcache</strong>()</code>
+<div class="details">
+<p>Gets the memcache instance used by the cache.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Cache/MemcacheCache.php at line 51</div>
+<h3 id="setMemcache()">setMemcache</h3>
+<code class="signature">public  void <strong>setMemcache</strong>(Memcache memcache)</code>
+<div class="details">
+<p>Sets the memcache instance to use.</p></div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/common/cache/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/common/cache/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/common/cache/memcachecache.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>ClassMetadata (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/mapping/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/mapping/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/mapping/classmetadata.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Mapping\ClassMetadata</div>
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadata.php at line 42</div>
+
+<h1>Class ClassMetadata</h1>
+
+<pre class="tree">Class:ClassMetadata - Superclass: ClassMetadataInfo
+<a href="../../../doctrine/orm/mapping/classmetadatainfo.html">ClassMetadataInfo</a><br>   &lfloor;&nbsp;<strong>ClassMetadata</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>ClassMetadata</strong><br>extends <a href="../../../doctrine/orm/mapping/classmetadatainfo.html">ClassMetadataInfo</a>
+
+</p>
+
+<div class="comment" id="overview_description"><p>A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
+of an entity and it's associations.</p><p>Once populated, ClassMetadata instances are usually cached in a serialized form.</p><p><b>IMPORTANT NOTE:</b></p><p>The fields of this class are only public for 2 reasons:
+1) To allow fast READ access.
+2) To drastically reduce the size of a serialized instance (private/protected members
+get the whole class name, namespace inclusive, prepended to every property in
+the serialized representation).</p></div>
+
+<dl>
+<dt>Author:</dt>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dd>Jonathan H. Wage <jonwage@gmail.com></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+</dl>
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type"> ReflectionClass</td>
+<td class="description"><p class="name"><a href="#reflClass">$reflClass</a></p><p class="description">The ReflectionClass instance of the mapped class.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#reflFields">$reflFields</a></p><p class="description">The ReflectionProperty instances of the mapped class.</p></td>
+</tr>
+</table>
+
+<table class="inherit">
+<tr><th colspan="2">Fields inherited from Doctrine\ORM\Mapping\ClassMetadataInfo</th></tr>
+<tr><td><a href="../../../doctrine/orm/mapping/classmetadatainfo.html#CHANGETRACKING_DEFERRED_EXPLICIT">CHANGETRACKING_DEFERRED_EXPLICIT</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#CHANGETRACKING_DEFERRED_IMPLICIT">CHANGETRACKING_DEFERRED_IMPLICIT</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#CHANGETRACKING_NOTIFY">CHANGETRACKING_NOTIFY</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#GENERATOR_TYPE_AUTO">GENERATOR_TYPE_AUTO</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#GENERATOR_TYPE_IDENTITY">GENERATOR_TYPE_IDENTITY</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#GENERATOR_TYPE_NONE">GENERATOR_TYPE_NONE</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#GENERATOR_TYPE_SEQUENCE">GENERATOR_TYPE_SEQUENCE</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#GENERATOR_TYPE_TABLE">GENERATOR_TYPE_TABLE</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#INHERITANCE_TYPE_JOINED">INHERITANCE_TYPE_JOINED</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#INHERITANCE_TYPE_NONE">INHERITANCE_TYPE_NONE</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#INHERITANCE_TYPE_SINGLE_TABLE">INHERITANCE_TYPE_SINGLE_TABLE</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#INHERITANCE_TYPE_TABLE_PER_CLASS">INHERITANCE_TYPE_TABLE_PER_CLASS</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#associationMappings">associationMappings</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#changeTrackingPolicy">changeTrackingPolicy</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#columnNames">columnNames</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#customRepositoryClassName">customRepositoryClassName</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#discriminatorColumn">discriminatorColumn</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#discriminatorMap">discriminatorMap</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#discriminatorValue">discriminatorValue</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#fieldMappings">fieldMappings</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#fieldNames">fieldNames</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#generatorType">generatorType</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#idGenerator">idGenerator</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#identifier">identifier</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#inheritanceType">inheritanceType</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isIdentifierComposite">isIdentifierComposite</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isMappedSuperclass">isMappedSuperclass</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isVersioned">isVersioned</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#lifecycleCallbacks">lifecycleCallbacks</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#name">name</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#namespace">namespace</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#parentClasses">parentClasses</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#rootEntityName">rootEntityName</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#sequenceGeneratorDefinition">sequenceGeneratorDefinition</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#subClasses">subClasses</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#table">table</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#tableGeneratorDefinition">tableGeneratorDefinition</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#versionField">versionField</a></td></tr></table>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#ClassMetadata()">ClassMetadata</a>(string entityName)</p><p class="description">Initializes a new ClassMetadata instance that will hold the object-relational mapping
+metadata of the class with the given name.</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getFieldValue()">getFieldValue</a>(object entity, string field)</p><p class="description">Gets the specified field's value off the given entity.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getIdentifierValues()">getIdentifierValues</a>(object entity)</p><p class="description">Extracts the identifier values of an entity of this class.
+</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getQuotedColumnName()">getQuotedColumnName</a>(string field, <a href="../../../doctrine/dbal/platforms/abstractplatform.html">AbstractPlatform</a> platform)</p><p class="description">Gets the (possibly quoted) column name of a mapped field for safe use
+in an SQL statement.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getQuotedTableName()">getQuotedTableName</a>(<a href="../../../doctrine/dbal/platforms/abstractplatform.html">AbstractPlatform</a> platform)</p><p class="description">Gets the (possibly quoted) primary table name of this class for safe use
+in an SQL statement.</p></td>
+</tr>
+<tr>
+<td class="type"> ReflectionClass</td>
+<td class="description"><p class="name"><a href="#getReflectionClass()">getReflectionClass</a>()</p><p class="description">Gets the ReflectionClass instance of the mapped class.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getReflectionProperties()">getReflectionProperties</a>()</p><p class="description">Gets the ReflectionPropertys of the mapped class.</p></td>
+</tr>
+<tr>
+<td class="type"> ReflectionProperty</td>
+<td class="description"><p class="name"><a href="#getReflectionProperty()">getReflectionProperty</a>(string name)</p><p class="description">Gets a ReflectionProperty for a specific field of the mapped class.</p></td>
+</tr>
+<tr>
+<td class="type"> ReflectionProperty</td>
+<td class="description"><p class="name"><a href="#getSingleIdReflectionProperty()">getSingleIdReflectionProperty</a>()</p><p class="description">Gets the ReflectionProperty for the single identifier field.</p></td>
+</tr>
+<tr>
+<td class="type"> object</td>
+<td class="description"><p class="name"><a href="#newInstance()">newInstance</a>()</p><p class="description">Creates a new instance of the mapped class, without invoking the constructor.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setFieldValue()">setFieldValue</a>(object entity, string field, mixed value)</p><p class="description">Sets the specified field to the specified value on the given entity.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setIdentifierValues()">setIdentifierValues</a>(object entity, mixed id)</p><p class="description">Populates the entity identifier of an entity.</p></td>
+</tr>
+</table>
+
+<table class="inherit">
+<tr><th colspan="2">Methods inherited from Doctrine\ORM\Mapping\ClassMetadataInfo</th></tr>
+<tr><td><a href="../../../doctrine/orm/mapping/classmetadatainfo.html#addInheritedAssociationMapping()">addInheritedAssociationMapping</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#addInheritedFieldMapping()">addInheritedFieldMapping</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#addLifecycleCallback()">addLifecycleCallback</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#getAssociationMapping()">getAssociationMapping</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#getAssociationMappings()">getAssociationMappings</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#getColumnName()">getColumnName</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#getColumnNames()">getColumnNames</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#getFieldMapping()">getFieldMapping</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#getFieldName()">getFieldName</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#getIdentifierColumnNames()">getIdentifierColumnNames</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#getIdentifierFieldNames()">getIdentifierFieldNames</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#getLifecycleCallbacks()">getLifecycleCallbacks</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#getSingleIdentifierColumnName()">getSingleIdentifierColumnName</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#getSingleIdentifierFieldName()">getSingleIdentifierFieldName</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#getTableName()">getTableName</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#getTemporaryIdTableName()">getTemporaryIdTableName</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#getTypeOfColumn()">getTypeOfColumn</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#getTypeOfField()">getTypeOfField</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#hasAssociation()">hasAssociation</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#hasField()">hasField</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#hasLifecycleCallbacks()">hasLifecycleCallbacks</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#invokeLifecycleCallbacks()">invokeLifecycleCallbacks</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isChangeTrackingDeferredExplicit()">isChangeTrackingDeferredExplicit</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isChangeTrackingDeferredImplicit()">isChangeTrackingDeferredImplicit</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isChangeTrackingNotify()">isChangeTrackingNotify</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isCollectionValuedAssociation()">isCollectionValuedAssociation</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isIdGeneratorIdentity()">isIdGeneratorIdentity</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isIdGeneratorSequence()">isIdGeneratorSequence</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isIdGeneratorTable()">isIdGeneratorTable</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isIdentifier()">isIdentifier</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isIdentifierNatural()">isIdentifierNatural</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isInheritanceTypeJoined()">isInheritanceTypeJoined</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isInheritanceTypeNone()">isInheritanceTypeNone</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isInheritanceTypeSingleTable()">isInheritanceTypeSingleTable</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isInheritanceTypeTablePerClass()">isInheritanceTypeTablePerClass</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isInheritedAssociation()">isInheritedAssociation</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isInheritedField()">isInheritedField</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isNullable()">isNullable</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isSingleValuedAssociation()">isSingleValuedAssociation</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#isUniqueField()">isUniqueField</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#mapField()">mapField</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#mapManyToMany()">mapManyToMany</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#mapManyToOne()">mapManyToOne</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#mapOneToMany()">mapOneToMany</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#mapOneToOne()">mapOneToOne</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#setChangeTrackingPolicy()">setChangeTrackingPolicy</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#setCustomRepositoryClass()">setCustomRepositoryClass</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#setDiscriminatorColumn()">setDiscriminatorColumn</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#setDiscriminatorMap()">setDiscriminatorMap</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#setIdGenerator()">setIdGenerator</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#setIdGeneratorType()">setIdGeneratorType</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#setIdentifier()">setIdentifier</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#setInheritanceType()">setInheritanceType</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#setLifecycleCallbacks()">setLifecycleCallbacks</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#setParentClasses()">setParentClasses</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#setPrimaryTable()">setPrimaryTable</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#setSequenceGeneratorDefinition()">setSequenceGeneratorDefinition</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#setSubclasses()">setSubclasses</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#setTableName()">setTableName</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#setVersionField()">setVersionField</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#setVersionMapping()">setVersionMapping</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#setVersioned()">setVersioned</a>, <a href="../../../doctrine/orm/mapping/classmetadatainfo.html#usesIdGenerator()">usesIdGenerator</a></td></tr></table>
+
+<h2 id="detail_field">Field Detail</h2>
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadata.php at line 49</div>
+<h3 id="reflClass">reflClass</h3>
+<code class="signature">public  ReflectionClass <strong>$reflClass</strong></code>
+<div class="details">
+<p>The ReflectionClass instance of the mapped class.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadata.php at line 56</div>
+<h3 id="reflFields">reflFields</h3>
+<code class="signature">public  array <strong>$reflFields</strong> = array()</code>
+<div class="details">
+<p>The ReflectionProperty instances of the mapped class.</p></div>
+
+<hr>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadata.php at line 71</div>
+<h3 id="ClassMetadata()">ClassMetadata</h3>
+<code class="signature">public <strong>ClassMetadata</strong>(string entityName)</code>
+<div class="details">
+<p>Initializes a new ClassMetadata instance that will hold the object-relational mapping
+metadata of the class with the given name.</p><dl>
+<dt>Parameters:</dt>
+<dd>entityName - The name of the entity class the new instance is used for.</dd>
+</dl>
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadata.php at line 203</div>
+<h3 id="getFieldValue()">getFieldValue</h3>
+<code class="signature">public  void <strong>getFieldValue</strong>(object entity, string field)</code>
+<div class="details">
+<p>Gets the specified field's value off the given entity.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadata.php at line 151</div>
+<h3 id="getIdentifierValues()">getIdentifierValues</h3>
+<code class="signature">public  array <strong>getIdentifierValues</strong>(object entity)</code>
+<div class="details">
+<p>Extracts the identifier values of an entity of this class.</p><p>For composite identifiers, the identifier values are returned as an array
+with the same order as the field order in <code><a href="../../../doctrine/orm/mapping/classmetadatainfo.html#identifier">identifier</a></code>.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadata.php at line 233</div>
+<h3 id="getQuotedColumnName()">getQuotedColumnName</h3>
+<code class="signature">public  string <strong>getQuotedColumnName</strong>(string field, <a href="../../../doctrine/dbal/platforms/abstractplatform.html">AbstractPlatform</a> platform)</code>
+<div class="details">
+<p>Gets the (possibly quoted) column name of a mapped field for safe use
+in an SQL statement.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadata.php at line 247</div>
+<h3 id="getQuotedTableName()">getQuotedTableName</h3>
+<code class="signature">public  string <strong>getQuotedTableName</strong>(<a href="../../../doctrine/dbal/platforms/abstractplatform.html">AbstractPlatform</a> platform)</code>
+<div class="details">
+<p>Gets the (possibly quoted) primary table name of this class for safe use
+in an SQL statement.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadata.php at line 84</div>
+<h3 id="getReflectionClass()">getReflectionClass</h3>
+<code class="signature">public  ReflectionClass <strong>getReflectionClass</strong>()</code>
+<div class="details">
+<p>Gets the ReflectionClass instance of the mapped class.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadata.php at line 94</div>
+<h3 id="getReflectionProperties()">getReflectionProperties</h3>
+<code class="signature">public  array <strong>getReflectionProperties</strong>()</code>
+<div class="details">
+<p>Gets the ReflectionPropertys of the mapped class.</p><dl>
+<dt>Returns:</dt>
+<dd>An array of ReflectionProperty instances.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadata.php at line 105</div>
+<h3 id="getReflectionProperty()">getReflectionProperty</h3>
+<code class="signature">public  ReflectionProperty <strong>getReflectionProperty</strong>(string name)</code>
+<div class="details">
+<p>Gets a ReflectionProperty for a specific field of the mapped class.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadata.php at line 116</div>
+<h3 id="getSingleIdReflectionProperty()">getSingleIdReflectionProperty</h3>
+<code class="signature">public  ReflectionProperty <strong>getSingleIdReflectionProperty</strong>()</code>
+<div class="details">
+<p>Gets the ReflectionProperty for the single identifier field.</p><dl>
+<dt>Throws:</dt>
+<dd>If the class has a composite identifier.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadata.php at line 340</div>
+<h3 id="newInstance()">newInstance</h3>
+<code class="signature">public  object <strong>newInstance</strong>()</code>
+<div class="details">
+<p>Creates a new instance of the mapped class, without invoking the constructor.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadata.php at line 192</div>
+<h3 id="setFieldValue()">setFieldValue</h3>
+<code class="signature">public  void <strong>setFieldValue</strong>(object entity, string field, mixed value)</code>
+<div class="details">
+<p>Sets the specified field to the specified value on the given entity.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadata.php at line 174</div>
+<h3 id="setIdentifierValues()">setIdentifierValues</h3>
+<code class="signature">public  void <strong>setIdentifierValues</strong>(object entity, mixed id)</code>
+<div class="details">
+<p>Populates the entity identifier of an entity.</p><dl>
+<dt>Todo:</dt>
+<dd>Rename to assignIdentifier()</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/mapping/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/mapping/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/mapping/classmetadata.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

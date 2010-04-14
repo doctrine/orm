@@ -1,0 +1,485 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:03 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>Collection (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/common/collections/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/common/collections/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/common/collections/collection.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\Common\Collections\Collection</div>
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 51</div>
+
+<h1>Interface Collection</h1>
+
+<pre class="tree">Class:Collection - Superclass: Countable
+Countable<br>&lfloor;&nbsp;<strong>Collection</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  interface <strong>Collection</strong><br>extends Countable
+
+</p>
+
+<div class="comment" id="overview_description"><p>The missing (SPL) Collection/Array/OrderedMap interface.</p><p>A Collection resembles the nature of a regular PHP array. That is,
+it is essentially an <b>ordered map</b> that can also be used
+like a list.</p><p>A Collection has an internal iterator just like a PHP array. In addition,
+a Collection can be iterated with external iterators, which is preferrable.
+To use an external iterator simply use the foreach language construct to
+iterate over the collection (which calls <code>getIterator()</code> internally) or
+explicitly retrieve an iterator though <code>getIterator()</code> which can then be
+used to iterate over the collection.
+You can not rely on the internal iterator of the collection being at a certain
+position unless you explicitly positioned it before. Prefer iteration with
+external iterators.</p></div>
+
+<dl>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision: 3938 $</dd>
+<dt>Author:</dt>
+<dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
+<dd>Jonathan Wage <jonwage@gmail.com></dd>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+</dl>
+<hr>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#add()">add</a>(mixed element)</p><p class="description">Adds an element at the end of the collection.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#clear()">clear</a>()</p><p class="description">Clears the collection, removing all elements.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#contains()">contains</a>(mixed element)</p><p class="description">Checks whether an element is contained in the collection.
+</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#containsKey()">containsKey</a>(string|integer key)</p><p class="description">Checks whether the collection contains an element with the specified key/index.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#current()">current</a>()</p><p class="description">Gets the element of the collection at the current iterator position.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#exists()">exists</a>(Closure p)</p><p class="description">Tests for the existence of an element that satisfies the given predicate.</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/common/collections/collection.html">Collection</a></td>
+<td class="description"><p class="name"><a href="#filter()">filter</a>(Closure p)</p><p class="description">Returns all the elements of this collection that satisfy the predicate p.
+</p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#first()">first</a>()</p><p class="description">Sets the internal iterator to the first element in the collection and
+returns this element.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#forAll()">forAll</a>(Closure p)</p><p class="description">Applies the given predicate p to all elements of this collection,
+returning true, if the predicate yields true for all elements.</p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#get()">get</a>(string|integer key)</p><p class="description">Gets the element at the specified key/index.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getKeys()">getKeys</a>()</p><p class="description">Gets all keys/indices of the collection.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getValues()">getValues</a>()</p><p class="description">Gets all values of the collection.</p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#indexOf()">indexOf</a>(mixed element)</p><p class="description">Gets the index/key of a given element. </p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isEmpty()">isEmpty</a>()</p><p class="description">Checks whether the collection is empty (contains no elements).</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#key()">key</a>()</p><p class="description">Gets the key/index of the element at the current iterator position.</p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#last()">last</a>()</p><p class="description">Sets the internal iterator to the last element in the collection and
+returns this element.</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/common/collections/collection.html">Collection</a></td>
+<td class="description"><p class="name"><a href="#map()">map</a>(Closure func)</p><p class="description">Applies the given function to each element in the collection and returns
+a new collection with the elements returned by the function.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#next()">next</a>()</p><p class="description">Moves the internal iterator position to the next element.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#partition()">partition</a>(Closure p)</p><p class="description">Partitions this collection in two collections according to a predicate.
+</p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#remove()">remove</a>(string|integer key)</p><p class="description">Removes the element at the specified index from the collection.</p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#removeElement()">removeElement</a>(mixed element)</p><p class="description">Removes an element from the collection.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#set()">set</a>(string|integer key, mixed value)</p><p class="description">Sets an element in the collection at the specified key/index.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#toArray()">toArray</a>()</p><p class="description">Gets a native PHP array representation of the collection.</p></td>
+</tr>
+</table>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 59</div>
+<h3 id="add()">add</h3>
+<code class="signature">public  boolean <strong>add</strong>(mixed element)</code>
+<div class="details">
+<p>Adds an element at the end of the collection.</p><dl>
+<dt>Parameters:</dt>
+<dd>element - The element to add.</dd>
+<dt>Returns:</dt>
+<dd>Always TRUE.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 64</div>
+<h3 id="clear()">clear</h3>
+<code class="signature">public  void <strong>clear</strong>()</code>
+<div class="details">
+<p>Clears the collection, removing all elements.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 73</div>
+<h3 id="contains()">contains</h3>
+<code class="signature">public  boolean <strong>contains</strong>(mixed element)</code>
+<div class="details">
+<p>Checks whether an element is contained in the collection.
+This is an O(n) operation, where n is the size of the collection.</p><dl>
+<dt>Parameters:</dt>
+<dd>element - The element to search for.</dd>
+<dt>Returns:</dt>
+<dd>TRUE if the collection contains the element, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 105</div>
+<h3 id="containsKey()">containsKey</h3>
+<code class="signature">public  boolean <strong>containsKey</strong>(string|integer key)</code>
+<div class="details">
+<p>Checks whether the collection contains an element with the specified key/index.</p><dl>
+<dt>Parameters:</dt>
+<dd>key - The key/index to check for.</dd>
+<dt>Returns:</dt>
+<dd>TRUE if the collection contains an element with the specified key/index, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 172</div>
+<h3 id="current()">current</h3>
+<code class="signature">public  void <strong>current</strong>()</code>
+<div class="details">
+<p>Gets the element of the collection at the current iterator position.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 186</div>
+<h3 id="exists()">exists</h3>
+<code class="signature">public  boolean <strong>exists</strong>(Closure p)</code>
+<div class="details">
+<p>Tests for the existence of an element that satisfies the given predicate.</p><dl>
+<dt>Parameters:</dt>
+<dd>p - The predicate.</dd>
+<dt>Returns:</dt>
+<dd>TRUE if the predicate is TRUE for at least one element, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 195</div>
+<h3 id="filter()">filter</h3>
+<code class="signature">public  <a href="../../../doctrine/common/collections/collection.html">Collection</a> <strong>filter</strong>(Closure p)</code>
+<div class="details">
+<p>Returns all the elements of this collection that satisfy the predicate p.
+The order of the elements is preserved.</p><dl>
+<dt>Parameters:</dt>
+<dd>p - The predicate used for filtering.</dd>
+<dt>Returns:</dt>
+<dd>A collection with the results of the filter operation.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 152</div>
+<h3 id="first()">first</h3>
+<code class="signature">public  mixed <strong>first</strong>()</code>
+<div class="details">
+<p>Sets the internal iterator to the first element in the collection and
+returns this element.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 204</div>
+<h3 id="forAll()">forAll</h3>
+<code class="signature">public  boolean <strong>forAll</strong>(Closure p)</code>
+<div class="details">
+<p>Applies the given predicate p to all elements of this collection,
+returning true, if the predicate yields true for all elements.</p><dl>
+<dt>Parameters:</dt>
+<dd>p - The predicate.</dd>
+<dt>Returns:</dt>
+<dd>TRUE, if the predicate yields TRUE for all elements, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 113</div>
+<h3 id="get()">get</h3>
+<code class="signature">public  mixed <strong>get</strong>(string|integer key)</code>
+<div class="details">
+<p>Gets the element at the specified key/index.</p><dl>
+<dt>Parameters:</dt>
+<dd>key - The key/index of the element to retrieve.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 121</div>
+<h3 id="getKeys()">getKeys</h3>
+<code class="signature">public  array <strong>getKeys</strong>()</code>
+<div class="details">
+<p>Gets all keys/indices of the collection.</p><dl>
+<dt>Returns:</dt>
+<dd>The keys/indices of the collection, in the order of the corresponding elements in the collection.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 129</div>
+<h3 id="getValues()">getValues</h3>
+<code class="signature">public  array <strong>getValues</strong>()</code>
+<div class="details">
+<p>Gets all values of the collection.</p><dl>
+<dt>Returns:</dt>
+<dd>The values of all elements in the collection, in the order they appear in the collection.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 234</div>
+<h3 id="indexOf()">indexOf</h3>
+<code class="signature">public  mixed <strong>indexOf</strong>(mixed element)</code>
+<div class="details">
+<p>Gets the index/key of a given element. The comparison of two elements is strict,
+that means not only the value but also the type must match.
+For objects this means reference equality.</p><dl>
+<dt>Parameters:</dt>
+<dd>element - The element to search for.</dd>
+<dt>Returns:</dt>
+<dd>The key/index of the element or FALSE if the element was not found.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 80</div>
+<h3 id="isEmpty()">isEmpty</h3>
+<code class="signature">public  boolean <strong>isEmpty</strong>()</code>
+<div class="details">
+<p>Checks whether the collection is empty (contains no elements).</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE if the collection is empty, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 166</div>
+<h3 id="key()">key</h3>
+<code class="signature">public  void <strong>key</strong>()</code>
+<div class="details">
+<p>Gets the key/index of the element at the current iterator position.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 160</div>
+<h3 id="last()">last</h3>
+<code class="signature">public  mixed <strong>last</strong>()</code>
+<div class="details">
+<p>Sets the internal iterator to the last element in the collection and
+returns this element.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 213</div>
+<h3 id="map()">map</h3>
+<code class="signature">public  <a href="../../../doctrine/common/collections/collection.html">Collection</a> <strong>map</strong>(Closure func)</code>
+<div class="details">
+<p>Applies the given function to each element in the collection and returns
+a new collection with the elements returned by the function.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 178</div>
+<h3 id="next()">next</h3>
+<code class="signature">public  void <strong>next</strong>()</code>
+<div class="details">
+<p>Moves the internal iterator position to the next element.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 224</div>
+<h3 id="partition()">partition</h3>
+<code class="signature">public  array <strong>partition</strong>(Closure p)</code>
+<div class="details">
+<p>Partitions this collection in two collections according to a predicate.
+Keys are preserved in the resulting collections.</p><dl>
+<dt>Parameters:</dt>
+<dd>p - The predicate on which to partition.</dd>
+<dt>Returns:</dt>
+<dd>An array with two elements. The first element contains the collection of elements where the predicate returned TRUE, the second element contains the collection of elements where the predicate returned FALSE.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 88</div>
+<h3 id="remove()">remove</h3>
+<code class="signature">public  mixed <strong>remove</strong>(string|integer key)</code>
+<div class="details">
+<p>Removes the element at the specified index from the collection.</p><dl>
+<dt>Parameters:</dt>
+<dd>key - The kex/index of the element to remove.</dd>
+<dt>Returns:</dt>
+<dd>The removed element or NULL, if the collection did not contain the element.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 96</div>
+<h3 id="removeElement()">removeElement</h3>
+<code class="signature">public  mixed <strong>removeElement</strong>(mixed element)</code>
+<div class="details">
+<p>Removes an element from the collection.</p><dl>
+<dt>Parameters:</dt>
+<dd>element - The element to remove.</dd>
+<dt>Returns:</dt>
+<dd>The removed element or NULL, if the collection did not contain the element.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 137</div>
+<h3 id="set()">set</h3>
+<code class="signature">public  void <strong>set</strong>(string|integer key, mixed value)</code>
+<div class="details">
+<p>Sets an element in the collection at the specified key/index.</p><dl>
+<dt>Parameters:</dt>
+<dd>key - The key/index of the element to set.</dd>
+<dd>value - The element to set.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/Common/Collections/Collection.php at line 144</div>
+<h3 id="toArray()">toArray</h3>
+<code class="signature">public  array <strong>toArray</strong>()</code>
+<div class="details">
+<p>Gets a native PHP array representation of the collection.</p></div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/common/collections/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/common/collections/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/common/collections/collection.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

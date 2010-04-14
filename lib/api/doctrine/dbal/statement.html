@@ -1,0 +1,302 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>Statement (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../doctrine/dbal/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../doctrine/dbal/package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../index.html" target="_top">Frames</a>
+<a href="../../doctrine/dbal/statement.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\DBAL\Statement</div>
+<div class="location">/Doctrine/DBAL/Statement.php at line 35</div>
+
+<h1>Class Statement</h1>
+
+<pre class="tree"><strong>Statement</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>Statement</strong></p>
+
+<div class="comment" id="overview_description"><p>A thin wrapper around a Doctrine\DBAL\Driver\Statement that adds support
+for logging, DBAL mapping types, etc.</p></div>
+
+<dl>
+<dt>Author:</dt>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+</dl>
+<hr>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#Statement()">Statement</a>(string sql, mixed conn, Doctrine\DBAL\Connection The)</p><p class="description">Creates a new Statement for the given SQL and Connection.</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#bindParam()">bindParam</a>(string name, mixed var, integer type, mixed value)</p><p class="description">Binds a parameter to a value by reference.
+</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#bindValue()">bindValue</a>(mixed name, mixed value, mixed type, $value The)</p><p class="description">Binds a parameter value to the statement.
+</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#closeCursor()">closeCursor</a>()</p><p class="description">Closes the cursor, freeing the database resources used by this statement.</p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#columnCount()">columnCount</a>()</p><p class="description">Returns the number of columns in the result set.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#errorCode()">errorCode</a>()</p><p class="description">Fetches the SQLSTATE associated with the last operation on the statement.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#errorInfo()">errorInfo</a>()</p><p class="description">Fetches extended error information associated with the last operation on the statement.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#execute()">execute</a>(mixed params)</p><p class="description">Executes the statement with the currently bound parameters.</p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#fetch()">fetch</a>(integer fetchStyle)</p><p class="description">Fetches the next row from a result set.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#fetchAll()">fetchAll</a>(integer fetchStyle, integer columnIndex)</p><p class="description">Returns an array containing all of the result set rows.</p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#fetchColumn()">fetchColumn</a>(integer columnIndex)</p><p class="description">Returns a single column from the next row of a result set.</p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\DBAL\Driver\Statement</td>
+<td class="description"><p class="name"><a href="#getWrappedStatement()">getWrappedStatement</a>()</p><p class="description">Gets the wrapped driver statement.</p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#rowCount()">rowCount</a>()</p><p class="description">Returns the number of rows affected by the last execution of this statement.</p></td>
+</tr>
+</table>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/DBAL/Statement.php at line 64</div>
+<h3 id="Statement()">Statement</h3>
+<code class="signature">public <strong>Statement</strong>(string sql, mixed conn, Doctrine\DBAL\Connection The)</code>
+<div class="details">
+<p>Creates a new <tt>Statement</tt> for the given SQL and <tt>Connection</tt>.</p><dl>
+<dt>Parameters:</dt>
+<dd>sql - The SQL of the statement.</dd>
+<dd>The - connection on which the statement should be executed.</dd>
+</dl>
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/DBAL/Statement.php at line 114</div>
+<h3 id="bindParam()">bindParam</h3>
+<code class="signature">public  boolean <strong>bindParam</strong>(string name, mixed var, integer type, mixed value)</code>
+<div class="details">
+<p>Binds a parameter to a value by reference.</p><p>Binding a parameter by reference does not support DBAL mapping types.</p><dl>
+<dt>Parameters:</dt>
+<dd>name - The name or position of the parameter.</dd>
+<dd>value - The reference to the variable to bind</dd>
+<dd>type - The PDO binding type.</dd>
+<dt>Returns:</dt>
+<dd>TRUE on success, FALSE on failure.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Statement.php at line 85</div>
+<h3 id="bindValue()">bindValue</h3>
+<code class="signature">public  boolean <strong>bindValue</strong>(mixed name, mixed value, mixed type, $value The)</code>
+<div class="details">
+<p>Binds a parameter value to the statement.</p><p>The value can optionally be bound with a PDO binding type or a DBAL mapping type.
+If bound with a DBAL mapping type, the binding type is derived from the mapping
+type and the value undergoes the conversion routines of the mapping type before
+being bound.</p><dl>
+<dt>Parameters:</dt>
+<dd>The - name or position of the parameter.</dd>
+<dd>The - value of the parameter.</dd>
+<dd>type - Either a PDO binding type or a DBAL mapping type name or instance.</dd>
+<dt>Returns:</dt>
+<dd>TRUE on success, FALSE on failure.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Statement.php at line 138</div>
+<h3 id="closeCursor()">closeCursor</h3>
+<code class="signature">public  boolean <strong>closeCursor</strong>()</code>
+<div class="details">
+<p>Closes the cursor, freeing the database resources used by this statement.</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE on success, FALSE on failure.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Statement.php at line 148</div>
+<h3 id="columnCount()">columnCount</h3>
+<code class="signature">public  integer <strong>columnCount</strong>()</code>
+<div class="details">
+<p>Returns the number of columns in the result set.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Statement.php at line 158</div>
+<h3 id="errorCode()">errorCode</h3>
+<code class="signature">public  string <strong>errorCode</strong>()</code>
+<div class="details">
+<p>Fetches the SQLSTATE associated with the last operation on the statement.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Statement.php at line 168</div>
+<h3 id="errorInfo()">errorInfo</h3>
+<code class="signature">public  array <strong>errorInfo</strong>()</code>
+<div class="details">
+<p>Fetches extended error information associated with the last operation on the statement.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Statement.php at line 124</div>
+<h3 id="execute()">execute</h3>
+<code class="signature">public  boolean <strong>execute</strong>(mixed params)</code>
+<div class="details">
+<p>Executes the statement with the currently bound parameters.</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE on success, FALSE on failure.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Statement.php at line 180</div>
+<h3 id="fetch()">fetch</h3>
+<code class="signature">public  mixed <strong>fetch</strong>(integer fetchStyle)</code>
+<div class="details">
+<p>Fetches the next row from a result set.</p><dl>
+<dt>Returns:</dt>
+<dd>The return value of this function on success depends on the fetch type. In all cases, FALSE is returned on failure.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Statement.php at line 192</div>
+<h3 id="fetchAll()">fetchAll</h3>
+<code class="signature">public  array <strong>fetchAll</strong>(integer fetchStyle, integer columnIndex)</code>
+<div class="details">
+<p>Returns an array containing all of the result set rows.</p><dl>
+<dt>Returns:</dt>
+<dd>An array containing all of the remaining rows in the result set.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Statement.php at line 206</div>
+<h3 id="fetchColumn()">fetchColumn</h3>
+<code class="signature">public  mixed <strong>fetchColumn</strong>(integer columnIndex)</code>
+<div class="details">
+<p>Returns a single column from the next row of a result set.</p><dl>
+<dt>Returns:</dt>
+<dd>A single column from the next row of a result set or FALSE if there are no more rows.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Statement.php at line 226</div>
+<h3 id="getWrappedStatement()">getWrappedStatement</h3>
+<code class="signature">public  Doctrine\DBAL\Driver\Statement <strong>getWrappedStatement</strong>()</code>
+<div class="details">
+<p>Gets the wrapped driver statement.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Statement.php at line 216</div>
+<h3 id="rowCount()">rowCount</h3>
+<code class="signature">public  integer <strong>rowCount</strong>()</code>
+<div class="details">
+<p>Returns the number of rows affected by the last execution of this statement.</p><dl>
+<dt>Returns:</dt>
+<dd>The number of affected rows.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../doctrine/dbal/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../doctrine/dbal/package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../index.html" target="_top">Frames</a>
+<a href="../../doctrine/dbal/statement.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

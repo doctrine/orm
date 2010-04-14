@@ -1,0 +1,621 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>Table (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/dbal/schema/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/dbal/schema/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/dbal/schema/table.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\DBAL\Schema\Table</div>
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 37</div>
+
+<h1>Class Table</h1>
+
+<pre class="tree">Class:Table - Superclass: AbstractAsset
+<a href="../../../doctrine/dbal/schema/abstractasset.html">AbstractAsset</a><br>   &lfloor;&nbsp;<strong>Table</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>Table</strong><br>extends <a href="../../../doctrine/dbal/schema/abstractasset.html">AbstractAsset</a>
+
+</p>
+
+<div class="comment" id="overview_description"><p>Object Representation of a table</p></div>
+
+<dl>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision$</dd>
+<dt>Author:</dt>
+<dd>Benjamin Eberlei <kontakt@beberlei.de></dd>
+</dl>
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#ID_IDENTITY">ID_IDENTITY</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#ID_NONE">$ID_NONE</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#ID_SEQUENCE">ID_SEQUENCE</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  array</td>
+<td class="description"><p class="name"><a href="#_columns">$_columns</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  array</td>
+<td class="description"><p class="name"><a href="#_fkConstraints">$_fkConstraints</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  bool</td>
+<td class="description"><p class="name"><a href="#_idGeneratorType">$_idGeneratorType</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  array</td>
+<td class="description"><p class="name"><a href="#_indexes">$_indexes</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  string</td>
+<td class="description"><p class="name"><a href="#_name">$_name</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  array</td>
+<td class="description"><p class="name"><a href="#_options">$_options</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  string</td>
+<td class="description"><p class="name"><a href="#_primaryKeyName">$_primaryKeyName</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  <a href="../../../doctrine/dbal/schema/schemaconfig.html">SchemaConfig</a></td>
+<td class="description"><p class="name"><a href="#_schemaConfig">$_schemaConfig</a></p><p class="description"></p></td>
+</tr>
+</table>
+
+<table class="inherit">
+<tr><th colspan="2">Fields inherited from Doctrine\DBAL\Schema\AbstractAsset</th></tr>
+<tr><td><a href="../../../doctrine/dbal/schema/abstractasset.html#_name">_name</a></td></tr></table>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#Table()">Table</a>(string tableName, array columns, array options, array indexes, array fkConstraints, int idGeneratorType)</p><p class="description"></p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/column.html">Column</a></td>
+<td class="description"><p class="name"><a href="#addColumn()">addColumn</a>(string columnName, mixed typeName, array options, string columnType)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/table.html">Table</a></td>
+<td class="description"><p class="name"><a href="#addForeignKeyConstraint()">addForeignKeyConstraint</a>(<a href="../../../doctrine/dbal/schema/table.html">Table</a> foreignTable, mixed localColumnNames, mixed foreignColumnNames, array options, array localColumns, array foreignColumns)</p><p class="description">Add a foreign key constraintName is inferred from the local columns</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/table.html">Table</a></td>
+<td class="description"><p class="name"><a href="#addIndex()">addIndex</a>(array columnNames, string indexName)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/table.html">Table</a></td>
+<td class="description"><p class="name"><a href="#addNamedForeignKeyConstraint()">addNamedForeignKeyConstraint</a>(string name, <a href="../../../doctrine/dbal/schema/table.html">Table</a> foreignTable, mixed localColumnNames, mixed foreignColumnNames, array options, array localColumns, array foreignColumns)</p><p class="description">Add a foreign key constraint with a given name</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/table.html">Table</a></td>
+<td class="description"><p class="name"><a href="#addOption()">addOption</a>(string name, string value)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/table.html">Table</a></td>
+<td class="description"><p class="name"><a href="#addUniqueIndex()">addUniqueIndex</a>(array columnNames, string indexName)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/table.html">Table</a></td>
+<td class="description"><p class="name"><a href="#addUnnamedForeignKeyConstraint()">addUnnamedForeignKeyConstraint</a>(<a href="../../../doctrine/dbal/schema/table.html">Table</a> foreignTable, mixed localColumnNames, mixed foreignColumnNames, array options, array localColumns, array foreignColumns)</p><p class="description">Add a foreign key constraintName is to be generated by the database itsself.</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/table.html">Table</a></td>
+<td class="description"><p class="name"><a href="#changeColumn()">changeColumn</a>(string columnName, array options)</p><p class="description">Change Column Details</p></td>
+</tr>
+<tr>
+<td class="type"> bool</td>
+<td class="description"><p class="name"><a href="#columnsAreIndexed()">columnsAreIndexed</a>(array columnsNames)</p><p class="description">Check if an index begins in the order of the given columns.</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/table.html">Table</a></td>
+<td class="description"><p class="name"><a href="#dropColumn()">dropColumn</a>(string columnName)</p><p class="description">Drop Column from Table</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/column.html">Column</a></td>
+<td class="description"><p class="name"><a href="#getColumn()">getColumn</a>(string columnName)</p><p class="description">Get a column instance</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/column.html">Column[]</a></td>
+<td class="description"><p class="name"><a href="#getColumns()">getColumns</a>()</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/foreignkeyconstraint.html">ForeignKeyConstraint</a></td>
+<td class="description"><p class="name"><a href="#getForeignKey()">getForeignKey</a>(string constraintName)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getForeignKeys()">getForeignKeys</a>()</p><p class="description">Get Constraints</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/index.html">Index</a></td>
+<td class="description"><p class="name"><a href="#getIndex()">getIndex</a>(string indexName)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getIndexes()">getIndexes</a>()</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getOption()">getOption</a>(mixed name)</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getOptions()">getOptions</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/index.html">Index</a></td>
+<td class="description"><p class="name"><a href="#getPrimaryKey()">getPrimaryKey</a>()</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> bool</td>
+<td class="description"><p class="name"><a href="#hasColumn()">hasColumn</a>(string columnName)</p><p class="description">Does this table have a column with the given name?</p></td>
+</tr>
+<tr>
+<td class="type"> bool</td>
+<td class="description"><p class="name"><a href="#hasForeignKey()">hasForeignKey</a>(string constraintName)</p><p class="description">Does Table have a foreign key constraint with the given name?</p></td>
+</tr>
+<tr>
+<td class="type"> bool</td>
+<td class="description"><p class="name"><a href="#hasIndex()">hasIndex</a>(string indexName)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#hasOption()">hasOption</a>(mixed name)</p></td>
+</tr>
+<tr>
+<td class="type"> bool</td>
+<td class="description"><p class="name"><a href="#isIdGeneratorIdentity()">isIdGeneratorIdentity</a>()</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#isIdGeneratorSequence()">isIdGeneratorSequence</a>()</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/table.html">Table</a></td>
+<td class="description"><p class="name"><a href="#renameColumn()">renameColumn</a>(string oldColumnName, string newColumnName)</p><p class="description">Rename Column</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/table.html">Table</a></td>
+<td class="description"><p class="name"><a href="#setIdGeneratorType()">setIdGeneratorType</a>(string type)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/table.html">Table</a></td>
+<td class="description"><p class="name"><a href="#setPrimaryKey()">setPrimaryKey</a>(array columns, string indexName)</p><p class="description">Set Primary Key</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setSchemaConfig()">setSchemaConfig</a>(<a href="../../../doctrine/dbal/schema/schemaconfig.html">SchemaConfig</a> schemaConfig)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#visit()">visit</a>(<a href="../../../doctrine/dbal/schema/visitor/visitor.html">Visitor</a> visitor)</p><p class="description"></p></td>
+</tr>
+</table>
+
+<table class="inherit">
+<tr><th colspan="2">Methods inherited from Doctrine\DBAL\Schema\AbstractAsset</th></tr>
+<tr><td><a href="../../../doctrine/dbal/schema/abstractasset.html#getName()">getName</a></td></tr></table>
+
+<h2 id="detail_field">Field Detail</h2>
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 52</div>
+<h3 id="ID_IDENTITY">ID_IDENTITY</h3>
+<code class="signature">public final  int <strong>ID_IDENTITY</strong> = 2</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 42</div>
+<h3 id="ID_NONE">ID_NONE</h3>
+<code class="signature">public final  int <strong>$ID_NONE</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 47</div>
+<h3 id="ID_SEQUENCE">ID_SEQUENCE</h3>
+<code class="signature">public final  int <strong>ID_SEQUENCE</strong> = 1</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 62</div>
+<h3 id="_columns">_columns</h3>
+<code class="signature">protected  array <strong>$_columns</strong> = array()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 77</div>
+<h3 id="_fkConstraints">_fkConstraints</h3>
+<code class="signature">protected  array <strong>$_fkConstraints</strong> = array()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 87</div>
+<h3 id="_idGeneratorType">_idGeneratorType</h3>
+<code class="signature">protected  bool <strong>$_idGeneratorType</strong> = self::ID_NONE</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 67</div>
+<h3 id="_indexes">_indexes</h3>
+<code class="signature">protected  array <strong>$_indexes</strong> = array()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 57</div>
+<h3 id="_name">_name</h3>
+<code class="signature">protected  string <strong>$_name</strong> = null</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 82</div>
+<h3 id="_options">_options</h3>
+<code class="signature">protected  array <strong>$_options</strong> = array()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 72</div>
+<h3 id="_primaryKeyName">_primaryKeyName</h3>
+<code class="signature">protected  string <strong>$_primaryKeyName</strong> = false</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 92</div>
+<h3 id="_schemaConfig">_schemaConfig</h3>
+<code class="signature">protected  <a href="../../../doctrine/dbal/schema/schemaconfig.html">SchemaConfig</a> <strong>$_schemaConfig</strong> = null</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 103</div>
+<h3 id="Table()">Table</h3>
+<code class="signature">public <strong>Table</strong>(string tableName, array columns, array options, array indexes, array fkConstraints, int idGeneratorType)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 266</div>
+<h3 id="addColumn()">addColumn</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/column.html">Column</a> <strong>addColumn</strong>(string columnName, mixed typeName, array options, string columnType)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 330</div>
+<h3 id="addForeignKeyConstraint()">addForeignKeyConstraint</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/table.html">Table</a> <strong>addForeignKeyConstraint</strong>(<a href="../../../doctrine/dbal/schema/table.html">Table</a> foreignTable, mixed localColumnNames, mixed foreignColumnNames, array options, array localColumns, array foreignColumns)</code>
+<div class="details">
+<p>Add a foreign key constraint</p><p>Name is inferred from the local columns</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 181</div>
+<h3 id="addIndex()">addIndex</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/table.html">Table</a> <strong>addIndex</strong>(array columnNames, string indexName)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 362</div>
+<h3 id="addNamedForeignKeyConstraint()">addNamedForeignKeyConstraint</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/table.html">Table</a> <strong>addNamedForeignKeyConstraint</strong>(string name, <a href="../../../doctrine/dbal/schema/table.html">Table</a> foreignTable, mixed localColumnNames, mixed foreignColumnNames, array options, array localColumns, array foreignColumns)</code>
+<div class="details">
+<p>Add a foreign key constraint with a given name</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 395</div>
+<h3 id="addOption()">addOption</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/table.html">Table</a> <strong>addOption</strong>(string name, string value)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 198</div>
+<h3 id="addUniqueIndex()">addUniqueIndex</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/table.html">Table</a> <strong>addUniqueIndex</strong>(array columnNames, string indexName)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 347</div>
+<h3 id="addUnnamedForeignKeyConstraint()">addUnnamedForeignKeyConstraint</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/table.html">Table</a> <strong>addUnnamedForeignKeyConstraint</strong>(<a href="../../../doctrine/dbal/schema/table.html">Table</a> foreignTable, mixed localColumnNames, mixed foreignColumnNames, array options, array localColumns, array foreignColumns)</code>
+<div class="details">
+<p>Add a foreign key constraint</p><p>Name is to be generated by the database itsself.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 297</div>
+<h3 id="changeColumn()">changeColumn</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/table.html">Table</a> <strong>changeColumn</strong>(string columnName, array options)</code>
+<div class="details">
+<p>Change Column Details</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 215</div>
+<h3 id="columnsAreIndexed()">columnsAreIndexed</h3>
+<code class="signature">public  bool <strong>columnsAreIndexed</strong>(array columnsNames)</code>
+<div class="details">
+<p>Check if an index begins in the order of the given columns.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 310</div>
+<h3 id="dropColumn()">dropColumn</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/table.html">Table</a> <strong>dropColumn</strong>(string columnName)</code>
+<div class="details">
+<p>Drop Column from Table</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 535</div>
+<h3 id="getColumn()">getColumn</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/column.html">Column</a> <strong>getColumn</strong>(string columnName)</code>
+<div class="details">
+<p>Get a column instance</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 511</div>
+<h3 id="getColumns()">getColumns</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/column.html">Column[]</a> <strong>getColumns</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 482</div>
+<h3 id="getForeignKey()">getForeignKey</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/foreignkeyconstraint.html">ForeignKeyConstraint</a> <strong>getForeignKey</strong>(string constraintName)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 589</div>
+<h3 id="getForeignKeys()">getForeignKeys</h3>
+<code class="signature">public  array <strong>getForeignKeys</strong>()</code>
+<div class="details">
+<p>Get Constraints</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 567</div>
+<h3 id="getIndex()">getIndex</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/index.html">Index</a> <strong>getIndex</strong>(string indexName)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 579</div>
+<h3 id="getIndexes()">getIndexes</h3>
+<code class="signature">public  array <strong>getIndexes</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 599</div>
+<h3 id="getOption()">getOption</h3>
+<code class="signature">public  void <strong>getOption</strong>(mixed name)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 604</div>
+<h3 id="getOptions()">getOptions</h3>
+<code class="signature">public  void <strong>getOptions</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 548</div>
+<h3 id="getPrimaryKey()">getPrimaryKey</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/index.html">Index</a> <strong>getPrimaryKey</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 523</div>
+<h3 id="hasColumn()">hasColumn</h3>
+<code class="signature">public  bool <strong>hasColumn</strong>(string columnName)</code>
+<div class="details">
+<p>Does this table have a column with the given name?</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 472</div>
+<h3 id="hasForeignKey()">hasForeignKey</h3>
+<code class="signature">public  bool <strong>hasForeignKey</strong>(string constraintName)</code>
+<div class="details">
+<p>Does Table have a foreign key constraint with the given name?</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 557</div>
+<h3 id="hasIndex()">hasIndex</h3>
+<code class="signature">public  bool <strong>hasIndex</strong>(string indexName)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 594</div>
+<h3 id="hasOption()">hasOption</h3>
+<code class="signature">public  void <strong>hasOption</strong>(mixed name)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 495</div>
+<h3 id="isIdGeneratorIdentity()">isIdGeneratorIdentity</h3>
+<code class="signature">public  bool <strong>isIdGeneratorIdentity</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 503</div>
+<h3 id="isIdGeneratorSequence()">isIdGeneratorSequence</h3>
+<code class="signature">public  array <strong>isIdGeneratorSequence</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 281</div>
+<h3 id="renameColumn()">renameColumn</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/table.html">Table</a> <strong>renameColumn</strong>(string oldColumnName, string newColumnName)</code>
+<div class="details">
+<p>Rename Column</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 170</div>
+<h3 id="setIdGeneratorType()">setIdGeneratorType</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/table.html">Table</a> <strong>setIdGeneratorType</strong>(string type)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 154</div>
+<h3 id="setPrimaryKey()">setPrimaryKey</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/table.html">Table</a> <strong>setPrimaryKey</strong>(array columns, string indexName)</code>
+<div class="details">
+<p>Set Primary Key</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 130</div>
+<h3 id="setSchemaConfig()">setSchemaConfig</h3>
+<code class="signature">public  void <strong>setSchemaConfig</strong>(<a href="../../../doctrine/dbal/schema/schemaconfig.html">SchemaConfig</a> schemaConfig)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Table.php at line 612</div>
+<h3 id="visit()">visit</h3>
+<code class="signature">public  void <strong>visit</strong>(<a href="../../../doctrine/dbal/schema/visitor/visitor.html">Visitor</a> visitor)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/dbal/schema/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/dbal/schema/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/dbal/schema/table.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

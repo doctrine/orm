@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -30,10 +28,7 @@ use Doctrine\ORM\ORMException,
  * metadata mapping informations of a class which describes how a class should be mapped
  * to a relational database.
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision$
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -190,7 +185,7 @@ class ClassMetadataFactory
     {
         $this->_loadedMetadata[$className] = $class;
     }
-    
+
     /**
      * Get array of parent classes for the given entity class
      *
@@ -200,17 +195,15 @@ class ClassMetadataFactory
     protected function _getParentClasses($name)
     {
         // Collect parent classes, ignoring transient (not-mapped) classes.
-        //TODO: Evaluate whether we can use class_parents() here.
-        $parentClass = $name;
         $parentClasses = array();
-        while ($parentClass = get_parent_class($parentClass)) {
+        foreach (array_reverse(class_parents($name)) as $parentClass) {
             if ( ! $this->_driver->isTransient($parentClass)) {
                 $parentClasses[] = $parentClass;
             }
         }
-        return array_reverse($parentClasses);
+        return $parentClasses;
     }
-    
+
     /**
      * Loads the metadata of the class in question and all it's ancestors whose metadata
      * is still not loaded.
@@ -223,9 +216,9 @@ class ClassMetadataFactory
         if ( ! $this->_initialized) {
             $this->_initialize();
         }
-        
+
         $loaded = array();
-        
+
         $parentClasses = $this->_getParentClasses($name);
         $parentClasses[] = $name;
 
@@ -242,7 +235,7 @@ class ClassMetadataFactory
             }
 
             $class = $this->_newClassMetadataInstance($className);
-            
+
             if ($parent) {
                 $class->setInheritanceType($parent->inheritanceType);
                 $class->setDiscriminatorColumn($parent->discriminatorColumn);
@@ -273,8 +266,8 @@ class ClassMetadataFactory
                 } else if ($parent->isIdGeneratorTable()) {
                     $class->getTableGeneratorDefinition($parent->tableGeneratorDefinition);
                 }
-                if ($generatorType = $parent->generatorType) {
-                    $class->setIdGeneratorType($generatorType);
+                if ($parent->generatorType) {
+                    $class->setIdGeneratorType($parent->generatorType);
                 }
                 if ($parent->idGenerator) {
                     $class->setIdGenerator($parent->idGenerator);
@@ -293,18 +286,18 @@ class ClassMetadataFactory
                 $eventArgs = new \Doctrine\ORM\Event\LoadClassMetadataEventArgs($class);
                 $this->_evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
             }
-            
+
             $this->_loadedMetadata[$className] = $class;
-            
+
             $parent = $class;
-            
+
             if ( ! $class->isMappedSuperclass) {
                 array_unshift($visited, $className);
             }
-            
+
             $loaded[] = $className;
         }
-        
+
         return $loaded;
     }
 
@@ -331,31 +324,33 @@ class ClassMetadataFactory
             if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
-            $subClass->addFieldMapping($mapping);
+            if ( ! isset($mapping['declared'])) {
+                $mapping['declared'] = $parentClass->name;
+            }
+            $subClass->addInheritedFieldMapping($mapping);
         }
         foreach ($parentClass->reflFields as $name => $field) {
             $subClass->reflFields[$name] = $field;
         }
     }
-    
+
     /**
-     * Adds inherited associations to the subclass mapping.
+     * Adds inherited association mappings to the subclass mapping.
      *
      * @param Doctrine\ORM\Mapping\ClassMetadata $subClass
      * @param Doctrine\ORM\Mapping\ClassMetadata $parentClass
      */
     private function _addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
-        foreach ($parentClass->associationMappings as $mapping) {
-            if (isset($parentClass->inheritedAssociationFields[$mapping->sourceFieldName])) {
-                // parent class also inherited that one
-                $subClass->addAssociationMapping($mapping, $parentClass->inheritedAssociationFields[$mapping->sourceFieldName]);
-            } else if ( ! $parentClass->isMappedSuperclass) {
-                // parent class defined that one
-                $subClass->addAssociationMapping($mapping, $parentClass->name);
-            } else {
-                $subClass->addAssociationMapping($mapping);
+        foreach ($parentClass->associationMappings as $field => $mapping) {
+            $subclassMapping = clone $mapping;
+            if ( ! isset($mapping->inherited) && ! $parentClass->isMappedSuperclass) {
+                $subclassMapping->inherited = $parentClass->name;
             }
+            if ( ! isset($mapping->declared)) {
+                $subclassMapping->declared = $parentClass->name;
+            }
+            $subClass->addInheritedAssociationMapping($subclassMapping);
         }
     }
 

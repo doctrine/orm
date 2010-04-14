@@ -1,0 +1,797 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>TreeWalkerAdapter (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/query/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/query/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/query/treewalkeradapter.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Query\TreeWalkerAdapter</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 31</div>
+
+<h1>Class TreeWalkerAdapter</h1>
+
+<pre class="tree"><strong>TreeWalkerAdapter</strong><br /></pre>
+
+<dl>
+<dt>All Implemented Interfaces:</dt>
+<dd>TreeWalker </dt>
+</dl>
+
+<hr>
+
+<p class="signature">public abstract  class <strong>TreeWalkerAdapter</strong></p>
+
+<div class="comment" id="overview_description"><p>An adapter implementation of the TreeWalker interface. The methods in this class
+are empty. ﻿This class exists as convenience for creating tree walkers.</p></div>
+
+<dl>
+<dt>Author:</dt>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+</dl>
+<hr>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#TreeWalkerAdapter()">TreeWalkerAdapter</a>(mixed query, mixed parserResult, mixed queryComponents)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> AbstractExecutor</td>
+<td class="description"><p class="name"><a href="#getExecutor()">getExecutor</a>(mixed AST)</p><p class="description">Gets an executor that can be used to execute the result of this walker.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkAggregateExpression()">walkAggregateExpression</a>(mixed aggExpression, <a href="../../../doctrine/orm/query/ast/aggregateexpression.html">AggregateExpression</a> )</p><p class="description">Walks down an AggregateExpression AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkArithmeticExpression()">walkArithmeticExpression</a>(mixed arithmeticExpr, <a href="../../../doctrine/orm/query/ast/arithmeticexpression.html">ArithmeticExpression</a> )</p><p class="description">Walks down an ArithmeticExpression AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkArithmeticFactor()">walkArithmeticFactor</a>(mixed factor, mixed )</p><p class="description">Walks down an ArithmeticFactor that represents an AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkArithmeticTerm()">walkArithmeticTerm</a>(mixed term, mixed )</p><p class="description">Walks down an ArithmeticTerm AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkBetweenExpression()">walkBetweenExpression</a>(mixed betweenExpr, <a href="../../../doctrine/orm/query/ast/betweenexpression.html">BetweenExpression</a> )</p><p class="description">Walks down a BetweenExpression AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkCollectionMemberExpression()">walkCollectionMemberExpression</a>(mixed collMemberExpr, <a href="../../../doctrine/orm/query/ast/collectionmemberexpression.html">CollectionMemberExpression</a> )</p><p class="description">Walks down a CollectionMemberExpression AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkComparisonExpression()">walkComparisonExpression</a>(mixed compExpr, <a href="../../../doctrine/orm/query/ast/comparisonexpression.html">ComparisonExpression</a> )</p><p class="description">Walks down a ComparisonExpression AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkConditionalFactor()">walkConditionalFactor</a>(mixed factor, <a href="../../../doctrine/orm/query/ast/conditionalfactor.html">ConditionalFactor</a> )</p><p class="description">Walks down a ConditionalFactor AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkConditionalTerm()">walkConditionalTerm</a>(mixed condTerm, <a href="../../../doctrine/orm/query/ast/conditionalterm.html">ConditionalTerm</a> )</p><p class="description">Walks down a ConditionalTerm AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkDeleteClause()">walkDeleteClause</a>(mixed deleteClause, <a href="../../../doctrine/orm/query/ast/deleteclause.html">DeleteClause</a> )</p><p class="description">Walks down a DeleteClause AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkDeleteStatement()">walkDeleteStatement</a>(mixed AST, <a href="../../../doctrine/orm/query/ast/deletestatement.html">DeleteStatement</a> )</p><p class="description">Walks down a DeleteStatement AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkEmptyCollectionComparisonExpression()">walkEmptyCollectionComparisonExpression</a>(mixed emptyCollCompExpr, <a href="../../../doctrine/orm/query/ast/emptycollectioncomparisonexpression.html">EmptyCollectionComparisonExpression</a> )</p><p class="description">Walks down an EmptyCollectionComparisonExpression AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkExistsExpression()">walkExistsExpression</a>(mixed existsExpr, <a href="../../../doctrine/orm/query/ast/existsexpression.html">ExistsExpression</a> )</p><p class="description">Walks down an ExistsExpression AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkFromClause()">walkFromClause</a>(mixed fromClause)</p><p class="description">Walks down a FromClause AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkFunction()">walkFunction</a>(mixed function)</p><p class="description">Walks down a FunctionNode AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkGroupByClause()">walkGroupByClause</a>(mixed groupByClause, <a href="../../../doctrine/orm/query/ast/groupbyclause.html">GroupByClause</a> )</p><p class="description">Walks down a GroupByClause AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkGroupByItem()">walkGroupByItem</a>(mixed pathExpr, GroupByItem )</p><p class="description">Walks down a GroupByItem AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkHavingClause()">walkHavingClause</a>(mixed havingClause, <a href="../../../doctrine/orm/query/ast/havingclause.html">HavingClause</a> )</p><p class="description">Walks down a HavingClause AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkInExpression()">walkInExpression</a>(mixed inExpr, <a href="../../../doctrine/orm/query/ast/inexpression.html">InExpression</a> )</p><p class="description">Walks down an InExpression AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkInputParameter()">walkInputParameter</a>(mixed inputParam, <a href="../../../doctrine/orm/query/ast/inputparameter.html">InputParameter</a> )</p><p class="description">Walks down an InputParameter AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkJoinVariableDeclaration()">walkJoinVariableDeclaration</a>(<a href="../../../doctrine/orm/query/ast/joinvariabledeclaration.html">JoinVariableDeclaration</a> joinVarDecl)</p><p class="description">Walks down a JoinVariableDeclaration AST node and creates the corresponding SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkLikeExpression()">walkLikeExpression</a>(mixed likeExpr, <a href="../../../doctrine/orm/query/ast/likeexpression.html">LikeExpression</a> )</p><p class="description">Walks down a LikeExpression AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkLiteral()">walkLiteral</a>(mixed literal, mixed )</p><p class="description">Walks down a literal that represents an AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkNullComparisonExpression()">walkNullComparisonExpression</a>(mixed nullCompExpr, <a href="../../../doctrine/orm/query/ast/nullcomparisonexpression.html">NullComparisonExpression</a> )</p><p class="description">Walks down a NullComparisonExpression AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkOrderByClause()">walkOrderByClause</a>(mixed orderByClause, <a href="../../../doctrine/orm/query/ast/orderbyclause.html">OrderByClause</a> )</p><p class="description">Walks down an OrderByClause AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkOrderByItem()">walkOrderByItem</a>(mixed orderByItem, <a href="../../../doctrine/orm/query/ast/orderbyitem.html">OrderByItem</a> )</p><p class="description">Walks down an OrderByItem AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkPathExpression()">walkPathExpression</a>(mixed pathExpr, mixed )</p><p class="description">Walks down an PathExpression AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkQuantifiedExpression()">walkQuantifiedExpression</a>(mixed qExpr, <a href="../../../doctrine/orm/query/ast/quantifiedexpression.html">QuantifiedExpression</a> )</p><p class="description">Walks down a QuantifiedExpression AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkSelectClause()">walkSelectClause</a>(mixed selectClause)</p><p class="description">Walks down a SelectClause AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkSelectExpression()">walkSelectExpression</a>(<a href="../../../doctrine/orm/query/ast/selectexpression.html">SelectExpression</a> selectExpression)</p><p class="description">Walks down a SelectExpression AST node and generates the corresponding SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkSelectStatement()">walkSelectStatement</a>(mixed AST)</p><p class="description">Walks down a SelectStatement AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkSimpleArithmeticExpression()">walkSimpleArithmeticExpression</a>(mixed simpleArithmeticExpr, <a href="../../../doctrine/orm/query/ast/simplearithmeticexpression.html">SimpleArithmeticExpression</a> )</p><p class="description">Walks down an SimpleArithmeticExpression AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkSimpleSelectClause()">walkSimpleSelectClause</a>(mixed simpleSelectClause, <a href="../../../doctrine/orm/query/ast/simpleselectclause.html">SimpleSelectClause</a> )</p><p class="description">Walks down a SimpleSelectClause AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkSimpleSelectExpression()">walkSimpleSelectExpression</a>(mixed simpleSelectExpression, <a href="../../../doctrine/orm/query/ast/simpleselectexpression.html">SimpleSelectExpression</a> )</p><p class="description">Walks down a SimpleSelectExpression AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkStateFieldPathExpression()">walkStateFieldPathExpression</a>(mixed stateFieldPathExpression, StateFieldPathExpression )</p><p class="description">Walks down a StateFieldPathExpression AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkStringPrimary()">walkStringPrimary</a>(mixed stringPrimary, mixed )</p><p class="description">Walks down a StringPrimary that represents an AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkSubselect()">walkSubselect</a>(mixed subselect, <a href="../../../doctrine/orm/query/ast/subselect.html">Subselect</a> )</p><p class="description">Walks down a Subselect AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkSubselectFromClause()">walkSubselectFromClause</a>(mixed subselectFromClause, <a href="../../../doctrine/orm/query/ast/subselectfromclause.html">SubselectFromClause</a> )</p><p class="description">Walks down a SubselectFromClause AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkUpdateClause()">walkUpdateClause</a>(mixed updateClause, <a href="../../../doctrine/orm/query/ast/updateclause.html">UpdateClause</a> )</p><p class="description">Walks down an UpdateClause AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkUpdateItem()">walkUpdateItem</a>(mixed updateItem, <a href="../../../doctrine/orm/query/ast/updateitem.html">UpdateItem</a> )</p><p class="description">Walks down an UpdateItem AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkUpdateStatement()">walkUpdateStatement</a>(mixed AST, <a href="../../../doctrine/orm/query/ast/updatestatement.html">UpdateStatement</a> )</p><p class="description">Walks down an UpdateStatement AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkWhereClause()">walkWhereClause</a>(mixed whereClause, <a href="../../../doctrine/orm/query/ast/whereclause.html">WhereClause</a> )</p><p class="description">Walks down a WhereClause AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+</table>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 40</div>
+<h3 id="TreeWalkerAdapter()">TreeWalkerAdapter</h3>
+<code class="signature">public <strong>TreeWalkerAdapter</strong>(mixed query, mixed parserResult, mixed queryComponents)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 412</div>
+<h3 id="getExecutor()">getExecutor</h3>
+<code class="signature">public  AbstractExecutor <strong>getExecutor</strong>(mixed AST)</code>
+<div class="details">
+<p>Gets an executor that can be used to execute the result of this walker.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 189</div>
+<h3 id="walkAggregateExpression()">walkAggregateExpression</h3>
+<code class="signature">public  string <strong>walkAggregateExpression</strong>(mixed aggExpression, <a href="../../../doctrine/orm/query/ast/aggregateexpression.html">AggregateExpression</a> )</code>
+<div class="details">
+<p>Walks down an AggregateExpression AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 365</div>
+<h3 id="walkArithmeticExpression()">walkArithmeticExpression</h3>
+<code class="signature">public  string <strong>walkArithmeticExpression</strong>(mixed arithmeticExpr, <a href="../../../doctrine/orm/query/ast/arithmeticexpression.html">ArithmeticExpression</a> )</code>
+<div class="details">
+<p>Walks down an ArithmeticExpression AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 389</div>
+<h3 id="walkArithmeticFactor()">walkArithmeticFactor</h3>
+<code class="signature">public  string <strong>walkArithmeticFactor</strong>(mixed factor, mixed )</code>
+<div class="details">
+<p>Walks down an ArithmeticFactor that represents an AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 373</div>
+<h3 id="walkArithmeticTerm()">walkArithmeticTerm</h3>
+<code class="signature">public  string <strong>walkArithmeticTerm</strong>(mixed term, mixed )</code>
+<div class="details">
+<p>Walks down an ArithmeticTerm AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 325</div>
+<h3 id="walkBetweenExpression()">walkBetweenExpression</h3>
+<code class="signature">public  string <strong>walkBetweenExpression</strong>(mixed betweenExpr, <a href="../../../doctrine/orm/query/ast/betweenexpression.html">BetweenExpression</a> )</code>
+<div class="details">
+<p>Walks down a BetweenExpression AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 285</div>
+<h3 id="walkCollectionMemberExpression()">walkCollectionMemberExpression</h3>
+<code class="signature">public  string <strong>walkCollectionMemberExpression</strong>(mixed collMemberExpr, <a href="../../../doctrine/orm/query/ast/collectionmemberexpression.html">CollectionMemberExpression</a> )</code>
+<div class="details">
+<p>Walks down a CollectionMemberExpression AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 349</div>
+<h3 id="walkComparisonExpression()">walkComparisonExpression</h3>
+<code class="signature">public  string <strong>walkComparisonExpression</strong>(mixed compExpr, <a href="../../../doctrine/orm/query/ast/comparisonexpression.html">ComparisonExpression</a> )</code>
+<div class="details">
+<p>Walks down a ComparisonExpression AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 269</div>
+<h3 id="walkConditionalFactor()">walkConditionalFactor</h3>
+<code class="signature">public  string <strong>walkConditionalFactor</strong>(mixed factor, <a href="../../../doctrine/orm/query/ast/conditionalfactor.html">ConditionalFactor</a> )</code>
+<div class="details">
+<p>Walks down a ConditionalFactor AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 261</div>
+<h3 id="walkConditionalTerm()">walkConditionalTerm</h3>
+<code class="signature">public  string <strong>walkConditionalTerm</strong>(mixed condTerm, <a href="../../../doctrine/orm/query/ast/conditionalterm.html">ConditionalTerm</a> )</code>
+<div class="details">
+<p>Walks down a ConditionalTerm AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 229</div>
+<h3 id="walkDeleteClause()">walkDeleteClause</h3>
+<code class="signature">public  string <strong>walkDeleteClause</strong>(mixed deleteClause, <a href="../../../doctrine/orm/query/ast/deleteclause.html">DeleteClause</a> )</code>
+<div class="details">
+<p>Walks down a DeleteClause AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 221</div>
+<h3 id="walkDeleteStatement()">walkDeleteStatement</h3>
+<code class="signature">public  string <strong>walkDeleteStatement</strong>(mixed AST, <a href="../../../doctrine/orm/query/ast/deletestatement.html">DeleteStatement</a> )</code>
+<div class="details">
+<p>Walks down a DeleteStatement AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 293</div>
+<h3 id="walkEmptyCollectionComparisonExpression()">walkEmptyCollectionComparisonExpression</h3>
+<code class="signature">public  string <strong>walkEmptyCollectionComparisonExpression</strong>(mixed emptyCollCompExpr, <a href="../../../doctrine/orm/query/ast/emptycollectioncomparisonexpression.html">EmptyCollectionComparisonExpression</a> )</code>
+<div class="details">
+<p>Walks down an EmptyCollectionComparisonExpression AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 277</div>
+<h3 id="walkExistsExpression()">walkExistsExpression</h3>
+<code class="signature">public  string <strong>walkExistsExpression</strong>(mixed existsExpr, <a href="../../../doctrine/orm/query/ast/existsexpression.html">ExistsExpression</a> )</code>
+<div class="details">
+<p>Walks down an ExistsExpression AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 94</div>
+<h3 id="walkFromClause()">walkFromClause</h3>
+<code class="signature">public  string <strong>walkFromClause</strong>(mixed fromClause)</code>
+<div class="details">
+<p>Walks down a FromClause AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 101</div>
+<h3 id="walkFunction()">walkFunction</h3>
+<code class="signature">public  string <strong>walkFunction</strong>(mixed function)</code>
+<div class="details">
+<p>Walks down a FunctionNode AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 197</div>
+<h3 id="walkGroupByClause()">walkGroupByClause</h3>
+<code class="signature">public  string <strong>walkGroupByClause</strong>(mixed groupByClause, <a href="../../../doctrine/orm/query/ast/groupbyclause.html">GroupByClause</a> )</code>
+<div class="details">
+<p>Walks down a GroupByClause AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 205</div>
+<h3 id="walkGroupByItem()">walkGroupByItem</h3>
+<code class="signature">public  string <strong>walkGroupByItem</strong>(mixed pathExpr, GroupByItem )</code>
+<div class="details">
+<p>Walks down a GroupByItem AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 125</div>
+<h3 id="walkHavingClause()">walkHavingClause</h3>
+<code class="signature">public  string <strong>walkHavingClause</strong>(mixed havingClause, <a href="../../../doctrine/orm/query/ast/havingclause.html">HavingClause</a> )</code>
+<div class="details">
+<p>Walks down a HavingClause AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 309</div>
+<h3 id="walkInExpression()">walkInExpression</h3>
+<code class="signature">public  string <strong>walkInExpression</strong>(mixed inExpr, <a href="../../../doctrine/orm/query/ast/inexpression.html">InExpression</a> )</code>
+<div class="details">
+<p>Walks down an InExpression AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 357</div>
+<h3 id="walkInputParameter()">walkInputParameter</h3>
+<code class="signature">public  string <strong>walkInputParameter</strong>(mixed inputParam, <a href="../../../doctrine/orm/query/ast/inputparameter.html">InputParameter</a> )</code>
+<div class="details">
+<p>Walks down an InputParameter AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 133</div>
+<h3 id="walkJoinVariableDeclaration()">walkJoinVariableDeclaration</h3>
+<code class="signature">public  string <strong>walkJoinVariableDeclaration</strong>(<a href="../../../doctrine/orm/query/ast/joinvariabledeclaration.html">JoinVariableDeclaration</a> joinVarDecl)</code>
+<div class="details">
+<p>Walks down a JoinVariableDeclaration AST node and creates the corresponding SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 333</div>
+<h3 id="walkLikeExpression()">walkLikeExpression</h3>
+<code class="signature">public  string <strong>walkLikeExpression</strong>(mixed likeExpr, <a href="../../../doctrine/orm/query/ast/likeexpression.html">LikeExpression</a> )</code>
+<div class="details">
+<p>Walks down a LikeExpression AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 317</div>
+<h3 id="walkLiteral()">walkLiteral</h3>
+<code class="signature">public  string <strong>walkLiteral</strong>(mixed literal, mixed )</code>
+<div class="details">
+<p>Walks down a literal that represents an AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 301</div>
+<h3 id="walkNullComparisonExpression()">walkNullComparisonExpression</h3>
+<code class="signature">public  string <strong>walkNullComparisonExpression</strong>(mixed nullCompExpr, <a href="../../../doctrine/orm/query/ast/nullcomparisonexpression.html">NullComparisonExpression</a> )</code>
+<div class="details">
+<p>Walks down a NullComparisonExpression AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 109</div>
+<h3 id="walkOrderByClause()">walkOrderByClause</h3>
+<code class="signature">public  string <strong>walkOrderByClause</strong>(mixed orderByClause, <a href="../../../doctrine/orm/query/ast/orderbyclause.html">OrderByClause</a> )</code>
+<div class="details">
+<p>Walks down an OrderByClause AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 117</div>
+<h3 id="walkOrderByItem()">walkOrderByItem</h3>
+<code class="signature">public  string <strong>walkOrderByItem</strong>(mixed orderByItem, <a href="../../../doctrine/orm/query/ast/orderbyitem.html">OrderByItem</a> )</code>
+<div class="details">
+<p>Walks down an OrderByItem AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 405</div>
+<h3 id="walkPathExpression()">walkPathExpression</h3>
+<code class="signature">public  string <strong>walkPathExpression</strong>(mixed pathExpr, mixed )</code>
+<div class="details">
+<p>Walks down an PathExpression AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 149</div>
+<h3 id="walkQuantifiedExpression()">walkQuantifiedExpression</h3>
+<code class="signature">public  string <strong>walkQuantifiedExpression</strong>(mixed qExpr, <a href="../../../doctrine/orm/query/ast/quantifiedexpression.html">QuantifiedExpression</a> )</code>
+<div class="details">
+<p>Walks down a QuantifiedExpression AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 87</div>
+<h3 id="walkSelectClause()">walkSelectClause</h3>
+<code class="signature">public  string <strong>walkSelectClause</strong>(mixed selectClause)</code>
+<div class="details">
+<p>Walks down a SelectClause AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 141</div>
+<h3 id="walkSelectExpression()">walkSelectExpression</h3>
+<code class="signature">public  string <strong>walkSelectExpression</strong>(<a href="../../../doctrine/orm/query/ast/selectexpression.html">SelectExpression</a> selectExpression)</code>
+<div class="details">
+<p>Walks down a SelectExpression AST node and generates the corresponding SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 80</div>
+<h3 id="walkSelectStatement()">walkSelectStatement</h3>
+<code class="signature">public  string <strong>walkSelectStatement</strong>(mixed AST)</code>
+<div class="details">
+<p>Walks down a SelectStatement AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 397</div>
+<h3 id="walkSimpleArithmeticExpression()">walkSimpleArithmeticExpression</h3>
+<code class="signature">public  string <strong>walkSimpleArithmeticExpression</strong>(mixed simpleArithmeticExpr, <a href="../../../doctrine/orm/query/ast/simplearithmeticexpression.html">SimpleArithmeticExpression</a> )</code>
+<div class="details">
+<p>Walks down an SimpleArithmeticExpression AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 173</div>
+<h3 id="walkSimpleSelectClause()">walkSimpleSelectClause</h3>
+<code class="signature">public  string <strong>walkSimpleSelectClause</strong>(mixed simpleSelectClause, <a href="../../../doctrine/orm/query/ast/simpleselectclause.html">SimpleSelectClause</a> )</code>
+<div class="details">
+<p>Walks down a SimpleSelectClause AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 181</div>
+<h3 id="walkSimpleSelectExpression()">walkSimpleSelectExpression</h3>
+<code class="signature">public  string <strong>walkSimpleSelectExpression</strong>(mixed simpleSelectExpression, <a href="../../../doctrine/orm/query/ast/simpleselectexpression.html">SimpleSelectExpression</a> )</code>
+<div class="details">
+<p>Walks down a SimpleSelectExpression AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 341</div>
+<h3 id="walkStateFieldPathExpression()">walkStateFieldPathExpression</h3>
+<code class="signature">public  string <strong>walkStateFieldPathExpression</strong>(mixed stateFieldPathExpression, StateFieldPathExpression )</code>
+<div class="details">
+<p>Walks down a StateFieldPathExpression AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 381</div>
+<h3 id="walkStringPrimary()">walkStringPrimary</h3>
+<code class="signature">public  string <strong>walkStringPrimary</strong>(mixed stringPrimary, mixed )</code>
+<div class="details">
+<p>Walks down a StringPrimary that represents an AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 157</div>
+<h3 id="walkSubselect()">walkSubselect</h3>
+<code class="signature">public  string <strong>walkSubselect</strong>(mixed subselect, <a href="../../../doctrine/orm/query/ast/subselect.html">Subselect</a> )</code>
+<div class="details">
+<p>Walks down a Subselect AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 165</div>
+<h3 id="walkSubselectFromClause()">walkSubselectFromClause</h3>
+<code class="signature">public  string <strong>walkSubselectFromClause</strong>(mixed subselectFromClause, <a href="../../../doctrine/orm/query/ast/subselectfromclause.html">SubselectFromClause</a> )</code>
+<div class="details">
+<p>Walks down a SubselectFromClause AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 237</div>
+<h3 id="walkUpdateClause()">walkUpdateClause</h3>
+<code class="signature">public  string <strong>walkUpdateClause</strong>(mixed updateClause, <a href="../../../doctrine/orm/query/ast/updateclause.html">UpdateClause</a> )</code>
+<div class="details">
+<p>Walks down an UpdateClause AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 245</div>
+<h3 id="walkUpdateItem()">walkUpdateItem</h3>
+<code class="signature">public  string <strong>walkUpdateItem</strong>(mixed updateItem, <a href="../../../doctrine/orm/query/ast/updateitem.html">UpdateItem</a> )</code>
+<div class="details">
+<p>Walks down an UpdateItem AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 213</div>
+<h3 id="walkUpdateStatement()">walkUpdateStatement</h3>
+<code class="signature">public  string <strong>walkUpdateStatement</strong>(mixed AST, <a href="../../../doctrine/orm/query/ast/updatestatement.html">UpdateStatement</a> )</code>
+<div class="details">
+<p>Walks down an UpdateStatement AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerAdapter.php at line 253</div>
+<h3 id="walkWhereClause()">walkWhereClause</h3>
+<code class="signature">public  string <strong>walkWhereClause</strong>(mixed whereClause, <a href="../../../doctrine/orm/query/ast/whereclause.html">WhereClause</a> )</code>
+<div class="details">
+<p>Walks down a WhereClause AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/query/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/query/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/query/treewalkeradapter.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

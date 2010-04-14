@@ -1,0 +1,1012 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>UnitOfWork (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../doctrine/orm/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../doctrine/orm/package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../index.html" target="_top">Frames</a>
+<a href="../../doctrine/orm/unitofwork.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\UnitOfWork</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 46</div>
+
+<h1>Class UnitOfWork</h1>
+
+<pre class="tree"><strong>UnitOfWork</strong><br /></pre>
+
+<dl>
+<dt>All Implemented Interfaces:</dt>
+<dd>PropertyChangedListener </dt>
+</dl>
+
+<hr>
+
+<p class="signature">public  class <strong>UnitOfWork</strong></p>
+
+<div class="comment" id="overview_description"><p>The UnitOfWork is responsible for tracking changes to objects during an
+"object-level" transaction and for writing out changes to the database
+in the correct order.</p></div>
+
+<dl>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision$</dd>
+<dt>Author:</dt>
+<dd>Benjamin Eberlei <kontakt@beberlei.de></dd>
+<dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
+<dd>Jonathan Wage <jonwage@gmail.com></dd>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dt>Internal:</dt>
+<dd>This class contains performance-critical code.</dd>
+</dl>
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#STATE_DETACHED">STATE_DETACHED</a></p><p class="description">A detached entity is an instance with a persistent identity that is not
+(or no longer) associated with an EntityManager (and a UnitOfWork).</p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#STATE_MANAGED">STATE_MANAGED</a></p><p class="description">An entity is in MANAGED state when its persistence is managed by an EntityManager.</p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#STATE_NEW">STATE_NEW</a></p><p class="description">An entity is new if it has just been instantiated (i.e. </p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#STATE_REMOVED">STATE_REMOVED</a></p><p class="description">A removed entity instance is an instance with a persistent identity,
+associated with an EntityManager, whose persistent state has been
+deleted (or is scheduled for deletion).</p></td>
+</tr>
+</table>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#UnitOfWork()">UnitOfWork</a>(Doctrine\ORM\EntityManager em)</p><p class="description">Initializes a new UnitOfWork instance, bound to the given EntityManager.</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#addToIdentityMap()">addToIdentityMap</a>(object entity)</p><p class="description">INTERNAL:
+Registers an entity in the identity map.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#clear()">clear</a>()</p><p class="description">Clears the UnitOfWork.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#clearEntityChangeSet()">clearEntityChangeSet</a>(string oid)</p><p class="description">INTERNAL:
+Clears the property changeset of the entity with the given OID.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#commit()">commit</a>()</p><p class="description">Commits the UnitOfWork, executing all operations that have been postponed
+up to this point. </p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#computeChangeSet()">computeChangeSet</a>(<a href="../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a> class, object entity)</p><p class="description">Computes the changes that happened to a single entity.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#computeChangeSets()">computeChangeSets</a>()</p><p class="description">Computes all the changes that have been done to entities and collections
+since the last commit and stores these changes in the _entityChangeSet map
+temporarily for access by the persisters, until the UoW commit is finished.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#containsIdHash()">containsIdHash</a>(string idHash, string rootClassName)</p><p class="description">INTERNAL:
+Checks whether an identifier hash exists in the identity map.</p></td>
+</tr>
+<tr>
+<td class="type"> object</td>
+<td class="description"><p class="name"><a href="#createEntity()">createEntity</a>(string className, array data, array hints)</p><p class="description">INTERNAL:
+Creates an entity. </p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#detach()">detach</a>(object entity)</p><p class="description">Detaches an entity from the persistence management. </p></td>
+</tr>
+<tr>
+<td class="type"> object</td>
+<td class="description"><p class="name"><a href="#getByIdHash()">getByIdHash</a>(string idHash, string rootClassName)</p><p class="description">INTERNAL:
+Gets an entity in the identity map by its identifier hash.</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../doctrine/orm/persisters/abstractcollectionpersister.html">AbstractCollectionPersister</a></td>
+<td class="description"><p class="name"><a href="#getCollectionPersister()">getCollectionPersister</a>(<a href="../../doctrine/orm/mapping/associationmapping.html">AssociationMapping</a> association)</p><p class="description">Gets a collection persister for a collection-valued association.</p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\ORM\Internal\CommitOrderCalculator</td>
+<td class="description"><p class="name"><a href="#getCommitOrderCalculator()">getCommitOrderCalculator</a>()</p><p class="description">Gets the CommitOrderCalculator used by the UnitOfWork to order commits.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getEntityChangeSet()">getEntityChangeSet</a>(mixed entity)</p><p class="description">Gets the changeset for an entity.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getEntityIdentifier()">getEntityIdentifier</a>(object entity)</p><p class="description">Gets the identifier of an entity.
+</p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\ORM\Persister\AbstractEntityPersister</td>
+<td class="description"><p class="name"><a href="#getEntityPersister()">getEntityPersister</a>(string entityName)</p><p class="description">Gets the EntityPersister for an Entity.</p></td>
+</tr>
+<tr>
+<td class="type"> int</td>
+<td class="description"><p class="name"><a href="#getEntityState()">getEntityState</a>(object entity, integer assume)</p><p class="description">Gets the state of an entity within the current unit of work.
+</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getIdentityMap()">getIdentityMap</a>()</p><p class="description">Gets the identity map of the UnitOfWork.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getOriginalEntityData()">getOriginalEntityData</a>(object entity)</p><p class="description">Gets the original data of an entity. </p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getScheduledCollectionDeletions()">getScheduledCollectionDeletions</a>()</p><p class="description">Get the currently scheduled complete collection deletions</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getScheduledCollectionUpdates()">getScheduledCollectionUpdates</a>()</p><p class="description">Gets the currently scheduled collection inserts, updates and deletes.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getScheduledEntityDeletions()">getScheduledEntityDeletions</a>()</p><p class="description">Gets the currently scheduled entity deletions in this UnitOfWork.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getScheduledEntityInsertions()">getScheduledEntityInsertions</a>()</p><p class="description">Gets the currently scheduled entity insertions in this UnitOfWork.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getScheduledEntityUpdates()">getScheduledEntityUpdates</a>()</p><p class="description">Gets the currently scheduled entity updates in this UnitOfWork.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#hasPendingInsertions()">hasPendingInsertions</a>()</p><p class="description">Checks whether the UnitOfWork has any pending insertions.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#isCollectionScheduledForDeletion()">isCollectionScheduledForDeletion</a>(mixed coll)</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isEntityScheduled()">isEntityScheduled</a>(mixed entity, $entity )</p><p class="description">Checks whether an entity is scheduled for insertion, update or deletion.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isInIdentityMap()">isInIdentityMap</a>(object entity)</p><p class="description">Checks whether an entity is registered in the identity map of this UnitOfWork.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isScheduledForDelete()">isScheduledForDelete</a>(object entity)</p><p class="description">Checks whether an entity is registered as removed/deleted with the unit
+of work.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isScheduledForInsert()">isScheduledForInsert</a>(object entity)</p><p class="description">Checks whether an entity is scheduled for insertion.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isScheduledForUpdate()">isScheduledForUpdate</a>(object entity)</p><p class="description">Checks whether an entity is registered as dirty in the unit of work.
+</p></td>
+</tr>
+<tr>
+<td class="type"> object</td>
+<td class="description"><p class="name"><a href="#merge()">merge</a>(object entity)</p><p class="description">Merges the state of the given detached entity into this UnitOfWork.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#persist()">persist</a>(object entity)</p><p class="description">Persists an entity as part of the current unit of work.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#propertyChanged()">propertyChanged</a>(object entity, string propertyName, mixed oldValue, mixed newValue)</p><p class="description">Notifies this UnitOfWork of a property change in an entity.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#recomputeSingleEntityChangeSet()">recomputeSingleEntityChangeSet</a>(<a href="../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a> class, object entity)</p><p class="description">INTERNAL:
+Computes the changeset of an individual entity, independently of the
+computeChangeSets() routine that is used at the beginning of a UnitOfWork#commit().
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#refresh()">refresh</a>(object entity)</p><p class="description">Refreshes the state of the given entity from the database, overwriting
+any local, unpersisted changes.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#registerManaged()">registerManaged</a>(object entity, array id, array data)</p><p class="description">INTERNAL:
+Registers an entity as managed.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#remove()">remove</a>(object entity)</p><p class="description">Deletes an entity as part of the current unit of work.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#removeFromIdentityMap()">removeFromIdentityMap</a>(object entity)</p><p class="description">INTERNAL:
+Removes an entity from the identity map. </p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#scheduleCollectionDeletion()">scheduleCollectionDeletion</a>(<a href="../../doctrine/orm/persistentcollection.html">PersistentCollection</a> coll)</p><p class="description">INTERNAL:
+Schedules a complete collection for removal when this UnitOfWork commits.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#scheduleExtraUpdate()">scheduleExtraUpdate</a>(object entity, array changeset)</p><p class="description">INTERNAL:
+Schedules an extra update that will be executed immediately after the
+regular entity updates within the currently running commit cycle.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#scheduleForDelete()">scheduleForDelete</a>(object entity)</p><p class="description">INTERNAL:
+Schedules an entity for deletion.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#scheduleForDirtyCheck()">scheduleForDirtyCheck</a>(object entity)</p><p class="description">Schedules an entity for dirty-checking at commit-time.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#scheduleForInsert()">scheduleForInsert</a>(object entity)</p><p class="description">Schedules an entity for insertion into the database.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#scheduleForUpdate()">scheduleForUpdate</a>(object entity)</p><p class="description">Schedules an entity for being updated.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#scheduleOrphanRemoval()">scheduleOrphanRemoval</a>(object entity)</p><p class="description">INTERNAL:
+Schedules an orphaned entity for removal. </p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setOriginalEntityData()">setOriginalEntityData</a>(mixed entity, mixed data)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setOriginalEntityProperty()">setOriginalEntityProperty</a>(string oid, string property, mixed value)</p><p class="description">INTERNAL:
+Sets a property value of the original data array of an entity.</p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#size()">size</a>()</p><p class="description">Calculates the size of the UnitOfWork. </p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#tryGetById()">tryGetById</a>(mixed id, string rootClassName)</p><p class="description">Tries to find an entity with the given identifier in the identity map of
+this UnitOfWork.</p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#tryGetByIdHash()">tryGetByIdHash</a>(string idHash, string rootClassName)</p><p class="description">INTERNAL:
+Tries to get an entity by its identifier hash. </p></td>
+</tr>
+</table>
+
+<h2 id="detail_field">Field Detail</h2>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 63</div>
+<h3 id="STATE_DETACHED">STATE_DETACHED</h3>
+<code class="signature">public final  int <strong>STATE_DETACHED</strong> = 3</code>
+<div class="details">
+<p>A detached entity is an instance with a persistent identity that is not
+(or no longer) associated with an EntityManager (and a UnitOfWork).</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 51</div>
+<h3 id="STATE_MANAGED">STATE_MANAGED</h3>
+<code class="signature">public final  int <strong>STATE_MANAGED</strong> = 1</code>
+<div class="details">
+<p>An entity is in MANAGED state when its persistence is managed by an EntityManager.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 57</div>
+<h3 id="STATE_NEW">STATE_NEW</h3>
+<code class="signature">public final  int <strong>STATE_NEW</strong> = 2</code>
+<div class="details">
+<p>An entity is new if it has just been instantiated (i.e. using the "new" operator)
+and is not (yet) managed by an EntityManager.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 70</div>
+<h3 id="STATE_REMOVED">STATE_REMOVED</h3>
+<code class="signature">public final  int <strong>STATE_REMOVED</strong> = 4</code>
+<div class="details">
+<p>A removed entity instance is an instance with a persistent identity,
+associated with an EntityManager, whose persistent state has been
+deleted (or is scheduled for deletion).</p></div>
+
+<hr>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 236</div>
+<h3 id="UnitOfWork()">UnitOfWork</h3>
+<code class="signature">public <strong>UnitOfWork</strong>(Doctrine\ORM\EntityManager em)</code>
+<div class="details">
+<p>Initializes a new UnitOfWork instance, bound to the given EntityManager.</p></div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1009</div>
+<h3 id="addToIdentityMap()">addToIdentityMap</h3>
+<code class="signature">public  boolean <strong>addToIdentityMap</strong>(object entity)</code>
+<div class="details">
+<p>INTERNAL:
+Registers an entity in the identity map.
+Note that entities in a hierarchy are registered with the class name of
+the root entity.</p><dl>
+<dt>Ignore.</dt>
+<dt>Parameters:</dt>
+<dd>entity - The entity to register.</dd>
+<dt>Returns:</dt>
+<dd>TRUE if the registration was successful, FALSE if the identity of the entity in question is already managed.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1650</div>
+<h3 id="clear()">clear</h3>
+<code class="signature">public  void <strong>clear</strong>()</code>
+<div class="details">
+<p>Clears the UnitOfWork.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2030</div>
+<h3 id="clearEntityChangeSet()">clearEntityChangeSet</h3>
+<code class="signature">public  void <strong>clearEntityChangeSet</strong>(string oid)</code>
+<div class="details">
+<p>INTERNAL:
+Clears the property changeset of the entity with the given OID.</p><dl>
+<dt>Parameters:</dt>
+<dd>oid - The entity's OID.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 257</div>
+<h3 id="commit()">commit</h3>
+<code class="signature">public  void <strong>commit</strong>()</code>
+<div class="details">
+<p>Commits the UnitOfWork, executing all operations that have been postponed
+up to this point. The state of all managed entities will be synchronized with
+the database.</p><p>The operations are executed in the following order:</p><p>1) All entity insertions
+2) All entity updates
+3) All collection deletions
+4) All collection updates
+5) All entity deletions</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 404</div>
+<h3 id="computeChangeSet()">computeChangeSet</h3>
+<code class="signature">public  void <strong>computeChangeSet</strong>(<a href="../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a> class, object entity)</code>
+<div class="details">
+<p>Computes the changes that happened to a single entity.</p><p>Modifies/populates the following properties:</p><p><code>_originalEntityData</code>
+If the entity is NEW or MANAGED but not yet fully persisted (only has an id)
+then it was not fetched from the database and therefore we have no original
+entity data yet. All of the current entity data is stored as the original entity data.</p><p><code>_entityChangeSets</code>
+The changes detected on all properties of the entity are stored there.
+A change is a tuple array where the first entry is the old value and the second
+entry is the new value of the property. Changesets are used by persisters
+to INSERT/UPDATE the persistent entity state.</p><p><code>_entityUpdates</code>
+If the entity is already fully MANAGED (has been fetched from the database before)
+and any changes to its properties are detected, then a reference to the entity is stored
+there to mark it for an update.</p><p><code>_collectionDeletions</code>
+If a PersistentCollection has been de-referenced in a fully MANAGED entity,
+then this collection is marked for deletion.</p><dl>
+<dt>Parameters:</dt>
+<dd>class - The class descriptor of the entity.</dd>
+<dd>entity - The entity for which to compute the changes.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 508</div>
+<h3 id="computeChangeSets()">computeChangeSets</h3>
+<code class="signature">public  void <strong>computeChangeSets</strong>()</code>
+<div class="details">
+<p>Computes all the changes that have been done to entities and collections
+since the last commit and stores these changes in the _entityChangeSet map
+temporarily for access by the persisters, until the UoW commit is finished.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1149</div>
+<h3 id="containsIdHash()">containsIdHash</h3>
+<code class="signature">public  boolean <strong>containsIdHash</strong>(string idHash, string rootClassName)</code>
+<div class="details">
+<p>INTERNAL:
+Checks whether an identifier hash exists in the identity map.</p><dl>
+<dt>Ignore.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1715</div>
+<h3 id="createEntity()">createEntity</h3>
+<code class="signature">public  object <strong>createEntity</strong>(string className, array data, array hints)</code>
+<div class="details">
+<p>INTERNAL:
+Creates an entity. Used for reconstitution of entities during hydration.</p><dl>
+<dt>Ignore.</dt>
+<dt>Parameters:</dt>
+<dd>className - The name of the entity class.</dd>
+<dd>data - The data for the entity.</dd>
+<dd>hints - Any hints to account for during reconstitution/lookup of the entity.</dd>
+<dt>Returns:</dt>
+<dd>The entity instance.</dd>
+<dt>Internal:</dt>
+<dd>Highly performance-sensitive method.</dd>
+<dt>Todo:</dt>
+<dd>Rename: getOrCreateEntity</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1415</div>
+<h3 id="detach()">detach</h3>
+<code class="signature">public  void <strong>detach</strong>(object entity)</code>
+<div class="details">
+<p>Detaches an entity from the persistence management. It's persistence will
+no longer be managed by Doctrine.</p><dl>
+<dt>Parameters:</dt>
+<dd>entity - The entity to detach.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1098</div>
+<h3 id="getByIdHash()">getByIdHash</h3>
+<code class="signature">public  object <strong>getByIdHash</strong>(string idHash, string rootClassName)</code>
+<div class="details">
+<p>INTERNAL:
+Gets an entity in the identity map by its identifier hash.</p><dl>
+<dt>Ignore.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1993</div>
+<h3 id="getCollectionPersister()">getCollectionPersister</h3>
+<code class="signature">public  <a href="../../doctrine/orm/persisters/abstractcollectionpersister.html">AbstractCollectionPersister</a> <strong>getCollectionPersister</strong>(<a href="../../doctrine/orm/mapping/associationmapping.html">AssociationMapping</a> association)</code>
+<div class="details">
+<p>Gets a collection persister for a collection-valued association.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1639</div>
+<h3 id="getCommitOrderCalculator()">getCommitOrderCalculator</h3>
+<code class="signature">public  Doctrine\ORM\Internal\CommitOrderCalculator <strong>getCommitOrderCalculator</strong>()</code>
+<div class="details">
+<p>Gets the CommitOrderCalculator used by the UnitOfWork to order commits.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 367</div>
+<h3 id="getEntityChangeSet()">getEntityChangeSet</h3>
+<code class="signature">public  array <strong>getEntityChangeSet</strong>(mixed entity)</code>
+<div class="details">
+<p>Gets the changeset for an entity.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1904</div>
+<h3 id="getEntityIdentifier()">getEntityIdentifier</h3>
+<code class="signature">public  array <strong>getEntityIdentifier</strong>(object entity)</code>
+<div class="details">
+<p>Gets the identifier of an entity.
+The returned value is always an array of identifier values. If the entity
+has a composite identifier then the identifier values are in the same
+order as the identifier field names as returned by ClassMetadata#getIdentifierFieldNames().</p><dl>
+<dt>Returns:</dt>
+<dd>The identifier values.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1969</div>
+<h3 id="getEntityPersister()">getEntityPersister</h3>
+<code class="signature">public  Doctrine\ORM\Persister\AbstractEntityPersister <strong>getEntityPersister</strong>(string entityName)</code>
+<div class="details">
+<p>Gets the EntityPersister for an Entity.</p><dl>
+<dt>Parameters:</dt>
+<dd>entityName - The name of the Entity.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1040</div>
+<h3 id="getEntityState()">getEntityState</h3>
+<code class="signature">public  int <strong>getEntityState</strong>(object entity, integer assume)</code>
+<div class="details">
+<p>Gets the state of an entity within the current unit of work.</p><p>NOTE: This method sees entities that are not MANAGED or REMOVED and have a
+populated identifier, whether it is generated or manually assigned, as
+DETACHED. This can be incorrect for manually assigned identifiers.</p><dl>
+<dt>Parameters:</dt>
+<dd></dd>
+<dd>assume - The state to assume if the state is not yet known. This is usually used to avoid costly state lookups, in the worst case with a database lookup.</dd>
+<dt>Returns:</dt>
+<dd>The entity state.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1852</div>
+<h3 id="getIdentityMap()">getIdentityMap</h3>
+<code class="signature">public  array <strong>getIdentityMap</strong>()</code>
+<div class="details">
+<p>Gets the identity map of the UnitOfWork.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1864</div>
+<h3 id="getOriginalEntityData()">getOriginalEntityData</h3>
+<code class="signature">public  array <strong>getOriginalEntityData</strong>(object entity)</code>
+<div class="details">
+<p>Gets the original data of an entity. The original data is the data that was
+present at the time the entity was reconstituted from the database.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2102</div>
+<h3 id="getScheduledCollectionDeletions()">getScheduledCollectionDeletions</h3>
+<code class="signature">public  array <strong>getScheduledCollectionDeletions</strong>()</code>
+<div class="details">
+<p>Get the currently scheduled complete collection deletions</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2112</div>
+<h3 id="getScheduledCollectionUpdates()">getScheduledCollectionUpdates</h3>
+<code class="signature">public  array <strong>getScheduledCollectionUpdates</strong>()</code>
+<div class="details">
+<p>Gets the currently scheduled collection inserts, updates and deletes.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2092</div>
+<h3 id="getScheduledEntityDeletions()">getScheduledEntityDeletions</h3>
+<code class="signature">public  array <strong>getScheduledEntityDeletions</strong>()</code>
+<div class="details">
+<p>Gets the currently scheduled entity deletions in this UnitOfWork.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2072</div>
+<h3 id="getScheduledEntityInsertions()">getScheduledEntityInsertions</h3>
+<code class="signature">public  array <strong>getScheduledEntityInsertions</strong>()</code>
+<div class="details">
+<p>Gets the currently scheduled entity insertions in this UnitOfWork.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2082</div>
+<h3 id="getScheduledEntityUpdates()">getScheduledEntityUpdates</h3>
+<code class="signature">public  array <strong>getScheduledEntityUpdates</strong>()</code>
+<div class="details">
+<p>Gets the currently scheduled entity updates in this UnitOfWork.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1943</div>
+<h3 id="hasPendingInsertions()">hasPendingInsertions</h3>
+<code class="signature">public  boolean <strong>hasPendingInsertions</strong>()</code>
+<div class="details">
+<p>Checks whether the UnitOfWork has any pending insertions.</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE if this UnitOfWork has pending insertions, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1697</div>
+<h3 id="isCollectionScheduledForDeletion()">isCollectionScheduledForDeletion</h3>
+<code class="signature">public  void <strong>isCollectionScheduledForDeletion</strong>(mixed coll)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 990</div>
+<h3 id="isEntityScheduled()">isEntityScheduled</h3>
+<code class="signature">public  boolean <strong>isEntityScheduled</strong>(mixed entity, $entity )</code>
+<div class="details">
+<p>Checks whether an entity is scheduled for insertion, update or deletion.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1125</div>
+<h3 id="isInIdentityMap()">isInIdentityMap</h3>
+<code class="signature">public  boolean <strong>isInIdentityMap</strong>(object entity)</code>
+<div class="details">
+<p>Checks whether an entity is registered in the identity map of this UnitOfWork.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 979</div>
+<h3 id="isScheduledForDelete()">isScheduledForDelete</h3>
+<code class="signature">public  boolean <strong>isScheduledForDelete</strong>(object entity)</code>
+<div class="details">
+<p>Checks whether an entity is registered as removed/deleted with the unit
+of work.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 880</div>
+<h3 id="isScheduledForInsert()">isScheduledForInsert</h3>
+<code class="signature">public  boolean <strong>isScheduledForInsert</strong>(object entity)</code>
+<div class="details">
+<p>Checks whether an entity is scheduled for insertion.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 935</div>
+<h3 id="isScheduledForUpdate()">isScheduledForUpdate</h3>
+<code class="signature">public  boolean <strong>isScheduledForUpdate</strong>(object entity)</code>
+<div class="details">
+<p>Checks whether an entity is registered as dirty in the unit of work.
+Note: Is not very useful currently as dirty entities are only registered
+at commit time.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1297</div>
+<h3 id="merge()">merge</h3>
+<code class="signature">public  object <strong>merge</strong>(object entity)</code>
+<div class="details">
+<p>Merges the state of the given detached entity into this UnitOfWork.</p><dl>
+<dt>Returns:</dt>
+<dd>The managed copy of the entity.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1159</div>
+<h3 id="persist()">persist</h3>
+<code class="signature">public  void <strong>persist</strong>(object entity)</code>
+<div class="details">
+<p>Persists an entity as part of the current unit of work.</p><dl>
+<dt>Parameters:</dt>
+<dd>entity - The entity to persist.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2045</div>
+<h3 id="propertyChanged()">propertyChanged</h3>
+<code class="signature">public  void <strong>propertyChanged</strong>(object entity, string propertyName, mixed oldValue, mixed newValue)</code>
+<div class="details">
+<p>Notifies this UnitOfWork of a property change in an entity.</p><dl>
+<dt>Parameters:</dt>
+<dd>entity - The entity that owns the property.</dd>
+<dd>propertyName - The name of the property that changed.</dd>
+<dd>oldValue - The old value of the property.</dd>
+<dd>newValue - The new value of the property.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 628</div>
+<h3 id="recomputeSingleEntityChangeSet()">recomputeSingleEntityChangeSet</h3>
+<code class="signature">public  void <strong>recomputeSingleEntityChangeSet</strong>(<a href="../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a> class, object entity)</code>
+<div class="details">
+<p>INTERNAL:
+Computes the changeset of an individual entity, independently of the
+computeChangeSets() routine that is used at the beginning of a UnitOfWork#commit().</p><p>The passed entity must be a managed entity. If the entity already has a change set
+because this method is invoked during a commit cycle then the change sets are added.
+whereby changes detected in this method prevail.</p><dl>
+<dt>Ignore.</dt>
+<dt>Parameters:</dt>
+<dd>class - The class descriptor of the entity.</dd>
+<dd>entity - The entity for which to (re)calculate the change set.</dd>
+<dt>Throws:</dt>
+<dd>If the passed entity is not MANAGED.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1459</div>
+<h3 id="refresh()">refresh</h3>
+<code class="signature">public  void <strong>refresh</strong>(object entity)</code>
+<div class="details">
+<p>Refreshes the state of the given entity from the database, overwriting
+any local, unpersisted changes.</p><dl>
+<dt>Parameters:</dt>
+<dd>entity - The entity to refresh.</dd>
+<dt>Throws:</dt>
+<dd>If the entity is not MANAGED.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2015</div>
+<h3 id="registerManaged()">registerManaged</h3>
+<code class="signature">public  void <strong>registerManaged</strong>(object entity, array id, array data)</code>
+<div class="details">
+<p>INTERNAL:
+Registers an entity as managed.</p><dl>
+<dt>Parameters:</dt>
+<dd>entity - The entity.</dd>
+<dd>id - The identifier values.</dd>
+<dd>data - The original entity data.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1241</div>
+<h3 id="remove()">remove</h3>
+<code class="signature">public  void <strong>remove</strong>(object entity)</code>
+<div class="details">
+<p>Deletes an entity as part of the current unit of work.</p><dl>
+<dt>Parameters:</dt>
+<dd>entity - The entity to remove.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1071</div>
+<h3 id="removeFromIdentityMap()">removeFromIdentityMap</h3>
+<code class="signature">public  boolean <strong>removeFromIdentityMap</strong>(object entity)</code>
+<div class="details">
+<p>INTERNAL:
+Removes an entity from the identity map. This effectively detaches the
+entity from the persistence management of Doctrine.</p><dl>
+<dt>Ignore.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1690</div>
+<h3 id="scheduleCollectionDeletion()">scheduleCollectionDeletion</h3>
+<code class="signature">public  void <strong>scheduleCollectionDeletion</strong>(<a href="../../doctrine/orm/persistentcollection.html">PersistentCollection</a> coll)</code>
+<div class="details">
+<p>INTERNAL:
+Schedules a complete collection for removal when this UnitOfWork commits.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 916</div>
+<h3 id="scheduleExtraUpdate()">scheduleExtraUpdate</h3>
+<code class="signature">public  void <strong>scheduleExtraUpdate</strong>(object entity, array changeset)</code>
+<div class="details">
+<p>INTERNAL:
+Schedules an extra update that will be executed immediately after the
+regular entity updates within the currently running commit cycle.</p><p>Extra updates for entities are stored as (entity, changeset) tuples.</p><dl>
+<dt>Ignore.</dt>
+<dt>Parameters:</dt>
+<dd>entity - The entity for which to schedule an extra update.</dd>
+<dd>changeset - The changeset of the entity (what to update).</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 946</div>
+<h3 id="scheduleForDelete()">scheduleForDelete</h3>
+<code class="signature">public  void <strong>scheduleForDelete</strong>(object entity)</code>
+<div class="details">
+<p>INTERNAL:
+Schedules an entity for deletion.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1932</div>
+<h3 id="scheduleForDirtyCheck()">scheduleForDirtyCheck</h3>
+<code class="signature">public  void <strong>scheduleForDirtyCheck</strong>(object entity)</code>
+<div class="details">
+<p>Schedules an entity for dirty-checking at commit-time.</p><dl>
+<dt>Parameters:</dt>
+<dd>entity - The entity to schedule for dirty-checking.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 853</div>
+<h3 id="scheduleForInsert()">scheduleForInsert</h3>
+<code class="signature">public  void <strong>scheduleForInsert</strong>(object entity)</code>
+<div class="details">
+<p>Schedules an entity for insertion into the database.
+If the entity already has an identifier, it will be added to the identity map.</p><dl>
+<dt>Parameters:</dt>
+<dd>entity - The entity to schedule for insertion.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 890</div>
+<h3 id="scheduleForUpdate()">scheduleForUpdate</h3>
+<code class="signature">public  void <strong>scheduleForUpdate</strong>(object entity)</code>
+<div class="details">
+<p>Schedules an entity for being updated.</p><dl>
+<dt>Parameters:</dt>
+<dd>entity - The entity to schedule for being updated.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1679</div>
+<h3 id="scheduleOrphanRemoval()">scheduleOrphanRemoval</h3>
+<code class="signature">public  void <strong>scheduleOrphanRemoval</strong>(object entity)</code>
+<div class="details">
+<p>INTERNAL:
+Schedules an orphaned entity for removal. The remove() operation will be
+invoked on that entity at the beginning of the next commit of this
+UnitOfWork.</p><dl>
+<dt>Ignore.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1876</div>
+<h3 id="setOriginalEntityData()">setOriginalEntityData</h3>
+<code class="signature">public  void <strong>setOriginalEntityData</strong>(mixed entity, mixed data)</code>
+<div class="details">
+<p></p><dl>
+<dt>Ignore.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1890</div>
+<h3 id="setOriginalEntityProperty()">setOriginalEntityProperty</h3>
+<code class="signature">public  void <strong>setOriginalEntityProperty</strong>(string oid, string property, mixed value)</code>
+<div class="details">
+<p>INTERNAL:
+Sets a property value of the original data array of an entity.</p><dl>
+<dt>Ignore.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1954</div>
+<h3 id="size()">size</h3>
+<code class="signature">public  integer <strong>size</strong>()</code>
+<div class="details">
+<p>Calculates the size of the UnitOfWork. The size of the UnitOfWork is the
+number of entities in the identity map.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1918</div>
+<h3 id="tryGetById()">tryGetById</h3>
+<code class="signature">public  mixed <strong>tryGetById</strong>(mixed id, string rootClassName)</code>
+<div class="details">
+<p>Tries to find an entity with the given identifier in the identity map of
+this UnitOfWork.</p><dl>
+<dt>Parameters:</dt>
+<dd>id - The entity identifier to look for.</dd>
+<dd>rootClassName - The name of the root class of the mapped entity hierarchy.</dd>
+<dt>Returns:</dt>
+<dd>Returns the entity with the specified identifier if it exists in this UnitOfWork, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1113</div>
+<h3 id="tryGetByIdHash()">tryGetByIdHash</h3>
+<code class="signature">public  mixed <strong>tryGetByIdHash</strong>(string idHash, string rootClassName)</code>
+<div class="details">
+<p>INTERNAL:
+Tries to get an entity by its identifier hash. If no entity is found for
+the given hash, FALSE is returned.</p><dl>
+<dt>Ignore.</dt>
+<dt>Returns:</dt>
+<dd>The found entity or FALSE.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../doctrine/orm/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../doctrine/orm/package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../index.html" target="_top">Frames</a>
+<a href="../../doctrine/orm/unitofwork.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

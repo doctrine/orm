@@ -1,0 +1,607 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>ResultSetMapping (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/query/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/query/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/query/resultsetmapping.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Query\ResultSetMapping</div>
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 38</div>
+
+<h1>Class ResultSetMapping</h1>
+
+<pre class="tree"><strong>ResultSetMapping</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>ResultSetMapping</strong></p>
+
+<div class="comment" id="overview_description"><p>A ResultSetMapping describes how a result set of an SQL query maps to a Doctrine result.</p><p>IMPORTANT NOTE:
+The properties of this class are only public for fast internal READ access and to (drastically)
+reduce the size of serialized instances for more effective caching due to better (un-)serialization
+performance.</p><p><b>Users should use the public methods.</b></p></div>
+
+<dl>
+<dt>Author:</dt>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Todo:</dt>
+<dd>Think about whether the number of lookup maps can be reduced.</dd>
+</dl>
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#aliasMap">$aliasMap</a></p><p class="description">Maps alias names to class names.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#columnOwnerMap">$columnOwnerMap</a></p><p class="description">Maps column names in the result set to the alias they belong to.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#declaringClasses">$declaringClasses</a></p><p class="description">Map from column names to class names that declare the field the column is mapped to.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#discriminatorColumns">$discriminatorColumns</a></p><p class="description">List of columns in the result set that are used as discriminator columns.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#fieldMappings">$fieldMappings</a></p><p class="description">Maps column names in the result set to field names for each class.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#indexByMap">$indexByMap</a></p><p class="description">Maps alias names to field names that should be used for indexing.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isMixed">$isMixed</a></p><p class="description">Whether the result is mixed (contains scalar values together with field values).</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#metaMappings">$metaMappings</a></p><p class="description">Maps column names of meta columns (foreign keys, discriminator columns, ...) to field names.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#parentAliasMap">$parentAliasMap</a></p><p class="description">Maps alias names to parent alias names.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#relationMap">$relationMap</a></p><p class="description">Maps alias names to related association field names.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#scalarMappings">$scalarMappings</a></p><p class="description">Maps column names in the result set to the alias/field name to use in the mapped result.</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#addEntityResult()">addEntityResult</a>(string class, string alias)</p><p class="description">Adds an entity result to this ResultSetMapping.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#addFieldResult()">addFieldResult</a>(string alias, string columnName, string fieldName, string declaringClass)</p><p class="description">Adds a field to the result that belongs to an entity or joined entity.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#addIndexBy()">addIndexBy</a>(string alias, string fieldName)</p><p class="description">Sets a field to use for indexing an entity result or joined entity result.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#addJoinedEntityResult()">addJoinedEntityResult</a>(string class, string alias, string parentAlias, object relation)</p><p class="description">Adds a joined entity result.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#addMetaResult()">addMetaResult</a>(mixed alias, mixed columnName, mixed fieldName, $fieldName )</p><p class="description">Adds a meta column (foreign key or discriminator column) to the result set.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#addScalarResult()">addScalarResult</a>(string columnName, string alias)</p><p class="description">Adds a scalar result mapping.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getAliasMap()">getAliasMap</a>()</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getClassName()">getClassName</a>(string alias)</p><p class="description">Gets the name of the class of an entity result or joined entity result,
+identified by the given unique alias.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getDeclaringClass()">getDeclaringClass</a>(string columnName)</p><p class="description">Gets the name of the class that owns a field mapping for the specified column.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getEntityAlias()">getEntityAlias</a>(string columnName)</p><p class="description">Gets the alias of the class that owns a field mapping for the specified column.</p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#getEntityResultCount()">getEntityResultCount</a>()</p><p class="description">Gets the number of different entities that appear in the mapped result.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getFieldName()">getFieldName</a>(string columnName)</p><p class="description">Gets the field name for a column name.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getParentAlias()">getParentAlias</a>(string alias)</p><p class="description">Gets the parent alias of the given alias.</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/orm/mapping/associationmapping.html">AssociationMapping</a></td>
+<td class="description"><p class="name"><a href="#getRelation()">getRelation</a>(string alias)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getScalarAlias()">getScalarAlias</a>(string columnName)</p><p class="description">Gets the field alias for a column that is mapped as a scalar value.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#hasIndexBy()">hasIndexBy</a>(string alias)</p><p class="description">Checks whether an entity result or joined entity result with a given alias has
+a field set for indexing.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#hasParentAlias()">hasParentAlias</a>(string alias)</p><p class="description">Checks whether the given alias has a parent alias.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isFieldResult()">isFieldResult</a>(string columnName)</p><p class="description">Checks whether the column with the given name is mapped as a field result
+as part of an entity result or joined entity result.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isMixedResult()">isMixedResult</a>()</p><p class="description">Checks whether this ResultSetMapping defines a mixed result.
+</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isRelation()">isRelation</a>(string alias)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isScalarResult()">isScalarResult</a>(mixed columnName, string columName)</p><p class="description">Checks whether a column with a given name is mapped as a scalar result.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setDiscriminatorColumn()">setDiscriminatorColumn</a>(string alias, string discrColumn)</p><p class="description">Sets a discriminator column for an entity result or joined entity result.
+</p></td>
+</tr>
+</table>
+
+<h2 id="detail_field">Field Detail</h2>
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 53</div>
+<h3 id="aliasMap">aliasMap</h3>
+<code class="signature">public  array <strong>$aliasMap</strong> = array()</code>
+<div class="details">
+<p>Maps alias names to class names.</p><dl>
+<dt>Ignore.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 95</div>
+<h3 id="columnOwnerMap">columnOwnerMap</h3>
+<code class="signature">public  array <strong>$columnOwnerMap</strong> = array()</code>
+<div class="details">
+<p>Maps column names in the result set to the alias they belong to.</p><dl>
+<dt>Ignore.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 116</div>
+<h3 id="declaringClasses">declaringClasses</h3>
+<code class="signature">public  array <strong>$declaringClasses</strong> = array()</code>
+<div class="details">
+<p>Map from column names to class names that declare the field the column is mapped to.</p><dl>
+<dt>Ignore.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 102</div>
+<h3 id="discriminatorColumns">discriminatorColumns</h3>
+<code class="signature">public  array <strong>$discriminatorColumns</strong> = array()</code>
+<div class="details">
+<p>List of columns in the result set that are used as discriminator columns.</p><dl>
+<dt>Ignore.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 74</div>
+<h3 id="fieldMappings">fieldMappings</h3>
+<code class="signature">public  array <strong>$fieldMappings</strong> = array()</code>
+<div class="details">
+<p>Maps column names in the result set to field names for each class.</p><dl>
+<dt>Ignore.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 109</div>
+<h3 id="indexByMap">indexByMap</h3>
+<code class="signature">public  array <strong>$indexByMap</strong> = array()</code>
+<div class="details">
+<p>Maps alias names to field names that should be used for indexing.</p><dl>
+<dt>Ignore.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 46</div>
+<h3 id="isMixed">isMixed</h3>
+<code class="signature">public  boolean <strong>$isMixed</strong> = false</code>
+<div class="details">
+<p>Whether the result is mixed (contains scalar values together with field values).</p><dl>
+<dt>Ignore.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 88</div>
+<h3 id="metaMappings">metaMappings</h3>
+<code class="signature">public  array <strong>$metaMappings</strong> = array()</code>
+<div class="details">
+<p>Maps column names of meta columns (foreign keys, discriminator columns, ...) to field names.</p><dl>
+<dt>Ignore.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 67</div>
+<h3 id="parentAliasMap">parentAliasMap</h3>
+<code class="signature">public  array <strong>$parentAliasMap</strong> = array()</code>
+<div class="details">
+<p>Maps alias names to parent alias names.</p><dl>
+<dt>Ignore.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 60</div>
+<h3 id="relationMap">relationMap</h3>
+<code class="signature">public  array <strong>$relationMap</strong> = array()</code>
+<div class="details">
+<p>Maps alias names to related association field names.</p><dl>
+<dt>Ignore.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 81</div>
+<h3 id="scalarMappings">scalarMappings</h3>
+<code class="signature">public  array <strong>$scalarMappings</strong> = array()</code>
+<div class="details">
+<p>Maps column names in the result set to the alias/field name to use in the mapped result.</p><dl>
+<dt>Ignore.</dt>
+</dl>
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 126</div>
+<h3 id="addEntityResult()">addEntityResult</h3>
+<code class="signature">public  void <strong>addEntityResult</strong>(string class, string alias)</code>
+<div class="details">
+<p>Adds an entity result to this ResultSetMapping.</p><dl>
+<dt>Parameters:</dt>
+<dd>class - The class name of the entity.</dd>
+<dd>alias - The alias for the class. The alias must be unique among all entity results or joined entity results within this ResultSetMapping.</dd>
+<dt>Todo:</dt>
+<dd>Rename: addRootEntity</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 197</div>
+<h3 id="addFieldResult()">addFieldResult</h3>
+<code class="signature">public  void <strong>addFieldResult</strong>(string alias, string columnName, string fieldName, string declaringClass)</code>
+<div class="details">
+<p>Adds a field to the result that belongs to an entity or joined entity.</p><dl>
+<dt>Parameters:</dt>
+<dd>alias - The alias of the root entity or joined entity to which the field belongs.</dd>
+<dd>columnName - The name of the column in the SQL result set.</dd>
+<dd>fieldName - The name of the field on the declaring class.</dd>
+<dd>declaringClass - The name of the class that declares/owns the specified field. When $alias refers to a superclass in a mapped hierarchy but the field $fieldName is defined on a subclass, specify that here. If not specified, the field is assumed to belong to the class designated by $alias.</dd>
+<dt>Todo:</dt>
+<dd>Rename: addField</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 153</div>
+<h3 id="addIndexBy()">addIndexBy</h3>
+<code class="signature">public  void <strong>addIndexBy</strong>(string alias, string fieldName)</code>
+<div class="details">
+<p>Sets a field to use for indexing an entity result or joined entity result.</p><dl>
+<dt>Parameters:</dt>
+<dd>alias - The alias of an entity result or joined entity result.</dd>
+<dd>fieldName - The name of the field to use for indexing.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 219</div>
+<h3 id="addJoinedEntityResult()">addJoinedEntityResult</h3>
+<code class="signature">public  void <strong>addJoinedEntityResult</strong>(string class, string alias, string parentAlias, object relation)</code>
+<div class="details">
+<p>Adds a joined entity result.</p><dl>
+<dt>Parameters:</dt>
+<dd>class - The class name of the joined entity.</dd>
+<dd>alias - The unique alias to use for the joined entity.</dd>
+<dd>parentAlias - The alias of the entity result that is the parent of this joined result.</dd>
+<dd>relation - The association field that connects the parent entity result with the joined entity result.</dd>
+<dt>Todo:</dt>
+<dd>Rename: addJoinedEntity</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 390</div>
+<h3 id="addMetaResult()">addMetaResult</h3>
+<code class="signature">public  void <strong>addMetaResult</strong>(mixed alias, mixed columnName, mixed fieldName, $fieldName )</code>
+<div class="details">
+<p>Adds a meta column (foreign key or discriminator column) to the result set.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 233</div>
+<h3 id="addScalarResult()">addScalarResult</h3>
+<code class="signature">public  void <strong>addScalarResult</strong>(string columnName, string alias)</code>
+<div class="details">
+<p>Adds a scalar result mapping.</p><dl>
+<dt>Parameters:</dt>
+<dd>columnName - The name of the column in the SQL result set.</dd>
+<dd>alias - The result alias with which the scalar result should be placed in the result structure.</dd>
+<dt>Todo:</dt>
+<dd>Rename: addScalar</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 355</div>
+<h3 id="getAliasMap()">getAliasMap</h3>
+<code class="signature">public  array <strong>getAliasMap</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 260</div>
+<h3 id="getClassName()">getClassName</h3>
+<code class="signature">public  string <strong>getClassName</strong>(string alias)</code>
+<div class="details">
+<p>Gets the name of the class of an entity result or joined entity result,
+identified by the given unique alias.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 282</div>
+<h3 id="getDeclaringClass()">getDeclaringClass</h3>
+<code class="signature">public  string <strong>getDeclaringClass</strong>(string columnName)</code>
+<div class="details">
+<p>Gets the name of the class that owns a field mapping for the specified column.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 313</div>
+<h3 id="getEntityAlias()">getEntityAlias</h3>
+<code class="signature">public  string <strong>getEntityAlias</strong>(string columnName)</code>
+<div class="details">
+<p>Gets the alias of the class that owns a field mapping for the specified column.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 365</div>
+<h3 id="getEntityResultCount()">getEntityResultCount</h3>
+<code class="signature">public  integer <strong>getEntityResultCount</strong>()</code>
+<div class="details">
+<p>Gets the number of different entities that appear in the mapped result.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 346</div>
+<h3 id="getFieldName()">getFieldName</h3>
+<code class="signature">public  string <strong>getFieldName</strong>(string columnName)</code>
+<div class="details">
+<p>Gets the field name for a column name.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 324</div>
+<h3 id="getParentAlias()">getParentAlias</h3>
+<code class="signature">public  string <strong>getParentAlias</strong>(string alias)</code>
+<div class="details">
+<p>Gets the parent alias of the given alias.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 292</div>
+<h3 id="getRelation()">getRelation</h3>
+<code class="signature">public  <a href="../../../doctrine/orm/mapping/associationmapping.html">AssociationMapping</a> <strong>getRelation</strong>(string alias)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 271</div>
+<h3 id="getScalarAlias()">getScalarAlias</h3>
+<code class="signature">public  string <strong>getScalarAlias</strong>(string columnName)</code>
+<div class="details">
+<p>Gets the field alias for a column that is mapped as a scalar value.</p><dl>
+<dt>Parameters:</dt>
+<dd>columnName - The name of the column in the SQL result set.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 166</div>
+<h3 id="hasIndexBy()">hasIndexBy</h3>
+<code class="signature">public  boolean <strong>hasIndexBy</strong>(string alias)</code>
+<div class="details">
+<p>Checks whether an entity result or joined entity result with a given alias has
+a field set for indexing.</p><dl>
+<dt>Todo:</dt>
+<dd>Rename: isIndexed($alias)</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 335</div>
+<h3 id="hasParentAlias()">hasParentAlias</h3>
+<code class="signature">public  boolean <strong>hasParentAlias</strong>(string alias)</code>
+<div class="details">
+<p>Checks whether the given alias has a parent alias.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 179</div>
+<h3 id="isFieldResult()">isFieldResult</h3>
+<code class="signature">public  boolean <strong>isFieldResult</strong>(string columnName)</code>
+<div class="details">
+<p>Checks whether the column with the given name is mapped as a field result
+as part of an entity result or joined entity result.</p><dl>
+<dt>Parameters:</dt>
+<dd>columnName - The name of the column in the SQL result set.</dd>
+<dt>Todo:</dt>
+<dd>Rename: isField</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 378</div>
+<h3 id="isMixedResult()">isMixedResult</h3>
+<code class="signature">public  boolean <strong>isMixedResult</strong>()</code>
+<div class="details">
+<p>Checks whether this ResultSetMapping defines a mixed result.
+Mixed results can only occur in object and array (graph) hydration. In such a
+case a mixed result means that scalar values are mixed with objects/array in
+the result.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 302</div>
+<h3 id="isRelation()">isRelation</h3>
+<code class="signature">public  boolean <strong>isRelation</strong>(string alias)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 248</div>
+<h3 id="isScalarResult()">isScalarResult</h3>
+<code class="signature">public  boolean <strong>isScalarResult</strong>(mixed columnName, string columName)</code>
+<div class="details">
+<p>Checks whether a column with a given name is mapped as a scalar result.</p><dl>
+<dt>Parameters:</dt>
+<dd>columName - The name of the column in the SQL result set.</dd>
+<dt>Todo:</dt>
+<dd>Rename: isScalar</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/ResultSetMapping.php at line 141</div>
+<h3 id="setDiscriminatorColumn()">setDiscriminatorColumn</h3>
+<code class="signature">public  void <strong>setDiscriminatorColumn</strong>(string alias, string discrColumn)</code>
+<div class="details">
+<p>Sets a discriminator column for an entity result or joined entity result.
+The discriminator column will be used to determine the concrete class name to
+instantiate.</p><dl>
+<dt>Parameters:</dt>
+<dd>alias - The alias of the entity result or joined entity result the discriminator column should be used for.</dd>
+<dd>discrColumn - The name of the discriminator column in the SQL result set.</dd>
+<dt>Todo:</dt>
+<dd>Rename: addDiscriminatorColumn</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/query/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/query/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/query/resultsetmapping.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

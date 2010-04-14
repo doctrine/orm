@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../../stylesheet.css">
+<link rel="start" href="../../../../overview-summary.html">
+
+<title>Driver (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../../doctrine/orm/mapping/driver/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../../doctrine/orm/mapping/driver/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../../index.html" target="_top">Frames</a>
+<a href="../../../../doctrine/orm/mapping/driver/driver.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Mapping\Driver\Driver</div>
+<div class="location">/Doctrine/ORM/Mapping/Driver/Driver.php at line 36</div>
+
+<h1>Interface Driver</h1>
+
+<pre class="tree"><strong>Driver</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  interface <strong>Driver</strong></p>
+
+<div class="comment" id="overview_description"><p>Contract for metadata drivers.</p></div>
+
+<dl>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.com</code></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision: 1393 $</dd>
+<dt>Author:</dt>
+<dd>Jonathan H. Wage <jonwage@gmail.com></dd>
+<dt>Todo:</dt>
+<dd>Rename: MetadataDriver</dd>
+</dl>
+<hr>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getAllClassNames()">getAllClassNames</a>()</p><p class="description">Gets the names of all mapped classes known to this driver.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isTransient()">isTransient</a>(string className)</p><p class="description">Whether the class with the specified name should have its metadata loaded.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#loadMetadataForClass()">loadMetadataForClass</a>(string className, <a href="../../../../doctrine/orm/mapping/classmetadatainfo.html">ClassMetadataInfo</a> metadata)</p><p class="description">Loads the metadata for the specified class into the provided container.</p></td>
+</tr>
+</table>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Mapping/Driver/Driver.php at line 51</div>
+<h3 id="getAllClassNames()">getAllClassNames</h3>
+<code class="signature">public  array <strong>getAllClassNames</strong>()</code>
+<div class="details">
+<p>Gets the names of all mapped classes known to this driver.</p><dl>
+<dt>Returns:</dt>
+<dd>The names of all mapped classes known to this driver.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/Driver/Driver.php at line 61</div>
+<h3 id="isTransient()">isTransient</h3>
+<code class="signature">public  boolean <strong>isTransient</strong>(string className)</code>
+<div class="details">
+<p>Whether the class with the specified name should have its metadata loaded.
+This is only the case if it is either mapped as an Entity or a
+MappedSuperclass.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/Driver/Driver.php at line 44</div>
+<h3 id="loadMetadataForClass()">loadMetadataForClass</h3>
+<code class="signature">public  void <strong>loadMetadataForClass</strong>(string className, <a href="../../../../doctrine/orm/mapping/classmetadatainfo.html">ClassMetadataInfo</a> metadata)</code>
+<div class="details">
+<p>Loads the metadata for the specified class into the provided container.</p></div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../../doctrine/orm/mapping/driver/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../../doctrine/orm/mapping/driver/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../../index.html" target="_top">Frames</a>
+<a href="../../../../doctrine/orm/mapping/driver/driver.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

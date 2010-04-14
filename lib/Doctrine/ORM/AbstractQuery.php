@@ -410,11 +410,6 @@ abstract class AbstractQuery
                 throw new NonUniqueResultException;
             }
             return array_shift($result);
-        } else if (is_object($result)) {
-            if (count($result) > 1) {
-                throw new NonUniqueResultException;
-            }
-            return $result->first();
         }
 
         return $result;
