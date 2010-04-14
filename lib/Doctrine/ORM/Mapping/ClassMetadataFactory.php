@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -30,10 +28,7 @@ use Doctrine\ORM\ORMException,
  * metadata mapping informations of a class which describes how a class should be mapped
  * to a relational database.
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision$
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -190,7 +185,25 @@ class ClassMetadataFactory
     {
         $this->_loadedMetadata[$className] = $class;
     }
-    
+
+    /**
+     * Get array of parent classes for the given entity class
+     *
+     * @param string $name
+     * @return array $parentClasses
+     */
+    protected function _getParentClasses($name)
+    {
+        // Collect parent classes, ignoring transient (not-mapped) classes.
+        $parentClasses = array();
+        foreach (array_reverse(class_parents($name)) as $parentClass) {
+            if ( ! $this->_driver->isTransient($parentClass)) {
+                $parentClasses[] = $parentClass;
+            }
+        }
+        return $parentClasses;
+    }
+
     /**
      * Loads the metadata of the class in question and all it's ancestors whose metadata
      * is still not loaded.
@@ -206,13 +219,7 @@ class ClassMetadataFactory
 
         $loaded = array();
 
-        // Collect parent classes, ignoring transient (not-mapped) classes.
-        $parentClasses = array();
-        foreach (array_reverse(class_parents($name)) as $parentClass) {
-            if ( ! $this->_driver->isTransient($parentClass)) {
-                $parentClasses[] = $parentClass;
-            }
-        }
+        $parentClasses = $this->_getParentClasses($name);
         $parentClasses[] = $name;
 
         // Move down the hierarchy of parent classes, starting from the topmost class
@@ -353,7 +360,7 @@ class ClassMetadataFactory
      *
      * @param Doctrine\ORM\Mapping\ClassMetadata $class
      */
-    private function _completeIdGeneratorMapping(ClassMetadata $class)
+    private function _completeIdGeneratorMapping(ClassMetadataInfo $class)
     {
         $idGenType = $class->generatorType;
         if ($idGenType == ClassMetadata::GENERATOR_TYPE_AUTO) {

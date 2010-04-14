@@ -25,7 +25,9 @@ use Symfony\Components\Console\Input\InputArgument,
     Symfony\Components\Console\Input\InputOption,
     Symfony\Components\Console,
     Doctrine\ORM\Tools\Console\MetadataFilter,
-    Doctrine\ORM\Tools\Export\ClassMetadataExporter;
+    Doctrine\ORM\Tools\Export\ClassMetadataExporter,
+    Doctrine\ORM\Tools\EntityGenerator,
+    Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 
 /**
  * Command to convert your mapping information between the various formats.
@@ -94,7 +96,8 @@ EOT
             );
         }
 
-        $metadatas = $em->getMetadataFactory()->getAllMetadata();
+        $cmf = new DisconnectedClassMetadataFactory($em);
+        $metadatas = $cmf->getAllMetadata();
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
 
         // Process destination directory
