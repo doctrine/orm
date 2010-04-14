@@ -317,31 +317,33 @@ class ClassMetadataFactory
             if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
-            $subClass->addFieldMapping($mapping);
+            if ( ! isset($mapping['declared'])) {
+                $mapping['declared'] = $parentClass->name;
+            }
+            $subClass->addInheritedFieldMapping($mapping);
         }
         foreach ($parentClass->reflFields as $name => $field) {
             $subClass->reflFields[$name] = $field;
         }
     }
-    
+
     /**
-     * Adds inherited associations to the subclass mapping.
+     * Adds inherited association mappings to the subclass mapping.
      *
      * @param Doctrine\ORM\Mapping\ClassMetadata $subClass
      * @param Doctrine\ORM\Mapping\ClassMetadata $parentClass
      */
     private function _addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
-        foreach ($parentClass->associationMappings as $mapping) {
-            if (isset($parentClass->inheritedAssociationFields[$mapping->sourceFieldName])) {
-                // parent class also inherited that one
-                $subClass->addAssociationMapping($mapping, $parentClass->inheritedAssociationFields[$mapping->sourceFieldName]);
-            } else if ( ! $parentClass->isMappedSuperclass) {
-                // parent class defined that one
-                $subClass->addAssociationMapping($mapping, $parentClass->name);
-            } else {
-                $subClass->addAssociationMapping($mapping);
+        foreach ($parentClass->associationMappings as $field => $mapping) {
+            $subclassMapping = clone $mapping;
+            if ( ! isset($mapping->inherited) && ! $parentClass->isMappedSuperclass) {
+                $subclassMapping->inherited = $parentClass->name;
             }
+            if ( ! isset($mapping->declared)) {
+                $subclassMapping->declared = $parentClass->name;
+            }
+            $subClass->addInheritedAssociationMapping($subclassMapping);
         }
     }
 

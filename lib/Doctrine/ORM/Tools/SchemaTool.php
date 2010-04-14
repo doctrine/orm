@@ -347,7 +347,7 @@ class SchemaTool
     private function _gatherRelationsSql($class, $table, $schema)
     {
         foreach ($class->associationMappings as $fieldName => $mapping) {
-            if (isset($class->inheritedAssociationFields[$fieldName])) {
+            if ($mapping->inherited) {
                 continue;
             }
 

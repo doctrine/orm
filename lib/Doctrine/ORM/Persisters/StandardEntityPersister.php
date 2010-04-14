@@ -695,6 +695,7 @@ class StandardEntityPersister
             $tableAlias = isset($this->_class->fieldMappings[$fieldName]['inherited']) ?
                     $this->_getSQLTableAlias($this->_em->getClassMetadata($this->_class->fieldMappings[$fieldName]['inherited']))
                     : $baseTableAlias;
+
             $columnName = $this->_class->getQuotedColumnName($fieldName, $this->_platform);
             if ($orderBySql != '') {
                 $orderBySql .= ', ';

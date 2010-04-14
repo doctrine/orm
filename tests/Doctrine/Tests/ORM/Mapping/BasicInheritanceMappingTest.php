@@ -48,7 +48,6 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFalse(isset($class->fieldMappings['mapped2']['inherited']));
         $this->assertFalse(isset($class->fieldMappings['transient']));
         
-        $this->assertTrue(empty($class->inheritedAssociationFields));
         $this->assertTrue(isset($class->associationMappings['mappedRelated1']));
     }
 
@@ -64,6 +63,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertTrue(isset($class2->reflFields['mapped1']));
         $this->assertTrue(isset($class2->reflFields['mapped2']));
+        $this->assertTrue(isset($class2->reflFields['mappedRelated1']));
     }
 }
 
