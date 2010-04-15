@@ -19,7 +19,7 @@
 
 namespace Doctrine\DBAL;
 
-use Doctrine\DBAL\Logging\SqlLogger;
+use Doctrine\DBAL\Logging\SQLLogger;
 
 /**
  * Configuration container for the Doctrine DBAL.
@@ -49,7 +49,7 @@ class Configuration
      *
      * @param SQLLogger $logger
      */
-    public function setSQLLogger(SqlLogger $logger)
+    public function setSQLLogger(SQLLogger $logger)
     {
         $this->_attributes['sqlLogger'] = $logger;
     }
