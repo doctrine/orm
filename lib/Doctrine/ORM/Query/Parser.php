@@ -557,40 +557,44 @@ class Parser
     {
         foreach ($this->_deferredPathExpressions as $deferredItem) {
             $pathExpression = $deferredItem['expression'];
-            $parts = $pathExpression->parts;
-            $numParts = count($parts);
 
             $qComp = $this->_queryComponents[$pathExpression->identificationVariable];
+            $numParts = count($pathExpression->parts);
 
+            if ($numParts == 0) {
+                $pathExpression->parts = array($qComp['metadata']->identifier[0]);
+                $numParts++;
+            }
+            
+            $parts = $pathExpression->parts;
             $aliasIdentificationVariable = $pathExpression->identificationVariable;
             $parentField = $pathExpression->identificationVariable;
             $class = $qComp['metadata'];
-            $fieldType = ($pathExpression->expectedType == AST\PathExpression::TYPE_IDENTIFICATION_VARIABLE)
-                ? AST\PathExpression::TYPE_IDENTIFICATION_VARIABLE : null;
+            $fieldType = null;
             $curIndex = 0;
 
             foreach ($parts as $field) {
                 // Check if it is not in a state field
                 if ($fieldType & AST\PathExpression::TYPE_STATE_FIELD) {
                     $this->semanticalError(
-                    'Cannot navigate through state field named ' . $field . ' on ' . $parentField,
-                    $deferredItem['token']
+                        'Cannot navigate through state field named ' . $field . ' on ' . $parentField,
+                        $deferredItem['token']
                     );
                 }
 
                 // Check if it is not a collection field
                 if ($fieldType & AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION) {
                     $this->semanticalError(
-                    'Cannot navigate through collection field named ' . $field . ' on ' . $parentField,
-                    $deferredItem['token']
+                        'Cannot navigate through collection field named ' . $field . ' on ' . $parentField,
+                        $deferredItem['token']
                     );
                 }
 
                 // Check if field or association exists
                 if ( ! isset($class->associationMappings[$field]) && ! isset($class->fieldMappings[$field])) {
                     $this->semanticalError(
-                    'Class ' . $class->name . ' has no field or association named ' . $field,
-                    $deferredItem['token']
+                        'Class ' . $class->name . ' has no field or association named ' . $field,
+                        $deferredItem['token']
                     );
                 }
 
@@ -649,11 +653,6 @@ class Parser
             if ( ! ($expectedType & $fieldType)) {
                 // We need to recognize which was expected type(s)
                 $expectedStringTypes = array();
-
-                // Validate state field type
-                if ($expectedType & AST\PathExpression::TYPE_IDENTIFICATION_VARIABLE) {
-                    $expectedStringTypes[] = 'IdentificationVariable';
-                }
 
                 // Validate state field type
                 if ($expectedType & AST\PathExpression::TYPE_STATE_FIELD) {
@@ -2174,7 +2173,7 @@ class Parser
                     return $this->SingleValuedPathExpression();
                 }
 
-                return $this->PathExpression(AST\PathExpression::TYPE_IDENTIFICATION_VARIABLE);
+                return $this->SimpleStateFieldPathExpression();
 
             case Lexer::T_INPUT_PARAMETER:
                 return $this->InputParameter();
