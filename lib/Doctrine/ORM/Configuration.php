@@ -50,7 +50,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'proxyDir' => null,
             'useCExtension' => false,
             'autoGenerateProxyClasses' => true,
-            'proxyNamespace' => null
+            'proxyNamespace' => null,
+            'entityNamespaces' => array(),
+            'namedNativeQueries' => array(),
+            'namedQueries' => array(),
+            // Custom DQL Functions
+            'customDatetimeFunctions' => array(),
+            'customNumericFunctions' => array(),
+            'customStringFunctions' => array()
         ));
     }
 
@@ -366,8 +373,19 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getCustomStringFunction($name)
     {
+        $name = strtolower($name);
+
         return isset($this->_attributes['customStringFunctions'][$name]) ?
                 $this->_attributes['customStringFunctions'][$name] : null;
+    }
+
+    /**
+     * Clean custom DQL functions that produces string values.
+     *
+     */
+    public function clearCustomStringFunctions()
+    {
+        $this->_attributes['customStringFunctions'] = array();
     }
 
     /**
@@ -391,8 +409,19 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getCustomNumericFunction($name)
     {
+        $name = strtolower($name);
+
         return isset($this->_attributes['customNumericFunctions'][$name]) ?
                 $this->_attributes['customNumericFunctions'][$name] : null;
+    }
+
+    /**
+     * Clean custom DQL functions that produces numeric values.
+     *
+     */
+    public function clearCustomNumericFunctions()
+    {
+        $this->_attributes['customNumericFunctions'] = array();
     }
 
     /**
@@ -416,7 +445,18 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getCustomDatetimeFunction($name)
     {
+        $name = strtolower($name);
+        
         return isset($this->_attributes['customDatetimeFunctions'][$name]) ?
                 $this->_attributes['customDatetimeFunctions'][$name] : null;
+    }
+
+    /**
+     * Clean custom DQL functions that produces date/time values.
+     * 
+     */
+    public function clearCustomDatetimeFunctions()
+    {
+        $this->_attributes['customDatetimeFunctions'] = array();
     }
 }

@@ -596,4 +596,51 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ?"
         );
     }
+
+    /**
+     * DDC-431
+     */
+    public function testSupportToCustomDQLFunctions()
+    {
+        $config = $this->_em->getConfiguration();
+        $config->addCustomNumericFunction('MYABS', 'Doctrine\Tests\ORM\Query\MyAbsFunction');
+
+        $this->assertSqlGeneration(
+            'SELECT MYABS(p.phonenumber) FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p',
+            'SELECT ABS(c0_.phonenumber) AS sclr0 FROM cms_phonenumbers c0_'
+        );
+
+        $config->clearCustomNumericFunctions();
+    }
+}
+
+
+class MyAbsFunction extends \Doctrine\ORM\Query\AST\Functions\FunctionNode
+{
+    public $simpleArithmeticExpression;
+
+    /**
+     * @override
+     */
+    public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
+    {
+        return 'ABS(' . $sqlWalker->walkSimpleArithmeticExpression(
+            $this->simpleArithmeticExpression
+        ) . ')';
+    }
+
+    /**
+     * @override
+     */
+    public function parse(\Doctrine\ORM\Query\Parser $parser)
+    {
+        $lexer = $parser->getLexer();
+
+        $parser->match(\Doctrine\ORM\Query\Lexer::T_IDENTIFIER);
+        $parser->match(\Doctrine\ORM\Query\Lexer::T_OPEN_PARENTHESIS);
+
+        $this->simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
+        
+        $parser->match(\Doctrine\ORM\Query\Lexer::T_CLOSE_PARENTHESIS);
+    }
 }
