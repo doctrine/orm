@@ -76,6 +76,8 @@ class <className> extends EntityRepository
             mkdir($dir, 0777, true);
         }
 
-        file_put_contents($path, $code);
+        if ( ! file_exists($path)) {
+            file_put_contents($path, $code);
+        }
     }
 }

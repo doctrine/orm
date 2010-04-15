@@ -41,7 +41,8 @@ class ConvertDoctrine1Schema
     private $_legacyTypeMap = array(
         // TODO: This list may need to be updated
         'clob' => 'text',
-        'timestamp' => 'datetime'
+        'timestamp' => 'datetime',
+        'enum' => 'string'
     );
 
     /**
@@ -238,6 +239,7 @@ class ConvertDoctrine1Schema
                 if (isset($relation['refClass'])) {
                     $type = 'many';
                     $foreignType = 'many';
+                    $joinColumns = array();
                 } else {
                     $type = isset($relation['type']) ? $relation['type'] : 'one';
                     $foreignType = isset($relation['foreignType']) ? $relation['foreignType'] : 'many';
