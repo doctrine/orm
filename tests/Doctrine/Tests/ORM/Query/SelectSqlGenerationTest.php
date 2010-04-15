@@ -610,7 +610,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT ABS(c0_.phonenumber) AS sclr0 FROM cms_phonenumbers c0_'
         );
 
-        $config->clearCustomNumericFunctions();
+        $config->setCustomNumericFunctions(array());
     }
 }
 
