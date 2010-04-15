@@ -585,4 +585,15 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.name AS name0, (SELECT COUNT(c1_.phonenumber) AS dctrn__1 FROM cms_phonenumbers c1_ WHERE c1_.phonenumber = 1234) AS sclr1 FROM cms_users c0_ WHERE c0_.name = 'jon'"
         );
     }
+
+    /**
+     * DDC-430
+     */
+    public function testSupportSelectWithMoreThan10InputParameters()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1 OR u.id = ?2 OR u.id = ?3 OR u.id = ?4 OR u.id = ?5 OR u.id = ?6 OR u.id = ?7 OR u.id = ?8 OR u.id = ?9 OR u.id = ?10 OR u.id = ?11",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ?"
+        );
+    }
 }
