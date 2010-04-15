@@ -36,7 +36,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  */
 abstract class AbstractExporter
 {
-    protected $_metadatas = array();
+    protected $_metadata = array();
     protected $_outputDir;
     protected $_extension;
 
@@ -57,12 +57,12 @@ abstract class AbstractExporter
     /**
      * Set the array of ClassMetadataInfo instances to export
      *
-     * @param array $metadatas 
+     * @param array $metadata 
      * @return void
      */
-    public function setMetadatas(array $metadatas)
+    public function setMetadata(array $metadata)
     {
-        $this->_metadatas = $metadatas;
+        $this->_metadata = $metadata;
     }
 
     /**
@@ -79,7 +79,7 @@ abstract class AbstractExporter
      * Set the directory to output the mapping files to
      *
      *     [php]
-     *     $exporter = new YamlExporter($metadatas);
+     *     $exporter = new YamlExporter($metadata);
      *     $exporter->setOutputDir(__DIR__ . '/yaml');
      *     $exporter->export();
      *
@@ -103,7 +103,7 @@ abstract class AbstractExporter
             mkdir($this->_outputDir, 0777, true);
         }
 
-        foreach ($this->_metadatas as $metadata) {
+        foreach ($this->_metadata as $metadata) {
             $output = $this->exportClassMetadata($metadata);
             $path = $this->_generateOutputPath($metadata);
             $dir = dirname($path);
@@ -129,7 +129,7 @@ abstract class AbstractExporter
      * Set the directory to output the mapping files to
      *
      *     [php]
-     *     $exporter = new YamlExporter($metadatas, __DIR__ . '/yaml');
+     *     $exporter = new YamlExporter($metadata, __DIR__ . '/yaml');
      *     $exporter->setExtension('.yml');
      *     $exporter->export();
      *

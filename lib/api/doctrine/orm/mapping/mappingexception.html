@@ -1,0 +1,419 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>MappingException (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/mapping/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/mapping/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/mapping/mappingexception.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Mapping\MappingException</div>
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 29</div>
+
+<h1>Class MappingException</h1>
+
+<pre class="tree">Class:MappingException - Superclass: Doctrine
+Doctrine<br>&lfloor;&nbsp;<strong>MappingException</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>MappingException</strong><br>extends Doctrine
+
+</p>
+
+<div class="comment" id="overview_description"><p>A MappingException indicates that something is wrong with the mapping setup.</p></div>
+
+<dl>
+<dt>Since:</dt>
+<dd>2.0</dd>
+</dl>
+<hr>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#classIsNotAValidEntityOrMappedSuperClass()">classIsNotAValidEntityOrMappedSuperClass</a>(mixed className)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#duplicateAssociationMapping()">duplicateAssociationMapping</a>(mixed entity, mixed fieldName)</p></td>
+</tr>
+<tr>
+<td class="type">static  self</td>
+<td class="description"><p class="name"><a href="#duplicateColumnName()">duplicateColumnName</a>(string className, string columnName)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#duplicateFieldMapping()">duplicateFieldMapping</a>(string entity, string fieldName)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#fileMappingDriversRequireConfiguredDirectoryPath()">fileMappingDriversRequireConfiguredDirectoryPath</a>()</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#generatorNotAllowedWithCompositeId()">generatorNotAllowedWithCompositeId</a>()</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#identifierRequired()">identifierRequired</a>(mixed entityName)</p></td>
+</tr>
+<tr>
+<td class="type">static  self</td>
+<td class="description"><p class="name"><a href="#invalidClassInDiscriminatorMap()">invalidClassInDiscriminatorMap</a>(string className, string owningClass)</p><p class="description">Throws an exception that indicates that a class used in a discriminator map does not exist.
+</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#invalidInheritanceType()">invalidInheritanceType</a>(mixed entityName, mixed type)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#invalidMapping()">invalidMapping</a>(string fieldName)</p><p class="description">Generic exception for invalid mappings.</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#joinColumnMustPointToMappedField()">joinColumnMustPointToMappedField</a>(mixed className, mixed joinColumn)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#joinTableRequired()">joinTableRequired</a>(mixed fieldName)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#mappingFileNotFound()">mappingFileNotFound</a>(mixed entityName, mixed fileName)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#mappingNotFound()">mappingNotFound</a>(mixed fieldName)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#missingFieldName()">missingFieldName</a>()</p></td>
+</tr>
+<tr>
+<td class="type">static  <a href="../../../doctrine/orm/mapping/mappingexception.html">MappingException</a></td>
+<td class="description"><p class="name"><a href="#missingRequiredOption()">missingRequiredOption</a>(string field, string expectedOption, string hint)</p><p class="description">Called if a required option was not found but is required</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#missingSourceEntity()">missingSourceEntity</a>(mixed fieldName)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#missingTargetEntity()">missingTargetEntity</a>(mixed fieldName)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#oneToManyRequiresMappedBy()">oneToManyRequiresMappedBy</a>(mixed fieldName)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#pathRequired()">pathRequired</a>()</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#propertyTypeIsRequired()">propertyTypeIsRequired</a>(mixed className, mixed propertyName)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#reflectionFailure()">reflectionFailure</a>(string entity, \ReflectionException previousException)</p><p class="description">Exception for reflection exceptions - adds the entity name,
+because there might be long classnames that will be shortened
+within the stacktrace</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#singleIdNotAllowedOnCompositePrimaryKey()">singleIdNotAllowedOnCompositePrimaryKey</a>(mixed entity)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#tableIdGeneratorNotImplemented()">tableIdGeneratorNotImplemented</a>(mixed className)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#unsupportedOptimisticLockingType()">unsupportedOptimisticLockingType</a>(mixed entity, mixed fieldName, mixed unsupportedType)</p></td>
+</tr>
+</table>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 137</div>
+<h3 id="classIsNotAValidEntityOrMappedSuperClass()">classIsNotAValidEntityOrMappedSuperClass</h3>
+<code class="signature">public static  void <strong>classIsNotAValidEntityOrMappedSuperClass</strong>(mixed className)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 161</div>
+<h3 id="duplicateAssociationMapping()">duplicateAssociationMapping</h3>
+<code class="signature">public static  void <strong>duplicateAssociationMapping</strong>(mixed entity, mixed fieldName)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 200</div>
+<h3 id="duplicateColumnName()">duplicateColumnName</h3>
+<code class="signature">public static  self <strong>duplicateColumnName</strong>(string className, string columnName)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 157</div>
+<h3 id="duplicateFieldMapping()">duplicateFieldMapping</h3>
+<code class="signature">public static  void <strong>duplicateFieldMapping</strong>(string entity, string fieldName)</code>
+<div class="details">
+<p></p><dl>
+<dt>Parameters:</dt>
+<dd>entity - The entity's name</dd>
+<dd>fieldName - The name of the field that was already declared</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 175</div>
+<h3 id="fileMappingDriversRequireConfiguredDirectoryPath()">fileMappingDriversRequireConfiguredDirectoryPath</h3>
+<code class="signature">public static  void <strong>fileMappingDriversRequireConfiguredDirectoryPath</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 48</div>
+<h3 id="generatorNotAllowedWithCompositeId()">generatorNotAllowedWithCompositeId</h3>
+<code class="signature">public static  void <strong>generatorNotAllowedWithCompositeId</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 37</div>
+<h3 id="identifierRequired()">identifierRequired</h3>
+<code class="signature">public static  void <strong>identifierRequired</strong>(mixed entityName)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 188</div>
+<h3 id="invalidClassInDiscriminatorMap()">invalidClassInDiscriminatorMap</h3>
+<code class="signature">public static  self <strong>invalidClassInDiscriminatorMap</strong>(string className, string owningClass)</code>
+<div class="details">
+<p>Throws an exception that indicates that a class used in a discriminator map does not exist.
+An example would be an outdated (maybe renamed) classname.</p><dl>
+<dt>Parameters:</dt>
+<dd>className - The class that could not be found</dd>
+<dd>owningClass - The class that declares the discriminator map.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 43</div>
+<h3 id="invalidInheritanceType()">invalidInheritanceType</h3>
+<code class="signature">public static  void <strong>invalidInheritanceType</strong>(mixed entityName, mixed type)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 113</div>
+<h3 id="invalidMapping()">invalidMapping</h3>
+<code class="signature">public static  void <strong>invalidMapping</strong>(string fieldName)</code>
+<div class="details">
+<p>Generic exception for invalid mappings.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 131</div>
+<h3 id="joinColumnMustPointToMappedField()">joinColumnMustPointToMappedField</h3>
+<code class="signature">public static  void <strong>joinColumnMustPointToMappedField</strong>(mixed className, mixed joinColumn)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 83</div>
+<h3 id="joinTableRequired()">joinTableRequired</h3>
+<code class="signature">public static  void <strong>joinTableRequired</strong>(mixed fieldName)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 68</div>
+<h3 id="mappingFileNotFound()">mappingFileNotFound</h3>
+<code class="signature">public static  void <strong>mappingFileNotFound</strong>(mixed entityName, mixed fileName)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 73</div>
+<h3 id="mappingNotFound()">mappingNotFound</h3>
+<code class="signature">public static  void <strong>mappingNotFound</strong>(mixed fieldName)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 53</div>
+<h3 id="missingFieldName()">missingFieldName</h3>
+<code class="signature">public static  void <strong>missingFieldName</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 97</div>
+<h3 id="missingRequiredOption()">missingRequiredOption</h3>
+<code class="signature">public static  <a href="../../../doctrine/orm/mapping/mappingexception.html">MappingException</a> <strong>missingRequiredOption</strong>(string field, string expectedOption, string hint)</code>
+<div class="details">
+<p>Called if a required option was not found but is required</p><dl>
+<dt>Parameters:</dt>
+<dd>field - which field cannot be processed?</dd>
+<dd>expectedOption - which option is required</dd>
+<dd>hint - Can optionally be used to supply a tip for common mistakes, e.g. "Did you think of the plural s?"</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 63</div>
+<h3 id="missingSourceEntity()">missingSourceEntity</h3>
+<code class="signature">public static  void <strong>missingSourceEntity</strong>(mixed fieldName)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 58</div>
+<h3 id="missingTargetEntity()">missingTargetEntity</h3>
+<code class="signature">public static  void <strong>missingTargetEntity</strong>(mixed fieldName)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 78</div>
+<h3 id="oneToManyRequiresMappedBy()">oneToManyRequiresMappedBy</h3>
+<code class="signature">public static  void <strong>oneToManyRequiresMappedBy</strong>(mixed fieldName)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 31</div>
+<h3 id="pathRequired()">pathRequired</h3>
+<code class="signature">public static  void <strong>pathRequired</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 142</div>
+<h3 id="propertyTypeIsRequired()">propertyTypeIsRequired</h3>
+<code class="signature">public static  void <strong>propertyTypeIsRequired</strong>(mixed className, mixed propertyName)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 126</div>
+<h3 id="reflectionFailure()">reflectionFailure</h3>
+<code class="signature">public static  void <strong>reflectionFailure</strong>(string entity, \ReflectionException previousException)</code>
+<div class="details">
+<p>Exception for reflection exceptions - adds the entity name,
+because there might be long classnames that will be shortened
+within the stacktrace</p><dl>
+<dt>Parameters:</dt>
+<dd>entity - The entity's name</dd>
+<dd></dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 165</div>
+<h3 id="singleIdNotAllowedOnCompositePrimaryKey()">singleIdNotAllowedOnCompositePrimaryKey</h3>
+<code class="signature">public static  void <strong>singleIdNotAllowedOnCompositePrimaryKey</strong>(mixed entity)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 147</div>
+<h3 id="tableIdGeneratorNotImplemented()">tableIdGeneratorNotImplemented</h3>
+<code class="signature">public static  void <strong>tableIdGeneratorNotImplemented</strong>(mixed className)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/MappingException.php at line 169</div>
+<h3 id="unsupportedOptimisticLockingType()">unsupportedOptimisticLockingType</h3>
+<code class="signature">public static  void <strong>unsupportedOptimisticLockingType</strong>(mixed entity, mixed fieldName, mixed unsupportedType)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/mapping/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/mapping/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/mapping/mappingexception.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>EntityRepository (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../doctrine/orm/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../doctrine/orm/package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../index.html" target="_top">Frames</a>
+<a href="../../doctrine/orm/entityrepository.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\EntityRepository</div>
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 40</div>
+
+<h1>Class EntityRepository</h1>
+
+<pre class="tree"><strong>EntityRepository</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>EntityRepository</strong></p>
+
+<div class="comment" id="overview_description"><p>An EntityRepository serves as a repository for entities with generic as well as
+business specific methods for retrieving entities.</p><p>This class is designed for inheritance and users can subclass this class to
+write their own repositories with business-specific methods to locate entities.</p></div>
+
+<dl>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision$</dd>
+<dt>Author:</dt>
+<dd>Benjamin Eberlei <kontakt@beberlei.de></dd>
+<dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
+<dd>Jonathan Wage <jonwage@gmail.com></dd>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+</dl>
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type">protected  Doctrine\ORM\Mapping\ClassMetadata</td>
+<td class="description"><p class="name"><a href="#_class">$_class</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  <a href="../../doctrine/orm/entitymanager.html">EntityManager</a></td>
+<td class="description"><p class="name"><a href="#_em">$_em</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  string</td>
+<td class="description"><p class="name"><a href="#_entityName">$_entityName</a></p><p class="description"></p></td>
+</tr>
+</table>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#EntityRepository()">EntityRepository</a>(<a href="../../doctrine/orm/entitymanager.html">EntityManager</a> em, mixed class, <a href="../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a> classMetadata)</p><p class="description">Initializes a new EntityRepository.</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#clear()">clear</a>()</p><p class="description">Clears the repository, causing all managed entities to become detached.</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
+<td class="description"><p class="name"><a href="#createQueryBuilder()">createQueryBuilder</a>(string alias)</p><p class="description">Create a new QueryBuilder instance that is prepopulated for this entity name</p></td>
+</tr>
+<tr>
+<td class="type"> object</td>
+<td class="description"><p class="name"><a href="#find()">find</a>(mixed id, $id The, int hydrationMode)</p><p class="description">Finds an entity by its primary key / identifier.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#findAll()">findAll</a>(int hydrationMode)</p><p class="description">Finds all entities in the repository.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#findBy()">findBy</a>(mixed criteria, string column, string value)</p><p class="description">Finds entities by a set of criteria.</p></td>
+</tr>
+<tr>
+<td class="type"> object</td>
+<td class="description"><p class="name"><a href="#findOneBy()">findOneBy</a>(mixed criteria, string column, string value)</p><p class="description">Finds a single entity by a set of criteria.</p></td>
+</tr>
+</table>
+
+<h2 id="detail_field">Field Detail</h2>
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 55</div>
+<h3 id="_class">_class</h3>
+<code class="signature">protected  Doctrine\ORM\Mapping\ClassMetadata <strong>$_class</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 50</div>
+<h3 id="_em">_em</h3>
+<code class="signature">protected  <a href="../../doctrine/orm/entitymanager.html">EntityManager</a> <strong>$_em</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 45</div>
+<h3 id="_entityName">_entityName</h3>
+<code class="signature">protected  string <strong>$_entityName</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 63</div>
+<h3 id="EntityRepository()">EntityRepository</h3>
+<code class="signature">public <strong>EntityRepository</strong>(<a href="../../doctrine/orm/entitymanager.html">EntityManager</a> em, mixed class, <a href="../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a> classMetadata)</code>
+<div class="details">
+<p>Initializes a new <tt>EntityRepository</tt>.</p><dl>
+<dt>Parameters:</dt>
+<dd>em - The EntityManager to use.</dd>
+<dd>classMetadata - The class descriptor.</dd>
+</dl>
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 86</div>
+<h3 id="clear()">clear</h3>
+<code class="signature">public  void <strong>clear</strong>()</code>
+<div class="details">
+<p>Clears the repository, causing all managed entities to become detached.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 76</div>
+<h3 id="createQueryBuilder()">createQueryBuilder</h3>
+<code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>createQueryBuilder</strong>(string alias)</code>
+<div class="details">
+<p>Create a new QueryBuilder instance that is prepopulated for this entity name</p><dl>
+<dt>Returns:</dt>
+<dd>$qb</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 98</div>
+<h3 id="find()">find</h3>
+<code class="signature">public  object <strong>find</strong>(mixed id, $id The, int hydrationMode)</code>
+<div class="details">
+<p>Finds an entity by its primary key / identifier.</p><dl>
+<dt>Parameters:</dt>
+<dd>The - identifier.</dd>
+<dd>hydrationMode - The hydration mode to use.</dd>
+<dt>Returns:</dt>
+<dd>The entity.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 120</div>
+<h3 id="findAll()">findAll</h3>
+<code class="signature">public  array <strong>findAll</strong>(int hydrationMode)</code>
+<div class="details">
+<p>Finds all entities in the repository.</p><dl>
+<dt>Returns:</dt>
+<dd>The entities.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 132</div>
+<h3 id="findBy()">findBy</h3>
+<code class="signature">public  array <strong>findBy</strong>(mixed criteria, string column, string value)</code>
+<div class="details">
+<p>Finds entities by a set of criteria.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 144</div>
+<h3 id="findOneBy()">findOneBy</h3>
+<code class="signature">public  object <strong>findOneBy</strong>(mixed criteria, string column, string value)</code>
+<div class="details">
+<p>Finds a single entity by a set of criteria.</p></div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../doctrine/orm/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../doctrine/orm/package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../index.html" target="_top">Frames</a>
+<a href="../../doctrine/orm/entityrepository.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

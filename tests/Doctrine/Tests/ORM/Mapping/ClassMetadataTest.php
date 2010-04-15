@@ -162,9 +162,9 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $a1 = new \Doctrine\ORM\Mapping\OneToOneMapping(array('fieldName' => 'foo', 'sourceEntity' => 'stdClass', 'targetEntity' => 'stdClass', 'mappedBy' => 'foo'));
         $a2 = new \Doctrine\ORM\Mapping\OneToOneMapping(array('fieldName' => 'foo', 'sourceEntity' => 'stdClass', 'targetEntity' => 'stdClass', 'mappedBy' => 'foo'));
 
-        $cm->addAssociationMapping($a1);
+        $cm->addInheritedAssociationMapping($a1);
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
-        $cm->addAssociationMapping($a2);
+        $cm->addInheritedAssociationMapping($a2);
     }
 
     public function testDuplicateColumnName_ThrowsMappingException()

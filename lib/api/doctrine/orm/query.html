@@ -1,0 +1,582 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>Query (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../doctrine/orm/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../doctrine/orm/package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../index.html" target="_top">Frames</a>
+<a href="../../doctrine/orm/query.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Query</div>
+<div class="location">/Doctrine/ORM/Query.php at line 33</div>
+
+<h1>Class Query</h1>
+
+<pre class="tree">Class:Query - Superclass: AbstractQuery
+<a href="../../doctrine/orm/abstractquery.html">AbstractQuery</a><br>   &lfloor;&nbsp;<strong>Query</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public final  class <strong>Query</strong><br>extends <a href="../../doctrine/orm/abstractquery.html">AbstractQuery</a>
+
+</p>
+
+<div class="comment" id="overview_description"><p>A Query object represents a DQL query.</p></div>
+
+<dl>
+<dt>Since:</dt>
+<dd>1.0</dd>
+<dt>Author:</dt>
+<dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
+<dd>Konsta Vesterinen <kvesteri@cc.hut.fi></dd>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Version:</dt>
+<dd>$Revision$</dd>
+</dl>
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type">final  string</td>
+<td class="description"><p class="name"><a href="#HINT_CUSTOM_OUTPUT_WALKER">HINT_CUSTOM_OUTPUT_WALKER</a></p><p class="description">A string with a class name that implements Doctrine\ORM\Query\TreeWalker
+and is used for generating the target SQL from any DQL AST tree.</p></td>
+</tr>
+<tr>
+<td class="type">final  string</td>
+<td class="description"><p class="name"><a href="#HINT_CUSTOM_TREE_WALKERS">HINT_CUSTOM_TREE_WALKERS</a></p><p class="description">An array of class names that implement Doctrine\ORM\Query\TreeWalker and
+are iterated and executed after the DQL has been parsed into an AST.</p></td>
+</tr>
+<tr>
+<td class="type">final  string</td>
+<td class="description"><p class="name"><a href="#HINT_FORCE_PARTIAL_LOAD">HINT_FORCE_PARTIAL_LOAD</a></p><p class="description">The forcePartialLoad query hint forces a particular query to return
+partial objects.</p></td>
+</tr>
+<tr>
+<td class="type">final  string</td>
+<td class="description"><p class="name"><a href="#HINT_INCLUDE_META_COLUMNS">HINT_INCLUDE_META_COLUMNS</a></p><p class="description">The includeMetaColumns query hint causes meta columns like foreign keys and
+discriminator columns to be selected and returned as part of the query result.
+</p></td>
+</tr>
+<tr>
+<td class="type">final  string</td>
+<td class="description"><p class="name"><a href="#HINT_INTERNAL_ITERATION">HINT_INTERNAL_ITERATION</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">final  string</td>
+<td class="description"><p class="name"><a href="#HINT_REFRESH">HINT_REFRESH</a></p><p class="description">The refresh hint turns any query into a refresh query with the result that
+any local changes in entities are overridden with the fetched values.</p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#STATE_CLEAN">STATE_CLEAN</a></p><p class="description">A query object is in CLEAN state when it has NO unparsed/unprocessed DQL parts.</p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#STATE_DIRTY">STATE_DIRTY</a></p><p class="description">A query object is in state DIRTY when it has DQL parts that have not yet been
+parsed/processed. </p></td>
+</tr>
+</table>
+
+<table class="inherit">
+<tr><th colspan="2">Fields inherited from Doctrine\ORM\AbstractQuery</th></tr>
+<tr><td><a href="../../doctrine/orm/abstractquery.html#HYDRATE_ARRAY">HYDRATE_ARRAY</a>, <a href="../../doctrine/orm/abstractquery.html#HYDRATE_OBJECT">HYDRATE_OBJECT</a>, <a href="../../doctrine/orm/abstractquery.html#HYDRATE_SCALAR">HYDRATE_SCALAR</a>, <a href="../../doctrine/orm/abstractquery.html#HYDRATE_SINGLE_SCALAR">HYDRATE_SINGLE_SCALAR</a>, <a href="../../doctrine/orm/abstractquery.html#_em">_em</a>, <a href="../../doctrine/orm/abstractquery.html#_expireResultCache">_expireResultCache</a>, <a href="../../doctrine/orm/abstractquery.html#_hints">_hints</a>, <a href="../../doctrine/orm/abstractquery.html#_hydrationMode">_hydrationMode</a>, <a href="../../doctrine/orm/abstractquery.html#_paramTypes">_paramTypes</a>, <a href="../../doctrine/orm/abstractquery.html#_params">_params</a>, <a href="../../doctrine/orm/abstractquery.html#_resultCacheDriver">_resultCacheDriver</a>, <a href="../../doctrine/orm/abstractquery.html#_resultCacheId">_resultCacheId</a>, <a href="../../doctrine/orm/abstractquery.html#_resultCacheTTL">_resultCacheTTL</a>, <a href="../../doctrine/orm/abstractquery.html#_resultSetMapping">_resultSetMapping</a>, <a href="../../doctrine/orm/abstractquery.html#_useResultCache">_useResultCache</a></td></tr></table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#contains()">contains</a>(string dql)</p><p class="description">Method to check if an arbitrary piece of DQL exists</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../doctrine/orm/query.html">Query</a></td>
+<td class="description"><p class="name"><a href="#expireQueryCache()">expireQueryCache</a>(boolean expire)</p><p class="description">Defines if the query cache is active or not.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#free()">free</a>()</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\ORM\Query\AST\SelectStatement</td>
+<td class="description"><p class="name"><a href="#getAST()">getAST</a>()</p><p class="description">Returns the corresponding AST for this DQL query.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getDQL()">getDQL</a>()</p><p class="description">Returns the DQL query that is represented by this query object.</p></td>
+</tr>
+<tr>
+<td class="type"> bool</td>
+<td class="description"><p class="name"><a href="#getExpireQueryCache()">getExpireQueryCache</a>()</p><p class="description">Retrieves if the query cache is active or not.</p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#getFirstResult()">getFirstResult</a>()</p><p class="description">Gets the position of the first result the query object was set to retrieve (the "offset").
+</p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#getMaxResults()">getMaxResults</a>()</p><p class="description">Gets the maximum number of results the query object was set to retrieve (the "limit").
+</p></td>
+</tr>
+<tr>
+<td class="type"> CacheDriver</td>
+<td class="description"><p class="name"><a href="#getQueryCacheDriver()">getQueryCacheDriver</a>()</p><p class="description">Returns the cache driver used for query caching.</p></td>
+</tr>
+<tr>
+<td class="type"> int</td>
+<td class="description"><p class="name"><a href="#getQueryCacheLifetime()">getQueryCacheLifetime</a>()</p><p class="description">Retrieves the lifetime of resultset cache.</p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#getSQL()">getSQL</a>()</p><p class="description">Gets the SQL query/queries that correspond to this DQL query.</p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#getState()">getState</a>()</p><p class="description">Returns the state of this query object
+By default the type is Doctrine_ORM_Query_Abstract::STATE_CLEAN but if it appears any unprocessed DQL
+part, it is switched to Doctrine_ORM_Query_Abstract::STATE_DIRTY.</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../doctrine/orm/internal/hydration/iterableresult.html">IterableResult</a></td>
+<td class="description"><p class="name"><a href="#iterate()">iterate</a>(array params, integer hydrationMode)</p><p class="description">Executes the query and returns an IterableResult that can be used to incrementally
+iterated over the result.</p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\ORM\AbstractQuery</td>
+<td class="description"><p class="name"><a href="#setDQL()">setDQL</a>(string dqlQuery)</p><p class="description">Sets a DQL query string.</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../doctrine/orm/query.html">Query</a></td>
+<td class="description"><p class="name"><a href="#setFirstResult()">setFirstResult</a>(integer firstResult)</p><p class="description">Sets the position of the first result to retrieve (the "offset").</p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\ORM\AbstractQuery</td>
+<td class="description"><p class="name"><a href="#setHint()">setHint</a>(string name, mixed value)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\ORM\AbstractQuery</td>
+<td class="description"><p class="name"><a href="#setHydrationMode()">setHydrationMode</a>(integer hydrationMode)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../doctrine/orm/query.html">Query</a></td>
+<td class="description"><p class="name"><a href="#setMaxResults()">setMaxResults</a>(integer maxResults)</p><p class="description">Sets the maximum number of results to retrieve (the "limit").</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../doctrine/orm/query.html">Query</a></td>
+<td class="description"><p class="name"><a href="#setQueryCacheDriver()">setQueryCacheDriver</a>(mixed queryCache, Doctrine_Cache_Interface|null driver)</p><p class="description">Defines a cache driver to be used for caching queries.</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../doctrine/orm/query.html">Query</a></td>
+<td class="description"><p class="name"><a href="#setQueryCacheLifetime()">setQueryCacheLifetime</a>(integer timeToLive)</p><p class="description">Defines how long the query cache will be active before expire.</p></td>
+</tr>
+<tr>
+<td class="type"> @return</td>
+<td class="description"><p class="name"><a href="#useQueryCache()">useQueryCache</a>(boolean bool)</p><p class="description">Defines whether the query should make use of a query cache, if available.</p></td>
+</tr>
+</table>
+
+<table class="inherit">
+<tr><th colspan="2">Methods inherited from Doctrine\ORM\AbstractQuery</th></tr>
+<tr><td><a href="../../doctrine/orm/abstractquery.html#execute()">execute</a>, <a href="../../doctrine/orm/abstractquery.html#expireResultCache()">expireResultCache</a>, <a href="../../doctrine/orm/abstractquery.html#free()">free</a>, <a href="../../doctrine/orm/abstractquery.html#getArrayResult()">getArrayResult</a>, <a href="../../doctrine/orm/abstractquery.html#getEntityManager()">getEntityManager</a>, <a href="../../doctrine/orm/abstractquery.html#getExpireResultCache()">getExpireResultCache</a>, <a href="../../doctrine/orm/abstractquery.html#getHint()">getHint</a>, <a href="../../doctrine/orm/abstractquery.html#getHydrationMode()">getHydrationMode</a>, <a href="../../doctrine/orm/abstractquery.html#getParameter()">getParameter</a>, <a href="../../doctrine/orm/abstractquery.html#getParameters()">getParameters</a>, <a href="../../doctrine/orm/abstractquery.html#getResult()">getResult</a>, <a href="../../doctrine/orm/abstractquery.html#getResultCacheDriver()">getResultCacheDriver</a>, <a href="../../doctrine/orm/abstractquery.html#getResultCacheLifetime()">getResultCacheLifetime</a>, <a href="../../doctrine/orm/abstractquery.html#getSQL()">getSQL</a>, <a href="../../doctrine/orm/abstractquery.html#getScalarResult()">getScalarResult</a>, <a href="../../doctrine/orm/abstractquery.html#getSingleResult()">getSingleResult</a>, <a href="../../doctrine/orm/abstractquery.html#getSingleScalarResult()">getSingleScalarResult</a>, <a href="../../doctrine/orm/abstractquery.html#iterate()">iterate</a>, <a href="../../doctrine/orm/abstractquery.html#setHint()">setHint</a>, <a href="../../doctrine/orm/abstractquery.html#setHydrationMode()">setHydrationMode</a>, <a href="../../doctrine/orm/abstractquery.html#setParameter()">setParameter</a>, <a href="../../doctrine/orm/abstractquery.html#setParameters()">setParameters</a>, <a href="../../doctrine/orm/abstractquery.html#setResultCacheDriver()">setResultCacheDriver</a>, <a href="../../doctrine/orm/abstractquery.html#setResultCacheId()">setResultCacheId</a>, <a href="../../doctrine/orm/abstractquery.html#setResultCacheLifetime()">setResultCacheLifetime</a>, <a href="../../doctrine/orm/abstractquery.html#setResultSetMapping()">setResultSetMapping</a>, <a href="../../doctrine/orm/abstractquery.html#useResultCache()">useResultCache</a></td></tr></table>
+
+<h2 id="detail_field">Field Detail</h2>
+<div class="location">/Doctrine/ORM/Query.php at line 87</div>
+<h3 id="HINT_CUSTOM_OUTPUT_WALKER">HINT_CUSTOM_OUTPUT_WALKER</h3>
+<code class="signature">public final  string <strong>HINT_CUSTOM_OUTPUT_WALKER</strong> = 'doctrine.customOutputWalker'</code>
+<div class="details">
+<p>A string with a class name that implements Doctrine\ORM\Query\TreeWalker
+and is used for generating the target SQL from any DQL AST tree.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 79</div>
+<h3 id="HINT_CUSTOM_TREE_WALKERS">HINT_CUSTOM_TREE_WALKERS</h3>
+<code class="signature">public final  string <strong>HINT_CUSTOM_TREE_WALKERS</strong> = 'doctrine.customTreeWalkers'</code>
+<div class="details">
+<p>An array of class names that implement Doctrine\ORM\Query\TreeWalker and
+are iterated and executed after the DQL has been parsed into an AST.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 62</div>
+<h3 id="HINT_FORCE_PARTIAL_LOAD">HINT_FORCE_PARTIAL_LOAD</h3>
+<code class="signature">public final  string <strong>HINT_FORCE_PARTIAL_LOAD</strong> = 'doctrine.forcePartialLoad'</code>
+<div class="details">
+<p>The forcePartialLoad query hint forces a particular query to return
+partial objects.</p><dl>
+<dt>Todo:</dt>
+<dd>Rename: HINT_OPTIMIZE</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 71</div>
+<h3 id="HINT_INCLUDE_META_COLUMNS">HINT_INCLUDE_META_COLUMNS</h3>
+<code class="signature">public final  string <strong>HINT_INCLUDE_META_COLUMNS</strong> = 'doctrine.includeMetaColumns'</code>
+<div class="details">
+<p>The includeMetaColumns query hint causes meta columns like foreign keys and
+discriminator columns to be selected and returned as part of the query result.</p><p>This hint does only apply to non-object queries.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 94</div>
+<h3 id="HINT_INTERNAL_ITERATION">HINT_INTERNAL_ITERATION</h3>
+<code class="signature">public final  string <strong>HINT_INTERNAL_ITERATION</strong> = 'doctrine.internal.iteration'</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 54</div>
+<h3 id="HINT_REFRESH">HINT_REFRESH</h3>
+<code class="signature">public final  string <strong>HINT_REFRESH</strong> = 'doctrine.refresh'</code>
+<div class="details">
+<p>The refresh hint turns any query into a refresh query with the result that
+any local changes in entities are overridden with the fetched values.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 39</div>
+<h3 id="STATE_CLEAN">STATE_CLEAN</h3>
+<code class="signature">public final  int <strong>STATE_CLEAN</strong> = 1</code>
+<div class="details">
+<p>A query object is in CLEAN state when it has NO unparsed/unprocessed DQL parts.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 45</div>
+<h3 id="STATE_DIRTY">STATE_DIRTY</h3>
+<code class="signature">public final  int <strong>STATE_DIRTY</strong> = 2</code>
+<div class="details">
+<p>A query object is in state DIRTY when it has DQL parts that have not yet been
+parsed/processed. This is automatically defined as DIRTY when addDqlQueryPart
+is called.</p></div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Query.php at line 405</div>
+<h3 id="contains()">contains</h3>
+<code class="signature">public  boolean <strong>contains</strong>(string dql)</code>
+<div class="details">
+<p>Method to check if an arbitrary piece of DQL exists</p><dl>
+<dt>Parameters:</dt>
+<dd>dql - Arbitrary piece of DQL to check for</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 332</div>
+<h3 id="expireQueryCache()">expireQueryCache</h3>
+<code class="signature">public  <a href="../../doctrine/orm/query.html">Query</a> <strong>expireQueryCache</strong>(boolean expire)</code>
+<div class="details">
+<p>Defines if the query cache is active or not.</p><dl>
+<dt>Parameters:</dt>
+<dd>expire - Whether or not to force query cache expiration.</dd>
+<dt>Returns:</dt>
+<dd>This query instance.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 352</div>
+<h3 id="free()">free</h3>
+<code class="signature">public  void <strong>free</strong>()</code>
+<div class="details">
+<p></p><dl>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 171</div>
+<h3 id="getAST()">getAST</h3>
+<code class="signature">public  Doctrine\ORM\Query\AST\SelectStatement <strong>getAST</strong>()</code>
+<div class="details">
+<p>Returns the corresponding AST for this DQL query.</p><dl>
+<dt>Returns:</dt>
+<dd>| Doctrine\ORM\Query\AST\UpdateStatement | Doctrine\ORM\Query\AST\DeleteStatement</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 379</div>
+<h3 id="getDQL()">getDQL</h3>
+<code class="signature">public  string <strong>getDQL</strong>()</code>
+<div class="details">
+<p>Returns the DQL query that is represented by this query object.</p><dl>
+<dt>Returns:</dt>
+<dd>DQL query</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 344</div>
+<h3 id="getExpireQueryCache()">getExpireQueryCache</h3>
+<code class="signature">public  bool <strong>getExpireQueryCache</strong>()</code>
+<div class="details">
+<p>Retrieves if the query cache is active or not.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 429</div>
+<h3 id="getFirstResult()">getFirstResult</h3>
+<code class="signature">public  integer <strong>getFirstResult</strong>()</code>
+<div class="details">
+<p>Gets the position of the first result the query object was set to retrieve (the "offset").
+Returns NULL if <code><a href="../../doctrine/orm/query.html#setFirstResult()">setFirstResult</a></code> was not applied to this query.</p><dl>
+<dt>Returns:</dt>
+<dd>The position of the first result.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 453</div>
+<h3 id="getMaxResults()">getMaxResults</h3>
+<code class="signature">public  integer <strong>getMaxResults</strong>()</code>
+<div class="details">
+<p>Gets the maximum number of results the query object was set to retrieve (the "limit").
+Returns NULL if <code><a href="../../doctrine/orm/query.html#setMaxResults()">setMaxResults</a></code> was not applied to this query.</p><dl>
+<dt>Returns:</dt>
+<dd>Maximum number of results.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 291</div>
+<h3 id="getQueryCacheDriver()">getQueryCacheDriver</h3>
+<code class="signature">public  CacheDriver <strong>getQueryCacheDriver</strong>()</code>
+<div class="details">
+<p>Returns the cache driver used for query caching.</p><dl>
+<dt>Returns:</dt>
+<dd>The cache driver used for query caching or NULL, if this Query does not use query caching.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 321</div>
+<h3 id="getQueryCacheLifetime()">getQueryCacheLifetime</h3>
+<code class="signature">public  int <strong>getQueryCacheLifetime</strong>()</code>
+<div class="details">
+<p>Retrieves the lifetime of resultset cache.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 159</div>
+<h3 id="getSQL()">getSQL</h3>
+<code class="signature">public  mixed <strong>getSQL</strong>()</code>
+<div class="details">
+<p>Gets the SQL query/queries that correspond to this DQL query.</p><dl>
+<dt>Returns:</dt>
+<dd>The built sql query or an array of all sql queries.</dd>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 394</div>
+<h3 id="getState()">getState</h3>
+<code class="signature">public  integer <strong>getState</strong>()</code>
+<div class="details">
+<p>Returns the state of this query object
+By default the type is Doctrine_ORM_Query_Abstract::STATE_CLEAN but if it appears any unprocessed DQL
+part, it is switched to Doctrine_ORM_Query_Abstract::STATE_DIRTY.</p><dl>
+<dt>See Also:</dt>
+<dd>AbstractQuery::STATE_CLEAN</dd>
+<dd>AbstractQuery::STATE_DIRTY</dd>
+<dt>Returns:</dt>
+<dd>Return the query state</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 466</div>
+<h3 id="iterate()">iterate</h3>
+<code class="signature">public  <a href="../../doctrine/orm/internal/hydration/iterableresult.html">IterableResult</a> <strong>iterate</strong>(array params, integer hydrationMode)</code>
+<div class="details">
+<p>Executes the query and returns an IterableResult that can be used to incrementally
+iterated over the result.</p><dl>
+<dt>Parameters:</dt>
+<dd>params - The query parameters.</dd>
+<dd>hydrationMode - The hydration mode to use.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 365</div>
+<h3 id="setDQL()">setDQL</h3>
+<code class="signature">public  Doctrine\ORM\AbstractQuery <strong>setDQL</strong>(string dqlQuery)</code>
+<div class="details">
+<p>Sets a DQL query string.</p><dl>
+<dt>Parameters:</dt>
+<dd>dqlQuery - DQL Query</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 416</div>
+<h3 id="setFirstResult()">setFirstResult</h3>
+<code class="signature">public  <a href="../../doctrine/orm/query.html">Query</a> <strong>setFirstResult</strong>(integer firstResult)</code>
+<div class="details">
+<p>Sets the position of the first result to retrieve (the "offset").</p><dl>
+<dt>Parameters:</dt>
+<dd>firstResult - The first result to return.</dd>
+<dt>Returns:</dt>
+<dd>This query object.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 475</div>
+<h3 id="setHint()">setHint</h3>
+<code class="signature">public  Doctrine\ORM\AbstractQuery <strong>setHint</strong>(string name, mixed value)</code>
+<div class="details">
+<p></p><dl>
+<dt>Parameters:</dt>
+<dd>name - The name of the hint.</dd>
+<dd>value - The value of the hint.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 484</div>
+<h3 id="setHydrationMode()">setHydrationMode</h3>
+<code class="signature">public  Doctrine\ORM\AbstractQuery <strong>setHydrationMode</strong>(integer hydrationMode)</code>
+<div class="details">
+<p></p><dl>
+<dt>Parameters:</dt>
+<dd>hydrationMode - Doctrine processing mode to be used during hydration process. One of the Query::HYDRATE_* constants.</dd>
+<dt>Returns:</dt>
+<dd>This query instance.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 440</div>
+<h3 id="setMaxResults()">setMaxResults</h3>
+<code class="signature">public  <a href="../../doctrine/orm/query.html">Query</a> <strong>setMaxResults</strong>(integer maxResults)</code>
+<div class="details">
+<p>Sets the maximum number of results to retrieve (the "limit").</p><dl>
+<dt>Returns:</dt>
+<dd>This query object.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 267</div>
+<h3 id="setQueryCacheDriver()">setQueryCacheDriver</h3>
+<code class="signature">public  <a href="../../doctrine/orm/query.html">Query</a> <strong>setQueryCacheDriver</strong>(mixed queryCache, Doctrine_Cache_Interface|null driver)</code>
+<div class="details">
+<p>Defines a cache driver to be used for caching queries.</p><dl>
+<dt>Parameters:</dt>
+<dd>driver - Cache driver</dd>
+<dt>Returns:</dt>
+<dd>This query instance.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 306</div>
+<h3 id="setQueryCacheLifetime()">setQueryCacheLifetime</h3>
+<code class="signature">public  <a href="../../doctrine/orm/query.html">Query</a> <strong>setQueryCacheLifetime</strong>(integer timeToLive)</code>
+<div class="details">
+<p>Defines how long the query cache will be active before expire.</p><dl>
+<dt>Parameters:</dt>
+<dd>timeToLive - How long the cache entry is valid</dd>
+<dt>Returns:</dt>
+<dd>This query instance.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query.php at line 279</div>
+<h3 id="useQueryCache()">useQueryCache</h3>
+<code class="signature">public  @return <strong>useQueryCache</strong>(boolean bool)</code>
+<div class="details">
+<p>Defines whether the query should make use of a query cache, if available.</p><dl>
+<dt>Returns:</dt>
+<dd>Query This query instance.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../doctrine/orm/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../doctrine/orm/package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../index.html" target="_top">Frames</a>
+<a href="../../doctrine/orm/query.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

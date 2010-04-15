@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>Index (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/dbal/schema/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/dbal/schema/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/dbal/schema/index.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\DBAL\Schema\Index</div>
+<div class="location">/Doctrine/DBAL/Schema/Index.php at line 26</div>
+
+<h1>Class Index</h1>
+
+<pre class="tree">Class:Index - Superclass: AbstractAsset
+<a href="../../../doctrine/dbal/schema/abstractasset.html">AbstractAsset</a><br>   &lfloor;&nbsp;<strong>Index</strong><br /></pre>
+
+<dl>
+<dt>All Implemented Interfaces:</dt>
+<dd>Constraint </dt>
+</dl>
+
+<hr>
+
+<p class="signature">public  class <strong>Index</strong><br>extends <a href="../../../doctrine/dbal/schema/abstractasset.html">AbstractAsset</a>
+
+</p>
+
+<div class="comment" id="overview_description"><p>The abstract asset allows to reset the name of all assets without publishing this to the public userland.</p><p>This encapsulation hack is necessary to keep a consistent state of the database schema. Say we have a list of tables
+array($tableName => Table($tableName)); if you want to rename the table, you have to make sure</p></div>
+
+<dl>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision$</dd>
+<dt>Author:</dt>
+<dd>Benjamin Eberlei <kontakt@beberlei.de></dd>
+</dl>
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type">protected  array</td>
+<td class="description"><p class="name"><a href="#_columns">$_columns</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  bool</td>
+<td class="description"><p class="name"><a href="#_isPrimary">$_isPrimary</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  bool</td>
+<td class="description"><p class="name"><a href="#_isUnique">$_isUnique</a></p><p class="description"></p></td>
+</tr>
+</table>
+
+<table class="inherit">
+<tr><th colspan="2">Fields inherited from Doctrine\DBAL\Schema\AbstractAsset</th></tr>
+<tr><td><a href="../../../doctrine/dbal/schema/abstractasset.html#_name">_name</a></td></tr></table>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#Index()">Index</a>(string indexName, mixed columns, bool isUnique, bool isPrimary, array column)</p><p class="description"></p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getColumns()">getColumns</a>()</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> bool</td>
+<td class="description"><p class="name"><a href="#hasColumnAtPosition()">hasColumnAtPosition</a>(string columnName, int pos)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> bool</td>
+<td class="description"><p class="name"><a href="#isPrimary()">isPrimary</a>()</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> bool</td>
+<td class="description"><p class="name"><a href="#isUnique()">isUnique</a>()</p><p class="description"></p></td>
+</tr>
+</table>
+
+<table class="inherit">
+<tr><th colspan="2">Methods inherited from Doctrine\DBAL\Schema\AbstractAsset</th></tr>
+<tr><td><a href="../../../doctrine/dbal/schema/abstractasset.html#getName()">getName</a></td></tr></table>
+
+<h2 id="detail_field">Field Detail</h2>
+<div class="location">/Doctrine/DBAL/Schema/Index.php at line 31</div>
+<h3 id="_columns">_columns</h3>
+<code class="signature">protected  array <strong>$_columns</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Index.php at line 41</div>
+<h3 id="_isPrimary">_isPrimary</h3>
+<code class="signature">protected  bool <strong>$_isPrimary</strong> = false</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Index.php at line 36</div>
+<h3 id="_isUnique">_isUnique</h3>
+<code class="signature">protected  bool <strong>$_isUnique</strong> = false</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/DBAL/Schema/Index.php at line 49</div>
+<h3 id="Index()">Index</h3>
+<code class="signature">public <strong>Index</strong>(string indexName, mixed columns, bool isUnique, bool isPrimary, array column)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/DBAL/Schema/Index.php at line 77</div>
+<h3 id="getColumns()">getColumns</h3>
+<code class="signature">public  array <strong>getColumns</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Index.php at line 103</div>
+<h3 id="hasColumnAtPosition()">hasColumnAtPosition</h3>
+<code class="signature">public  bool <strong>hasColumnAtPosition</strong>(string columnName, int pos)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Index.php at line 93</div>
+<h3 id="isPrimary()">isPrimary</h3>
+<code class="signature">public  bool <strong>isPrimary</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Index.php at line 85</div>
+<h3 id="isUnique()">isUnique</h3>
+<code class="signature">public  bool <strong>isUnique</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/dbal/schema/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/dbal/schema/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/dbal/schema/index.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

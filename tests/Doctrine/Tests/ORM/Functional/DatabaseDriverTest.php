@@ -4,7 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-use Doctrine\ORM\Tools\ClassMetadataReader;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -80,7 +80,6 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertType('Doctrine\ORM\Mapping\OneToOneMapping', $metadata->associationMappings['bar']);
     }
 
-
     /**
      *
      * @param  string $className
@@ -88,15 +87,12 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     protected function extractClassMetadata($className)
     {
-        $cm = new ClassMetadataReader();
-        $cm->addMappingSource(new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($this->_sm));
-        $metadatas = $cm->getMetadatas();
-
-        $output = false;
-        
-        foreach ($metadatas AS $metadata) {
-            if (strtolower($metadata->name) == strtolower($className)) {
-                return $metadata;
+        $driver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($this->_sm);
+        foreach ($driver->getAllClassNames() as $dbClassName) {
+            $class = new ClassMetadataInfo($dbClassName);
+            $driver->loadMetadataForClass($dbClassName, $class);
+            if (strtolower($class->name) == strtolower($className)) {
+                return $class;
             }
         }
 

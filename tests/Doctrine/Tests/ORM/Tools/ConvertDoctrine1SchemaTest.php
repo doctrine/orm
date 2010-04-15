@@ -21,8 +21,15 @@
 
 namespace Doctrine\Tests\ORM\Tools;
 
-use Doctrine\ORM\Tools\Export\ClassMetadataExporter,
-    Doctrine\ORM\Tools\ConvertDoctrine1Schema;
+use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
+use Doctrine\ORM\Tools\ConvertDoctrine1Schema;
+use Doctrine\Tests\Mocks\MetadataDriverMock;
+use Doctrine\Tests\Mocks\DatabasePlatformMock;
+use Doctrine\Tests\Mocks\EntityManagerMock;
+use Doctrine\Tests\Mocks\ConnectionMock;
+use Doctrine\Tests\Mocks\DriverMock;
+use Doctrine\Common\EventManager;
+use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -38,9 +45,23 @@ require_once __DIR__ . '/../../TestInit.php';
  */
 class ConvertDoctrine1SchemaTest extends \Doctrine\Tests\OrmTestCase
 {
+    protected function _createEntityManager($metadataDriver)
+    {
+        $driverMock = new DriverMock();
+        $config = new \Doctrine\ORM\Configuration();
+        $config->setProxyDir(__DIR__ . '/../../Proxies');
+        $config->setProxyNamespace('Doctrine\Tests\Proxies');
+        $eventManager = new EventManager();
+        $conn = new ConnectionMock(array(), $driverMock, $config, $eventManager);
+        $mockDriver = new MetadataDriverMock();
+        $config->setMetadataDriverImpl($metadataDriver);
+
+        return EntityManagerMock::create($conn, $config, $eventManager);
+    }
+
     public function testTest()
     {
-        if (!class_exists('Symfony\Components\Yaml\Yaml', true)) {
+        if ( ! class_exists('Symfony\Components\Yaml\Yaml', true)) {
             $this->markTestSkipped('Please install Symfony YAML Component into the include path of your PHP installation.');
         }
 
@@ -48,28 +69,32 @@ class ConvertDoctrine1SchemaTest extends \Doctrine\Tests\OrmTestCase
         $converter = new ConvertDoctrine1Schema(__DIR__ . '/doctrine1schema');
 
         $exporter = $cme->getExporter('yml', __DIR__ . '/convert');
-        $exporter->setMetadatas($converter->getMetadatas());
+        $exporter->setMetadata($converter->getMetadata());
         $exporter->export();
 
         $this->assertTrue(file_exists(__DIR__ . '/convert/User.dcm.yml'));
         $this->assertTrue(file_exists(__DIR__ . '/convert/Profile.dcm.yml'));
 
-        $cme->addMappingSource(__DIR__ . '/convert');
-        $metadatas = $cme->getMetadatas();
+        $metadataDriver = new \Doctrine\ORM\Mapping\Driver\YamlDriver(__DIR__ . '/convert');
+        $em = $this->_createEntityManager($metadataDriver);
+        $cmf = new DisconnectedClassMetadataFactory($em);
+        $metadata = $cmf->getAllMetadata();
+        $profileClass = $metadata[0];
+        $userClass = $metadata[1];
 
-        $this->assertEquals(2, count($metadatas));
-        $this->assertEquals('Profile', $metadatas['Profile']->name);
-        $this->assertEquals('User', $metadatas['User']->name);
-        $this->assertEquals(4, count($metadatas['Profile']->fieldMappings));
-        $this->assertEquals(5, count($metadatas['User']->fieldMappings));
-        $this->assertEquals('text', $metadatas['User']->fieldMappings['clob']['type']);
-        $this->assertEquals('test_alias', $metadatas['User']->fieldMappings['theAlias']['columnName']);
-        $this->assertEquals('theAlias', $metadatas['User']->fieldMappings['theAlias']['fieldName']);
+        $this->assertEquals(2, count($metadata));
+        $this->assertEquals('Profile', $profileClass->name);
+        $this->assertEquals('User', $userClass->name);
+        $this->assertEquals(4, count($profileClass->fieldMappings));
+        $this->assertEquals(5, count($userClass->fieldMappings));
+        $this->assertEquals('text', $userClass->fieldMappings['clob']['type']);
+        $this->assertEquals('test_alias', $userClass->fieldMappings['theAlias']['columnName']);
+        $this->assertEquals('theAlias', $userClass->fieldMappings['theAlias']['fieldName']);
 
-        $this->assertEquals('Profile', $metadatas['Profile']->associationMappings['User']->sourceEntityName);
-        $this->assertEquals('User', $metadatas['Profile']->associationMappings['User']->targetEntityName);
+        $this->assertEquals('Profile', $profileClass->associationMappings['User']->sourceEntityName);
+        $this->assertEquals('User', $profileClass->associationMappings['User']->targetEntityName);
 
-        $this->assertEquals('username', $metadatas['User']->table['uniqueConstraints']['username']['columns'][0]);
+        $this->assertEquals('username', $userClass->table['uniqueConstraints']['username']['columns'][0]);
 
         unlink(__DIR__ . '/convert/User.dcm.yml');
         unlink(__DIR__ . '/convert/Profile.dcm.yml');

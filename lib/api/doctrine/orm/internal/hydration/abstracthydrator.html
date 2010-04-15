@@ -1,0 +1,246 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../../stylesheet.css">
+<link rel="start" href="../../../../overview-summary.html">
+
+<title>AbstractHydrator (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../../doctrine/orm/internal/hydration/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../../doctrine/orm/internal/hydration/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../../index.html" target="_top">Frames</a>
+<a href="../../../../doctrine/orm/internal/hydration/abstracthydrator.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Internal\Hydration\AbstractHydrator</div>
+<div class="location">/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php at line 40</div>
+
+<h1>Class AbstractHydrator</h1>
+
+<pre class="tree"><strong>AbstractHydrator</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public abstract  class <strong>AbstractHydrator</strong></p>
+
+<div class="comment" id="overview_description"><p>Base class for all hydrators. A hydrator is a class that provides some form
+of transformation of an SQL result set into another structure.</p></div>
+
+<dl>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision: 3192 $</dd>
+<dt>Author:</dt>
+<dd>Konsta Vesterinen <kvesteri@cc.hut.fi></dd>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+</dl>
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type">protected  mixed</td>
+<td class="description"><p class="name"><a href="#_cache">$_cache</a></p><p class="description">@var array The cache used during row-by-row hydration.</p></td>
+</tr>
+<tr>
+<td class="type">protected  mixed</td>
+<td class="description"><p class="name"><a href="#_em">$_em</a></p><p class="description">@var EntityManager The EntityManager instance.</p></td>
+</tr>
+<tr>
+<td class="type">protected  mixed</td>
+<td class="description"><p class="name"><a href="#_hints">$_hints</a></p><p class="description">@var array The query hints.</p></td>
+</tr>
+<tr>
+<td class="type">protected  mixed</td>
+<td class="description"><p class="name"><a href="#_platform">$_platform</a></p><p class="description">@var AbstractPlatform The dbms Platform instance</p></td>
+</tr>
+<tr>
+<td class="type">protected  mixed</td>
+<td class="description"><p class="name"><a href="#_rsm">$_rsm</a></p><p class="description">@var ResultSetMapping The ResultSetMapping.</p></td>
+</tr>
+<tr>
+<td class="type">protected  mixed</td>
+<td class="description"><p class="name"><a href="#_stmt">$_stmt</a></p><p class="description">@var Statement The statement that provides the data to hydrate.</p></td>
+</tr>
+<tr>
+<td class="type">protected  mixed</td>
+<td class="description"><p class="name"><a href="#_uow">$_uow</a></p><p class="description">@var UnitOfWork The UnitOfWork of the associated EntityManager.</p></td>
+</tr>
+</table>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#AbstractHydrator()">AbstractHydrator</a>(Doctrine\ORM\EntityManager em)</p><p class="description">Initializes a new instance of a class derived from AbstractHydrator.</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#hydrateAll()">hydrateAll</a>(object stmt, object resultSetMapping, mixed hints)</p><p class="description">Hydrates all rows returned by the passed statement instance at once.</p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#hydrateRow()">hydrateRow</a>()</p><p class="description">Hydrates a single row returned by the current statement instance during
+row-by-row hydration with {@link iterate()}.</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../../doctrine/orm/internal/hydration/iterableresult.html">IterableResult</a></td>
+<td class="description"><p class="name"><a href="#iterate()">iterate</a>(object stmt, object resultSetMapping, mixed hints)</p><p class="description">Initiates a row-by-row hydration.</p></td>
+</tr>
+</table>
+
+<h2 id="detail_field">Field Detail</h2>
+<div class="location">/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php at line 55</div>
+<h3 id="_cache">_cache</h3>
+<code class="signature">protected  mixed <strong>$_cache</strong> = array()</code>
+<div class="details">
+<p>array The cache used during row-by-row hydration.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php at line 46</div>
+<h3 id="_em">_em</h3>
+<code class="signature">protected  mixed <strong>$_em</strong></code>
+<div class="details">
+<p>EntityManager The EntityManager instance.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php at line 61</div>
+<h3 id="_hints">_hints</h3>
+<code class="signature">protected  mixed <strong>$_hints</strong></code>
+<div class="details">
+<p>array The query hints.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php at line 49</div>
+<h3 id="_platform">_platform</h3>
+<code class="signature">protected  mixed <strong>$_platform</strong></code>
+<div class="details">
+<p>AbstractPlatform The dbms Platform instance</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php at line 43</div>
+<h3 id="_rsm">_rsm</h3>
+<code class="signature">protected  mixed <strong>$_rsm</strong></code>
+<div class="details">
+<p>ResultSetMapping The ResultSetMapping.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php at line 58</div>
+<h3 id="_stmt">_stmt</h3>
+<code class="signature">protected  mixed <strong>$_stmt</strong></code>
+<div class="details">
+<p>Statement The statement that provides the data to hydrate.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php at line 52</div>
+<h3 id="_uow">_uow</h3>
+<code class="signature">protected  mixed <strong>$_uow</strong></code>
+<div class="details">
+<p>UnitOfWork The UnitOfWork of the associated EntityManager.</p></div>
+
+<hr>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php at line 68</div>
+<h3 id="AbstractHydrator()">AbstractHydrator</h3>
+<code class="signature">public <strong>AbstractHydrator</strong>(Doctrine\ORM\EntityManager em)</code>
+<div class="details">
+<p>Initializes a new instance of a class derived from <tt>AbstractHydrator</tt>.</p><dl>
+<dt>Parameters:</dt>
+<dd>em - The EntityManager to use.</dd>
+</dl>
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php at line 98</div>
+<h3 id="hydrateAll()">hydrateAll</h3>
+<code class="signature">public  mixed <strong>hydrateAll</strong>(object stmt, object resultSetMapping, mixed hints)</code>
+<div class="details">
+<p>Hydrates all rows returned by the passed statement instance at once.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php at line 115</div>
+<h3 id="hydrateRow()">hydrateRow</h3>
+<code class="signature">public  mixed <strong>hydrateRow</strong>()</code>
+<div class="details">
+<p>Hydrates a single row returned by the current statement instance during
+row-by-row hydration with <code>iterate()</code>.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php at line 82</div>
+<h3 id="iterate()">iterate</h3>
+<code class="signature">public  <a href="../../../../doctrine/orm/internal/hydration/iterableresult.html">IterableResult</a> <strong>iterate</strong>(object stmt, object resultSetMapping, mixed hints)</code>
+<div class="details">
+<p>Initiates a row-by-row hydration.</p></div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../../doctrine/orm/internal/hydration/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../../doctrine/orm/internal/hydration/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../../index.html" target="_top">Frames</a>
+<a href="../../../../doctrine/orm/internal/hydration/abstracthydrator.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>
