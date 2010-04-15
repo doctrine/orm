@@ -294,5 +294,4 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
             ->getResult()) > 0);
         
     }
-    
 }

@@ -26,7 +26,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  * SINGLE_TABLE strategy.
  *
  * @author Roman Borschel <roman@code-factory.org>
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since 2.0
  * @link http://martinfowler.com/eaaCatalog/singleTableInheritance.html
  */
