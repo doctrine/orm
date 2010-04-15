@@ -339,6 +339,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Such a function can then be used in any DQL statement in any place where string
      * functions are allowed.
      *
+     * DQL function names are case-insensitive.
+     *
      * @param string $name
      * @param string $className
      */
@@ -355,6 +357,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getCustomStringFunction($name)
     {
+        $name = strtolower($name);
         return isset($this->_attributes['customStringFunctions'][$name]) ?
                 $this->_attributes['customStringFunctions'][$name] : null;
     }
@@ -371,13 +374,15 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setCustomStringFunctions(array $functions)
     {
-        $this->_attributes['customStringFunctions'] = $functions;
+        $this->_attributes['customStringFunctions'] = array_change_key_case($functions);
     }
 
     /**
      * Registers a custom DQL function that produces a numeric value.
      * Such a function can then be used in any DQL statement in any place where numeric
      * functions are allowed.
+     *
+     * DQL function names are case-insensitive.
      *
      * @param string $name
      * @param string $className
@@ -395,6 +400,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getCustomNumericFunction($name)
     {
+        $name = strtolower($name);
         return isset($this->_attributes['customNumericFunctions'][$name]) ?
                 $this->_attributes['customNumericFunctions'][$name] : null;
     }
@@ -411,13 +417,15 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setCustomNumericFunctions(array $functions)
     {
-        $this->_attributes['customNumericFunctions'] = $functions;
+        $this->_attributes['customNumericFunctions'] = array_change_key_case($functions);
     }
 
     /**
      * Registers a custom DQL function that produces a date/time value.
      * Such a function can then be used in any DQL statement in any place where date/time
      * functions are allowed.
+     *
+     * DQL function names are case-insensitive.
      *
      * @param string $name
      * @param string $className
@@ -435,6 +443,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getCustomDatetimeFunction($name)
     {
+        $name = strtolower($name);
         return isset($this->_attributes['customDatetimeFunctions'][$name]) ?
                 $this->_attributes['customDatetimeFunctions'][$name] : null;
     }
@@ -451,6 +460,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setCustomDatetimeFunctions(array $functions)
     {
-        $this->_attributes['customDatetimeFunctions'] = $functions;
+        $this->_attributes['customDatetimeFunctions'] = array_change_key_case($functions);
     }
 }

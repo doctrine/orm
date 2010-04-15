@@ -2619,9 +2619,10 @@ class Parser
 
     public function CustomFunctionsReturningNumerics()
     {
-        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
-        $funcClass = $this->_em->getConfiguration()->getCustomNumericFunction($funcNameLower);
-        $function = new $funcClass($funcNameLower);
+        $funcName = strtolower($this->_lexer->lookahead['value']);
+        // getCustomNumericFunction is case-insensitive
+        $funcClass = $this->_em->getConfiguration()->getCustomNumericFunction($funcName);
+        $function = new $funcClass($funcName);
         $function->parse($this);
 
         return $function;
@@ -2642,9 +2643,10 @@ class Parser
 
     public function CustomFunctionsReturningDatetime()
     {
-        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
-        $funcClass = $this->_em->getConfiguration()->getCustomDatetimeFunction($funcNameLower);
-        $function = new $funcClass($funcNameLower);
+        $funcName = $this->_lexer->lookahead['value'];
+        // getCustomDatetimeFunction is case-insensitive
+        $funcClass = $this->_em->getConfiguration()->getCustomDatetimeFunction($funcName);
+        $function = new $funcClass($funcName);
         $function->parse($this);
 
         return $function;
@@ -2670,9 +2672,10 @@ class Parser
 
     public function CustomFunctionsReturningStrings()
     {
-        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
-        $funcClass = $this->_em->getConfiguration()->getCustomStringFunction($funcNameLower);
-        $function = new $funcClass($funcNameLower);
+        $funcName = $this->_lexer->lookahead['value'];
+        // getCustomStringFunction is case-insensitive
+        $funcClass = $this->_em->getConfiguration()->getCustomStringFunction($funcName);
+        $function = new $funcClass($funcName);
         $function->parse($this);
 
         return $function;
