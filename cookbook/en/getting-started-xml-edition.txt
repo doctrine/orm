@@ -458,14 +458,19 @@ You can then use your favorite console tool to call:
 
     [console]
     doctrine@my-desktop> cd myproject/
-    doctrine@my-desktop> doctrine orm:schema-tool --create
+    doctrine@my-desktop> doctrine orm:schema-tool:create
 
 During the development you probably need to re-create the database several times when changing the Entity
-metadata. You can then either re-create the database, or use the update functionality:
+metadata. You can then either re-create the database:
 
     [console]
-    doctrine@my-desktop> doctrine orm:schema-tool --re-create
-    doctrine@my-desktop> doctrine orm:schema-tool --update
+    doctrine@my-desktop> doctrine orm:schema-tool:drop
+    doctrine@my-dekstop> doctrine orm:schema-tool:create
+
+Or use the update functionality:
+
+    [console]
+    doctrine@my-desktop> doctrine orm:schema-tool:update
 
 The updating of databases uses a Diff Algorithm for a given Database Schema, a cornerstone of the `Doctrine\DBAL`
 package, which can even be used without the Doctrine ORM package. However its not available in SQLite since
