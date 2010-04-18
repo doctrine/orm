@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -135,5 +133,26 @@ class OneToManyMapping extends AssociationMapping
         }
 
         $persister->loadOneToManyCollection($this, $conditions, $targetCollection);
+    }
+
+    /**
+     * Determines which fields get serialized.
+     *
+     * It is only serialized what is necessary for best unserialization performance.
+     * That means any metadata properties that are not set or empty or simply have
+     * their default value are NOT serialized.
+     *
+     * @return array The names of all the fields that should be serialized.
+     */
+    public function __sleep()
+    {
+        $serialized = parent::__sleep();
+        if ($this->orderBy) {
+            $serialized[] = 'orderBy';
+        }
+        if ($this->orphanRemoval) {
+            $serialized[] = 'orphanRemoval';
+        }
+        return $serialized;
     }
 }

@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -250,7 +248,7 @@ class Parser
 
         // Is it really an annotation class?
         if (
-            (! $this->_isNestedAnnotation && $this->_lexer->lookahead != null &&
+            ( ! $this->_isNestedAnnotation && $this->_lexer->lookahead != null &&
             ! $this->_lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS) &&
             ! $this->_lexer->isNextToken(Lexer::T_AT)) ||
             ! class_exists($name, false)
