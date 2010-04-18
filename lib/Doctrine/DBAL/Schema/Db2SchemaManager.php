@@ -187,8 +187,14 @@ class Db2SchemaManager extends AbstractSchemaManager
     protected function _getPortableViewDefinition($view)
     {
         $view = array_change_key_case($view, \CASE_LOWER);
-        $pos = strpos($view['text'], ' AS ');
-        $sql = substr($view['text'], $pos+4);
+        // sadly this still segfaults on PDO_IBM, see http://pecl.php.net/bugs/bug.php?id=17199
+        //$view['text'] = (is_resource($view['text']) ? stream_get_contents($view['text']) : $view['text']);
+        if (!is_resource($view['text'])) {
+            $pos = strpos($view['text'], ' AS ');
+            $sql = substr($view['text'], $pos+4);
+        } else {
+            $sql = '';
+        }
 
         return new View($view['name'], $sql);
     }

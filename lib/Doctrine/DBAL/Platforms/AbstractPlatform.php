@@ -1178,6 +1178,17 @@ abstract class AbstractPlatform
     }
 
     /**
+     * Some vendors require temporary table names to be qualified specially.
+     *
+     * @param  string $tableName
+     * @return string
+     */
+    public function getTemporaryTableName($tableName)
+    {
+        return $tableName;
+    }
+
+    /**
      * Get sql query to show a list of database.
      *
      * @return string

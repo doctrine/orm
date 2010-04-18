@@ -45,6 +45,7 @@ final class DriverManager
             'pdo_mssql'  => 'Doctrine\DBAL\Driver\PDOMsSql\Driver',
             'oci8' => 'Doctrine\DBAL\Driver\OCI8\Driver',
             'ibm_db2' => 'Doctrine\DBAL\Driver\IbmDb2\Db2Driver',
+            'pdo_ibm' => 'Doctrine\DBAL\Driver\PDOIbm\Driver',
             );
 
     /** Private constructor. This class cannot be instantiated. */

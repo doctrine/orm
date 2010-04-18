@@ -284,8 +284,6 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
             $this->markTestSkipped('Alter Table is not supported by this platform.');
         }
 
-        $this->_conn->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-
         $this->createTestTable('alter_table');
         $this->createTestTable('alter_table_foreign');
 
