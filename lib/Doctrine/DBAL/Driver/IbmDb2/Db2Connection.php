@@ -71,18 +71,12 @@ class Db2Connection implements \Doctrine\DBAL\Driver\Connection
     {
         $stmt = $this->prepare($statement);
         $stmt->execute();
-        return $stmt;
+        return $stmt->rowCount();
     }
 
     function lastInsertId($name = null)
     {
-        $sql = 'SELECT IDENTITY_VAL_LOCAL() AS VAL FROM SYSIBM.SYSDUMMY1';
-        if ($stmt = $this->query($sql)) {
-            if ($col = $stmt->fetchColumn()) {
-                return $col;
-            }
-        }
-        return false;
+        return db2_last_insert_id($this->_conn);
     }
 
     function beginTransaction()

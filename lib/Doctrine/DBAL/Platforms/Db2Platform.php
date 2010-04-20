@@ -282,7 +282,7 @@ class Db2Platform extends AbstractPlatform
      */
     public function getCurrentDateSQL()
     {
-        return 'current date';
+        return 'VALUES CURRENT DATE';
     }
 
     /**
@@ -292,7 +292,7 @@ class Db2Platform extends AbstractPlatform
      */
     public function getCurrentTimeSQL()
     {
-        return 'current time';
+        return 'VALUES CURRENT TIME';
     }
 
     /**
@@ -300,10 +300,11 @@ class Db2Platform extends AbstractPlatform
      *
      * @return string
      */
-    /*public function getCurrentTimestampSQL()
+
+    public function getCurrentTimestampSQL()
     {
-        return 'current timestamp';
-    }*/
+        return "VALUES CURRENT TIMESTAMP";
+    }
 
     /**
      * Obtain DBMS specific SQL code portion needed to set an index
@@ -435,11 +436,6 @@ class Db2Platform extends AbstractPlatform
     public function getTemporaryTableName($tableName)
     {
         return "SESSION." . $tableName;
-    }
-
-    public function getCurrentTimestampSQL()
-    {
-        return "VALUES CURRENT TIMESTAMP";
     }
 
     public function modifyLimitQuery($query, $limit, $offset = null)
