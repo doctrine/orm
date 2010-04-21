@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -152,7 +150,23 @@ abstract class AssociationMapping
      *
      * @var array
      */
-    public $joinTable = array();
+    public $joinTable;
+
+    /**
+     * READ-ONLY: The name of the entity class from which the association was
+     * inherited in an inheritance hierarchy.
+     *
+     * @var string
+     */
+    public $inherited;
+
+    /**
+     * READ-ONLY: The name of the entity or mapped superclass that declares
+     * the association field in an inheritance hierarchy.
+     *
+     * @var string
+     */
+    public $declared;
 
     /**
      * Initializes a new instance of a class derived from AssociationMapping.
@@ -161,9 +175,7 @@ abstract class AssociationMapping
      */
     public function __construct(array $mapping)
     {
-        if ($mapping) {
-            $this->_validateAndCompleteMapping($mapping);
-        }
+        $this->_validateAndCompleteMapping($mapping);
     }
 
     /**
@@ -317,8 +329,9 @@ abstract class AssociationMapping
     abstract public function load($sourceEntity, $target, $em, array $joinColumnValues = array());
     
     /**
-     * 
-     * @param $platform
+     * Gets the (possibly quoted) name of the join table.
+     *
+     * @param AbstractPlatform $platform
      * @return string
      */
     public function getQuotedJoinTableName($platform)

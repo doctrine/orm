@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -63,7 +61,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
             // Append subclass foreign keys
             foreach ($subClass->associationMappings as $assoc) {
-                if ($assoc->isOwningSide && $assoc->isOneToOne() && ! isset($subClass->inheritedAssociationFields[$assoc->sourceFieldName])) {
+                if ($assoc->isOwningSide && $assoc->isOneToOne() && ! $assoc->inherited) {
                     foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
                         $columnAlias = $srcColumn . $this->_sqlAliasCounter++;
                         $columnList .= ', ' . $tableAlias . ".$srcColumn AS $columnAlias";

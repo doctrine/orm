@@ -95,9 +95,9 @@ EOT
                 $deleted = $cacheDriver->delete($id);
 
                 if (is_array($deleted)) {
-                    $this->_printDeleted($deleted);
+                    $this->_printDeleted($output, $deleted);
                 } else if (is_bool($deleted) && $deleted) {
-                    $this->_printDeleted(array($id));
+                    $this->_printDeleted($output, array($id));
                 }
 
                 $outputed = true;
@@ -105,12 +105,12 @@ EOT
         }
 
         // Removing based on --regex
-        if (($regex = $input->getOption('regex')) !== null && $regexps) {
+        if (($regexps = $input->getOption('regex')) !== null && $regexps) {
             foreach($regexps as $regex) {
                 $output->write($outputed ? PHP_EOL : '');
                 $output->write(sprintf('Clearing Result cache entries that match the regular expression "<info>%s</info>"', $regex) . PHP_EOL);
 
-                $this->_printDeleted($cacheDriver->deleteByRegex('/' . $regex. '/'));
+                $this->_printDeleted($output, $cacheDriver->deleteByRegex('/' . $regex. '/'));
 
                 $outputed = true;
             }
@@ -122,7 +122,7 @@ EOT
                 $output->write($outputed ? PHP_EOL : '');
                 $output->write(sprintf('Clearing Result cache entries that have the prefix "<info>%s</info>"', $prefix) . PHP_EOL);
 
-                $this->_printDeleted($cacheDriver->deleteByPrefix($prefix));
+                $this->_printDeleted($output, $cacheDriver->deleteByPrefix($prefix));
 
                 $outputed = true;
             }
@@ -134,7 +134,7 @@ EOT
                 $output->write($outputed ? PHP_EOL : '');
                 $output->write(sprintf('Clearing Result cache entries that have the suffix "<info>%s</info>"', $suffix) . PHP_EOL);
 
-                $this->_printDeleted($cacheDriver->deleteBySuffix($suffix));
+                $this->_printDeleted($output, $cacheDriver->deleteBySuffix($suffix));
 
                 $outputed = true;
             }
@@ -143,9 +143,9 @@ EOT
         // Removing ALL entries
         if ( ! $ids && ! $regexps && ! $prefixes && ! $suffixes) {
             $output->write($outputed ? PHP_EOL : '');
-            $output->write('Clearing ALL Result cache entries');
+            $output->write('Clearing ALL Result cache entries' . PHP_EOL);
 
-            $this->_printDeleted($cacheDriver->deleteAll());
+            $this->_printDeleted($output, $cacheDriver->deleteAll());
 
             $outputed = true;
         }

@@ -1,0 +1,743 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>OraclePlatform (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/dbal/platforms/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/dbal/platforms/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/dbal/platforms/oracleplatform.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\DBAL\Platforms\OraclePlatform</div>
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 34</div>
+
+<h1>Class OraclePlatform</h1>
+
+<pre class="tree">Class:OraclePlatform - Superclass: AbstractPlatform
+<a href="../../../doctrine/dbal/platforms/abstractplatform.html">AbstractPlatform</a><br>   &lfloor;&nbsp;<strong>OraclePlatform</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>OraclePlatform</strong><br>extends <a href="../../../doctrine/dbal/platforms/abstractplatform.html">AbstractPlatform</a>
+
+</p>
+
+<div class="comment" id="overview_description"><p>OraclePlatform.</p></div>
+
+<dl>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Author:</dt>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dd>Lukas Smith <smith@pooteeweet.org> (PEAR MDB2 library)</dd>
+<dd>Benjamin Eberlei <kontakt@beberlei.de></dd>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Version:</dt>
+<dd>$Revision: 3938 $</dd>
+<dt>Todo:</dt>
+<dd>Remove any unnecessary methods.</dd>
+</dl>
+<hr>
+
+<table class="inherit">
+<tr><th colspan="2">Fields inherited from Doctrine\DBAL\Platforms\AbstractPlatform</th></tr>
+<tr><td><a href="../../../doctrine/dbal/platforms/abstractplatform.html#CREATE_FOREIGNKEYS">CREATE_FOREIGNKEYS</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#CREATE_INDEXES">CREATE_INDEXES</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#TRIM_BOTH">TRIM_BOTH</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#TRIM_LEADING">TRIM_LEADING</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#TRIM_TRAILING">TRIM_TRAILING</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#TRIM_UNSPECIFIED">TRIM_UNSPECIFIED</a></td></tr></table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#fixSchemaElementName()">fixSchemaElementName</a>(mixed schemaElementName, string schemaName)</p><p class="description">Makes any fixes to a name of a schema element (table, sequence, ...) that are required
+by restrictions of the platform, like a maximum length.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getAlterTableSQL()">getAlterTableSQL</a>(<a href="../../../doctrine/dbal/schema/tablediff.html">TableDiff</a> diff, string diff->name, array changes, boolean check)</p><p class="description">Gets the sql statements for altering an existing table.
+</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getBigIntTypeDeclarationSQL()">getBigIntTypeDeclarationSQL</a>(mixed field, array columnDef)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getBooleanTypeDeclarationSQL()">getBooleanTypeDeclarationSQL</a>(mixed field, array columnDef)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getClobTypeDeclarationSQL()">getClobTypeDeclarationSQL</a>(array field)</p><p class="description">@override</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getCreateAutoincrementSql()">getCreateAutoincrementSql</a>(mixed name, mixed table, mixed start)</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getCreateSequenceSQL()">getCreateSequenceSQL</a>(\Doctrine\DBAL\Schema\Sequence sequence)</p><p class="description">Gets the SQL used to create a sequence that starts with a given value
+and increments by the given allocation size.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getCreateTemporaryTableSnippetSQL()">getCreateTemporaryTableSnippetSQL</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getCreateViewSQL()">getCreateViewSQL</a>(mixed name, mixed sql)</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getDateTimeFormatString()">getDateTimeFormatString</a>()</p><p class="description">Gets the format string, as accepted by the date() function, that describes
+the format of a stored datetime value of this platform.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getDateTimeTypeDeclarationSQL()">getDateTimeTypeDeclarationSQL</a>(array fieldDeclaration)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getDateTypeDeclarationSQL()">getDateTypeDeclarationSQL</a>(array fieldDeclaration)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getDropAutoincrementSql()">getDropAutoincrementSql</a>(mixed table)</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getDropDatabaseSQL()">getDropDatabaseSQL</a>(mixed database)</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getDropForeignKeySQL()">getDropForeignKeySQL</a>(ForeignKeyConstraint|string foreignKey, Table|string table)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getDropSequenceSQL()">getDropSequenceSQL</a>(\Doctrine\DBAL\Schema\Sequence sequence)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getDropViewSQL()">getDropViewSQL</a>(mixed name)</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getGuidExpression()">getGuidExpression</a>()</p><p class="description">Returns global unique identifier</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getIntegerTypeDeclarationSQL()">getIntegerTypeDeclarationSQL</a>(mixed field, array columnDef)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getListDatabasesSQL()">getListDatabasesSQL</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getListSequencesSQL()">getListSequencesSQL</a>(mixed database)</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getListTableColumnsSQL()">getListTableColumnsSQL</a>(mixed table)</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getListTableConstraintsSQL()">getListTableConstraintsSQL</a>(mixed table)</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getListTableForeignKeysSQL()">getListTableForeignKeysSQL</a>(mixed table)</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getListTableIndexesSQL()">getListTableIndexesSQL</a>(string table)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getListTablesSQL()">getListTablesSQL</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getListViewsSQL()">getListViewsSQL</a>(string database)</p><p class="description">Get the SQL to list all views of a database or user.</p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#getLocateExpression()">getLocateExpression</a>(string str, string substr, mixed startPos, int pos)</p><p class="description">returns the position of the first occurrence of substring $substr in string $str</p></td>
+</tr>
+<tr>
+<td class="type"> int</td>
+<td class="description"><p class="name"><a href="#getMaxIdentifierLength()">getMaxIdentifierLength</a>()</p><p class="description">Maximum length of any given databse identifier, like tables or column names.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getName()">getName</a>()</p><p class="description">Get the platform name for this instance</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getNowExpression()">getNowExpression</a>(mixed type)</p><p class="description">Return string to call a variable with the current timestamp inside an SQL statement
+There are three special variables for current date and time:
+- CURRENT_TIMESTAMP (date and time, TIMESTAMP type)
+- CURRENT_DATE (date, DATE type)
+- CURRENT_TIME (time, TIME type)</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getSQLResultCasing()">getSQLResultCasing</a>(string column)</p><p class="description">Gets the character casing of a column in an SQL result set of this platform.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getSequenceNextValSQL()">getSequenceNextValSQL</a>(string sequenceName)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getSetTransactionIsolationSQL()">getSetTransactionIsolationSQL</a>(integer level)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getSmallIntTypeDeclarationSQL()">getSmallIntTypeDeclarationSQL</a>(mixed field, array columnDef)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getSubstringExpression()">getSubstringExpression</a>(string value, integer position, integer length, integer from, integer len)</p><p class="description">return string to call a function to get a substring inside an SQL statementNote: Not SQL92, but common functionality.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getTimeTypeDeclarationSQL()">getTimeTypeDeclarationSQL</a>(array fieldDeclaration)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getTruncateTableSQL()">getTruncateTableSQL</a>(string tableName, bool cascade)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getVarcharTypeDeclarationSQL()">getVarcharTypeDeclarationSQL</a>(array field)</p><p class="description">Gets the SQL snippet used to declare a VARCHAR column on the Oracle platform.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#modifyLimitQuery()">modifyLimitQuery</a>(string query, integer limit, integer offset)</p><p class="description">Adds an driver-specific LIMIT clause to the query</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#prefersSequences()">prefersSequences</a>()</p><p class="description">Whether the platform prefers sequences for ID generation.</p></td>
+</tr>
+<tr>
+<td class="type"> bool</td>
+<td class="description"><p class="name"><a href="#supportsForeignKeyOnUpdate()">supportsForeignKeyOnUpdate</a>()</p><p class="description">Does this platform supports onUpdate in foreign key constraints?</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#supportsSequences()">supportsSequences</a>()</p><p class="description">Whether the platform supports sequences.</p></td>
+</tr>
+</table>
+
+<table class="inherit">
+<tr><th colspan="2">Methods inherited from Doctrine\DBAL\Platforms\AbstractPlatform</th></tr>
+<tr><td><a href="../../../doctrine/dbal/platforms/abstractplatform.html#convertBooleans()">convertBooleans</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#createsExplicitIndexForForeignKeys()">createsExplicitIndexForForeignKeys</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#fixSchemaElementName()">fixSchemaElementName</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getAcosExpression()">getAcosExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getAdvancedForeignKeyOptionsSQL()">getAdvancedForeignKeyOptionsSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getAlterTableSQL()">getAlterTableSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getAvgExpression()">getAvgExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getBetweenExpression()">getBetweenExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getBigIntTypeDeclarationSQL()">getBigIntTypeDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getBooleanTypeDeclarationSQL()">getBooleanTypeDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getCheckDeclarationSQL()">getCheckDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getClobTypeDeclarationSQL()">getClobTypeDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getColumnCharsetDeclarationSQL()">getColumnCharsetDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getColumnCollationDeclarationSQL()">getColumnCollationDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getColumnDeclarationListSQL()">getColumnDeclarationListSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getColumnDeclarationSQL()">getColumnDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getConcatExpression()">getConcatExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getCosExpression()">getCosExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getCountExpression()">getCountExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getCreateConstraintSQL()">getCreateConstraintSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getCreateDatabaseSQL()">getCreateDatabaseSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getCreateForeignKeySQL()">getCreateForeignKeySQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getCreateIndexSQL()">getCreateIndexSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getCreateSequenceSQL()">getCreateSequenceSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getCreateTableSQL()">getCreateTableSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getCreateTemporaryTableSnippetSQL()">getCreateTemporaryTableSnippetSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getCreateViewSQL()">getCreateViewSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getCurrentDateSQL()">getCurrentDateSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getCurrentTimeSQL()">getCurrentTimeSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getCurrentTimestampSQL()">getCurrentTimestampSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getCustomTypeDeclarationSQL()">getCustomTypeDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getDateFormatString()">getDateFormatString</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getDateTimeFormatString()">getDateTimeFormatString</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getDateTimeTypeDeclarationSQL()">getDateTimeTypeDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getDateTypeDeclarationSQL()">getDateTypeDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getDecimalTypeDeclarationSQL()">getDecimalTypeDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getDefaultTransactionIsolationLevel()">getDefaultTransactionIsolationLevel</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getDefaultValueDeclarationSQL()">getDefaultValueDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getDropConstraintSQL()">getDropConstraintSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getDropDatabaseSQL()">getDropDatabaseSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getDropForeignKeySQL()">getDropForeignKeySQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getDropIndexSQL()">getDropIndexSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getDropSequenceSQL()">getDropSequenceSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getDropTableSQL()">getDropTableSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getDropViewSQL()">getDropViewSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getEmptyIdentityInsertSQL()">getEmptyIdentityInsertSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getForUpdateSql()">getForUpdateSql</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getForeignKeyBaseDeclarationSQL()">getForeignKeyBaseDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getForeignKeyDeclarationSQL()">getForeignKeyDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getForeignKeyReferentialActionSQL()">getForeignKeyReferentialActionSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getIdentifierQuoteCharacter()">getIdentifierQuoteCharacter</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getIdentityColumnNullInsertSQL()">getIdentityColumnNullInsertSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getInExpression()">getInExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getIndexDeclarationSQL()">getIndexDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getIndexFieldDeclarationListSQL()">getIndexFieldDeclarationListSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getIntegerTypeDeclarationSQL()">getIntegerTypeDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getIsNotNullExpression()">getIsNotNullExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getIsNullExpression()">getIsNullExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getLengthExpression()">getLengthExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getListDatabasesSQL()">getListDatabasesSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getListSequencesSQL()">getListSequencesSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getListTableColumnsSQL()">getListTableColumnsSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getListTableConstraintsSQL()">getListTableConstraintsSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getListTableForeignKeysSQL()">getListTableForeignKeysSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getListTableIndexesSQL()">getListTableIndexesSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getListTablesSQL()">getListTablesSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getListUsersSQL()">getListUsersSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getListViewsSQL()">getListViewsSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getLocateExpression()">getLocateExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getLowerExpression()">getLowerExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getLtrimExpression()">getLtrimExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getMaxExpression()">getMaxExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getMaxIdentifierLength()">getMaxIdentifierLength</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getMd5Expression()">getMd5Expression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getMinExpression()">getMinExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getModExpression()">getModExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getName()">getName</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getNotExpression()">getNotExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getNowExpression()">getNowExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getPiExpression()">getPiExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getRegexpExpression()">getRegexpExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getRoundExpression()">getRoundExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getRtrimExpression()">getRtrimExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getSQLResultCasing()">getSQLResultCasing</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getSequenceNextValSQL()">getSequenceNextValSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getSetCharsetSQL()">getSetCharsetSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getSetTransactionIsolationSQL()">getSetTransactionIsolationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getShowDatabasesSQL()">getShowDatabasesSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getSinExpression()">getSinExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getSmallIntTypeDeclarationSQL()">getSmallIntTypeDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getSqlCommentEndString()">getSqlCommentEndString</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getSqlCommentStartString()">getSqlCommentStartString</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getSubstringExpression()">getSubstringExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getSumExpression()">getSumExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getTemporaryTableSQL()">getTemporaryTableSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getTimeFormatString()">getTimeFormatString</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getTimeTypeDeclarationSQL()">getTimeTypeDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getTrimExpression()">getTrimExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getTruncateTableSQL()">getTruncateTableSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getUniqueConstraintDeclarationSQL()">getUniqueConstraintDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getUniqueFieldDeclarationSQL()">getUniqueFieldDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getUpperExpression()">getUpperExpression</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getVarcharMaxLength()">getVarcharMaxLength</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getVarcharTypeDeclarationSQL()">getVarcharTypeDeclarationSQL</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#getWildcards()">getWildcards</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#modifyLimitQuery()">modifyLimitQuery</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#prefersIdentityColumns()">prefersIdentityColumns</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#prefersSequences()">prefersSequences</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#quoteIdentifier()">quoteIdentifier</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#supportsAlterTable()">supportsAlterTable</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#supportsForeignKeyConstraints()">supportsForeignKeyConstraints</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#supportsForeignKeyOnUpdate()">supportsForeignKeyOnUpdate</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#supportsGettingAffectedRows()">supportsGettingAffectedRows</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#supportsIdentityColumns()">supportsIdentityColumns</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#supportsIndexes()">supportsIndexes</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#supportsPrimaryConstraints()">supportsPrimaryConstraints</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#supportsSavepoints()">supportsSavepoints</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#supportsSchemas()">supportsSchemas</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#supportsSequences()">supportsSequences</a>, <a href="../../../doctrine/dbal/platforms/abstractplatform.html#supportsTransactions()">supportsTransactions</a></td></tr></table>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 612</div>
+<h3 id="fixSchemaElementName()">fixSchemaElementName</h3>
+<code class="signature">public  string <strong>fixSchemaElementName</strong>(mixed schemaElementName, string schemaName)</code>
+<div class="details">
+<p>Makes any fixes to a name of a schema element (table, sequence, ...) that are required
+by restrictions of the platform, like a maximum length.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 493</div>
+<h3 id="getAlterTableSQL()">getAlterTableSQL</h3>
+<code class="signature">public  array <strong>getAlterTableSQL</strong>(<a href="../../../doctrine/dbal/schema/tablediff.html">TableDiff</a> diff, string diff->name, array changes, boolean check)</code>
+<div class="details">
+<p>Gets the sql statements for altering an existing table.</p><p>The method returns an array of sql statements, since some platforms need several statements.</p><dl>
+<dt>Parameters:</dt>
+<dd>diff->name - name of the table that is intended to be changed.</dd>
+<dd>changes - associative array that contains the details of each type *</dd>
+<dd>check - indicates whether the function should just check if the DBMS driver can perform the requested table alterations if the value is true or actually perform them otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 180</div>
+<h3 id="getBigIntTypeDeclarationSQL()">getBigIntTypeDeclarationSQL</h3>
+<code class="signature">public  string <strong>getBigIntTypeDeclarationSQL</strong>(mixed field, array columnDef)</code>
+<div class="details">
+<p></p><dl>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 164</div>
+<h3 id="getBooleanTypeDeclarationSQL()">getBooleanTypeDeclarationSQL</h3>
+<code class="signature">public  string <strong>getBooleanTypeDeclarationSQL</strong>(mixed field, array columnDef)</code>
+<div class="details">
+<p></p><dl>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 249</div>
+<h3 id="getClobTypeDeclarationSQL()">getClobTypeDeclarationSQL</h3>
+<code class="signature">public  void <strong>getClobTypeDeclarationSQL</strong>(array field)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 338</div>
+<h3 id="getCreateAutoincrementSql()">getCreateAutoincrementSql</h3>
+<code class="signature">public  void <strong>getCreateAutoincrementSql</strong>(mixed name, mixed table, mixed start)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 116</div>
+<h3 id="getCreateSequenceSQL()">getCreateSequenceSQL</h3>
+<code class="signature">public  string <strong>getCreateSequenceSQL</strong>(\Doctrine\DBAL\Schema\Sequence sequence)</code>
+<div class="details">
+<p>Gets the SQL used to create a sequence that starts with a given value
+and increments by the given allocation size.</p><p>Need to specifiy minvalue, since start with is hidden in the system and MINVALUE <= START WITH.
+Therefore we can use MINVALUE to be able to get a hint what START WITH was for later introspection
+in listSequences()</p><dl>
+<dt>Throws:</dt>
+<dd><a href="../../../doctrine/dbal/dbalexception.html">DBALException</a></dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 602</div>
+<h3 id="getCreateTemporaryTableSnippetSQL()">getCreateTemporaryTableSnippetSQL</h3>
+<code class="signature">public  void <strong>getCreateTemporaryTableSnippetSQL</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 328</div>
+<h3 id="getCreateViewSQL()">getCreateViewSQL</h3>
+<code class="signature">public  void <strong>getCreateViewSQL</strong>(mixed name, mixed sql)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 607</div>
+<h3 id="getDateTimeFormatString()">getDateTimeFormatString</h3>
+<code class="signature">public  string <strong>getDateTimeFormatString</strong>()</code>
+<div class="details">
+<p>Gets the format string, as accepted by the date() function, that describes
+the format of a stored datetime value of this platform.</p><dl>
+<dt>Returns:</dt>
+<dd>The format string.</dd>
+<dt>Todo:</dt>
+<dd>We need to get the specific format for each dbms and override this function for each platform</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 196</div>
+<h3 id="getDateTimeTypeDeclarationSQL()">getDateTimeTypeDeclarationSQL</h3>
+<code class="signature">public  string <strong>getDateTimeTypeDeclarationSQL</strong>(array fieldDeclaration)</code>
+<div class="details">
+<p></p><dl>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 204</div>
+<h3 id="getDateTypeDeclarationSQL()">getDateTypeDeclarationSQL</h3>
+<code class="signature">public  string <strong>getDateTypeDeclarationSQL</strong>(array fieldDeclaration)</code>
+<div class="details">
+<p></p><dl>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 389</div>
+<h3 id="getDropAutoincrementSql()">getDropAutoincrementSql</h3>
+<code class="signature">public  void <strong>getDropAutoincrementSql</strong>(mixed table)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 476</div>
+<h3 id="getDropDatabaseSQL()">getDropDatabaseSQL</h3>
+<code class="signature">public  void <strong>getDropDatabaseSQL</strong>(mixed database)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 463</div>
+<h3 id="getDropForeignKeySQL()">getDropForeignKeySQL</h3>
+<code class="signature">public  string <strong>getDropForeignKeySQL</strong>(ForeignKeyConstraint|string foreignKey, Table|string table)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 449</div>
+<h3 id="getDropSequenceSQL()">getDropSequenceSQL</h3>
+<code class="signature">public  string <strong>getDropSequenceSQL</strong>(\Doctrine\DBAL\Schema\Sequence sequence)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 333</div>
+<h3 id="getDropViewSQL()">getDropViewSQL</h3>
+<code class="signature">public  void <strong>getDropViewSQL</strong>(mixed name)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 100</div>
+<h3 id="getGuidExpression()">getGuidExpression</h3>
+<code class="signature">public  string <strong>getGuidExpression</strong>()</code>
+<div class="details">
+<p>Returns global unique identifier</p><dl>
+<dt>Returns:</dt>
+<dd>to get global unique identifier</dd>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 172</div>
+<h3 id="getIntegerTypeDeclarationSQL()">getIntegerTypeDeclarationSQL</h3>
+<code class="signature">public  string <strong>getIntegerTypeDeclarationSQL</strong>(mixed field, array columnDef)</code>
+<div class="details">
+<p></p><dl>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 254</div>
+<h3 id="getListDatabasesSQL()">getListDatabasesSQL</h3>
+<code class="signature">public  void <strong>getListDatabasesSQL</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 259</div>
+<h3 id="getListSequencesSQL()">getListSequencesSQL</h3>
+<code class="signature">public  void <strong>getListSequencesSQL</strong>(mixed database)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 438</div>
+<h3 id="getListTableColumnsSQL()">getListTableColumnsSQL</h3>
+<code class="signature">public  void <strong>getListTableColumnsSQL</strong>(mixed table)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 432</div>
+<h3 id="getListTableConstraintsSQL()">getListTableConstraintsSQL</h3>
+<code class="signature">public  void <strong>getListTableConstraintsSQL</strong>(mixed table)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 405</div>
+<h3 id="getListTableForeignKeysSQL()">getListTableForeignKeysSQL</h3>
+<code class="signature">public  void <strong>getListTableForeignKeysSQL</strong>(mixed table)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 304</div>
+<h3 id="getListTableIndexesSQL()">getListTableIndexesSQL</h3>
+<code class="signature">public  string <strong>getListTableIndexesSQL</strong>(string table)</code>
+<div class="details">
+<p></p><dl>
+<dt>License:</dt>
+<dd>New BSD License</dd>
+<dt>See Also:</dt>
+<dd><code><a href="http://ezcomponents.org/docs/api/trunk/DatabaseSchema/ezcDbSchemaOracleReader.html">http://ezcomponents.org/docs/api/trunk/DatabaseSchema/ezcDbSchemaOracleReader.html</a></code></dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 318</div>
+<h3 id="getListTablesSQL()">getListTablesSQL</h3>
+<code class="signature">public  void <strong>getListTablesSQL</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 323</div>
+<h3 id="getListViewsSQL()">getListViewsSQL</h3>
+<code class="signature">public  string <strong>getListViewsSQL</strong>(string database)</code>
+<div class="details">
+<p>Get the SQL to list all views of a database or user.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 85</div>
+<h3 id="getLocateExpression()">getLocateExpression</h3>
+<code class="signature">public  integer <strong>getLocateExpression</strong>(string str, string substr, mixed startPos, int pos)</code>
+<div class="details">
+<p>returns the position of the first occurrence of substring $substr in string $str</p><dl>
+<dt>Parameters:</dt>
+<dd>substr - literal string to find</dd>
+<dd>str - literal string</dd>
+<dd>pos - position to start at, beginning of string by default</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 626</div>
+<h3 id="getMaxIdentifierLength()">getMaxIdentifierLength</h3>
+<code class="signature">public  int <strong>getMaxIdentifierLength</strong>()</code>
+<div class="details">
+<p>Maximum length of any given databse identifier, like tables or column names.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 550</div>
+<h3 id="getName()">getName</h3>
+<code class="signature">public  string <strong>getName</strong>()</code>
+<div class="details">
+<p>Get the platform name for this instance</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 66</div>
+<h3 id="getNowExpression()">getNowExpression</h3>
+<code class="signature">public  string <strong>getNowExpression</strong>(mixed type)</code>
+<div class="details">
+<p>Return string to call a variable with the current timestamp inside an SQL statement
+There are three special variables for current date and time:
+- CURRENT_TIMESTAMP (date and time, TIMESTAMP type)
+- CURRENT_DATE (date, DATE type)
+- CURRENT_TIME (time, TIME type)</p><dl>
+<dt>Returns:</dt>
+<dd>to call a variable with the current timestamp</dd>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 597</div>
+<h3 id="getSQLResultCasing()">getSQLResultCasing</h3>
+<code class="signature">public  string <strong>getSQLResultCasing</strong>(string column)</code>
+<div class="details">
+<p>Gets the character casing of a column in an SQL result set of this platform.</p><p>Oracle returns all column names in SQL result sets in uppercase.</p><dl>
+<dt>Parameters:</dt>
+<dd>column - The column name for which to get the correct character casing.</dd>
+<dt>Returns:</dt>
+<dd>The column name in the character casing used in SQL result sets.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 130</div>
+<h3 id="getSequenceNextValSQL()">getSequenceNextValSQL</h3>
+<code class="signature">public  void <strong>getSequenceNextValSQL</strong>(string sequenceName)</code>
+<div class="details">
+<p></p><dl>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 141</div>
+<h3 id="getSetTransactionIsolationSQL()">getSetTransactionIsolationSQL</h3>
+<code class="signature">public  void <strong>getSetTransactionIsolationSQL</strong>(integer level)</code>
+<div class="details">
+<p></p><dl>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 188</div>
+<h3 id="getSmallIntTypeDeclarationSQL()">getSmallIntTypeDeclarationSQL</h3>
+<code class="signature">public  string <strong>getSmallIntTypeDeclarationSQL</strong>(mixed field, array columnDef)</code>
+<div class="details">
+<p></p><dl>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 47</div>
+<h3 id="getSubstringExpression()">getSubstringExpression</h3>
+<code class="signature">public  string <strong>getSubstringExpression</strong>(string value, integer position, integer length, integer from, integer len)</code>
+<div class="details">
+<p>return string to call a function to get a substring inside an SQL statement</p><p>Note: Not SQL92, but common functionality.</p><dl>
+<dt>Parameters:</dt>
+<dd>value - an sql string literal or column name/alias</dd>
+<dd>position - where to start the substring portion</dd>
+<dd>length - the substring portion length</dd>
+<dt>Returns:</dt>
+<dd>SQL substring function with given parameters</dd>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 212</div>
+<h3 id="getTimeTypeDeclarationSQL()">getTimeTypeDeclarationSQL</h3>
+<code class="signature">public  string <strong>getTimeTypeDeclarationSQL</strong>(array fieldDeclaration)</code>
+<div class="details">
+<p></p><dl>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 649</div>
+<h3 id="getTruncateTableSQL()">getTruncateTableSQL</h3>
+<code class="signature">public  string <strong>getTruncateTableSQL</strong>(string tableName, bool cascade)</code>
+<div class="details">
+<p></p><dl>
+<dt>Inheritdoc.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 231</div>
+<h3 id="getVarcharTypeDeclarationSQL()">getVarcharTypeDeclarationSQL</h3>
+<code class="signature">public  void <strong>getVarcharTypeDeclarationSQL</strong>(array field)</code>
+<div class="details">
+<p>Gets the SQL snippet used to declare a VARCHAR column on the Oracle platform.</p><dl>
+<dt>Params:</dt>
+<dd>array $field</dd>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 563</div>
+<h3 id="modifyLimitQuery()">modifyLimitQuery</h3>
+<code class="signature">public  string <strong>modifyLimitQuery</strong>(string query, integer limit, integer offset)</code>
+<div class="details">
+<p>Adds an driver-specific LIMIT clause to the query</p><dl>
+<dt>Parameters:</dt>
+<dd>query - query to modify</dd>
+<dd>limit - limit the number of rows</dd>
+<dd>offset - start reading from given offset</dd>
+<dt>Returns:</dt>
+<dd>the modified query</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 540</div>
+<h3 id="prefersSequences()">prefersSequences</h3>
+<code class="signature">public  boolean <strong>prefersSequences</strong>()</code>
+<div class="details">
+<p>Whether the platform prefers sequences for ID generation.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 641</div>
+<h3 id="supportsForeignKeyOnUpdate()">supportsForeignKeyOnUpdate</h3>
+<code class="signature">public  bool <strong>supportsForeignKeyOnUpdate</strong>()</code>
+<div class="details">
+<p>Does this platform supports onUpdate in foreign key constraints?</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Platforms/OraclePlatform.php at line 636</div>
+<h3 id="supportsSequences()">supportsSequences</h3>
+<code class="signature">public  boolean <strong>supportsSequences</strong>()</code>
+<div class="details">
+<p>Whether the platform supports sequences.</p></div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/dbal/platforms/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/dbal/platforms/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/dbal/platforms/oracleplatform.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

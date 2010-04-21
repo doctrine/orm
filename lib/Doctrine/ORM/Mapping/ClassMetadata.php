@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -72,11 +70,10 @@ class ClassMetadata extends ClassMetadataInfo
      */
     public function __construct($entityName)
     {
-        $this->name = $entityName;
-        $this->reflClass = new \ReflectionClass($entityName);
+        parent::__construct($entityName);
+        $this->reflClass = new ReflectionClass($entityName);
         $this->namespace = $this->reflClass->getNamespaceName();
         $this->table['name'] = $this->reflClass->getShortName();
-        $this->rootEntityName = $entityName;
     }
 
     /**
@@ -97,18 +94,6 @@ class ClassMetadata extends ClassMetadataInfo
     public function getReflectionProperties()
     {
         return $this->reflFields;
-    }
-
-    /**
-     * INTERNAL:
-     * Adds a reflection property. Usually only used by the ClassMetadataFactory
-     * while processing inheritance mappings.
-     *
-     * @param array $props
-     */
-    public function addReflectionProperty($propName, \ReflectionProperty $property)
-    {
-        $this->reflFields[$propName] = $property;
     }
 
     /**
@@ -189,7 +174,7 @@ class ClassMetadata extends ClassMetadataInfo
     public function setIdentifierValues($entity, $id)
     {
         if ($this->isIdentifierComposite) {
-            foreach ((array)$id as $idField => $idValue) {
+            foreach ($id as $idField => $idValue) {
                 $this->reflFields[$idField]->setValue($entity, $idValue);
             }
         } else {
@@ -221,18 +206,6 @@ class ClassMetadata extends ClassMetadataInfo
     }
 
     /**
-     * Sets the field mapped to the specified column to the specified value on the given entity.
-     *
-     * @param object $entity
-     * @param string $field
-     * @param mixed $value
-     */
-    public function setColumnValue($entity, $column, $value)
-    {
-        $this->reflFields[$this->fieldNames[$column]]->setValue($entity, $value);
-    }
-
-    /**
      * Stores the association mapping.
      *
      * @param AssociationMapping $assocMapping
@@ -243,10 +216,10 @@ class ClassMetadata extends ClassMetadataInfo
 
         // Store ReflectionProperty of mapped field
         $sourceFieldName = $assocMapping->sourceFieldName;
-        
-	    $refProp = $this->reflClass->getProperty($sourceFieldName);
-	    $refProp->setAccessible(true);
-	    $this->reflFields[$sourceFieldName] = $refProp;
+
+        $refProp = $this->reflClass->getProperty($sourceFieldName);
+        $refProp->setAccessible(true);
+        $this->reflFields[$sourceFieldName] = $refProp;
     }
 
     /**
@@ -314,7 +287,6 @@ class ClassMetadata extends ClassMetadataInfo
             'identifier',
             'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.
             'inheritanceType',
-            'inheritedAssociationFields',
             'isIdentifierComposite',
             'isMappedSuperclass',
             'isVersioned',
@@ -337,20 +309,20 @@ class ClassMetadata extends ClassMetadataInfo
     {
         // Restore ReflectionClass and properties
         $this->reflClass = new ReflectionClass($this->name);
-        
+
         foreach ($this->fieldMappings as $field => $mapping) {
-	        if (isset($mapping['inherited'])) {
-	            $reflField = new ReflectionProperty($mapping['inherited'], $field);
-	        } else {
-	            $reflField = $this->reflClass->getProperty($field);
-	        }
+            if (isset($mapping['declared'])) {
+                $reflField = new ReflectionProperty($mapping['declared'], $field);
+            } else {
+                $reflField = $this->reflClass->getProperty($field);
+            }
             $reflField->setAccessible(true);
             $this->reflFields[$field] = $reflField;
         }
 
         foreach ($this->associationMappings as $field => $mapping) {
-            if (isset($this->inheritedAssociationFields[$field])) {
-                $reflField = new ReflectionProperty($this->inheritedAssociationFields[$field], $field);
+            if ($mapping->declared) {
+                $reflField = new ReflectionProperty($mapping->declared, $field);
             } else {
                 $reflField = $this->reflClass->getProperty($field);
             }

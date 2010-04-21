@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:06 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../../stylesheet.css">
+<link rel="start" href="../../../../overview-summary.html">
+
+<title>MultiTableDeleteExecutor (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../../doctrine/orm/query/exec/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../../doctrine/orm/query/exec/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../../index.html" target="_top">Frames</a>
+<a href="../../../../doctrine/orm/query/exec/multitabledeleteexecutor.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Query\Exec\MultiTableDeleteExecutor</div>
+<div class="location">/Doctrine/ORM/Query/Exec/MultiTableDeleteExecutor.php at line 37</div>
+
+<h1>Class MultiTableDeleteExecutor</h1>
+
+<pre class="tree">Class:MultiTableDeleteExecutor - Superclass: AbstractSqlExecutor
+<a href="../../../../doctrine/orm/query/exec/abstractsqlexecutor.html">AbstractSqlExecutor</a><br>   &lfloor;&nbsp;<strong>MultiTableDeleteExecutor</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>MultiTableDeleteExecutor</strong><br>extends <a href="../../../../doctrine/orm/query/exec/abstractsqlexecutor.html">AbstractSqlExecutor</a>
+
+</p>
+
+<div class="comment" id="overview_description"><p>Executes the SQL statements for bulk DQL DELETE statements on classes in
+Class Table Inheritance (JOINED).</p></div>
+
+<dl>
+<dt>Author:</dt>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code><a href="http://www.doctrine-project.org">http://www.doctrine-project.org</a></code></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision$</dd>
+<dt>Todo:</dt>
+<dd>Rename: AbstractSQLExecutor</dd>
+</dl>
+<hr>
+
+<table class="inherit">
+<tr><th colspan="2">Fields inherited from Doctrine\ORM\Query\Exec\AbstractSqlExecutor</th></tr>
+<tr><td><a href="../../../../doctrine/orm/query/exec/abstractsqlexecutor.html#_sqlStatements">_sqlStatements</a></td></tr></table>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#MultiTableDeleteExecutor()">MultiTableDeleteExecutor</a>(<a href="../../../../doctrine/orm/query/ast/node.html">Node</a> AST, <a href="../../../../doctrine/orm/query/sqlwalker.html">SqlWalker</a> sqlWalker)</p><p class="description">Initializes a new MultiTableDeleteExecutor.</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> Doctrine\DBAL\Driver\Statement</td>
+<td class="description"><p class="name"><a href="#execute()">execute</a>(Doctrine\DBAL\Connection conn, array params, mixed types)</p><p class="description">Executes all SQL statements.</p></td>
+</tr>
+</table>
+
+<table class="inherit">
+<tr><th colspan="2">Methods inherited from Doctrine\ORM\Query\Exec\AbstractSqlExecutor</th></tr>
+<tr><td><a href="../../../../doctrine/orm/query/exec/abstractsqlexecutor.html#execute()">execute</a>, <a href="../../../../doctrine/orm/query/exec/abstractsqlexecutor.html#getSqlStatements()">getSqlStatements</a></td></tr></table>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/ORM/Query/Exec/MultiTableDeleteExecutor.php at line 51</div>
+<h3 id="MultiTableDeleteExecutor()">MultiTableDeleteExecutor</h3>
+<code class="signature">public <strong>MultiTableDeleteExecutor</strong>(<a href="../../../../doctrine/orm/query/ast/node.html">Node</a> AST, <a href="../../../../doctrine/orm/query/sqlwalker.html">SqlWalker</a> sqlWalker)</code>
+<div class="details">
+<p>Initializes a new <tt>MultiTableDeleteExecutor</tt>.</p><dl>
+<dt>Parameters:</dt>
+<dd>AST - The root AST node of the DQL query.</dd>
+<dd>sqlWalker - The walker used for SQL generation from the AST.</dd>
+<dt>Internal:</dt>
+<dd>Any SQL construction and preparation takes place in the constructor for best performance. With a query cache the executor will be cached.</dd>
+</dl>
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Query/Exec/MultiTableDeleteExecutor.php at line 110</div>
+<h3 id="execute()">execute</h3>
+<code class="signature">public  Doctrine\DBAL\Driver\Statement <strong>execute</strong>(Doctrine\DBAL\Connection conn, array params, mixed types)</code>
+<div class="details">
+<p>Executes all SQL statements.</p><dl>
+<dt>Parameters:</dt>
+<dd>conn - The database connection that is used to execute the queries.</dd>
+<dd>params - The parameters.</dd>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../../doctrine/orm/query/exec/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../../doctrine/orm/query/exec/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../../index.html" target="_top">Frames</a>
+<a href="../../../../doctrine/orm/query/exec/multitabledeleteexecutor.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

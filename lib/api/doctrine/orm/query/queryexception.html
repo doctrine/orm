@@ -1,0 +1,271 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>QueryException (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/query/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/query/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/query/queryexception.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Query\QueryException</div>
+<div class="location">/Doctrine/ORM/Query/QueryException.php at line 38</div>
+
+<h1>Class QueryException</h1>
+
+<pre class="tree">Class:QueryException - Superclass: Doctrine
+Doctrine<br>&lfloor;&nbsp;<strong>QueryException</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>QueryException</strong><br>extends Doctrine
+
+</p>
+
+<div class="comment" id="overview_description"><p>Description of QueryException</p></div>
+
+<dl>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision: 3938 $</dd>
+<dt>Author:</dt>
+<dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
+<dd>Jonathan Wage <jonwage@gmail.com></dd>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dd>Benjamin Eberlei <kontakt@beberlei.de></dd>
+</dl>
+<hr>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#associationPathCompositeKeyNotSupported()">associationPathCompositeKeyNotSupported</a>()</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#associationPathInverseSideNotSupported()">associationPathInverseSideNotSupported</a>()</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#invalidLiteral()">invalidLiteral</a>(mixed literal)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#invalidParameterFormat()">invalidParameterFormat</a>(mixed value)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#invalidParameterNumber()">invalidParameterNumber</a>()</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#invalidParameterPosition()">invalidParameterPosition</a>(mixed pos)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#invalidPathExpression()">invalidPathExpression</a>(mixed pathExpr)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#iterateWithFetchJoinCollectionNotAllowed()">iterateWithFetchJoinCollectionNotAllowed</a>(Doctrine\ORM\Mapping\AssociationMapping assoc)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#iterateWithFetchJoinNotAllowed()">iterateWithFetchJoinNotAllowed</a>(mixed assoc)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#overwritingJoinConditionsNotYetSupported()">overwritingJoinConditionsNotYetSupported</a>(mixed assoc)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#partialObjectsAreDangerous()">partialObjectsAreDangerous</a>()</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#semanticalError()">semanticalError</a>(mixed message)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#syntaxError()">syntaxError</a>(mixed message)</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#unknownParameter()">unknownParameter</a>(mixed key)</p></td>
+</tr>
+</table>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Query/QueryException.php at line 126</div>
+<h3 id="associationPathCompositeKeyNotSupported()">associationPathCompositeKeyNotSupported</h3>
+<code class="signature">public static  void <strong>associationPathCompositeKeyNotSupported</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/QueryException.php at line 111</div>
+<h3 id="associationPathInverseSideNotSupported()">associationPathInverseSideNotSupported</h3>
+<code class="signature">public static  void <strong>associationPathInverseSideNotSupported</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/QueryException.php at line 78</div>
+<h3 id="invalidLiteral()">invalidLiteral</h3>
+<code class="signature">public static  void <strong>invalidLiteral</strong>(mixed literal)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/QueryException.php at line 60</div>
+<h3 id="invalidParameterFormat()">invalidParameterFormat</h3>
+<code class="signature">public static  void <strong>invalidParameterFormat</strong>(mixed value)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/QueryException.php at line 55</div>
+<h3 id="invalidParameterNumber()">invalidParameterNumber</h3>
+<code class="signature">public static  void <strong>invalidParameterNumber</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/QueryException.php at line 50</div>
+<h3 id="invalidParameterPosition()">invalidParameterPosition</h3>
+<code class="signature">public static  void <strong>invalidParameterPosition</strong>(mixed pos)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/QueryException.php at line 70</div>
+<h3 id="invalidPathExpression()">invalidPathExpression</h3>
+<code class="signature">public static  void <strong>invalidPathExpression</strong>(mixed pathExpr)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/QueryException.php at line 85</div>
+<h3 id="iterateWithFetchJoinCollectionNotAllowed()">iterateWithFetchJoinCollectionNotAllowed</h3>
+<code class="signature">public static  void <strong>iterateWithFetchJoinCollectionNotAllowed</strong>(Doctrine\ORM\Mapping\AssociationMapping assoc)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/QueryException.php at line 119</div>
+<h3 id="iterateWithFetchJoinNotAllowed()">iterateWithFetchJoinNotAllowed</h3>
+<code class="signature">public static  void <strong>iterateWithFetchJoinNotAllowed</strong>(mixed assoc)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/QueryException.php at line 102</div>
+<h3 id="overwritingJoinConditionsNotYetSupported()">overwritingJoinConditionsNotYetSupported</h3>
+<code class="signature">public static  void <strong>overwritingJoinConditionsNotYetSupported</strong>(mixed assoc)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/QueryException.php at line 93</div>
+<h3 id="partialObjectsAreDangerous()">partialObjectsAreDangerous</h3>
+<code class="signature">public static  void <strong>partialObjectsAreDangerous</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/QueryException.php at line 45</div>
+<h3 id="semanticalError()">semanticalError</h3>
+<code class="signature">public static  void <strong>semanticalError</strong>(mixed message)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/QueryException.php at line 40</div>
+<h3 id="syntaxError()">syntaxError</h3>
+<code class="signature">public static  void <strong>syntaxError</strong>(mixed message)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/QueryException.php at line 65</div>
+<h3 id="unknownParameter()">unknownParameter</h3>
+<code class="signature">public static  void <strong>unknownParameter</strong>(mixed key)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/query/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/query/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/query/queryexception.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

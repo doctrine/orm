@@ -30,11 +30,14 @@ $proxiesClassLoader->register();
 $config = new Configuration;
 $cache = new ApcCache;
 $config->setMetadataCacheImpl($cache);
+$driverImpl = $config->newDefaultAnnotationDriver(array(__DIR__."/Entities"));
+$config->setMetadataDriverImpl($driverImpl);
 $config->setQueryCacheImpl($cache);
 
 // Proxy configuration
 $config->setProxyDir(__DIR__ . '/Proxies');
 $config->setProxyNamespace('Proxies');
+$config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache);
 
 // Database connection information
 $connectionOptions = array(

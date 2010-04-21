@@ -1,0 +1,260 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>TableDiff (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/dbal/schema/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/dbal/schema/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/dbal/schema/tablediff.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\DBAL\Schema\TableDiff</div>
+<div class="location">/Doctrine/DBAL/Schema/TableDiff.php at line 35</div>
+
+<h1>Class TableDiff</h1>
+
+<pre class="tree"><strong>TableDiff</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>TableDiff</strong></p>
+
+<div class="comment" id="overview_description"><p>Table Diff</p></div>
+
+<dl>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dd>http://ez.no/licenses/new_bsd New BSD License</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Copyright:</dt>
+<dd>Copyright (C) 2005-2009 eZ Systems AS. All rights reserved.</dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision$</dd>
+<dt>Author:</dt>
+<dd>Benjamin Eberlei <kontakt@beberlei.de></dd>
+</dl>
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type"> array(string=>Column)</td>
+<td class="description"><p class="name"><a href="#addedColumns">$addedColumns</a></p><p class="description">All added fields</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#addedForeignKeys">$addedForeignKeys</a></p><p class="description">All added foreign key definitions</p></td>
+</tr>
+<tr>
+<td class="type"> array(string=>Index)</td>
+<td class="description"><p class="name"><a href="#addedIndexes">$addedIndexes</a></p><p class="description">All added indexes</p></td>
+</tr>
+<tr>
+<td class="type"> array(string=>Column)</td>
+<td class="description"><p class="name"><a href="#changedColumns">$changedColumns</a></p><p class="description">All changed fields</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#changedForeignKeys">$changedForeignKeys</a></p><p class="description">All changed foreign keys</p></td>
+</tr>
+<tr>
+<td class="type"> array(string=>Index)</td>
+<td class="description"><p class="name"><a href="#changedIndexes">$changedIndexes</a></p><p class="description">All changed indexes</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#name">$name</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#newName">$newName</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> array(string=>bool)</td>
+<td class="description"><p class="name"><a href="#removedColumns">$removedColumns</a></p><p class="description">All removed fields</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#removedForeignKeys">$removedForeignKeys</a></p><p class="description">All removed foreign keys</p></td>
+</tr>
+<tr>
+<td class="type"> array(string=>bool)</td>
+<td class="description"><p class="name"><a href="#removedIndexes">$removedIndexes</a></p><p class="description">All removed indexes</p></td>
+</tr>
+<tr>
+<td class="type"> array(string=>Column)</td>
+<td class="description"><p class="name"><a href="#renamedColumns">$renamedColumns</a></p><p class="description">Columns that are only renamed from key to column instance name.</p></td>
+</tr>
+</table>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#TableDiff()">TableDiff</a>(mixed tableName, array(string=>Column) addedColumns, array(string=>Column) changedColumns, array(string=>bool) removedColumns, array(string=>Index) addedIndexes, array(string=>Index) changedIndexes, array(string=>bool) removedIndexes)</p><p class="description">Constructs an TableDiff object.</p></td>
+</tr>
+</table>
+
+<h2 id="detail_field">Field Detail</h2>
+<div class="location">/Doctrine/DBAL/Schema/TableDiff.php at line 52</div>
+<h3 id="addedColumns">addedColumns</h3>
+<code class="signature">public  array(string=>Column) <strong>$addedColumns</strong></code>
+<div class="details">
+<p>All added fields</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/TableDiff.php at line 101</div>
+<h3 id="addedForeignKeys">addedForeignKeys</h3>
+<code class="signature">public  array <strong>$addedForeignKeys</strong> = array()</code>
+<div class="details">
+<p>All added foreign key definitions</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/TableDiff.php at line 80</div>
+<h3 id="addedIndexes">addedIndexes</h3>
+<code class="signature">public  array(string=>Index) <strong>$addedIndexes</strong> = array()</code>
+<div class="details">
+<p>All added indexes</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/TableDiff.php at line 59</div>
+<h3 id="changedColumns">changedColumns</h3>
+<code class="signature">public  array(string=>Column) <strong>$changedColumns</strong> = array()</code>
+<div class="details">
+<p>All changed fields</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/TableDiff.php at line 108</div>
+<h3 id="changedForeignKeys">changedForeignKeys</h3>
+<code class="signature">public  array <strong>$changedForeignKeys</strong> = array()</code>
+<div class="details">
+<p>All changed foreign keys</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/TableDiff.php at line 87</div>
+<h3 id="changedIndexes">changedIndexes</h3>
+<code class="signature">public  array(string=>Index) <strong>$changedIndexes</strong> = array()</code>
+<div class="details">
+<p>All changed indexes</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/TableDiff.php at line 40</div>
+<h3 id="name">name</h3>
+<code class="signature">public  string <strong>$name</strong> = null</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/TableDiff.php at line 45</div>
+<h3 id="newName">newName</h3>
+<code class="signature">public  string <strong>$newName</strong> = false</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/TableDiff.php at line 66</div>
+<h3 id="removedColumns">removedColumns</h3>
+<code class="signature">public  array(string=>bool) <strong>$removedColumns</strong> = array()</code>
+<div class="details">
+<p>All removed fields</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/TableDiff.php at line 115</div>
+<h3 id="removedForeignKeys">removedForeignKeys</h3>
+<code class="signature">public  array <strong>$removedForeignKeys</strong> = array()</code>
+<div class="details">
+<p>All removed foreign keys</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/TableDiff.php at line 94</div>
+<h3 id="removedIndexes">removedIndexes</h3>
+<code class="signature">public  array(string=>bool) <strong>$removedIndexes</strong> = array()</code>
+<div class="details">
+<p>All removed indexes</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/TableDiff.php at line 73</div>
+<h3 id="renamedColumns">renamedColumns</h3>
+<code class="signature">public  array(string=>Column) <strong>$renamedColumns</strong> = array()</code>
+<div class="details">
+<p>Columns that are only renamed from key to column instance name.</p></div>
+
+<hr>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/DBAL/Schema/TableDiff.php at line 127</div>
+<h3 id="TableDiff()">TableDiff</h3>
+<code class="signature">public <strong>TableDiff</strong>(mixed tableName, array(string=>Column) addedColumns, array(string=>Column) changedColumns, array(string=>bool) removedColumns, array(string=>Index) addedIndexes, array(string=>Index) changedIndexes, array(string=>bool) removedIndexes)</code>
+<div class="details">
+<p>Constructs an TableDiff object.</p></div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/dbal/schema/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/dbal/schema/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/dbal/schema/tablediff.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

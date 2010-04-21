@@ -78,14 +78,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     public function getOwningTable($fieldName)
     {
         if ( ! isset($this->_owningTableMap[$fieldName])) {
-            if (isset($this->_class->associationMappings[$fieldName])) {
-                if (isset($this->_class->inheritedAssociationFields[$fieldName])) {
-                    $this->_owningTableMap[$fieldName] = $this->_em->getClassMetadata(
-                        $this->_class->inheritedAssociationFields[$fieldName]
-                        )->table['name'];
-                } else {
-                    $this->_owningTableMap[$fieldName] = $this->_class->table['name'];
-                }
+            if (isset($this->_class->associationMappings[$fieldName]->inherited)) {
+                $this->_owningTableMap[$fieldName] = $this->_em->getClassMetadata(
+                    $this->_class->associationMappings[$fieldName]->inherited
+                    )->table['name'];
             } else if (isset($this->_class->fieldMappings[$fieldName]['inherited'])) {
                 $this->_owningTableMap[$fieldName] = $this->_em->getClassMetadata(
                     $this->_class->fieldMappings[$fieldName]['inherited']
@@ -252,9 +248,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             // Add foreign key columns
             foreach ($this->_class->associationMappings as $assoc) {
                 if ($assoc->isOwningSide && $assoc->isOneToOne()) {
-                    $tableAlias = isset($this->_class->inheritedAssociationFields[$assoc->sourceFieldName]) ?
-                    $this->_getSQLTableAlias($this->_em->getClassMetadata($this->_class->inheritedAssociationFields[$assoc->sourceFieldName]))
-                    : $baseTableAlias;
+                    $tableAlias = $assoc->inherited ?
+                            $this->_getSQLTableAlias($this->_em->getClassMetadata($assoc->inherited))
+                            : $baseTableAlias;
                     foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
                         $columnAlias = $srcColumn . $this->_sqlAliasCounter++;
                         $columnList .= ", $tableAlias.$srcColumn AS $columnAlias";
@@ -308,7 +304,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
                 // Add join columns (foreign keys)
                 foreach ($subClass->associationMappings as $assoc2) {
-                    if ($assoc2->isOwningSide && $assoc2->isOneToOne() && ! isset($subClass->inheritedAssociationFields[$assoc2->sourceFieldName])) {
+                    if ($assoc2->isOwningSide && $assoc2->isOneToOne() && ! $assoc2->inherited) {
                         foreach ($assoc2->targetToSourceKeyColumns as $srcColumn) {
                             $columnAlias = $srcColumn . $this->_sqlAliasCounter++;
                             $columnList .= ', ' . $tableAlias . ".$srcColumn AS $columnAlias";
@@ -377,7 +373,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         foreach ($this->_class->reflFields as $name => $field) {
             if (isset($this->_class->fieldMappings[$name]['inherited']) && ! isset($this->_class->fieldMappings[$name]['id'])
-                    || isset($this->_class->inheritedAssociationFields[$name])
+                    || isset($this->_class->associationMappings[$name]->inherited)
                     || ($this->_class->isVersioned && $this->_class->versionField == $name)) {
                 continue;
             }

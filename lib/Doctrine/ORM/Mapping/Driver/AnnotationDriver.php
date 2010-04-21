@@ -428,40 +428,41 @@ class AnnotationDriver implements Driver
             return $this->_classNames;
         }
 
+        if (!$this->_paths) {
+            throw MappingException::pathRequired();
+        }
+
         $classes = array();
+        $includedFiles = array();
 
-        if ($this->_paths) {
-            $includedFiles = array();
-
-            foreach ((array) $this->_paths as $path) {
-                if ( ! is_dir($path)) {
-                    throw MappingException::fileMappingDriversRequireConfiguredDirectoryPath();
-                }
-
-                $iterator = new \RecursiveIteratorIterator(
-                    new \RecursiveDirectoryIterator($path),
-                    \RecursiveIteratorIterator::LEAVES_ONLY
-                );
-
-                foreach ($iterator as $file) {
-                    if (($fileName = $file->getBasename($this->_fileExtension)) == $file->getBasename()) {
-                        continue;
-                    }
-                    
-                    $sourceFile = realpath($file->getPathName());
-                    require_once $sourceFile;
-                    $includedFiles[] = $sourceFile;
-                }
+        foreach ($this->_paths as $path) {
+            if ( ! is_dir($path)) {
+                throw MappingException::fileMappingDriversRequireConfiguredDirectoryPath();
             }
 
-            $declared = get_declared_classes();
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($path),
+                \RecursiveIteratorIterator::LEAVES_ONLY
+            );
 
-            foreach ($declared as $className) {
-                $rc = new \ReflectionClass($className);
-                $sourceFile = $rc->getFileName();
-                if (in_array($sourceFile, $includedFiles) && ! $this->isTransient($className)) {
-                    $classes[] = $className;
+            foreach ($iterator as $file) {
+                if (($fileName = $file->getBasename($this->_fileExtension)) == $file->getBasename()) {
+                    continue;
                 }
+
+                $sourceFile = realpath($file->getPathName());
+                require_once $sourceFile;
+                $includedFiles[] = $sourceFile;
+            }
+        }
+
+        $declared = get_declared_classes();
+
+        foreach ($declared as $className) {
+            $rc = new \ReflectionClass($className);
+            $sourceFile = $rc->getFileName();
+            if (in_array($sourceFile, $includedFiles) && ! $this->isTransient($className)) {
+                $classes[] = $className;
             }
         }
 
@@ -470,4 +471,19 @@ class AnnotationDriver implements Driver
         return $classes;
     }
 
+    /**
+     * Factory method for the Annotation Driver
+     * 
+     * @param array|string $paths
+     * @param AnnotationReader $reader
+     * @return AnnotationDriver
+     */
+    static public function create($paths = array(), AnnotationReader $reader = null)
+    {
+        if ($reader == null) {
+            $reader = new AnnotationReader();
+            $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
+        }
+        return new self($reader, $paths);
+    }
 }

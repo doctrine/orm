@@ -10,6 +10,9 @@ $classLoader->register();
 
 $config = new \Doctrine\ORM\Configuration();
 $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache);
+$driverImpl = $config->newDefaultAnnotationDriver(array(__DIR__."/Entities"));
+$config->setMetadataDriverImpl($driverImpl);
+
 $config->setProxyDir(__DIR__ . '/Proxies');
 $config->setProxyNamespace('Proxies');
 

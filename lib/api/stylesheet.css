@@ -1,0 +1,216 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+	font-family: "Times New Roman", Times, serif;
+	margin: 0px;
+	padding: 10px;
+	font-size: 100%;
+    background-color: #fff;
+    color: #000;
+}
+
+a {
+    color: #00f;
+}
+
+a:visited {
+    color: #518;
+}
+
+table {
+    width: 100%;
+    margin: 10px 0;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 2px solid #999;
+}
+
+th {
+    padding: 2px 4px;
+    background-color: #ccf;
+    text-align: left;
+    font-size: 140%;
+}
+
+td {
+    padding: 2px 4px;
+}
+
+td p {
+    padding: 0;
+    margin: 0;
+}
+
+hr, p, dl, ul, ol, h1, h2, h3, h4, h5, h6 {
+    margin: 5px 0;
+}
+
+dt {
+    font-weight: bold;
+}
+
+dd {
+    margin-left: 40px;
+}
+
+ul, ol {
+    margin-left: 30px;
+}
+
+p {
+    margin-left: 10px;
+}
+
+h1 {
+    font-size: 140%;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+h2 {
+    font-size: 120%;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* page header */
+
+div.header {
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #eef;
+    margin: 0 0 10px;
+    padding: 4px 0;
+}
+
+div.header h1 {
+    float: right;
+    font-size: 100%;
+    font-style: italic;
+    padding: 0 4px;
+    margin: 0;
+}
+
+div.header ul {
+    list-style: none;
+    margin: 0;
+}
+
+div.header ul li {
+    display: inline;
+    font-size: 100%;
+    font-weight: bold;
+    padding: 0 4px;
+}
+
+div.header ul li.active {
+    background-color: #00008c;
+    color: #fff;
+}
+
+div.header ul li a:visited {
+    color: #000;
+}
+
+/* small links */
+
+div.small_links {
+    text-transform: uppercase;
+    font-size: 65%;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 8px;
+}
+
+/* footer */
+
+p#footer {
+	font-size: 80%;
+}
+
+/* frames */
+
+#frame h1 {
+    font-size: 120%;
+}
+
+#frame h2 {
+    font-size: 100%;
+}
+
+#frame ul {
+    list-style: none;
+    margin-left: 10px;
+}
+
+/* definition writer */
+
+div.qualifiedName {
+    font-size: 80%;
+    font-weight: bold;
+    margin: 10px 0 0;
+}
+
+div.location {
+    font-size: 80%;
+	float: right;
+}
+
+#definition h1 {
+    margin: 0 0 10px;
+    font-family: "Times New Roman", Times, serif;
+}
+
+#definition h2 {
+    border: 2px solid #999;
+    padding: 2px;
+    background-color: #ccf;
+    text-align: left;
+    font-size: 140%;
+    font-family: "Times New Roman", Times, serif;
+}
+
+pre.tree {
+    margin: 10px 0;
+}
+
+table.inherit th {
+    background-color: #eef;
+    font-size: 120%;
+}
+
+p.signature, div.comment {
+    margin: 10px 0;
+}
+
+code.signature {
+    display: block;
+    margin: 10px 0;
+}
+
+div.details {
+    margin: 10px 0 10px 20px;
+}
+
+td.type {
+    text-align: right;
+    vertical-align: top;
+    font-family: monospace;
+}
+
+td p.name {
+    font-family: monospace;
+}
+
+td p.description {
+    margin: 2px 0 0 20px;
+}
+
+/* tree */
+
+#tree ul ul {
+    margin-top: 0;
+    margin-bottom: 0;
+}

@@ -10,6 +10,12 @@ namespace Doctrine\ORM;
  */
 class ORMException extends \Exception
 {
+    public static function missingMappingDriverImpl()
+    {
+        return new self("It's a requirement to specify a Metadata Driver and pass it ".
+            "to Doctrine\ORM\Configuration::setMetadataDriverImpl().");
+    }
+
     public static function entityMissingAssignedId($entity)
     {
         return new self("Entity of type " . get_class($entity) . " is missing an assigned ID.");

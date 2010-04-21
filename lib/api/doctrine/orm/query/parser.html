@@ -1,0 +1,1315 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>Parser (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/query/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/query/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/query/parser.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Query\Parser</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 39</div>
+
+<h1>Class Parser</h1>
+
+<pre class="tree"><strong>Parser</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>Parser</strong></p>
+
+<div class="comment" id="overview_description"><p>An LL(*) recursive-descent parser for the context-free grammar of the Doctrine Query Language.
+Parses a DQL query, reports any errors in it, and generates an AST.</p></div>
+
+<dl>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision: 3938 $</dd>
+<dt>Author:</dt>
+<dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
+<dd>Jonathan Wage <jonwage@gmail.com></dd>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dd>Janne Vanhala <jpvanhal@cc.hut.fi></dd>
+</dl>
+<hr>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#Parser()">Parser</a>(<a href="../../../doctrine/orm/query.html">Query</a> query)</p><p class="description">Creates a new query parser object.</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#AbstractSchemaName()">AbstractSchemaName</a>()</p><p class="description">AbstractSchemaName ::= identifier</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\AggregateExpression</td>
+<td class="description"><p class="name"><a href="#AggregateExpression()">AggregateExpression</a>()</p><p class="description">AggregateExpression ::=
+("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] StateFieldPathExpression ")" |
+"COUNT" "(" ["DISTINCT"] (IdentificationVariable | SingleValuedPathExpression) ")"</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#AliasIdentificationVariable()">AliasIdentificationVariable</a>()</p><p class="description">AliasIdentificationVariable = identifier</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#AliasResultVariable()">AliasResultVariable</a>()</p><p class="description">AliasResultVariable ::= identifier</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\ArithmeticExpression</td>
+<td class="description"><p class="name"><a href="#ArithmeticExpression()">ArithmeticExpression</a>()</p><p class="description">ArithmeticExpression ::= SimpleArithmeticExpression | "(" Subselect ")"</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\ArithmeticFactor</td>
+<td class="description"><p class="name"><a href="#ArithmeticFactor()">ArithmeticFactor</a>()</p><p class="description">ArithmeticFactor ::= [("+" | "-")] ArithmeticPrimary</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#ArithmeticPrimary()">ArithmeticPrimary</a>()</p><p class="description">ArithmeticPrimary ::= SingleValuedPathExpression | Literal | "(" SimpleArithmeticExpression ")"
+| FunctionsReturningNumerics | AggregateExpression | FunctionsReturningStrings
+| FunctionsReturningDatetime | IdentificationVariable</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\ArithmeticTerm</td>
+<td class="description"><p class="name"><a href="#ArithmeticTerm()">ArithmeticTerm</a>()</p><p class="description">ArithmeticTerm ::= ArithmeticFactor {("*" | "/") ArithmeticFactor}</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\PathExpression</td>
+<td class="description"><p class="name"><a href="#AssociationPathExpression()">AssociationPathExpression</a>()</p><p class="description">AssociationPathExpression ::= CollectionValuedPathExpression | SingleValuedAssociationPathExpression</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\BetweenExpression</td>
+<td class="description"><p class="name"><a href="#BetweenExpression()">BetweenExpression</a>()</p><p class="description">BetweenExpression ::= ArithmeticExpression ["NOT"] "BETWEEN" ArithmeticExpression "AND" ArithmeticExpression</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#CaseExpression()">CaseExpression</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\CollectionMemberExpression</td>
+<td class="description"><p class="name"><a href="#CollectionMemberExpression()">CollectionMemberExpression</a>()</p><p class="description">CollectionMemberExpression ::= EntityExpression ["NOT"] "MEMBER" ["OF"] CollectionValuedPathExpressionEntityExpression ::= SingleValuedAssociationPathExpression | SimpleEntityExpression
+SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\PathExpression</td>
+<td class="description"><p class="name"><a href="#CollectionValuedPathExpression()">CollectionValuedPathExpression</a>()</p><p class="description">CollectionValuedPathExpression ::= IdentificationVariable "." {SingleValuedAssociationField "."}* CollectionValuedAssociationField</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\ComparisonExpression</td>
+<td class="description"><p class="name"><a href="#ComparisonExpression()">ComparisonExpression</a>()</p><p class="description">ComparisonExpression ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression )</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#ComparisonOperator()">ComparisonOperator</a>()</p><p class="description">ComparisonOperator ::= "=" | "=" | "!="</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\ConditionalExpression</td>
+<td class="description"><p class="name"><a href="#ConditionalExpression()">ConditionalExpression</a>()</p><p class="description">ConditionalExpression ::= ConditionalTerm {"OR" ConditionalTerm}</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\ConditionalFactor</td>
+<td class="description"><p class="name"><a href="#ConditionalFactor()">ConditionalFactor</a>()</p><p class="description">ConditionalFactor ::= ["NOT"] ConditionalPrimary</p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\ORM\Query\AST\ConditionalPrimary</td>
+<td class="description"><p class="name"><a href="#ConditionalPrimary()">ConditionalPrimary</a>()</p><p class="description">ConditionalPrimary ::= SimpleConditionalExpression | "(" ConditionalExpression ")"</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\ConditionalTerm</td>
+<td class="description"><p class="name"><a href="#ConditionalTerm()">ConditionalTerm</a>()</p><p class="description">ConditionalTerm ::= ConditionalFactor {"AND" ConditionalFactor}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#CustomFunctionsReturningDatetime()">CustomFunctionsReturningDatetime</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#CustomFunctionsReturningNumerics()">CustomFunctionsReturningNumerics</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#CustomFunctionsReturningStrings()">CustomFunctionsReturningStrings</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\DeleteClause</td>
+<td class="description"><p class="name"><a href="#DeleteClause()">DeleteClause</a>()</p><p class="description">DeleteClause ::= "DELETE" ["FROM"] AbstractSchemaName ["AS"] AliasIdentificationVariable</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\DeleteStatement</td>
+<td class="description"><p class="name"><a href="#DeleteStatement()">DeleteStatement</a>()</p><p class="description">DeleteStatement ::= DeleteClause [WhereClause]</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\EmptyCollectionComparisonExpression</td>
+<td class="description"><p class="name"><a href="#EmptyCollectionComparisonExpression()">EmptyCollectionComparisonExpression</a>()</p><p class="description">EmptyCollectionComparisonExpression ::= CollectionValuedPathExpression "IS" ["NOT"] "EMPTY"</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\SingleValuedAssociationPathExpression</td>
+<td class="description"><p class="name"><a href="#EntityExpression()">EntityExpression</a>()</p><p class="description">EntityExpression ::= SingleValuedAssociationPathExpression | SimpleEntityExpression</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\ExistsExpression</td>
+<td class="description"><p class="name"><a href="#ExistsExpression()">ExistsExpression</a>()</p><p class="description">ExistsExpression ::= ["NOT"] "EXISTS" "(" Subselect ")"</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\FromClause</td>
+<td class="description"><p class="name"><a href="#FromClause()">FromClause</a>()</p><p class="description">FromClause ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#FunctionDeclaration()">FunctionDeclaration</a>()</p><p class="description">FunctionDeclaration ::= FunctionsReturningStrings | FunctionsReturningNumerics | FunctionsReturningDatetime</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#FunctionsReturningDatetime()">FunctionsReturningDatetime</a>()</p><p class="description">FunctionsReturningDateTime ::= "CURRENT_DATE" | "CURRENT_TIME" | "CURRENT_TIMESTAMP"</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#FunctionsReturningNumerics()">FunctionsReturningNumerics</a>()</p><p class="description">FunctionsReturningNumerics ::=
+"LENGTH" "(" StringPrimary ")" |
+"LOCATE" "(" StringPrimary "," StringPrimary ["," SimpleArithmeticExpression]")" |
+"ABS" "(" SimpleArithmeticExpression ")" |
+"SQRT" "(" SimpleArithmeticExpression ")" |
+"MOD" "(" SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
+"SIZE" "(" CollectionValuedPathExpression ")"</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#FunctionsReturningStrings()">FunctionsReturningStrings</a>()</p><p class="description">FunctionsReturningStrings ::=
+"CONCAT" "(" StringPrimary "," StringPrimary ")" |
+"SUBSTRING" "(" StringPrimary "," SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
+"TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
+"LOWER" "(" StringPrimary ")" |
+"UPPER" "(" StringPrimary ")"</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\GroupByClause</td>
+<td class="description"><p class="name"><a href="#GroupByClause()">GroupByClause</a>()</p><p class="description">GroupByClause ::= "GROUP" "BY" GroupByItem {"," GroupByItem}</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#GroupByItem()">GroupByItem</a>()</p><p class="description">GroupByItem ::= IdentificationVariable | SingleValuedPathExpression</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\HavingClause</td>
+<td class="description"><p class="name"><a href="#HavingClause()">HavingClause</a>()</p><p class="description">HavingClause ::= "HAVING" ConditionalExpression</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#IdentificationVariable()">IdentificationVariable</a>()</p><p class="description">IdentificationVariable ::= identifier</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\IdentificationVariableDeclaration</td>
+<td class="description"><p class="name"><a href="#IdentificationVariableDeclaration()">IdentificationVariableDeclaration</a>()</p><p class="description">IdentificationVariableDeclaration ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\InExpression</td>
+<td class="description"><p class="name"><a href="#InExpression()">InExpression</a>()</p><p class="description">InExpression ::= StateFieldPathExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#InParameter()">InParameter</a>()</p><p class="description">InParameter ::= Literal | InputParameter</p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\ORM\Query\AST\IndexBy</td>
+<td class="description"><p class="name"><a href="#IndexBy()">IndexBy</a>()</p><p class="description">IndexBy ::= "INDEX" "BY" SimpleStateFieldPathExpression</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\InputParameter</td>
+<td class="description"><p class="name"><a href="#InputParameter()">InputParameter</a>()</p><p class="description">InputParameter ::= PositionalParameter | NamedParameter</p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\ORM\Query\AST\Join</td>
+<td class="description"><p class="name"><a href="#Join()">Join</a>()</p><p class="description">Join ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression
+["AS"] AliasIdentificationVariable ["WITH" ConditionalExpression]</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\JoinAssociationPathExpression</td>
+<td class="description"><p class="name"><a href="#JoinAssociationPathExpression()">JoinAssociationPathExpression</a>()</p><p class="description">JoinAssociationPathExpression ::= IdentificationVariable "." (CollectionValuedAssociationField | SingleValuedAssociationField)</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\JoinVariableDeclaration</td>
+<td class="description"><p class="name"><a href="#JoinVariableDeclaration()">JoinVariableDeclaration</a>()</p><p class="description">JoinVariableDeclaration ::= Join [IndexBy]</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\LikeExpression</td>
+<td class="description"><p class="name"><a href="#LikeExpression()">LikeExpression</a>()</p><p class="description">LikeExpression ::= StringExpression ["NOT"] "LIKE" (string | input_parameter) ["ESCAPE" char]</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#Literal()">Literal</a>()</p><p class="description">Literal ::= string | char | integer | float | boolean</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#NewValue()">NewValue</a>()</p><p class="description">NewValue ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | BooleanPrimary |
+EnumPrimary | SimpleEntityExpression | "NULL"NOTE: Since it is not possible to correctly recognize individual types, here is the full
+grammar that needs to be supported:NewValue ::= SimpleArithmeticExpression | "NULL"SimpleArithmeticExpression covers all *Primary grammar rules and also SimplEntityExpression</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\NullComparisonExpression</td>
+<td class="description"><p class="name"><a href="#NullComparisonExpression()">NullComparisonExpression</a>()</p><p class="description">NullComparisonExpression ::= (SingleValuedPathExpression | InputParameter) "IS" ["NOT"] "NULL"</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\OrderByClause</td>
+<td class="description"><p class="name"><a href="#OrderByClause()">OrderByClause</a>()</p><p class="description">OrderByClause ::= "ORDER" "BY" OrderByItem {"," OrderByItem}</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\OrderByItem</td>
+<td class="description"><p class="name"><a href="#OrderByItem()">OrderByItem</a>()</p><p class="description">OrderByItem ::= (ResultVariable | StateFieldPathExpression) ["ASC" | "DESC"]</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#PartialObjectExpression()">PartialObjectExpression</a>()</p><p class="description">PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
+PartialFieldSet ::= "{" SimpleStateField {"," SimpleStateField}* "}"</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\PathExpression</td>
+<td class="description"><p class="name"><a href="#PathExpression()">PathExpression</a>(integer expectedTypes)</p><p class="description">Parses an arbitrary path expression and defers semantical validation
+based on expected types.
+</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\QuantifiedExpression</td>
+<td class="description"><p class="name"><a href="#QuantifiedExpression()">QuantifiedExpression</a>()</p><p class="description">QuantifiedExpression ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\SelectStatement</td>
+<td class="description"><p class="name"><a href="#QueryLanguage()">QueryLanguage</a>()</p><p class="description">QueryLanguage ::= SelectStatement | UpdateStatement | DeleteStatement</p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\ORM\Query\AST\RangeVariableDeclaration</td>
+<td class="description"><p class="name"><a href="#RangeVariableDeclaration()">RangeVariableDeclaration</a>()</p><p class="description">RangeVariableDeclaration ::= AbstractSchemaName ["AS"] AliasIdentificationVariable</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#ResultVariable()">ResultVariable</a>()</p><p class="description">ResultVariable ::= identifier</p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#ScalarExpression()">ScalarExpression</a>()</p><p class="description">ScalarExpression ::= SimpleArithmeticExpression | StringPrimary | DateTimePrimary |
+StateFieldPathExpression | BooleanPrimary | CaseExpression |
+EntityTypeExpression</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\SelectClause</td>
+<td class="description"><p class="name"><a href="#SelectClause()">SelectClause</a>()</p><p class="description">SelectClause ::= "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}</p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\ORM\Query\AST\SelectExpression</td>
+<td class="description"><p class="name"><a href="#SelectExpression()">SelectExpression</a>()</p><p class="description">SelectExpression ::=
+IdentificationVariable | StateFieldPathExpression |
+(AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable]</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\SelectStatement</td>
+<td class="description"><p class="name"><a href="#SelectStatement()">SelectStatement</a>()</p><p class="description">SelectStatement ::= SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\SimpleArithmeticExpression</td>
+<td class="description"><p class="name"><a href="#SimpleArithmeticExpression()">SimpleArithmeticExpression</a>()</p><p class="description">SimpleArithmeticExpression ::= ArithmeticTerm {("+" | "-") ArithmeticTerm}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#SimpleConditionalExpression()">SimpleConditionalExpression</a>()</p><p class="description">SimpleConditionalExpression ::=
+ComparisonExpression | BetweenExpression | LikeExpression |
+InExpression | NullComparisonExpression | ExistsExpression |
+EmptyCollectionComparisonExpression | CollectionMemberExpression</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#SimpleEntityExpression()">SimpleEntityExpression</a>()</p><p class="description">SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\SimpleSelectClause</td>
+<td class="description"><p class="name"><a href="#SimpleSelectClause()">SimpleSelectClause</a>()</p><p class="description">SimpleSelectClause ::= "SELECT" ["DISTINCT"] SimpleSelectExpression</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\SimpleSelectExpression</td>
+<td class="description"><p class="name"><a href="#SimpleSelectExpression()">SimpleSelectExpression</a>()</p><p class="description">SimpleSelectExpression ::= StateFieldPathExpression | IdentificationVariable | (AggregateExpression [["AS"] AliasResultVariable])</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\PathExpression</td>
+<td class="description"><p class="name"><a href="#SimpleStateFieldPathExpression()">SimpleStateFieldPathExpression</a>()</p><p class="description">SimpleStateFieldPathExpression ::= IdentificationVariable "." StateField</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\PathExpression</td>
+<td class="description"><p class="name"><a href="#SingleValuedAssociationPathExpression()">SingleValuedAssociationPathExpression</a>()</p><p class="description">SingleValuedAssociationPathExpression ::= IdentificationVariable "." {SingleValuedAssociationField "."}* SingleValuedAssociationField</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\PathExpression</td>
+<td class="description"><p class="name"><a href="#SingleValuedPathExpression()">SingleValuedPathExpression</a>()</p><p class="description">SingleValuedPathExpression ::= StateFieldPathExpression | SingleValuedAssociationPathExpression</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\PathExpression</td>
+<td class="description"><p class="name"><a href="#StateFieldPathExpression()">StateFieldPathExpression</a>()</p><p class="description">StateFieldPathExpression ::= SimpleStateFieldPathExpression | SimpleStateFieldAssociationPathExpression</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\StringPrimary</td>
+<td class="description"><p class="name"><a href="#StringExpression()">StringExpression</a>()</p><p class="description">StringExpression ::= StringPrimary | "(" Subselect ")"</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#StringPrimary()">StringPrimary</a>()</p><p class="description">StringPrimary ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\Subselect</td>
+<td class="description"><p class="name"><a href="#Subselect()">Subselect</a>()</p><p class="description">Subselect ::= SimpleSelectClause SubselectFromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\SubselectFromClause</td>
+<td class="description"><p class="name"><a href="#SubselectFromClause()">SubselectFromClause</a>()</p><p class="description">SubselectFromClause ::= "FROM" SubselectIdentificationVariableDeclaration {"," SubselectIdentificationVariableDeclaration}</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\SubselectIdentificationVariableDeclaration</td>
+<td class="description"><p class="name"><a href="#SubselectIdentificationVariableDeclaration()">SubselectIdentificationVariableDeclaration</a>()</p><p class="description">SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | (AssociationPathExpression ["AS"] AliasIdentificationVariable)</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\UpdateClause</td>
+<td class="description"><p class="name"><a href="#UpdateClause()">UpdateClause</a>()</p><p class="description">UpdateClause ::= "UPDATE" AbstractSchemaName ["AS"] AliasIdentificationVariable "SET" UpdateItem {"," UpdateItem}</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\UpdateItem</td>
+<td class="description"><p class="name"><a href="#UpdateItem()">UpdateItem</a>()</p><p class="description">UpdateItem ::= IdentificationVariable "." {StateField | SingleValuedAssociationField} "=" NewValue</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\UpdateStatement</td>
+<td class="description"><p class="name"><a href="#UpdateStatement()">UpdateStatement</a>()</p><p class="description">UpdateStatement ::= UpdateClause [WhereClause]</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\WhereClause</td>
+<td class="description"><p class="name"><a href="#WhereClause()">WhereClause</a>()</p><p class="description">WhereClause ::= "WHERE" ConditionalExpression</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#addCustomTreeWalker()">addCustomTreeWalker</a>(string className)</p><p class="description">Adds a custom tree walker for modifying the AST.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#free()">free</a>(boolean deep, integer position)</p><p class="description">Free this parser enabling it to be reused</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\ORM\Query\AST\SelectStatement</td>
+<td class="description"><p class="name"><a href="#getAST()">getAST</a>()</p><p class="description">Parse and build AST for the given Query.</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/orm/entitymanager.html">EntityManager</a></td>
+<td class="description"><p class="name"><a href="#getEntityManager()">getEntityManager</a>()</p><p class="description">Gets the EntityManager used by the parser.</p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\ORM\Query\Lexer</td>
+<td class="description"><p class="name"><a href="#getLexer()">getLexer</a>()</p><p class="description">Gets the lexer used by the parser.</p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\ORM\Query\ParserResult</td>
+<td class="description"><p class="name"><a href="#getParserResult()">getParserResult</a>()</p><p class="description">Gets the ParserResult that is being filled with information during parsing.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#match()">match</a>(int|string token)</p><p class="description">Attempts to match the given token with the current lookahead token.
+</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/orm/query/parserresult.html">ParserResult</a></td>
+<td class="description"><p class="name"><a href="#parse()">parse</a>()</p><p class="description">Parses a query string.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#semanticalError()">semanticalError</a>(string message, array token)</p><p class="description">Generates a new semantical error.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setCustomOutputTreeWalker()">setCustomOutputTreeWalker</a>(string className)</p><p class="description">Sets a custom tree walker that produces output.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#syntaxError()">syntaxError</a>(string expected, array token)</p><p class="description">Generates a new syntax error.</p></td>
+</tr>
+</table>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 137</div>
+<h3 id="Parser()">Parser</h3>
+<code class="signature">public <strong>Parser</strong>(<a href="../../../doctrine/orm/query.html">Query</a> query)</code>
+<div class="details">
+<p>Creates a new query parser object.</p><dl>
+<dt>Parameters:</dt>
+<dd>query - The Query to parse.</dd>
+</dl>
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 816</div>
+<h3 id="AbstractSchemaName()">AbstractSchemaName</h3>
+<code class="signature">public  string <strong>AbstractSchemaName</strong>()</code>
+<div class="details">
+<p>AbstractSchemaName ::= identifier</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2280</div>
+<h3 id="AggregateExpression()">AggregateExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\AggregateExpression <strong>AggregateExpression</strong>()</code>
+<div class="details">
+<p>AggregateExpression ::=
+("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] StateFieldPathExpression ")" |
+"COUNT" "(" ["DISTINCT"] (IdentificationVariable | SingleValuedPathExpression) ")"</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 795</div>
+<h3 id="AliasIdentificationVariable()">AliasIdentificationVariable</h3>
+<code class="signature">public  string <strong>AliasIdentificationVariable</strong>()</code>
+<div class="details">
+<p>AliasIdentificationVariable = identifier</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 841</div>
+<h3 id="AliasResultVariable()">AliasResultVariable</h3>
+<code class="signature">public  string <strong>AliasResultVariable</strong>()</code>
+<div class="details">
+<p>AliasResultVariable ::= identifier</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2065</div>
+<h3 id="ArithmeticExpression()">ArithmeticExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\ArithmeticExpression <strong>ArithmeticExpression</strong>()</code>
+<div class="details">
+<p>ArithmeticExpression ::= SimpleArithmeticExpression | "(" Subselect ")"</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2131</div>
+<h3 id="ArithmeticFactor()">ArithmeticFactor</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\ArithmeticFactor <strong>ArithmeticFactor</strong>()</code>
+<div class="details">
+<p>ArithmeticFactor ::= [("+" | "-")] ArithmeticPrimary</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2148</div>
+<h3 id="ArithmeticPrimary()">ArithmeticPrimary</h3>
+<code class="signature">public  void <strong>ArithmeticPrimary</strong>()</code>
+<div class="details">
+<p>ArithmeticPrimary ::= SingleValuedPathExpression | Literal | "(" SimpleArithmeticExpression ")"
+| FunctionsReturningNumerics | AggregateExpression | FunctionsReturningStrings
+| FunctionsReturningDatetime | IdentificationVariable</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2111</div>
+<h3 id="ArithmeticTerm()">ArithmeticTerm</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\ArithmeticTerm <strong>ArithmeticTerm</strong>()</code>
+<div class="details">
+<p>ArithmeticTerm ::= ArithmeticFactor {("*" | "/") ArithmeticFactor}</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 943</div>
+<h3 id="AssociationPathExpression()">AssociationPathExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\PathExpression <strong>AssociationPathExpression</strong>()</code>
+<div class="details">
+<p>AssociationPathExpression ::= CollectionValuedPathExpression | SingleValuedAssociationPathExpression</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2354</div>
+<h3 id="BetweenExpression()">BetweenExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\BetweenExpression <strong>BetweenExpression</strong>()</code>
+<div class="details">
+<p>BetweenExpression ::= ArithmeticExpression ["NOT"] "BETWEEN" ArithmeticExpression "AND" ArithmeticExpression</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1646</div>
+<h3 id="CaseExpression()">CaseExpression</h3>
+<code class="signature">public  void <strong>CaseExpression</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1978</div>
+<h3 id="CollectionMemberExpression()">CollectionMemberExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\CollectionMemberExpression <strong>CollectionMemberExpression</strong>()</code>
+<div class="details">
+<p>CollectionMemberExpression ::= EntityExpression ["NOT"] "MEMBER" ["OF"] CollectionValuedPathExpression</p><p>EntityExpression ::= SingleValuedAssociationPathExpression | SimpleEntityExpression
+SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 989</div>
+<h3 id="CollectionValuedPathExpression()">CollectionValuedPathExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\PathExpression <strong>CollectionValuedPathExpression</strong>()</code>
+<div class="details">
+<p>CollectionValuedPathExpression ::= IdentificationVariable "." {SingleValuedAssociationField "."}* CollectionValuedAssociationField</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2380</div>
+<h3 id="ComparisonExpression()">ComparisonExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\ComparisonExpression <strong>ComparisonExpression</strong>()</code>
+<div class="details">
+<p>ComparisonExpression ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression )</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2526</div>
+<h3 id="ComparisonOperator()">ComparisonOperator</h3>
+<code class="signature">public  string <strong>ComparisonOperator</strong>()</code>
+<div class="details">
+<p>ComparisonOperator ::= "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1775</div>
+<h3 id="ConditionalExpression()">ConditionalExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\ConditionalExpression <strong>ConditionalExpression</strong>()</code>
+<div class="details">
+<p>ConditionalExpression ::= ConditionalTerm {"OR" ConditionalTerm}</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1811</div>
+<h3 id="ConditionalFactor()">ConditionalFactor</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\ConditionalFactor <strong>ConditionalFactor</strong>()</code>
+<div class="details">
+<p>ConditionalFactor ::= ["NOT"] ConditionalPrimary</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1831</div>
+<h3 id="ConditionalPrimary()">ConditionalPrimary</h3>
+<code class="signature">public  Doctrine\ORM\Query\AST\ConditionalPrimary <strong>ConditionalPrimary</strong>()</code>
+<div class="details">
+<p>ConditionalPrimary ::= SimpleConditionalExpression | "(" ConditionalExpression ")"</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1793</div>
+<h3 id="ConditionalTerm()">ConditionalTerm</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\ConditionalTerm <strong>ConditionalTerm</strong>()</code>
+<div class="details">
+<p>ConditionalTerm ::= ConditionalFactor {"AND" ConditionalFactor}</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2643</div>
+<h3 id="CustomFunctionsReturningDatetime()">CustomFunctionsReturningDatetime</h3>
+<code class="signature">public  void <strong>CustomFunctionsReturningDatetime</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2620</div>
+<h3 id="CustomFunctionsReturningNumerics()">CustomFunctionsReturningNumerics</h3>
+<code class="signature">public  void <strong>CustomFunctionsReturningNumerics</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2671</div>
+<h3 id="CustomFunctionsReturningStrings()">CustomFunctionsReturningStrings</h3>
+<code class="signature">public  void <strong>CustomFunctionsReturningStrings</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1111</div>
+<h3 id="DeleteClause()">DeleteClause</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\DeleteClause <strong>DeleteClause</strong>()</code>
+<div class="details">
+<p>DeleteClause ::= "DELETE" ["FROM"] AbstractSchemaName ["AS"] AliasIdentificationVariable</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 761</div>
+<h3 id="DeleteStatement()">DeleteStatement</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\DeleteStatement <strong>DeleteStatement</strong>()</code>
+<div class="details">
+<p>DeleteStatement ::= DeleteClause [WhereClause]</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1953</div>
+<h3 id="EmptyCollectionComparisonExpression()">EmptyCollectionComparisonExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\EmptyCollectionComparisonExpression <strong>EmptyCollectionComparisonExpression</strong>()</code>
+<div class="details">
+<p>EmptyCollectionComparisonExpression ::= CollectionValuedPathExpression "IS" ["NOT"] "EMPTY"</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2248</div>
+<h3 id="EntityExpression()">EntityExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\SingleValuedAssociationPathExpression <strong>EntityExpression</strong>()</code>
+<div class="details">
+<p>EntityExpression ::= SingleValuedAssociationPathExpression | SimpleEntityExpression</p><dl>
+<dt>Returns:</dt>
+<dd>| \Doctrine\ORM\Query\AST\SimpleEntityExpression</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2503</div>
+<h3 id="ExistsExpression()">ExistsExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\ExistsExpression <strong>ExistsExpression</strong>()</code>
+<div class="details">
+<p>ExistsExpression ::= ["NOT"] "EXISTS" "(" Subselect ")"</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1150</div>
+<h3 id="FromClause()">FromClause</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\FromClause <strong>FromClause</strong>()</code>
+<div class="details">
+<p>FromClause ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2573</div>
+<h3 id="FunctionDeclaration()">FunctionDeclaration</h3>
+<code class="signature">public  void <strong>FunctionDeclaration</strong>()</code>
+<div class="details">
+<p>FunctionDeclaration ::= FunctionsReturningStrings | FunctionsReturningNumerics | FunctionsReturningDatetime</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2633</div>
+<h3 id="FunctionsReturningDatetime()">FunctionsReturningDatetime</h3>
+<code class="signature">public  void <strong>FunctionsReturningDatetime</strong>()</code>
+<div class="details">
+<p>FunctionsReturningDateTime ::= "CURRENT_DATE" | "CURRENT_TIME" | "CURRENT_TIMESTAMP"</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2610</div>
+<h3 id="FunctionsReturningNumerics()">FunctionsReturningNumerics</h3>
+<code class="signature">public  void <strong>FunctionsReturningNumerics</strong>()</code>
+<div class="details">
+<p>FunctionsReturningNumerics ::=
+"LENGTH" "(" StringPrimary ")" |
+"LOCATE" "(" StringPrimary "," StringPrimary ["," SimpleArithmeticExpression]")" |
+"ABS" "(" SimpleArithmeticExpression ")" |
+"SQRT" "(" SimpleArithmeticExpression ")" |
+"MOD" "(" SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
+"SIZE" "(" CollectionValuedPathExpression ")"</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2661</div>
+<h3 id="FunctionsReturningStrings()">FunctionsReturningStrings</h3>
+<code class="signature">public  void <strong>FunctionsReturningStrings</strong>()</code>
+<div class="details">
+<p>FunctionsReturningStrings ::=
+"CONCAT" "(" StringPrimary "," StringPrimary ")" |
+"SUBSTRING" "(" StringPrimary "," SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
+"TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
+"LOWER" "(" StringPrimary ")" |
+"UPPER" "(" StringPrimary ")"</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1212</div>
+<h3 id="GroupByClause()">GroupByClause</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\GroupByClause <strong>GroupByClause</strong>()</code>
+<div class="details">
+<p>GroupByClause ::= "GROUP" "BY" GroupByItem {"," GroupByItem}</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1316</div>
+<h3 id="GroupByItem()">GroupByItem</h3>
+<code class="signature">public  string <strong>GroupByItem</strong>()</code>
+<div class="details">
+<p>GroupByItem ::= IdentificationVariable | SingleValuedPathExpression</p><dl>
+<dt>Returns:</dt>
+<dd>| \Doctrine\ORM\Query\AST\PathExpression</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1200</div>
+<h3 id="HavingClause()">HavingClause</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\HavingClause <strong>HavingClause</strong>()</code>
+<div class="details">
+<p>HavingClause ::= "HAVING" ConditionalExpression</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 775</div>
+<h3 id="IdentificationVariable()">IdentificationVariable</h3>
+<code class="signature">public  string <strong>IdentificationVariable</strong>()</code>
+<div class="details">
+<p>IdentificationVariable ::= identifier</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1395</div>
+<h3 id="IdentificationVariableDeclaration()">IdentificationVariableDeclaration</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\IdentificationVariableDeclaration <strong>IdentificationVariableDeclaration</strong>()</code>
+<div class="details">
+<p>IdentificationVariableDeclaration ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2401</div>
+<h3 id="InExpression()">InExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\InExpression <strong>InExpression</strong>()</code>
+<div class="details">
+<p>InExpression ::= StateFieldPathExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2039</div>
+<h3 id="InParameter()">InParameter</h3>
+<code class="signature">public  string <strong>InParameter</strong>()</code>
+<div class="details">
+<p>InParameter ::= Literal | InputParameter</p><dl>
+<dt>Returns:</dt>
+<dd>| \Doctrine\ORM\Query\AST\InputParameter</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1594</div>
+<h3 id="IndexBy()">IndexBy</h3>
+<code class="signature">public  Doctrine\ORM\Query\AST\IndexBy <strong>IndexBy</strong>()</code>
+<div class="details">
+<p>IndexBy ::= "INDEX" "BY" SimpleStateFieldPathExpression</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2053</div>
+<h3 id="InputParameter()">InputParameter</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\InputParameter <strong>InputParameter</strong>()</code>
+<div class="details">
+<p>InputParameter ::= PositionalParameter | NamedParameter</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1524</div>
+<h3 id="Join()">Join</h3>
+<code class="signature">public  Doctrine\ORM\Query\AST\Join <strong>Join</strong>()</code>
+<div class="details">
+<p>Join ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression
+["AS"] AliasIdentificationVariable ["WITH" ConditionalExpression]</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 883</div>
+<h3 id="JoinAssociationPathExpression()">JoinAssociationPathExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\JoinAssociationPathExpression <strong>JoinAssociationPathExpression</strong>()</code>
+<div class="details">
+<p>JoinAssociationPathExpression ::= IdentificationVariable "." (CollectionValuedAssociationField | SingleValuedAssociationField)</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1441</div>
+<h3 id="JoinVariableDeclaration()">JoinVariableDeclaration</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\JoinVariableDeclaration <strong>JoinVariableDeclaration</strong>()</code>
+<div class="details">
+<p>JoinVariableDeclaration ::= Join [IndexBy]</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2437</div>
+<h3 id="LikeExpression()">LikeExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\LikeExpression <strong>LikeExpression</strong>()</code>
+<div class="details">
+<p>LikeExpression ::= StringExpression ["NOT"] "LIKE" (string | input_parameter) ["ESCAPE" char]</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2008</div>
+<h3 id="Literal()">Literal</h3>
+<code class="signature">public  string <strong>Literal</strong>()</code>
+<div class="details">
+<p>Literal ::= string | char | integer | float | boolean</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1377</div>
+<h3 id="NewValue()">NewValue</h3>
+<code class="signature">public  void <strong>NewValue</strong>()</code>
+<div class="details">
+<p>NewValue ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | BooleanPrimary |
+EnumPrimary | SimpleEntityExpression | "NULL"</p><p>NOTE: Since it is not possible to correctly recognize individual types, here is the full
+grammar that needs to be supported:</p><p>NewValue ::= SimpleArithmeticExpression | "NULL"</p><p>SimpleArithmeticExpression covers all *Primary grammar rules and also SimplEntityExpression</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2476</div>
+<h3 id="NullComparisonExpression()">NullComparisonExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\NullComparisonExpression <strong>NullComparisonExpression</strong>()</code>
+<div class="details">
+<p>NullComparisonExpression ::= (SingleValuedPathExpression | InputParameter) "IS" ["NOT"] "NULL"</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1232</div>
+<h3 id="OrderByClause()">OrderByClause</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\OrderByClause <strong>OrderByClause</strong>()</code>
+<div class="details">
+<p>OrderByClause ::= "ORDER" "BY" OrderByItem {"," OrderByItem}</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1339</div>
+<h3 id="OrderByItem()">OrderByItem</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\OrderByItem <strong>OrderByItem</strong>()</code>
+<div class="details">
+<p>OrderByItem ::= (ResultVariable | StateFieldPathExpression) ["ASC" | "DESC"]</p><dl>
+<dt>Todo:</dt>
+<dd>Post 2.0 release. Support general SingleValuedPathExpression instead of only StateFieldPathExpression.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1487</div>
+<h3 id="PartialObjectExpression()">PartialObjectExpression</h3>
+<code class="signature">public  array <strong>PartialObjectExpression</strong>()</code>
+<div class="details">
+<p>PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
+PartialFieldSet ::= "{" SimpleStateField {"," SimpleStateField}* "}"</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 912</div>
+<h3 id="PathExpression()">PathExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\PathExpression <strong>PathExpression</strong>(integer expectedTypes)</code>
+<div class="details">
+<p>Parses an arbitrary path expression and defers semantical validation
+based on expected types.</p><p>PathExpression ::= IdentificationVariable {"." identifier}* "." identifier</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2324</div>
+<h3 id="QuantifiedExpression()">QuantifiedExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\QuantifiedExpression <strong>QuantifiedExpression</strong>()</code>
+<div class="details">
+<p>QuantifiedExpression ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 691</div>
+<h3 id="QueryLanguage()">QueryLanguage</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\SelectStatement <strong>QueryLanguage</strong>()</code>
+<div class="details">
+<p>QueryLanguage ::= SelectStatement | UpdateStatement | DeleteStatement</p><dl>
+<dt>Returns:</dt>
+<dd>| \Doctrine\ORM\Query\AST\UpdateStatement | \Doctrine\ORM\Query\AST\DeleteStatement</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1455</div>
+<h3 id="RangeVariableDeclaration()">RangeVariableDeclaration</h3>
+<code class="signature">public  Doctrine\ORM\Query\AST\RangeVariableDeclaration <strong>RangeVariableDeclaration</strong>()</code>
+<div class="details">
+<p>RangeVariableDeclaration ::= AbstractSchemaName ["AS"] AliasIdentificationVariable</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 862</div>
+<h3 id="ResultVariable()">ResultVariable</h3>
+<code class="signature">public  string <strong>ResultVariable</strong>()</code>
+<div class="details">
+<p>ResultVariable ::= identifier</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1614</div>
+<h3 id="ScalarExpression()">ScalarExpression</h3>
+<code class="signature">public  mixed <strong>ScalarExpression</strong>()</code>
+<div class="details">
+<p>ScalarExpression ::= SimpleArithmeticExpression | StringPrimary | DateTimePrimary |
+StateFieldPathExpression | BooleanPrimary | CaseExpression |
+EntityTypeExpression</p><dl>
+<dt>Returns:</dt>
+<dd>One of the possible expressions or subexpressions.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1019</div>
+<h3 id="SelectClause()">SelectClause</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\SelectClause <strong>SelectClause</strong>()</code>
+<div class="details">
+<p>SelectClause ::= "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1662</div>
+<h3 id="SelectExpression()">SelectExpression</h3>
+<code class="signature">public  Doctrine\ORM\Query\AST\SelectExpression <strong>SelectExpression</strong>()</code>
+<div class="details">
+<p>SelectExpression ::=
+IdentificationVariable | StateFieldPathExpression |
+(AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable]</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 723</div>
+<h3 id="SelectStatement()">SelectStatement</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\SelectStatement <strong>SelectStatement</strong>()</code>
+<div class="details">
+<p>SelectStatement ::= SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2091</div>
+<h3 id="SimpleArithmeticExpression()">SimpleArithmeticExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\SimpleArithmeticExpression <strong>SimpleArithmeticExpression</strong>()</code>
+<div class="details">
+<p>SimpleArithmeticExpression ::= ArithmeticTerm {("+" | "-") ArithmeticTerm}</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1865</div>
+<h3 id="SimpleConditionalExpression()">SimpleConditionalExpression</h3>
+<code class="signature">public  void <strong>SimpleConditionalExpression</strong>()</code>
+<div class="details">
+<p>SimpleConditionalExpression ::=
+ComparisonExpression | BetweenExpression | LikeExpression |
+InExpression | NullComparisonExpression | ExistsExpression |
+EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2264</div>
+<h3 id="SimpleEntityExpression()">SimpleEntityExpression</h3>
+<code class="signature">public  string <strong>SimpleEntityExpression</strong>()</code>
+<div class="details">
+<p>SimpleEntityExpression ::= IdentificationVariable | InputParameter</p><dl>
+<dt>Returns:</dt>
+<dd>| \Doctrine\ORM\Query\AST\InputParameter</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1047</div>
+<h3 id="SimpleSelectClause()">SimpleSelectClause</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\SimpleSelectClause <strong>SimpleSelectClause</strong>()</code>
+<div class="details">
+<p>SimpleSelectClause ::= "SELECT" ["DISTINCT"] SimpleSelectExpression</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1733</div>
+<h3 id="SimpleSelectExpression()">SimpleSelectExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\SimpleSelectExpression <strong>SimpleSelectExpression</strong>()</code>
+<div class="details">
+<p>SimpleSelectExpression ::= StateFieldPathExpression | IdentificationVariable | (AggregateExpression [["AS"] AliasResultVariable])</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 999</div>
+<h3 id="SimpleStateFieldPathExpression()">SimpleStateFieldPathExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\PathExpression <strong>SimpleStateFieldPathExpression</strong>()</code>
+<div class="details">
+<p>SimpleStateFieldPathExpression ::= IdentificationVariable "." StateField</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 979</div>
+<h3 id="SingleValuedAssociationPathExpression()">SingleValuedAssociationPathExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\PathExpression <strong>SingleValuedAssociationPathExpression</strong>()</code>
+<div class="details">
+<p>SingleValuedAssociationPathExpression ::= IdentificationVariable "." {SingleValuedAssociationField "."}* SingleValuedAssociationField</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 956</div>
+<h3 id="SingleValuedPathExpression()">SingleValuedPathExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\PathExpression <strong>SingleValuedPathExpression</strong>()</code>
+<div class="details">
+<p>SingleValuedPathExpression ::= StateFieldPathExpression | SingleValuedAssociationPathExpression</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 969</div>
+<h3 id="StateFieldPathExpression()">StateFieldPathExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\PathExpression <strong>StateFieldPathExpression</strong>()</code>
+<div class="details">
+<p>StateFieldPathExpression ::= SimpleStateFieldPathExpression | SimpleStateFieldAssociationPathExpression</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2197</div>
+<h3 id="StringExpression()">StringExpression</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\StringPrimary <strong>StringExpression</strong>()</code>
+<div class="details">
+<p>StringExpression ::= StringPrimary | "(" Subselect ")"</p><dl>
+<dt>Returns:</dt>
+<dd>| \Doctrine]ORM\Query\AST\Subselect</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2217</div>
+<h3 id="StringPrimary()">StringPrimary</h3>
+<code class="signature">public  void <strong>StringPrimary</strong>()</code>
+<div class="details">
+<p>StringPrimary ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1253</div>
+<h3 id="Subselect()">Subselect</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\Subselect <strong>Subselect</strong>()</code>
+<div class="details">
+<p>Subselect ::= SimpleSelectClause SubselectFromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1169</div>
+<h3 id="SubselectFromClause()">SubselectFromClause</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\SubselectFromClause <strong>SubselectFromClause</strong>()</code>
+<div class="details">
+<p>SubselectFromClause ::= "FROM" SubselectIdentificationVariableDeclaration {"," SubselectIdentificationVariableDeclaration}</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1420</div>
+<h3 id="SubselectIdentificationVariableDeclaration()">SubselectIdentificationVariableDeclaration</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\SubselectIdentificationVariableDeclaration <strong>SubselectIdentificationVariableDeclaration</strong>()</code>
+<div class="details">
+<p>SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | (AssociationPathExpression ["AS"] AliasIdentificationVariable)</p><dl>
+<dt>Returns:</dt>
+<dd>| \Doctrine\ORM\Query\AST\IdentificationVariableDeclaration</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1065</div>
+<h3 id="UpdateClause()">UpdateClause</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\UpdateClause <strong>UpdateClause</strong>()</code>
+<div class="details">
+<p>UpdateClause ::= "UPDATE" AbstractSchemaName ["AS"] AliasIdentificationVariable "SET" UpdateItem {"," UpdateItem}</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1283</div>
+<h3 id="UpdateItem()">UpdateItem</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\UpdateItem <strong>UpdateItem</strong>()</code>
+<div class="details">
+<p>UpdateItem ::= IdentificationVariable "." {StateField | SingleValuedAssociationField} "=" NewValue</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 747</div>
+<h3 id="UpdateStatement()">UpdateStatement</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\UpdateStatement <strong>UpdateStatement</strong>()</code>
+<div class="details">
+<p>UpdateStatement ::= UpdateClause [WhereClause]</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1188</div>
+<h3 id="WhereClause()">WhereClause</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\WhereClause <strong>WhereClause</strong>()</code>
+<div class="details">
+<p>WhereClause ::= "WHERE" ConditionalExpression</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 161</div>
+<h3 id="addCustomTreeWalker()">addCustomTreeWalker</h3>
+<code class="signature">public  void <strong>addCustomTreeWalker</strong>(string className)</code>
+<div class="details">
+<p>Adds a custom tree walker for modifying the AST.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 249</div>
+<h3 id="free()">free</h3>
+<code class="signature">public  void <strong>free</strong>(boolean deep, integer position)</code>
+<div class="details">
+<p>Free this parser enabling it to be reused</p><dl>
+<dt>Parameters:</dt>
+<dd>deep - Whether to clean peek and reset errors</dd>
+<dd>position - Position to reset</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 203</div>
+<h3 id="getAST()">getAST</h3>
+<code class="signature">public  \Doctrine\ORM\Query\AST\SelectStatement <strong>getAST</strong>()</code>
+<div class="details">
+<p>Parse and build AST for the given Query.</p><dl>
+<dt>Returns:</dt>
+<dd>| \Doctrine\ORM\Query\AST\UpdateStatement | \Doctrine\ORM\Query\AST\DeleteStatement</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 191</div>
+<h3 id="getEntityManager()">getEntityManager</h3>
+<code class="signature">public  <a href="../../../doctrine/orm/entitymanager.html">EntityManager</a> <strong>getEntityManager</strong>()</code>
+<div class="details">
+<p>Gets the EntityManager used by the parser.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 171</div>
+<h3 id="getLexer()">getLexer</h3>
+<code class="signature">public  Doctrine\ORM\Query\Lexer <strong>getLexer</strong>()</code>
+<div class="details">
+<p>Gets the lexer used by the parser.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 181</div>
+<h3 id="getParserResult()">getParserResult</h3>
+<code class="signature">public  Doctrine\ORM\Query\ParserResult <strong>getParserResult</strong>()</code>
+<div class="details">
+<p>Gets the ParserResult that is being filled with information during parsing.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 234</div>
+<h3 id="match()">match</h3>
+<code class="signature">public  void <strong>match</strong>(int|string token)</code>
+<div class="details">
+<p>Attempts to match the given token with the current lookahead token.</p><p>If they match, updates the lookahead token; otherwise raises a syntax
+error.</p><dl>
+<dt>Parameters:</dt>
+<dd>token - type or value</dd>
+<dt>Throws:</dt>
+<dd><a href="../../../doctrine/orm/query/queryexception.html">If the tokens dont match.</a></dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 268</div>
+<h3 id="parse()">parse</h3>
+<code class="signature">public  <a href="../../../doctrine/orm/query/parserresult.html">ParserResult</a> <strong>parse</strong>()</code>
+<div class="details">
+<p>Parses a query string.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 353</div>
+<h3 id="semanticalError()">semanticalError</h3>
+<code class="signature">public  void <strong>semanticalError</strong>(string message, array token)</code>
+<div class="details">
+<p>Generates a new semantical error.</p><dl>
+<dt>Parameters:</dt>
+<dd>message - Optional message.</dd>
+<dd>token - Optional token.</dd>
+<dt>Throws:</dt>
+<dd>\Doctrine\ORM\Query\QueryException</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 151</div>
+<h3 id="setCustomOutputTreeWalker()">setCustomOutputTreeWalker</h3>
+<code class="signature">public  void <strong>setCustomOutputTreeWalker</strong>(string className)</code>
+<div class="details">
+<p>Sets a custom tree walker that produces output.
+This tree walker will be run last over the AST, after any other walkers.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 321</div>
+<h3 id="syntaxError()">syntaxError</h3>
+<code class="signature">public  void <strong>syntaxError</strong>(string expected, array token)</code>
+<div class="details">
+<p>Generates a new syntax error.</p><dl>
+<dt>Parameters:</dt>
+<dd>expected - Expected string.</dd>
+<dd>token - Got token.</dd>
+<dt>Throws:</dt>
+<dd>\Doctrine\ORM\Query\QueryException</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/query/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/query/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/query/parser.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

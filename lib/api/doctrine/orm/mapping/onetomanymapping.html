@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>OneToManyMapping (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/mapping/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/mapping/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/mapping/onetomanymapping.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Mapping\OneToManyMapping</div>
+<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 47</div>
+
+<h1>Class OneToManyMapping</h1>
+
+<pre class="tree">Class:OneToManyMapping - Superclass: AssociationMapping
+<a href="../../../doctrine/orm/mapping/associationmapping.html">AssociationMapping</a><br>   &lfloor;&nbsp;<strong>OneToManyMapping</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>OneToManyMapping</strong><br>extends <a href="../../../doctrine/orm/mapping/associationmapping.html">AssociationMapping</a>
+
+</p>
+
+<div class="comment" id="overview_description"><p>Represents a one-to-many mapping.</p><p>NOTE: One-to-many mappings can currently not be uni-directional (one -> many).
+They must either be bidirectional (one <-> many) or unidirectional (many -> one).
+In other words, the many-side MUST be the owning side and the one-side MUST be
+the inverse side.</p><p><b>IMPORTANT NOTE:</b></p><p>The fields of this class are only public for 2 reasons:
+1) To allow fast READ access.
+2) To drastically reduce the size of a serialized instance (private/protected members
+get the whole class name, namespace inclusive, prepended to every property in
+the serialized representation).</p><p>Instances of this class are stored serialized in the metadata cache together with the
+owning <tt>ClassMetadata</tt> instance.</p></div>
+
+<dl>
+<dt>Author:</dt>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dd>Giorgio Sironi <piccoloprincipeazzurro@gmail.com></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+</dl>
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#orderBy">$orderBy</a></p><p class="description">READ-ONLY: Order this collection by the given SQL snippet.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#orphanRemoval">$orphanRemoval</a></p><p class="description">READ-ONLY: Whether to delete orphaned elements (removed from the collection)</p></td>
+</tr>
+</table>
+
+<table class="inherit">
+<tr><th colspan="2">Fields inherited from Doctrine\ORM\Mapping\AssociationMapping</th></tr>
+<tr><td><a href="../../../doctrine/orm/mapping/associationmapping.html#FETCH_EAGER">FETCH_EAGER</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#FETCH_LAZY">FETCH_LAZY</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#declared">declared</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#fetchMode">fetchMode</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#inherited">inherited</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#inversedBy">inversedBy</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isCascadeDetach">isCascadeDetach</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isCascadeMerge">isCascadeMerge</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isCascadePersist">isCascadePersist</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isCascadeRefresh">isCascadeRefresh</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isCascadeRemove">isCascadeRemove</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isOwningSide">isOwningSide</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#joinTable">joinTable</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#mappedBy">mappedBy</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#sourceEntityName">sourceEntityName</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#sourceFieldName">sourceFieldName</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#targetEntityName">targetEntityName</a></td></tr></table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isOneToMany()">isOneToMany</a>()</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#load()">load</a>(object sourceEntity, mixed targetCollection, <a href="../../../doctrine/orm/entitymanager.html">EntityManager</a> em, array joinColumnValues, $em The, $joinColumnValues , object target)</p><p class="description">Loads a one-to-many collection.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#shouldDeleteOrphans()">shouldDeleteOrphans</a>()</p><p class="description">Whether orphaned elements (removed from the collection) should be deleted.</p></td>
+</tr>
+</table>
+
+<table class="inherit">
+<tr><th colspan="2">Methods inherited from Doctrine\ORM\Mapping\AssociationMapping</th></tr>
+<tr><td><a href="../../../doctrine/orm/mapping/associationmapping.html#getQuotedJoinTableName()">getQuotedJoinTableName</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#hasCascades()">hasCascades</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isEagerlyFetched()">isEagerlyFetched</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isLazilyFetched()">isLazilyFetched</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isManyToMany()">isManyToMany</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isOneToMany()">isOneToMany</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isOneToOne()">isOneToOne</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#load()">load</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#usesJoinTable()">usesJoinTable</a></td></tr></table>
+
+<h2 id="detail_field">Field Detail</h2>
+<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 62</div>
+<h3 id="orderBy">orderBy</h3>
+<code class="signature">public  mixed <strong>$orderBy</strong></code>
+<div class="details">
+<p>READ-ONLY: Order this collection by the given SQL snippet.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 54</div>
+<h3 id="orphanRemoval">orphanRemoval</h3>
+<code class="signature">public  boolean <strong>$orphanRemoval</strong> = false</code>
+<div class="details">
+<p>READ-ONLY: Whether to delete orphaned elements (removed from the collection)</p></div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 107</div>
+<h3 id="isOneToMany()">isOneToMany</h3>
+<code class="signature">public  boolean <strong>isOneToMany</strong>()</code>
+<div class="details">
+<p></p><dl>
+<dt>Override.</dt>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 121</div>
+<h3 id="load()">load</h3>
+<code class="signature">public  void <strong>load</strong>(object sourceEntity, mixed targetCollection, <a href="../../../doctrine/orm/entitymanager.html">EntityManager</a> em, array joinColumnValues, $em The, $joinColumnValues , object target)</code>
+<div class="details">
+<p>Loads a one-to-many collection.</p><dl>
+<dt>Parameters:</dt>
+<dd>The - entity that owns the collection.</dd>
+<dd>The - collection to load/fill.</dd>
+<dd>The - EntityManager to use.</dd>
+<dd></dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 97</div>
+<h3 id="shouldDeleteOrphans()">shouldDeleteOrphans</h3>
+<code class="signature">public  boolean <strong>shouldDeleteOrphans</strong>()</code>
+<div class="details">
+<p>Whether orphaned elements (removed from the collection) should be deleted.</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE if orphaned elements should be deleted, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/mapping/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/mapping/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/mapping/onetomanymapping.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

@@ -1,0 +1,767 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>Expr (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/query/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/query/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/query/expr.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Query\Expr</div>
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 36</div>
+
+<h1>Class Expr</h1>
+
+<pre class="tree"><strong>Expr</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>Expr</strong></p>
+
+<div class="comment" id="overview_description"><p>This class is used to generate DQL expressions via a set of PHP static functions</p></div>
+
+<dl>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision$</dd>
+<dt>Author:</dt>
+<dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
+<dd>Jonathan Wage <jonwage@gmail.com></dd>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dt>Todo:</dt>
+<dd>Rename: ExpressionBuilder</dd>
+</dl>
+<hr>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#abs()">abs</a>(mixed x)</p><p class="description">Creates an ABS() function expression with the given argument.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#all()">all</a>(mixed subquery)</p><p class="description">Creates an instance of ALL() function, with the given DQL Subquery.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Andx</td>
+<td class="description"><p class="name"><a href="#andX()">andX</a>(mixed x)</p><p class="description">Creates a conjunction of the given boolean expressions.
+</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#any()">any</a>(mixed subquery)</p><p class="description">Creates an ANY() function expression with the given DQL subquery.</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/orm/mapping/orderby.html">OrderBy</a></td>
+<td class="description"><p class="name"><a href="#asc()">asc</a>(mixed expr, $sort )</p><p class="description">Creates an ASCending order expression.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#avg()">avg</a>(mixed x)</p><p class="description">Creates an instance of AVG() function, with the given argument.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#between()">between</a>(mixed val, integer x, integer y)</p><p class="description">Creates an instance of BETWEEN() function, with the given argument.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#concat()">concat</a>(mixed x, mixed y)</p><p class="description">Creates a CONCAT() function expression with the given arguments.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#count()">count</a>(mixed x)</p><p class="description">Creates an instance of COUNT() function, with the given argument.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#countDistinct()">countDistinct</a>(mixed x)</p><p class="description">Creates an instance of COUNT(DISTINCT) function, with the given argument.</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/orm/mapping/orderby.html">OrderBy</a></td>
+<td class="description"><p class="name"><a href="#desc()">desc</a>(mixed expr, $sort )</p><p class="description">Creates a DESCending order expression.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Math</td>
+<td class="description"><p class="name"><a href="#diff()">diff</a>(mixed x, mixed y)</p><p class="description">Creates a difference mathematical expression with the given arguments.
+</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Comparison</td>
+<td class="description"><p class="name"><a href="#eq()">eq</a>(mixed x, mixed y)</p><p class="description">Creates an equality comparison expression with the given arguments.
+</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#exists()">exists</a>(mixed subquery)</p><p class="description">Creates an instance of EXISTS() function, with the given DQL Subquery.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Comparison</td>
+<td class="description"><p class="name"><a href="#gt()">gt</a>(mixed x, mixed y)</p><p class="description">Creates an instance of Expr\Comparison, with the given arguments.
+</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Comparison</td>
+<td class="description"><p class="name"><a href="#gte()">gte</a>(mixed x, mixed y)</p><p class="description">Creates an instance of Expr\Comparison, with the given arguments.
+</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#in()">in</a>(string x, mixed y)</p><p class="description">Creates an IN() expression with the given arguments.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#length()">length</a>(mixed x)</p><p class="description">Creates a LENGTH() function expression with the given argument.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Comparison</td>
+<td class="description"><p class="name"><a href="#like()">like</a>(string x, mixed y)</p><p class="description">Creates a LIKE() comparison expression with the given arguments.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Literal</td>
+<td class="description"><p class="name"><a href="#literal()">literal</a>(mixed literal)</p><p class="description">Creates a literal expression of the given argument.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#lower()">lower</a>(mixed x)</p><p class="description">Creates a LOWER() function expression with the given argument.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Comparison</td>
+<td class="description"><p class="name"><a href="#lt()">lt</a>(mixed x, mixed y)</p><p class="description">Creates an instance of Expr\Comparison, with the given arguments.
+</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Comparison</td>
+<td class="description"><p class="name"><a href="#lte()">lte</a>(mixed x, mixed y)</p><p class="description">Creates an instance of Expr\Comparison, with the given arguments.
+</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#max()">max</a>(mixed x)</p><p class="description">Creates an instance of MAX() function, with the given argument.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#min()">min</a>(mixed x)</p><p class="description">Creates an instance of MIN() function, with the given argument.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Comparison</td>
+<td class="description"><p class="name"><a href="#neq()">neq</a>(mixed x, mixed y)</p><p class="description">Creates an instance of Expr\Comparison, with the given arguments.
+</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#not()">not</a>(mixed restriction)</p><p class="description">Creates a negation expression of the given restriction.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#notIn()">notIn</a>(string x, mixed y)</p><p class="description">Creates a NOT IN() expression with the given arguments.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Orx</td>
+<td class="description"><p class="name"><a href="#orX()">orX</a>(mixed x)</p><p class="description">Creates a disjunction of the given boolean expressions.
+</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Math</td>
+<td class="description"><p class="name"><a href="#prod()">prod</a>(mixed x, mixed y)</p><p class="description">Creates a product mathematical expression with the given arguments.
+</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Math</td>
+<td class="description"><p class="name"><a href="#quot()">quot</a>(mixed x, mixed y)</p><p class="description">Creates a quotient mathematical expression with the given arguments.
+</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#some()">some</a>(mixed subquery)</p><p class="description">Creates a SOME() function expression with the given DQL subquery.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#sqrt()">sqrt</a>(mixed x)</p><p class="description">Creates a SQRT() function expression with the given argument.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#substring()">substring</a>(mixed x, integer from, integer len)</p><p class="description">Creates a SUBSTRING() function expression with the given arguments.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Math</td>
+<td class="description"><p class="name"><a href="#sum()">sum</a>(mixed x, mixed y)</p><p class="description">Creates a sum mathematical expression with the given arguments.
+</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#trim()">trim</a>(mixed x)</p><p class="description">Creates an instance of TRIM() function, with the given argument.</p></td>
+</tr>
+<tr>
+<td class="type"> Expr\Func</td>
+<td class="description"><p class="name"><a href="#upper()">upper</a>(mixed x)</p><p class="description">Creates an UPPER() function expression with the given argument.</p></td>
+</tr>
+</table>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 321</div>
+<h3 id="abs()">abs</h3>
+<code class="signature">public  Expr\Func <strong>abs</strong>(mixed x)</code>
+<div class="details">
+<p>Creates an ABS() function expression with the given argument.</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Argument to be used in ABS() function.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 277</div>
+<h3 id="all()">all</h3>
+<code class="signature">public  Expr\Func <strong>all</strong>(mixed subquery)</code>
+<div class="details">
+<p>Creates an instance of ALL() function, with the given DQL Subquery.</p><dl>
+<dt>Parameters:</dt>
+<dd>subquery - DQL Subquery to be used in ALL() function.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 51</div>
+<h3 id="andX()">andX</h3>
+<code class="signature">public  Expr\Andx <strong>andX</strong>(mixed x)</code>
+<div class="details">
+<p>Creates a conjunction of the given boolean expressions.</p><p>Example:</p><p>[php]
+(u.type = ?1) AND (u.role = ?2)
+$expr->andX('u.type = ?1', 'u.role = ?2'));</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Optional clause. Defaults = null, but requires at least one defined when converting to string.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 299</div>
+<h3 id="any()">any</h3>
+<code class="signature">public  Expr\Func <strong>any</strong>(mixed subquery)</code>
+<div class="details">
+<p>Creates an ANY() function expression with the given DQL subquery.</p><dl>
+<dt>Parameters:</dt>
+<dd>subquery - DQL Subquery to be used in ANY() function.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 80</div>
+<h3 id="asc()">asc</h3>
+<code class="signature">public  <a href="../../../doctrine/orm/mapping/orderby.html">OrderBy</a> <strong>asc</strong>(mixed expr, $sort )</code>
+<div class="details">
+<p>Creates an ASCending order expression.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 211</div>
+<h3 id="avg()">avg</h3>
+<code class="signature">public  Expr\Func <strong>avg</strong>(mixed x)</code>
+<div class="details">
+<p>Creates an instance of AVG() function, with the given argument.</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Argument to be used in AVG() function.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 545</div>
+<h3 id="between()">between</h3>
+<code class="signature">public  Expr\Func <strong>between</strong>(mixed val, integer x, integer y)</code>
+<div class="details">
+<p>Creates an instance of BETWEEN() function, with the given argument.</p><dl>
+<dt>Parameters:</dt>
+<dd>val - Valued to be inspected by range values.</dd>
+<dd>x - Starting range value to be used in BETWEEN() function.</dd>
+<dd>y - End point value to be used in BETWEEN() function.</dd>
+<dt>Returns:</dt>
+<dd>A BETWEEN expression.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 460</div>
+<h3 id="concat()">concat</h3>
+<code class="signature">public  Expr\Func <strong>concat</strong>(mixed x, mixed y)</code>
+<div class="details">
+<p>Creates a CONCAT() function expression with the given arguments.</p><dl>
+<dt>Parameters:</dt>
+<dd>x - First argument to be used in CONCAT() function.</dd>
+<dd>x - Second argument to be used in CONCAT() function.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 244</div>
+<h3 id="count()">count</h3>
+<code class="signature">public  Expr\Func <strong>count</strong>(mixed x)</code>
+<div class="details">
+<p>Creates an instance of COUNT() function, with the given argument.</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Argument to be used in COUNT() function.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 255</div>
+<h3 id="countDistinct()">countDistinct</h3>
+<code class="signature">public  string <strong>countDistinct</strong>(mixed x)</code>
+<div class="details">
+<p>Creates an instance of COUNT(DISTINCT) function, with the given argument.</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Argument to be used in COUNT(DISTINCT) function.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 91</div>
+<h3 id="desc()">desc</h3>
+<code class="signature">public  <a href="../../../doctrine/orm/mapping/orderby.html">OrderBy</a> <strong>desc</strong>(mixed expr, $sort )</code>
+<div class="details">
+<p>Creates a DESCending order expression.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 358</div>
+<h3 id="diff()">diff</h3>
+<code class="signature">public  Expr\Math <strong>diff</strong>(mixed x, mixed y)</code>
+<div class="details">
+<p>Creates a difference mathematical expression with the given arguments.
+First argument is considered the left expression and the second is the right expression.
+When converted to string, it will generated a <left expr> - <right expr>. Example:</p><p>[php]
+u.monthlySubscriptionCount - 1
+$q->expr()->diff('u.monthlySubscriptionCount', '1')</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Left expression</dd>
+<dd>y - Right expression</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 110</div>
+<h3 id="eq()">eq</h3>
+<code class="signature">public  Expr\Comparison <strong>eq</strong>(mixed x, mixed y)</code>
+<div class="details">
+<p>Creates an equality comparison expression with the given arguments.</p><p>First argument is considered the left expression and the second is the right expression.
+When converted to string, it will generated a <left expr> = <right expr>. Example:</p><p>[php]
+u.id = ?1
+$expr->eq('u.id', '?1');</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Left expression</dd>
+<dd>y - Right expression</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 266</div>
+<h3 id="exists()">exists</h3>
+<code class="signature">public  Expr\Func <strong>exists</strong>(mixed subquery)</code>
+<div class="details">
+<p>Creates an instance of EXISTS() function, with the given DQL Subquery.</p><dl>
+<dt>Parameters:</dt>
+<dd>subquery - DQL Subquery to be used in EXISTS() function.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 182</div>
+<h3 id="gt()">gt</h3>
+<code class="signature">public  Expr\Comparison <strong>gt</strong>(mixed x, mixed y)</code>
+<div class="details">
+<p>Creates an instance of Expr\Comparison, with the given arguments.
+First argument is considered the left expression and the second is the right expression.
+When converted to string, it will generated a <left expr> > <right expr>. Example:</p><p>[php]
+u.id > ?1
+$q->where($q->expr()->gt('u.id', '?1'));</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Left expression</dd>
+<dd>y - Right expression</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 200</div>
+<h3 id="gte()">gte</h3>
+<code class="signature">public  Expr\Comparison <strong>gte</strong>(mixed x, mixed y)</code>
+<div class="details">
+<p>Creates an instance of Expr\Comparison, with the given arguments.
+First argument is considered the left expression and the second is the right expression.
+When converted to string, it will generated a <left expr> >= <right expr>. Example:</p><p>[php]
+u.id >= ?1
+$q->where($q->expr()->gte('u.id', '?1'));</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Left expression</dd>
+<dd>y - Right expression</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 417</div>
+<h3 id="in()">in</h3>
+<code class="signature">public  Expr\Func <strong>in</strong>(string x, mixed y)</code>
+<div class="details">
+<p>Creates an IN() expression with the given arguments.</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Field in string format to be restricted by IN() function</dd>
+<dd>y - Argument to be used in IN() function.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 506</div>
+<h3 id="length()">length</h3>
+<code class="signature">public  Expr\Func <strong>length</strong>(mixed x)</code>
+<div class="details">
+<p>Creates a LENGTH() function expression with the given argument.</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Argument to be used as argument of LENGTH() function.</dd>
+<dt>Returns:</dt>
+<dd>A LENGTH function expression.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 448</div>
+<h3 id="like()">like</h3>
+<code class="signature">public  Expr\Comparison <strong>like</strong>(string x, mixed y)</code>
+<div class="details">
+<p>Creates a LIKE() comparison expression with the given arguments.</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Field in string format to be inspected by LIKE() comparison.</dd>
+<dd>y - Argument to be used in LIKE() comparison.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 517</div>
+<h3 id="literal()">literal</h3>
+<code class="signature">public  Expr\Literal <strong>literal</strong>(mixed literal)</code>
+<div class="details">
+<p>Creates a literal expression of the given argument.</p><dl>
+<dt>Parameters:</dt>
+<dd>literal - Argument to be converted to literal.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 484</div>
+<h3 id="lower()">lower</h3>
+<code class="signature">public  Expr\Func <strong>lower</strong>(mixed x)</code>
+<div class="details">
+<p>Creates a LOWER() function expression with the given argument.</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Argument to be used in LOWER() function.</dd>
+<dt>Returns:</dt>
+<dd>A LOWER function expression.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 146</div>
+<h3 id="lt()">lt</h3>
+<code class="signature">public  Expr\Comparison <strong>lt</strong>(mixed x, mixed y)</code>
+<div class="details">
+<p>Creates an instance of Expr\Comparison, with the given arguments.
+First argument is considered the left expression and the second is the right expression.
+When converted to string, it will generated a <left expr> < <right expr>. Example:</p><p>[php]
+u.id < ?1
+$q->where($q->expr()->lt('u.id', '?1'));</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Left expression</dd>
+<dd>y - Right expression</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 164</div>
+<h3 id="lte()">lte</h3>
+<code class="signature">public  Expr\Comparison <strong>lte</strong>(mixed x, mixed y)</code>
+<div class="details">
+<p>Creates an instance of Expr\Comparison, with the given arguments.
+First argument is considered the left expression and the second is the right expression.
+When converted to string, it will generated a <left expr> <= <right expr>. Example:</p><p>[php]
+u.id <= ?1
+$q->where($q->expr()->lte('u.id', '?1'));</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Left expression</dd>
+<dd>y - Right expression</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 222</div>
+<h3 id="max()">max</h3>
+<code class="signature">public  Expr\Func <strong>max</strong>(mixed x)</code>
+<div class="details">
+<p>Creates an instance of MAX() function, with the given argument.</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Argument to be used in MAX() function.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 233</div>
+<h3 id="min()">min</h3>
+<code class="signature">public  Expr\Func <strong>min</strong>(mixed x)</code>
+<div class="details">
+<p>Creates an instance of MIN() function, with the given argument.</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Argument to be used in MIN() function.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 128</div>
+<h3 id="neq()">neq</h3>
+<code class="signature">public  Expr\Comparison <strong>neq</strong>(mixed x, mixed y)</code>
+<div class="details">
+<p>Creates an instance of Expr\Comparison, with the given arguments.
+First argument is considered the left expression and the second is the right expression.
+When converted to string, it will generated a <left expr> <> <right expr>. Example:</p><p>[php]
+u.id <> ?1
+$q->where($q->expr()->neq('u.id', '?1'));</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Left expression</dd>
+<dd>y - Right expression</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 310</div>
+<h3 id="not()">not</h3>
+<code class="signature">public  Expr\Func <strong>not</strong>(mixed restriction)</code>
+<div class="details">
+<p>Creates a negation expression of the given restriction.</p><dl>
+<dt>Parameters:</dt>
+<dd>restriction - Restriction to be used in NOT() function.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 436</div>
+<h3 id="notIn()">notIn</h3>
+<code class="signature">public  Expr\Func <strong>notIn</strong>(string x, mixed y)</code>
+<div class="details">
+<p>Creates a NOT IN() expression with the given arguments.</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Field in string format to be restricted by NOT IN() function</dd>
+<dd>y - Argument to be used in NOT IN() function.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 69</div>
+<h3 id="orX()">orX</h3>
+<code class="signature">public  Expr\Orx <strong>orX</strong>(mixed x)</code>
+<div class="details">
+<p>Creates a disjunction of the given boolean expressions.</p><p>Example:</p><p>[php]
+(u.type = ?1) OR (u.role = ?2)
+$q->where($q->expr()->orX('u.type = ?1', 'u.role = ?2'));</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Optional clause. Defaults = null, but requires at least one defined when converting to string.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 340</div>
+<h3 id="prod()">prod</h3>
+<code class="signature">public  Expr\Math <strong>prod</strong>(mixed x, mixed y)</code>
+<div class="details">
+<p>Creates a product mathematical expression with the given arguments.</p><p>First argument is considered the left expression and the second is the right expression.
+When converted to string, it will generated a <left expr> * <right expr>. Example:</p><p>[php]
+u.salary * u.percentAnualSalaryIncrease
+$q->expr()->prod('u.salary', 'u.percentAnualSalaryIncrease')</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Left expression</dd>
+<dd>y - Right expression</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 394</div>
+<h3 id="quot()">quot</h3>
+<code class="signature">public  Expr\Math <strong>quot</strong>(mixed x, mixed y)</code>
+<div class="details">
+<p>Creates a quotient mathematical expression with the given arguments.
+First argument is considered the left expression and the second is the right expression.
+When converted to string, it will generated a <left expr> / <right expr>. Example:</p><p>[php]
+u.total / u.period
+$expr->quot('u.total', 'u.period')</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Left expression</dd>
+<dd>y - Right expression</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 288</div>
+<h3 id="some()">some</h3>
+<code class="signature">public  Expr\Func <strong>some</strong>(mixed subquery)</code>
+<div class="details">
+<p>Creates a SOME() function expression with the given DQL subquery.</p><dl>
+<dt>Parameters:</dt>
+<dd>subquery - DQL Subquery to be used in SOME() function.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 405</div>
+<h3 id="sqrt()">sqrt</h3>
+<code class="signature">public  Expr\Func <strong>sqrt</strong>(mixed x)</code>
+<div class="details">
+<p>Creates a SQRT() function expression with the given argument.</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Argument to be used in SQRT() function.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 473</div>
+<h3 id="substring()">substring</h3>
+<code class="signature">public  Expr\Func <strong>substring</strong>(mixed x, integer from, integer len)</code>
+<div class="details">
+<p>Creates a SUBSTRING() function expression with the given arguments.</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Argument to be used as string to be cropped by SUBSTRING() function.</dd>
+<dd>from - Initial offset to start cropping string. May accept negative values.</dd>
+<dd>len - Length of crop. May accept negative values.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 376</div>
+<h3 id="sum()">sum</h3>
+<code class="signature">public  Expr\Math <strong>sum</strong>(mixed x, mixed y)</code>
+<div class="details">
+<p>Creates a sum mathematical expression with the given arguments.
+First argument is considered the left expression and the second is the right expression.
+When converted to string, it will generated a <left expr> + <right expr>. Example:</p><p>[php]
+u.numChildren + 1
+$q->expr()->diff('u.numChildren', '1')</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Left expression</dd>
+<dd>y - Right expression</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 556</div>
+<h3 id="trim()">trim</h3>
+<code class="signature">public  Expr\Func <strong>trim</strong>(mixed x)</code>
+<div class="details">
+<p>Creates an instance of TRIM() function, with the given argument.</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Argument to be used as argument of TRIM() function.</dd>
+<dt>Returns:</dt>
+<dd>a TRIM expression.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/Expr.php at line 495</div>
+<h3 id="upper()">upper</h3>
+<code class="signature">public  Expr\Func <strong>upper</strong>(mixed x)</code>
+<div class="details">
+<p>Creates an UPPER() function expression with the given argument.</p><dl>
+<dt>Parameters:</dt>
+<dd>x - Argument to be used in UPPER() function.</dd>
+<dt>Returns:</dt>
+<dd>An UPPER function expression.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/query/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/query/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/query/expr.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

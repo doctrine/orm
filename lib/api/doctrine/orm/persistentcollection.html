@@ -1,0 +1,714 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>PersistentCollection (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../doctrine/orm/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../doctrine/orm/package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../index.html" target="_top">Frames</a>
+<a href="../../doctrine/orm/persistentcollection.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\PersistentCollection</div>
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 44</div>
+
+<h1>Class PersistentCollection</h1>
+
+<pre class="tree"><strong>PersistentCollection</strong><br /></pre>
+
+<dl>
+<dt>All Implemented Interfaces:</dt>
+<dd>Collection </dt>
+</dl>
+
+<hr>
+
+<p class="signature">public final  class <strong>PersistentCollection</strong></p>
+
+<div class="comment" id="overview_description"><p>A PersistentCollection represents a collection of elements that have persistent state.</p><p>Collections of entities represent only the associations (links) to those entities.
+That means, if the collection is part of a many-many mapping and you remove
+entities from the collection, only the links in the relation table are removed (on flush).
+Similarly, if you remove entities from a collection that is part of a one-many
+mapping this will only result in the nulling out of the foreign keys on flush.</p></div>
+
+<dl>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision: 4930 $</dd>
+<dt>Author:</dt>
+<dd>Konsta Vesterinen <kvesteri@cc.hut.fi></dd>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dd>Giorgio Sironi <piccoloprincipeazzurro@gmail.com></dd>
+</dl>
+<hr>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#PersistentCollection()">PersistentCollection</a>(<a href="../../doctrine/orm/entitymanager.html">EntityManager</a> em, <a href="../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a> class, mixed coll, array The)</p><p class="description">Creates a new persistent collection.</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#add()">add</a>(mixed value)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#clear()">clear</a>()</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#contains()">contains</a>(mixed element)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#containsKey()">containsKey</a>(mixed key)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#count()">count</a>()</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#current()">current</a>()</p><p class="description">Gets the element of the collection at the current iterator position.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#exists()">exists</a>(mixed p)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#filter()">filter</a>(mixed p)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#first()">first</a>()</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#forAll()">forAll</a>(mixed p)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#get()">get</a>(mixed key)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getDeleteDiff()">getDeleteDiff</a>()</p><p class="description">INTERNAL:
+getDeleteDiff</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getInsertDiff()">getInsertDiff</a>()</p><p class="description">INTERNAL:
+getInsertDiff</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getIterator()">getIterator</a>()</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getKeys()">getKeys</a>()</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> Doctrine\ORM\Mapping\AssociationMapping</td>
+<td class="description"><p class="name"><a href="#getMapping()">getMapping</a>()</p><p class="description">INTERNAL: Gets the association mapping of the collection.</p></td>
+</tr>
+<tr>
+<td class="type"> object</td>
+<td class="description"><p class="name"><a href="#getOwner()">getOwner</a>()</p><p class="description">INTERNAL:
+Gets the collection owner.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getSnapshot()">getSnapshot</a>()</p><p class="description">INTERNAL:
+Returns the last snapshot of the elements in the collection.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getTypeClass()">getTypeClass</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getValues()">getValues</a>()</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#hydrateAdd()">hydrateAdd</a>(mixed element)</p><p class="description">INTERNAL:
+Adds an element to a collection during hydration. </p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#hydrateSet()">hydrateSet</a>(mixed key, mixed element)</p><p class="description">INTERNAL:
+Sets a keyed element in the collection during hydration.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#indexOf()">indexOf</a>(mixed element)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isDirty()">isDirty</a>()</p><p class="description">Gets a boolean flag indicating whether this colleciton is dirty which means
+its state needs to be synchronized with the database.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#isEmpty()">isEmpty</a>()</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isInitialized()">isInitialized</a>()</p><p class="description">Checks whether this collection has been initialized.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#key()">key</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#last()">last</a>()</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#map()">map</a>(mixed func)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#next()">next</a>()</p><p class="description">Moves the internal iterator position to the next element.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#offsetExists()">offsetExists</a>(mixed offset)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#offsetGet()">offsetGet</a>(mixed offset)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#offsetSet()">offsetSet</a>(mixed offset, mixed value)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#offsetUnset()">offsetUnset</a>(mixed offset)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#partition()">partition</a>(mixed p)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#remove()">remove</a>(mixed key)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#removeElement()">removeElement</a>(mixed element)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#set()">set</a>(mixed key, mixed value)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setDirty()">setDirty</a>(boolean dirty)</p><p class="description">Sets a boolean flag, indicating whether this collection is dirty.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setInitialized()">setInitialized</a>(boolean bool)</p><p class="description">Sets the initialized flag of the collection, forcing it into that state.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setOwner()">setOwner</a>(object entity, <a href="../../doctrine/orm/mapping/associationmapping.html">AssociationMapping</a> assoc)</p><p class="description">INTERNAL:
+Sets the collection's owning entity together with the AssociationMapping that
+describes the association between the owner and the elements of the collection.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#takeSnapshot()">takeSnapshot</a>()</p><p class="description">INTERNAL:
+Tells this collection to take a snapshot of its current state.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#toArray()">toArray</a>()</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#unwrap()">unwrap</a>()</p><p class="description">Retrieves the wrapped Collection instance.</p></td>
+</tr>
+</table>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 118</div>
+<h3 id="PersistentCollection()">PersistentCollection</h3>
+<code class="signature">public <strong>PersistentCollection</strong>(<a href="../../doctrine/orm/entitymanager.html">EntityManager</a> em, <a href="../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a> class, mixed coll, array The)</code>
+<div class="details">
+<p>Creates a new persistent collection.</p><dl>
+<dt>Parameters:</dt>
+<dd>em - The EntityManager the collection will be associated with.</dd>
+<dd>class - The class descriptor of the entity type of this collection.</dd>
+<dd>The - collection elements.</dd>
+</dl>
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 491</div>
+<h3 id="add()">add</h3>
+<code class="signature">public  void <strong>add</strong>(mixed value)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 564</div>
+<h3 id="clear()">clear</h3>
+<code class="signature">public  void <strong>clear</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 401</div>
+<h3 id="contains()">contains</h3>
+<code class="signature">public  void <strong>contains</strong>(mixed element)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 392</div>
+<h3 id="containsKey()">containsKey</h3>
+<code class="signature">public  void <strong>containsKey</strong>(mixed key)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 472</div>
+<h3 id="count()">count</h3>
+<code class="signature">public  void <strong>count</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 634</div>
+<h3 id="current()">current</h3>
+<code class="signature">public  void <strong>current</strong>()</code>
+<div class="details">
+<p>Gets the element of the collection at the current iterator position.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 427</div>
+<h3 id="exists()">exists</h3>
+<code class="signature">public  void <strong>exists</strong>(mixed p)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 528</div>
+<h3 id="filter()">filter</h3>
+<code class="signature">public  void <strong>filter</strong>(mixed p)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 333</div>
+<h3 id="first()">first</h3>
+<code class="signature">public  void <strong>first</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 537</div>
+<h3 id="forAll()">forAll</h3>
+<code class="signature">public  void <strong>forAll</strong>(mixed p)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 445</div>
+<h3 id="get()">get</h3>
+<code class="signature">public  void <strong>get</strong>(mixed key)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 250</div>
+<h3 id="getDeleteDiff()">getDeleteDiff</h3>
+<code class="signature">public  array <strong>getDeleteDiff</strong>()</code>
+<div class="details">
+<p>INTERNAL:
+getDeleteDiff</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 262</div>
+<h3 id="getInsertDiff()">getInsertDiff</h3>
+<code class="signature">public  array <strong>getInsertDiff</strong>()</code>
+<div class="details">
+<p>INTERNAL:
+getInsertDiff</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 510</div>
+<h3 id="getIterator()">getIterator</h3>
+<code class="signature">public  void <strong>getIterator</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 454</div>
+<h3 id="getKeys()">getKeys</h3>
+<code class="signature">public  void <strong>getKeys</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 273</div>
+<h3 id="getMapping()">getMapping</h3>
+<code class="signature">public  Doctrine\ORM\Mapping\AssociationMapping <strong>getMapping</strong>()</code>
+<div class="details">
+<p>INTERNAL: Gets the association mapping of the collection.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 146</div>
+<h3 id="getOwner()">getOwner</h3>
+<code class="signature">public  object <strong>getOwner</strong>()</code>
+<div class="details">
+<p>INTERNAL:
+Gets the collection owner.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 239</div>
+<h3 id="getSnapshot()">getSnapshot</h3>
+<code class="signature">public  array <strong>getSnapshot</strong>()</code>
+<div class="details">
+<p>INTERNAL:
+Returns the last snapshot of the elements in the collection.</p><dl>
+<dt>Returns:</dt>
+<dd>The last snapshot of the elements.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 151</div>
+<h3 id="getTypeClass()">getTypeClass</h3>
+<code class="signature">public  void <strong>getTypeClass</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 463</div>
+<h3 id="getValues()">getValues</h3>
+<code class="signature">public  void <strong>getValues</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 163</div>
+<h3 id="hydrateAdd()">hydrateAdd</h3>
+<code class="signature">public  void <strong>hydrateAdd</strong>(mixed element)</code>
+<div class="details">
+<p>INTERNAL:
+Adds an element to a collection during hydration. This will automatically
+complete bidirectional associations in the case of a one-to-many association.</p><dl>
+<dt>Parameters:</dt>
+<dd>element - The element to add.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 186</div>
+<h3 id="hydrateSet()">hydrateSet</h3>
+<code class="signature">public  void <strong>hydrateSet</strong>(mixed key, mixed element)</code>
+<div class="details">
+<p>INTERNAL:
+Sets a keyed element in the collection during hydration.</p><dl>
+<dt>Parameters:</dt>
+<dd>key - The key to set. $param mixed $value The element to set.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 436</div>
+<h3 id="indexOf()">indexOf</h3>
+<code class="signature">public  void <strong>indexOf</strong>(mixed element)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 297</div>
+<h3 id="isDirty()">isDirty</h3>
+<code class="signature">public  boolean <strong>isDirty</strong>()</code>
+<div class="details">
+<p>Gets a boolean flag indicating whether this colleciton is dirty which means
+its state needs to be synchronized with the database.</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE if the collection is dirty, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 501</div>
+<h3 id="isEmpty()">isEmpty</h3>
+<code class="signature">public  void <strong>isEmpty</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 327</div>
+<h3 id="isInitialized()">isInitialized</h3>
+<code class="signature">public  boolean <strong>isInitialized</strong>()</code>
+<div class="details">
+<p>Checks whether this collection has been initialized.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 626</div>
+<h3 id="key()">key</h3>
+<code class="signature">public  void <strong>key</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 340</div>
+<h3 id="last()">last</h3>
+<code class="signature">public  void <strong>last</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 519</div>
+<h3 id="map()">map</h3>
+<code class="signature">public  void <strong>map</strong>(mixed func)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 642</div>
+<h3 id="next()">next</h3>
+<code class="signature">public  void <strong>next</strong>()</code>
+<div class="details">
+<p>Moves the internal iterator position to the next element.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 593</div>
+<h3 id="offsetExists()">offsetExists</h3>
+<code class="signature">public  void <strong>offsetExists</strong>(mixed offset)</code>
+<div class="details">
+<p></p><dl>
+<dt>See Also:</dt>
+<dd>containsKey()</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 601</div>
+<h3 id="offsetGet()">offsetGet</h3>
+<code class="signature">public  void <strong>offsetGet</strong>(mixed offset)</code>
+<div class="details">
+<p></p><dl>
+<dt>See Also:</dt>
+<dd>get()</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 610</div>
+<h3 id="offsetSet()">offsetSet</h3>
+<code class="signature">public  void <strong>offsetSet</strong>(mixed offset, mixed value)</code>
+<div class="details">
+<p></p><dl>
+<dt>See Also:</dt>
+<dd>add()</dd>
+<dd>set()</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 621</div>
+<h3 id="offsetUnset()">offsetUnset</h3>
+<code class="signature">public  void <strong>offsetUnset</strong>(mixed offset)</code>
+<div class="details">
+<p></p><dl>
+<dt>See Also:</dt>
+<dd>remove()</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 546</div>
+<h3 id="partition()">partition</h3>
+<code class="signature">public  void <strong>partition</strong>(mixed p)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 349</div>
+<h3 id="remove()">remove</h3>
+<code class="signature">public  void <strong>remove</strong>(mixed key)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 371</div>
+<h3 id="removeElement()">removeElement</h3>
+<code class="signature">public  void <strong>removeElement</strong>(mixed element)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 481</div>
+<h3 id="set()">set</h3>
+<code class="signature">public  void <strong>set</strong>(mixed key, mixed value)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 307</div>
+<h3 id="setDirty()">setDirty</h3>
+<code class="signature">public  void <strong>setDirty</strong>(boolean dirty)</code>
+<div class="details">
+<p>Sets a boolean flag, indicating whether this collection is dirty.</p><dl>
+<dt>Parameters:</dt>
+<dd>dirty - Whether the collection should be marked dirty or not.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 317</div>
+<h3 id="setInitialized()">setInitialized</h3>
+<code class="signature">public  void <strong>setInitialized</strong>(boolean bool)</code>
+<div class="details">
+<p>Sets the initialized flag of the collection, forcing it into that state.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 133</div>
+<h3 id="setOwner()">setOwner</h3>
+<code class="signature">public  void <strong>setOwner</strong>(object entity, <a href="../../doctrine/orm/mapping/associationmapping.html">AssociationMapping</a> assoc)</code>
+<div class="details">
+<p>INTERNAL:
+Sets the collection's owning entity together with the AssociationMapping that
+describes the association between the owner and the elements of the collection.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 227</div>
+<h3 id="takeSnapshot()">takeSnapshot</h3>
+<code class="signature">public  void <strong>takeSnapshot</strong>()</code>
+<div class="details">
+<p>INTERNAL:
+Tells this collection to take a snapshot of its current state.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 555</div>
+<h3 id="toArray()">toArray</h3>
+<code class="signature">public  void <strong>toArray</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/PersistentCollection.php at line 650</div>
+<h3 id="unwrap()">unwrap</h3>
+<code class="signature">public  void <strong>unwrap</strong>()</code>
+<div class="details">
+<p>Retrieves the wrapped Collection instance.</p></div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../doctrine/orm/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../doctrine/orm/package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../index.html" target="_top">Frames</a>
+<a href="../../doctrine/orm/persistentcollection.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>
