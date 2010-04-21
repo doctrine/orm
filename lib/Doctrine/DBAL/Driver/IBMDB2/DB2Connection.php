@@ -19,9 +19,9 @@
  * <http://www.doctrine-project.org>.
 */
 
-namespace Doctrine\DBAL\Driver\IbmDb2;
+namespace Doctrine\DBAL\Driver\IBMDB2;
 
-class Db2Connection implements \Doctrine\DBAL\Driver\Connection
+class DB2Connection implements \Doctrine\DBAL\Driver\Connection
 {
     private $_conn = null;
 
@@ -35,7 +35,7 @@ class Db2Connection implements \Doctrine\DBAL\Driver\Connection
             $this->_conn = db2_connect($params['dbname'], $username, $password, $driverOptions);
         }
         if (!$this->_conn) {
-            throw new Db2Exception(db2_conn_errormsg());
+            throw new DB2Exception(db2_conn_errormsg());
         }
     }
 
@@ -43,9 +43,9 @@ class Db2Connection implements \Doctrine\DBAL\Driver\Connection
     {
         $stmt = @db2_prepare($this->_conn, $sql);
         if (!$stmt) {
-            throw new Db2Exception(db2_stmt_errormsg());
+            throw new DB2Exception(db2_stmt_errormsg());
         }
-        return new Db2Statement($stmt);
+        return new DB2Statement($stmt);
     }
     
     function query()
@@ -87,7 +87,7 @@ class Db2Connection implements \Doctrine\DBAL\Driver\Connection
     function commit()
     {
         if (!db2_commit($this->_conn)) {
-            throw new Db2Exception(db2_conn_errormsg($this->_conn));
+            throw new DB2Exception(db2_conn_errormsg($this->_conn));
         }
         db2_autocommit($this->_conn, DB2_AUTOCOMMIT_ON);
     }
@@ -95,7 +95,7 @@ class Db2Connection implements \Doctrine\DBAL\Driver\Connection
     function rollBack()
     {
         if (!db2_rollback($this->_conn)) {
-            throw new Db2Exception(db2_conn_errormsg($this->_conn));
+            throw new DB2Exception(db2_conn_errormsg($this->_conn));
         }
         db2_autocommit($this->_conn, DB2_AUTOCOMMIT_ON);
     }

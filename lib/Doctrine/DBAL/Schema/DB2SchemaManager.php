@@ -30,7 +30,7 @@ namespace Doctrine\DBAL\Schema;
  * @version     $Revision$
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
  */
-class Db2SchemaManager extends AbstractSchemaManager
+class DB2SchemaManager extends AbstractSchemaManager
 {
     /**
      * Return a list of all tables in the current database

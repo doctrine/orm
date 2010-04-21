@@ -44,7 +44,7 @@ final class DriverManager
             'pdo_oci' => 'Doctrine\DBAL\Driver\PDOOracle\Driver',
             'pdo_mssql'  => 'Doctrine\DBAL\Driver\PDOMsSql\Driver',
             'oci8' => 'Doctrine\DBAL\Driver\OCI8\Driver',
-            'ibm_db2' => 'Doctrine\DBAL\Driver\IbmDb2\Db2Driver',
+            'ibm_db2' => 'Doctrine\DBAL\Driver\IBMDB2\DB2Driver',
             'pdo_ibm' => 'Doctrine\DBAL\Driver\PDOIbm\Driver',
             );
 

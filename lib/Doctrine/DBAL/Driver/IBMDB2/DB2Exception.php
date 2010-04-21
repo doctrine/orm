@@ -19,9 +19,9 @@
  * <http://www.doctrine-project.org>.
 */
 
-namespace Doctrine\DBAL\Driver\IbmDb2;
+namespace Doctrine\DBAL\Driver\IBMDB2;
 
-class Db2Exception extends \Exception
+class DB2Exception extends \Exception
 {
     
 }

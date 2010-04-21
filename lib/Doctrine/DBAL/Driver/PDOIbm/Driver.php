@@ -87,7 +87,7 @@ class Driver implements \Doctrine\DBAL\Driver
      */
     public function getDatabasePlatform()
     {
-        return new \Doctrine\DBAL\Platforms\Db2Platform;
+        return new \Doctrine\DBAL\Platforms\DB2Platform;
     }
 
     /**
@@ -99,7 +99,7 @@ class Driver implements \Doctrine\DBAL\Driver
      */
     public function getSchemaManager(Connection $conn)
     {
-        return new \Doctrine\DBAL\Schema\Db2SchemaManager($conn);
+        return new \Doctrine\DBAL\Schema\DB2SchemaManager($conn);
     }
 
     /**

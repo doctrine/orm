@@ -19,9 +19,9 @@
  * <http://www.doctrine-project.org>.
 */
 
-namespace Doctrine\DBAL\Driver\IbmDb2;
+namespace Doctrine\DBAL\Driver\IBMDB2;
 
-class Db2Statement implements \Doctrine\DBAL\Driver\Statement
+class DB2Statement implements \Doctrine\DBAL\Driver\Statement
 {
     private $_stmt = null;
 
@@ -92,7 +92,7 @@ class Db2Statement implements \Doctrine\DBAL\Driver\Statement
         }
 
         if (!db2_bind_param($this->_stmt, $column, "variable", DB2_PARAM_IN, $type)) {
-            throw new Db2Exception(db2_stmt_errormsg());
+            throw new DB2Exception(db2_stmt_errormsg());
         }
         return true;
     }
@@ -191,7 +191,7 @@ class Db2Statement implements \Doctrine\DBAL\Driver\Statement
         $retval = @db2_execute($this->_stmt, $params);
 
         if ($retval === false) {
-            throw new Db2Exception(db2_stmt_errormsg());
+            throw new DB2Exception(db2_stmt_errormsg());
         }
         return $retval;
     }
@@ -233,7 +233,7 @@ class Db2Statement implements \Doctrine\DBAL\Driver\Statement
             case \PDO::FETCH_NUM:
                 return db2_fetch_array($this->_stmt);
             default:
-                throw new Db2Exception("Given Fetch-Style " . $fetchStyle . " is not supported.");
+                throw new DB2Exception("Given Fetch-Style " . $fetchStyle . " is not supported.");
         }
     }
 

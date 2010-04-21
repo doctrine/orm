@@ -19,7 +19,7 @@
  * <http://www.doctrine-project.org>.
 */
 
-namespace Doctrine\DBAL\Driver\IbmDb2;
+namespace Doctrine\DBAL\Driver\IBMDB2;
 
 use Doctrine\DBAL\Driver,
     Doctrine\DBAL\Connection;
@@ -33,7 +33,7 @@ use Doctrine\DBAL\Driver,
  * @version     $Revision$
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
  */
-class Db2Driver implements Driver
+class DB2Driver implements Driver
 {
     /**
      * Attempts to create a connection with the database.
@@ -63,7 +63,7 @@ class Db2Driver implements Driver
             $password = null;
         }
 
-        return new Db2Connection($params, $username, $password, $driverOptions);
+        return new DB2Connection($params, $username, $password, $driverOptions);
     }
 
     /**
@@ -74,7 +74,7 @@ class Db2Driver implements Driver
      */
     public function getDatabasePlatform()
     {
-        return new \Doctrine\DBAL\Platforms\Db2Platform;
+        return new \Doctrine\DBAL\Platforms\DB2Platform;
     }
 
     /**
@@ -86,7 +86,7 @@ class Db2Driver implements Driver
      */
     public function getSchemaManager(Connection $conn)
     {
-        return new \Doctrine\DBAL\Schema\Db2SchemaManager($conn);
+        return new \Doctrine\DBAL\Schema\DB2SchemaManager($conn);
     }
 
     /**
