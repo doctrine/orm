@@ -6,9 +6,9 @@ namespace Doctrine\Tests\Models\Company;
  * @Entity @Table(name="company_events")
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="event_type", type="string")
- * @DiscriminatorMap({"auction" = "CompanyAuction", "raffle" = "CompanyRaffle"})
+ * @DiscriminatorMap({"auction"="CompanyAuction", "raffle"="CompanyRaffle"})
  */
-class CompanyEvent {
+abstract class CompanyEvent {
    /**
      * @Id @Column(type="integer")
      * @GeneratedValue

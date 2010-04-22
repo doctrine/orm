@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -27,10 +25,7 @@ use Doctrine\ORM\Query;
  * An LL(*) recursive-descent parser for the context-free grammar of the Doctrine Query Language.
  * Parses a DQL query, reports any errors in it, and generates an AST.
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision: 3938 $
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
@@ -2624,9 +2619,10 @@ class Parser
 
     public function CustomFunctionsReturningNumerics()
     {
-        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
-        $funcClass = $this->_em->getConfiguration()->getCustomNumericFunction($funcNameLower);
-        $function = new $funcClass($funcNameLower);
+        $funcName = strtolower($this->_lexer->lookahead['value']);
+        // getCustomNumericFunction is case-insensitive
+        $funcClass = $this->_em->getConfiguration()->getCustomNumericFunction($funcName);
+        $function = new $funcClass($funcName);
         $function->parse($this);
 
         return $function;
@@ -2647,9 +2643,10 @@ class Parser
 
     public function CustomFunctionsReturningDatetime()
     {
-        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
-        $funcClass = $this->_em->getConfiguration()->getCustomDatetimeFunction($funcNameLower);
-        $function = new $funcClass($funcNameLower);
+        $funcName = $this->_lexer->lookahead['value'];
+        // getCustomDatetimeFunction is case-insensitive
+        $funcClass = $this->_em->getConfiguration()->getCustomDatetimeFunction($funcName);
+        $function = new $funcClass($funcName);
         $function->parse($this);
 
         return $function;
@@ -2675,9 +2672,10 @@ class Parser
 
     public function CustomFunctionsReturningStrings()
     {
-        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
-        $funcClass = $this->_em->getConfiguration()->getCustomStringFunction($funcNameLower);
-        $function = new $funcClass($funcNameLower);
+        $funcName = $this->_lexer->lookahead['value'];
+        // getCustomStringFunction is case-insensitive
+        $funcClass = $this->_em->getConfiguration()->getCustomStringFunction($funcName);
+        $function = new $funcClass($funcName);
         $function->parse($this);
 
         return $function;

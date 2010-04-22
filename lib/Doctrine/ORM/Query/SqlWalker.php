@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -240,16 +238,17 @@ class SqlWalker implements TreeWalker
     {
         $sql = '';
 
-        $baseTableAlias = $this->getSqlTableAlias($class->table['name'], $dqlAlias);
+        $baseTableAlias = $this->getSQLTableAlias($class->table['name'], $dqlAlias);
 
         // INNER JOIN parent class tables
         foreach ($class->parentClasses as $parentClassName) {
             $parentClass = $this->_em->getClassMetadata($parentClassName);
-            $tableAlias = $this->getSqlTableAlias($parentClass->table['name'], $dqlAlias);
-            $sql .= ' INNER JOIN ' . $parentClass->getQuotedTableName($this->_platform)
+            $tableAlias = $this->getSQLTableAlias($parentClass->table['name'], $dqlAlias);
+            // If this is a joined association we must use left joins to preserve the correct result.
+            $sql .= isset($this->_queryComponents[$dqlAlias]['relation']) ? ' LEFT ' : ' INNER ';
+            $sql .= 'JOIN ' . $parentClass->getQuotedTableName($this->_platform)
                   . ' ' . $tableAlias . ' ON ';
             $first = true;
-
             foreach ($class->identifier as $idField) {
                 if ($first) $first = false; else $sql .= ' AND ';
 
@@ -260,14 +259,13 @@ class SqlWalker implements TreeWalker
             }
         }
 
-        // LEFT JOIN subclass tables, if partial objects disallowed
+        // LEFT JOIN subclass tables, if partial objects disallowed.
         if ( ! $this->_query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
             foreach ($class->subClasses as $subClassName) {
                 $subClass = $this->_em->getClassMetadata($subClassName);
-                $tableAlias = $this->getSqlTableAlias($subClass->table['name'], $dqlAlias);
+                $tableAlias = $this->getSQLTableAlias($subClass->table['name'], $dqlAlias);
                 $sql .= ' LEFT JOIN ' . $subClass->getQuotedTableName($this->_platform)
                         . ' ' . $tableAlias . ' ON ';
-
                 $first = true;
                 foreach ($class->identifier as $idField) {
                     if ($first) $first = false; else $sql .= ' AND ';
