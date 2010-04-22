@@ -478,8 +478,12 @@ class SqlWalker implements TreeWalker
                     if (count($assoc->sourceToTargetKeyColumns) > 1) {
                         throw QueryException::associationPathCompositeKeyNotSupported();
                     }
-                    $sql .= $this->getSqlTableAlias($class->table['name'], $dqlAlias) . '.'
-                          . reset($assoc->targetToSourceKeyColumns);
+
+                    if ($this->_useSqlTableAliases) {
+                        $sql .= $this->getSqlTableAlias($class->table['name'], $dqlAlias) . '.';
+                    }
+
+                    $sql .= reset($assoc->targetToSourceKeyColumns);
                 } else {
                     // 2- Inverse side: NOT (YET?) SUPPORTED
                     throw QueryException::associationPathInverseSideNotSupported();
