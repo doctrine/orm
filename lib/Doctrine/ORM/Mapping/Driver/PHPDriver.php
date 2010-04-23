@@ -41,7 +41,6 @@ use Doctrine\Common\Cache\ArrayCache,
  * @author		Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
- * @todo Rename: PHPDriver
  */
 class PHPDriver extends AbstractFileDriver
 {
