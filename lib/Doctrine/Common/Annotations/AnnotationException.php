@@ -27,20 +27,32 @@ namespace Doctrine\Common\Annotations;
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision: 3938 $
+ * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class AnnotationException extends \Doctrine\Common\CommonException
+class AnnotationException extends \Exception
 {
+    /**
+     * Creates a new AnnotationException describing a Syntax error.
+     *
+     * @param string $message Exception message
+     * @return AnnotationException
+     */
 	public static function syntaxError($message)
     {
         return new self('[Syntax Error] ' . $message);
     }
 
-
-    public static function semanticalError($message)
+    /**
+     * Creates a new AnnotationException describing a Semantical error.
+     *
+     * @param string $message Exception message
+     * @return AnnotationException
+     */
+	public static function semanticalError($message)
     {
         return new self('[Semantical Error] ' . $message);
     }

@@ -15,7 +15,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     private static $_queryCacheImpl = null;
 
     /* Shared connection when a TestCase is run alone (outside of it's functional suite) */
-    private static $_sharedConn;
+    protected static $_sharedConn;
     
     /**
      * @var \Doctrine\ORM\EntityManager
@@ -33,13 +33,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     protected $_sqlLoggerStack;
 
     /** The names of the model sets used in this testcase. */
-    private $_usedModelSets = array();
+    protected $_usedModelSets = array();
 
     /** Whether the database schema has already been created. */
-    private static $_tablesCreated = array();
+    protected static $_tablesCreated = array();
 
     /** List of model sets and their classes. */
-    private static $_modelSets = array(
+    protected static $_modelSets = array(
         'cms' => array(
             'Doctrine\Tests\Models\CMS\CmsUser',
             'Doctrine\Tests\Models\CMS\CmsPhonenumber',
@@ -170,11 +170,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $forceCreateTables = false;
         
         if ( ! isset($this->sharedFixture['conn'])) {
-            if ( ! isset(self::$_sharedConn)) {
-                self::$_sharedConn = TestUtil::getConnection();
+            if ( ! isset(static::$_sharedConn)) {
+                static::$_sharedConn = TestUtil::getConnection();
             }
             
-            $this->sharedFixture['conn'] = self::$_sharedConn;
+            $this->sharedFixture['conn'] = static::$_sharedConn;
             
             if ($this->sharedFixture['conn']->getDriver() instanceof \Doctrine\DBAL\Driver\PDOSqlite\Driver) {
                 $forceCreateTables = true;
@@ -189,12 +189,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $classes = array();
         
         foreach ($this->_usedModelSets as $setName => $bool) {
-            if ( ! isset(self::$_tablesCreated[$setName])/* || $forceCreateTables*/) {
-                foreach (self::$_modelSets[$setName] as $className) {
+            if ( ! isset(static::$_tablesCreated[$setName])/* || $forceCreateTables*/) {
+                foreach (static::$_modelSets[$setName] as $className) {
                     $classes[] = $this->_em->getClassMetadata($className);
                 }
                 
-                self::$_tablesCreated[$setName] = true;
+                static::$_tablesCreated[$setName] = true;
             }
         }
         

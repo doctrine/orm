@@ -159,4 +159,12 @@ class UpdateSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'UPDATE cms_users SET status = ? WHERE id BETWEEN ? AND ?'
         );
     }
+
+    public function testSingleValuedAssociationFieldInWhere()
+    {
+        $this->assertSqlGeneration(
+            "UPDATE Doctrine\Tests\Models\CMS\CmsPhonenumber p SET p.phonenumber = 1234 WHERE p.user = ?1",
+            "UPDATE cms_phonenumbers SET phonenumber = 1234 WHERE user_id = ?"
+        );
+    }
 }
