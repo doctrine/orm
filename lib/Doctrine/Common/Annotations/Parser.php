@@ -27,11 +27,11 @@ namespace Doctrine\Common\Annotations;
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision: 3938 $
+ * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
 class Parser
 {
@@ -173,9 +173,10 @@ class Parser
             $message .= "'{$token['value']}' at position {$token['position']}";
         }
 
-        if(strlen($this->_context)) {
-            $message .= ' in '.$this->_context;
+        if (strlen($this->_context)) {
+            $message .= ' in ' . $this->_context;
         }
+
         $message .= '.';
 
         throw AnnotationException::syntaxError($message);
@@ -411,6 +412,7 @@ class Parser
 
         foreach ($values as $value) {
             list ($key, $val) = $value;
+
             if ($key !== null) {
                 $array[$key] = $val;
             } else {
