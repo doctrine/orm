@@ -105,7 +105,7 @@ The EntityManager and UnitOfWork trigger a bunch of events during the life-time 
 * loadClassMetadata - The loadClassMetadata event occurs after the mapping metadata for a class has been loaded from a mapping source (annotations/xml/yaml).
 * onFlush - The onFlush event occours after the change-sets of all managed entities are computed. This event is not a lifecycle callback.
 
-> **NOTE**
+> **CAUTION**
 > Note that the postLoad event occurs for an entity before any associations have been
 > initialized. Therefore it is not safe to access associations in a postLoad callback
 > or event handler.
