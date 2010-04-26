@@ -23,7 +23,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\XmlMappingDriverTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\YamlMappingDriverTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\AnnotationDriverTest');
-        //$suite->addTestSuite('Doctrine\Tests\ORM\Mapping\PHPMappingDriverTest'); FILE MISSING!!!
+        $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\PHPMappingDriverTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\StaticPHPMappingDriverTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\ClassMetadataFactoryTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\ClassMetadataLoadEventTest');

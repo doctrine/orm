@@ -37,7 +37,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
      * 
      * @var array
      */
-    /*private*/protected $_declaringClassMap = array();
+    private $_declaringClassMap = array();
 
     /**
      * {@inheritdoc}
