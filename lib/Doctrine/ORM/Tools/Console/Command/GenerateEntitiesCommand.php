@@ -113,7 +113,7 @@ EOT
             );
         }
 
-        if ( count($metadatas)) {
+        if (count($metadatas)) {
             // Create EntityGenerator
             $entityGenerator = new EntityGenerator();
 

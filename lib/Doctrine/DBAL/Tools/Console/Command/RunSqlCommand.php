@@ -78,7 +78,7 @@ EOT
         if (preg_match('/^select/i', $sql)) {
            $resultSet = $conn->fetchAll($sql);
         } else {
-            $resultSet = $em->getConnection()->executeUpdate($sql);
+            $resultSet = $conn->executeUpdate($sql);
         }
 
         \Doctrine\Common\Util\Debug::dump($resultSet, (int) $depth);

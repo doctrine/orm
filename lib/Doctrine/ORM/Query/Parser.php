@@ -203,12 +203,15 @@ class Parser
         // Process any deferred validations of some nodes in the AST.
         // This also allows post-processing of the AST for modification purposes.
         $this->_processDeferredIdentificationVariables();
+
         if ($this->_deferredPartialObjectExpressions) {
             $this->_processDeferredPartialObjectExpressions();
         }
+
         if ($this->_deferredPathExpressions) {
             $this->_processDeferredPathExpressions($AST);
         }
+
         if ($this->_deferredResultVariables) {
             $this->_processDeferredResultVariables();
         }
@@ -456,7 +459,7 @@ class Parser
             // Check if IdentificationVariable exists in queryComponents
             if ( ! isset($this->_queryComponents[$identVariable])) {
                 $this->semanticalError(
-                "'$identVariable' is not defined.", $deferredItem['token']
+                    "'$identVariable' is not defined.", $deferredItem['token']
                 );
             }
 
@@ -465,14 +468,14 @@ class Parser
             // Check if queryComponent points to an AbstractSchemaName or a ResultVariable
             if ( ! isset($qComp['metadata'])) {
                 $this->semanticalError(
-                "'$identVariable' does not point to a Class.", $deferredItem['token']
+                    "'$identVariable' does not point to a Class.", $deferredItem['token']
                 );
             }
 
             // Validate if identification variable nesting level is lower or equal than the current one
             if ($qComp['nestingLevel'] > $deferredItem['nestingLevel']) {
                 $this->semanticalError(
-                "'$identVariable' is used outside the scope of its declaration.", $deferredItem['token']
+                    "'$identVariable' is used outside the scope of its declaration.", $deferredItem['token']
                 );
             }
         }
@@ -486,15 +489,15 @@ class Parser
             foreach ($expr->partialFieldSet as $field) {
                 if ( ! isset($class->fieldMappings[$field])) {
                     $this->semanticalError(
-                    "There is no mapped field named '$field' on class " . $class->name . ".",
-                    $deferredItem['token']
+                        "There is no mapped field named '$field' on class " . $class->name . ".",
+                        $deferredItem['token']
                     );
                 }
             }
             if (array_intersect($class->identifier, $expr->partialFieldSet) != $class->identifier) {
                 $this->semanticalError(
-                "The partial field selection of class " . $class->name . " must contain the identifier.",
-                $deferredItem['token']
+                    "The partial field selection of class " . $class->name . " must contain the identifier.",
+                    $deferredItem['token']
                 );
             }
         }
@@ -514,7 +517,7 @@ class Parser
             // Check if ResultVariable exists in queryComponents
             if ( ! isset($this->_queryComponents[$resultVariable])) {
                 $this->semanticalError(
-                "'$resultVariable' is not defined.", $deferredItem['token']
+                    "'$resultVariable' is not defined.", $deferredItem['token']
                 );
             }
 
@@ -523,14 +526,14 @@ class Parser
             // Check if queryComponent points to an AbstractSchemaName or a ResultVariable
             if ( ! isset($qComp['resultVariable'])) {
                 $this->semanticalError(
-                "'$identVariable' does not point to a ResultVariable.", $deferredItem['token']
+                    "'$identVariable' does not point to a ResultVariable.", $deferredItem['token']
                 );
             }
 
             // Validate if identification variable nesting level is lower or equal than the current one
             if ($qComp['nestingLevel'] > $deferredItem['nestingLevel']) {
                 $this->semanticalError(
-                "'$resultVariable' is used outside the scope of its declaration.", $deferredItem['token']
+                    "'$resultVariable' is used outside the scope of its declaration.", $deferredItem['token']
                 );
             }
         }
@@ -625,6 +628,7 @@ class Parser
                             ),
                             null
                         );
+                        
                         $AST->fromClause->identificationVariableDeclarations[0]->joinVariableDeclarations[] = $joinVariableDeclaration;
 
                         $this->_queryComponents[$aliasIdentificationVariable . '.' . $field] = $joinQueryComponent;

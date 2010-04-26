@@ -41,7 +41,7 @@ class AnnotationReader
      * @var string
      * @static
      */
-    private static $CACHE_SALT = "@<Annot>";
+    private static $CACHE_SALT = '@<Annot>';
     
     /**
      * Annotations Parser
@@ -51,15 +51,14 @@ class AnnotationReader
     private $_parser;
     
     /**
-     * Cache machanism to store processed Annotations
+     * Cache mechanism to store processed Annotations
      *
      * @var Doctrine\Common\Cache\Cache
      */
     private $_cache;
     
     /**
-     * Constructor. Initializes a new AnnotationReader that uses the given 
-     * Cache provider.
+     * Constructor. Initializes a new AnnotationReader that uses the given Cache provider.
      * 
      * @param Cache $cache The cache provider to use. If none is provided, ArrayCache is used.
      */
@@ -107,7 +106,7 @@ class AnnotationReader
             return $data;
         }
         
-        $annotations = $this->_parser->parse($class->getDocComment(), "class ".$class->getName());
+        $annotations = $this->_parser->parse($class->getDocComment(), 'class ' . $class->getName());
         $this->_cache->save($cacheKey, $annotations, null);
         
         return $annotations;
@@ -123,6 +122,7 @@ class AnnotationReader
     public function getClassAnnotation(ReflectionClass $class, $annotation)
     {
         $annotations = $this->getClassAnnotations($class);
+
         return isset($annotations[$annotation]) ? $annotations[$annotation] : null;
     }
     
@@ -143,7 +143,7 @@ class AnnotationReader
             return $data;
         }
         
-        $context = "property ".$property->getDeclaringClass()->getName()."::\$".$property->getName();
+        $context = 'property ' . $property->getDeclaringClass()->getName() . "::\$" . $property->getName();
         $annotations = $this->_parser->parse($property->getDocComment(), $context);
         $this->_cache->save($cacheKey, $annotations, null);
         
@@ -160,6 +160,7 @@ class AnnotationReader
     public function getPropertyAnnotation(ReflectionProperty $property, $annotation)
     {
         $annotations = $this->getPropertyAnnotations($property);
+
         return isset($annotations[$annotation]) ? $annotations[$annotation] : null;
     }
     
@@ -180,7 +181,7 @@ class AnnotationReader
             return $data;
         }
 
-        $context = "method ".$method->getDeclaringClass()->getName()."::".$method->getName()."()";
+        $context = 'method ' . $method->getDeclaringClass()->getName() . '::' . $method->getName() . '()';
         $annotations = $this->_parser->parse($method->getDocComment(), $context);
         $this->_cache->save($cacheKey, $annotations, null);
         
@@ -197,6 +198,7 @@ class AnnotationReader
     public function getMethodAnnotation(ReflectionMethod $method, $annotation)
     {
         $annotations = $this->getMethodAnnotations($method);
+        
         return isset($annotations[$annotation]) ? $annotations[$annotation] : null;
     }
 }
