@@ -2,7 +2,7 @@
 
 namespace Doctrine\ORM\Persisters;
 
-class UnionSubclassPersister extends StandardEntityPersister
+class UnionSubclassPersister extends BasicEntityPersister
 {
     
 }

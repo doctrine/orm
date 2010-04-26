@@ -70,9 +70,8 @@ use PDO,
  * @author Roman Borschel <roman@code-factory.org>
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @since 2.0
- * @todo Rename: BasicEntityPersister
  */
-class StandardEntityPersister
+class BasicEntityPersister
 {
     /**
      * Metadata object that describes the mapping of the mapped entity class.
@@ -159,7 +158,7 @@ class StandardEntityPersister
     protected $_sqlTableAliases = array();
 
     /**
-     * Initializes a new <tt>StandardEntityPersister</tt> that uses the given EntityManager
+     * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
      * and persists instances of the class described by the given ClassMetadata descriptor.
      * 
      * @param Doctrine\ORM\EntityManager $em
@@ -828,7 +827,7 @@ class StandardEntityPersister
      * an entity in this persister.
      *
      * Subclasses should override this method to alter or change the select column
-     * list SQL fragment. Note that in the implementation of StandardEntityPersister
+     * list SQL fragment. Note that in the implementation of BasicEntityPersister
      * the resulting SQL fragment is generated only once and cached in {@link _selectColumnListSql}.
      * Subclasses may or may not do the same.
      * 

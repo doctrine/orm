@@ -30,7 +30,7 @@ use Doctrine\ORM\Mapping\ClassMetadata,
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-abstract class AbstractEntityInheritancePersister extends StandardEntityPersister
+abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
 {
     /**
      * Map from column names to class names that declare the field the column is mapped to.
