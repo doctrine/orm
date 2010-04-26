@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping\ClassMetadata,
 
 require_once __DIR__ . '/../../TestInit.php';
 
-class PhpMappingDriverTest extends AbstractMappingDriverTest
+class PHPMappingDriverTest extends AbstractMappingDriverTest
 {
     protected function _loadDriver()
     {
