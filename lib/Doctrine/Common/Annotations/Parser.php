@@ -22,10 +22,7 @@ namespace Doctrine\Common\Annotations;
 /**
  * A simple parser for docblock annotations.
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision: 3938 $
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
@@ -234,7 +231,7 @@ class Parser
             $nameParts[] = $this->_lexer->token['value'];
         }
 
-        // Effectively pick the name of class (append default NS if none, grab from NS alias, etc)
+        // Effectively pick the name of the class (append default NS if none, grab from NS alias, etc)
         if (count($nameParts) == 1) {
             if (strpos($nameParts[0], ':')) {
                 list ($alias, $simpleName) = explode(':', $nameParts[0]);

@@ -37,6 +37,7 @@ namespace Doctrine\ORM\Mapping;
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
+ * @todo Potentially remove if assoc mapping objects get replaced by simple arrays.
  */
 class OneToOneMapping extends AssociationMapping
 {
@@ -133,57 +134,11 @@ class OneToOneMapping extends AssociationMapping
      * @param object $targetEntity      the entity to load data in
      * @param EntityManager $em
      * @param array $joinColumnValues  Values of the join columns of $sourceEntity.
+     * @todo Remove
      */
     public function load($sourceEntity, $targetEntity, $em, array $joinColumnValues = array())
     {
-        $targetClass = $em->getClassMetadata($this->targetEntityName);
-
-        if ($this->isOwningSide) {
-            // Mark inverse side as fetched in the hints, otherwise the UoW would
-            // try to load it in a separate query (remember: to-one inverse sides can not be lazy). 
-            $hints = array();
-            if ($this->inversedBy) {
-                $hints['fetched'][$targetClass->name][$this->inversedBy] = true;
-                if ($targetClass->subClasses) {
-                    foreach ($targetClass->subClasses as $targetSubclassName) {
-                        $hints['fetched'][$targetSubclassName][$this->inversedBy] = true;
-                    }
-                }
-            }
-            /* cascade read-only status
-            if ($em->getUnitOfWork()->isReadOnly($sourceEntity)) {
-                $hints[Query::HINT_READ_ONLY] = true;
-            }
-            */
-
-            $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($joinColumnValues, $targetEntity, $this, $hints);
-            
-            if ($targetEntity !== null && $this->inversedBy && ! $targetClass->isCollectionValuedAssociation($this->inversedBy)) {
-                $targetClass->reflFields[$this->inversedBy]->setValue($targetEntity, $sourceEntity);
-            }
-        } else {
-            $conditions = array();
-            $sourceClass = $em->getClassMetadata($this->sourceEntityName);
-            $owningAssoc = $targetClass->getAssociationMapping($this->mappedBy);
-            // TRICKY: since the association is specular source and target are flipped
-            foreach ($owningAssoc->targetToSourceKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
-                if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
-                    $conditions[$targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
-                } else {
-                    throw MappingException::joinColumnMustPointToMappedField(
-                        $sourceClass->name, $sourceKeyColumn
-                    );
-                }
-            }
-
-            $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($conditions, $targetEntity, $this);
-            
-            if ($targetEntity !== null) {
-                $targetClass->setFieldValue($targetEntity, $this->mappedBy, $sourceEntity);
-            }
-        }
-
-        return $targetEntity;
+        return $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->loadOneToOneEntity($this, $sourceEntity, $targetEntity, $joinColumnValues);
     }
 
     /**

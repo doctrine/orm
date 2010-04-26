@@ -41,24 +41,25 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     protected function _getSelectColumnListSQL()
     {
         $columnList = parent::_getSelectColumnListSQL();
+
         // Append discriminator column
         $discrColumn = $this->_class->discriminatorColumn['name'];
         $columnList .= ", $discrColumn";
         $rootClass = $this->_em->getClassMetadata($this->_class->rootEntityName);
-        $tableAlias = $this->_getSQLTableAlias($rootClass);
+        $tableAlias = $this->_getSQLTableAlias($rootClass->name);
         $resultColumnName = $this->_platform->getSQLResultCasing($discrColumn);
         $this->_resultColumnNames[$resultColumnName] = $discrColumn;
 
+        // Append subclass columns
         foreach ($this->_class->subClasses as $subClassName) {
             $subClass = $this->_em->getClassMetadata($subClassName);
-            // Append subclass columns
+            // Regular columns
             foreach ($subClass->fieldMappings as $fieldName => $mapping) {
                 if ( ! isset($mapping['inherited'])) {
                     $columnList .= ', ' . $this->_getSelectColumnSQL($fieldName, $subClass);
                 }
             }
-
-            // Append subclass foreign keys
+            // Foreign key columns
             foreach ($subClass->associationMappings as $assoc) {
                 if ($assoc->isOwningSide && $assoc->isOneToOne() && ! $assoc->inherited) {
                     foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
@@ -87,14 +88,27 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     }
 
     /** {@inheritdoc} */
-    protected function _getSQLTableAlias(ClassMetadata $class)
+    protected function _getSQLTableAlias($className)
     {
-        if (isset($this->_sqlTableAliases[$class->rootEntityName])) {
-            return $this->_sqlTableAliases[$class->rootEntityName];
-        }
-        $tableAlias = $this->_em->getClassMetadata($class->rootEntityName)->table['name'][0] . $this->_sqlAliasCounter++;
-        $this->_sqlTableAliases[$class->rootEntityName] = $tableAlias;
+        return parent::_getSQLTableAlias($this->_class->rootEntityName);
+    }
 
-        return $tableAlias;
+    /** {@inheritdoc} */
+    protected function _getSelectConditionSQL(array $criteria, $assoc = null)
+    {
+        $conditionSql = parent::_getSelectConditionSQL($criteria, $assoc);
+
+        // Append discriminator condition
+        if ($conditionSql) $conditionSql .= ' AND ';
+        $values = array($this->_conn->quote($this->_class->discriminatorValue));
+        $discrValues = array_flip($this->_class->discriminatorMap);
+        foreach ($this->_class->subClasses as $subclassName) {
+            $values[] = $this->_conn->quote($discrValues[$subclassName]);
+        }
+        $conditionSql .= $this->_getSQLTableAlias($this->_class->name) . '.'
+                . $this->_class->discriminatorColumn['name']
+                . ' IN (' . implode(', ', $values) . ')';
+
+        return $conditionSql;
     }
 }

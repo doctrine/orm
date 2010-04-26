@@ -32,6 +32,7 @@ namespace Doctrine\ORM\Mapping;
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
+ * @todo Potentially remove if assoc mapping objects get replaced by simple arrays.
  */
 abstract class AssociationMapping
 {
@@ -58,7 +59,7 @@ abstract class AssociationMapping
     public $isCascadeRemove;
 
     /**
-     * READ-ONLY: Whether the association cascades save() operations from the source entity
+     * READ-ONLY: Whether the association cascades persist() operations from the source entity
      * to the target entity/entities.
      *
      * @var boolean

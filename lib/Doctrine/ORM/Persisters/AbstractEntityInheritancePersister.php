@@ -37,7 +37,7 @@ abstract class AbstractEntityInheritancePersister extends StandardEntityPersiste
      * 
      * @var array
      */
-    private $_declaringClassMap = array();
+    /*private*/protected $_declaringClassMap = array();
 
     /**
      * {@inheritdoc}
@@ -91,7 +91,7 @@ abstract class AbstractEntityInheritancePersister extends StandardEntityPersiste
     protected function _getSelectColumnSQL($field, ClassMetadata $class)
     {
         $columnName = $class->columnNames[$field];
-        $sql = $this->_getSQLTableAlias($class) . '.' . $class->getQuotedColumnName($field, $this->_platform);
+        $sql = $this->_getSQLTableAlias($class->name) . '.' . $class->getQuotedColumnName($field, $this->_platform);
         $columnAlias = $this->_platform->getSQLResultCasing($columnName . $this->_sqlAliasCounter++);
         if ( ! isset($this->_resultColumnNames[$columnAlias])) {
             $this->_resultColumnNames[$columnAlias] = $columnName;

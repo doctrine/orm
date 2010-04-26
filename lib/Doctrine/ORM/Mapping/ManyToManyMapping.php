@@ -37,6 +37,7 @@ namespace Doctrine\ORM\Mapping;
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
+ * @todo Potentially remove if assoc mapping objects get replaced by simple arrays.
  */
 class ManyToManyMapping extends AssociationMapping
 {
@@ -140,39 +141,11 @@ class ManyToManyMapping extends AssociationMapping
      * @param object The owner of the collection.
      * @param object The collection to populate.
      * @param array
+     * @todo Remove
      */
     public function load($sourceEntity, $targetCollection, $em, array $joinColumnValues = array())
     {
-        $sourceClass = $em->getClassMetadata($this->sourceEntityName);
-        $joinTableConditions = array();
-        if ($this->isOwningSide) {
-            foreach ($this->relationToSourceKeyColumns as $relationKeyColumn => $sourceKeyColumn) {
-                // getting id
-                if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
-                    $joinTableConditions[$relationKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
-                } else {
-                    throw MappingException::joinColumnMustPointToMappedField(
-                        $sourceClass->name, $sourceKeyColumn
-                    );
-                }
-            }
-        } else {
-            $owningAssoc = $em->getClassMetadata($this->targetEntityName)->associationMappings[$this->mappedBy];
-            // TRICKY: since the association is inverted source and target are flipped
-            foreach ($owningAssoc->relationToTargetKeyColumns as $relationKeyColumn => $sourceKeyColumn) {
-                // getting id
-                if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
-                    $joinTableConditions[$relationKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
-                } else {
-                    throw MappingException::joinColumnMustPointToMappedField(
-                        $sourceClass->name, $sourceKeyColumn
-                    );
-                }
-            }
-        }
-
-        $persister = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName);
-        $persister->loadManyToManyCollection($this, $joinTableConditions, $targetCollection);
+        $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->loadManyToManyCollection($this, $sourceEntity, $targetCollection);
     }
 
     /** {@inheritdoc} */

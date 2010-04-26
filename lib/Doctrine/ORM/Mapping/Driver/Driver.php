@@ -26,12 +26,9 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 /**
  * Contract for metadata drivers.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
- * @since       2.0
- * @version     $Revision: 1393 $
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @todo Rename: MetadataDriver
+ * @since 2.0
+ * @author Jonathan H. Wage <jonwage@gmail.com>
+ * @todo Rename: MetadataDriver or MappingDriver
  */
 interface Driver
 {
