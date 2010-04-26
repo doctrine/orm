@@ -412,18 +412,27 @@ to all the explicitly given ORDER BY items.
 * To keep the database impact low, these implicit ORDER BY items are only added
 to an DQL Query if the collection is fetch joined in the DQL query.
 
-Given our previously defined Example:
+Given our previously defined example, the following would not add ORDER BY, since g is not fetch joined:
 
     [sql]
-    -- Would not add ORDER BY, since g is not fetch joined
     SELECT u FROM User u JOIN u.groups g WHERE SIZE(g) > 10
 
-    -- However
+However the following:
+
+    [sql]
     SELECT u FROM User u JOIN u.groups g WHERE u.id = 10
-    -- would internally be rewritten to
+
+...would internally be rewritten to:
+
+    [sql]
     SELECT u FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name ASC
 
-    -- You can't reverse the order, an explicit:
+You can't reverse the order, an explicit:
+
+    [sql]
     SELECT u FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name DESC
-    -- is internally be rewritten to
+
+...is internally rewritten to:
+
+    [sql]
     SELECT u FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name DESC, g.name ASC

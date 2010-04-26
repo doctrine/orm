@@ -158,9 +158,9 @@ The recommended implementations are:
 
 +++ SQL Logger (***Optional***)
 
-     [php]
-     $config->setSQLLogger($logger);
-     $config->getSQLLogger();
+    [php]
+    $config->setSQLLogger($logger);
+    $config->getSQLLogger();
 
 Gets or sets the logger to use for logging all SQL statements executed by Doctrine. The logger class must implement the `Doctrine\DBAL\Logging\SqlLogger` interface. A simple default implementation that logs to the standard output using `echo` and `var_dump` can be found at `Doctrine\DBAL\Logging\EchoSqlLogger`.
 
@@ -191,14 +191,14 @@ be defined on a per-class basis (or more precisely, per-hierarchy).
 +++ Deferred Implicit
 
 The deferred implicit policy is the default change tracking policy and the most
- convenient one. With this policy, Doctrine detects the changes by a 
- property-by-property comparison at commit time and also detects changes 
- to entities or new entities that are referenced by other managed entities 
- ("persistence by reachability"). Although the most convenient policy, it can 
- have negative effects on performance if you are dealing with large units of 
- work (see "Understanding the Unit of Work"). Since Doctrine can't know what 
- has changed, it needs to check all managed entities for changes every time you 
- invoke EntityManager#flush(), making this operation rather costly.
+convenient one. With this policy, Doctrine detects the changes by a 
+property-by-property comparison at commit time and also detects changes 
+to entities or new entities that are referenced by other managed entities 
+("persistence by reachability"). Although the most convenient policy, it can 
+have negative effects on performance if you are dealing with large units of 
+work (see "Understanding the Unit of Work"). Since Doctrine can't know what 
+has changed, it needs to check all managed entities for changes every time you 
+invoke EntityManager#flush(), making this operation rather costly.
 
 +++ Deferred Explicit
 
@@ -218,6 +218,7 @@ on the way so you can pass them to EntityManager#persist().
 
 This policy can be configured as follows:
 
+    [php]
     /**
      * @Entity
      * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
@@ -268,7 +269,6 @@ Then, in each property setter of this class or derived classes, you need to
 invoke `_onPropertyChanged` as follows to notify listeners:
 
     [php]
-    <?php
     // ...
 
     class MyEntity implements NotifyPropertyChanged
@@ -396,7 +396,7 @@ Proxy classes can either be generated manually through the Doctrine Console or a
 The default value is `TRUE` for convenient development. However, this setting is not optimal for performance and therefore not recommended for a production environment.
 To eliminate the overhead of proxy class generation during runtime, set this configuration option to `FALSE`. When you do this in a development environment, note that you may get class/file not found errors if certain proxy classes are not available or failing lazy-loads if new methods were added to the entity class that are not yet in the proxy class. In such a case, simply use the Doctrine Console to (re)generate the proxy classes like so:
 
-    doctrine orm:generate-proxies
+    $ ./doctrine orm:generate-proxies
 
 ++ Multiple Metadata Sources
 

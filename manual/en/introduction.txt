@@ -10,7 +10,9 @@ unnecessary code duplication.
 
 ++ Disclaimer
 
-This is the Doctrine 2 reference documentation. Introductory guides and tutorials that you can follow along from start to finish, like the "Guide to Doctrine" book known from the Doctrine 1.x series, will be available at a later date.
+This is the Doctrine 2 reference documentation. Introductory guides and tutorials
+that you can follow along from start to finish, like the "Guide to Doctrine" book
+known from the Doctrine 1.x series, will be available at a later date.
 
 ++ Requirements
 
@@ -64,19 +66,19 @@ line installation utility.
 
 To install just the `Common` package you can run the following command:
 
-    $ sudo pear install pear.phpdoctrine.org/DoctrineCommon-2.0.0
+    $ sudo pear install pear.doctrine-project.org/DoctrineCommon-2.0.0
 
 If you want to use the Doctrine Database Abstraction Layer you can install it
 with the following command.
 
-    $ sudo pear install pear.phpdoctrine.org/DoctrineDBAL-2.0.0
+    $ sudo pear install pear.doctrine-project.org/DoctrineDBAL-2.0.0
 
 Or, if you want to get the works and go for the ORM you can install it with the 
 following command.
 
-    $ sudo pear install pear.phpdoctrine.org/DoctrineORM-2.0.0
+    $ sudo pear install pear.doctrine-project.org/DoctrineORM-2.0.0
 
-When you have a package installed via PEAR you can required and load the 
+When you have a package installed via PEAR you can require and load the 
 `ClassLoader` with the following code.
 
     [php]
@@ -128,12 +130,19 @@ see what you can do with it.
 You can also use Doctrine 2 by downloading the latest release package 
 from [the download page](http://www.doctrine-project.org/download).
 
++++ GitHub
+
+Alternatively you can clone the latest version of Doctrine 2 via GitHub.com:
+
+    $ git clone git://github.com/doctrine/doctrine2.git doctrine
+
 +++ Subversion
 
-Alternatively you can check out the latest version of Doctrine 2 via SVN.
+If you prefer subversion you can also checkout the code from GitHub.com through 
+the subversion protocol:
 
-    $ svn co http://svn.doctrine-project.org/trunk doctrine
-    
+    $ svn co http://svn.github.com/doctrine/doctrine2.git doctrine2
+
 ++ Sandbox Quickstart
 
 > **NOTE**
@@ -183,7 +192,7 @@ see the same output.
 2) Take another look into the tools/sandbox folder. A SQLite database should 
 have been created with the name `database.sqlite`.
 
-3) Open `index.php` and edit it so that it looks as follows:
+3) Open `index.php` and at the bottom edit it so it looks like the following:
 
     [php]
     //... bootstrap stuff

@@ -68,13 +68,6 @@ synchronized with the database when `EntityManager#flush()` is invoked.
 > with the database in the most efficient way and a single, short transaction,
 > taking care of maintaining referential integrity.
 
--
-
-> **CAUTION**
-> Generated entity identifiers / primary keys are guaranteed to be available after the
-> next invocation of `EntityManager#flush()` that involves the entity in question.
-> YOU CAN NOT RELY ON A GENERATED IDENTIFIER TO BE AVAILABLE AFTER INVOKING `persist`!
-
 Example:
 
     [php]
@@ -82,7 +75,11 @@ Example:
     $user->setName('Mr.Right');
     $em->persist($user);
     $em->flush();
-    // If $user had a generated identifier, it would now be available.
+
+> **CAUTION**
+> Generated entity identifiers / primary keys are guaranteed to be available after the
+> next invocation of `EntityManager#flush()` that involves the entity in question.
+> YOU CAN NOT RELY ON A GENERATED IDENTIFIER TO BE AVAILABLE AFTER INVOKING `persist`!
     
 The semantics of the persist operation, applied on an entity X, are as follows:
 
@@ -161,7 +158,7 @@ Example:
     // $entity now refers to the fully managed copy returned by the merge operation.
     // The EntityManager $em now manages the persistence of $entity as usual.
 
-> **WARNING**
+> **CAUTION**
 > When you want to serialize/unserialize entities you have to make all entity properties
 > protected, never private. The reason for this is, if you serialize a class that was a proxy
 > instance before the private variables won't be serialized and a PHP Notice is thrown.
@@ -417,6 +414,7 @@ one recommended way of grouping these queries in a central location.
 
     [php]
     namespace MyDomain\Model;
+    
     use Doctrine\ORM\EntityRepository;
 
     /**
