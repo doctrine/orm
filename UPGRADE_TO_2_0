@@ -1,6 +1,19 @@
 
 # Upgrade from 2.0-ALPHA4 to 2.0-BETA1
 
+## EntityRepository deprecates access to protected variables
+
+Instead of accessing protected variables for the EntityManager in
+a custom EntityRepository it is now required to use the getter methods
+for all the three instance variables:
+
+* `$this->_em` now accessible through `$this->getEntityManager()`
+* `$this->_class` now accessible through `$this->getClassMetadata()`
+* `$this->_entityName` now accessible through `$this->getEntityName()`
+
+Important: For Beta 2 the protected visibility of these three properties will be
+changed to private!
+
 ## Console migrated to Symfony Console
 
 The Doctrine CLI has been replaced by Symfony Console Configuration

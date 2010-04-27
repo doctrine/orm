@@ -176,4 +176,28 @@ class EntityRepository
             throw ORMException::invalidFindByCall($this->_entityName, $fieldName, $method.$by);
         }
     }
+
+    /**
+     * @return string
+     */
+    protected function getEntityName()
+    {
+        return $this->_entityName;
+    }
+
+    /**
+     * @return EntityManager
+     */
+    protected function getEntityManager()
+    {
+        return $this->_em;
+    }
+
+    /**
+     * @return Mapping\ClassMetadata
+     */
+    protected function getClassMetadata()
+    {
+        return $this->_class;
+    }
 }
