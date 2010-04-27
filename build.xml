@@ -142,16 +142,16 @@
 
         <nativephpunit testfile="./tests/Doctrine/Tests/ORM/Performance/AllTests.php" testdirectory="./tests" haltonfailure="false" haltonerror="false" />
         <tstamp/>
-        <svnlastrevision svnpath="${svn.path}" workingcopy="." propertyname="svn.lastrevision"/>
-        <copy file="${build.dir}/logs/testsuites.xml" tofile="${log.archive.dir}/${svn.lastrevision}/log.xml" overwrite="true"/>
+        <!--<svnlastrevision svnpath="${svn.path}" workingcopy="." propertyname="svn.lastrevision"/>-->
+        <copy file="${build.dir}/logs/testsuites.xml" tofile="${log.archive.dir}/latest/log.xml" overwrite="true"/>
 
         <if><equals arg1="${test.pmd_reports}" arg2="1" />
             <then>
                 <exec command="${test.pdepend_exec} --jdepend-xml=${build.dir}/logs/jdepend.xml ./lib/Doctrine" />
                 <exec command="${test.phpmd_exec} ./lib/Doctrine xml codesize --reportfile ${build.dir}/logs/phpmd.xml" />
 
-                <copy file="${build.dir}/logs/jdepend.xml" tofile="${log.archive.dir}/${svn.lastrevision}/jdepend.xml" overwrite="true"/>
-                <copy file="${build.dir}/logs/phpmd.xml" tofile="${log.archive.dir}/${svn.lastrevision}/phpmd.xml" overwrite="true"/>
+                <copy file="${build.dir}/logs/jdepend.xml" tofile="${log.archive.dir}/latest/jdepend.xml" overwrite="true"/>
+                <copy file="${build.dir}/logs/phpmd.xml" tofile="${log.archive.dir}/latest/phpmd.xml" overwrite="true"/>
             </then>
         </if>
     </target>
