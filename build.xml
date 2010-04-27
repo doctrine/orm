@@ -163,7 +163,7 @@
         <d51pearpkg2 baseinstalldir="/" dir="${build.dir}/common/DoctrineCommon-${version}">
            <name>DoctrineCommon</name>
            <summary>Common Doctrine code</summary>
-           <channel>pear.phpdoctrine.org</channel>
+           <channel>pear.doctrine-project.org</channel>
            <description>The Doctrine Common package contains shared code between the other packages.</description>
            <lead user="jwage" name="Jonathan H. Wage" email="jonwage@gmail.com" />
            <lead user="guilhermeblanco" name="Guilherme Blanco" email="guilhermeblanco@gmail.com" />
@@ -182,7 +182,7 @@
         <d51pearpkg2 baseinstalldir="/" dir="${build.dir}/dbal/DoctrineDBAL-${version}">
            <name>DoctrineDBAL</name>
            <summary>Doctrine Database Abstraction Layer</summary>
-           <channel>pear.phpdoctrine.org</channel>
+           <channel>pear.doctrine-project.org</channel>
            <description>The Doctrine DBAL package is the database abstraction layer used to power the ORM package.</description>
            <lead user="jwage" name="Jonathan H. Wage" email="jonwage@gmail.com" />
            <lead user="guilhermeblanco" name="Guilherme Blanco" email="guilhermeblanco@gmail.com" />
@@ -201,7 +201,7 @@
         <d51pearpkg2 baseinstalldir="/" dir="${build.dir}/orm/DoctrineORM-${version}">
            <name>DoctrineORM</name>
            <summary>Doctrine Object Relationl Mapper</summary>
-           <channel>pear.phpdoctrine.org</channel>
+           <channel>pear.doctrine-project.org</channel>
            <description>The Doctrine ORM package is the primary package containing the object relational mapper.</description>
            <lead user="jwage" name="Jonathan H. Wage" email="jonwage@gmail.com" />
            <lead user="guilhermeblanco" name="Guilherme Blanco" email="guilhermeblanco@gmail.com" />
