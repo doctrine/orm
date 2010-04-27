@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id: UnitOfWork.php 4947 2008-09-12 13:16:05Z romanb $
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -33,15 +31,12 @@ use Doctrine\Common\Collections\ArrayCollection,
  * "object-level" transaction and for writing out changes to the database
  * in the correct order.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
  * @since       2.0
- * @version     $Revision$
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Jonathan Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
- * @internal    This class contains performance-critical code.
+ * @internal    This class contains highly performance-sensitive code.
  */
 class UnitOfWork implements PropertyChangedListener
 {
@@ -1971,7 +1966,7 @@ class UnitOfWork implements PropertyChangedListener
         if ( ! isset($this->_persisters[$entityName])) {
             $class = $this->_em->getClassMetadata($entityName);
             if ($class->isInheritanceTypeNone()) {
-                $persister = new Persisters\StandardEntityPersister($this->_em, $class);
+                $persister = new Persisters\BasicEntityPersister($this->_em, $class);
             } else if ($class->isInheritanceTypeSingleTable()) {
                 $persister = new Persisters\SingleTablePersister($this->_em, $class);
             } else if ($class->isInheritanceTypeJoined()) {

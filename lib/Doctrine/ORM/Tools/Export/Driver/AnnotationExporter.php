@@ -49,6 +49,9 @@ class AnnotationExporter extends AbstractExporter
      */
     public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
+        if ( ! $this->_entityGenerator) {
+            throw new \RuntimeException('For the AnnotationExporter you must set an EntityGenerator instance with the setEntityGenerator() method.');
+        }
         $this->_entityGenerator->setGenerateAnnotations(true);
         $this->_entityGenerator->setGenerateStubMethods(false);
         $this->_entityGenerator->setRegenerateEntityIfExists(false);

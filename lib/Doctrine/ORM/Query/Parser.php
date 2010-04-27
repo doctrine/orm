@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -27,10 +25,7 @@ use Doctrine\ORM\Query;
  * An LL(*) recursive-descent parser for the context-free grammar of the Doctrine Query Language.
  * Parses a DQL query, reports any errors in it, and generates an AST.
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision: 3938 $
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
@@ -208,12 +203,15 @@ class Parser
         // Process any deferred validations of some nodes in the AST.
         // This also allows post-processing of the AST for modification purposes.
         $this->_processDeferredIdentificationVariables();
+
         if ($this->_deferredPartialObjectExpressions) {
             $this->_processDeferredPartialObjectExpressions();
         }
+
         if ($this->_deferredPathExpressions) {
             $this->_processDeferredPathExpressions($AST);
         }
+
         if ($this->_deferredResultVariables) {
             $this->_processDeferredResultVariables();
         }
@@ -461,7 +459,7 @@ class Parser
             // Check if IdentificationVariable exists in queryComponents
             if ( ! isset($this->_queryComponents[$identVariable])) {
                 $this->semanticalError(
-                "'$identVariable' is not defined.", $deferredItem['token']
+                    "'$identVariable' is not defined.", $deferredItem['token']
                 );
             }
 
@@ -470,14 +468,14 @@ class Parser
             // Check if queryComponent points to an AbstractSchemaName or a ResultVariable
             if ( ! isset($qComp['metadata'])) {
                 $this->semanticalError(
-                "'$identVariable' does not point to a Class.", $deferredItem['token']
+                    "'$identVariable' does not point to a Class.", $deferredItem['token']
                 );
             }
 
             // Validate if identification variable nesting level is lower or equal than the current one
             if ($qComp['nestingLevel'] > $deferredItem['nestingLevel']) {
                 $this->semanticalError(
-                "'$identVariable' is used outside the scope of its declaration.", $deferredItem['token']
+                    "'$identVariable' is used outside the scope of its declaration.", $deferredItem['token']
                 );
             }
         }
@@ -491,15 +489,15 @@ class Parser
             foreach ($expr->partialFieldSet as $field) {
                 if ( ! isset($class->fieldMappings[$field])) {
                     $this->semanticalError(
-                    "There is no mapped field named '$field' on class " . $class->name . ".",
-                    $deferredItem['token']
+                        "There is no mapped field named '$field' on class " . $class->name . ".",
+                        $deferredItem['token']
                     );
                 }
             }
             if (array_intersect($class->identifier, $expr->partialFieldSet) != $class->identifier) {
                 $this->semanticalError(
-                "The partial field selection of class " . $class->name . " must contain the identifier.",
-                $deferredItem['token']
+                    "The partial field selection of class " . $class->name . " must contain the identifier.",
+                    $deferredItem['token']
                 );
             }
         }
@@ -519,7 +517,7 @@ class Parser
             // Check if ResultVariable exists in queryComponents
             if ( ! isset($this->_queryComponents[$resultVariable])) {
                 $this->semanticalError(
-                "'$resultVariable' is not defined.", $deferredItem['token']
+                    "'$resultVariable' is not defined.", $deferredItem['token']
                 );
             }
 
@@ -528,14 +526,14 @@ class Parser
             // Check if queryComponent points to an AbstractSchemaName or a ResultVariable
             if ( ! isset($qComp['resultVariable'])) {
                 $this->semanticalError(
-                "'$identVariable' does not point to a ResultVariable.", $deferredItem['token']
+                    "'$identVariable' does not point to a ResultVariable.", $deferredItem['token']
                 );
             }
 
             // Validate if identification variable nesting level is lower or equal than the current one
             if ($qComp['nestingLevel'] > $deferredItem['nestingLevel']) {
                 $this->semanticalError(
-                "'$resultVariable' is used outside the scope of its declaration.", $deferredItem['token']
+                    "'$resultVariable' is used outside the scope of its declaration.", $deferredItem['token']
                 );
             }
         }
@@ -557,11 +555,16 @@ class Parser
     {
         foreach ($this->_deferredPathExpressions as $deferredItem) {
             $pathExpression = $deferredItem['expression'];
-            $parts = $pathExpression->parts;
-            $numParts = count($parts);
 
             $qComp = $this->_queryComponents[$pathExpression->identificationVariable];
+            $numParts = count($pathExpression->parts);
 
+            if ($numParts == 0) {
+                $pathExpression->parts = array($qComp['metadata']->identifier[0]);
+                $numParts++;
+            }
+            
+            $parts = $pathExpression->parts;
             $aliasIdentificationVariable = $pathExpression->identificationVariable;
             $parentField = $pathExpression->identificationVariable;
             $class = $qComp['metadata'];
@@ -572,24 +575,24 @@ class Parser
                 // Check if it is not in a state field
                 if ($fieldType & AST\PathExpression::TYPE_STATE_FIELD) {
                     $this->semanticalError(
-                    'Cannot navigate through state field named ' . $field . ' on ' . $parentField,
-                    $deferredItem['token']
+                        'Cannot navigate through state field named ' . $field . ' on ' . $parentField,
+                        $deferredItem['token']
                     );
                 }
 
                 // Check if it is not a collection field
                 if ($fieldType & AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION) {
                     $this->semanticalError(
-                    'Cannot navigate through collection field named ' . $field . ' on ' . $parentField,
-                    $deferredItem['token']
+                        'Cannot navigate through collection field named ' . $field . ' on ' . $parentField,
+                        $deferredItem['token']
                     );
                 }
 
                 // Check if field or association exists
                 if ( ! isset($class->associationMappings[$field]) && ! isset($class->fieldMappings[$field])) {
                     $this->semanticalError(
-                    'Class ' . $class->name . ' has no field or association named ' . $field,
-                    $deferredItem['token']
+                        'Class ' . $class->name . ' has no field or association named ' . $field,
+                        $deferredItem['token']
                     );
                 }
 
@@ -602,8 +605,8 @@ class Parser
                     $class = $this->_em->getClassMetadata($assoc->targetEntityName);
 
                     if (
-                    ($curIndex != $numParts - 1) &&
-                    ! isset($this->_queryComponents[$aliasIdentificationVariable . '.' . $field])
+                        ($curIndex != $numParts - 1) &&
+                        ! isset($this->_queryComponents[$aliasIdentificationVariable . '.' . $field])
                     ) {
                         // Building queryComponent
                         $joinQueryComponent = array(
@@ -617,14 +620,15 @@ class Parser
 
                         // Create AST node
                         $joinVariableDeclaration = new AST\JoinVariableDeclaration(
-                        new AST\Join(
-                        AST\Join::JOIN_TYPE_INNER,
-                        new AST\JoinAssociationPathExpression($aliasIdentificationVariable, $field),
-                        $aliasIdentificationVariable . '.' . $field,
-                        false
-                        ),
-                        null
+                            new AST\Join(
+                                AST\Join::JOIN_TYPE_INNER,
+                                new AST\JoinAssociationPathExpression($aliasIdentificationVariable, $field),
+                                $aliasIdentificationVariable . '.' . $field,
+                                false
+                            ),
+                            null
                         );
+                        
                         $AST->fromClause->identificationVariableDeclarations[0]->joinVariableDeclarations[] = $joinVariableDeclaration;
 
                         $this->_queryComponents[$aliasIdentificationVariable . '.' . $field] = $joinQueryComponent;
@@ -915,12 +919,12 @@ class Parser
         $identVariable = $this->IdentificationVariable();
         $parts = array();
 
-        do {
+        while ($this->_lexer->isNextToken(Lexer::T_DOT)) {
             $this->match(Lexer::T_DOT);
             $this->match(Lexer::T_IDENTIFIER);
 
             $parts[] = $this->_lexer->token['value'];
-        } while ($this->_lexer->isNextToken(Lexer::T_DOT));
+        }
 
         // Creating AST node
         $pathExpr = new AST\PathExpression($expectedTypes, $identVariable, $parts);
@@ -2168,7 +2172,7 @@ class Parser
                     return $this->SingleValuedPathExpression();
                 }
 
-                return $this->IdentificationVariable();
+                return $this->SimpleStateFieldPathExpression();
 
             case Lexer::T_INPUT_PARAMETER:
                 return $this->InputParameter();
@@ -2619,9 +2623,10 @@ class Parser
 
     public function CustomFunctionsReturningNumerics()
     {
-        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
-        $funcClass = $this->_em->getConfiguration()->getCustomNumericFunction($funcNameLower);
-        $function = new $funcClass($funcNameLower);
+        $funcName = strtolower($this->_lexer->lookahead['value']);
+        // getCustomNumericFunction is case-insensitive
+        $funcClass = $this->_em->getConfiguration()->getCustomNumericFunction($funcName);
+        $function = new $funcClass($funcName);
         $function->parse($this);
 
         return $function;
@@ -2642,9 +2647,10 @@ class Parser
 
     public function CustomFunctionsReturningDatetime()
     {
-        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
-        $funcClass = $this->_em->getConfiguration()->getCustomDatetimeFunction($funcNameLower);
-        $function = new $funcClass($funcNameLower);
+        $funcName = $this->_lexer->lookahead['value'];
+        // getCustomDatetimeFunction is case-insensitive
+        $funcClass = $this->_em->getConfiguration()->getCustomDatetimeFunction($funcName);
+        $function = new $funcClass($funcName);
         $function->parse($this);
 
         return $function;
@@ -2670,9 +2676,10 @@ class Parser
 
     public function CustomFunctionsReturningStrings()
     {
-        $funcNameLower = strtolower($this->_lexer->lookahead['value']);
-        $funcClass = $this->_em->getConfiguration()->getCustomStringFunction($funcNameLower);
-        $function = new $funcClass($funcNameLower);
+        $funcName = $this->_lexer->lookahead['value'];
+        // getCustomStringFunction is case-insensitive
+        $funcClass = $this->_em->getConfiguration()->getCustomStringFunction($funcName);
+        $function = new $funcClass($funcName);
         $function->parse($this);
 
         return $function;

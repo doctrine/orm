@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -21,16 +19,12 @@
 
 namespace Doctrine\Common\Collections;
 
-use \Closure, \ArrayIterator;
+use Closure, ArrayIterator;
 
 /**
- * An ArrayCollection is a Collection implementation that uses a regular PHP array
- * internally.
+ * An ArrayCollection is a Collection implementation that wraps a regular PHP array.
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision: 3938 $
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
@@ -39,7 +33,6 @@ class ArrayCollection implements Collection
 {
     /**
      * An array containing the entries of this collection.
-     * This is the internal php array.
      *
      * @var array
      */
@@ -54,7 +47,7 @@ class ArrayCollection implements Collection
     {
         $this->_elements = $elements;
     }
-    
+
     /**
      * Gets the PHP array representation of this collection.
      *
@@ -121,7 +114,7 @@ class ArrayCollection implements Collection
      * Removes an element with a specific key/index from the collection.
      *
      * @param mixed $key
-     * @return mixed
+     * @return mixed The removed element or NULL, if no element exists for the given key.
      */
     public function remove($key)
     {
@@ -131,7 +124,7 @@ class ArrayCollection implements Collection
             
             return $removed;
         }
-        
+
         return null;
     }
 
@@ -413,6 +406,7 @@ class ArrayCollection implements Collection
     /**
      * Returns a string representation of this object.
      *
+     * @return string
      */
     public function __toString()
     {
@@ -421,7 +415,6 @@ class ArrayCollection implements Collection
 
     /**
      * Clears the collection.
-     *
      */
     public function clear()
     {

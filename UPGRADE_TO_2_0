@@ -3,9 +3,9 @@
 
 ## Console migrated to Symfony Console
 
-The Doctrine Cli has been replaced by Symfony Console Configuration
+The Doctrine CLI has been replaced by Symfony Console Configuration
 
-Instead of having to specifiy:
+Instead of having to specify:
 
     [php]
     $cliConfig = new CliConfiguration();
@@ -100,9 +100,22 @@ The "default" option for database column defaults has been removed. If desired, 
 be implemented by using the columnDefinition attribute of the @Column annotation (or the approriate XML and YAML equivalents).
 Prefer PHP default values, if possible.
 
-## Partial Objects
+## Selecting Partial Objects
 
-[TBD: New syntax, results, etc.]
+Querying for partial objects now has a new syntax. The old syntax to query for partial objects
+now has a different meaning. This is best illustrated by an example. If you previously
+had a DQL query like this:
+
+    [sql]
+    SELECT u.id, u.name FROM User u
+    
+Since BETA1, simple state field path expressions in the select clause are used to select
+object fields as plain scalar values (something that was not possible before).
+To achieve the same result as previously (that is, a partial object with only id and name populated)
+you need to use the following, explicit syntax:
+
+    [sql]
+    SELECT PARTIAL u.{id,name} FROM User u
 
 ## XML Mapping Driver
 
@@ -132,4 +145,10 @@ Event Listeners listening to the 'preUpdate' event can only affect the primitive
 by using the API on the `PreUpdateEventArgs` instance passed to the preUpdate listener method. Any changes
 to the state of the entitys properties won't affect the database UPDATE statement anymore. This gives drastic
 performance benefits for the preUpdate event.
+
+## Collection API
+
+The Collection interface in the Common package has been updated with some missing methods
+that were present only on the default implementation, ArrayCollection. Custom collection
+implementations need to be updated to adhere to the updated interface.
 

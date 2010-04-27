@@ -97,8 +97,8 @@ EOT
         }
 
         $cmf = new DisconnectedClassMetadataFactory($em);
-        $metadatas = $cmf->getAllMetadata();
-        $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
+        $metadata = $cmf->getAllMetadata();
+        $metadata = MetadataFilter::filter($metadata, $input->getOption('filter'));
 
         // Process destination directory
         if ( ! is_dir($destPath = $input->getArgument('dest-path'))) {
@@ -132,12 +132,12 @@ EOT
             }
         }
 
-        if (count($metadatas)) {
-            foreach ($metadatas as $metadata) {
-                $output->write(sprintf('Processing entity "<info>%s</info>"', $metadata->name) . PHP_EOL);
+        if (count($metadata)) {
+            foreach ($metadata as $class) {
+                $output->write(sprintf('Processing entity "<info>%s</info>"', $class->name) . PHP_EOL);
             }
 
-            $exporter->setMetadatas($metadatas);
+            $exporter->setMetadata($metadata);
             $exporter->export();
 
             $output->write(PHP_EOL . sprintf(

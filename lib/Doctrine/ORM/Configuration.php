@@ -27,8 +27,7 @@ use Doctrine\Common\Cache\Cache,
  * It combines all configuration options from DBAL & ORM.
  *
  * @since 2.0
- * @internal When adding a new configuration option just write a getter/setter
- * pair and add the option to the _attributes array with a proper default value.
+ * @internal When adding a new configuration option just write a getter/setter pair.
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -36,24 +35,6 @@ use Doctrine\Common\Cache\Cache,
  */
 class Configuration extends \Doctrine\DBAL\Configuration
 {
-    /**
-     * Creates a new configuration that can be used for Doctrine.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->_attributes = array_merge($this->_attributes, array(
-            'resultCacheImpl' => null,
-            'queryCacheImpl' => null,
-            'metadataCacheImpl' => null,
-            'metadataDriverImpl' => null,
-            'proxyDir' => null,
-            'useCExtension' => false,
-            'autoGenerateProxyClasses' => true,
-            'proxyNamespace' => null
-        ));
-    }
-
     /**
      * Sets the directory where Doctrine generates any necessary proxy class files.
      *
@@ -71,7 +52,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getProxyDir()
     {
-        return $this->_attributes['proxyDir'];
+        return isset($this->_attributes['proxyDir']) ?
+                $this->_attributes['proxyDir'] : null;
     }
 
     /**
@@ -82,7 +64,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getAutoGenerateProxyClasses()
     {
-        return $this->_attributes['autoGenerateProxyClasses'];
+        return isset($this->_attributes['autoGenerateProxyClasses']) ?
+                $this->_attributes['autoGenerateProxyClasses'] : true;
     }
 
     /**
@@ -103,7 +86,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getProxyNamespace()
     {
-        return $this->_attributes['proxyNamespace'];
+        return isset($this->_attributes['proxyNamespace']) ?
+                $this->_attributes['proxyNamespace'] : null;
     }
 
     /**
@@ -188,7 +172,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getMetadataDriverImpl()
     {
-        return $this->_attributes['metadataDriverImpl'];
+        return isset($this->_attributes['metadataDriverImpl']) ?
+                $this->_attributes['metadataDriverImpl'] : null;
     }
 
     /**
@@ -198,7 +183,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getResultCacheImpl()
     {
-        return $this->_attributes['resultCacheImpl'];
+        return isset($this->_attributes['resultCacheImpl']) ?
+                $this->_attributes['resultCacheImpl'] : null;
     }
 
     /**
@@ -218,7 +204,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getQueryCacheImpl()
     {
-        return $this->_attributes['queryCacheImpl'];
+        return isset($this->_attributes['queryCacheImpl']) ?
+                $this->_attributes['queryCacheImpl'] : null;
     }
 
     /**
@@ -238,7 +225,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getMetadataCacheImpl()
     {
-        return $this->_attributes['metadataCacheImpl'];
+        return isset($this->_attributes['metadataCacheImpl']) ?
+                $this->_attributes['metadataCacheImpl'] : null;
     }
 
     /**
@@ -259,7 +247,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getUseCExtension()
     {
-        return $this->_attributes['useCExtension'];
+        return isset($this->_attributes['useCExtension']) ?
+                $this->_attributes['useCExtension'] : false;
     }
 
     /**
@@ -350,6 +339,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Such a function can then be used in any DQL statement in any place where string
      * functions are allowed.
      *
+     * DQL function names are case-insensitive.
+     *
      * @param string $name
      * @param string $className
      */
@@ -366,14 +357,32 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getCustomStringFunction($name)
     {
+        $name = strtolower($name);
         return isset($this->_attributes['customStringFunctions'][$name]) ?
                 $this->_attributes['customStringFunctions'][$name] : null;
+    }
+
+    /**
+     * Sets a map of custom DQL string functions.
+     *
+     * Keys must be function names and values the FQCN of the implementing class.
+     * The function names will be case-insensitive in DQL.
+     *
+     * Any previously added string functions are discarded.
+     *
+     * @param array $functions The map of custom DQL string functions.
+     */
+    public function setCustomStringFunctions(array $functions)
+    {
+        $this->_attributes['customStringFunctions'] = array_change_key_case($functions);
     }
 
     /**
      * Registers a custom DQL function that produces a numeric value.
      * Such a function can then be used in any DQL statement in any place where numeric
      * functions are allowed.
+     *
+     * DQL function names are case-insensitive.
      *
      * @param string $name
      * @param string $className
@@ -391,14 +400,32 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getCustomNumericFunction($name)
     {
+        $name = strtolower($name);
         return isset($this->_attributes['customNumericFunctions'][$name]) ?
                 $this->_attributes['customNumericFunctions'][$name] : null;
+    }
+
+    /**
+     * Sets a map of custom DQL numeric functions.
+     *
+     * Keys must be function names and values the FQCN of the implementing class.
+     * The function names will be case-insensitive in DQL.
+     *
+     * Any previously added numeric functions are discarded.
+     *
+     * @param array $functions The map of custom DQL numeric functions.
+     */
+    public function setCustomNumericFunctions(array $functions)
+    {
+        $this->_attributes['customNumericFunctions'] = array_change_key_case($functions);
     }
 
     /**
      * Registers a custom DQL function that produces a date/time value.
      * Such a function can then be used in any DQL statement in any place where date/time
      * functions are allowed.
+     *
+     * DQL function names are case-insensitive.
      *
      * @param string $name
      * @param string $className
@@ -416,7 +443,23 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getCustomDatetimeFunction($name)
     {
+        $name = strtolower($name);
         return isset($this->_attributes['customDatetimeFunctions'][$name]) ?
                 $this->_attributes['customDatetimeFunctions'][$name] : null;
+    }
+
+    /**
+     * Sets a map of custom DQL date/time functions.
+     *
+     * Keys must be function names and values the FQCN of the implementing class.
+     * The function names will be case-insensitive in DQL.
+     *
+     * Any previously added date/time functions are discarded.
+     *
+     * @param array $functions The map of custom DQL date/time functions.
+     */
+    public function setCustomDatetimeFunctions(array $functions)
+    {
+        $this->_attributes['customDatetimeFunctions'] = array_change_key_case($functions);
     }
 }

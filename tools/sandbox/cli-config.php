@@ -23,7 +23,7 @@ $connectionOptions = array(
 
 $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);
 
-$helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
+$helpers = array(
     'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
     'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
-));
+);

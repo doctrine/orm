@@ -63,7 +63,7 @@ class ClassMetadataExporter
      * @param string $source    The directory where the exporter will export to
      * @return AbstractExporter $exporter
      */
-    public function getExporter($type, $dest)
+    public function getExporter($type, $dest = null)
     {
         if ( ! isset(self::$_exporterDrivers[$type])) {
             throw ExportException::invalidExporterDriverType($type);

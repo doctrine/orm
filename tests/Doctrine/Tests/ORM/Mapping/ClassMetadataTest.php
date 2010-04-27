@@ -20,8 +20,10 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->rootEntityName);
         $this->assertEquals(array(), $cm->subClasses);
         $this->assertEquals(array(), $cm->parentClasses);
+        $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm->inheritanceType);
 
         // Customize state
+        $cm->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
         $cm->setSubclasses(array("One", "Two", "Three"));
         $cm->setParentClasses(array("UserParent"));
         $cm->setCustomRepositoryClass("UserRepository");

@@ -27,7 +27,8 @@ namespace Doctrine\Common\Annotations;
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision: 3938 $
+ * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
@@ -80,7 +81,7 @@ class Lexer extends \Doctrine\Common\Lexer
         $newVal = $this->_getNumeric($value);
         
         // Checking numeric value
-        if ($newVal !== false){
+        if ($newVal !== false) {
             $value = $newVal;
             
             return (strpos($value, '.') !== false || stripos($value, 'e') !== false)
@@ -93,16 +94,34 @@ class Lexer extends \Doctrine\Common\Lexer
             return self::T_STRING;
         } else {
             switch (strtolower($value)) {
-                case '@': return self::T_AT;
-                case ',': return self::T_COMMA;
-                case '(': return self::T_OPEN_PARENTHESIS;
-                case ')': return self::T_CLOSE_PARENTHESIS;
-                case '{': return self::T_OPEN_CURLY_BRACES;
+                case '@': 
+                    return self::T_AT;
+
+                case ',': 
+                    return self::T_COMMA;
+
+                case '(': 
+                    return self::T_OPEN_PARENTHESIS;
+
+                case ')': 
+                    return self::T_CLOSE_PARENTHESIS;
+
+                case '{': 
+                    return self::T_OPEN_CURLY_BRACES;
+
                 case '}': return self::T_CLOSE_CURLY_BRACES;
-                case '=': return self::T_EQUALS;
-                case '\\': return self::T_NAMESPACE_SEPARATOR;
-                case 'true': return self::T_TRUE;
-                case 'false': return self::T_FALSE;
+                case '=': 
+                    return self::T_EQUALS;
+
+                case '\\': 
+                    return self::T_NAMESPACE_SEPARATOR;
+
+                case 'true': 
+                    return self::T_TRUE;
+
+                case 'false': 
+                    return self::T_FALSE;
+
                 default:
                     if (ctype_alpha($value[0]) || $value[0] === '_') {
                         return self::T_IDENTIFIER;
@@ -126,6 +145,7 @@ class Lexer extends \Doctrine\Common\Lexer
         if ( ! is_scalar($value)) {
             return false;
         }
+
         // Checking for valid numeric numbers: 1.234, -1.234e-2
         if (is_numeric($value)) {
             return $value;

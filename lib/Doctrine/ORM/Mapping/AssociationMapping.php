@@ -32,6 +32,7 @@ namespace Doctrine\ORM\Mapping;
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
+ * @todo Potentially remove if assoc mapping objects get replaced by simple arrays.
  */
 abstract class AssociationMapping
 {
@@ -58,7 +59,7 @@ abstract class AssociationMapping
     public $isCascadeRemove;
 
     /**
-     * READ-ONLY: Whether the association cascades save() operations from the source entity
+     * READ-ONLY: Whether the association cascades persist() operations from the source entity
      * to the target entity/entities.
      *
      * @var boolean
@@ -340,5 +341,58 @@ abstract class AssociationMapping
             ? $platform->quoteIdentifier($this->joinTable['name'])
             : $this->joinTable['name'];
     }
-    
+
+    /**
+     * Determines which fields get serialized.
+     *
+     * It is only serialized what is necessary for best unserialization performance.
+     * That means any metadata properties that are not set or empty or simply have
+     * their default value are NOT serialized.
+     *
+     * @return array The names of all the fields that should be serialized.
+     */
+    public function __sleep()
+    {
+        $serialized = array(
+            'sourceEntityName',
+            'targetEntityName',
+            'sourceFieldName'
+        );
+
+        if ($this->isCascadeDetach) {
+            $serialized[] = 'isCascadeDetach';
+        }
+        if ($this->isCascadeMerge) {
+            $serialized[] = 'isCascadeMerge';
+        }
+        if ($this->isCascadePersist) {
+            $serialized[] = 'isCascadePersist';
+        }
+        if ($this->isCascadeRefresh) {
+            $serialized[] = 'isCascadeRefresh';
+        }
+        if ($this->isCascadeRemove) {
+            $serialized[] = 'isCascadeRemove';
+        }
+        if ( ! $this->isOwningSide) {
+            $serialized[] = 'isOwningSide';
+        }
+        if ($this->mappedBy) {
+            $serialized[] = 'mappedBy';
+        }
+        if ($this->inversedBy) {
+            $serialized[] = 'inversedBy';
+        }
+        if ($this->joinTable) {
+            $serialized[] = 'joinTable';
+        }
+        if ($this->inherited) {
+            $serialized[] = 'inherited';
+        }
+        if ($this->declared) {
+            $serialized[] = 'declared';
+        }
+        
+        return $serialized;
+    }
 }
