@@ -40,6 +40,23 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      * @depends testEntityTableNameAndInheritance
      * @param ClassMetadata $class
      */
+    public function testEntityUniqueConstraints($class)
+    {
+        $this->assertArrayHasKey('uniqueConstraints', $class->table,
+            'ClassMetadata should have uniqueConstraints key in table property when Unique Constraints are set.');
+        
+        $this->assertEquals(array(
+            "search_idx" => array("columns" => array("name", "user_email"))
+        ), $class->table['uniqueConstraints']);
+
+        return $class;
+    }
+
+
+    /**
+     * @depends testEntityTableNameAndInheritance
+     * @param ClassMetadata $class
+     */
     public function testFieldMappings($class)
     {
         $this->assertEquals(3, count($class->fieldMappings));
@@ -206,7 +223,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
 /**
  * @Entity
  * @HasLifecycleCallbacks
- * @Table(name="cms_users")
+ * @Table(name="cms_users", uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"})})
  */
 class User
 {
@@ -369,5 +386,8 @@ class User
            ),
            'orderBy' => NULL,
           ));
+        $metadata->table['uniqueConstraints'] = array(
+            'search_idx' => array('columns' => array('name', 'user_email')),
+        );
     }
 }

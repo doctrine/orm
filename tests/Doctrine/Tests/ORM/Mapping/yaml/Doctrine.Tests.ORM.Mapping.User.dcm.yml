@@ -51,4 +51,7 @@ Doctrine\Tests\ORM\Mapping\User:
         - all
   lifecycleCallbacks:
     prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersistToo ] 
-    postPersist: [ doStuffOnPostPersist ] 
+    postPersist: [ doStuffOnPostPersist ]
+  uniqueConstraints:
+    search_idx:
+      columns: name,user_email
