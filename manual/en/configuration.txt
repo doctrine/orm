@@ -343,17 +343,15 @@ objects in an ORM with transparent persistence.
 
 Doctrine, by default, does not allow partial objects. That means, any query that only selects partial object data and wants to retrieve the result as objects 
 (i.e. `Query#getResult()`) will raise an exception telling you that 
-partial objects are dangerous. If you want to force a query to return you partial objects, possibly as a performance tweak, you can use the `Query#HINT_FORCE_PARTIAL_LOAD` query hint as follows:
+partial objects are dangerous. If you want to force a query to return you partial objects, possibly as a performance tweak, you can use the `partial` keyword as follows:
 
     [php]
-    $q = $em->createQuery("select u.id, u.name from MyApp\Domain\User u");
-    $q->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+    $q = $em->createQuery("select partial u.{id,name} from MyApp\Domain\User u");
 
 +++ When should I force partial objects?
 
-Mainly for optimization purposes, especially since the stateless nature of PHP 
-applications means that any fields or objects that are loaded unnecessarily in 
-a request are useless (though often minimal) overhead. Be careful of premature optimization. Only force partial objects if it proves to provide an improvement to a performance problem.
+Mainly for optimization purposes, but be careful of premature optimization as partial objects
+lead to potentially more fragile code.
 
 ++ Proxy Objects
 
