@@ -21,20 +21,22 @@
 
 namespace Doctrine\DBAL\Driver;
 
-use \PDO;
-
 /**
- * PDO implementation of the Connection interface.
- * Used by all PDO-based drivers.
+ * Transaction interface.
+ * Each Driver Connection must implement this interface.
  *
- * @since 2.0
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
  */
-class PDOConnection extends PDO implements Connection, Transaction
+interface Transaction
 {
-    public function __construct($dsn, $user = null, $password = null, array $options = null)
-    {
-        parent::__construct($dsn, $user, $password, $options);
-        $this->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('Doctrine\DBAL\Driver\PDOStatement', array()));
-        $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    }
+    function beginTransaction();
+    function commit();
+    function rollBack();
 }

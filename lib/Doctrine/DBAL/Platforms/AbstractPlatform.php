@@ -23,6 +23,7 @@ namespace Doctrine\DBAL\Platforms;
 
 use Doctrine\DBAL\DBALException,
     Doctrine\DBAL\Connection,
+    Doctrine\DBAL\Transaction,
     Doctrine\DBAL\Types,
     Doctrine\DBAL\Schema\Table,
     Doctrine\DBAL\Schema\Index,
@@ -1445,13 +1446,13 @@ abstract class AbstractPlatform
     protected function _getTransactionIsolationLevelSQL($level)
     {
         switch ($level) {
-            case Connection::TRANSACTION_READ_UNCOMMITTED:
+            case Transaction::READ_UNCOMMITTED:
                 return 'READ UNCOMMITTED';
-            case Connection::TRANSACTION_READ_COMMITTED:
+            case Transaction::READ_COMMITTED:
                 return 'READ COMMITTED';
-            case Connection::TRANSACTION_REPEATABLE_READ:
+            case Transaction::REPEATABLE_READ:
                 return 'REPEATABLE READ';
-            case Connection::TRANSACTION_SERIALIZABLE:
+            case Transaction::SERIALIZABLE:
                 return 'SERIALIZABLE';
             default:
                 throw new \InvalidArgumentException('Invalid isolation level:' . $level);
@@ -1584,11 +1585,11 @@ abstract class AbstractPlatform
      * Gets the default transaction isolation level of the platform.
      *
      * @return integer The default isolation level.
-     * @see Doctrine\DBAL\Connection\TRANSACTION_* constants.
+     * @see Doctrine\DBAL\Transaction constants.
      */
     public function getDefaultTransactionIsolationLevel()
     {
-        return Connection::TRANSACTION_READ_COMMITTED;
+        return Transaction::READ_COMMITTED;
     }
 
     /* supports*() metods */

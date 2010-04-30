@@ -108,6 +108,13 @@ class EntityManager
     private $_closed = false;
 
     /**
+     * The ORM Entity Transaction.
+     *
+     * @var Doctrine\ORM\EntityTransaction
+     */
+    protected $_transaction;
+
+    /**
      * Creates a new EntityManager that operates on the given database connection
      * and uses the given Configuration and EventManager implementations.
      *
@@ -127,6 +134,7 @@ class EntityManager
                 $config->getProxyDir(),
                 $config->getProxyNamespace(),
                 $config->getAutoGenerateProxyClasses());
+        $this->_transaction = new EntityTransaction($conn->getTransaction());
     }
 
     /**
@@ -147,6 +155,16 @@ class EntityManager
     public function getMetadataFactory()
     {
         return $this->_metadataFactory;
+    }
+
+    /**
+     * Gets the ORM Transaction instance.
+     *
+     * @return Doctrine\ORM\EntityTransaction
+     */
+    public function getTransaction()
+    {
+        return $this->_transaction;
     }
 
     /**
@@ -175,7 +193,7 @@ class EntityManager
      */
     public function beginTransaction()
     {
-        $this->_conn->beginTransaction();
+        $this->getTransaction()->begin();
     }
 
     /**
@@ -183,7 +201,7 @@ class EntityManager
      */
     public function commit()
     {
-        $this->_conn->commit();
+        $this->getTransaction()->commit();
     }
 
     /**
@@ -192,7 +210,7 @@ class EntityManager
      */
     public function rollback()
     {
-        $this->_conn->rollback();
+        $this->getTransaction()->rollback();
         $this->close();
     }
 

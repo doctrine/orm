@@ -56,12 +56,11 @@ class DriverManagerTest extends \Doctrine\Tests\DbalTestCase
 
     public function testCustomWrapper()
     {
-        $wrapperMock = $this->getMock('\Doctrine\DBAL\Connection', array(), array(), '', false);
-        $wrapperClass = get_class($wrapperMock);
+        $wrapperClass = 'Doctrine\Tests\Mocks\ConnectionMock';
 
         $options = array(
             'pdo' => new \PDO('sqlite::memory:'),
-            'wrapperClass' => $wrapperClass
+            'wrapperClass' => $wrapperClass,
         );
 
         $conn = \Doctrine\DBAL\DriverManager::getConnection($options);

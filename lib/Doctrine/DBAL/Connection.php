@@ -45,26 +45,6 @@ use PDO, Closure,
 class Connection implements DriverConnection
 {
     /**
-     * Constant for transaction isolation level READ UNCOMMITTED.
-     */
-    const TRANSACTION_READ_UNCOMMITTED = 1;
-    
-    /**
-     * Constant for transaction isolation level READ COMMITTED.
-     */
-    const TRANSACTION_READ_COMMITTED = 2;
-    
-    /**
-     * Constant for transaction isolation level REPEATABLE READ.
-     */
-    const TRANSACTION_REPEATABLE_READ = 3;
-    
-    /**
-     * Constant for transaction isolation level SERIALIZABLE.
-     */
-    const TRANSACTION_SERIALIZABLE = 4;
-
-    /**
      * The wrapped driver connection.
      *
      * @var Doctrine\DBAL\Driver\Connection
@@ -87,20 +67,6 @@ class Connection implements DriverConnection
      * @var boolean
      */
     private $_isConnected = false;
-
-    /**
-     * The transaction nesting level.
-     *
-     * @var integer
-     */
-    private $_transactionNestingLevel = 0;
-
-    /**
-     * The currently active transaction isolation level.
-     *
-     * @var integer
-     */
-    private $_transactionIsolationLevel;
 
     /**
      * The parameters used during creation of the Connection instance.
@@ -130,14 +96,14 @@ class Connection implements DriverConnection
      * @var Doctrine\DBAL\Driver
      */
     protected $_driver;
-    
-    /**
-     * Flag that indicates whether the current transaction is marked for rollback only.
-     * 
-     * @var boolean
-     */
-    private $_isRollbackOnly = false;
 
+    /**
+     * The DBAL Transaction.
+     *
+     * @var Doctrine\DBAL\Transaction
+     */
+    protected $_transaction;
+    
     /**
      * Initializes a new instance of the Connection class.
      *
@@ -168,6 +134,7 @@ class Connection implements DriverConnection
 
         $this->_config = $config;
         $this->_eventManager = $eventManager;
+
         if ( ! isset($params['platform'])) {
             $this->_platform = $driver->getDatabasePlatform();
         } else if ($params['platform'] instanceof Platforms\AbstractPlatform) {
@@ -175,7 +142,8 @@ class Connection implements DriverConnection
         } else {
             throw DBALException::invalidPlatformSpecified();
         }
-        $this->_transactionIsolationLevel = $this->_platform->getDefaultTransactionIsolationLevel();
+
+        $this->_transaction = new Transaction($this);
     }
 
     /**
@@ -279,6 +247,16 @@ class Connection implements DriverConnection
     }
 
     /**
+     * Gets the DBAL Transaction instance.
+     *
+     * @return Doctrine\DBAL\Transaction
+     */
+    public function getTransaction()
+    {
+        return $this->_transaction;
+    }
+
+    /**
      * Establishes the connection with the database.
      *
      * @return boolean TRUE if the connection was successfully established, FALSE if
@@ -357,16 +335,6 @@ class Connection implements DriverConnection
     }
 
     /**
-     * Checks whether a transaction is currently active.
-     * 
-     * @return boolean TRUE if a transaction is currently active, FALSE otherwise.
-     */
-    public function isTransactionActive()
-    {
-        return $this->_transactionNestingLevel > 0;
-    }
-
-    /**
      * Executes an SQL DELETE statement on a table.
      *
      * @param string $table The name of the table on which to delete.
@@ -398,28 +366,6 @@ class Connection implements DriverConnection
         unset($this->_conn);
         
         $this->_isConnected = false;
-    }
-
-    /**
-     * Sets the transaction isolation level.
-     *
-     * @param integer $level The level to set.
-     */
-    public function setTransactionIsolation($level)
-    {
-        $this->_transactionIsolationLevel = $level;
-        
-        return $this->executeUpdate($this->_platform->getSetTransactionIsolationSQL($level));
-    }
-
-    /**
-     * Gets the currently active transaction isolation level.
-     *
-     * @return integer The current transaction isolation level.
-     */
-    public function getTransactionIsolation()
-    {
-        return $this->_transactionIsolationLevel;
     }
 
     /**
@@ -585,10 +531,10 @@ class Connection implements DriverConnection
      *                        represents a row of the result set.
      * @return mixed The projected result of the query.
      */
-    public function project($query, array $params = array(), Closure $function)
+    public function project($query, array $params, Closure $function)
     {
         $result = array();
-        $stmt = $this->executeQuery($query, $params);
+        $stmt = $this->executeQuery($query, $params ?: array());
 
         while ($row = $stmt->fetch()) {
             $result[] = $function($row);
@@ -660,16 +606,6 @@ class Connection implements DriverConnection
     }
 
     /**
-     * Returns the current transaction nesting level.
-     *
-     * @return integer The nesting level. A value of 0 means there's no active transaction.
-     */
-    public function getTransactionNestingLevel()
-    {
-        return $this->_transactionNestingLevel;
-    }
-
-    /**
      * Fetch the SQLSTATE associated with the last database operation.
      *
      * @return integer The last error code.
@@ -709,73 +645,6 @@ class Connection implements DriverConnection
     }
 
     /**
-     * Starts a transaction by suspending auto-commit mode.
-     *
-     * @return void
-     */
-    public function beginTransaction()
-    {
-        $this->connect();
-
-        if ($this->_transactionNestingLevel == 0) {
-            $this->_conn->beginTransaction();
-        }
-
-        ++$this->_transactionNestingLevel;
-    }
-
-    /**
-     * Commits the current transaction.
-     *
-     * @return void
-     * @throws ConnectionException If the commit failed due to no active transaction or
-     *                             because the transaction was marked for rollback only.
-     */
-    public function commit()
-    {
-        if ($this->_transactionNestingLevel == 0) {
-            throw ConnectionException::commitFailedNoActiveTransaction();
-        }
-        if ($this->_isRollbackOnly) {
-            throw ConnectionException::commitFailedRollbackOnly();
-        }
-
-        $this->connect();
-
-        if ($this->_transactionNestingLevel == 1) {
-            $this->_conn->commit();
-        }
-
-        --$this->_transactionNestingLevel;
-    }
-
-    /**
-     * Cancel any database changes done during the current transaction.
-     *
-     * this method can be listened with onPreTransactionRollback and onTransactionRollback
-     * eventlistener methods
-     *
-     * @throws ConnectionException If the rollback operation failed.
-     */
-    public function rollback()
-    {
-        if ($this->_transactionNestingLevel == 0) {
-            throw ConnectionException::rollbackFailedNoActiveTransaction();
-        }
-
-        $this->connect();
-
-        if ($this->_transactionNestingLevel == 1) {
-            $this->_transactionNestingLevel = 0;
-            $this->_conn->rollback();
-            $this->_isRollbackOnly = false;
-        } else {
-            $this->_isRollbackOnly = true;
-            --$this->_transactionNestingLevel;
-        }
-    }
-
-    /**
      * Gets the wrapped driver connection.
      *
      * @return Doctrine\DBAL\Driver\Connection
@@ -800,34 +669,6 @@ class Connection implements DriverConnection
         }
 
         return $this->_schemaManager;
-    }
-
-    /**
-     * Marks the current transaction so that the only possible
-     * outcome for the transaction to be rolled back.
-     * 
-     * @throws ConnectionException If no transaction is active.
-     */
-    public function setRollbackOnly()
-    {
-        if ($this->_transactionNestingLevel == 0) {
-            throw ConnectionException::noActiveTransaction();
-        }
-        $this->_isRollbackOnly = true;
-    }
-
-    /**
-     * Check whether the current transaction is marked for rollback only.
-     * 
-     * @return boolean
-     * @throws ConnectionException If no transaction is active.
-     */
-    public function getRollbackOnly()
-    {
-        if ($this->_transactionNestingLevel == 0) {
-            throw ConnectionException::noActiveTransaction();
-        }
-        return $this->_isRollbackOnly;
     }
 
     /**

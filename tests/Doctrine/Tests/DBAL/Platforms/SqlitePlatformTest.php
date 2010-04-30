@@ -36,10 +36,10 @@ class SqlitePlatformTest extends AbstractPlatformTestCase
 
     public function testGeneratesTransactionCommands()
     {
-        $this->assertEquals('PRAGMA read_uncommitted = 0', $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_READ_UNCOMMITTED));
-        $this->assertEquals('PRAGMA read_uncommitted = 1', $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_READ_COMMITTED));
-        $this->assertEquals('PRAGMA read_uncommitted = 1', $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_REPEATABLE_READ));
-        $this->assertEquals('PRAGMA read_uncommitted = 1', $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_SERIALIZABLE));
+        $this->assertEquals('PRAGMA read_uncommitted = 0', $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Transaction::READ_UNCOMMITTED));
+        $this->assertEquals('PRAGMA read_uncommitted = 1', $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Transaction::READ_COMMITTED));
+        $this->assertEquals('PRAGMA read_uncommitted = 1', $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Transaction::REPEATABLE_READ));
+        $this->assertEquals('PRAGMA read_uncommitted = 1', $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Transaction::SERIALIZABLE));
     }
 
     public function testPrefersIdentityColumns()

@@ -281,11 +281,12 @@ class UnitOfWork implements PropertyChangedListener
         
         // Now we need a commit order to maintain referential integrity
         $commitOrder = $this->_getCommitOrder();
+        
+        $tx = $this->_em->getTransaction();
 
-        $conn = $this->_em->getConnection();
+        try {
+            $tx->begin();
 
-        $conn->beginTransaction();
-        try {            
             if ($this->_entityInsertions) {
                 foreach ($commitOrder as $class) {
                     $this->_executeInserts($class);
@@ -321,11 +322,10 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            $conn->commit();
+            $tx->commit();
         } catch (\Exception $e) {
-            $conn->setRollbackOnly();
-            $conn->rollback();
-            $this->_em->close();
+            $tx->rollback();
+
             throw $e;
         }
 

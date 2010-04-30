@@ -130,11 +130,11 @@ class SqlitePlatform extends AbstractPlatform
     protected function _getTransactionIsolationLevelSQL($level)
     {
         switch ($level) {
-            case \Doctrine\DBAL\Connection::TRANSACTION_READ_UNCOMMITTED:
+            case \Doctrine\DBAL\Transaction::READ_UNCOMMITTED:
                 return 0;
-            case \Doctrine\DBAL\Connection::TRANSACTION_READ_COMMITTED:
-            case \Doctrine\DBAL\Connection::TRANSACTION_REPEATABLE_READ:
-            case \Doctrine\DBAL\Connection::TRANSACTION_SERIALIZABLE:
+            case \Doctrine\DBAL\Transaction::READ_COMMITTED:
+            case \Doctrine\DBAL\Transaction::REPEATABLE_READ:
+            case \Doctrine\DBAL\Transaction::SERIALIZABLE:
                 return 1;
             default:
                 return parent::_getTransactionIsolationLevelSQL($level);

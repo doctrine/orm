@@ -26,7 +26,7 @@ namespace Doctrine\DBAL\Driver\PDOMsSql;
  *
  * @since 2.0
  */
-class Connection extends \PDO implements \Doctrine\DBAL\Driver\Connection
+class Connection extends \Doctrine\DBAL\Driver\PDOConnection
 {
     /**
      * Performs the rollback.
