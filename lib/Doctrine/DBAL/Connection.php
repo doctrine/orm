@@ -290,9 +290,8 @@ class Connection implements DriverConnection
      * @param string $statement The SQL query.
      * @param array $params The query parameters.
      * @return array
-     * @todo Rename: fetchAssoc
      */
-    public function fetchRow($statement, array $params = array())
+    public function fetchAssoc($statement, array $params = array())
     {
         return $this->executeQuery($statement, $params)->fetch(PDO::FETCH_ASSOC);
     }
