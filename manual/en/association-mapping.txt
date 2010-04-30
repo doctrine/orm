@@ -224,6 +224,33 @@ The following example sets up such a unidirectional one-to-many association:
 > **NOTE**
 > One-To-Many uni-directional relations with join-table only work using the @ManyToMany annotation and a unique-constraint.
 
+++ Many-To-One, Unidirectional
+
+You can easily implement a many-to-one unidirectional association with the following:
+
+    [php]
+    /** @Entity */
+    class User
+    {
+        // ...
+
+        /**
+         * @ManyToOne(targetEntity="Address")
+         * @JoinColumn(name="address_id", referencedColumnName="id")
+         */
+        private $address
+    }
+
+    /** @Entity */
+    class Address
+    {
+        // ...
+    }
+
+> **TIP**
+> The above `@JoinColumn` is optional as it would default to `address_id` and `id`
+> anyways. You can omit it and let it use the defaults.
+
 ++ One-To-Many, Bidirectional
 
 Bidirectional one-to-many associations are very common. The following code shows an example with a Product and a Feature class:
