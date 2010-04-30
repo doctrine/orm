@@ -286,6 +286,7 @@ class ClassMetadata extends ClassMetadataInfo
             'identifier',
             'isIdentifierComposite', // TODO: REMOVE
             'name',
+            'namespace', // TODO: REMOVE
             'table',
             'rootEntityName',
             'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.

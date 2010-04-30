@@ -359,7 +359,7 @@ final class PersistentCollection implements Collection
                 $this->_em->getUnitOfWork()->scheduleOrphanRemoval($removed);
             }
         }
-        
+
         return $removed;
     }
 
