@@ -177,7 +177,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE ((u.id + 5000) * u.id + 3) < 10000000',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE ((c0_.id + 5000) * c0_.id + 3) < 10000000'
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (c0_.id + 5000) * c0_.id + 3 < 10000000'
         );
     }
 
@@ -456,7 +456,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "select u from Doctrine\Tests\Models\CMS\CmsUser u where u.id > 10 and u.id < 42 and ((u.id * 2) > 5)",
-            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id > 10 AND c0_.id < 42 AND ((c0_.id * 2) > 5)"
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id > 10 AND c0_.id < 42 AND (c0_.id * 2 > 5)"
         );
     }
 
@@ -464,7 +464,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "select u from Doctrine\Tests\Models\CMS\CmsUser u where (u.id > 10) and (u.id < 42 and ((u.id * 2) > 5)) or u.id <> 42",
-            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (c0_.id > 10) AND (c0_.id < 42 AND ((c0_.id * 2) > 5)) OR c0_.id <> 42"
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (c0_.id > 10) AND (c0_.id < 42 AND (c0_.id * 2 > 5)) OR c0_.id <> 42"
         );
     }
 

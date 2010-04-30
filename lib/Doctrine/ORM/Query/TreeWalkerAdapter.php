@@ -253,6 +253,14 @@ abstract class TreeWalkerAdapter implements TreeWalker
     public function walkWhereClause($whereClause) {}
 
     /**
+     * Walks down a ConditionalExpression AST node, thereby generating the appropriate SQL.
+     *
+     * @param ConditionalExpression
+     * @return string The SQL.
+     */
+    public function walkConditionalExpression($condExpr) {}
+
+    /**
      * Walks down a ConditionalTerm AST node, thereby generating the appropriate SQL.
      *
      * @param ConditionalTerm
@@ -267,6 +275,14 @@ abstract class TreeWalkerAdapter implements TreeWalker
      * @return string The SQL.
      */
     public function walkConditionalFactor($factor) {}
+
+    /**
+     * Walks down a ConditionalPrimary AST node, thereby generating the appropriate SQL.
+     *
+     * @param ConditionalPrimary
+     * @return string The SQL.
+     */
+    public function walkConditionalPrimary($primary) {}
 
     /**
      * Walks down an ExistsExpression AST node, thereby generating the appropriate SQL.
