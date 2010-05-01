@@ -118,15 +118,17 @@ class XmlDriver extends AbstractFileDriver
         // Evaluate <unique-constraints..>
         if (isset($xmlRoot->{'unique-constraints'})) {
             foreach ($xmlRoot->{'unique-constraints'}->{'unique-constraint'} as $unique) {
-                if (is_string($unique['columns'])) {
-                    $columns = explode(',', $unique['columns']);
+                $columns = explode(',', (string)$unique['columns']);
+
+                if (isset($unique['name'])) {
+                    $metadata->table['uniqueConstraints'][(string)$unique['name']] = array(
+                        'columns' => $columns
+                    );
                 } else {
-                    $columns = $unique['columns'];
+                    $metadata->table['uniqueConstraints'][] = array(
+                        'columns' => $columns
+                    );
                 }
-                
-                $metadata->table['uniqueConstraints'][$unique['name']] = array(
-                    'columns' => $columns
-                );
             }
         }
 
@@ -203,9 +205,9 @@ class XmlDriver extends AbstractFileDriver
             if (isset($idElement->{'sequence-generator'})) {
                 $seqGenerator = $idElement->{'sequence-generator'};
                 $metadata->setSequenceGeneratorDefinition(array(
-                    'sequenceName' => $seqGenerator->{'sequence-name'},
-                    'allocationSize' => $seqGenerator->{'allocation-size'},
-                    'initialValue' => $seqGeneratorAnnot->{'initial-value'}
+                    'sequenceName' => (string)$seqGenerator['sequence-name'],
+                    'allocationSize' => (string)$seqGenerator['allocation-size'],
+                    'initialValue' => (string)$seqGenerator['initial-value']
                 ));
             } else if (isset($idElement->{'table-generator'})) {
                 throw MappingException::tableIdGeneratorNotImplemented($className);

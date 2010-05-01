@@ -28,7 +28,7 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->name = 'romanb';
         $this->_em->persist($user);
         $this->_em->flush();
-        $this->_em->clear();     
+        $this->_em->clear();
         
         $userId = $user->id; // e.g. from $_REQUEST
         $user2 = $this->_em->getReference(get_class($user), $userId);

@@ -286,9 +286,7 @@ class SqlWalker implements TreeWalker
         $sql = '';
         foreach ($this->_selectedClasses AS $dqlAlias => $class) {
             $qComp = $this->_queryComponents[$dqlAlias];
-            if (isset($qComp['relation']) && ($qComp['relation']->isManyToMany() || $qComp['relation']->isOneToMany())
-                && $qComp['relation']->orderBy != null) {
-
+            if (isset($qComp['relation']->orderBy)) {
                 foreach ($qComp['relation']->orderBy AS $fieldName => $orientation) {
                     if ($qComp['metadata']->isInheritanceTypeJoined()) {
                         $tableName = $this->_em->getUnitOfWork()->getEntityPersister($class->name)->getOwningTable($fieldName);
@@ -299,8 +297,8 @@ class SqlWalker implements TreeWalker
                     if ($sql != '') {
                         $sql .= ', ';
                     }
-                    $sql .= $this->getSqlTableAlias($tableName, $dqlAlias) . "." .
-                            $qComp['metadata']->getQuotedColumnName($fieldName, $this->_platform) . " ".$orientation;
+                    $sql .= $this->getSqlTableAlias($tableName, $dqlAlias) . '.' .
+                            $qComp['metadata']->getQuotedColumnName($fieldName, $this->_platform) . " $orientation";
                 }
             }
         }
@@ -313,7 +311,7 @@ class SqlWalker implements TreeWalker
      * @param string $dqlAlias
      * @return string
      */
-    private function _generateDiscriminatorColumnConditionSql($dqlAlias)
+    private function _generateDiscriminatorColumnConditionSQL($dqlAlias)
     {
         $sql = '';
 
@@ -338,7 +336,6 @@ class SqlWalker implements TreeWalker
         return $sql;
     }
 
-
     /**
      * Walks down a SelectStatement AST node, thereby generating the appropriate SQL.
      *
@@ -351,7 +348,7 @@ class SqlWalker implements TreeWalker
 
         if (($whereClause = $AST->whereClause) !== null) {
             $sql .= $this->walkWhereClause($whereClause);
-        } else if (($discSql = $this->_generateDiscriminatorColumnConditionSql($this->_currentRootAlias)) !== '') {
+        } else if (($discSql = $this->_generateDiscriminatorColumnConditionSQL($this->_currentRootAlias)) !== '') {
             $sql .= ' WHERE ' . $discSql;
         }
 
@@ -385,7 +382,7 @@ class SqlWalker implements TreeWalker
 
         if (($whereClause = $AST->whereClause) !== null) {
             $sql .= $this->walkWhereClause($whereClause);
-        } else if (($discSql = $this->_generateDiscriminatorColumnConditionSql($this->_currentRootAlias)) !== '') {
+        } else if (($discSql = $this->_generateDiscriminatorColumnConditionSQL($this->_currentRootAlias)) !== '') {
             $sql .= ' WHERE ' . $discSql;
         }
 
@@ -405,7 +402,7 @@ class SqlWalker implements TreeWalker
 
         if (($whereClause = $AST->whereClause) !== null) {
             $sql .= $this->walkWhereClause($whereClause);
-        } else if (($discSql = $this->_generateDiscriminatorColumnConditionSql($this->_currentRootAlias)) !== '') {
+        } else if (($discSql = $this->_generateDiscriminatorColumnConditionSQL($this->_currentRootAlias)) !== '') {
             $sql .= ' WHERE ' . $discSql;
         }
 
@@ -782,7 +779,7 @@ class SqlWalker implements TreeWalker
             $sql .= ' AND (' . $this->walkConditionalExpression($condExpr) . ')';
         }
 
-        $discrSql = $this->_generateDiscriminatorColumnConditionSql($joinedDqlAlias);
+        $discrSql = $this->_generateDiscriminatorColumnConditionSQL($joinedDqlAlias);
 
         if ($discrSql) {
             $sql .= ' AND ' . $discrSql;

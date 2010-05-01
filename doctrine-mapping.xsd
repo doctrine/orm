@@ -173,10 +173,17 @@
   <xs:complexType name="id">
     <xs:sequence>
       <xs:element name="generator" type="orm:generator" minOccurs="0" />
+      <xs:element name="sequence-generator" type="orm:sequence-generator" minOccurs="0" maxOccurs="1" />
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="type" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="column" type="xs:NMTOKEN" />
+  </xs:complexType>
+
+  <xs:complexType name="sequence-generator">
+      <xs:attribute name="sequence-name" type="xs:NMTOKEN" use="required" />
+      <xs:attribute name="allocation-size" type="xs:integer" use="optional" default="1" />
+      <xs:attribute name="initial-value" type="xs:integer" use="optional" default="1" />
   </xs:complexType>
 
   <xs:complexType name="inverse-join-columns">

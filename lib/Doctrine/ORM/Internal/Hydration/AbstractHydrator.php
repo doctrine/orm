@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id: Hydrate.php 3192 2007-11-19 17:55:23Z romanb $
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -30,10 +28,7 @@ use PDO,
  * Base class for all hydrators. A hydrator is a class that provides some form
  * of transformation of an SQL result set into another structure.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
  * @since       2.0
- * @version     $Revision: 3192 $
  * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author      Roman Borschel <roman@code-factory.org>
  */

@@ -143,7 +143,7 @@ class AnnotationDriver implements Driver
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
         }
 
-        // Evaluate DoctrineTable annotation
+        // Evaluate Table annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\Table'])) {
             $tableAnnot = $classAnnotations['Doctrine\ORM\Mapping\Table'];
             $primaryTable = array(

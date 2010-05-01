@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -242,8 +240,8 @@ class ObjectHydrator extends AbstractHydrator
      *         specified by the FROM clause in a DQL query. 
      * 
      * @param array $data The data of the row to process.
-     * @param array $cache
-     * @param array $result
+     * @param array $cache The cache to use.
+     * @param array $result The result array to fill.
      */
     protected function _hydrateRow(array $data, array &$cache, array &$result)
     {

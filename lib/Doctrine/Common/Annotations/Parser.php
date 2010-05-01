@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -24,10 +22,7 @@ namespace Doctrine\Common\Annotations;
 /**
  * A simple parser for docblock annotations.
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision$
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -237,7 +232,7 @@ class Parser
             $nameParts[] = $this->_lexer->token['value'];
         }
 
-        // Effectively pick the name of class (append default NS if none, grab from NS alias, etc)
+        // Effectively pick the name of the class (append default NS if none, grab from NS alias, etc)
         if (count($nameParts) == 1) {
             if (strpos($nameParts[0], ':')) {
                 list ($alias, $simpleName) = explode(':', $nameParts[0]);
@@ -251,7 +246,7 @@ class Parser
 
         // Is it really an annotation class?
         if (
-            (! $this->_isNestedAnnotation && $this->_lexer->lookahead != null &&
+            ( ! $this->_isNestedAnnotation && $this->_lexer->lookahead != null &&
             ! $this->_lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS) &&
             ! $this->_lexer->isNextToken(Lexer::T_AT)) ||
             ! class_exists($name, false)

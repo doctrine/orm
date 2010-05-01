@@ -276,7 +276,7 @@ class Command
    */
   public function setName($name)
   {
-    if (false !== $pos = strpos($name, ':'))
+    if (false !== $pos = strrpos($name, ':'))
     {
       $namespace = substr($name, 0, $pos);
       $name = substr($name, $pos + 1);
@@ -376,6 +376,28 @@ class Command
   }
 
   /**
+   * Returns the processed help for the command replacing the %command.name% and
+   * %command.full_name% patterns with the real values dynamically.
+   *
+   * @return string  The processed help for the command
+   */
+  public function getProcessedHelp()
+  {
+    $name = $this->namespace.':'.$this->name;
+    
+    $placeholders = array(
+      '%command.name%',
+      '%command.full_name%'
+    );
+    $replacements = array(
+      $name,
+      $_SERVER['PHP_SELF'].' '.$name
+    );
+
+    return str_replace($placeholders, $replacements, $this->getHelp());
+  }
+
+  /**
    * Sets the aliases for the command.
    *
    * @param array $aliases An array of aliases for the command
@@ -457,7 +479,7 @@ class Command
 
     $messages[] = $this->definition->asText();
 
-    if ($help = $this->getHelp())
+    if ($help = $this->getProcessedHelp())
     {
       $messages[] = '<comment>Help:</comment>';
       $messages[] = ' '.implode("\n ", explode("\n", $help))."\n";

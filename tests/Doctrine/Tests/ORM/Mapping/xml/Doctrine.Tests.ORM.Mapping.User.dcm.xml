@@ -6,6 +6,10 @@
                           http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
                               
     <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
+
+        <unique-constraints>
+            <unique-constraint columns="name,user_email" name="search_idx" />
+        </unique-constraints>
         
         <lifecycle-callbacks>
             <lifecycle-callback type="prePersist" method="doStuffOnPrePersist"/>
@@ -14,6 +18,7 @@
         </lifecycle-callbacks>
 
         <id name="id" type="integer" column="id">
+            <sequence-generator sequence-name="tablename_seq" allocation-size="100" initial-value="1" />
             <generator strategy="AUTO"/>
         </id>
         

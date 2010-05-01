@@ -156,7 +156,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
     
     protected function _getMockPersister()
     {
-        $persister = $this->getMock('Doctrine\ORM\Persisters\StandardEntityPersister', array('load'), array(), '', false);
+        $persister = $this->getMock('Doctrine\ORM\Persisters\BasicEntityPersister', array('load'), array(), '', false);
         return $persister;
     }
 }

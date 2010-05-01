@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -22,15 +20,13 @@
 namespace Doctrine\Common;
 
 /**
- * Simple generic lexical scanner.
+ * Base class for writing simple lexers, i.e. for creating small DSLs.
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision: 3938 $
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ * @todo Rename: AbstractLexer
  */
 abstract class Lexer
 {
@@ -50,7 +46,7 @@ abstract class Lexer
     private $_peek = 0;
 
     /**
-     * @var array The next token in the query string.
+     * @var array The next token in the input.
      */
     public $lookahead;
 
@@ -60,9 +56,12 @@ abstract class Lexer
     public $token;
     
     /**
-     * Inputs data to be tokenized
+     * Sets the input data to be tokenized.
      *
-     * @param string $input input to be tokenized
+     * The Lexer is immediately reset and the new input tokenized.
+     * Any unprocessed tokens from any previous input are lost.
+     *
+     * @param string $input The input to be tokenized.
      */
     public function setInput($input)
     {
@@ -72,20 +71,18 @@ abstract class Lexer
     }
     
     /**
-     * Resets the scanner
-     *
+     * Resets the lexer.
      */
     public function reset()
     {
         $this->lookahead = null;
-        $this->token     = null;
-        $this->_peek     = 0;
+        $this->token = null;
+        $this->_peek = 0;
         $this->_position = 0;
     }
-    
+
     /**
-     * Resets the peek pointer to 0
-     *
+     * Resets the peek pointer to 0.
      */
     public function resetPeek()
     {
@@ -93,7 +90,7 @@ abstract class Lexer
     }
 
     /**
-     * Resets the lexer position on the input to the given position
+     * Resets the lexer position on the input to the given position.
      *
      * @param integer $position Position to place the lexical scanner
      */
@@ -235,14 +232,14 @@ abstract class Lexer
     }
     
     /**
-     * Lexical catchable patterns
+     * Lexical catchable patterns.
      *
      * @return array
      */
     abstract protected function getCatchablePatterns();
     
     /**
-     * Lexical non-catchable patterns
+     * Lexical non-catchable patterns.
      *
      * @return array
      */
