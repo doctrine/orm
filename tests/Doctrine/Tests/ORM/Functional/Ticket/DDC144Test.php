@@ -43,21 +43,21 @@ class DDC144Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC144FlowElement {
     /**
-     * @Id @Column(type="integer") @GeneratedValue(strategy="AUTO")
+     * @Id @Column(type="integer") @GeneratedValue
      * @var integer
      */
     public $id;
-    /** @Column(type="string") */
+    /** @Column */
     public $property;
 }
 
-// /** @Entity @Table(name="ddc144_expressions") */
 abstract class DDC144Expression extends DDC144FlowElement {
     abstract function method();
 }
+
 /** @Entity @Table(name="ddc144_operands") */
 class DDC144Operand extends DDC144Expression {
-    /** @Column(type="string") */
+    /** @Column */
     public $operandProperty;
     function method() {}
 }

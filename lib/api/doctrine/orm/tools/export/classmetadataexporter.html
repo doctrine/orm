@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:06 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../../stylesheet.css">
+<link rel="start" href="../../../../overview-summary.html">
+
+<title>ClassMetadataExporter (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../../doctrine/orm/tools/export/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../../doctrine/orm/tools/export/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../../index.html" target="_top">Frames</a>
+<a href="../../../../doctrine/orm/tools/export/classmetadataexporter.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Tools\Export\ClassMetadataExporter</div>
+<div class="location">/Doctrine/ORM/Tools/Export/ClassMetadataExporter.php at line 54</div>
+
+<h1>Class ClassMetadataExporter</h1>
+
+<pre class="tree"><strong>ClassMetadataExporter</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>ClassMetadataExporter</strong></p>
+
+<div class="comment" id="overview_description"><p>Class used for converting your mapping information between the
+supported formats: yaml, xml, and php/annotation.</p><p>[php]
+Unify all your mapping information which is written in php, xml, yml
+and convert it to a single set of yaml files.</p><p>$cme = new Doctrine\ORM\Tools\Export\ClassMetadataExporter();
+$cme->addMappingSource(__DIR__ . '/Entities');
+$cme->addMappingSource(__DIR__ . '/xml');
+$cme->addMappingSource(__DIR__ . '/yaml');</p><p>$exporter = $cme->getExporter('yaml');
+$exporter->setOutputDir(__DIR__ . '/new_yaml');</p><p>$exporter->setMetadatas($cme->getMetadatas());
+$exporter->export();</p></div>
+
+<dl>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision$</dd>
+<dt>Author:</dt>
+<dd>Jonathan Wage <jonwage@gmail.com></dd>
+</dl>
+<hr>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#ClassMetadataExporter()">ClassMetadataExporter</a>()</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#addMappingSource()">addMappingSource</a>(string source, string type)</p><p class="description">Add a new mapping directory to the array of directories to convert and export
+to another format[php]
+$cme = new Doctrine\ORM\Tools\Export\ClassMetadataExporter();
+$cme->addMappingSource(__DIR__ . </p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../../doctrine/orm/tools/export/driver/abstractexporter.html">AbstractExporter</a></td>
+<td class="description"><p class="name"><a href="#getExporter()">getExporter</a>(string type, string source)</p><p class="description">Get a exporter driver instance</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getMetadatas()">getMetadatas</a>()</p><p class="description">Get an array of ClassMetadataInfo instances for all the configured mapping
+directories. </p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#registerExportDriver()">registerExportDriver</a>(string name, string class)</p><p class="description">Register a new exporter driver class under a specified name</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setEntityManager()">setEntityManager</a>(<a href="../../../../doctrine/orm/entitymanager.html">EntityManager</a> em)</p><p class="description">Optionally set the EntityManager instance to get the AnnotationDriver
+from instead of creating a new instance of the AnnotationDriver</p></td>
+</tr>
+</table>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/ORM/Tools/Export/ClassMetadataExporter.php at line 64</div>
+<h3 id="ClassMetadataExporter()">ClassMetadataExporter</h3>
+<code class="signature">public <strong>ClassMetadataExporter</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Tools/Export/ClassMetadataExporter.php at line 123</div>
+<h3 id="addMappingSource()">addMappingSource</h3>
+<code class="signature">public  void <strong>addMappingSource</strong>(string source, string type)</code>
+<div class="details">
+<p>Add a new mapping directory to the array of directories to convert and export
+to another format</p><p>[php]
+$cme = new Doctrine\ORM\Tools\Export\ClassMetadataExporter();
+$cme->addMappingSource(__DIR__ . '/yaml');
+$cme->addMappingSource($schemaManager);</p><dl>
+<dt>Parameters:</dt>
+<dd>source - The source for the mapping files</dd>
+<dd>type - The type of mapping files (yml, xml, etc.)</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Tools/Export/ClassMetadataExporter.php at line 99</div>
+<h3 id="getExporter()">getExporter</h3>
+<code class="signature">public  <a href="../../../../doctrine/orm/tools/export/driver/abstractexporter.html">AbstractExporter</a> <strong>getExporter</strong>(string type, string source)</code>
+<div class="details">
+<p>Get a exporter driver instance</p><dl>
+<dt>Parameters:</dt>
+<dd>type - The type to get (yml, xml, etc.)</dd>
+<dd>source - The directory where the exporter will export to</dd>
+<dt>Returns:</dt>
+<dd>$exporter</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Tools/Export/ClassMetadataExporter.php at line 135</div>
+<h3 id="getMetadatas()">getMetadatas</h3>
+<code class="signature">public  array <strong>getMetadatas</strong>()</code>
+<div class="details">
+<p>Get an array of ClassMetadataInfo instances for all the configured mapping
+directories. Reads the mapping directories and populates ClassMetadataInfo
+instances.</p><dl>
+<dt>Returns:</dt>
+<dd>$classes</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Tools/Export/ClassMetadataExporter.php at line 75</div>
+<h3 id="registerExportDriver()">registerExportDriver</h3>
+<code class="signature">public static  void <strong>registerExportDriver</strong>(string name, string class)</code>
+<div class="details">
+<p>Register a new exporter driver class under a specified name</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Tools/Export/ClassMetadataExporter.php at line 87</div>
+<h3 id="setEntityManager()">setEntityManager</h3>
+<code class="signature">public  void <strong>setEntityManager</strong>(<a href="../../../../doctrine/orm/entitymanager.html">EntityManager</a> em)</code>
+<div class="details">
+<p>Optionally set the EntityManager instance to get the AnnotationDriver
+from instead of creating a new instance of the AnnotationDriver</p></div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../../doctrine/orm/tools/export/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../../doctrine/orm/tools/export/package-tree.html">Tree</a></li>
+<li><a href="../../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../../index.html" target="_top">Frames</a>
+<a href="../../../../doctrine/orm/tools/export/classmetadataexporter.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

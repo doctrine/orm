@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -38,7 +36,7 @@ class Version
     /**
      * Current Doctrine Version
      */
-    const VERSION = '2.0 ALPHA 4';
+    const VERSION = '2.0-DEV';
 
     /**
      * Compares a Doctrine version with the current one.

@@ -1,0 +1,471 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>AssociationMapping (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/mapping/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/mapping/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/mapping/associationmapping.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Mapping\AssociationMapping</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 36</div>
+
+<h1>Class AssociationMapping</h1>
+
+<pre class="tree"><strong>AssociationMapping</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public abstract  class <strong>AssociationMapping</strong></p>
+
+<div class="comment" id="overview_description"><p>Base class for association mappings.</p><p><b>IMPORTANT NOTE:</b></p><p>The fields of this class are only public for 2 reasons:
+1) To allow fast, internal READ access.
+2) To drastically reduce the size of a serialized instance (private/protected members
+get the whole class name, namespace inclusive, prepended to every property in
+the serialized representation).</p></div>
+
+<dl>
+<dt>Author:</dt>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+</dl>
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type">final  integer</td>
+<td class="description"><p class="name"><a href="#FETCH_EAGER">FETCH_EAGER</a></p><p class="description">Specifies that an association is to be fetched when the owner of the
+association is fetched.</p></td>
+</tr>
+<tr>
+<td class="type">final  integer</td>
+<td class="description"><p class="name"><a href="#FETCH_LAZY">FETCH_LAZY</a></p><p class="description">Specifies that an association is to be fetched when it is first accessed.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#declared">$declared</a></p><p class="description">READ-ONLY: The name of the entity or mapped superclass that declares
+the association field in an inheritance hierarchy.</p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#fetchMode">$fetchMode</a></p><p class="description">READ-ONLY: The fetch mode used for the association.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#inherited">$inherited</a></p><p class="description">READ-ONLY: The name of the entity class from which the association was
+inherited in an inheritance hierarchy.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#inversedBy">$inversedBy</a></p><p class="description">READ-ONLY: Identifies the field on the inverse side of a bidirectional association.
+</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isCascadeDetach">$isCascadeDetach</a></p><p class="description">READ-ONLY: Whether the association cascades detach() operations from the source entity
+to the target entity/entities.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isCascadeMerge">$isCascadeMerge</a></p><p class="description">READ-ONLY: Whether the association cascades merge() operations from the source entity
+to the target entity/entities.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isCascadePersist">$isCascadePersist</a></p><p class="description">READ-ONLY: Whether the association cascades save() operations from the source entity
+to the target entity/entities.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isCascadeRefresh">$isCascadeRefresh</a></p><p class="description">READ-ONLY: Whether the association cascades refresh() operations from the source entity
+to the target entity/entities.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isCascadeRemove">$isCascadeRemove</a></p><p class="description">READ-ONLY: Whether the association cascades delete() operations from the source entity
+to the target entity/entities.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isOwningSide">$isOwningSide</a></p><p class="description">READ-ONLY: Flag that indicates whether the class that defines this mapping is
+the owning side of the association.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#joinTable">$joinTable</a></p><p class="description">READ-ONLY: The join table definition, if any.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#mappedBy">$mappedBy</a></p><p class="description">READ-ONLY: Identifies the field on the owning side of a bidirectional association that
+controls the mapping for the association. </p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#sourceEntityName">$sourceEntityName</a></p><p class="description">READ-ONLY: The name of the source Entity (the Entity that defines this mapping).</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#sourceFieldName">$sourceFieldName</a></p><p class="description">READ-ONLY: Identifies the field on the source class (the class this AssociationMapping
+belongs to) that represents the association and stores the reference to the
+other entity/entities.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#targetEntityName">$targetEntityName</a></p><p class="description">READ-ONLY: The name of the target Entity (the Enitity that is the target of the
+association).</p></td>
+</tr>
+</table>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#AssociationMapping()">AssociationMapping</a>(array mapping)</p><p class="description">Initializes a new instance of a class derived from AssociationMapping.</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getQuotedJoinTableName()">getQuotedJoinTableName</a>(<a href="../../../doctrine/dbal/platforms/abstractplatform.html">AbstractPlatform</a> platform)</p><p class="description">Gets the (possibly quoted) name of the join table.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#hasCascades()">hasCascades</a>()</p><p class="description">Checks whether the association has any cascades configured.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isEagerlyFetched()">isEagerlyFetched</a>()</p><p class="description">Whether the target entity/entities of the association are eagerly fetched.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isLazilyFetched()">isLazilyFetched</a>()</p><p class="description">Whether the target entity/entities of the association are lazily fetched.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isManyToMany()">isManyToMany</a>()</p><p class="description">Whether the association is a many-to-many association.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isOneToMany()">isOneToMany</a>()</p><p class="description">Whether the association is a one-to-many association.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isOneToOne()">isOneToOne</a>()</p><p class="description">Whether the association is a one-to-one association.</p></td>
+</tr>
+<tr>
+<td class="type">abstract  void</td>
+<td class="description"><p class="name"><a href="#load()">load</a>(object sourceEntity, object target, <a href="../../../doctrine/orm/entitymanager.html">EntityManager</a> em, array joinColumnValues)</p><p class="description">Loads data in $target domain object using this association.
+</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#usesJoinTable()">usesJoinTable</a>()</p><p class="description">Whether the association uses a join table for the mapping.</p></td>
+</tr>
+</table>
+
+<h2 id="detail_field">Field Detail</h2>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 50</div>
+<h3 id="FETCH_EAGER">FETCH_EAGER</h3>
+<code class="signature">public final  integer <strong>FETCH_EAGER</strong> = 3</code>
+<div class="details">
+<p>Specifies that an association is to be fetched when the owner of the
+association is fetched.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 43</div>
+<h3 id="FETCH_LAZY">FETCH_LAZY</h3>
+<code class="signature">public final  integer <strong>FETCH_LAZY</strong> = 2</code>
+<div class="details">
+<p>Specifies that an association is to be fetched when it is first accessed.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 169</div>
+<h3 id="declared">declared</h3>
+<code class="signature">public  string <strong>$declared</strong></code>
+<div class="details">
+<p>READ-ONLY: The name of the entity or mapped superclass that declares
+the association field in an inheritance hierarchy.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 97</div>
+<h3 id="fetchMode">fetchMode</h3>
+<code class="signature">public  integer <strong>$fetchMode</strong></code>
+<div class="details">
+<p>READ-ONLY: The fetch mode used for the association.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 161</div>
+<h3 id="inherited">inherited</h3>
+<code class="signature">public  string <strong>$inherited</strong></code>
+<div class="details">
+<p>READ-ONLY: The name of the entity class from which the association was
+inherited in an inheritance hierarchy.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 146</div>
+<h3 id="inversedBy">inversedBy</h3>
+<code class="signature">public  string <strong>$inversedBy</strong></code>
+<div class="details">
+<p>READ-ONLY: Identifies the field on the inverse side of a bidirectional association.
+This is only set on the owning side of an association.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 90</div>
+<h3 id="isCascadeDetach">isCascadeDetach</h3>
+<code class="signature">public  boolean <strong>$isCascadeDetach</strong></code>
+<div class="details">
+<p>READ-ONLY: Whether the association cascades detach() operations from the source entity
+to the target entity/entities.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 82</div>
+<h3 id="isCascadeMerge">isCascadeMerge</h3>
+<code class="signature">public  boolean <strong>$isCascadeMerge</strong></code>
+<div class="details">
+<p>READ-ONLY: Whether the association cascades merge() operations from the source entity
+to the target entity/entities.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 66</div>
+<h3 id="isCascadePersist">isCascadePersist</h3>
+<code class="signature">public  boolean <strong>$isCascadePersist</strong></code>
+<div class="details">
+<p>READ-ONLY: Whether the association cascades save() operations from the source entity
+to the target entity/entities.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 74</div>
+<h3 id="isCascadeRefresh">isCascadeRefresh</h3>
+<code class="signature">public  boolean <strong>$isCascadeRefresh</strong></code>
+<div class="details">
+<p>READ-ONLY: Whether the association cascades refresh() operations from the source entity
+to the target entity/entities.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 58</div>
+<h3 id="isCascadeRemove">isCascadeRemove</h3>
+<code class="signature">public  boolean <strong>$isCascadeRemove</strong></code>
+<div class="details">
+<p>READ-ONLY: Whether the association cascades delete() operations from the source entity
+to the target entity/entities.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 105</div>
+<h3 id="isOwningSide">isOwningSide</h3>
+<code class="signature">public  boolean <strong>$isOwningSide</strong> = true</code>
+<div class="details">
+<p>READ-ONLY: Flag that indicates whether the class that defines this mapping is
+the owning side of the association.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 153</div>
+<h3 id="joinTable">joinTable</h3>
+<code class="signature">public  array <strong>$joinTable</strong></code>
+<div class="details">
+<p>READ-ONLY: The join table definition, if any.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 138</div>
+<h3 id="mappedBy">mappedBy</h3>
+<code class="signature">public  string <strong>$mappedBy</strong></code>
+<div class="details">
+<p>READ-ONLY: Identifies the field on the owning side of a bidirectional association that
+controls the mapping for the association. This is only set on the inverse side
+of an association.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 112</div>
+<h3 id="sourceEntityName">sourceEntityName</h3>
+<code class="signature">public  string <strong>$sourceEntityName</strong></code>
+<div class="details">
+<p>READ-ONLY: The name of the source Entity (the Entity that defines this mapping).</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 129</div>
+<h3 id="sourceFieldName">sourceFieldName</h3>
+<code class="signature">public  string <strong>$sourceFieldName</strong></code>
+<div class="details">
+<p>READ-ONLY: Identifies the field on the source class (the class this AssociationMapping
+belongs to) that represents the association and stores the reference to the
+other entity/entities.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 120</div>
+<h3 id="targetEntityName">targetEntityName</h3>
+<code class="signature">public  string <strong>$targetEntityName</strong></code>
+<div class="details">
+<p>READ-ONLY: The name of the target Entity (the Enitity that is the target of the
+association).</p></div>
+
+<hr>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 176</div>
+<h3 id="AssociationMapping()">AssociationMapping</h3>
+<code class="signature">public <strong>AssociationMapping</strong>(array mapping)</code>
+<div class="details">
+<p>Initializes a new instance of a class derived from AssociationMapping.</p><dl>
+<dt>Parameters:</dt>
+<dd>mapping - The mapping definition.</dd>
+</dl>
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 337</div>
+<h3 id="getQuotedJoinTableName()">getQuotedJoinTableName</h3>
+<code class="signature">public  string <strong>getQuotedJoinTableName</strong>(<a href="../../../doctrine/dbal/platforms/abstractplatform.html">AbstractPlatform</a> platform)</code>
+<div class="details">
+<p>Gets the (possibly quoted) name of the join table.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 309</div>
+<h3 id="hasCascades()">hasCascades</h3>
+<code class="signature">public  boolean <strong>hasCascades</strong>()</code>
+<div class="details">
+<p>Checks whether the association has any cascades configured.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 249</div>
+<h3 id="isEagerlyFetched()">isEagerlyFetched</h3>
+<code class="signature">public  boolean <strong>isEagerlyFetched</strong>()</code>
+<div class="details">
+<p>Whether the target entity/entities of the association are eagerly fetched.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 259</div>
+<h3 id="isLazilyFetched()">isLazilyFetched</h3>
+<code class="signature">public  boolean <strong>isLazilyFetched</strong>()</code>
+<div class="details">
+<p>Whether the target entity/entities of the association are lazily fetched.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 289</div>
+<h3 id="isManyToMany()">isManyToMany</h3>
+<code class="signature">public  boolean <strong>isManyToMany</strong>()</code>
+<div class="details">
+<p>Whether the association is a many-to-many association.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 279</div>
+<h3 id="isOneToMany()">isOneToMany</h3>
+<code class="signature">public  boolean <strong>isOneToMany</strong>()</code>
+<div class="details">
+<p>Whether the association is a one-to-many association.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 269</div>
+<h3 id="isOneToOne()">isOneToOne</h3>
+<code class="signature">public  boolean <strong>isOneToOne</strong>()</code>
+<div class="details">
+<p>Whether the association is a one-to-one association.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 329</div>
+<h3 id="load()">load</h3>
+<code class="signature">public abstract  void <strong>load</strong>(object sourceEntity, object target, <a href="../../../doctrine/orm/entitymanager.html">EntityManager</a> em, array joinColumnValues)</code>
+<div class="details">
+<p>Loads data in $target domain object using this association.
+The data comes from the association navigated from $sourceEntity
+using $em.</p><dl>
+<dt>Parameters:</dt>
+<dd></dd>
+<dd>target - an entity or a collection</dd>
+<dd></dd>
+<dd>joinColumnValues - foreign keys (significative for this association) of $sourceEntity, if needed</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 299</div>
+<h3 id="usesJoinTable()">usesJoinTable</h3>
+<code class="signature">public  boolean <strong>usesJoinTable</strong>()</code>
+<div class="details">
+<p>Whether the association uses a join table for the mapping.</p></div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/orm/mapping/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/orm/mapping/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/orm/mapping/associationmapping.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

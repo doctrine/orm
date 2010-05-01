@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -34,6 +32,7 @@ namespace Doctrine\ORM\Mapping;
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
+ * @todo Potentially remove if assoc mapping objects get replaced by simple arrays.
  */
 abstract class AssociationMapping
 {
@@ -60,7 +59,7 @@ abstract class AssociationMapping
     public $isCascadeRemove;
 
     /**
-     * READ-ONLY: Whether the association cascades save() operations from the source entity
+     * READ-ONLY: Whether the association cascades persist() operations from the source entity
      * to the target entity/entities.
      *
      * @var boolean
@@ -152,7 +151,23 @@ abstract class AssociationMapping
      *
      * @var array
      */
-    public $joinTable = array();
+    public $joinTable;
+
+    /**
+     * READ-ONLY: The name of the entity class from which the association was
+     * inherited in an inheritance hierarchy.
+     *
+     * @var string
+     */
+    public $inherited;
+
+    /**
+     * READ-ONLY: The name of the entity or mapped superclass that declares
+     * the association field in an inheritance hierarchy.
+     *
+     * @var string
+     */
+    public $declared;
 
     /**
      * Initializes a new instance of a class derived from AssociationMapping.
@@ -161,9 +176,7 @@ abstract class AssociationMapping
      */
     public function __construct(array $mapping)
     {
-        if ($mapping) {
-            $this->_validateAndCompleteMapping($mapping);
-        }
+        $this->_validateAndCompleteMapping($mapping);
     }
 
     /**
@@ -317,8 +330,9 @@ abstract class AssociationMapping
     abstract public function load($sourceEntity, $target, $em, array $joinColumnValues = array());
     
     /**
-     * 
-     * @param $platform
+     * Gets the (possibly quoted) name of the join table.
+     *
+     * @param AbstractPlatform $platform
      * @return string
      */
     public function getQuotedJoinTableName($platform)
@@ -327,5 +341,59 @@ abstract class AssociationMapping
             ? $platform->quoteIdentifier($this->joinTable['name'])
             : $this->joinTable['name'];
     }
-    
+
+    /**
+     * Determines which fields get serialized.
+     *
+     * It is only serialized what is necessary for best unserialization performance.
+     * That means any metadata properties that are not set or empty or simply have
+     * their default value are NOT serialized.
+     *
+     * @return array The names of all the fields that should be serialized.
+     */
+    public function __sleep()
+    {
+        $serialized = array(
+            'sourceEntityName',
+            'targetEntityName',
+            'sourceFieldName',
+            'fetchMode'
+        );
+
+        if ($this->isCascadeDetach) {
+            $serialized[] = 'isCascadeDetach';
+        }
+        if ($this->isCascadeMerge) {
+            $serialized[] = 'isCascadeMerge';
+        }
+        if ($this->isCascadePersist) {
+            $serialized[] = 'isCascadePersist';
+        }
+        if ($this->isCascadeRefresh) {
+            $serialized[] = 'isCascadeRefresh';
+        }
+        if ($this->isCascadeRemove) {
+            $serialized[] = 'isCascadeRemove';
+        }
+        if ( ! $this->isOwningSide) {
+            $serialized[] = 'isOwningSide';
+        }
+        if ($this->mappedBy) {
+            $serialized[] = 'mappedBy';
+        }
+        if ($this->inversedBy) {
+            $serialized[] = 'inversedBy';
+        }
+        if ($this->joinTable) {
+            $serialized[] = 'joinTable';
+        }
+        if ($this->inherited) {
+            $serialized[] = 'inherited';
+        }
+        if ($this->declared) {
+            $serialized[] = 'declared';
+        }
+        
+        return $serialized;
+    }
 }

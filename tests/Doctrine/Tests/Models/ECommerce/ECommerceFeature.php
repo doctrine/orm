@@ -14,17 +14,17 @@ class ECommerceFeature
     /**
      * @Column(type="integer")
      * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @GeneratedValue
      */
     private $id;
 
     /**
-     * @Column(type="string", length=50)
+     * @Column(length=50)
      */
     private $description;
 
     /**
-     * @ManyToOne(targetEntity="ECommerceProduct")
+     * @ManyToOne(targetEntity="ECommerceProduct", inversedBy="features")
      * @JoinColumn(name="product_id", referencedColumnName="id")
      */
     private $product;

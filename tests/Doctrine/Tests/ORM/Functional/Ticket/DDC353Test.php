@@ -78,8 +78,7 @@ class DDC353Picture
 {
     /**
      * @Column(name="picture_id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @Id @GeneratedValue
      */
     private $pictureId;
 

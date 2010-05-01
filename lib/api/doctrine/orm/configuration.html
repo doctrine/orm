@@ -1,0 +1,554 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>Configuration (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../doctrine/orm/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../doctrine/orm/package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../index.html" target="_top">Frames</a>
+<a href="../../doctrine/orm/configuration.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\ORM\Configuration</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 37</div>
+
+<h1>Class Configuration</h1>
+
+<pre class="tree">Class:Configuration - Superclass: Doctrine
+Doctrine<br>&lfloor;&nbsp;<strong>Configuration</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>Configuration</strong><br>extends Doctrine
+
+</p>
+
+<div class="comment" id="overview_description"><p>Configuration container for all configuration options of Doctrine.
+It combines all configuration options from DBAL & ORM.</p></div>
+
+<dl>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Internal:</dt>
+<dd>When adding a new configuration option just write a getter/setter pair and add the option to the _attributes array with a proper default value.</dd>
+<dt>Author:</dt>
+<dd>Benjamin Eberlei <kontakt@beberlei.de></dd>
+<dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
+<dd>Jonathan Wage <jonwage@gmail.com></dd>
+<dd>Roman Borschel <roman@code-factory.org></dd>
+</dl>
+<hr>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#Configuration()">Configuration</a>()</p><p class="description">Creates a new configuration that can be used for Doctrine.</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#addCustomDatetimeFunction()">addCustomDatetimeFunction</a>(string name, string className)</p><p class="description">Registers a custom DQL function that produces a date/time value.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#addCustomNumericFunction()">addCustomNumericFunction</a>(string name, string className)</p><p class="description">Registers a custom DQL function that produces a numeric value.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#addCustomStringFunction()">addCustomStringFunction</a>(string name, string className)</p><p class="description">Registers a custom DQL function that produces a string value.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#addEntityNamespace()">addEntityNamespace</a>(string alias, string namespace)</p><p class="description">Adds a namespace under a certain alias.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#addNamedNativeQuery()">addNamedNativeQuery</a>(string name, string sql, <a href="../../doctrine/orm/query/resultsetmapping.html">ResultSetMapping</a> rsm)</p><p class="description">Adds a named native query to the configuration.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#addNamedQuery()">addNamedQuery</a>(string name, string dql)</p><p class="description">Adds a named DQL query to the configuration.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#ensureProductionSettings()">ensureProductionSettings</a>()</p><p class="description">Ensures that this Configuration instance contains settings that are
+suitable for a production environment.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#getAutoGenerateProxyClasses()">getAutoGenerateProxyClasses</a>()</p><p class="description">Gets a boolean flag that indicates whether proxy classes should always be regenerated
+during each script execution.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getCustomDatetimeFunction()">getCustomDatetimeFunction</a>(string name)</p><p class="description">Gets the implementation class name of a registered custom date/time DQL function.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getCustomNumericFunction()">getCustomNumericFunction</a>(string name)</p><p class="description">Gets the implementation class name of a registered custom numeric DQL function.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getCustomStringFunction()">getCustomStringFunction</a>(string name)</p><p class="description">Gets the implementation class name of a registered custom string DQL function.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getEntityNamespace()">getEntityNamespace</a>(string entityNamespaceAlias)</p><p class="description">Resolves a registered namespace alias to the full namespace.</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\Common\Cache\Cache</td>
+<td class="description"><p class="name"><a href="#getMetadataCacheImpl()">getMetadataCacheImpl</a>()</p><p class="description">Gets the cache driver implementation that is used for metadata caching.</p></td>
+</tr>
+<tr>
+<td class="type"> Mapping\Driver\Driver</td>
+<td class="description"><p class="name"><a href="#getMetadataDriverImpl()">getMetadataDriverImpl</a>()</p><p class="description">Gets the cache driver implementation that is used for the mapping metadata.</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getNamedNativeQuery()">getNamedNativeQuery</a>(string name)</p><p class="description">Gets the components of a previously registered named native query.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getNamedQuery()">getNamedQuery</a>(string name)</p><p class="description">Gets a previously registered named DQL query.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getProxyDir()">getProxyDir</a>()</p><p class="description">Gets the directory where Doctrine generates any necessary proxy class files.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#getProxyNamespace()">getProxyNamespace</a>()</p><p class="description">Gets the namespace where proxy classes reside.</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\Common\Cache\Cache</td>
+<td class="description"><p class="name"><a href="#getQueryCacheImpl()">getQueryCacheImpl</a>()</p><p class="description">Gets the cache driver implementation that is used for the query cache (SQL cache).</p></td>
+</tr>
+<tr>
+<td class="type"> \Doctrine\Common\Cache\Cache</td>
+<td class="description"><p class="name"><a href="#getResultCacheImpl()">getResultCacheImpl</a>()</p><p class="description">Gets the cache driver implementation that is used for query result caching.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#getUseCExtension()">getUseCExtension</a>()</p><p class="description">Gets a boolean flag that indicates whether Doctrine should make use of the
+C extension.</p></td>
+</tr>
+<tr>
+<td class="type"> Mapping\Driver\AnnotationDriver</td>
+<td class="description"><p class="name"><a href="#newDefaultAnnotationDriver()">newDefaultAnnotationDriver</a>(array paths)</p><p class="description">Add a new default annotation driver with a correctly configured annotation reader.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setAutoGenerateProxyClasses()">setAutoGenerateProxyClasses</a>(boolean bool)</p><p class="description">Sets a boolean flag that indicates whether proxy classes should always be regenerated
+during each script execution.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setEntityNamespaces()">setEntityNamespaces</a>(mixed entityNamespaces, array entityAliasMap)</p><p class="description">Set the entity alias map</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setMetadataCacheImpl()">setMetadataCacheImpl</a>(\Doctrine\Common\Cache\Cache cacheImpl)</p><p class="description">Sets the cache driver implementation that is used for metadata caching.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setMetadataDriverImpl()">setMetadataDriverImpl</a>(<a href="../../doctrine/dbal/driver.html">Driver</a> driverImpl)</p><p class="description">Sets the cache driver implementation that is used for metadata caching.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setProxyDir()">setProxyDir</a>(string dir)</p><p class="description">Sets the directory where Doctrine generates any necessary proxy class files.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setProxyNamespace()">setProxyNamespace</a>(string ns)</p><p class="description">Sets the namespace where proxy classes reside.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setQueryCacheImpl()">setQueryCacheImpl</a>(\Doctrine\Common\Cache\Cache cacheImpl)</p><p class="description">Sets the cache driver implementation that is used for the query cache (SQL cache).</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setResultCacheImpl()">setResultCacheImpl</a>(\Doctrine\Common\Cache\Cache cacheImpl)</p><p class="description">Sets the cache driver implementation that is used for query result caching.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setUseCExtension()">setUseCExtension</a>(boolean boolean)</p><p class="description">Sets a boolean flag that indicates whether Doctrine should make use of the
+C extension.</p></td>
+</tr>
+</table>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/ORM/Configuration.php at line 42</div>
+<h3 id="Configuration()">Configuration</h3>
+<code class="signature">public <strong>Configuration</strong>()</code>
+<div class="details">
+<p>Creates a new configuration that can be used for Doctrine.</p></div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/ORM/Configuration.php at line 406</div>
+<h3 id="addCustomDatetimeFunction()">addCustomDatetimeFunction</h3>
+<code class="signature">public  void <strong>addCustomDatetimeFunction</strong>(string name, string className)</code>
+<div class="details">
+<p>Registers a custom DQL function that produces a date/time value.
+Such a function can then be used in any DQL statement in any place where date/time
+functions are allowed.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 381</div>
+<h3 id="addCustomNumericFunction()">addCustomNumericFunction</h3>
+<code class="signature">public  void <strong>addCustomNumericFunction</strong>(string name, string className)</code>
+<div class="details">
+<p>Registers a custom DQL function that produces a numeric value.
+Such a function can then be used in any DQL statement in any place where numeric
+functions are allowed.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 356</div>
+<h3 id="addCustomStringFunction()">addCustomStringFunction</h3>
+<code class="signature">public  void <strong>addCustomStringFunction</strong>(string name, string className)</code>
+<div class="details">
+<p>Registers a custom DQL function that produces a string value.
+Such a function can then be used in any DQL statement in any place where string
+functions are allowed.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 151</div>
+<h3 id="addEntityNamespace()">addEntityNamespace</h3>
+<code class="signature">public  void <strong>addEntityNamespace</strong>(string alias, string namespace)</code>
+<div class="details">
+<p>Adds a namespace under a certain alias.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 308</div>
+<h3 id="addNamedNativeQuery()">addNamedNativeQuery</h3>
+<code class="signature">public  void <strong>addNamedNativeQuery</strong>(string name, string sql, <a href="../../doctrine/orm/query/resultsetmapping.html">ResultSetMapping</a> rsm)</code>
+<div class="details">
+<p>Adds a named native query to the configuration.</p><dl>
+<dt>Parameters:</dt>
+<dd>name - The name of the query.</dd>
+<dd>sql - The native SQL query string.</dd>
+<dd>rsm - The ResultSetMapping used for the results of the SQL query.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 282</div>
+<h3 id="addNamedQuery()">addNamedQuery</h3>
+<code class="signature">public  void <strong>addNamedQuery</strong>(string name, string dql)</code>
+<div class="details">
+<p>Adds a named DQL query to the configuration.</p><dl>
+<dt>Parameters:</dt>
+<dd>name - The name of the query.</dd>
+<dd>dql - The DQL query string.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 335</div>
+<h3 id="ensureProductionSettings()">ensureProductionSettings</h3>
+<code class="signature">public  void <strong>ensureProductionSettings</strong>()</code>
+<div class="details">
+<p>Ensures that this Configuration instance contains settings that are
+suitable for a production environment.</p><dl>
+<dt>Throws:</dt>
+<dd><a href="../../doctrine/orm/ormexception.html">If a configuration setting has a value that is not suitable for a production environment.</a></dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 83</div>
+<h3 id="getAutoGenerateProxyClasses()">getAutoGenerateProxyClasses</h3>
+<code class="signature">public  boolean <strong>getAutoGenerateProxyClasses</strong>()</code>
+<div class="details">
+<p>Gets a boolean flag that indicates whether proxy classes should always be regenerated
+during each script execution.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 417</div>
+<h3 id="getCustomDatetimeFunction()">getCustomDatetimeFunction</h3>
+<code class="signature">public  string <strong>getCustomDatetimeFunction</strong>(string name)</code>
+<div class="details">
+<p>Gets the implementation class name of a registered custom date/time DQL function.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 392</div>
+<h3 id="getCustomNumericFunction()">getCustomNumericFunction</h3>
+<code class="signature">public  string <strong>getCustomNumericFunction</strong>(string name)</code>
+<div class="details">
+<p>Gets the implementation class name of a registered custom numeric DQL function.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 367</div>
+<h3 id="getCustomStringFunction()">getCustomStringFunction</h3>
+<code class="signature">public  string <strong>getCustomStringFunction</strong>(string name)</code>
+<div class="details">
+<p>Gets the implementation class name of a registered custom string DQL function.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 163</div>
+<h3 id="getEntityNamespace()">getEntityNamespace</h3>
+<code class="signature">public  string <strong>getEntityNamespace</strong>(string entityNamespaceAlias)</code>
+<div class="details">
+<p>Resolves a registered namespace alias to the full namespace.</p><dl>
+<dt>Throws:</dt>
+<dd><a href="../../doctrine/orm/mapping/mappingexception.html">MappingException</a></dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 239</div>
+<h3 id="getMetadataCacheImpl()">getMetadataCacheImpl</h3>
+<code class="signature">public  \Doctrine\Common\Cache\Cache <strong>getMetadataCacheImpl</strong>()</code>
+<div class="details">
+<p>Gets the cache driver implementation that is used for metadata caching.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 189</div>
+<h3 id="getMetadataDriverImpl()">getMetadataDriverImpl</h3>
+<code class="signature">public  Mapping\Driver\Driver <strong>getMetadataDriverImpl</strong>()</code>
+<div class="details">
+<p>Gets the cache driver implementation that is used for the mapping metadata.</p><dl>
+<dt>Throws:</dt>
+<dd><a href="../../doctrine/orm/ormexception.html">ORMException</a></dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 320</div>
+<h3 id="getNamedNativeQuery()">getNamedNativeQuery</h3>
+<code class="signature">public  array <strong>getNamedNativeQuery</strong>(string name)</code>
+<div class="details">
+<p>Gets the components of a previously registered named native query.</p><dl>
+<dt>Parameters:</dt>
+<dd>name - The name of the query.</dd>
+<dt>Returns:</dt>
+<dd>A tuple with the first element being the SQL string and the second element being the ResultSetMapping.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 293</div>
+<h3 id="getNamedQuery()">getNamedQuery</h3>
+<code class="signature">public  string <strong>getNamedQuery</strong>(string name)</code>
+<div class="details">
+<p>Gets a previously registered named DQL query.</p><dl>
+<dt>Parameters:</dt>
+<dd>name - The name of the query.</dd>
+<dt>Returns:</dt>
+<dd>The DQL query.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 72</div>
+<h3 id="getProxyDir()">getProxyDir</h3>
+<code class="signature">public  string <strong>getProxyDir</strong>()</code>
+<div class="details">
+<p>Gets the directory where Doctrine generates any necessary proxy class files.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 104</div>
+<h3 id="getProxyNamespace()">getProxyNamespace</h3>
+<code class="signature">public  string <strong>getProxyNamespace</strong>()</code>
+<div class="details">
+<p>Gets the namespace where proxy classes reside.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 219</div>
+<h3 id="getQueryCacheImpl()">getQueryCacheImpl</h3>
+<code class="signature">public  \Doctrine\Common\Cache\Cache <strong>getQueryCacheImpl</strong>()</code>
+<div class="details">
+<p>Gets the cache driver implementation that is used for the query cache (SQL cache).</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 199</div>
+<h3 id="getResultCacheImpl()">getResultCacheImpl</h3>
+<code class="signature">public  \Doctrine\Common\Cache\Cache <strong>getResultCacheImpl</strong>()</code>
+<div class="details">
+<p>Gets the cache driver implementation that is used for query result caching.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 260</div>
+<h3 id="getUseCExtension()">getUseCExtension</h3>
+<code class="signature">public  boolean <strong>getUseCExtension</strong>()</code>
+<div class="details">
+<p>Gets a boolean flag that indicates whether Doctrine should make use of the
+C extension.</p><dl>
+<dt>Returns:</dt>
+<dd>TRUE if Doctrine is configured to use the C extension, FALSE otherwise.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 137</div>
+<h3 id="newDefaultAnnotationDriver()">newDefaultAnnotationDriver</h3>
+<code class="signature">public  Mapping\Driver\AnnotationDriver <strong>newDefaultAnnotationDriver</strong>(array paths)</code>
+<div class="details">
+<p>Add a new default annotation driver with a correctly configured annotation reader.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 94</div>
+<h3 id="setAutoGenerateProxyClasses()">setAutoGenerateProxyClasses</h3>
+<code class="signature">public  void <strong>setAutoGenerateProxyClasses</strong>(boolean bool)</code>
+<div class="details">
+<p>Sets a boolean flag that indicates whether proxy classes should always be regenerated
+during each script execution.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 178</div>
+<h3 id="setEntityNamespaces()">setEntityNamespaces</h3>
+<code class="signature">public  void <strong>setEntityNamespaces</strong>(mixed entityNamespaces, array entityAliasMap)</code>
+<div class="details">
+<p>Set the entity alias map</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 249</div>
+<h3 id="setMetadataCacheImpl()">setMetadataCacheImpl</h3>
+<code class="signature">public  void <strong>setMetadataCacheImpl</strong>(\Doctrine\Common\Cache\Cache cacheImpl)</code>
+<div class="details">
+<p>Sets the cache driver implementation that is used for metadata caching.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 126</div>
+<h3 id="setMetadataDriverImpl()">setMetadataDriverImpl</h3>
+<code class="signature">public  void <strong>setMetadataDriverImpl</strong>(<a href="../../doctrine/dbal/driver.html">Driver</a> driverImpl)</code>
+<div class="details">
+<p>Sets the cache driver implementation that is used for metadata caching.</p><dl>
+<dt>Todo:</dt>
+<dd>Force parameter to be a Closure to ensure lazy evaluation (as soon as a metadata cache is in effect, the driver never needs to initialize).</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 62</div>
+<h3 id="setProxyDir()">setProxyDir</h3>
+<code class="signature">public  void <strong>setProxyDir</strong>(string dir)</code>
+<div class="details">
+<p>Sets the directory where Doctrine generates any necessary proxy class files.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 114</div>
+<h3 id="setProxyNamespace()">setProxyNamespace</h3>
+<code class="signature">public  void <strong>setProxyNamespace</strong>(string ns)</code>
+<div class="details">
+<p>Sets the namespace where proxy classes reside.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 229</div>
+<h3 id="setQueryCacheImpl()">setQueryCacheImpl</h3>
+<code class="signature">public  void <strong>setQueryCacheImpl</strong>(\Doctrine\Common\Cache\Cache cacheImpl)</code>
+<div class="details">
+<p>Sets the cache driver implementation that is used for the query cache (SQL cache).</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 209</div>
+<h3 id="setResultCacheImpl()">setResultCacheImpl</h3>
+<code class="signature">public  void <strong>setResultCacheImpl</strong>(\Doctrine\Common\Cache\Cache cacheImpl)</code>
+<div class="details">
+<p>Sets the cache driver implementation that is used for query result caching.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 271</div>
+<h3 id="setUseCExtension()">setUseCExtension</h3>
+<code class="signature">public  void <strong>setUseCExtension</strong>(boolean boolean)</code>
+<div class="details">
+<p>Sets a boolean flag that indicates whether Doctrine should make use of the
+C extension.</p><dl>
+<dt>Parameters:</dt>
+<dd>boolean - Whether to make use of the C extension or not.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../doctrine/orm/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../doctrine/orm/package-tree.html">Tree</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../index.html" target="_top">Frames</a>
+<a href="../../doctrine/orm/configuration.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

@@ -14,12 +14,12 @@ class CmsEmployee
     /**
      * @Id
      * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @GeneratedValue
      */
     private $id;
 
     /**
-     * @Column(type="string")
+     * @Column
      */
     private $name;
 

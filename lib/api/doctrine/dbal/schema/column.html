@@ -1,0 +1,561 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>Column (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/dbal/schema/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/dbal/schema/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/dbal/schema/column.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\DBAL\Schema\Column</div>
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 36</div>
+
+<h1>Class Column</h1>
+
+<pre class="tree">Class:Column - Superclass: AbstractAsset
+<a href="../../../doctrine/dbal/schema/abstractasset.html">AbstractAsset</a><br>   &lfloor;&nbsp;<strong>Column</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>Column</strong><br>extends <a href="../../../doctrine/dbal/schema/abstractasset.html">AbstractAsset</a>
+
+</p>
+
+<div class="comment" id="overview_description"><p>Object representation of a database column</p></div>
+
+<dl>
+<dt>License:</dt>
+<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
+<dt>See Also:</dt>
+<dd><code>www.doctrine-project.org</code></dd>
+<dt>Since:</dt>
+<dd>2.0</dd>
+<dt>Version:</dt>
+<dd>$Revision$</dd>
+<dt>Author:</dt>
+<dd>Benjamin Eberlei <kontakt@beberlei.de></dd>
+</dl>
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type">protected  string</td>
+<td class="description"><p class="name"><a href="#_columnDefinition">$_columnDefinition</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  string</td>
+<td class="description"><p class="name"><a href="#_default">$_default</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  bool</td>
+<td class="description"><p class="name"><a href="#_fixed">$_fixed</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  int</td>
+<td class="description"><p class="name"><a href="#_length">$_length</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  bool</td>
+<td class="description"><p class="name"><a href="#_notnull">$_notnull</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  array</td>
+<td class="description"><p class="name"><a href="#_platformOptions">$_platformOptions</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  int</td>
+<td class="description"><p class="name"><a href="#_precision">$_precision</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  int</td>
+<td class="description"><p class="name"><a href="#_scale">$_scale</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  \Doctrine\DBAL\Types\Type</td>
+<td class="description"><p class="name"><a href="#_type">$_type</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  bool</td>
+<td class="description"><p class="name"><a href="#_unsigned">$_unsigned</a></p><p class="description"></p></td>
+</tr>
+</table>
+
+<table class="inherit">
+<tr><th colspan="2">Fields inherited from Doctrine\DBAL\Schema\AbstractAsset</th></tr>
+<tr><td><a href="../../../doctrine/dbal/schema/abstractasset.html#_name">_name</a></td></tr></table>
+
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#Column()">Column</a>(string columnName, Doctrine\DBAL\Types\Type type, mixed options, int length, bool notNull, mixed default, bool unsigned, bool fixed, int precision, int scale, array platformOptions)</p><p class="description">Create a new Column</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getColumnDefinition()">getColumnDefinition</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getDefault()">getDefault</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getFixed()">getFixed</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getLength()">getLength</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getNotnull()">getNotnull</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getPlatformOption()">getPlatformOption</a>(mixed name)</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getPlatformOptions()">getPlatformOptions</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getPrecision()">getPrecision</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getScale()">getScale</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getType()">getType</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getUnsigned()">getUnsigned</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#hasPlatformOption()">hasPlatformOption</a>(mixed name)</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/column.html">Column</a></td>
+<td class="description"><p class="name"><a href="#setColumnDefinition()">setColumnDefinition</a>(mixed value, string )</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/column.html">Column</a></td>
+<td class="description"><p class="name"><a href="#setDefault()">setDefault</a>(mixed default)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/column.html">Column</a></td>
+<td class="description"><p class="name"><a href="#setFixed()">setFixed</a>(bool fixed)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/column.html">Column</a></td>
+<td class="description"><p class="name"><a href="#setLength()">setLength</a>(int length)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/column.html">Column</a></td>
+<td class="description"><p class="name"><a href="#setNotnull()">setNotnull</a>(bool notnull)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/column.html">Column</a></td>
+<td class="description"><p class="name"><a href="#setOptions()">setOptions</a>(array options)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/column.html">Column</a></td>
+<td class="description"><p class="name"><a href="#setPlatformOption()">setPlatformOption</a>(string name, mixed value)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/column.html">Column</a></td>
+<td class="description"><p class="name"><a href="#setPlatformOptions()">setPlatformOptions</a>(array platformOptions)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/column.html">Column</a></td>
+<td class="description"><p class="name"><a href="#setPrecision()">setPrecision</a>(int precision)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/column.html">Column</a></td>
+<td class="description"><p class="name"><a href="#setScale()">setScale</a>(int scale)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/column.html">Column</a></td>
+<td class="description"><p class="name"><a href="#setType()">setType</a>(<a href="../../../doctrine/dbal/types/type.html">Type</a> type)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../../doctrine/dbal/schema/column.html">Column</a></td>
+<td class="description"><p class="name"><a href="#setUnsigned()">setUnsigned</a>(bool unsigned)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#toArray()">toArray</a>()</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#visit()">visit</a>(<a href="../../../doctrine/dbal/schema/visitor/visitor.html">Visitor</a> visitor)</p><p class="description"></p></td>
+</tr>
+</table>
+
+<table class="inherit">
+<tr><th colspan="2">Methods inherited from Doctrine\DBAL\Schema\AbstractAsset</th></tr>
+<tr><td><a href="../../../doctrine/dbal/schema/abstractasset.html#getName()">getName</a></td></tr></table>
+
+<h2 id="detail_field">Field Detail</h2>
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 86</div>
+<h3 id="_columnDefinition">_columnDefinition</h3>
+<code class="signature">protected  string <strong>$_columnDefinition</strong> = null</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 76</div>
+<h3 id="_default">_default</h3>
+<code class="signature">protected  string <strong>$_default</strong> = null</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 66</div>
+<h3 id="_fixed">_fixed</h3>
+<code class="signature">protected  bool <strong>$_fixed</strong> = false</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 46</div>
+<h3 id="_length">_length</h3>
+<code class="signature">protected  int <strong>$_length</strong> = 255</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 71</div>
+<h3 id="_notnull">_notnull</h3>
+<code class="signature">protected  bool <strong>$_notnull</strong> = true</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 81</div>
+<h3 id="_platformOptions">_platformOptions</h3>
+<code class="signature">protected  array <strong>$_platformOptions</strong> = array()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 51</div>
+<h3 id="_precision">_precision</h3>
+<code class="signature">protected  int <strong>$_precision</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 56</div>
+<h3 id="_scale">_scale</h3>
+<code class="signature">protected  int <strong>$_scale</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 41</div>
+<h3 id="_type">_type</h3>
+<code class="signature">protected  \Doctrine\DBAL\Types\Type <strong>$_type</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 61</div>
+<h3 id="_unsigned">_unsigned</h3>
+<code class="signature">protected  bool <strong>$_unsigned</strong> = false</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 102</div>
+<h3 id="Column()">Column</h3>
+<code class="signature">public <strong>Column</strong>(string columnName, Doctrine\DBAL\Types\Type type, mixed options, int length, bool notNull, mixed default, bool unsigned, bool fixed, int precision, int scale, array platformOptions)</code>
+<div class="details">
+<p>Create a new Column</p></div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 300</div>
+<h3 id="getColumnDefinition()">getColumnDefinition</h3>
+<code class="signature">public  void <strong>getColumnDefinition</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 280</div>
+<h3 id="getDefault()">getDefault</h3>
+<code class="signature">public  void <strong>getDefault</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 270</div>
+<h3 id="getFixed()">getFixed</h3>
+<code class="signature">public  void <strong>getFixed</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 250</div>
+<h3 id="getLength()">getLength</h3>
+<code class="signature">public  void <strong>getLength</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 275</div>
+<h3 id="getNotnull()">getNotnull</h3>
+<code class="signature">public  void <strong>getNotnull</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 295</div>
+<h3 id="getPlatformOption()">getPlatformOption</h3>
+<code class="signature">public  void <strong>getPlatformOption</strong>(mixed name)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 285</div>
+<h3 id="getPlatformOptions()">getPlatformOptions</h3>
+<code class="signature">public  void <strong>getPlatformOptions</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 255</div>
+<h3 id="getPrecision()">getPrecision</h3>
+<code class="signature">public  void <strong>getPrecision</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 260</div>
+<h3 id="getScale()">getScale</h3>
+<code class="signature">public  void <strong>getScale</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 245</div>
+<h3 id="getType()">getType</h3>
+<code class="signature">public  void <strong>getType</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 265</div>
+<h3 id="getUnsigned()">getUnsigned</h3>
+<code class="signature">public  void <strong>getUnsigned</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 290</div>
+<h3 id="hasPlatformOption()">hasPlatformOption</h3>
+<code class="signature">public  void <strong>hasPlatformOption</strong>(mixed name)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 239</div>
+<h3 id="setColumnDefinition()">setColumnDefinition</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/column.html">Column</a> <strong>setColumnDefinition</strong>(mixed value, string )</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 205</div>
+<h3 id="setDefault()">setDefault</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/column.html">Column</a> <strong>setDefault</strong>(mixed default)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 184</div>
+<h3 id="setFixed()">setFixed</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/column.html">Column</a> <strong>setFixed</strong>(bool fixed)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 138</div>
+<h3 id="setLength()">setLength</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/column.html">Column</a> <strong>setLength</strong>(int length)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 194</div>
+<h3 id="setNotnull()">setNotnull</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/column.html">Column</a> <strong>setNotnull</strong>(bool notnull)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 113</div>
+<h3 id="setOptions()">setOptions</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/column.html">Column</a> <strong>setOptions</strong>(array options)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 228</div>
+<h3 id="setPlatformOption()">setPlatformOption</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/column.html">Column</a> <strong>setPlatformOption</strong>(string name, mixed value)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 216</div>
+<h3 id="setPlatformOptions()">setPlatformOptions</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/column.html">Column</a> <strong>setPlatformOptions</strong>(array platformOptions)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 152</div>
+<h3 id="setPrecision()">setPrecision</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/column.html">Column</a> <strong>setPrecision</strong>(int precision)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 162</div>
+<h3 id="setScale()">setScale</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/column.html">Column</a> <strong>setScale</strong>(int scale)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 128</div>
+<h3 id="setType()">setType</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/column.html">Column</a> <strong>setType</strong>(<a href="../../../doctrine/dbal/types/type.html">Type</a> type)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 173</div>
+<h3 id="setUnsigned()">setUnsigned</h3>
+<code class="signature">public  <a href="../../../doctrine/dbal/schema/column.html">Column</a> <strong>setUnsigned</strong>(bool unsigned)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 316</div>
+<h3 id="toArray()">toArray</h3>
+<code class="signature">public  array <strong>toArray</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/Column.php at line 308</div>
+<h3 id="visit()">visit</h3>
+<code class="signature">public  void <strong>visit</strong>(<a href="../../../doctrine/dbal/schema/visitor/visitor.html">Visitor</a> visitor)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/dbal/schema/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/dbal/schema/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/dbal/schema/column.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

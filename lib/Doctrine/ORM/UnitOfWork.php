@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id: UnitOfWork.php 4947 2008-09-12 13:16:05Z romanb $
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -33,15 +31,12 @@ use Doctrine\Common\Collections\ArrayCollection,
  * "object-level" transaction and for writing out changes to the database
  * in the correct order.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
  * @since       2.0
- * @version     $Revision$
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Jonathan Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
- * @internal    This class contains performance-critical code.
+ * @internal    This class contains highly performance-sensitive code.
  */
 class UnitOfWork implements PropertyChangedListener
 {
@@ -1336,12 +1331,12 @@ class UnitOfWork implements PropertyChangedListener
                 // We need to fetch the managed copy in order to merge.
                 $managedCopy = $this->_em->find($class->name, $id);
             }
-            
+
             if ($managedCopy === null) {
                 throw new \InvalidArgumentException('New entity detected during merge.'
                         . ' Persist the new entity before merging.');
             }
-            
+
             if ($class->isVersioned) {
                 $managedCopyVersion = $class->reflFields[$class->versionField]->getValue($managedCopy);
                 $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
@@ -1350,7 +1345,7 @@ class UnitOfWork implements PropertyChangedListener
                     throw OptimisticLockException::lockFailed();
                 }
             }
-    
+
             // Merge state of $entity into existing (managed) entity
             foreach ($class->reflFields as $name => $prop) {
                 if ( ! isset($class->associationMappings[$name])) {
@@ -1359,7 +1354,7 @@ class UnitOfWork implements PropertyChangedListener
                     $assoc2 = $class->associationMappings[$name];
                     if ($assoc2->isOneToOne()) {
                         if ( ! $assoc2->isCascadeMerge) {
-                            $other = $class->reflFields[$name]->getValue($entity);
+                            $other = $class->reflFields[$name]->getValue($entity); //TODO: Just $prop->getValue($entity)?
                             if ($other !== null) {
                                 $targetClass = $this->_em->getClassMetadata($assoc2->targetEntityName);
                                 $id = $targetClass->getIdentifierValues($other);
@@ -1971,7 +1966,7 @@ class UnitOfWork implements PropertyChangedListener
         if ( ! isset($this->_persisters[$entityName])) {
             $class = $this->_em->getClassMetadata($entityName);
             if ($class->isInheritanceTypeNone()) {
-                $persister = new Persisters\StandardEntityPersister($this->_em, $class);
+                $persister = new Persisters\BasicEntityPersister($this->_em, $class);
             } else if ($class->isInheritanceTypeSingleTable()) {
                 $persister = new Persisters\SingleTablePersister($this->_em, $class);
             } else if ($class->isInheritanceTypeJoined()) {

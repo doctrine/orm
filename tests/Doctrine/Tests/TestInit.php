@@ -24,15 +24,6 @@ if (!file_exists(__DIR__."/ORM/Proxy/generated")) {
     }
 }
 
-spl_autoload_register(function($class) {
-    if (strpos($class, 'Symfony') === 0) {
-        $file = str_replace("\\", "/", $class);
-        if (@fopen($class, "r")) {
-            require_once ($file);
-        }
-    }
-});
-
 set_include_path(
     __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'lib'
     . PATH_SEPARATOR .

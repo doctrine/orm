@@ -47,7 +47,7 @@ class DDC381Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC381Entity
 {
     /**
-     * @Id @Column(type="integer") @generatedValue
+     * @Id @Column(type="integer") @GeneratedValue
      */
     protected $id;
 

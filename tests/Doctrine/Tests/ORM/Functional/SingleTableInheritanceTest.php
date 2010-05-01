@@ -66,6 +66,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
+        // READ by DQL on subtype
         $query = $this->_em->createQuery("select e from Doctrine\Tests\ORM\Functional\ChildEntity e");
         $entities = $query->getResult();
         $this->assertEquals(1, count($entities));
@@ -77,6 +78,18 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
+        // READ by findAll() on subtype
+        $entities = $this->_em->getRepository('Doctrine\Tests\ORM\Functional\ChildEntity')->findAll();
+        $this->assertEquals(1, count($entities));
+        $this->assertTrue($entities[0] instanceof ChildEntity);
+        $this->assertTrue(is_numeric($entities[0]->getId()));
+        $this->assertEquals('thedata', $entities[0]->getData());
+        $this->assertEquals(1234, $entities[0]->getNumber());
+        $this->assertNull($entities[0]->getParentRelated());
+
+        $this->_em->clear();
+
+        // READ by joining into an STI hierarchy from outwards
         $query = $this->_em->createQuery("select r,o from Doctrine\Tests\ORM\Functional\RelatedEntity r join r.owner o");
 
         $entities = $query->getResult();
@@ -194,7 +207,7 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 class ParentEntity {
     /**
      * @Id
-     * @Column(type="integer")
+     * @Column(name="parent_id", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
@@ -317,7 +330,7 @@ class ParentRelatedEntity {
     public function setData($data) {$this->data = $data;}
     /**
      * @OneToOne(targetEntity="ParentEntity")
-     * @JoinColumn(name="parent_id", referencedColumnName="id")
+     * @JoinColumn(name="parent_id", referencedColumnName="parent_id")
      */
     private $parent;
     public function getParent() {return $this->parent;}

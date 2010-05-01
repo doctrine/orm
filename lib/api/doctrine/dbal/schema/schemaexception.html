@@ -1,0 +1,355 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
+<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>SchemaException (Doctrine)</title>
+
+</head>
+<body id="definition" onload="parent.document.title=document.title;">
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/dbal/schema/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/dbal/schema/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/dbal/schema/schemaexception.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Doctrine\DBAL\Schema\SchemaException</div>
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 5</div>
+
+<h1>Class SchemaException</h1>
+
+<pre class="tree">Class:SchemaException - Superclass: Doctrine
+Doctrine<br>&lfloor;&nbsp;<strong>SchemaException</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>SchemaException</strong><br>extends Doctrine
+
+</p>
+
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#COLUMN_ALREADY_EXISTS">COLUMN_ALREADY_EXISTS</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#COLUMN_DOESNT_EXIST">COLUMN_DOESNT_EXIST</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#FOREIGNKEY_DOESNT_EXIST">FOREIGNKEY_DOESNT_EXIST</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#INDEX_ALREADY_EXISTS">INDEX_ALREADY_EXISTS</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#INDEX_DOESNT_EXIST">INDEX_DOESNT_EXIST</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#INDEX_INVALID_NAME">INDEX_INVALID_NAME</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#SEQUENCE_ALREADY_EXISTS">SEQUENCE_ALREADY_EXISTS</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#SEQUENCE_DOENST_EXIST">SEQUENCE_DOENST_EXIST</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#TABLE_ALREADY_EXISTS">TABLE_ALREADY_EXISTS</a></p></td>
+</tr>
+<tr>
+<td class="type">final  int</td>
+<td class="description"><p class="name"><a href="#TABLE_DOESNT_EXIST">TABLE_DOESNT_EXIST</a></p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#alterTableChangeNotSupported()">alterTableChangeNotSupported</a>(mixed changeName)</p></td>
+</tr>
+<tr>
+<td class="type">static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a></td>
+<td class="description"><p class="name"><a href="#columnAlreadyExists()">columnAlreadyExists</a>(string tableName, string columnName)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a></td>
+<td class="description"><p class="name"><a href="#columnDoesNotExist()">columnDoesNotExist</a>(string columnName)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a></td>
+<td class="description"><p class="name"><a href="#foreignKeyDoesNotExist()">foreignKeyDoesNotExist</a>(string fkName)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a></td>
+<td class="description"><p class="name"><a href="#indexAlreadyExists()">indexAlreadyExists</a>(string indexName)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a></td>
+<td class="description"><p class="name"><a href="#indexDoesNotExist()">indexDoesNotExist</a>(string indexName)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a></td>
+<td class="description"><p class="name"><a href="#indexNameInvalid()">indexNameInvalid</a>(string indexName)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#namedForeignKeyRequired()">namedForeignKeyRequired</a>(mixed localTable, mixed foreignKey)</p></td>
+</tr>
+<tr>
+<td class="type">static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a></td>
+<td class="description"><p class="name"><a href="#sequenceAlreadyExists()">sequenceAlreadyExists</a>(string sequenceName)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a></td>
+<td class="description"><p class="name"><a href="#sequenceDoesNotExist()">sequenceDoesNotExist</a>(string sequenceName)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a></td>
+<td class="description"><p class="name"><a href="#tableAlreadyExists()">tableAlreadyExists</a>(string tableName)</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a></td>
+<td class="description"><p class="name"><a href="#tableDoesNotExist()">tableDoesNotExist</a>(string tableName)</p><p class="description"></p></td>
+</tr>
+</table>
+
+<h2 id="detail_field">Field Detail</h2>
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 10</div>
+<h3 id="COLUMN_ALREADY_EXISTS">COLUMN_ALREADY_EXISTS</h3>
+<code class="signature">public final  int <strong>COLUMN_ALREADY_EXISTS</strong> = 40</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 9</div>
+<h3 id="COLUMN_DOESNT_EXIST">COLUMN_DOESNT_EXIST</h3>
+<code class="signature">public final  int <strong>COLUMN_DOESNT_EXIST</strong> = 30</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 16</div>
+<h3 id="FOREIGNKEY_DOESNT_EXIST">FOREIGNKEY_DOESNT_EXIST</h3>
+<code class="signature">public final  int <strong>FOREIGNKEY_DOESNT_EXIST</strong> = 100</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 12</div>
+<h3 id="INDEX_ALREADY_EXISTS">INDEX_ALREADY_EXISTS</h3>
+<code class="signature">public final  int <strong>INDEX_ALREADY_EXISTS</strong> = 60</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 11</div>
+<h3 id="INDEX_DOESNT_EXIST">INDEX_DOESNT_EXIST</h3>
+<code class="signature">public final  int <strong>INDEX_DOESNT_EXIST</strong> = 50</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 15</div>
+<h3 id="INDEX_INVALID_NAME">INDEX_INVALID_NAME</h3>
+<code class="signature">public final  int <strong>INDEX_INVALID_NAME</strong> = 90</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 14</div>
+<h3 id="SEQUENCE_ALREADY_EXISTS">SEQUENCE_ALREADY_EXISTS</h3>
+<code class="signature">public final  int <strong>SEQUENCE_ALREADY_EXISTS</strong> = 80</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 13</div>
+<h3 id="SEQUENCE_DOENST_EXIST">SEQUENCE_DOENST_EXIST</h3>
+<code class="signature">public final  int <strong>SEQUENCE_DOENST_EXIST</strong> = 70</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 8</div>
+<h3 id="TABLE_ALREADY_EXISTS">TABLE_ALREADY_EXISTS</h3>
+<code class="signature">public final  int <strong>TABLE_ALREADY_EXISTS</strong> = 20</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 7</div>
+<h3 id="TABLE_DOESNT_EXIST">TABLE_DOESNT_EXIST</h3>
+<code class="signature">public final  int <strong>TABLE_DOESNT_EXIST</strong> = 10</code>
+<div class="details">
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 123</div>
+<h3 id="alterTableChangeNotSupported()">alterTableChangeNotSupported</h3>
+<code class="signature">public static  void <strong>alterTableChangeNotSupported</strong>(mixed changeName)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 79</div>
+<h3 id="columnAlreadyExists()">columnAlreadyExists</h3>
+<code class="signature">public static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a> <strong>columnAlreadyExists</strong>(string tableName, string columnName)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 58</div>
+<h3 id="columnDoesNotExist()">columnDoesNotExist</h3>
+<code class="signature">public static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a> <strong>columnDoesNotExist</strong>(string columnName)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 108</div>
+<h3 id="foreignKeyDoesNotExist()">foreignKeyDoesNotExist</h3>
+<code class="signature">public static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a> <strong>foreignKeyDoesNotExist</strong>(string fkName)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 49</div>
+<h3 id="indexAlreadyExists()">indexAlreadyExists</h3>
+<code class="signature">public static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a> <strong>indexAlreadyExists</strong>(string indexName)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 40</div>
+<h3 id="indexDoesNotExist()">indexDoesNotExist</h3>
+<code class="signature">public static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a> <strong>indexDoesNotExist</strong>(string indexName)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 31</div>
+<h3 id="indexNameInvalid()">indexNameInvalid</h3>
+<code class="signature">public static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a> <strong>indexNameInvalid</strong>(string indexName)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 113</div>
+<h3 id="namedForeignKeyRequired()">namedForeignKeyRequired</h3>
+<code class="signature">public static  void <strong>namedForeignKeyRequired</strong>(mixed localTable, mixed foreignKey)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 90</div>
+<h3 id="sequenceAlreadyExists()">sequenceAlreadyExists</h3>
+<code class="signature">public static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a> <strong>sequenceAlreadyExists</strong>(string sequenceName)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 99</div>
+<h3 id="sequenceDoesNotExist()">sequenceDoesNotExist</h3>
+<code class="signature">public static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a> <strong>sequenceDoesNotExist</strong>(string sequenceName)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 68</div>
+<h3 id="tableAlreadyExists()">tableAlreadyExists</h3>
+<code class="signature">public static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a> <strong>tableAlreadyExists</strong>(string tableName)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Schema/SchemaException.php at line 22</div>
+<h3 id="tableDoesNotExist()">tableDoesNotExist</h3>
+<code class="signature">public static  <a href="../../../doctrine/dbal/schema/schemaexception.html">SchemaException</a> <strong>tableDoesNotExist</strong>(string tableName)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="header">
+<h1>Doctrine</h1>
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="../../../doctrine/dbal/schema/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../../doctrine/dbal/schema/package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="small_links">
+<a href="../../../index.html" target="_top">Frames</a>
+<a href="../../../doctrine/dbal/schema/schemaexception.html" target="_top">No frames</a>
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</body>
+
+</html>

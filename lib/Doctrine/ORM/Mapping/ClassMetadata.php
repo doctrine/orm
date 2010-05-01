@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -44,13 +42,6 @@ use ReflectionClass, ReflectionProperty;
 class ClassMetadata extends ClassMetadataInfo
 {
     /**
-     * The ReflectionClass instance of the mapped class.
-     *
-     * @var ReflectionClass
-     */
-    public $reflClass;
-
-    /**
      * The ReflectionProperty instances of the mapped class.
      *
      * @var array
@@ -72,21 +63,10 @@ class ClassMetadata extends ClassMetadataInfo
      */
     public function __construct($entityName)
     {
-        $this->name = $entityName;
-        $this->reflClass = new \ReflectionClass($entityName);
+        parent::__construct($entityName);
+        $this->reflClass = new ReflectionClass($entityName);
         $this->namespace = $this->reflClass->getNamespaceName();
         $this->table['name'] = $this->reflClass->getShortName();
-        $this->rootEntityName = $entityName;
-    }
-
-    /**
-     * Gets the ReflectionClass instance of the mapped class.
-     *
-     * @return ReflectionClass
-     */
-    public function getReflectionClass()
-    {
-        return $this->reflClass;
     }
 
     /**
@@ -97,18 +77,6 @@ class ClassMetadata extends ClassMetadataInfo
     public function getReflectionProperties()
     {
         return $this->reflFields;
-    }
-
-    /**
-     * INTERNAL:
-     * Adds a reflection property. Usually only used by the ClassMetadataFactory
-     * while processing inheritance mappings.
-     *
-     * @param array $props
-     */
-    public function addReflectionProperty($propName, \ReflectionProperty $property)
-    {
-        $this->reflFields[$propName] = $property;
     }
 
     /**
@@ -189,7 +157,7 @@ class ClassMetadata extends ClassMetadataInfo
     public function setIdentifierValues($entity, $id)
     {
         if ($this->isIdentifierComposite) {
-            foreach ((array)$id as $idField => $idValue) {
+            foreach ($id as $idField => $idValue) {
                 $this->reflFields[$idField]->setValue($entity, $idValue);
             }
         } else {
@@ -221,18 +189,6 @@ class ClassMetadata extends ClassMetadataInfo
     }
 
     /**
-     * Sets the field mapped to the specified column to the specified value on the given entity.
-     *
-     * @param object $entity
-     * @param string $field
-     * @param mixed $value
-     */
-    public function setColumnValue($entity, $column, $value)
-    {
-        $this->reflFields[$this->fieldNames[$column]]->setValue($entity, $value);
-    }
-
-    /**
      * Stores the association mapping.
      *
      * @param AssociationMapping $assocMapping
@@ -243,10 +199,10 @@ class ClassMetadata extends ClassMetadataInfo
 
         // Store ReflectionProperty of mapped field
         $sourceFieldName = $assocMapping->sourceFieldName;
-        
-	    $refProp = $this->reflClass->getProperty($sourceFieldName);
-	    $refProp->setAccessible(true);
-	    $this->reflFields[$sourceFieldName] = $refProp;
+
+        $refProp = $this->reflClass->getProperty($sourceFieldName);
+        $refProp->setAccessible(true);
+        $this->reflFields[$sourceFieldName] = $refProp;
     }
 
     /**
@@ -291,8 +247,12 @@ class ClassMetadata extends ClassMetadataInfo
     
     /**
      * Determines which fields get serialized.
+     *
+     * It is only serialized what is necessary for best unserialization performance.
+     * That means any metadata properties that are not set or empty or simply have
+     * their default value are NOT serialized.
      * 
-     * Parts that are NOT serialized because they can not be properly unserialized:
+     * Parts that are also NOT serialized because they can not be properly unserialized:
      *      - reflClass (ReflectionClass)
      *      - reflFields (ReflectionProperty array)
      * 
@@ -300,33 +260,57 @@ class ClassMetadata extends ClassMetadataInfo
      */
     public function __sleep()
     {
-        return array(
-            'associationMappings', // unserialization "bottleneck" with many associations
-            'changeTrackingPolicy',
+        // This metadata is always serialized/cached.
+        $serialized = array(
+            'associationMappings',
             'columnNames', //TODO: Not really needed. Can use fieldMappings[$fieldName]['columnName']
-            'customRepositoryClassName',
-            'discriminatorColumn',
-            'discriminatorValue',
-            'discriminatorMap',
-            'fieldMappings',//TODO: Not all of this stuff needs to be serialized. Only type, columnName and fieldName.
-            'fieldNames', 
-            'generatorType',
+            'fieldMappings',
+            'fieldNames',
             'identifier',
-            'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.
-            'inheritanceType',
-            'inheritedAssociationFields',
-            'inverseMappings', //TODO: Remove! DDC-193
-            'isIdentifierComposite',
-            'isMappedSuperclass',
-            'isVersioned',
-            'lifecycleCallbacks',
+            'isIdentifierComposite', // TODO: REMOVE
             'name',
-            'parentClasses',
+            'namespace', // TODO: REMOVE
             'table',
             'rootEntityName',
-            'subClasses',
-            'versionField'
+            'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.
         );
+
+        // The rest of the metadata is only serialized if necessary.
+        if ($this->changeTrackingPolicy != self::CHANGETRACKING_DEFERRED_IMPLICIT) {
+            $serialized[] = 'changeTrackingPolicy';
+        }
+
+        if ($this->customRepositoryClassName) {
+            $serialized[] = 'customRepositoryClassName';
+        }
+
+        if ($this->inheritanceType != self::INHERITANCE_TYPE_NONE) {
+            $serialized[] = 'inheritanceType';
+            $serialized[] = 'discriminatorColumn';
+            $serialized[] = 'discriminatorValue';
+            $serialized[] = 'discriminatorMap';
+            $serialized[] = 'parentClasses';
+            $serialized[] = 'subClasses';
+        }
+
+        if ($this->generatorType != self::GENERATOR_TYPE_NONE) {
+            $serialized[] = 'generatorType';
+        }
+
+        if ($this->isMappedSuperclass) {
+            $serialized[] = 'isMappedSuperclass';
+        }
+
+        if ($this->isVersioned) {
+            $serialized[] = 'isVersioned';
+            $serialized[] = 'versionField';
+        }
+
+        if ($this->lifecycleCallbacks) {
+            $serialized[] = 'lifecycleCallbacks';
+        }
+
+        return $serialized;
     }
 
     /**
@@ -338,20 +322,20 @@ class ClassMetadata extends ClassMetadataInfo
     {
         // Restore ReflectionClass and properties
         $this->reflClass = new ReflectionClass($this->name);
-        
+
         foreach ($this->fieldMappings as $field => $mapping) {
-	        if (isset($mapping['inherited'])) {
-	            $reflField = new ReflectionProperty($mapping['inherited'], $field);
-	        } else {
-	            $reflField = $this->reflClass->getProperty($field);
-	        }
+            if (isset($mapping['declared'])) {
+                $reflField = new ReflectionProperty($mapping['declared'], $field);
+            } else {
+                $reflField = $this->reflClass->getProperty($field);
+            }
             $reflField->setAccessible(true);
             $this->reflFields[$field] = $reflField;
         }
 
         foreach ($this->associationMappings as $field => $mapping) {
-            if (isset($this->inheritedAssociationFields[$field])) {
-                $reflField = new ReflectionProperty($this->inheritedAssociationFields[$field], $field);
+            if ($mapping->declared) {
+                $reflField = new ReflectionProperty($mapping->declared, $field);
             } else {
                 $reflField = $this->reflClass->getProperty($field);
             }

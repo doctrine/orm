@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -134,18 +132,7 @@ final class PersistentCollection implements Collection
     {
         $this->_owner = $entity;
         $this->_association = $assoc;
-        
-        // Check for bidirectionality
-        //$this->_backRefFieldName = $assoc->inversedBy ?: $assoc->mappedBy;
-        if ( ! $assoc->isOwningSide) {
-            // For sure bi-directional
-            $this->_backRefFieldName = $assoc->mappedBy;
-        } else {
-            if (isset($this->_typeClass->inverseMappings[$assoc->sourceEntityName][$assoc->sourceFieldName])) {
-                // Bi-directional
-                $this->_backRefFieldName = $this->_typeClass->inverseMappings[$assoc->sourceEntityName][$assoc->sourceFieldName]->sourceFieldName;
-            }
-        }
+        $this->_backRefFieldName = $assoc->inversedBy ?: $assoc->mappedBy;
     }
 
     /**
@@ -174,8 +161,8 @@ final class PersistentCollection implements Collection
     public function hydrateAdd($element)
     {
         $this->_coll->add($element);
-        // If _backRefFieldName is set, then the association is bidirectional
-        // and we need to set the back reference.
+        // If _backRefFieldName is set and its a one-to-many association,
+        // we need to set the back reference.
         if ($this->_backRefFieldName && $this->_association->isOneToMany()) {
             // Set back reference to owner
             $this->_typeClass->reflFields[$this->_backRefFieldName]
@@ -372,7 +359,7 @@ final class PersistentCollection implements Collection
                 $this->_em->getUnitOfWork()->scheduleOrphanRemoval($removed);
             }
         }
-        
+
         return $removed;
     }
 

@@ -8,8 +8,7 @@ namespace Doctrine\Tests\Models\Routing;
 class RoutingLocation
 {
     /**
-     * @Id
-     * @generatedValue(strategy="AUTO")
+     * @Id @GeneratedValue
      * @Column(type="integer")
      */
     public $id;

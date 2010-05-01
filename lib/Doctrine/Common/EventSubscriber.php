@@ -16,7 +16,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\Common;
@@ -24,13 +24,12 @@ namespace Doctrine\Common;
 /**
  * An EventSubscriber knows himself what events he is interested in.
  * If an EventSubscriber is added to an EventManager, the manager invokes
- * getSubscribedEvents() and registers the subscriber as a listener for all
+ * {@link getSubscribedEvents} and registers the subscriber as a listener for all
  * returned events.
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision: 3938 $
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
@@ -38,7 +37,7 @@ namespace Doctrine\Common;
 interface EventSubscriber
 {
     /**
-     * Returns an array of events that this subscriber listens 
+     * Returns an array of events this subscriber wants to listen to.
      *
      * @return array
      */

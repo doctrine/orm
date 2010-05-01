@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -28,6 +26,12 @@ namespace Doctrine\ORM\Mapping;
  */
 class MappingException extends \Doctrine\ORM\ORMException
 {
+    public static function pathRequired()
+    {
+        return new self("Specifying the paths to your entities is required ".
+            "in the AnnotationDriver to retrieve all class names.");
+    }
+
     public static function identifierRequired($entityName)
     {
         return new self("No identifier/primary key specified for Entity '$entityName'."

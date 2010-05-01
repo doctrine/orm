@@ -83,7 +83,7 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testQueryCache_NoHitSaveParserResult()
     {
-        $this->_em->getConfiguration()->setQueryCacheImpl(null);
+        $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
         
@@ -103,7 +103,7 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testQueryCache_HitDoesNotSaveParserResult()
     {
-        $this->_em->getConfiguration()->setQueryCacheImpl(null);
+        $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 

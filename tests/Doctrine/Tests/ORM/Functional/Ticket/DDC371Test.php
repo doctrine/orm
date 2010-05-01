@@ -53,7 +53,7 @@ class DDC371Child {
     private $id;
     /** @Column(type="string") */
     public $data;
-    /** @ManyToOne(targetEntity="DDC371Parent") @JoinColumn(name="parentId") */
+    /** @ManyToOne(targetEntity="DDC371Parent", inversedBy="children") @JoinColumn(name="parentId") */
     public $parent;
 }
 

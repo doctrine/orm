@@ -41,14 +41,15 @@ class ConvertDoctrine1Schema
     private $_legacyTypeMap = array(
         // TODO: This list may need to be updated
         'clob' => 'text',
-        'timestamp' => 'datetime'
+        'timestamp' => 'datetime',
+        'enum' => 'string'
     );
 
     /**
      * Constructor passes the directory or array of directories
      * to convert the Doctrine 1 schema files from
      *
-     * @param string $from
+     * @param array $from
      * @author Jonathan Wage
      */
     public function __construct($from)
@@ -62,7 +63,7 @@ class ConvertDoctrine1Schema
      *
      * @return array $metadatas  An array of ClassMetadataInfo instances
      */
-    public function getMetadatas()
+    public function getMetadata()
     {
         $schema = array();
         foreach ($this->_from as $path) {
@@ -238,6 +239,7 @@ class ConvertDoctrine1Schema
                 if (isset($relation['refClass'])) {
                     $type = 'many';
                     $foreignType = 'many';
+                    $joinColumns = array();
                 } else {
                     $type = isset($relation['type']) ? $relation['type'] : 'one';
                     $foreignType = isset($relation['foreignType']) ? $relation['foreignType'] : 'many';

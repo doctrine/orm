@@ -135,6 +135,10 @@ class YamlDriver extends AbstractFileDriver
         if (isset($element['id'])) {
             // Evaluate identifier settings
             foreach ($element['id'] as $name => $idElement) {
+                if (!isset($idElement['type'])) {
+                    throw MappingException::propertyTypeIsRequired($className, $name);
+                }
+
                 $mapping = array(
                     'id' => true,
                     'fieldName' => $name,
@@ -150,6 +154,12 @@ class YamlDriver extends AbstractFileDriver
                 if (isset($idElement['generator'])) {
                     $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
                             . strtoupper($idElement['generator']['strategy'])));
+                }
+                // Check for SequenceGenerator/TableGenerator definition
+                if (isset($idElement['sequenceGenerator'])) {
+                    $metadata->setSequenceGeneratorDefinition($idElement['sequenceGenerator']);
+                } else if (isset($idElement['tableGenerator'])) {
+                    throw MappingException::tableIdGeneratorNotImplemented($className);
                 }
             }
         }
@@ -176,12 +186,6 @@ class YamlDriver extends AbstractFileDriver
                         $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
                                 . strtoupper($fieldMapping['generator']['strategy'])));
                     }
-                }
-                // Check for SequenceGenerator/TableGenerator definition
-                if (isset($fieldMapping['sequenceGenerator'])) {
-                    $metadata->setSequenceGeneratorDefinition($fieldMapping['sequenceGenerator']);
-                } else if (isset($fieldMapping['tableGenerator'])) {
-                    throw MappingException::tableIdGeneratorNotImplemented($className);
                 }
                 if (isset($fieldMapping['column'])) {
                     $mapping['columnName'] = $fieldMapping['column'];
@@ -230,6 +234,10 @@ class YamlDriver extends AbstractFileDriver
                 if (isset($oneToOneElement['mappedBy'])) {
                     $mapping['mappedBy'] = $oneToOneElement['mappedBy'];
                 } else {
+                    if (isset($oneToOneElement['inversedBy'])) {
+                        $mapping['inversedBy'] = $oneToOneElement['inversedBy'];
+                    }
+
                     $joinColumns = array();
 
                     if (isset($oneToOneElement['joinColumn'])) {
@@ -292,6 +300,10 @@ class YamlDriver extends AbstractFileDriver
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $manyToOneElement['fetch']);
                 }
 
+                if (isset($manyToOneElement['inversedBy'])) {
+                    $mapping['inversedBy'] = $manyToOneElement['inversedBy'];
+                }
+
                 $joinColumns = array();
 
                 if (isset($manyToOneElement['joinColumn'])) {
@@ -331,6 +343,10 @@ class YamlDriver extends AbstractFileDriver
                 if (isset($manyToManyElement['mappedBy'])) {
                     $mapping['mappedBy'] = $manyToManyElement['mappedBy'];
                 } else if (isset($manyToManyElement['joinTable'])) {
+                    if (isset($manyToManyElement['inversedBy'])) {
+                        $mapping['inversedBy'] = $manyToManyElement['inversedBy'];
+                    }
+
                     $joinTableElement = $manyToManyElement['joinTable'];
                     $joinTable = array(
                         'name' => $joinTableElement['name']
@@ -375,7 +391,7 @@ class YamlDriver extends AbstractFileDriver
         if (isset($element['lifecycleCallbacks'])) {
             foreach ($element['lifecycleCallbacks'] as $type => $methods) {
                 foreach ($methods as $method) {
-                    $metadata->addLifecycleCallback($method, constant('\Doctrine\ORM\Events::' . $type));
+                    $metadata->addLifecycleCallback($method, constant('Doctrine\ORM\Events::' . $type));
                 }
             }
         }

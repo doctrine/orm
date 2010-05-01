@@ -20,8 +20,10 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->rootEntityName);
         $this->assertEquals(array(), $cm->subClasses);
         $this->assertEquals(array(), $cm->parentClasses);
+        $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm->inheritanceType);
 
         // Customize state
+        $cm->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
         $cm->setSubclasses(array("One", "Two", "Three"));
         $cm->setParentClasses(array("UserParent"));
         $cm->setCustomRepositoryClass("UserRepository");
@@ -35,6 +37,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         // Check state
         $this->assertTrue(count($cm->getReflectionProperties()) > 0);
+        $this->assertEquals('Doctrine\Tests\Models\CMS', $cm->namespace);
         $this->assertTrue($cm->reflClass instanceof \ReflectionClass);
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->name);
         $this->assertEquals('UserParent', $cm->rootEntityName);
@@ -45,6 +48,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($cm->getAssociationMapping('phonenumbers') instanceof \Doctrine\ORM\Mapping\OneToOneMapping);
         $this->assertEquals(1, count($cm->associationMappings));
         $oneOneMapping = $cm->getAssociationMapping('phonenumbers');
+        $this->assertTrue($oneOneMapping->fetchMode == \Doctrine\ORM\Mapping\AssociationMapping::FETCH_LAZY);
         $this->assertEquals('phonenumbers', $oneOneMapping->sourceFieldName);
         $this->assertEquals('Doctrine\Tests\Models\CMS\Bar', $oneOneMapping->targetEntityName);
     }
@@ -100,8 +104,8 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($assoc instanceof \Doctrine\ORM\Mapping\ManyToManyMapping);
         $this->assertEquals(array(
             'name' => 'CmsUser_CmsGroup',
-            'joinColumns' => array(array('name' => 'CmsUser_id', 'referencedColumnName' => 'id')),
-            'inverseJoinColumns' => array(array('name' => 'CmsGroup_id', 'referencedColumnName' => 'id'))
+            'joinColumns' => array(array('name' => 'CmsUser_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE')),
+            'inverseJoinColumns' => array(array('name' => 'CmsGroup_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE'))
         ), $assoc->joinTable);
     }
 
@@ -162,9 +166,9 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $a1 = new \Doctrine\ORM\Mapping\OneToOneMapping(array('fieldName' => 'foo', 'sourceEntity' => 'stdClass', 'targetEntity' => 'stdClass', 'mappedBy' => 'foo'));
         $a2 = new \Doctrine\ORM\Mapping\OneToOneMapping(array('fieldName' => 'foo', 'sourceEntity' => 'stdClass', 'targetEntity' => 'stdClass', 'mappedBy' => 'foo'));
 
-        $cm->addAssociationMapping($a1);
+        $cm->addInheritedAssociationMapping($a1);
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
-        $cm->addAssociationMapping($a2);
+        $cm->addInheritedAssociationMapping($a2);
     }
 
     public function testDuplicateColumnName_ThrowsMappingException()

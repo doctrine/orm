@@ -440,7 +440,8 @@ class EntityManager
      *
      * @param object $entity  The entity to copy.
      * @return object  The new entity.
-     * @todo Implementation or remove.
+     * @todo Implementation need. This is necessary since $e2 = clone $e1; throws an E_FATAL when access anything on $e:
+     * Fatal error: Maximum function nesting level of '100' reached, aborting!
      */
     public function copy($entity, $deep = false)
     {
@@ -593,9 +594,11 @@ class EntityManager
      * @param EventManager $eventManager The EventManager instance to use.
      * @return EntityManager The created EntityManager.
      */
-    public static function create($conn, Configuration $config = null, EventManager $eventManager = null)
+    public static function create($conn, Configuration $config, EventManager $eventManager = null)
     {
-        $config = $config ?: new Configuration();
+        if (!$config->getMetadataDriverImpl()) {
+            throw ORMException::missingMappingDriverImpl();
+        }
 
         if (is_array($conn)) {
             $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, ($eventManager ?: new EventManager()));

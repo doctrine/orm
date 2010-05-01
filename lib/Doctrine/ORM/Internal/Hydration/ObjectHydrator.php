@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -87,8 +85,8 @@ class ObjectHydrator extends AbstractHydrator
                     if ($assoc->mappedBy) {
                         $this->_hints['fetched'][$className][$assoc->mappedBy] = true;
                     } else {
-                        if (isset($class->inverseMappings[$sourceClassName][$assoc->sourceFieldName])) {
-                            $inverseAssoc = $class->inverseMappings[$sourceClassName][$assoc->sourceFieldName];
+                        if ($assoc->inversedBy) {
+                            $inverseAssoc = $class->associationMappings[$assoc->inversedBy];
                             if ($inverseAssoc->isOneToOne()) {
                                 $this->_hints['fetched'][$className][$inverseAssoc->sourceFieldName] = true;
                                 if ($class->subClasses) {
@@ -242,8 +240,8 @@ class ObjectHydrator extends AbstractHydrator
      *         specified by the FROM clause in a DQL query. 
      * 
      * @param array $data The data of the row to process.
-     * @param array $cache
-     * @param array $result
+     * @param array $cache The cache to use.
+     * @param array $result The result array to fill.
      */
     protected function _hydrateRow(array $data, array &$cache, array &$result)
     {
@@ -346,9 +344,10 @@ class ObjectHydrator extends AbstractHydrator
                             $this->_uow->setOriginalEntityProperty($oid, $relationField, $element);
                             $targetClass = $this->_ce[$relation->targetEntityName];
                             if ($relation->isOwningSide) {
+                                //TODO: Just check hints['fetched'] here?
                                 // If there is an inverse mapping on the target class its bidirectional
-                                if (isset($targetClass->inverseMappings[$relation->sourceEntityName][$relationField])) {
-                                    $inverseAssoc = $targetClass->inverseMappings[$relation->sourceEntityName][$relationField];
+                                if ($relation->inversedBy) {
+                                    $inverseAssoc = $targetClass->associationMappings[$relation->inversedBy];
                                     if ($inverseAssoc->isOneToOne()) {
                                         $targetClass->reflFields[$inverseAssoc->sourceFieldName]->setValue($element, $parentObject);
                                         $this->_uow->setOriginalEntityProperty(spl_object_hash($element), $inverseAssoc->sourceFieldName, $parentObject);

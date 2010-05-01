@@ -6,17 +6,17 @@ namespace Doctrine\Tests\Models\Company;
  * @Entity @Table(name="company_events")
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="event_type", type="string")
- * @DiscriminatorMap({"auction" = "CompanyAuction", "raffle" = "CompanyRaffle"})
+ * @DiscriminatorMap({"auction"="CompanyAuction", "raffle"="CompanyRaffle"})
  */
-class CompanyEvent {
+abstract class CompanyEvent {
    /**
      * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @GeneratedValue
      */
     private $id;
 
     /**
-     * @ManyToOne(targetEntity="CompanyOrganization",cascade={"persist"})
+     * @ManyToOne(targetEntity="CompanyOrganization", inversedBy="events", cascade={"persist"})
      * @JoinColumn(name="org_id", referencedColumnName="id")
      */
      private $organization;

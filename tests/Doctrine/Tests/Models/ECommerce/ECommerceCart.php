@@ -17,17 +17,17 @@ class ECommerceCart
     /**
      * @Column(type="integer")
      * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @GeneratedValue
      */
     private $id;
 
     /**
-     * @Column(type="string", length=50, nullable=true)
+     * @Column(length=50, nullable=true)
      */
     private $payment;
 
     /**
-     * @OneToOne(targetEntity="ECommerceCustomer")
+     * @OneToOne(targetEntity="ECommerceCustomer", inversedBy="cart")
      * @JoinColumn(name="customer_id", referencedColumnName="id")
      */
     private $customer;
