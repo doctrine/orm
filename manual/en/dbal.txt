@@ -72,8 +72,8 @@ Doctrine is already shipped with two implementations for the "PostConnect" event
 You can register events by subscribing them to the `EventManager` instance passed to the Connection factory:
 
     [php]
-    $evm = new EventManager(),
-    $evm->addEventSubscriber(new MysqlSessionInit('UTF-8'));
+    $evm = new EventManager();
+    $evm->addEventSubscriber(new MysqlSessionInit('UTF8'));
 
     $conn = DriverManager::getConnection($connectionParams, null, $evm);
 
