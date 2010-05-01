@@ -37,6 +37,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         // Check state
         $this->assertTrue(count($cm->getReflectionProperties()) > 0);
+        $this->assertEquals('Doctrine\Tests\Models\CMS', $cm->namespace);
         $this->assertTrue($cm->reflClass instanceof \ReflectionClass);
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->name);
         $this->assertEquals('UserParent', $cm->rootEntityName);
@@ -47,6 +48,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($cm->getAssociationMapping('phonenumbers') instanceof \Doctrine\ORM\Mapping\OneToOneMapping);
         $this->assertEquals(1, count($cm->associationMappings));
         $oneOneMapping = $cm->getAssociationMapping('phonenumbers');
+        $this->assertTrue($oneOneMapping->fetchMode == \Doctrine\ORM\Mapping\AssociationMapping::FETCH_LAZY);
         $this->assertEquals('phonenumbers', $oneOneMapping->sourceFieldName);
         $this->assertEquals('Doctrine\Tests\Models\CMS\Bar', $oneOneMapping->targetEntityName);
     }

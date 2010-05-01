@@ -42,13 +42,6 @@ use ReflectionClass, ReflectionProperty;
 class ClassMetadata extends ClassMetadataInfo
 {
     /**
-     * The ReflectionClass instance of the mapped class.
-     *
-     * @var ReflectionClass
-     */
-    public $reflClass;
-
-    /**
      * The ReflectionProperty instances of the mapped class.
      *
      * @var array
@@ -74,16 +67,6 @@ class ClassMetadata extends ClassMetadataInfo
         $this->reflClass = new ReflectionClass($entityName);
         $this->namespace = $this->reflClass->getNamespaceName();
         $this->table['name'] = $this->reflClass->getShortName();
-    }
-
-    /**
-     * Gets the ReflectionClass instance of the mapped class.
-     *
-     * @return ReflectionClass
-     */
-    public function getReflectionClass()
-    {
-        return $this->reflClass;
     }
 
     /**
@@ -286,6 +269,7 @@ class ClassMetadata extends ClassMetadataInfo
             'identifier',
             'isIdentifierComposite', // TODO: REMOVE
             'name',
+            'namespace', // TODO: REMOVE
             'table',
             'rootEntityName',
             'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.

@@ -356,7 +356,8 @@ abstract class AssociationMapping
         $serialized = array(
             'sourceEntityName',
             'targetEntityName',
-            'sourceFieldName'
+            'sourceFieldName',
+            'fetchMode'
         );
 
         if ($this->isCascadeDetach) {

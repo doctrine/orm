@@ -60,6 +60,7 @@ class OCI8Statement implements \Doctrine\DBAL\Driver\Statement
      * placeholders and converted to a named parameter.
      *
      * @param string $statement The SQL statement to convert.
+     * @todo review and test for lost spaces. we experienced missing spaces with oci8 in some sql statements.
      */
     private function _convertPositionalToNamedPlaceholders($statement)
     {

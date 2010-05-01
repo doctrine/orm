@@ -815,7 +815,7 @@ class BasicEntityPersister
                     : $baseTableAlias;
 
             $columnName = $this->_class->getQuotedColumnName($fieldName, $this->_platform);
-            $orderBySql .= $orderBySql ? ', ' : 'ORDER BY ';
+            $orderBySql .= $orderBySql ? ', ' : ' ORDER BY ';
             $orderBySql .= $tableAlias . '.' . $columnName . ' ' . $orientation;
         }
 
