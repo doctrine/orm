@@ -52,6 +52,23 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         return $class;
     }
 
+    /**
+     * @depends testEntityTableNameAndInheritance
+     * @param ClassMetadata $class
+     */
+    public function testEntitySequence($class)
+    {
+        $this->assertType('array', $class->sequenceGeneratorDefinition, 'No Sequence Definition set on this driver.');
+        $this->assertEquals(
+            array(
+                'sequenceName' => 'tablename_seq',
+                'allocationSize' => 100,
+                'initialValue' => 1,
+            ),
+            $class->sequenceGeneratorDefinition
+        );
+    }
+
 
     /**
      * @depends testEntityTableNameAndInheritance
@@ -227,7 +244,12 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
  */
 class User
 {
-    /** @Id @Column(type="integer") @generatedValue(strategy="AUTO") */
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @generatedValue(strategy="AUTO")
+     * @SequenceGenerator(sequenceName="tablename_seq", initialValue=1, allocationSize=100)
+     **/
     public $id;
 
     /**
@@ -389,5 +411,10 @@ class User
         $metadata->table['uniqueConstraints'] = array(
             'search_idx' => array('columns' => array('name', 'user_email')),
         );
+        $metadata->setSequenceGeneratorDefinition(array(
+                'sequenceName' => 'tablename_seq',
+                'allocationSize' => 100,
+                'initialValue' => 1,
+            ));
     }
 }

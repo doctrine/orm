@@ -18,6 +18,7 @@
         </lifecycle-callbacks>
 
         <id name="id" type="integer" column="id">
+            <sequence-generator sequence-name="tablename_seq" allocation-size="100" initial-value="1" />
             <generator strategy="AUTO"/>
         </id>
         

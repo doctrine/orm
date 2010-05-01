@@ -207,7 +207,7 @@ class XmlDriver extends AbstractFileDriver
                 $metadata->setSequenceGeneratorDefinition(array(
                     'sequenceName' => (string)$seqGenerator['sequence-name'],
                     'allocationSize' => (string)$seqGenerator['allocation-size'],
-                    'initialValue' => (string)$seqGeneratorAnnot['initial-value']
+                    'initialValue' => (string)$seqGenerator['initial-value']
                 ));
             } else if (isset($idElement->{'table-generator'})) {
                 throw MappingException::tableIdGeneratorNotImplemented($className);
