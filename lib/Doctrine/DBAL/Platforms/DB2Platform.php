@@ -25,7 +25,7 @@ use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\TableDiff;
 
-class Db2Platform extends AbstractPlatform
+class DB2Platform extends AbstractPlatform
 {
     /**
      * Gets the SQL snippet used to declare a VARCHAR column type.
