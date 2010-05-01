@@ -789,7 +789,7 @@ class Connection implements DriverConnection
      * Gets the SchemaManager that can be used to inspect or change the
      * database schema through the connection.
      *
-     * @return Doctrine\DBAL\Schema\SchemaManager
+     * @return Doctrine\DBAL\Schema\AbstractSchemaManager
      */
     public function getSchemaManager()
     {

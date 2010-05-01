@@ -253,7 +253,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $queries = "";
             for($i = count($this->_sqlLoggerStack->queries)-1; $i > max(count($this->_sqlLoggerStack->queries)-25, 0); $i--) {
                 $query = $this->_sqlLoggerStack->queries[$i];
-                $params = array_map(function($p) { return "'".$p."'"; }, $query['params'] ?: array());
+                $params = array_map(function($p) { if (is_object($p)) return get_class($p); else return "'".$p."'"; }, $query['params'] ?: array());
                 $queries .= ($i+1).". SQL: '".$query['sql']."' Params: ".implode(", ", $params).PHP_EOL;
             }
             

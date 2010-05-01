@@ -40,6 +40,7 @@ class ArrayType extends Type
 
     public function convertToPHPValue($value, \Doctrine\DBAL\Platforms\AbstractPlatform $platform)
     {
+        $value = (is_resource($value)) ? stream_get_contents($value) : $value;
         return unserialize($value);
     }
 

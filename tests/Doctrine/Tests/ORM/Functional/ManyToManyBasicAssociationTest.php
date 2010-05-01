@@ -47,7 +47,9 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
     
         // Get user
         $user = $uRep->findOneById($user->getId());
-    
+
+        $this->assertNotNull($user, "Has to return exactly one entry.");
+
         $this->assertFalse($user->getGroups()->isInitialized());
         
         // Check groups
@@ -89,6 +91,8 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         
         // Association should not exist
         $user2 = $this->_em->find(get_class($user), $user->getId());
+
+        $this->assertNotNull($user2, "Has to return exactly one entry.");
         $this->assertEquals(0, $user2->getGroups()->count());
     }
     

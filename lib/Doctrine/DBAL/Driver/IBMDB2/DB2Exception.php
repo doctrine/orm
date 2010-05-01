@@ -17,40 +17,11 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
- */
+*/
 
-namespace Doctrine\DBAL\Types;
+namespace Doctrine\DBAL\Driver\IBMDB2;
 
-use Doctrine\DBAL\Platforms\AbstractPlatform;
-
-/**
- * Type that maps an SQL CLOB to a PHP string.
- *
- * @since 2.0
- */
-class TextType extends Type
+class DB2Exception extends \Exception
 {
-    /** @override */
-    public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
-    {
-        return $platform->getClobTypeDeclarationSQL($fieldDeclaration);
-    }
-
-    /**
-     * Converts a value from its database representation to its PHP representation
-     * of this type.
-     *
-     * @param mixed $value The value to convert.
-     * @param AbstractPlatform $platform The currently used database platform.
-     * @return mixed The PHP representation of the value.
-     */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
-    {
-        return (is_resource($value)) ? stream_get_contents($value) : $value;
-    }
-
-    public function getName()
-    {
-        return Type::TEXT;
-    }
+    
 }

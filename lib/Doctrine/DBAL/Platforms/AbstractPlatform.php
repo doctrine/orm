@@ -1095,7 +1095,7 @@ abstract class AbstractPlatform
             throw \InvalidArgumentException("Incomplete definition. 'columns' required.");
         }
         
-        return 'CONSTRAINT' . $name . ' UNIQUE ('
+        return 'CONSTRAINT ' . $name . ' UNIQUE ('
              . $this->getIndexFieldDeclarationListSQL($index->getColumns()) 
              . ')';
     }
@@ -1175,6 +1175,17 @@ abstract class AbstractPlatform
     public function getTemporaryTableSQL()
     {
         return 'TEMPORARY';
+    }
+
+    /**
+     * Some vendors require temporary table names to be qualified specially.
+     *
+     * @param  string $tableName
+     * @return string
+     */
+    public function getTemporaryTableName($tableName)
+    {
+        return $tableName;
     }
 
     /**
@@ -1688,6 +1699,16 @@ abstract class AbstractPlatform
     public function supportsSchemas()
     {
         return false;
+    }
+
+    /**
+     * Some databases don't allow to create and drop databases at all or only with certain tools.
+     *
+     * @return bool
+     */
+    public function supportsCreateDropDatabase()
+    {
+        return true;
     }
 
     /**

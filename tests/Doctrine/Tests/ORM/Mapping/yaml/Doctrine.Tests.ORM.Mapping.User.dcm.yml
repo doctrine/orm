@@ -6,6 +6,10 @@ Doctrine\Tests\ORM\Mapping\User:
       type: integer
       generator:
         strategy: AUTO
+      sequenceGenerator:
+        sequenceName: tablename_seq
+        allocationSize: 100
+        initialValue: 1
   fields:
     name:
       type: string
@@ -51,4 +55,7 @@ Doctrine\Tests\ORM\Mapping\User:
         - all
   lifecycleCallbacks:
     prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersistToo ] 
-    postPersist: [ doStuffOnPostPersist ] 
+    postPersist: [ doStuffOnPostPersist ]
+  uniqueConstraints:
+    search_idx:
+      columns: name,user_email

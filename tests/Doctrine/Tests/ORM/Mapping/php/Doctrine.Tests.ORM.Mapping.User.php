@@ -103,3 +103,11 @@ $metadata->mapManyToMany(array(
    ),
    'orderBy' => NULL,
   ));
+$metadata->table['uniqueConstraints'] = array(
+    'search_idx' => array('columns' => array('name', 'user_email')),
+);
+$metadata->setSequenceGeneratorDefinition(array(
+        'sequenceName' => 'tablename_seq',
+        'allocationSize' => 100,
+        'initialValue' => 1,
+    ));

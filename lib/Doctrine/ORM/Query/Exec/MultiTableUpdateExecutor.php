@@ -59,7 +59,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
         $updateItems = $updateClause->updateItems;
 
-        $tempTable = $rootClass->getTemporaryIdTableName();
+        $tempTable = $platform->getTemporaryTableName($rootClass->getTemporaryIdTableName());
         $idColumnNames = $rootClass->getIdentifierColumnNames();
         $idColumnList = implode(', ', $idColumnNames);
 
@@ -126,8 +126,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             );
         }
         $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
-                . $platform->getColumnDeclarationListSQL($columnDefinitions)
-                . ', PRIMARY KEY(' . $idColumnList . '))';
+                . $platform->getColumnDeclarationListSQL($columnDefinitions) . ')';
         $this->_dropTempTableSql = 'DROP TABLE ' . $tempTable;
     }
 

@@ -28,6 +28,8 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
             $this->markTestSkipped('The ' . $testClass .' requires the use of ' . $dbms);
         }
 
+        #$this->_conn->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+
         $this->_sm = $this->_conn->getSchemaManager();
     }
 
@@ -59,6 +61,10 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
 
     public function testListDatabases()
     {
+        if (!$this->_sm->getDatabasePlatform()->supportsCreateDropDatabase()) {
+            $this->markTestSkipped('Cannot drop Database client side with this Driver.');
+        }
+
         $this->_sm->dropAndCreateDatabase('test_create_database');
         $databases = $this->_sm->listDatabases();
 
@@ -73,12 +79,12 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
         $tables = $this->_sm->listTables();
 
         $this->assertType('array', $tables);
-        $this->assertTrue(count($tables) > 0);
+        $this->assertTrue(count($tables) > 0, "List Tables has to find at least one table named 'list_tables_test'.");
 
         $foundTable = false;
         foreach ($tables AS $table) {
             $this->assertType('Doctrine\DBAL\Schema\Table', $table);
-            if ($table->getName() == 'list_tables_test') {
+            if (strtolower($table->getName()) == 'list_tables_test') {
                 $foundTable = true;
 
                 $this->assertTrue($table->hasColumn('id'));
@@ -86,6 +92,8 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
                 $this->assertTrue($table->hasColumn('foreign_key_test'));
             }
         }
+
+        $this->assertTrue( $foundTable , "The 'list_tables_test' table has to be found.");
     }
 
     public function testListTableColumns()
@@ -122,7 +130,6 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
 
         $this->assertEquals('foo',  strtolower($columns['foo']->getname()));
         $this->assertType('Doctrine\DBAL\Types\TextType', $columns['foo']->gettype());
-        $this->assertEquals(null,   $columns['foo']->getlength());
         $this->assertEquals(false,  $columns['foo']->getunsigned());
         $this->assertEquals(false,  $columns['foo']->getfixed());
         $this->assertEquals(true,   $columns['foo']->getnotnull());
@@ -171,6 +178,7 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
 
         $this->assertEquals(3, count($tableIndexes));
 
+        $this->assertArrayHasKey('primary', $tableIndexes, 'listTableIndexes() has to return a "primary" array key.');
         $this->assertEquals(array('id'), array_map('strtolower', $tableIndexes['primary']->getColumns()));
         $this->assertTrue($tableIndexes['primary']->isUnique());
         $this->assertTrue($tableIndexes['primary']->isPrimary());
@@ -218,7 +226,7 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
         $this->_sm->dropAndCreateTable($tableA);
 
         $fkConstraints = $this->_sm->listTableForeignKeys('test_create_fk');
-        $this->assertEquals(1, count($fkConstraints));
+        $this->assertEquals(1, count($fkConstraints), "Table 'test_create_fk1' has to have one foreign key.");
 
         $fkConstraint = current($fkConstraints);
         $this->assertType('\Doctrine\DBAL\Schema\ForeignKeyConstraint', $fkConstraint);
@@ -237,22 +245,20 @@ class SchemaManagerFunctionalTestCase extends \Doctrine\Tests\DbalFunctionalTest
         $this->createTestTable('test_create_fk2');
 
         $foreignKey = new \Doctrine\DBAL\Schema\ForeignKeyConstraint(
-            array('foreign_key_test'), 'test_create_fk2', array('id'), 'foreign_key_test_fk', array('onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE')
+            array('foreign_key_test'), 'test_create_fk2', array('id'), 'foreign_key_test_fk', array('onDelete' => 'CASCADE')
         );
 
         $this->_sm->createForeignKey($foreignKey, 'test_create_fk1');
 
         $fkeys = $this->_sm->listTableForeignKeys('test_create_fk1');
 
-        $this->assertEquals(1, count($fkeys));
+        $this->assertEquals(1, count($fkeys), "Table 'test_create_fk1' has to have one foreign key.");
+        
         $this->assertType('Doctrine\DBAL\Schema\ForeignKeyConstraint', $fkeys[0]);
         $this->assertEquals(array('foreign_key_test'),  array_map('strtolower', $fkeys[0]->getLocalColumns()));
         $this->assertEquals(array('id'),                array_map('strtolower', $fkeys[0]->getForeignColumns()));
         $this->assertEquals('test_create_fk2',          strtolower($fkeys[0]->getForeignTableName()));
 
-        if($fkeys[0]->hasOption('onUpdate')) {
-            $this->assertEquals('CASCADE', $fkeys[0]->getOption('onUpdate'));
-        }
         if($fkeys[0]->hasOption('onDelete')) {
             $this->assertEquals('CASCADE', $fkeys[0]->getOption('onDelete'));
         }
