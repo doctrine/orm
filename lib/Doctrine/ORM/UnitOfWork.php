@@ -485,7 +485,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
         }
-        
+
         // Look for changes in associations of the entity
         foreach ($class->associationMappings as $assoc) {
             $val = $class->reflFields[$assoc->sourceFieldName]->getValue($entity);
@@ -2042,9 +2042,15 @@ class UnitOfWork implements PropertyChangedListener
         $oid = spl_object_hash($entity);
         $class = $this->_em->getClassMetadata(get_class($entity));
 
+        $isAssocField = isset($class->associationMappings[$propertyName]);
+
+        if ( ! $isAssocField && ! isset($class->fieldMappings[$propertyName])) {
+            return; // ignore non-persistent fields
+        }
+
         $this->_entityChangeSets[$oid][$propertyName] = array($oldValue, $newValue);
 
-        if (isset($class->associationMappings[$propertyName])) {
+        if ($isAssocField) {
             $assoc = $class->associationMappings[$propertyName];
             if ($assoc->isOneToOne() && $assoc->isOwningSide) {
                 $this->_entityUpdates[$oid] = $entity;
