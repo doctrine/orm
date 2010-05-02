@@ -101,6 +101,7 @@ class LockAgentWorker
         $cache = new \Doctrine\Common\Cache\ArrayCache();
         $config->setMetadataCacheImpl($cache);
         $config->setQueryCacheImpl($cache);
+        $config->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
 
         $em = \Doctrine\ORM\EntityManager::create($conn, $config);
 
