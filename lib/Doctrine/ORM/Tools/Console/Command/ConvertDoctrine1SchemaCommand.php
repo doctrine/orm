@@ -134,16 +134,16 @@ EOT
         }
 
         $converter = new ConvertDoctrine1Schema($fromPaths);
-        $metadatas = $converter->getMetadatas();
+        $metadata = $converter->getMetadata();
 
         if ($metadatas) {
             $output->write(PHP_EOL);
 
-            foreach ($metadatas as $metadata) {
-                $output->write(sprintf('Processing entity "<info>%s</info>"', $metadata->name) . PHP_EOL);
+            foreach ($metadata as $class) {
+                $output->write(sprintf('Processing entity "<info>%s</info>"', $class->name) . PHP_EOL);
             }
 
-            $exporter->setMetadatas($metadatas);
+            $exporter->setMetadata($metadata);
             $exporter->export();
 
             $output->write(PHP_EOL . sprintf(

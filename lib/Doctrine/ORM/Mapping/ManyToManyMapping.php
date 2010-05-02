@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -39,6 +37,7 @@ namespace Doctrine\ORM\Mapping;
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
+ * @todo Potentially remove if assoc mapping objects get replaced by simple arrays.
  */
 class ManyToManyMapping extends AssociationMapping
 {
@@ -142,44 +141,37 @@ class ManyToManyMapping extends AssociationMapping
      * @param object The owner of the collection.
      * @param object The collection to populate.
      * @param array
+     * @todo Remove
      */
     public function load($sourceEntity, $targetCollection, $em, array $joinColumnValues = array())
     {
-        $sourceClass = $em->getClassMetadata($this->sourceEntityName);
-        $joinTableConditions = array();
-        if ($this->isOwningSide) {
-            foreach ($this->relationToSourceKeyColumns as $relationKeyColumn => $sourceKeyColumn) {
-                // getting id
-                if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
-                    $joinTableConditions[$relationKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
-                } else {
-                    throw MappingException::joinColumnMustPointToMappedField(
-                        $sourceClass->name, $sourceKeyColumn
-                    );
-                }
-            }
-        } else {
-            $owningAssoc = $em->getClassMetadata($this->targetEntityName)->associationMappings[$this->mappedBy];
-            // TRICKY: since the association is inverted source and target are flipped
-            foreach ($owningAssoc->relationToTargetKeyColumns as $relationKeyColumn => $sourceKeyColumn) {
-                // getting id
-                if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
-                    $joinTableConditions[$relationKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
-                } else {
-                    throw MappingException::joinColumnMustPointToMappedField(
-                        $sourceClass->name, $sourceKeyColumn
-                    );
-                }
-            }
-        }
-
-        $persister = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName);
-        $persister->loadManyToManyCollection($this, $joinTableConditions, $targetCollection);
+        $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->loadManyToManyCollection($this, $sourceEntity, $targetCollection);
     }
 
     /** {@inheritdoc} */
     public function isManyToMany()
     {
         return true;
+    }
+
+    /**
+     * Determines which fields get serialized.
+     *
+     * It is only serialized what is necessary for best unserialization performance.
+     * That means any metadata properties that are not set or empty or simply have
+     * their default value are NOT serialized.
+     *
+     * @return array The names of all the fields that should be serialized.
+     */
+    public function __sleep()
+    {
+        $serialized = parent::__sleep();
+        $serialized[] = 'joinTableColumns';
+        $serialized[] = 'relationToSourceKeyColumns';
+        $serialized[] = 'relationToTargetKeyColumns';
+        if ($this->orderBy) {
+            $serialized[] = 'orderBy';
+        }
+        return $serialized;
     }
 }

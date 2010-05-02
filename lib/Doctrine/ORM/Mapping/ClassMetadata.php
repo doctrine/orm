@@ -42,13 +42,6 @@ use ReflectionClass, ReflectionProperty;
 class ClassMetadata extends ClassMetadataInfo
 {
     /**
-     * The ReflectionClass instance of the mapped class.
-     *
-     * @var ReflectionClass
-     */
-    public $reflClass;
-
-    /**
      * The ReflectionProperty instances of the mapped class.
      *
      * @var array
@@ -74,16 +67,6 @@ class ClassMetadata extends ClassMetadataInfo
         $this->reflClass = new ReflectionClass($entityName);
         $this->namespace = $this->reflClass->getNamespaceName();
         $this->table['name'] = $this->reflClass->getShortName();
-    }
-
-    /**
-     * Gets the ReflectionClass instance of the mapped class.
-     *
-     * @return ReflectionClass
-     */
-    public function getReflectionClass()
-    {
-        return $this->reflClass;
     }
 
     /**
@@ -264,8 +247,12 @@ class ClassMetadata extends ClassMetadataInfo
     
     /**
      * Determines which fields get serialized.
+     *
+     * It is only serialized what is necessary for best unserialization performance.
+     * That means any metadata properties that are not set or empty or simply have
+     * their default value are NOT serialized.
      * 
-     * Parts that are NOT serialized because they can not be properly unserialized:
+     * Parts that are also NOT serialized because they can not be properly unserialized:
      *      - reflClass (ReflectionClass)
      *      - reflFields (ReflectionProperty array)
      * 
@@ -273,31 +260,57 @@ class ClassMetadata extends ClassMetadataInfo
      */
     public function __sleep()
     {
-        return array(
-            'associationMappings', // unserialization "bottleneck" with many associations
-            'changeTrackingPolicy',
+        // This metadata is always serialized/cached.
+        $serialized = array(
+            'associationMappings',
             'columnNames', //TODO: Not really needed. Can use fieldMappings[$fieldName]['columnName']
-            'customRepositoryClassName',
-            'discriminatorColumn',
-            'discriminatorValue',
-            'discriminatorMap',
-            'fieldMappings',//TODO: Not all of this stuff needs to be serialized. Only type, columnName and fieldName.
-            'fieldNames', 
-            'generatorType',
+            'fieldMappings',
+            'fieldNames',
             'identifier',
-            'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.
-            'inheritanceType',
-            'isIdentifierComposite',
-            'isMappedSuperclass',
-            'isVersioned',
-            'lifecycleCallbacks',
+            'isIdentifierComposite', // TODO: REMOVE
             'name',
-            'parentClasses',
+            'namespace', // TODO: REMOVE
             'table',
             'rootEntityName',
-            'subClasses',
-            'versionField'
+            'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.
         );
+
+        // The rest of the metadata is only serialized if necessary.
+        if ($this->changeTrackingPolicy != self::CHANGETRACKING_DEFERRED_IMPLICIT) {
+            $serialized[] = 'changeTrackingPolicy';
+        }
+
+        if ($this->customRepositoryClassName) {
+            $serialized[] = 'customRepositoryClassName';
+        }
+
+        if ($this->inheritanceType != self::INHERITANCE_TYPE_NONE) {
+            $serialized[] = 'inheritanceType';
+            $serialized[] = 'discriminatorColumn';
+            $serialized[] = 'discriminatorValue';
+            $serialized[] = 'discriminatorMap';
+            $serialized[] = 'parentClasses';
+            $serialized[] = 'subClasses';
+        }
+
+        if ($this->generatorType != self::GENERATOR_TYPE_NONE) {
+            $serialized[] = 'generatorType';
+        }
+
+        if ($this->isMappedSuperclass) {
+            $serialized[] = 'isMappedSuperclass';
+        }
+
+        if ($this->isVersioned) {
+            $serialized[] = 'isVersioned';
+            $serialized[] = 'versionField';
+        }
+
+        if ($this->lifecycleCallbacks) {
+            $serialized[] = 'lifecycleCallbacks';
+        }
+
+        return $serialized;
     }
 
     /**

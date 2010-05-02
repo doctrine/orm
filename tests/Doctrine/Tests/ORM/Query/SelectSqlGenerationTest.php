@@ -21,6 +21,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             $query = $this->_em->createQuery($dqlToBeTested);
             $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true)
                     ->useQueryCache(false);
+            
             foreach ($queryHints AS $name => $value) {
                 $query->setHint($name, $value);
             }
@@ -388,7 +389,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('SELECT d0_.id AS id0 FROM date_time_model d0_ WHERE d0_.col_datetime > CURRENT_TIMESTAMP', $q->getSql());
     }
 
-    /*public function testExistsExpressionInWhereCorrelatedSubqueryAssocCondition()
+    public function testExistsExpressionInWhereCorrelatedSubqueryAssocCondition()
     {
         $this->assertSqlGeneration(
             // DQL
@@ -405,7 +406,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
                     . ')'
 
         );
-    }*/
+    }
 
     public function testLimitFromQueryClass()
     {
@@ -619,6 +620,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 ".
             "FROM cms_users c0_ WHERE c0_.username = 'gblanco' FOR SHARE",
             array(Query::HINT_LOCK_MODE => \Doctrine\ORM\LockMode::PESSIMISTIC_READ)
+                );
+    }
+
+    /**
+     * @group DDC-430
+     */
+    public function testSupportSelectWithMoreThan10InputParameters()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1 OR u.id = ?2 OR u.id = ?3 OR u.id = ?4 OR u.id = ?5 OR u.id = ?6 OR u.id = ?7 OR u.id = ?8 OR u.id = ?9 OR u.id = ?10 OR u.id = ?11",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ? OR c0_.id = ?"
         );
     }
 
@@ -652,5 +664,52 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "FROM cms_users c0_ WHERE c0_.username = 'gblanco' FOR UPDATE",
             array(Query::HINT_LOCK_MODE => \Doctrine\ORM\LockMode::PESSIMISTIC_READ)
         );
+    }
+
+    /**
+     * @group DDC-431
+     */
+    public function testSupportToCustomDQLFunctions()
+    {
+        $config = $this->_em->getConfiguration();
+        $config->addCustomNumericFunction('MYABS', 'Doctrine\Tests\ORM\Query\MyAbsFunction');
+
+        $this->assertSqlGeneration(
+            'SELECT MYABS(p.phonenumber) FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p',
+            'SELECT ABS(c0_.phonenumber) AS sclr0 FROM cms_phonenumbers c0_'
+        );
+
+        $config->setCustomNumericFunctions(array());
+    }
+}
+
+
+class MyAbsFunction extends \Doctrine\ORM\Query\AST\Functions\FunctionNode
+{
+    public $simpleArithmeticExpression;
+
+    /**
+     * @override
+     */
+    public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
+    {
+        return 'ABS(' . $sqlWalker->walkSimpleArithmeticExpression(
+            $this->simpleArithmeticExpression
+        ) . ')';
+    }
+
+    /**
+     * @override
+     */
+    public function parse(\Doctrine\ORM\Query\Parser $parser)
+    {
+        $lexer = $parser->getLexer();
+
+        $parser->match(\Doctrine\ORM\Query\Lexer::T_IDENTIFIER);
+        $parser->match(\Doctrine\ORM\Query\Lexer::T_OPEN_PARENTHESIS);
+
+        $this->simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
+        
+        $parser->match(\Doctrine\ORM\Query\Lexer::T_CLOSE_PARENTHESIS);
     }
 }

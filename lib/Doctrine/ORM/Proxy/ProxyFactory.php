@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -44,13 +42,13 @@ class ProxyFactory
     private $_proxyDir;
 
     /**
-	 * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
-	 * connected to the given <tt>EntityManager</tt>.
-	 *
-	 * @param EntityManager $em The EntityManager the new factory works for.
-	 * @param string $proxyDir The directory to use for the proxy classes. It must exist.
-	 * @param string $proxyNs The namespace to use for the proxy classes.
-	 * @param boolean $autoGenerate Whether to automatically generate proxy classes.
+     * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
+     * connected to the given <tt>EntityManager</tt>.
+     *
+     * @param EntityManager $em The EntityManager the new factory works for.
+     * @param string $proxyDir The directory to use for the proxy classes. It must exist.
+     * @param string $proxyNs The namespace to use for the proxy classes.
+     * @param boolean $autoGenerate Whether to automatically generate proxy classes.
      */
     public function __construct(EntityManager $em, $proxyDir, $proxyNs, $autoGenerate = false)
     {
@@ -240,7 +238,7 @@ class ProxyFactory
         return $sleepImpl;
     }
 
-    /** Reference Proxy class code template */
+    /** Proxy class code template */
     private static $_proxyClassTemplate =
 '<?php
 

@@ -98,7 +98,7 @@ class EntityGenerator
  */
 public function <methodName>()
 {
-    return $this-><fieldName>;
+<spaces>return $this-><fieldName>;
 }';
 
     private static $_setMethodTemplate =
@@ -109,7 +109,7 @@ public function <methodName>()
  */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
-    $this-><fieldName> = $<variableName>;
+<spaces>$this-><fieldName> = $<variableName>;
 }';
 
     private static $_addMethodTemplate =
@@ -120,7 +120,7 @@ public function <methodName>(<methodTypeHint>$<variableName>)
  */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
-    $this-><fieldName>[] = $<variableName>;
+<spaces>$this-><fieldName>[] = $<variableName>;
 }';
 
     private static $_lifecycleCallbackMethodTemplate =
@@ -129,7 +129,7 @@ public function <methodName>(<methodTypeHint>$<variableName>)
  */
 public function <methodName>()
 {
-    // Add your code here
+<spaces>// Add your code here
 }';
 
     /**
@@ -203,7 +203,8 @@ public function <methodName>()
             $this->_generateEntityBody($metadata)
         );
 
-        return str_replace($placeHolders, $replacements, self::$_classTemplate);
+        $code = str_replace($placeHolders, $replacements, self::$_classTemplate);
+        return str_replace('<spaces>', $this->_spaces, $code);
     }
 
     /**
@@ -218,9 +219,10 @@ public function <methodName>()
         $currentCode = file_get_contents($path);
 
         $body = $this->_generateEntityBody($metadata);
+        $body = str_replace('<spaces>', $this->_spaces, $body);
         $last = strrpos($currentCode, '}');
 
-        return substr($currentCode, 0, $last) . $body . '}';
+        return substr($currentCode, 0, $last) . $body . "\n}";
     }
 
     /**

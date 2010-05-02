@@ -122,7 +122,7 @@ class AdvancedDqlQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testUpdateAs()
     {
         $dql = 'UPDATE Doctrine\Tests\Models\Company\CompanyEmployee AS p SET p.salary = 1';
-        $this->_em->createQuery($dql)->getResult();
+        $this->_em->createQuery($dql)->execute();
 
         $this->assertTrue(count($this->_em->createQuery(
             'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1')->getResult()) > 0);

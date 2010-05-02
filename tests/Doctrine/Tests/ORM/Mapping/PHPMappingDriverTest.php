@@ -3,12 +3,12 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\Driver\PhpDriver,
+    Doctrine\ORM\Mapping\Driver\PHPDriver,
     Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-class PhpMappingDriverTest extends AbstractMappingDriverTest
+class PHPMappingDriverTest extends AbstractMappingDriverTest
 {
     protected function _loadDriver()
     {
@@ -26,6 +26,6 @@ class PhpMappingDriverTest extends AbstractMappingDriverTest
         $exporter->export();
         */
 
-        return new PhpDriver($path);
+        return new PHPDriver($path);
     }
 }

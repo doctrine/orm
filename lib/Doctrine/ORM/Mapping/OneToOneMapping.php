@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -39,6 +37,7 @@ namespace Doctrine\ORM\Mapping;
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
+ * @todo Potentially remove if assoc mapping objects get replaced by simple arrays.
  */
 class OneToOneMapping extends AssociationMapping
 {
@@ -135,56 +134,32 @@ class OneToOneMapping extends AssociationMapping
      * @param object $targetEntity      the entity to load data in
      * @param EntityManager $em
      * @param array $joinColumnValues  Values of the join columns of $sourceEntity.
+     * @todo Remove
      */
     public function load($sourceEntity, $targetEntity, $em, array $joinColumnValues = array())
     {
-        $targetClass = $em->getClassMetadata($this->targetEntityName);
+        return $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->loadOneToOneEntity($this, $sourceEntity, $targetEntity, $joinColumnValues);
+    }
 
-        if ($this->isOwningSide) {
-            // Mark inverse side as fetched in the hints, otherwise the UoW would
-            // try to load it in a separate query (remember: to-one inverse sides can not be lazy). 
-            $hints = array();
-            if ($this->inversedBy) {
-                $hints['fetched'][$targetClass->name][$this->inversedBy] = true;
-                if ($targetClass->subClasses) {
-                    foreach ($targetClass->subClasses as $targetSubclassName) {
-                        $hints['fetched'][$targetSubclassName][$this->inversedBy] = true;
-                    }
-                }
-            }
-            /* cascade read-only status
-            if ($em->getUnitOfWork()->isReadOnly($sourceEntity)) {
-                $hints[Query::HINT_READ_ONLY] = true;
-            }
-            */
-
-            $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($joinColumnValues, $targetEntity, $this, $hints);
-            
-            if ($targetEntity !== null && $this->inversedBy && ! $targetClass->isCollectionValuedAssociation($this->inversedBy)) {
-                $targetClass->reflFields[$this->inversedBy]->setValue($targetEntity, $sourceEntity);
-            }
-        } else {
-            $conditions = array();
-            $sourceClass = $em->getClassMetadata($this->sourceEntityName);
-            $owningAssoc = $targetClass->getAssociationMapping($this->mappedBy);
-            // TRICKY: since the association is specular source and target are flipped
-            foreach ($owningAssoc->targetToSourceKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
-                if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
-                    $conditions[$targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
-                } else {
-                    throw MappingException::joinColumnMustPointToMappedField(
-                        $sourceClass->name, $sourceKeyColumn
-                    );
-                }
-            }
-
-            $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($conditions, $targetEntity, $this);
-            
-            if ($targetEntity !== null) {
-                $targetClass->setFieldValue($targetEntity, $this->mappedBy, $sourceEntity);
-            }
+    /**
+     * Determines which fields get serialized.
+     *
+     * It is only serialized what is necessary for best unserialization performance.
+     * That means any metadata properties that are not set or empty or simply have
+     * their default value are NOT serialized.
+     *
+     * @return array The names of all the fields that should be serialized.
+     */
+    public function __sleep()
+    {
+        $serialized = parent::__sleep();
+        $serialized[] = 'joinColumns';
+        $serialized[] = 'joinColumnFieldNames';
+        $serialized[] = 'sourceToTargetKeyColumns';
+        $serialized[] = 'targetToSourceKeyColumns';
+        if ($this->orphanRemoval) {
+            $serialized[] = 'orphanRemoval';
         }
-
-        return $targetEntity;
+        return $serialized;
     }
 }

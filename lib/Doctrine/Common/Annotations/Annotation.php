@@ -27,7 +27,8 @@ namespace Doctrine\Common\Annotations;
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision: 3938 $
+ * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
@@ -52,14 +53,29 @@ class Annotation
             $this->$key = $value;
         }
     }
-    
+
+    /**
+     * Error handler for unknown property accessor in Annotation class.
+     *
+     * @param string $name Unknown property name
+     */
     public function __get($name)
     {
-        throw new \BadMethodCallException("Unknown annotation property '$name' on annotation '".get_class($this)."'.");
+        throw new \BadMethodCallException(
+            sprintf("Unknown property '%s' on annotation '%s'.", $name, get_class($this))
+        );
     }
     
+    /**
+     * Error handler for unknown property mutator in Annotation class.
+     *
+     * @param string $name Unkown property name
+     * @param mixed $value Property value
+     */
     public function __set($name, $value)
     {
-        throw new \BadMethodCallException("Unknown annotation property '$name' on annotation '".get_class($this)."'.");
+        throw new \BadMethodCallException(
+            sprintf("Unknown property '%s' on annotation '%s'.", $name, get_class($this))
+        );
     }
 }

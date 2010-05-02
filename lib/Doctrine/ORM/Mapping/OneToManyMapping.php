@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -43,6 +41,7 @@ namespace Doctrine\ORM\Mapping;
  * @author Roman Borschel <roman@code-factory.org>
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @since 2.0
+ * @todo Potentially remove if assoc mapping objects get replaced by simple arrays.
  */
 class OneToManyMapping extends AssociationMapping
 {
@@ -101,8 +100,6 @@ class OneToManyMapping extends AssociationMapping
     
     /**
      * {@inheritdoc}
-     *
-     * @override
      */
     public function isOneToMany()
     {
@@ -117,23 +114,31 @@ class OneToManyMapping extends AssociationMapping
      * @param $em The EntityManager to use.
      * @param $joinColumnValues 
      * @return void
+     * @todo Remove
      */
     public function load($sourceEntity, $targetCollection, $em, array $joinColumnValues = array())
     {
-        $persister = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName);
-        // a one-to-many is always inverse (does not have foreign key)
-        $sourceClass = $em->getClassMetadata($this->sourceEntityName);
-        $owningAssoc = $em->getClassMetadata($this->targetEntityName)->associationMappings[$this->mappedBy];
-        // TRICKY: since the association is specular source and target are flipped
-        foreach ($owningAssoc->targetToSourceKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
-            // getting id
-            if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
-                $conditions[$targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
-            } else {
-                $conditions[$targetKeyColumn] = $joinColumnValues[$sourceKeyColumn];
-            }
-        }
+        $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->loadOneToManyCollection($this, $sourceEntity, $targetCollection);
+    }
 
-        $persister->loadOneToManyCollection($this, $conditions, $targetCollection);
+    /**
+     * Determines which fields get serialized.
+     *
+     * It is only serialized what is necessary for best unserialization performance.
+     * That means any metadata properties that are not set or empty or simply have
+     * their default value are NOT serialized.
+     *
+     * @return array The names of all the fields that should be serialized.
+     */
+    public function __sleep()
+    {
+        $serialized = parent::__sleep();
+        if ($this->orderBy) {
+            $serialized[] = 'orderBy';
+        }
+        if ($this->orphanRemoval) {
+            $serialized[] = 'orphanRemoval';
+        }
+        return $serialized;
     }
 }

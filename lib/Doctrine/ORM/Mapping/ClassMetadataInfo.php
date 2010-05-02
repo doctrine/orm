@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use ReflectionClass;
+
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
  * of an entity and it's associations.
@@ -367,6 +369,13 @@ class ClassMetadataInfo
     public $versionField;
 
     /**
+     * The ReflectionClass instance of the mapped class.
+     *
+     * @var ReflectionClass
+     */
+    public $reflClass;
+
+    /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
      *
@@ -376,6 +385,19 @@ class ClassMetadataInfo
     {
         $this->name = $entityName;
         $this->rootEntityName = $entityName;
+    }
+
+    /**
+     * Gets the ReflectionClass instance of the mapped class.
+     *
+     * @return ReflectionClass
+     */
+    public function getReflectionClass()
+    {
+        if ( ! $this->reflClass) {
+            $this->reflClass = new ReflectionClass($entityName);
+        }
+        return $this->reflClass;
     }
 
     /**

@@ -30,7 +30,7 @@ use Doctrine\Common\Cache\ArrayCache,
     Doctrine\ORM\Mapping\Driver\AbstractFileDriver;
 
 /**
- * The PhpDriver includes php files which just populate ClassMetadataInfo
+ * The PHPDriver includes php files which just populate ClassMetadataInfo
  * instances with plain php code
  *
  * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -43,7 +43,7 @@ use Doctrine\Common\Cache\ArrayCache,
  * @author      Roman Borschel <roman@code-factory.org>
  * @todo Rename: PHPDriver
  */
-class PhpDriver extends AbstractFileDriver
+class PHPDriver extends AbstractFileDriver
 {
     /**
      * {@inheritdoc}
