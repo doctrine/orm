@@ -78,8 +78,10 @@ Example:
 
 > **CAUTION**
 > Generated entity identifiers / primary keys are guaranteed to be available after the
-> next invocation of `EntityManager#flush()` that involves the entity in question.
-> YOU CAN NOT RELY ON A GENERATED IDENTIFIER TO BE AVAILABLE AFTER INVOKING `persist`!
+> next successful flush operation that involves the entity in question.
+> You can not reply on a generated identifier to be available directly after invoking `persist`.
+> The inverse is also true. You can not rely on a generated identifier being not available
+> after a failed flush operation.
     
 The semantics of the persist operation, applied on an entity X, are as follows:
 
