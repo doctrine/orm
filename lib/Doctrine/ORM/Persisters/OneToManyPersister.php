@@ -25,7 +25,7 @@ use Doctrine\ORM\PersistentCollection;
 
 /**
  * Persister for one-to-many collections.
- * 
+ *
  * IMPORTANT:
  * This persister is only used for uni-directional one-to-many mappings on a foreign key
  * (which are not yet supported). So currently this persister is not used.
@@ -44,7 +44,7 @@ class OneToManyPersister extends AbstractCollectionPersister
      * @return string
      * @override
      */
-    protected function _getDeleteRowSql(PersistentCollection $coll)
+    protected function _getDeleteRowSQL(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
         $targetClass = $this->_em->getClassMetadata($mapping->getTargetEntityName());
@@ -67,36 +67,36 @@ class OneToManyPersister extends AbstractCollectionPersister
         return array("UPDATE $table SET $setClause WHERE $whereClause", $this->_uow->getEntityIdentifier($element));
     }
 
-    protected function _getInsertRowSql(PersistentCollection $coll)
+    protected function _getInsertRowSQL(PersistentCollection $coll)
     {
         return "UPDATE xxx SET foreign_key = yyy WHERE foreign_key = zzz";
     }
 
     /* Not used for OneToManyPersister */
-    protected function _getUpdateRowSql(PersistentCollection $coll)
+    protected function _getUpdateRowSQL(PersistentCollection $coll)
     {
         return;
     }
-    
+
     /**
      * Generates the SQL UPDATE that updates all the foreign keys to null.
      *
      * @param PersistentCollection $coll
      */
-    protected function _getDeleteSql(PersistentCollection $coll)
+    protected function _getDeleteSQL(PersistentCollection $coll)
     {
-        
+
     }
-    
+
     /**
      * Gets the SQL parameters for the corresponding SQL statement to delete
      * the given collection.
      *
      * @param PersistentCollection $coll
      */
-    protected function _getDeleteSqlParameters(PersistentCollection $coll)
+    protected function _getDeleteSQLParameters(PersistentCollection $coll)
     {}
-    
+
     /**
      * Gets the SQL parameters for the corresponding SQL statement to insert the given
      * element of the given collection into the database.
@@ -104,9 +104,9 @@ class OneToManyPersister extends AbstractCollectionPersister
      * @param PersistentCollection $coll
      * @param mixed $element
      */
-    protected function _getInsertRowSqlParameters(PersistentCollection $coll, $element)
+    protected function _getInsertRowSQLParameters(PersistentCollection $coll, $element)
     {}
-    
+
     /**
      * Gets the SQL parameters for the corresponding SQL statement to delete the given
      * element from the given collection.
@@ -114,6 +114,6 @@ class OneToManyPersister extends AbstractCollectionPersister
      * @param PersistentCollection $coll
      * @param mixed $element
      */
-    protected function _getDeleteRowSqlParameters(PersistentCollection $coll, $element)
+    protected function _getDeleteRowSQLParameters(PersistentCollection $coll, $element)
     {}
 }
