@@ -82,13 +82,16 @@ Example:
 > You can not reply on a generated identifier to be available directly after invoking `persist`.
 > The inverse is also true. You can not rely on a generated identifier being not available
 > after a failed flush operation.
-    
+
 The semantics of the persist operation, applied on an entity X, are as follows:
 
-* If X is a new entity, it becomes managed. The entity X will be entered into the database at or before transaction commit or as a result of the flush operation. 
+* If X is a new entity, it becomes managed. The entity X will be entered into the database as a result of the flush operation. 
 * If X is a preexisting managed entity, it is ignored by the persist operation. However, the persist operation is cascaded to entities referenced by X, if the relationships from X to these other entities are mapped with cascade=PERSIST or cascade=ALL (see "Transitive Persistence").
 * If X is a removed entity, it becomes managed. 
-* If X is a detached entity, an InvalidArgumentException will be thrown.
+* If X is a detached entity, the behavior is undefined.
+
+> **CAUTION**
+> Do not pass detached entities to the persist operation.
 
 
 ++ Removing entities
@@ -112,7 +115,7 @@ The semantics of the remove operation, applied to an entity X are as follows:
 * If X is a managed entity, the remove operation causes it to become removed. The remove operation is cascaded to entities referenced by X, if the relationships from X to these other entities is mapped with cascade=REMOVE or cascade=ALL (see "Transitive Persistence"). 
 * If X is a detached entity, an InvalidArgumentException will be thrown.
 * If X is a removed entity, it is ignored by the remove operation. 
-* A removed entity X will be removed from the database at or before transaction commit or as a result of the flush operation. 
+* A removed entity X will be removed from the database as a result of the flush operation. 
 
 
 ++ Detaching entities
@@ -163,7 +166,7 @@ Example:
 > **CAUTION**
 > When you want to serialize/unserialize entities you have to make all entity properties
 > protected, never private. The reason for this is, if you serialize a class that was a proxy
-> instance before the private variables won't be serialized and a PHP Notice is thrown.
+> instance before, the private variables won't be serialized and a PHP Notice is thrown.
 
 The semantics of the merge operation, applied to an entity X, are as follows:
 
