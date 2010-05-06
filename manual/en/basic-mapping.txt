@@ -250,6 +250,8 @@ Doctrine can generate identifier values for the allocationSizes amount of entiti
 `allocationSize=100` Doctrine 2 would only need to access the sequence once to generate the identifiers for
 100 new entities.
 
+*The default allocationSize for a @SequenceGenerator is currently 10.*
+
 > **CAUTION**
 > The allocationSize is detected by SchemaTool and transformed into an "INCREMENT BY <allocationSize>" clause
 > in the CREATE SEQUENCE statement. For a database schema created manually (and not SchemaTool) you have to
