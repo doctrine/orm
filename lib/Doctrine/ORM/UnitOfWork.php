@@ -278,7 +278,7 @@ class UnitOfWork implements PropertyChangedListener
         $commitOrder = $this->_getCommitOrder();
         
         $tx = $this->_em->getTransaction();
-
+        
         try {
             $tx->begin();
 

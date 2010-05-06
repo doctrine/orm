@@ -134,7 +134,7 @@ class EntityManager
                 $config->getProxyDir(),
                 $config->getProxyNamespace(),
                 $config->getAutoGenerateProxyClasses());
-        $this->_transaction = new EntityTransaction($conn->getTransaction());
+        $this->_transaction = new EntityTransaction($this);
     }
 
     /**
@@ -164,7 +164,7 @@ class EntityManager
      */
     public function getTransaction()
     {
-        return $this->_transaction;
+	    return $this->_transaction;
     }
 
     /**
@@ -207,11 +207,12 @@ class EntityManager
     /**
      * Performs a rollback on the underlying database connection and closes the
      * EntityManager as it may now be in a corrupted state.
+     *
+     * @return boolean TRUE on success, FALSE on failure
      */
     public function rollback()
     {
-        $this->getTransaction()->rollback();
-        $this->close();
+        return $this->getTransaction()->rollback();
     }
 
     /**

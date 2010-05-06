@@ -26,7 +26,7 @@ namespace Doctrine\DBAL\Driver\OCI8;
  *
  * @since 2.0
  */
-class OCI8Connection implements \Doctrine\DBAL\Driver\Connection, \Doctrine\DBAL\Driver\Transaction
+class OCI8Connection implements \Doctrine\DBAL\Driver\Connection
 {
     private $_dbh;
     

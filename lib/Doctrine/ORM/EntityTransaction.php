@@ -25,7 +25,6 @@ use Doctrine\DBAL\Transaction;
 
 /**
  * The Transaction class is the central access point to ORM Transaction functionality.
- * This class acts more as a delegate class to the DBAL Transaction functionality.
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -36,23 +35,31 @@ use Doctrine\DBAL\Transaction;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class EntityTransaction
+final class EntityTransaction
 {
     /**
-     * The wrapped DBAL Transaction.
+     * The wrapped ORM EntityManager.
      *
-     * @var Doctrine\DBAL\Transaction
+     * @var Doctrine\ORM\EntityManager
      */
-    protected $_wrappedTransaction;
+    private $_em;
+
+    /**
+     * The database connection used by the EntityManager.
+     *
+     * @var Doctrine\DBAL\Connection
+     */
+    private $_conn;
 
     /**
      * Constructor.
      *
      * @param Transaction $transaction
      */
-    public function __construct(Transaction $transaction)
+    public function __construct(EntityManager $em)
     {
-        $this->_wrappedTransaction = $transaction;
+        $this->_em = $em;
+        $this->_conn = $em->getConnection();
     }
 
     /**
@@ -62,7 +69,7 @@ class EntityTransaction
      */
     public function isTransactionActive()
     {
-        return $this->_wrappedTransaction->isTransactionActive();
+        return $this->_conn->isTransactionActive();
     }
 
     /**
@@ -72,7 +79,7 @@ class EntityTransaction
      */
     public function setTransactionIsolation($level)
     {
-        return $this->_wrappedTransaction->setTransactionIsolation($level);
+        return $this->_conn->setTransactionIsolation($level);
     }
 
     /**
@@ -82,7 +89,7 @@ class EntityTransaction
      */
     public function getTransactionIsolation()
     {
-        return $this->_wrappedTransaction->getTransactionIsolation();
+        return $this->_conn->getTransactionIsolation();
     }
 
     /**
@@ -92,7 +99,7 @@ class EntityTransaction
      */
     public function getTransactionNestingLevel()
     {
-        return $this->_wrappedTransaction->getTransactionNestingLevel();
+        return $this->_conn->getTransactionNestingLevel();
     }
 
     /**
@@ -102,7 +109,7 @@ class EntityTransaction
      */
     public function begin()
     {
-        $this->_wrappedTransaction->begin();
+        $this->_conn->beginTransaction();
     }
 
     /**
@@ -114,41 +121,43 @@ class EntityTransaction
      */
     public function commit()
     {
-        $this->_wrappedTransaction->commit();
+        $this->_conn->commit();
     }
 
     /**
      * Cancel any database changes done during the current transaction.
      *
      * this method can be listened with onPreTransactionRollback and onTransactionRollback
-     * eventlistener methods
+     * event listener methods
      *
+     * @return boolean TRUE on success, FALSE on failure
      * @throws Doctrine\DBAL\ConnectionException If the rollback operation failed.
      */
     public function rollback()
     {
-        $this->_wrappedTransaction->rollback();
+	    $this->_em->close();
+        return $this->_conn->rollback();
     }
 
     /**
      * Marks the current transaction so that the only possible
      * outcome for the transaction to be rolled back.
      *
-     * @throws ConnectionException If no transaction is active.
+     * @throws Doctrine\DBAL\ConnectionException If no transaction is active.
      */
     public function setRollbackOnly()
     {
-        $this->_wrappedTransaction->setRollbackOnly();
+        $this->_conn->setRollbackOnly();
     }
 
     /**
      * Check whether the current transaction is marked for rollback only.
      *
      * @return boolean
-     * @throws ConnectionException If no transaction is active.
+     * @throws Doctrine\DBAL\ConnectionException If no transaction is active.
      */
-    public function getRollbackOnly()
+    public function isRollbackOnly()
     {
-        return $this->_wrappedTransaction->getRollbackOnly();
+        return $this->_conn->getRollbackOnly();
     }
 }

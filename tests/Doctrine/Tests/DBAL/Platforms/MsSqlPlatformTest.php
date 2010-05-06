@@ -44,19 +44,19 @@ class MsSqlPlatformTest extends AbstractPlatformTestCase
     {
         $this->assertEquals(
             'SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED',
-            $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Transaction::READ_UNCOMMITTED)
+            $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_READ_UNCOMMITTED)
         );
         $this->assertEquals(
             'SET TRANSACTION ISOLATION LEVEL READ COMMITTED',
-            $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Transaction::READ_COMMITTED)
+            $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_READ_COMMITTED)
         );
         $this->assertEquals(
             'SET TRANSACTION ISOLATION LEVEL REPEATABLE READ',
-            $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Transaction::REPEATABLE_READ)
+            $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_REPEATABLE_READ)
         );
         $this->assertEquals(
             'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE',
-            $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Transaction::SERIALIZABLE)
+            $this->_platform->getSetTransactionIsolationSQL(\Doctrine\DBAL\Connection::TRANSACTION_SERIALIZABLE)
         );
     }
 
