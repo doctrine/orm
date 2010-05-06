@@ -158,6 +158,6 @@ final class EntityTransaction
      */
     public function isRollbackOnly()
     {
-        return $this->_conn->getRollbackOnly();
+        return $this->_conn->isRollbackOnly();
     }
 }

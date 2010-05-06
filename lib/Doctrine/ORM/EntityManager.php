@@ -164,7 +164,7 @@ class EntityManager
      */
     public function getTransaction()
     {
-	    return $this->_transaction;
+        return $this->_transaction;
     }
 
     /**
