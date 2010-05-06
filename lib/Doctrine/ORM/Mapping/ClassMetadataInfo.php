@@ -395,7 +395,7 @@ class ClassMetadataInfo
     public function getReflectionClass()
     {
         if ( ! $this->reflClass) {
-            $this->reflClass = new ReflectionClass($entityName);
+            $this->reflClass = new ReflectionClass($this->name);
         }
         return $this->reflClass;
     }
