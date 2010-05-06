@@ -220,7 +220,9 @@ Here is the list of possible generation strategies:
 * `AUTO` (default): Tells Doctrine to pick the strategy that is preferred by the used database platform.
    The preferred strategies are IDENTITY for MySQL, SQLite and MsSQL and SEQUENCE for Oracle and PostgreSQL.
    This strategy provides full portability.
-* `NONE`: Tells Doctrine that you generated the entities primary key value in userland before `EntityManager#persist()` is called.
+* `NONE`: Tells Doctrine that the identifiers are assigned (and thus generated) by your code.
+          The assignment must take place before a new entity is passed to `EntityManager#persist`.
+          NONE is the same as leaving off the @GeneratedValue entirely.
 * `SEQUENCE`: Tells Doctrine to use a database sequence for ID generation. This strategy does currently not provide full portability. Sequences are supported by Oracle and PostgreSql.
 * `IDENTITY`: Tells Doctrine to use special identity columns in the database that generate a value on insertion of a row. This strategy does currently not provide full portability and
               is supported by the following platforms: MySQL/SQLite (AUTO_INCREMENT), MSSQL (IDENTITY) and PostgreSQL (SERIAL).
