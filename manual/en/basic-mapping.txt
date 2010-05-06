@@ -208,24 +208,28 @@ A common alternative strategy is to use a generated value as the identifier. To 
         private $id;
     }
 
-This tells Doctrine to automatically generate a value for the identifier. How this value is generated is specified by the `strategy` attribute, which is optional and defaults to 'AUTO'. A value of `AUTO` tells Doctrine to use the generation strategy that is preferred by the currently used database platform. For MySql, for example, Doctrine would use the `IDENTITY` strategy which means a typical AUTO_INCREMENT column. For PostgreSql it would choose to use the `SEQUENCE` strategy which would result in using a database sequence.
+This tells Doctrine to automatically generate a value for the identifier. How this value is generated is specified by the `strategy` attribute, which is optional and defaults to 'AUTO'. A value of `AUTO` tells Doctrine to use the generation strategy that is preferred by the currently used database platform. See below for details.
 
-+++ Id Generation Strategies
++++ Identifier Generation Strategies
 
-The previous example showed how to use the default Id generation strategy without knowing the underlying database with the AUTO-detection strategy.
-It is also possible to specifiy the Id Generation strategy more explicitly, which allows to make use of some additional features.
+The previous example showed how to use the default identifier generation strategy without knowing the underlying database with the AUTO-detection strategy.
+It is also possible to specifiy the identifier generation strategy more explicitly, which allows to make use of some additional features.
 
 Here is the list of possible generation strategies:
 
-* `AUTO` (default): Tells Doctrine to pick the strategy that is preferred by the used database platform. This strategy provides full portability.
+* `AUTO` (default): Tells Doctrine to pick the strategy that is preferred by the used database platform.
+   The preferred strategies are IDENTITY for MySQL, SQLite and MsSQL and SEQUENCE for Oracle and PostgreSQL.
+   This strategy provides full portability.
 * `NONE`: Tells Doctrine that you generated the entities primary key value in userland before `EntityManager#persist()` is called.
 * `SEQUENCE`: Tells Doctrine to use a database sequence for ID generation. This strategy does currently not provide full portability. Sequences are supported by Oracle and PostgreSql.
-* `IDENTITY`: Tells Doctrine to use special identity columns in the database that usually generate a value on insertion of a row (i.e. MySql AUTO_INCREMENT). This strategy does currently not provide full portability. IDENTITY is supported by MySql, Sqlite and MsSql.
+* `IDENTITY`: Tells Doctrine to use special identity columns in the database that generate a value on insertion of a row. This strategy does currently not provide full portability and
+              is supported by the following platforms: MySQL/SQLite (AUTO_INCREMENT), MSSQL (IDENTITY) and PostgreSQL (SERIAL).
 * `TABLE`: Tells Doctrine to use a separate table for ID generation. This strategy provides full portability. ***This strategy is not yet implemented!***
+
 
 ++++ Sequence Generator
 
-The Sequence Generator can be used in conjunction with Oracle or Postgres Platforms and allows some additional configuration options besides
+The Sequence Generator can currently be used in conjunction with Oracle or Postgres and allows some additional configuration options besides
 specifiying the sequence's name:
 
     [php]
@@ -240,17 +244,23 @@ specifiying the sequence's name:
 
 The initial value specifies at which value the sequence should start.
 
-Allocation Size is a powerful feature to optimize INSERT performance of Doctrine. The allocation size specifies
-by how much values the sequence is incremented whenever the next value is retrieved. If this is larger than one
-Doctrine 2 can generate Id values for the allocationSizes amount of entities. In the above example with
+The allocationSize is a powerful feature to optimize INSERT performance of Doctrine. The allocationSize specifies
+by how much values the sequence is incremented whenever the next value is retrieved. If this is larger than 1 (one)
+Doctrine can generate identifier values for the allocationSizes amount of entities. In the above example with
 `allocationSize=100` Doctrine 2 would only need to access the sequence once to generate the identifiers for
 100 new entities.
 
 > **CAUTION**
+> The allocationSize is detected by SchemaTool and transformed into an "INCREMENT BY <allocationSize>" clause
+> in the CREATE SEQUENCE statement. For a database schema created manually (and not SchemaTool) you have to
+> make sure that the allocationSize configuration option is never larger than the actual sequences INCREMENT BY value,
+> otherwise you may get duplicate keys.
 
-> Allocation Size is detected by SchemaTool and transformed into an "INCREMENT BY <allocationSize>" clause
-> in the CREATE SEQUENCE statement. For a database schema created by you (and not SchemaTool) you have to
-> make sure that the allocationSize configuration option is never larger than the actual sequences INCREMENT BY value.
+> **TIP**
+> It is possible to use strategy="AUTO" and at the same time specifying a @SequenceGenerator.
+> In such a case, your custom sequence settings are used in the case where the preferred
+> strategy of the underlying platform is SEQUENCE, such as for Oracle and PostgreSQL.
+
 
 +++ Composite Keys
 

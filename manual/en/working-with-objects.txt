@@ -35,9 +35,9 @@ may want to check it from time to time during development.
 > **CAUTION**
 > Do not invoke `flush` after every change to an entity or every single invocation of
 > persist/remove/merge/... This is an anti-pattern and unnecessarily reduces the
-> performance of your application. Instead form units of work that operate on your objects
+> performance of your application. Instead, form units of work that operate on your objects
 > and call `flush` when you are done. While serving a single HTTP request there should
-> be no need for invoking `flush` more than 0-2 times.
+> be usually no need for invoking `flush` more than 0-2 times.
 
 +++ Direct access to a Unit of Work
 
@@ -49,7 +49,7 @@ This will return the UnitOfWork instance the EntityManager is currently using.
 
 > **NOTE**
 > Directly manipulating a UnitOfWork is not recommended. When working directly with the
-> UnitOfWork API respect methods marked as INTERNAL by not using them and carefully read
+> UnitOfWork API, respect methods marked as INTERNAL by not using them and carefully read
 > the API documentation.
 
 ++ Persisting entities
@@ -249,6 +249,10 @@ to do so, by key and by element. Here are some examples:
 
 
 Notice how both sides of the bidirectional association are always updated. Unidirectional associations are consequently simpler to handle. Also note that if you type-hint your methods, i.e. `setAddress(Address $address)`, then PHP does not allow null values and setAddress(null) will fail for removing the association. If you insist on type-hinting a typical way to deal with this is to provide a special method, like `removeAddress()`. This can also provide better encapsulation as it hides the internal meaning of not having an address.
+
+When working with collections, keep in mind that a Collection is essentially an ordered map (just like a PHP array).
+That is why the `remove` operation accepts an index/key. `removeElement` is a separate method
+that has O(n) complexity, where n is the size of the map. 
 
 Since Doctrine always only looks at the owning side of a bidirectional association, it is essentially not necessary that an inverse collection of a bidirectional one-to-many or many-to-many association is updated. This knowledge can often be used to improve performance by avoiding the loading of the inverse collection.
 
