@@ -277,9 +277,9 @@ class ClassMetadataFactory
             } else {
                 $this->_completeIdGeneratorMapping($class);
             }
-            
+
             if ($parent && $parent->isInheritanceTypeSingleTable()) {
-                $class->setTableName($parent->getTableName());
+                $class->setPrimaryTable($parent->table);
             }
 
             $class->setParentClasses($visited);

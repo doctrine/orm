@@ -62,13 +62,16 @@ class XmlDriver extends AbstractFileDriver
         }
 
         // Evaluate <entity...> attributes
+        $table = array();
         if (isset($xmlRoot['table'])) {
-            $metadata->table['name'] = (string)$xmlRoot['table'];
+            $table['name'] = (string)$xmlRoot['table'];
         }
-        
+        $metadata->setPrimaryTable($table);
+
+        /* not implemented specially anyway. use table = schema.table
         if (isset($xmlRoot['schema'])) {
             $metadata->table['schema'] = (string)$xmlRoot['schema'];
-        }
+        }*/
         
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string)$xmlRoot['inheritance-type'];

@@ -903,8 +903,8 @@ class ClassMetadataInfo
     /**
      * Sets the name of the primary table the class is mapped to.
      *
-     * @param string $tableName  The table name.
-     * @deprecated
+     * @param string $tableName The table name.
+     * @deprecated Use {@link setPrimaryTable}.
      */
     public function setTableName($tableName)
     {
@@ -912,18 +912,22 @@ class ClassMetadataInfo
     }
 
     /**
-     * Sets the primary table definition. The provided array must have the
+     * Sets the primary table definition. The provided array supports the
      * following structure:
      *
-     * name => <tableName>
-     * schema => <schemaName>
-     * catalog => <catalogName>
+     * name => <tableName> (optional, defaults to class name)
+     * indexes => array of indexes (optional)
+     * uniqueConstraints => array of constraints (optional)
      *
-     * @param array $primaryTableDefinition
+     * @param array $table
      */
-    public function setPrimaryTable(array $primaryTableDefinition)
+    public function setPrimaryTable(array $table)
     {
-        $this->table = $primaryTableDefinition;
+        if (isset($table['name']) && $table['name'][0] == '`') {
+            $table['name'] = trim($table['name'], '`');
+            $table['quoted'] = true;
+        }
+        $this->table = $table;
     }
 
     /**
