@@ -22,6 +22,12 @@ class PostgreSQLIdentityStrategyTest extends \Doctrine\Tests\OrmFunctionalTestCa
             }
         }
     }
+
+    protected function tearDown() {
+        parent::tearDown();
+        // drop sequence manually due to dependency
+        $this->_em->getConnection()->exec('DROP SEQUENCE postgresqlidentityentity_id_seq CASCADE');
+    }
     
     public function testPreSavePostSaveCallbacksAreInvoked()
     {        
