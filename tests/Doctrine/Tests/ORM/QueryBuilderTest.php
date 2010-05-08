@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -32,10 +30,7 @@ require_once __DIR__ . '/../TestInit.php';
  *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        http://www.phpdoctrine.org
  * @since       2.0
- * @version     $Revision$
  */
 class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 {
@@ -179,6 +174,20 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->orWhere('u.id = :uid2');
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid) OR (u.id = :uid2)');
+    }
+
+    public function testComplexAndWhereOrWhereNesting()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')
+           ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+           ->where('u.id = :uid')
+           ->orWhere('u.id = :uid2')
+           ->andWhere('u.id = :uid3')
+           ->orWhere('u.name = :name1', 'u.name = :name2')
+           ->andWhere('u.name <> :noname');
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE ((((u.id = :uid) OR (u.id = :uid2)) AND (u.id = :uid3)) OR (u.name = :name1) OR (u.name = :name2)) AND (u.name <> :noname)');
     }
 
     public function testAndWhereIn()
