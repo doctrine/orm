@@ -19,8 +19,10 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\ORM\ORMException,
-    Doctrine\DBAL\Platforms\AbstractPlatform,
+use ReflectionException,
+    Doctrine\ORM\ORMException,
+    Doctrine\ORM\EntityManager,
+    Doctrine\DBAL\Platforms,
     Doctrine\ORM\Events;
 
 /**
@@ -53,7 +55,7 @@ class ClassMetadataFactory
      *
      * @param $driver  The metadata driver to use.
      */
-    public function __construct(\Doctrine\ORM\EntityManager $em)
+    public function __construct(EntityManager $em)
     {
         $this->_em = $em;
     }
@@ -94,15 +96,15 @@ class ClassMetadataFactory
         if ( ! $this->_initialized) {
             $this->_initialize();
         }
-        
+
         $metadata = array();
         foreach ($this->_driver->getAllClassNames() as $className) {
             $metadata[] = $this->getMetadataFor($className);
         }
-        
+
         return $metadata;
     }
-    
+
     /**
      * Lazy initialization of this stuff, especially the metadata driver,
      * since these are not needed at all when a metadata cache is active.
@@ -252,7 +254,7 @@ class ClassMetadataFactory
             // Invoke driver
             try {
                 $this->_driver->loadMetadataForClass($className, $class);
-            } catch(\ReflectionException $e) { 
+            } catch(ReflectionException $e) { 
                 throw MappingException::reflectionFailure($className, $e);
             }
 
@@ -376,7 +378,13 @@ class ClassMetadataFactory
         // Create & assign an appropriate ID generator instance
         switch ($class->generatorType) {
             case ClassMetadata::GENERATOR_TYPE_IDENTITY:
-                $class->setIdGenerator(new \Doctrine\ORM\Id\IdentityGenerator());
+                // For PostgreSQL IDENTITY (SERIAL) we need a sequence name. It defaults to
+                // <table>_<column>_seq in PostgreSQL for SERIAL columns.
+                // Not pretty but necessary and the simplest solution that currently works.
+                $seqName = $this->_targetPlatform instanceof Platforms\PostgreSQLPlatform ?
+                        $class->table['name'] . '_' . $class->columnNames[$class->identifier[0]] . '_seq' :
+                        null;
+                $class->setIdGenerator(new \Doctrine\ORM\Id\IdentityGenerator($seqName));
                 break;
             case ClassMetadata::GENERATOR_TYPE_SEQUENCE:
                 // If there is no sequence definition yet, create a default definition

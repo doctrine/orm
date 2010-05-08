@@ -317,7 +317,7 @@ class ClassMetadataInfo
      * READ-ONLY: The ID generator used for generating IDs for this class.
      *
      * @var AbstractIdGenerator
-     * @todo Remove
+     * @todo Remove!
      */
     public $idGenerator;
 
@@ -335,6 +335,7 @@ class ClassMetadataInfo
      * </code>
      *
      * @var array
+     * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
      */
     public $sequenceGeneratorDefinition;
 
@@ -343,6 +344,7 @@ class ClassMetadataInfo
      * TABLE generation strategy.
      *
      * @var array
+     * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
      */
     public $tableGeneratorDefinition;
 
