@@ -164,7 +164,11 @@ class ProxyFactory
             }
 
             if ($method->isPublic() && ! $method->isFinal() && ! $method->isStatic()) {
-                $methods .= PHP_EOL . '    public function ' . $method->getName() . '(';
+                $methods .= PHP_EOL . '    public function ';
+                if ($method->returnsReference()) {
+                    $methods .= '&';
+                }
+                $methods .= $method->getName() . '(';
                 $firstParam = true;
                 $parameterString = $argumentString = '';
 

@@ -18,5 +18,9 @@ class ForumEntry
      * @Column(type="string", length=50)
      */
     public $topic;
+
+    public function &getTopicByReference() {
+        return $this->topic;
+    }
 }
 
