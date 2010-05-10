@@ -19,7 +19,8 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Collections\ArrayCollection,
+use Exception,
+    Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\Collections\Collection,
     Doctrine\Common\NotifyPropertyChanged,
     Doctrine\Common\PropertyChangedListener,
@@ -276,18 +277,17 @@ class UnitOfWork implements PropertyChangedListener
         
         // Now we need a commit order to maintain referential integrity
         $commitOrder = $this->_getCommitOrder();
-        
-        $tx = $this->_em->getTransaction();
-        
-        try {
-            $tx->begin();
 
+        $conn = $this->_em->getConnection();
+
+        $conn->beginTransaction();
+        try {
             if ($this->_entityInsertions) {
                 foreach ($commitOrder as $class) {
                     $this->_executeInserts($class);
                 }
             }
-            
+
             if ($this->_entityUpdates) {
                 foreach ($commitOrder as $class) {
                     $this->_executeUpdates($class);
@@ -317,11 +317,10 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            $tx->commit();
-        } catch (\Exception $e) {
-            $tx->setRollbackOnly();
-            $tx->rollback();
-
+            $conn->commit();
+        } catch (Exception $e) {
+            $this->_em->close();
+            $conn->rollback();
             throw $e;
         }
 
@@ -1289,6 +1288,8 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      * @return object The managed copy of the entity.
+     * @throws OptimisticLockException If the entity uses optimistic locking through a version
+     *         attribute and the version check against the managed copy fails.
      */
     public function merge($entity)
     {
@@ -1315,7 +1316,7 @@ class UnitOfWork implements PropertyChangedListener
             throw new \InvalidArgumentException('New entity detected during merge.'
                     . ' Persist the new entity before merging.');
         }
-        
+
         // MANAGED entities are ignored by the merge operation
         if ($this->getEntityState($entity, self::STATE_DETACHED) == self::STATE_MANAGED) {
             $managedCopy = $entity;
@@ -1343,7 +1344,7 @@ class UnitOfWork implements PropertyChangedListener
                 $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
                 // Throw exception if versions dont match.
                 if ($managedCopyVersion != $entityVersion) {
-                    throw OptimisticLockException::lockFailed();
+                    throw OptimisticLockException::lockFailed($entity);
                 }
             }
 

@@ -34,7 +34,7 @@ interface Connection
     function quote($input, $type=\PDO::PARAM_STR);
     function exec($statement);
     function lastInsertId($name = null);
-	function beginTransaction();
+    function beginTransaction();
     function commit();
     function rollBack();
     function errorCode();

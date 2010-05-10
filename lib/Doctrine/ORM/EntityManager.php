@@ -103,13 +103,6 @@ class EntityManager
     private $_closed = false;
 
     /**
-     * The ORM Entity Transaction.
-     *
-     * @var Doctrine\ORM\EntityTransaction
-     */
-    protected $_transaction;
-
-    /**
      * Creates a new EntityManager that operates on the given database connection
      * and uses the given Configuration and EventManager implementations.
      *
@@ -129,7 +122,6 @@ class EntityManager
                 $config->getProxyDir(),
                 $config->getProxyNamespace(),
                 $config->getAutoGenerateProxyClasses());
-        $this->_transaction = new EntityTransaction($this);
     }
 
     /**
@@ -153,25 +145,16 @@ class EntityManager
     }
 
     /**
-     * Gets the ORM Transaction instance.
-     *
-     * @return Doctrine\ORM\EntityTransaction
-     */
-    public function getTransaction()
-    {
-        return $this->_transaction;
-    }
-
-    /**
      * Gets an ExpressionBuilder used for object-oriented construction of query expressions.
      *
      * Example:
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder();
      *     $expr = $em->getExpressionBuilder();
      *     $qb->select('u')->from('User', 'u')
      *         ->where($expr->orX($expr->eq('u.id', 1), $expr->eq('u.id', 2)));
+     * </code>
      *
      * @return ExpressionBuilder
      */
@@ -185,29 +168,32 @@ class EntityManager
 
     /**
      * Starts a transaction on the underlying database connection.
+     *
+     * @deprecated Use {@link getConnection}.beginTransaction().
      */
     public function beginTransaction()
     {
-        $this->getTransaction()->begin();
+        $this->_conn->beginTransaction();
     }
 
     /**
      * Commits a transaction on the underlying database connection.
+     *
+     * @deprecated Use {@link getConnection}.commit().
      */
     public function commit()
     {
-        $this->getTransaction()->commit();
+        $this->_conn->commit();
     }
 
     /**
-     * Performs a rollback on the underlying database connection and closes the
-     * EntityManager as it may now be in a corrupted state.
+     * Performs a rollback on the underlying database connection.
      *
-     * @return boolean TRUE on success, FALSE on failure
+     * @deprecated Use {@link getConnection}.rollback().
      */
     public function rollback()
     {
-        return $this->getTransaction()->rollback();
+        $this->_conn->rollback();
     }
 
     /**
@@ -288,6 +274,9 @@ class EntityManager
      * Flushes all changes to objects that have been queued up to now to the database.
      * This effectively synchronizes the in-memory state of managed objects with the
      * database.
+     *
+     * @throws Doctrine\ORM\OptimisticLockException If a version check on an entity that
+     *         makes use of optimistic locking fails.
      */
     public function flush()
     {

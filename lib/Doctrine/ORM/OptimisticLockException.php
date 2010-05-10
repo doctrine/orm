@@ -20,15 +20,33 @@
 namespace Doctrine\ORM;
 
 /**
- * OptimisticLockException
+ * An OptimisticLockException is thrown when a version check on an object
+ * that uses optimistic locking through a version field fails.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
 class OptimisticLockException extends ORMException
 {
-    public static function lockFailed()
+    private $entity;
+
+    public function __construct($msg, $entity)
     {
-        return new self("The optimistic lock failed.");
+        $this->entity = $entity;
+    }
+
+    /**
+     * Gets the entity that caused the exception.
+     *
+     * @return object
+     */
+    public function getEntity()
+    {
+        return $this->entity;
+    }
+
+    public static function lockFailed($entity)
+    {
+        return new self("The optimistic lock on an entity failed.", $entity);
     }
 }
