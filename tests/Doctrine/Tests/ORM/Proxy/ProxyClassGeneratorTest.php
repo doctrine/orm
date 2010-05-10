@@ -28,7 +28,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
      * @var \Doctrine\ORM\Proxy\ProxyFactory
      */
     private $_proxyFactory;
-    
+
     protected function setUp()
     {
         parent::setUp();
@@ -39,7 +39,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         // SUT
         $this->_proxyFactory = new ProxyFactory($this->_emMock, __DIR__ . '/generated', 'Proxies', true);
     }
-    
+
     protected function tearDown()
     {
         foreach (new \DirectoryIterator(__DIR__ . '/generated') as $file) {
@@ -55,14 +55,14 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $proxyClass = 'Proxies\DoctrineTestsModelsECommerceECommerceFeatureProxy';
         $persister = $this->_getMockPersister();
         $this->_uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
-        
+
         $proxy = $this->_proxyFactory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $identifier);
-        
+
         $persister->expects($this->atLeastOnce())
                   ->method('load')
                   ->with($this->equalTo($identifier), $this->isInstanceOf($proxyClass))
                   ->will($this->returnValue(new \stdClass())); // fake return of entity instance
-        
+
         $proxy->getDescription();
     }
 
@@ -87,12 +87,22 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $persister = $this->_getMockPersister();
         $this->_uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
         $proxy = $this->_proxyFactory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', null);
-        
+
         $method = new \ReflectionMethod(get_class($proxy), 'setProduct');
         $params = $method->getParameters();
-        
+
         $this->assertEquals(1, count($params));
         $this->assertEquals('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $params[0]->getClass()->getName());
+    }
+
+    /**
+     * Test that the proxy behaves in regard to methods like &foo() correctly
+     */
+    public function testProxyRespectsMethodsWhichReturnValuesByReference() {
+        $proxy = $this->_proxyFactory->getProxy('Doctrine\Tests\Models\Forum\ForumEntry', null);
+        $method = new \ReflectionMethod(get_class($proxy), 'getTopicByReference');
+
+        $this->assertTrue($method->returnsReference());
     }
 
     public function testCreatesAssociationProxyAsSubclassOfTheOriginalOne()
@@ -122,7 +132,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->_proxyFactory->generateProxyClasses(array($classMetadata));
 
         $classCode = file_get_contents(dirname(__FILE__)."/generated/".$proxyName.".php");
-        
+
         $this->assertNotContains("class DoctrineOrmTestEntityProxy extends \\\\DoctrineOrmTestEntity", $classCode);
         $this->assertContains("class DoctrineOrmTestEntityProxy extends \\DoctrineOrmTestEntity", $classCode);
     }
@@ -153,7 +163,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->setExpectedException('Doctrine\ORM\Proxy\ProxyException');
         new ProxyFactory($this->_getTestEntityManager(), __DIR__ . '/generated', null);
     }
-    
+
     protected function _getMockPersister()
     {
         $persister = $this->getMock('Doctrine\ORM\Persisters\BasicEntityPersister', array('load'), array(), '', false);
