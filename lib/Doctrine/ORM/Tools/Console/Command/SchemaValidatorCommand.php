@@ -26,7 +26,7 @@ use Symfony\Components\Console\Input\InputArgument,
     Symfony\Components\Console;
 
 /**
- * Validate that the current mapping is valid
+ * Schema Validator Command
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
@@ -37,7 +37,7 @@ use Symfony\Components\Console\Input\InputArgument,
  * @author      Jonathan Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class ValidateSchemaCommand extends Console\Command\Command
+class SchemaValidatorCommand extends Console\Command\Command
 {
     /**
      * @see Console\Command\Command
@@ -63,25 +63,18 @@ EOT
         $validator = new \Doctrine\ORM\Tools\SchemaValidator($em);
         $errors = $validator->validateMapping();
 
-        $exit = 0;
         if ($errors) {
             foreach ($errors AS $className => $errorMessages) {
-                $output->write("<error>[Mapping] FAIL - The entity-class '" . $className . "' mapping is invalid:</error>\n");
+                $output->write("The entity-class '" . $className . "' is invalid:\n");
                 foreach ($errorMessages AS $errorMessage) {
                     $output->write('* ' . $errorMessage . "\n");
                 }
                 $output->write("\n");
             }
-            $exit += 1;
         }
 
         if (!$validator->schemaInSyncWithMetadata()) {
-            $output->write('<error>[Database] FAIL - The database schema is not in sync with the current mapping file.</error>' . "\n");
-            $exit += 2;
-        } else {
-            $output->write('<info>[Database] OK - The database schema is in sync with the mapping files.</info>' . "\n");
+            $output->write('The database schema is not in sync with the current mapping file.');
         }
-
-        exit($exit);
     }
 }
