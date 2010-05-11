@@ -117,7 +117,8 @@ class SchemaValidator
                                 "field " . $assoc->targetEntityName . "#" . $assoc->inversedBy . " which does not exist.";
                     }
 
-                    if ($targetMetadata->associationMappings[$assoc->mappedBy]->mappedBy == null) {
+                    if (isset($targetMetadata->associationMappings[$assoc->mappedBy]) &&
+                            $targetMetadata->associationMappings[$assoc->mappedBy]->mappedBy == null) {
                         $ce[] = "The field " . $class->name . "#" . $fieldName . " is on the inverse side of a ".
                                 "bi-directional relationship, but the specified mappedBy association on the target-entity ".
                                 $assoc->targetEntityName . "#" . $assoc->mappedBy . " does not contain the required ".
