@@ -1,13 +1,40 @@
-The Doctrine 2 database layer can be used independently of the object-relational mapping. It offers a leightweight abstraction layer around a PDO like API and allows optional access to lots of convenience functionality aswell as the ability to generate platform independent DQL and DDL statements.
+The Doctrine database abstraction & access layer (DBAL) offers a leightweight and thin runtime layer around a PDO-like API and a lot of additional, horizontal features like database schema introspection and manipulation through an OO API.
 
-++ Configuration
+The fact that the Doctrine DBAL abstracts the concrete PDO API away through the use of interfaces that closely resemble the existing PDO API
+makes it possible to implement custom drivers that may use existing native or self-made APIs. For example, the DBAL ships with a driver for Oracle databases
+that uses the oci8 extension under the hood.
 
-You can create a Doctrine Connection by using the `Doctrine\DBAL\DriverManager` class.
+++ Architecture
+
+As already said, the DBAL is a thin layer on top of PDO. PDO itself is mainly defined in terms of 2 classes:
+`PDO` and `PDOStatement`. The equivalent classes in the DBAL are `Doctrine\DBAL\Connection` and
+`Doctrine\DBAL\Statement`. A `Doctrine\DBAL\Connection` wraps a `Doctrine\DBAL\Driver\Connection`
+and a `Doctrine\DBAL\Statement` wraps a `Doctrine\DBAL\Driver\Statement`.
+
+`Doctrine\DBAL\Driver\Connection` and `Doctrine\DBAL\Driver\Statement` are just interfaces.
+These interfaces are implemented by concrete drivers. For all PDO based drivers, `PDO` and
+`PDOStatement` are the implementations of these interfaces. Thus, for PDO-based drivers, a 
+`Doctrine\DBAL\Connection` wraps a `PDO` instance and a `Doctrine\DBAL\Statement` wraps a
+`PDOStatement` instance. Even more, a `Doctrine\DBAL\Connection` *is a* `Doctrine\DBAL\Driver\Connection` 
+and a `Doctrine\DBAL\Statement` *is a* `Doctrine\DBAL\Driver\Statement`.
+
+What does a `Doctrine\DBAL\Connection` or a `Doctrine\DBAL\Statement` add to the underlying
+driver implementations? The enhancements include SQL logging, events and control over the
+transaction isolation level in a portable manner, among others.
+
+A DBAL driver is defined to the outside in terms of 3 interfaces: `Doctrine\DBAL\Driver`,
+`Doctrine\DBAL\Driver\Connection` and `Doctrine\DBAL\Driver\Statement`.
+The latter two resemble (a subset of) the corresponding PDO API.
+A concrete driver implementation must provide implementation classes for these 3 interfaces.
+
+
+++ Getting a Connection
+
+You can get a DBAL Connection through the `Doctrine\DBAL\DriverManager` class.
 
     [php]
     $config = new \Doctrine\DBAL\Configuration();
     //..
-
     $connectionParams = array(
         'dbname' => 'mydb',
         'user' => 'user',
@@ -17,45 +44,89 @@ You can create a Doctrine Connection by using the `Doctrine\DBAL\DriverManager` 
     );
     $conn = DriverManager::getConnection($connectionParams);
 
-The `DriverManager` returns an instance of `Doctrine\DBAL\Connection` which is a wrapper around any configured database driver, for example the PDO Mysql driver in the previous example.
+The `DriverManager` returns an instance of `Doctrine\DBAL\Connection` which is a wrapper around the underlying driver connection (which is often a PDO instance).
 
-+++ Connection Options
+The following sections describe the available connection parameters in detail.
 
-The `$connectionOptions` passed as the first argument to `EntityManager::create()` has to be either an array
-or an instance of `Doctrine\DBAL\Connection`. If an array is passed it is directly passed along to the
-DBAL Factory `Doctrine\DBAL\DriverManager::getConnection()`. The following option keys can be specified
-to create your connection:
 
-++++ Driver Management Options:
++++ Driver
 
-* driver - Allows to specify the default drivers shipped with Doctrine 2, 'pdo_mysql', 'pdo_sqlite', 'pdo_pgsql, and 'oci'.
-* driverClass - If no 'driver' is specified this allows usage of a userland implementation of Doctrine\DBAL\Driver.
-* pdo - If PDO is already instantiated for Mysql, SqLite or PgSQL this key can be used to pass this instance into Doctrine.
-* wrapperClass - By default Doctrine\DBAL\Connection is wrapped around each driver, however this option allows to specify a userland sub-class.
+The driver specifies the actual implementations of the DBAL interfaces to use. It can be configured in one of three ways:
 
-++++ Driver Configuration Options:
+* `driver`: The built-in driver implementation to use. The following drivers are currently available:
+    * `pdo_mysql`: A MySQL driver that uses the pdo_mysql PDO extension. 
+    * `pdo_sqlite`: An SQLite driver that uses the pdo_sqlite PDO extension. 
+    * `pdo_pgsql`: A PostgreSQL driver that uses the pdo_pgsql PDO extension.
+    * `pdo_oci`: An Oracle driver that uses the pdo_oci PDO extension. **Note that this driver caused problems in our tests. Prefer the oci8 driver if possible.**
+    * `oci8`:` An Oracle driver that uses the oci8 PHP extension.
+* `driverClass`: Specifies a custom driver implementation if no 'driver' is specified. This allows the use of custom drivers that are not part of the Doctrine DBAL itself.
+* `pdo`: Specifies an existing PDO instance to use.
 
-Common Configuration Options across all database drivers:
 
-* platform - An instance of `Doctrine\DBAL\Platforms\AbstractPlatform`. This is only required for userland implementations, each driver shipped with Doctrine 2 has a default platform.
-* user - Username required to connect to the database.
-* password - Password required to connect to the database.
-* driverOptions - Array of options passed to the driver instance on calling to Driver::connect.
++++ Wrapper Class
 
-Driver Configuration Options are different for each Database Driver, here are some of the db specific ones:
+By default a `Doctrine\DBAL\Connection` is wrapped around a driver `Connection`.
+The `wrapperClass` option allows to specify a custom wrapper implementation to use, however,
+custom wrapper class must be a subclass of `Doctrine\DBAL\Connection`.
 
-* host - Database host (Mysql, Pgsql, Oracle)
-* port - Database port (Mysql, Pgsql, Oracle)
-* dbname - Name of the database/schema to connect to. (Mysql, Pgsql, Oracle)
-* unix_socket - Name of the socket used to connect to the database. (Mysql)
-* charset - The charset used when connecting to the database. (Oracle)
-* path - The filesystem path to the database (Sqlite)
-* memory - True if the sqlite database should be in memory. (Sqlite)
 
-+++ DBAL Events
++++ Connection Details
 
-Both `Doctrine\DBAL\DriverManager` and `Doctrine\DBAL\Connection` accept an instance of `Doctrine\Common\EventManager`.
-The EventManager has a couple of events inside the DBAL layer that are triggered for the user to listen to:
+The connection details identify the database to connect to as well as the credentials to use.
+The connection details can differ depending on the used driver. The following sections describe
+the options recognized by each built-in driver.
+
+> *NOTE*
+> When using an existing PDO instance through the `pdo` option, specifying connection details is obviously not necessary.
+
+++++ pdo_sqlite
+
+* `user` (string): Username to use when connecting to the database.
+* `password` (string): Password to use when connecting to the database.
+* `path` (string): The filesystem path to the database file. Mutually exclusive with `memory`. `path` takes precedence.
+* `memory` (boolean): True if the SQLite database should be in-memory (non-persistent). Mutually exclusive with `path`. `path` takes precedence.
+
+++++ pdo_mysql
+
+* `user` (string): Username to use when connecting to the database.
+* `password` (string): Password to use when connecting to the database.
+* `host` (string): Hostname of the database to connect to.
+* `port` (integer): Port of the database to connect to.
+* `dbname` (string): Name of the database/schema to connect to.
+* `unix_socket` (string): Name of the socket used to connect to the database.
+
+++++ pdo_pgsql
+
+* `user` (string): Username to use when connecting to the database.
+* `password` (string): Password to use when connecting to the database.
+* `host` (string): Hostname of the database to connect to.
+* `port` (integer): Port of the database to connect to.
+* `dbname` (string): Name of the database/schema to connect to.
+
+++++ pdo_oci / oci8
+
+* `user` (string): Username to use when connecting to the database.
+* `password` (string): Password to use when connecting to the database.
+* `host` (string): Hostname of the database to connect to.
+* `port` (integer): Port of the database to connect to.
+* `dbname` (string): Name of the database/schema to connect to.
+* `charset` (string): The charset used when connecting to the database.
+
+
++++ Custom Platform
+
+Each built-in driver uses a default implementation of `Doctrine\DBAL\Platforms\AbstractPlatform`.
+If you wish to use a customized or custom implementation, you can pass a precreated instance
+in the `platform` option.
+
+
++++ Custom Driver Options
+
+The `driverOptions` option allows to pass arbitrary options through to the driver.
+This is equivalent to the 4th argument of the [PDO constructor](http://php.net/manual/en/pdo.construct.php).
+
+
++++ Events
 
 ++++ PostConnect Event
 
@@ -77,6 +148,7 @@ You can register events by subscribing them to the `EventManager` instance passe
 
     $conn = DriverManager::getConnection($connectionParams, null, $evm);
 
+
 ++ DBAL API
 
 +++ DBAL Architecture
@@ -91,7 +163,7 @@ The DBAL is seperated into several different packages that perfectly seperate re
 
 +++ Data Retrieval and Manipulation
 
- The following methods exist for executing queries against your configured database, three very generic methods and some advanced retrievial methods:
+The following methods exist for executing queries against your configured database, three very generic methods and some advanced retrievial methods:
 
 * `prepare($sql)` - Prepare a given sql statement and return the `\Doctrine\DBAL\Driver\Statement` instance.
 * `executeUpdate($sql, array $params)` - Executes a prepared statement with the given sql and parameters and returns the affected rows count.
@@ -116,44 +188,105 @@ By default the Doctrine DBAL does no escaping. Escaping is a very tricky busines
 
 +++ Transactions
 
-Doctrine handles transactions with a PDO like API, having methods for `beginTransaction()`, `commit()` and `rollBack()`. For consistency across different drivers Doctrine also handles the nesting of transactions internally. You can call `beginTransaction()` more than once, and only a matching amount of calls to `commit()` triggers the commit to the database. The Doctrine connectionalso has a method to set the transaction isolation level of the connection as supported by the underlying database.
+A `Doctrine\DBAL\Connection` provides a PDO-like API for transaction management, with the
+methods `Connection#beginTransaction()`, `Connection#commit()` and `Connection#rollback()`.
+
+Transaction demarcation with the Doctrine DBAL looks as follows:
 
     [php]
-    class Connection
-    {
-        /**
-         * Constant for transaction isolation level READ UNCOMMITTED.
-         */
-        const TRANSACTION_READ_UNCOMMITTED = 1;
-        
-        /**
-         * Constant for transaction isolation level READ COMMITTED.
-         */
-        const TRANSACTION_READ_COMMITTED = 2;
-        
-        /**
-         * Constant for transaction isolation level REPEATABLE READ.
-         */
-        const TRANSACTION_REPEATABLE_READ = 3;
-        
-        /**
-         * Constant for transaction isolation level SERIALIZABLE.
-         */
-        const TRANSACTION_SERIALIZABLE = 4;
-    }
-
-A transaction with Doctrine DBAL might then look like:
-
-    [php]
-    $conn->setTransactionIsolationLevel(Connection::TRANSACTION_SERIALIZABLE);
-
+    $conn->beginTransaction();
     try{
-        $conn->beginTransaction();
         // do stuff
         $conn->commit();
     } catch(\Exception $e) {
         $conn->rollback();
+        //handle or rethrow
     }
+    
+The `Doctrine\DBAL\Connection` also has methods control the transaction isolation level as supported by the underlying database.
+`Connection#setTransactionIsolation($level)` and Connection#getTransactionIsolation() can be used for that purpose.
+The possible isolation levels are represented by the following constants:
+
+    [php]
+    Connection::TRANSACTION_READ_UNCOMMITTED
+    Connection::TRANSACTION_READ_COMMITTED
+    Connection::TRANSACTION_REPEATABLE_READ
+    Connection::TRANSACTION_SERIALIZABLE
+
+The default transaction isolation level of a `Doctrine\DBAL\Connection` is chosen by the underlying
+platform but it is always at least READ_COMMITTED.
+
+
++++ Transaction Nesting 
+
+A `Doctrine\DBAL\Connection` also adds support for nesting transactions, or rather propagating transaction control up the call stack.
+For that purpose, the `Connection` class keeps an internal counter that represents the nesting level and is increased/decreased as
+`beginTransaction()`, `commit()` and `rollback()` are invoked. `beginTransaction()` increases the nesting level whilst `commit()``
+and `rollback()` decrease the nesting level. The nesting level starts at 0. Whenever the nesting level transitions from 0 to 1,
+`beginTransaction()` is invoked on the underlying driver connection and whenever the nesting level transitions from 1 to 0,
+`commit()` or `rollback()` is invoked on the underlying driver, depending on whether the transition was caused by `Connection#commit()`
+or `Connection#rollback()`.
+
+What this means is that transaction control is basically passed to code higher up in the call stack and
+the inner transaction block is ignored, with one important exception that is described further below.
+Do not confuse this with "real" nested transactions or savepoints. These are not supported by Doctrine.
+There is always only a single, real database transaction.
+
+To visualize what this means in practice, consider the following example:
+
+    [php]
+    // $conn instanceof Doctrine\DBAL\Connection
+    $conn->beginTransaction(); // 0 => 1, "real" transaction started
+    try {
+
+        ...
+        
+        // nested transaction block, this might be in some other API/library code that is
+        // unaware of the outer transaction.
+        $conn->beginTransaction(); // 1 => 2
+        try {
+            ...
+
+            $conn->commit(); // 2 => 1
+        } catch (Exception $e) {
+            $conn->rollback(); // 2 => 1, transaction marked for rollback only
+            throw $e;
+        }
+
+        ...
+
+        $conn->commit(); // 1 => 0, "real" transaction committed
+    } catch (Exception $e) {
+        $conn->rollback(); // 1 => 0, "real" transaction rollback
+        throw $e;
+    }
+
+However, **a rollback in a nested transaction block will always mark the current transaction so that the only possible outcome of the transaction is to be rolled back**.
+That means in the above example, the rollback in the inner transaction block marks the whole transaction for rollback only.
+Even if the nested transaction block would not rethrow the exception, the transaction is marked for rollback only and the commit of
+the outer transaction would trigger an exception, leading to the final rollback.
+This also means that you can not successfully commit some changes in an outer transaction if an inner transaction block fails and issues a rollback,
+even if this would be the desired behavior (i.e. because the nested operation is "optional" for the purpose of the outer transaction block).
+To achieve that, you need to restructure your application logic so as to avoid nesting transaction blocks. If this is not possible
+because the nested transaction blocks are in a third-party API you're out of luck.
+
+All that is guaruanteed to the inner transaction is that it still happens atomically, all or nothing, the transaction just gets a wider scope
+and the control is handed to the outer scope.
+
+> *CAUTION*
+> The transaction nesting described here is a debated feature that has it's critics. Form your own opinion.
+> We recommend avoiding nesting transaction blocks when possible, and most of the time, it is possible.
+> Transaction control should mostly be left to a service layer and not be handled in data access objects or similar.
+
+-
+
+> **CAUTION**
+> Directly invoking `PDO#beginTransaction()`, `PDO#commit()` or `PDO#rollback()` or the
+> corresponding methods on the particular `Doctrine\DBAL\Driver\Connection` instance in
+> use bybasses the transparent transaction nesting that is provided by
+> `Doctrine\DBAL\Connection` and can therefore corrupt the nesting level, causing errors
+> with broken transaction boundaries that may be hard to debug.
+
 
 ++ Schema Representation
 

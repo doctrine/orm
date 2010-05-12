@@ -146,7 +146,7 @@ The result would look like this:
 Note that this would be a partial object if the entity has more fields than just id and name. In the example above the column and field names are identical but that is not necessary, of course. Also note that the query string passed to createNativeQuery is **real native SQL**. Doctrine does not touch this SQL in any way.
 
 In the previous basic example, a User had no relations and the table the class is mapped to owns no foreign keys.
-The next an example assumes User has a unidirectional or bidirectional one-to-one association to a CmsAddress,
+The next example assumes User has a unidirectional or bidirectional one-to-one association to a CmsAddress,
 where the User is the owning side and thus owns the foreign key.
 
     [php]
