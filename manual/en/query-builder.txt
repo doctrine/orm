@@ -74,7 +74,7 @@ This method is the responsable to build every piece of DQL. It takes 3 parameter
 
 ++++ Binding parameters to your query
 
-Doctrine supports dynamic binding of parameters to your query, similar to preparing queries. You can use both strings and numbers as placeholders, although both have a slightly different syntax. Binding parameters can simply be achieved as follows:
+Doctrine supports dynamic binding of parameters to your query, similar to preparing queries. You can use both strings and numbers as placeholders, although both have a slightly different syntax. Additionally, you must make your choice: Mixing both styles is not allowed. Binding parameters can simply be achieved as follows:
 
 	[php]
     // $qb instanceof QueryBuilder
@@ -107,7 +107,7 @@ If you've got several parameters to bind to your query, you can also use setPara
 	// $qb instanceof QueryBuilder
     
     // Query here...
-	$qb->setParameters(array(1 => 'value for ?1', 2 => 'value for ?2', 'whatever' => 'your value for :whatever'));
+	$qb->setParameters(array(1 => 'value for ?1', 2 => 'value for ?2'));
 
 
 Getting already bound parameters is easy - simply use the abovementioned syntax with "getParameter()" or "getParameters()":
@@ -116,9 +116,9 @@ Getting already bound parameters is easy - simply use the abovementioned syntax 
 	// $qb instanceof QueryBuilder
     
     // See example above
-	$params = qb->getParameters(array(1, 2, 'whatever'));
+	$params = qb->getParameters(array(1, 2));
 	// Equivalent to
-	$param  = array($qb->getParameter(1), $qb->getParameter(2), $qb->getParameter('whatever'));
+	$param  = array($qb->getParameter(1), $qb->getParameter(2));
 
 Note: If you try to get a parameter that was not bound yet, getParameter() simply returns NULL.
 
