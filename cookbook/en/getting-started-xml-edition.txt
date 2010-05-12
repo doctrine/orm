@@ -295,11 +295,11 @@ We then go on specifying the definition of a Bug:
             <field name="created" column="bug_created" type="datetime" />
             <field name="status" column="bug_status" type="string" />
 
-            <many-to-one target-entity="User" field="reporter">
+            <many-to-one target-entity="User" field="reporter" inversed-by="reportedBugs">
                 <join-column name="reporter_id" referenced-column-name="account_id" />
             </many-to-one>
 
-            <many-to-one target-entity="User" field="engineer">
+            <many-to-one target-entity="User" field="engineer" inversed-by="assignedBugs">
                 <join-column name="engineer_id" referenced-column-name="account_id" />
             </many-to-one>
 
@@ -326,7 +326,9 @@ After the field definitions the two qualified references to the user entity are 
 the `many-to-one` tag. The class name of the related entity has to be specified with the `target-entity`
 attribute, which is enough information for the database mapper to access the foreign-table. The
 `join-column` tags are used to specifiy how the foreign and referend columns are named, an information
-Doctrine needs to construct joins between those two entities correctly.
+Doctrine needs to construct joins between those two entities correctly. Since `reporter` and `engineer`
+are on the owning side of a bi-direcitonal relation we also have to specify the `inversed-by` attribute.
+They have to point to the field names on the inverse side of the relationship.
 
 The last missing property is the `Bug::$products` collection. It holds all products where the specific
 bug is occouring in. Again you have to define the `target-entity` and `field` attributes on the `many-to-many`
