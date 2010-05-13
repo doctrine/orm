@@ -1290,6 +1290,8 @@ class UnitOfWork implements PropertyChangedListener
      * @return object The managed copy of the entity.
      * @throws OptimisticLockException If the entity uses optimistic locking through a version
      *         attribute and the version check against the managed copy fails.
+     *
+     * @todo Require active transaction!? OptimisticLockException may result in undefined state!?
      */
     public function merge($entity)
     {

@@ -19,7 +19,8 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\EventManager,
+use Closure, Exception,
+    Doctrine\Common\EventManager,
     Doctrine\DBAL\Connection,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\ClassMetadataFactory,
@@ -174,6 +175,32 @@ class EntityManager
     public function beginTransaction()
     {
         $this->_conn->beginTransaction();
+    }
+
+    /**
+     * Executes a function in a transaction.
+     *
+     * The function gets passed this EntityManager instance as an (optional) parameter.
+     *
+     * {@link flush} is invoked prior to transaction commit.
+     *
+     * If an exception occurs during execution of the function or flushing or transaction commit,
+     * the transaction is rolled back, the EntityManager closed and the exception re-thrown.
+     *
+     * @param Closure $func The function to execute transactionally.
+     */
+    public function transactional(Closure $func)
+    {
+        $this->_conn->beginTransaction();
+        try {
+            $func($this);
+            $this->flush();
+            $this->_conn->commit();
+        } catch (Exception $e) {
+            $this->close();
+            $this->_conn->rollback();
+            throw $e;
+        }
     }
 
     /**
