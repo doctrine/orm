@@ -213,7 +213,7 @@ of an exception. The following code snippet is functionally equivalent to the pr
     });
     
 
-The `Doctrine\DBAL\Connection` also has methods control the transaction isolation level as supported by the underlying database.
+The `Doctrine\DBAL\Connection` also has methods to control the transaction isolation level as supported by the underlying database.
 `Connection#setTransactionIsolation($level)` and Connection#getTransactionIsolation() can be used for that purpose.
 The possible isolation levels are represented by the following constants:
 
