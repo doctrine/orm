@@ -51,15 +51,35 @@ Explicit transaction demarcation is required when you want to include custom DBA
 or when you want to make use of some methods of the `EntityManager` API that require an active transaction.
 Such methods will throw a `TransactionRequiredException` to inform you of that requirement.
 
+A more convenient alternative for explicit transaction demarcation is the use of provided control
+abstractions in the form of `Connection#transactional($func)` and `EntityManager#transactional($func)`.
+When used, these control abstractions ensure that you never forget to rollback the transaction or
+close the `EntityManager`, apart from the obvious code reduction. An example that is functionally
+equivalent to the previously shown code looks as follows:
 
-++ Exception Handling
+    [php]
+    // $em instanceof EntityManager
+    $em->transactional(function($em) {
+        //... do some work
+        $user = new User;
+        $user->setName('George');
+        $em->persist($user);
+    });
+
+The difference between `Connection#transactional($func)` and `EntityManager#transactional($func)` is
+that the latter abstraction flushes the `EntityManager` prior to transaction commit and also closes
+the `EntityManager` properly when an exception occurs (in addition to rolling back the transaction).
+
+
++++ Exception Handling
 
 When using implicit transaction demarcation and an exception occurs during `EntityManager#flush()`, the transaction
 is automatically rolled back and the `EntityManager` closed.
 
 When using explicit transaction demarcation and an exception occurs, the transaction should be rolled back immediately
 and the `EntityManager` closed by invoking `EntityManager#close()` and subsequently discarded, as demonstrated in
-the example above. Note that when catching `Exception` you should generally rethrow the exception. If you intend to
+the example above. This can be handled elegantly by the control abstractions shown earlier.
+Note that when catching `Exception` you should generally rethrow the exception. If you intend to
 recover from some exceptions, catch them explicitly in earlier catch blocks (but do not forget to rollback the
 transaction and close the `EntityManager` there as well). All other best practices of exception handling apply
 similarly (i.e. either log or rethrow, not both, etc.).

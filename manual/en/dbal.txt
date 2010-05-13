@@ -198,11 +198,21 @@ Transaction demarcation with the Doctrine DBAL looks as follows:
     try{
         // do stuff
         $conn->commit();
-    } catch(\Exception $e) {
+    } catch(Exception $e) {
         $conn->rollback();
-        //handle or rethrow
+        throw $e;
     }
+
+Alternatively, the control abstraction `Connection#transactional($func)` can be used to make
+the code more concise and to make sure you never forget to rollback the transaction in the case
+of an exception. The following code snippet is functionally equivalent to the previous one:
+
+    [php]
+    $conn->transactional(function($conn) {
+        // do stuff
+    });
     
+
 The `Doctrine\DBAL\Connection` also has methods control the transaction isolation level as supported by the underlying database.
 `Connection#setTransactionIsolation($level)` and Connection#getTransactionIsolation() can be used for that purpose.
 The possible isolation levels are represented by the following constants:
