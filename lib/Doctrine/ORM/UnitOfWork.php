@@ -1480,7 +1480,7 @@ class UnitOfWork implements PropertyChangedListener
         $class = $this->_em->getClassMetadata(get_class($entity));
         if ($this->getEntityState($entity) == self::STATE_MANAGED) {
             $this->getEntityPersister($class->name)->refresh(
-                array_combine($class->getIdentifierColumnNames(), $this->_entityIdentifiers[$oid]),
+                array_combine($class->getIdentifierFieldNames(), $this->_entityIdentifiers[$oid]),
                 $entity
             );
         } else {
