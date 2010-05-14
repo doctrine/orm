@@ -1,6 +1,8 @@
 <?php
 
-namespace Doctrine\Models\DBAL\Functional;
+namespace Doctrine\Tests\DBAL\Functional;
+
+require_once __DIR__ . '/../../TestInit.php';
 
 class DataAccessTest extends \Doctrine\Tests\DbalFunctionalTestCase
 {
