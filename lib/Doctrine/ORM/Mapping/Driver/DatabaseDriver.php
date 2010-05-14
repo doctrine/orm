@@ -78,13 +78,6 @@ class DatabaseDriver implements Driver
         $ids = array();
         $fieldMappings = array();
         foreach ($columns as $column) {
-            // Skip columns that are foreign keys
-            foreach ($foreignKeys as $foreignKey) {
-                if (in_array(strtolower($column->getName()), array_map('strtolower', $foreignKey->getColumns()))) {
-                    continue(2);
-                }
-            }
-
             $fieldMapping = array();
             if (isset($indexes['primary']) && in_array($column->getName(), $indexes['primary']->getColumns())) {
                 $fieldMapping['id'] = true;
