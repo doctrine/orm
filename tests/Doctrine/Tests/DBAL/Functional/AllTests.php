@@ -27,6 +27,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\DBAL\Functional\Schema\OracleSchemaManagerTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Functional\Schema\Db2SchemaManagerTest');
         $suite->addTestSuite('Doctrine\Tests\DBAL\Functional\ConnectionTest');
+        $suite->addTestSuite('Doctrine\Tests\DBAL\Functional\DataAccessTest');
 
         return $suite;
     }
