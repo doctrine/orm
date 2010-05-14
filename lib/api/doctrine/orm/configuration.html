@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:37 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css">
 <link rel="start" href="../../overview-summary.html">
@@ -37,7 +37,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\ORM\Configuration</div>
-<div class="location">/Doctrine/ORM/Configuration.php at line 37</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 36</div>
 
 <h1>Class Configuration</h1>
 
@@ -57,7 +57,7 @@ It combines all configuration options from DBAL & ORM.</p></div>
 <dt>Since:</dt>
 <dd>2.0</dd>
 <dt>Internal:</dt>
-<dd>When adding a new configuration option just write a getter/setter pair and add the option to the _attributes array with a proper default value.</dd>
+<dd>When adding a new configuration option just write a getter/setter pair.</dd>
 <dt>Author:</dt>
 <dd>Benjamin Eberlei <kontakt@beberlei.de></dd>
 <dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
@@ -65,13 +65,6 @@ It combines all configuration options from DBAL & ORM.</p></div>
 <dd>Roman Borschel <roman@code-factory.org></dd>
 </dl>
 <hr>
-
-<table id="summary_constr">
-<tr><th colspan="2">Constructor Summary</th></tr>
-<tr>
-<td class="description"><p class="name"><a href="#Configuration()">Configuration</a>()</p><p class="description">Creates a new configuration that can be used for Doctrine.</p></td>
-</tr>
-</table>
 
 <table id="summary_method">
 <tr><th colspan="2">Method Summary</th></tr>
@@ -176,6 +169,21 @@ during each script execution.</p></td>
 </tr>
 <tr>
 <td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setCustomDatetimeFunctions()">setCustomDatetimeFunctions</a>(array functions)</p><p class="description">Sets a map of custom DQL date/time functions.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setCustomNumericFunctions()">setCustomNumericFunctions</a>(array functions)</p><p class="description">Sets a map of custom DQL numeric functions.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setCustomStringFunctions()">setCustomStringFunctions</a>(array functions)</p><p class="description">Sets a map of custom DQL string functions.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
 <td class="description"><p class="name"><a href="#setEntityNamespaces()">setEntityNamespaces</a>(mixed entityNamespaces, array entityAliasMap)</p><p class="description">Set the entity alias map</p></td>
 </tr>
 <tr>
@@ -209,47 +217,38 @@ C extension.</p></td>
 </tr>
 </table>
 
-<h2 id="detail_constr">Constructor Detail</h2>
-<div class="location">/Doctrine/ORM/Configuration.php at line 42</div>
-<h3 id="Configuration()">Configuration</h3>
-<code class="signature">public <strong>Configuration</strong>()</code>
-<div class="details">
-<p>Creates a new configuration that can be used for Doctrine.</p></div>
-
-<hr>
-
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/ORM/Configuration.php at line 406</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 433</div>
 <h3 id="addCustomDatetimeFunction()">addCustomDatetimeFunction</h3>
 <code class="signature">public  void <strong>addCustomDatetimeFunction</strong>(string name, string className)</code>
 <div class="details">
 <p>Registers a custom DQL function that produces a date/time value.
 Such a function can then be used in any DQL statement in any place where date/time
-functions are allowed.</p></div>
+functions are allowed.</p><p>DQL function names are case-insensitive.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 381</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 390</div>
 <h3 id="addCustomNumericFunction()">addCustomNumericFunction</h3>
 <code class="signature">public  void <strong>addCustomNumericFunction</strong>(string name, string className)</code>
 <div class="details">
 <p>Registers a custom DQL function that produces a numeric value.
 Such a function can then be used in any DQL statement in any place where numeric
-functions are allowed.</p></div>
+functions are allowed.</p><p>DQL function names are case-insensitive.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 356</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 347</div>
 <h3 id="addCustomStringFunction()">addCustomStringFunction</h3>
 <code class="signature">public  void <strong>addCustomStringFunction</strong>(string name, string className)</code>
 <div class="details">
 <p>Registers a custom DQL function that produces a string value.
 Such a function can then be used in any DQL statement in any place where string
-functions are allowed.</p></div>
+functions are allowed.</p><p>DQL function names are case-insensitive.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 151</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 135</div>
 <h3 id="addEntityNamespace()">addEntityNamespace</h3>
 <code class="signature">public  void <strong>addEntityNamespace</strong>(string alias, string namespace)</code>
 <div class="details">
@@ -257,7 +256,7 @@ functions are allowed.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 308</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 297</div>
 <h3 id="addNamedNativeQuery()">addNamedNativeQuery</h3>
 <code class="signature">public  void <strong>addNamedNativeQuery</strong>(string name, string sql, <a href="../../doctrine/orm/query/resultsetmapping.html">ResultSetMapping</a> rsm)</code>
 <div class="details">
@@ -271,7 +270,7 @@ functions are allowed.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 282</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 271</div>
 <h3 id="addNamedQuery()">addNamedQuery</h3>
 <code class="signature">public  void <strong>addNamedQuery</strong>(string name, string dql)</code>
 <div class="details">
@@ -284,7 +283,7 @@ functions are allowed.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 335</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 324</div>
 <h3 id="ensureProductionSettings()">ensureProductionSettings</h3>
 <code class="signature">public  void <strong>ensureProductionSettings</strong>()</code>
 <div class="details">
@@ -297,7 +296,7 @@ suitable for a production environment.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 83</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 65</div>
 <h3 id="getAutoGenerateProxyClasses()">getAutoGenerateProxyClasses</h3>
 <code class="signature">public  boolean <strong>getAutoGenerateProxyClasses</strong>()</code>
 <div class="details">
@@ -306,7 +305,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 417</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 444</div>
 <h3 id="getCustomDatetimeFunction()">getCustomDatetimeFunction</h3>
 <code class="signature">public  string <strong>getCustomDatetimeFunction</strong>(string name)</code>
 <div class="details">
@@ -314,7 +313,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 392</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 401</div>
 <h3 id="getCustomNumericFunction()">getCustomNumericFunction</h3>
 <code class="signature">public  string <strong>getCustomNumericFunction</strong>(string name)</code>
 <div class="details">
@@ -322,7 +321,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 367</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 358</div>
 <h3 id="getCustomStringFunction()">getCustomStringFunction</h3>
 <code class="signature">public  string <strong>getCustomStringFunction</strong>(string name)</code>
 <div class="details">
@@ -330,7 +329,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 163</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 147</div>
 <h3 id="getEntityNamespace()">getEntityNamespace</h3>
 <code class="signature">public  string <strong>getEntityNamespace</strong>(string entityNamespaceAlias)</code>
 <div class="details">
@@ -342,7 +341,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 239</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 226</div>
 <h3 id="getMetadataCacheImpl()">getMetadataCacheImpl</h3>
 <code class="signature">public  \Doctrine\Common\Cache\Cache <strong>getMetadataCacheImpl</strong>()</code>
 <div class="details">
@@ -350,7 +349,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 189</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 173</div>
 <h3 id="getMetadataDriverImpl()">getMetadataDriverImpl</h3>
 <code class="signature">public  Mapping\Driver\Driver <strong>getMetadataDriverImpl</strong>()</code>
 <div class="details">
@@ -362,7 +361,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 320</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 309</div>
 <h3 id="getNamedNativeQuery()">getNamedNativeQuery</h3>
 <code class="signature">public  array <strong>getNamedNativeQuery</strong>(string name)</code>
 <div class="details">
@@ -376,7 +375,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 293</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 282</div>
 <h3 id="getNamedQuery()">getNamedQuery</h3>
 <code class="signature">public  string <strong>getNamedQuery</strong>(string name)</code>
 <div class="details">
@@ -390,7 +389,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 72</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 53</div>
 <h3 id="getProxyDir()">getProxyDir</h3>
 <code class="signature">public  string <strong>getProxyDir</strong>()</code>
 <div class="details">
@@ -398,7 +397,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 104</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 87</div>
 <h3 id="getProxyNamespace()">getProxyNamespace</h3>
 <code class="signature">public  string <strong>getProxyNamespace</strong>()</code>
 <div class="details">
@@ -406,7 +405,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 219</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 205</div>
 <h3 id="getQueryCacheImpl()">getQueryCacheImpl</h3>
 <code class="signature">public  \Doctrine\Common\Cache\Cache <strong>getQueryCacheImpl</strong>()</code>
 <div class="details">
@@ -414,7 +413,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 199</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 184</div>
 <h3 id="getResultCacheImpl()">getResultCacheImpl</h3>
 <code class="signature">public  \Doctrine\Common\Cache\Cache <strong>getResultCacheImpl</strong>()</code>
 <div class="details">
@@ -422,7 +421,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 260</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 248</div>
 <h3 id="getUseCExtension()">getUseCExtension</h3>
 <code class="signature">public  boolean <strong>getUseCExtension</strong>()</code>
 <div class="details">
@@ -435,7 +434,7 @@ C extension.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 137</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 121</div>
 <h3 id="newDefaultAnnotationDriver()">newDefaultAnnotationDriver</h3>
 <code class="signature">public  Mapping\Driver\AnnotationDriver <strong>newDefaultAnnotationDriver</strong>(array paths)</code>
 <div class="details">
@@ -443,7 +442,7 @@ C extension.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 94</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 77</div>
 <h3 id="setAutoGenerateProxyClasses()">setAutoGenerateProxyClasses</h3>
 <code class="signature">public  void <strong>setAutoGenerateProxyClasses</strong>(boolean bool)</code>
 <div class="details">
@@ -452,7 +451,46 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 178</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 461</div>
+<h3 id="setCustomDatetimeFunctions()">setCustomDatetimeFunctions</h3>
+<code class="signature">public  void <strong>setCustomDatetimeFunctions</strong>(array functions)</code>
+<div class="details">
+<p>Sets a map of custom DQL date/time functions.</p><p>Keys must be function names and values the FQCN of the implementing class.
+The function names will be case-insensitive in DQL.</p><p>Any previously added date/time functions are discarded.</p><dl>
+<dt>Parameters:</dt>
+<dd>functions - The map of custom DQL date/time functions.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 418</div>
+<h3 id="setCustomNumericFunctions()">setCustomNumericFunctions</h3>
+<code class="signature">public  void <strong>setCustomNumericFunctions</strong>(array functions)</code>
+<div class="details">
+<p>Sets a map of custom DQL numeric functions.</p><p>Keys must be function names and values the FQCN of the implementing class.
+The function names will be case-insensitive in DQL.</p><p>Any previously added numeric functions are discarded.</p><dl>
+<dt>Parameters:</dt>
+<dd>functions - The map of custom DQL numeric functions.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 375</div>
+<h3 id="setCustomStringFunctions()">setCustomStringFunctions</h3>
+<code class="signature">public  void <strong>setCustomStringFunctions</strong>(array functions)</code>
+<div class="details">
+<p>Sets a map of custom DQL string functions.</p><p>Keys must be function names and values the FQCN of the implementing class.
+The function names will be case-insensitive in DQL.</p><p>Any previously added string functions are discarded.</p><dl>
+<dt>Parameters:</dt>
+<dd>functions - The map of custom DQL string functions.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Configuration.php at line 162</div>
 <h3 id="setEntityNamespaces()">setEntityNamespaces</h3>
 <code class="signature">public  void <strong>setEntityNamespaces</strong>(mixed entityNamespaces, array entityAliasMap)</code>
 <div class="details">
@@ -460,7 +498,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 249</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 237</div>
 <h3 id="setMetadataCacheImpl()">setMetadataCacheImpl</h3>
 <code class="signature">public  void <strong>setMetadataCacheImpl</strong>(\Doctrine\Common\Cache\Cache cacheImpl)</code>
 <div class="details">
@@ -468,7 +506,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 126</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 110</div>
 <h3 id="setMetadataDriverImpl()">setMetadataDriverImpl</h3>
 <code class="signature">public  void <strong>setMetadataDriverImpl</strong>(<a href="../../doctrine/dbal/driver.html">Driver</a> driverImpl)</code>
 <div class="details">
@@ -480,7 +518,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 62</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 43</div>
 <h3 id="setProxyDir()">setProxyDir</h3>
 <code class="signature">public  void <strong>setProxyDir</strong>(string dir)</code>
 <div class="details">
@@ -488,7 +526,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 114</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 98</div>
 <h3 id="setProxyNamespace()">setProxyNamespace</h3>
 <code class="signature">public  void <strong>setProxyNamespace</strong>(string ns)</code>
 <div class="details">
@@ -496,7 +534,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 229</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 216</div>
 <h3 id="setQueryCacheImpl()">setQueryCacheImpl</h3>
 <code class="signature">public  void <strong>setQueryCacheImpl</strong>(\Doctrine\Common\Cache\Cache cacheImpl)</code>
 <div class="details">
@@ -504,7 +542,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 209</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 195</div>
 <h3 id="setResultCacheImpl()">setResultCacheImpl</h3>
 <code class="signature">public  void <strong>setResultCacheImpl</strong>(\Doctrine\Common\Cache\Cache cacheImpl)</code>
 <div class="details">
@@ -512,7 +550,7 @@ during each script execution.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Configuration.php at line 271</div>
+<div class="location">/Doctrine/ORM/Configuration.php at line 260</div>
 <h3 id="setUseCExtension()">setUseCExtension</h3>
 <code class="signature">public  void <strong>setUseCExtension</strong>(boolean boolean)</code>
 <div class="details">

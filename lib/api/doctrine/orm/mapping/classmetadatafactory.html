@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:37 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
 <link rel="start" href="../../../overview-summary.html">
@@ -37,7 +37,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\ORM\Mapping\ClassMetadataFactory</div>
-<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 42</div>
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 39</div>
 
 <h1>Class ClassMetadataFactory</h1>
 
@@ -52,14 +52,8 @@ metadata mapping informations of a class which describes how a class should be m
 to a relational database.</p></div>
 
 <dl>
-<dt>License:</dt>
-<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
-<dt>See Also:</dt>
-<dd><code>www.doctrine-project.org</code></dd>
 <dt>Since:</dt>
 <dd>2.0</dd>
-<dt>Version:</dt>
-<dd>$Revision$</dd>
 <dt>Author:</dt>
 <dd>Benjamin Eberlei <kontakt@beberlei.de></dd>
 <dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
@@ -83,7 +77,7 @@ to a relational database.</p></div>
 mapping driver.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\Common\Cache\Cache</td>
+<td class="type"> <a href="../../../doctrine/common/cache/cache.html">Cache</a></td>
 <td class="description"><p class="name"><a href="#getCacheDriver()">getCacheDriver</a>()</p><p class="description">Gets the cache driver used by the factory to cache ClassMetadata instances.</p></td>
 </tr>
 <tr>
@@ -91,7 +85,7 @@ mapping driver.</p></td>
 <td class="description"><p class="name"><a href="#getLoadedMetadata()">getLoadedMetadata</a>()</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\Mapping\ClassMetadata</td>
+<td class="type"> <a href="../../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a></td>
 <td class="description"><p class="name"><a href="#getMetadataFor()">getMetadataFor</a>(string className)</p><p class="description">Gets the class metadata descriptor for a class.</p></td>
 </tr>
 <tr>
@@ -100,7 +94,7 @@ mapping driver.</p></td>
 </tr>
 <tr>
 <td class="type"> void</td>
-<td class="description"><p class="name"><a href="#setCacheDriver()">setCacheDriver</a>(Doctrine\Common\Cache\Cache cacheDriver)</p><p class="description">Sets the cache driver used by the factory to cache ClassMetadata instances.</p></td>
+<td class="description"><p class="name"><a href="#setCacheDriver()">setCacheDriver</a>(<a href="../../../doctrine/common/cache/cache.html">Cache</a> cacheDriver)</p><p class="description">Sets the cache driver used by the factory to cache ClassMetadata instances.</p></td>
 </tr>
 <tr>
 <td class="type"> void</td>
@@ -110,7 +104,7 @@ mapping driver.</p></td>
 </table>
 
 <h2 id="detail_constr">Constructor Detail</h2>
-<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 61</div>
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 58</div>
 <h3 id="ClassMetadataFactory()">ClassMetadataFactory</h3>
 <code class="signature">public <strong>ClassMetadataFactory</strong>(mixed em, $driver The)</code>
 <div class="details">
@@ -123,7 +117,7 @@ mapping driver.</p></td>
 <hr>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 97</div>
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 94</div>
 <h3 id="getAllMetadata()">getAllMetadata</h3>
 <code class="signature">public  array <strong>getAllMetadata</strong>()</code>
 <div class="details">
@@ -136,15 +130,15 @@ mapping driver.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 81</div>
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 78</div>
 <h3 id="getCacheDriver()">getCacheDriver</h3>
-<code class="signature">public  Doctrine\Common\Cache\Cache <strong>getCacheDriver</strong>()</code>
+<code class="signature">public  <a href="../../../doctrine/common/cache/cache.html">Cache</a> <strong>getCacheDriver</strong>()</code>
 <div class="details">
 <p>Gets the cache driver used by the factory to cache ClassMetadata instances.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 86</div>
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 83</div>
 <h3 id="getLoadedMetadata()">getLoadedMetadata</h3>
 <code class="signature">public  void <strong>getLoadedMetadata</strong>()</code>
 <div class="details">
@@ -152,9 +146,9 @@ mapping driver.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 129</div>
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 126</div>
 <h3 id="getMetadataFor()">getMetadataFor</h3>
-<code class="signature">public  Doctrine\ORM\Mapping\ClassMetadata <strong>getMetadataFor</strong>(string className)</code>
+<code class="signature">public  <a href="../../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a> <strong>getMetadataFor</strong>(string className)</code>
 <div class="details">
 <p>Gets the class metadata descriptor for a class.</p><dl>
 <dt>Parameters:</dt>
@@ -164,7 +158,7 @@ mapping driver.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 176</div>
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 173</div>
 <h3 id="hasMetadataFor()">hasMetadataFor</h3>
 <code class="signature">public  boolean <strong>hasMetadataFor</strong>(string className)</code>
 <div class="details">
@@ -176,15 +170,15 @@ mapping driver.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 71</div>
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 68</div>
 <h3 id="setCacheDriver()">setCacheDriver</h3>
-<code class="signature">public  void <strong>setCacheDriver</strong>(Doctrine\Common\Cache\Cache cacheDriver)</code>
+<code class="signature">public  void <strong>setCacheDriver</strong>(<a href="../../../doctrine/common/cache/cache.html">Cache</a> cacheDriver)</code>
 <div class="details">
 <p>Sets the cache driver used by the factory to cache ClassMetadata instances.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 189</div>
+<div class="location">/Doctrine/ORM/Mapping/ClassMetadataFactory.php at line 186</div>
 <h3 id="setMetadataFor()">setMetadataFor</h3>
 <code class="signature">public  void <strong>setMetadataFor</strong>(string className, <a href="../../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a> class)</code>
 <div class="details">

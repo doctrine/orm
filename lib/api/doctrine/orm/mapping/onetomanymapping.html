@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:37 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
 <link rel="start" href="../../../overview-summary.html">
@@ -37,7 +37,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\ORM\Mapping\OneToManyMapping</div>
-<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 47</div>
+<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 46</div>
 
 <h1>Class OneToManyMapping</h1>
 
@@ -66,6 +66,8 @@ owning <tt>ClassMetadata</tt> instance.</p></div>
 <dd>Giorgio Sironi <piccoloprincipeazzurro@gmail.com></dd>
 <dt>Since:</dt>
 <dd>2.0</dd>
+<dt>Todo:</dt>
+<dd>Potentially remove if assoc mapping objects get replaced by simple arrays.</dd>
 </dl>
 <hr>
 
@@ -106,7 +108,7 @@ owning <tt>ClassMetadata</tt> instance.</p></div>
 <tr><td><a href="../../../doctrine/orm/mapping/associationmapping.html#getQuotedJoinTableName()">getQuotedJoinTableName</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#hasCascades()">hasCascades</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isEagerlyFetched()">isEagerlyFetched</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isLazilyFetched()">isLazilyFetched</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isManyToMany()">isManyToMany</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isOneToMany()">isOneToMany</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isOneToOne()">isOneToOne</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#load()">load</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#usesJoinTable()">usesJoinTable</a></td></tr></table>
 
 <h2 id="detail_field">Field Detail</h2>
-<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 62</div>
+<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 61</div>
 <h3 id="orderBy">orderBy</h3>
 <code class="signature">public  mixed <strong>$orderBy</strong></code>
 <div class="details">
@@ -114,7 +116,7 @@ owning <tt>ClassMetadata</tt> instance.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 54</div>
+<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 53</div>
 <h3 id="orphanRemoval">orphanRemoval</h3>
 <code class="signature">public  boolean <strong>$orphanRemoval</strong> = false</code>
 <div class="details">
@@ -123,18 +125,15 @@ owning <tt>ClassMetadata</tt> instance.</p></div>
 <hr>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 107</div>
+<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 104</div>
 <h3 id="isOneToMany()">isOneToMany</h3>
 <code class="signature">public  boolean <strong>isOneToMany</strong>()</code>
 <div class="details">
-<p></p><dl>
-<dt>Override.</dt>
-</dl>
-</div>
+<p></p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 121</div>
+<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 119</div>
 <h3 id="load()">load</h3>
 <code class="signature">public  void <strong>load</strong>(object sourceEntity, mixed targetCollection, <a href="../../../doctrine/orm/entitymanager.html">EntityManager</a> em, array joinColumnValues, $em The, $joinColumnValues , object target)</code>
 <div class="details">
@@ -144,12 +143,14 @@ owning <tt>ClassMetadata</tt> instance.</p></div>
 <dd>The - collection to load/fill.</dd>
 <dd>The - EntityManager to use.</dd>
 <dd></dd>
+<dt>Todo:</dt>
+<dd>Remove</dd>
 </dl>
 </div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 97</div>
+<div class="location">/Doctrine/ORM/Mapping/OneToManyMapping.php at line 96</div>
 <h3 id="shouldDeleteOrphans()">shouldDeleteOrphans</h3>
 <code class="signature">public  boolean <strong>shouldDeleteOrphans</strong>()</code>
 <div class="details">

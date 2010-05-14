@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:37 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
 <link rel="start" href="../../../overview-summary.html">
@@ -37,7 +37,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\ORM\Mapping\OneToOneMapping</div>
-<div class="location">/Doctrine/ORM/Mapping/OneToOneMapping.php at line 43</div>
+<div class="location">/Doctrine/ORM/Mapping/OneToOneMapping.php at line 42</div>
 
 <h1>Class OneToOneMapping</h1>
 
@@ -64,6 +64,8 @@ owning <tt>ClassMetadata</tt> instance.</p></div>
 <dt>Author:</dt>
 <dd>Roman Borschel <roman@code-factory.org></dd>
 <dd>Giorgio Sironi <piccoloprincipeazzurro@gmail.com></dd>
+<dt>Todo:</dt>
+<dd>Potentially remove if assoc mapping objects get replaced by simple arrays.</dd>
 </dl>
 <hr>
 
@@ -115,7 +117,7 @@ when the join columns are fetched as part of the query result.</p></td>
 <tr><td><a href="../../../doctrine/orm/mapping/associationmapping.html#getQuotedJoinTableName()">getQuotedJoinTableName</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#hasCascades()">hasCascades</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isEagerlyFetched()">isEagerlyFetched</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isLazilyFetched()">isLazilyFetched</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isManyToMany()">isManyToMany</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isOneToMany()">isOneToMany</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#isOneToOne()">isOneToOne</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#load()">load</a>, <a href="../../../doctrine/orm/mapping/associationmapping.html#usesJoinTable()">usesJoinTable</a></td></tr></table>
 
 <h2 id="detail_field">Field Detail</h2>
-<div class="location">/Doctrine/ORM/Mapping/OneToOneMapping.php at line 79</div>
+<div class="location">/Doctrine/ORM/Mapping/OneToOneMapping.php at line 78</div>
 <h3 id="joinColumnFieldNames">joinColumnFieldNames</h3>
 <code class="signature">public  array <strong>$joinColumnFieldNames</strong> = array()</code>
 <div class="details">
@@ -124,7 +126,7 @@ when the join columns are fetched as part of the query result.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/OneToOneMapping.php at line 71</div>
+<div class="location">/Doctrine/ORM/Mapping/OneToOneMapping.php at line 70</div>
 <h3 id="joinColumns">joinColumns</h3>
 <code class="signature">public  array <strong>$joinColumns</strong> = array()</code>
 <div class="details">
@@ -132,7 +134,7 @@ when the join columns are fetched as part of the query result.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/OneToOneMapping.php at line 64</div>
+<div class="location">/Doctrine/ORM/Mapping/OneToOneMapping.php at line 63</div>
 <h3 id="orphanRemoval">orphanRemoval</h3>
 <code class="signature">public  boolean <strong>$orphanRemoval</strong> = false</code>
 <div class="details">
@@ -140,7 +142,7 @@ when the join columns are fetched as part of the query result.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/OneToOneMapping.php at line 50</div>
+<div class="location">/Doctrine/ORM/Mapping/OneToOneMapping.php at line 49</div>
 <h3 id="sourceToTargetKeyColumns">sourceToTargetKeyColumns</h3>
 <code class="signature">public  mixed <strong>$sourceToTargetKeyColumns</strong> = array()</code>
 <div class="details">
@@ -150,7 +152,7 @@ Reverse mapping of _targetToSourceKeyColumns.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/OneToOneMapping.php at line 57</div>
+<div class="location">/Doctrine/ORM/Mapping/OneToOneMapping.php at line 56</div>
 <h3 id="targetToSourceKeyColumns">targetToSourceKeyColumns</h3>
 <code class="signature">public  mixed <strong>$targetToSourceKeyColumns</strong> = array()</code>
 <div class="details">
@@ -161,7 +163,7 @@ Reverse mapping of _sourceToTargetKeyColumns.</p></div>
 <hr>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/ORM/Mapping/OneToOneMapping.php at line 126</div>
+<div class="location">/Doctrine/ORM/Mapping/OneToOneMapping.php at line 125</div>
 <h3 id="isOneToOne()">isOneToOne</h3>
 <code class="signature">public  boolean <strong>isOneToOne</strong>()</code>
 <div class="details">
@@ -182,6 +184,8 @@ Reverse mapping of _sourceToTargetKeyColumns.</p></div>
 <dd>targetEntity - the entity to load data in</dd>
 <dd></dd>
 <dd>joinColumnValues - Values of the join columns of $sourceEntity.</dd>
+<dt>Todo:</dt>
+<dd>Remove</dd>
 </dl>
 </div>
 

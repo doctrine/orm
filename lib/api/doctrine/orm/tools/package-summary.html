@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:03 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:35 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
 <link rel="start" href="../../../overview-summary.html">
@@ -35,10 +35,9 @@
 
 <table class="title">
 <tr><th colspan="2" class="title">Class Summary</th></tr>
-<tr><td class="name"><a href="../../../doctrine/orm/tools/classmetadatareader.html">ClassMetadataReader</a></td><td class="description">Class to read metadata mapping information from multiple sources into an array
-of ClassMetadataInfo instances.
-</td></tr>
 <tr><td class="name"><a href="../../../doctrine/orm/tools/convertdoctrine1schema.html">ConvertDoctrine1Schema</a></td><td class="description">Class to help with converting Doctrine 1 schema files to Doctrine 2 mapping files</td></tr>
+<tr><td class="name"><a href="../../../doctrine/orm/tools/disconnectedclassmetadatafactory.html">DisconnectedClassMetadataFactory</a></td><td class="description">The DisconnectedClassMetadataFactory is used to create ClassMetadataInfo objects
+that do not require the entity class actually exist. </td></tr>
 <tr><td class="name"><a href="../../../doctrine/orm/tools/entitygenerator.html">EntityGenerator</a></td><td class="description">Generic class used to generate PHP5 entity classes from ClassMetadataInfo instances[php]
 $classes = $em->getClassMetadataFactory()->getAllMetadata();$generator = new \Doctrine\ORM\Tools\EntityGenerator();
 $generator->setGenerateAnnotations(true);
@@ -46,6 +45,7 @@ $generator->setGenerateStubMethods(true);
 $generator->setRegenerateEntityIfExists(false);
 $generator->setUpdateEntityIfExists(true);
 $generator->generate($classes, '/path/to/generate/entities');</td></tr>
+<tr><td class="name"><a href="../../../doctrine/orm/tools/entityrepositorygenerator.html">EntityRepositoryGenerator</a></td><td class="description">Class to generate entity repository classes</td></tr>
 <tr><td class="name"><a href="../../../doctrine/orm/tools/schematool.html">SchemaTool</a></td><td class="description">The SchemaTool is a tool to create/drop/update database schemas based on
 ClassMetadata class descriptors.</td></tr>
 <tr><td class="name"><a href="../../../doctrine/orm/tools/toolevents.html">ToolEvents</a></td><td class="description"></td></tr>

@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:37 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css">
 <link rel="start" href="../../overview-summary.html">
@@ -37,7 +37,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\ORM\QueryBuilder</div>
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 38</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 33</div>
 
 <h1>Class QueryBuilder</h1>
 
@@ -51,14 +51,8 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 PHP interface.</p></div>
 
 <dl>
-<dt>License:</dt>
-<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
-<dt>See Also:</dt>
-<dd><code>www.doctrine-project.org</code></dd>
 <dt>Since:</dt>
 <dd>2.0</dd>
-<dt>Version:</dt>
-<dd>$Revision$</dd>
 <dt>Author:</dt>
 <dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
 <dd>Jonathan Wage <jonwage@gmail.com></dd>
@@ -82,7 +76,7 @@ PHP interface.</p></div>
 </tr>
 <tr>
 <td class="type">final  int</td>
-<td class="description"><p class="name"><a href="#STATE_DIRTY">$STATE_DIRTY</a></p></td>
+<td class="description"><p class="name"><a href="#STATE_DIRTY">$STATE_DIRTY</a></p><p class="description">The builder states.</p></td>
 </tr>
 <tr>
 <td class="type">final  int</td>
@@ -101,50 +95,39 @@ PHP interface.</p></div>
 <tr><th colspan="2">Method Summary</th></tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#add()">add</a>(string dqlPartName, string dqlPart, string append)</p><p class="description">Add a single DQL query part to the array of parts</p></td>
+<td class="description"><p class="name"><a href="#add()">add</a>(string dqlPartName, string dqlPart, string append)</p><p class="description">Either appends to or replaces a single, generic query part.
+</p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#addGroupBy()">addGroupBy</a>(string groupBy)</p><p class="description">Add to the existing GROUP BY clause[php]
-$qb = $em->createQueryBuilder()
-->select('u')
-->from('User', 'u')
-->groupBy('u.last_login');
-->addGroupBy('u.created_at')</p></td>
+<td class="description"><p class="name"><a href="#addGroupBy()">addGroupBy</a>(string groupBy)</p><p class="description">Adds a grouping expression to the query.
+</p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#addOrderBy()">addOrderBy</a>(string sort, string order)</p><p class="description">Add to the existing ORDER BY clause</p></td>
+<td class="description"><p class="name"><a href="#addOrderBy()">addOrderBy</a>(string sort, string order)</p><p class="description">Adds an ordering to the query results.</p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#addSelect()">addSelect</a>(mixed select)</p><p class="description">Add to the SELECT statement[php]
-$qb = $em->createQueryBuilder()
-->select('u')
-->addSelect('p')
-->from('User', 'u')
-->leftJoin('u.Phonenumbers', 'p');</p></td>
+<td class="description"><p class="name"><a href="#addSelect()">addSelect</a>(mixed select)</p><p class="description">Adds an item that is to be returned in the query result.
+</p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#andHaving()">andHaving</a>(mixed having)</p><p class="description">Add to the existing HAVING clause with an AND</p></td>
+<td class="description"><p class="name"><a href="#andHaving()">andHaving</a>(mixed having)</p><p class="description">Adds a restriction over the groups of the query, forming a logical
+conjunction with any existing having restrictions.</p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#andWhere()">andWhere</a>(mixed where)</p><p class="description">Add a new WHERE statement with an AND[php]
-$qb = $em->createQueryBuilder()
-->select('u')
-->from('User', 'u')
-->where('u.username LIKE ?')
-->andWhere('u.is_active = 1');</p></td>
+<td class="description"><p class="name"><a href="#andWhere()">andWhere</a>(mixed where)</p><p class="description">Adds one or more restrictions to the query results, forming a logical
+conjunction with any previously specified restrictions.
+</p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#delete()">delete</a>(string delete, string alias)</p><p class="description">Construct a DQL DELETE query[php]
-$qb = $em->createQueryBuilder()
-->delete('User', 'u')
-->where('u.id = :user_id');
-->setParameter(':user_id', 1);</p></td>
+<td class="description"><p class="name"><a href="#delete()">delete</a>(string delete, string alias)</p><p class="description">Turns the query being built into a bulk delete query that ranges over
+a certain entity type.
+</p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/query/expr.html">Expr</a></td>
@@ -153,26 +136,22 @@ $qb = $em->createQueryBuilder()
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#from()">from</a>(string from, string alias)</p><p class="description">Specify the FROM part when constructing a SELECT DQL query[php]
-$qb = $em->createQueryBuilder()
-->select('u')
-->from('User', 'u')</p></td>
+<td class="description"><p class="name"><a href="#from()">from</a>(string from, string alias)</p><p class="description">Create and add a query root corresponding to the entity identified by the given alias,
+forming a cartesian product with any existing query roots.
+</p></td>
 </tr>
 <tr>
 <td class="type"> string</td>
-<td class="description"><p class="name"><a href="#getDQL()">getDQL</a>()</p><p class="description">Get the complete DQL string for this query builder instance[php]
-$qb = $em->createQueryBuilder()
-->select('u')
-->from('User', 'u')
-echo $qb->getDql(); // SELECT u FROM User u</p></td>
+<td class="description"><p class="name"><a href="#getDQL()">getDQL</a>()</p><p class="description">Get the complete DQL string formed by the current specifications of this QueryBuilder.
+</p></td>
 </tr>
 <tr>
 <td class="type"> mixed</td>
-<td class="description"><p class="name"><a href="#getDQLPart()">getDQLPart</a>(string queryPartName)</p><p class="description">Get a DQL part or parts by the part name</p></td>
+<td class="description"><p class="name"><a href="#getDQLPart()">getDQLPart</a>(string queryPartName)</p><p class="description">Get a query part by its name.</p></td>
 </tr>
 <tr>
 <td class="type"> array</td>
-<td class="description"><p class="name"><a href="#getDQLParts()">getDQLParts</a>()</p><p class="description">Get the full DQL parts array</p></td>
+<td class="description"><p class="name"><a href="#getDQLParts()">getDQLParts</a>()</p><p class="description">Get all query parts.</p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/entitymanager.html">EntityManager</a></td>
@@ -190,29 +169,24 @@ echo $qb->getDql(); // SELECT u FROM User u</p></td>
 </tr>
 <tr>
 <td class="type"> mixed</td>
-<td class="description"><p class="name"><a href="#getParameter()">getParameter</a>(mixed key)</p><p class="description">Gets a query parameter.</p></td>
+<td class="description"><p class="name"><a href="#getParameter()">getParameter</a>(mixed key)</p><p class="description">Gets a (previously set) query parameter of the query being constructed.</p></td>
 </tr>
 <tr>
 <td class="type"> array</td>
-<td class="description"><p class="name"><a href="#getParameters()">getParameters</a>(mixed params)</p><p class="description">Get all defined parameters</p></td>
+<td class="description"><p class="name"><a href="#getParameters()">getParameters</a>()</p><p class="description">Gets all defined query parameters for the query being constructed.</p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/query.html">Query</a></td>
-<td class="description"><p class="name"><a href="#getQuery()">getQuery</a>()</p><p class="description">Constructs a Query instance from the current configuration of the builder.
+<td class="description"><p class="name"><a href="#getQuery()">getQuery</a>()</p><p class="description">Constructs a Query instance from the current specifications of the builder.
 </p></td>
 </tr>
 <tr>
 <td class="type"> string</td>
-<td class="description"><p class="name"><a href="#getRootAlias()">getRootAlias</a>()</p><p class="description">Get the root alias for the query. </p></td>
+<td class="description"><p class="name"><a href="#getRootAlias()">getRootAlias</a>()</p><p class="description">Gets the root alias of the query. </p></td>
 </tr>
 <tr>
 <td class="type"> integer</td>
-<td class="description"><p class="name"><a href="#getState()">getState</a>()</p><p class="description">Get the state of this query builder instance[php]
-if ($qb->getState() == QueryBuilder::STATE_DIRTY) {
-echo 'Query builder is dirty';
-} else {
-echo 'Query builder is clean';
-}</p></td>
+<td class="description"><p class="name"><a href="#getState()">getState</a>()</p><p class="description">Get the state of this query builder instance.</p></td>
 </tr>
 <tr>
 <td class="type"> integer</td>
@@ -220,66 +194,54 @@ echo 'Query builder is clean';
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#groupBy()">groupBy</a>(string groupBy)</p><p class="description">Set the GROUP BY clause[php]
-$qb = $em->createQueryBuilder()
-->select('u')
-->from('User', 'u')
-->groupBy('u.id');</p></td>
-</tr>
-<tr>
-<td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#having()">having</a>(mixed having)</p><p class="description">Set the HAVING clause</p></td>
-</tr>
-<tr>
-<td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#innerJoin()">innerJoin</a>(string join, string alias, string conditionType, string condition)</p><p class="description">Add an INNER JOIN to an associated class.
+<td class="description"><p class="name"><a href="#groupBy()">groupBy</a>(string groupBy)</p><p class="description">Specifies a grouping over the results of the query.
 </p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#join()">join</a>(string join, string alias, string conditionType, string condition)</p><p class="description">Add a INNER JOIN to an associated class.
+<td class="description"><p class="name"><a href="#having()">having</a>(mixed having)</p><p class="description">Specifies a restriction over the groups of the query.
 </p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#leftJoin()">leftJoin</a>(string join, string alias, string conditionType, string condition)</p><p class="description">Add a LEFT JOIN[php]
-$qb = $em->createQueryBuilder()
-->select('u')
-->from('User', 'u')
-->leftJoin('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');</p></td>
+<td class="description"><p class="name"><a href="#innerJoin()">innerJoin</a>(string join, string alias, string conditionType, string condition)</p><p class="description">Creates and adds a join over an entity association to the query.
+</p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#orHaving()">orHaving</a>(mixed having)</p><p class="description">Add to the existing HAVING clause with an OR</p></td>
+<td class="description"><p class="name"><a href="#join()">join</a>(string join, string alias, string conditionType, string condition)</p><p class="description">Creates and adds a join over an entity association to the query.
+</p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#orWhere()">orWhere</a>(mixed where)</p><p class="description">Add a new WHERE statement with an OR[php]
-$qb = $em->createQueryBuilder()
-->select('u')
-->from('User', 'u')
-->where('u.id = 1')
-->orWhere('u.id = 2');</p></td>
+<td class="description"><p class="name"><a href="#leftJoin()">leftJoin</a>(string join, string alias, string conditionType, string condition)</p><p class="description">Creates and adds a left join over an entity association to the query.
+</p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#orderBy()">orderBy</a>(string sort, string order)</p><p class="description">Set the ORDER BY clause</p></td>
+<td class="description"><p class="name"><a href="#orHaving()">orHaving</a>(mixed having)</p><p class="description">Adds a restriction over the groups of the query, forming a logical
+disjunction with any existing having restrictions.</p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#select()">select</a>(mixed select)</p><p class="description">Set the SELECT statement[php]
-$qb = $em->createQueryBuilder()
-->select('u', 'p')
-->from('User', 'u')
-->leftJoin('u.Phonenumbers', 'p');</p></td>
+<td class="description"><p class="name"><a href="#orWhere()">orWhere</a>(mixed where)</p><p class="description">Adds one or more restrictions to the query results, forming a logical
+disjunction with any previously specified restrictions.
+</p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#set()">set</a>(string key, string value)</p><p class="description">Add a SET statement for a DQL UPDATE query[php]
-$qb = $em->createQueryBuilder()
-->update('User', 'u')
-->set('u.password', md5('password'))
-->where('u.id = ?');</p></td>
+<td class="description"><p class="name"><a href="#orderBy()">orderBy</a>(string sort, string order)</p><p class="description">Specifies an ordering for the query results.
+</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
+<td class="description"><p class="name"><a href="#select()">select</a>(mixed select)</p><p class="description">Specifies an item that is to be returned in the query result.
+</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
+<td class="description"><p class="name"><a href="#set()">set</a>(string key, string value)</p><p class="description">Sets a new value for a field in a bulk update query.
+</p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
@@ -291,39 +253,29 @@ $qb = $em->createQueryBuilder()
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#setParameter()">setParameter</a>(string|integer key, mixed value)</p><p class="description">Sets a query parameter.
+<td class="description"><p class="name"><a href="#setParameter()">setParameter</a>(string|integer key, mixed value)</p><p class="description">Sets a query parameter for the query being constructed.
 </p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#setParameters()">setParameters</a>(array params)</p><p class="description">Sets a collection of query parameters.
+<td class="description"><p class="name"><a href="#setParameters()">setParameters</a>(array params)</p><p class="description">Sets a collection of query parameters for the query being constructed.
 </p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#update()">update</a>(string update, string alias)</p><p class="description">Construct a DQL UPDATE query[php]
-$qb = $em->createQueryBuilder()
-->update('User', 'u')
-->set('u.password', md5('password'))
-->where('u.id = ?');</p></td>
+<td class="description"><p class="name"><a href="#update()">update</a>(string update, string alias)</p><p class="description">Turns the query being built into a bulk update query that ranges over
+a certain entity type.
+</p></td>
 </tr>
 <tr>
 <td class="type"> <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a></td>
-<td class="description"><p class="name"><a href="#where()">where</a>(mixed predicates)</p><p class="description">Set and override any existing WHERE statements[php]
-$qb = $em->createQueryBuilder()
-->select('u')
-->from('User', 'u')
-->where('u.id = ?');You can optionally programatically build and/or expressions
-$qb = $em->createQueryBuilder();$or = $qb->expr()->orx();
-$or->add($qb->expr()->eq('u.id', 1));
-$or->add($qb->expr()->eq('u.id', 2));$qb->update('User', 'u')
-->set('u.password', md5('password'))
-->where($or);</p></td>
+<td class="description"><p class="name"><a href="#where()">where</a>(mixed predicates)</p><p class="description">Specifies one or more restrictions to the query result.
+</p></td>
 </tr>
 </table>
 
 <h2 id="detail_field">Field Detail</h2>
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 41</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 37</div>
 <h3 id="DELETE">DELETE</h3>
 <code class="signature">public final  int <strong>DELETE</strong> = 1</code>
 <div class="details">
@@ -331,7 +283,7 @@ $or->add($qb->expr()->eq('u.id', 2));$qb->update('User', 'u')
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 40</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 36</div>
 <h3 id="SELECT">SELECT</h3>
 <code class="signature">public final  int <strong>$SELECT</strong></code>
 <div class="details">
@@ -339,7 +291,7 @@ $or->add($qb->expr()->eq('u.id', 2));$qb->update('User', 'u')
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 45</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 42</div>
 <h3 id="STATE_CLEAN">STATE_CLEAN</h3>
 <code class="signature">public final  int <strong>STATE_CLEAN</strong> = 1</code>
 <div class="details">
@@ -347,15 +299,15 @@ $or->add($qb->expr()->eq('u.id', 2));$qb->update('User', 'u')
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 44</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 41</div>
 <h3 id="STATE_DIRTY">STATE_DIRTY</h3>
 <code class="signature">public final  int <strong>$STATE_DIRTY</strong></code>
 <div class="details">
-</div>
+<p>The builder states.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 42</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 38</div>
 <h3 id="UPDATE">UPDATE</h3>
 <code class="signature">public final  int <strong>UPDATE</strong> = 2</code>
 <div class="details">
@@ -364,7 +316,7 @@ $or->add($qb->expr()->eq('u.id', 2));$qb->update('User', 'u')
 <hr>
 
 <h2 id="detail_constr">Constructor Detail</h2>
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 101</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 98</div>
 <h3 id="QueryBuilder()">QueryBuilder</h3>
 <code class="signature">public <strong>QueryBuilder</strong>(<a href="../../doctrine/orm/entitymanager.html">EntityManager</a> em)</code>
 <div class="details">
@@ -377,11 +329,12 @@ $or->add($qb->expr()->eq('u.id', 2));$qb->update('User', 'u')
 <hr>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 355</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 358</div>
 <h3 id="add()">add</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>add</strong>(string dqlPartName, string dqlPart, string append)</code>
 <div class="details">
-<p>Add a single DQL query part to the array of parts</p><dl>
+<p>Either appends to or replaces a single, generic query part.</p><p>The available parts are: 'select', 'from', 'join', 'set', 'where',
+'groupBy', 'having' and 'orderBy'.</p><dl>
 <dt>Returns:</dt>
 <dd>This QueryBuilder instance.</dd>
 </dl>
@@ -389,52 +342,54 @@ $or->add($qb->expr()->eq('u.id', 2));$qb->update('User', 'u')
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 689</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 725</div>
 <h3 id="addGroupBy()">addGroupBy</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>addGroupBy</strong>(string groupBy)</code>
 <div class="details">
-<p>Add to the existing GROUP BY clause</p><p>[php]
+<p>Adds a grouping expression to the query.</p><p><code>
 $qb = $em->createQueryBuilder()
 ->select('u')
 ->from('User', 'u')
-->groupBy('u.last_login');
-->addGroupBy('u.created_at')</p><dl>
+->groupBy('u.lastLogin');
+->addGroupBy('u.createdAt')
+</code></p><dl>
 <dt>Parameters:</dt>
-<dd>groupBy - The GROUP BY clause</dd>
+<dd>groupBy - The grouping expression.</dd>
 <dt>Returns:</dt>
-<dd>$qb</dd>
+<dd>This QueryBuilder instance.</dd>
 </dl>
 </div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 771</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 811</div>
 <h3 id="addOrderBy()">addOrderBy</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>addOrderBy</strong>(string sort, string order)</code>
 <div class="details">
-<p>Add to the existing ORDER BY clause</p><dl>
+<p>Adds an ordering to the query results.</p><dl>
 <dt>Parameters:</dt>
-<dd>sort - What to sort on</dd>
-<dd>order - Optional: The order to sort the results.</dd>
+<dd>sort - The ordering expression.</dd>
+<dd>order - The ordering direction.</dd>
 <dt>Returns:</dt>
-<dd>$qb</dd>
+<dd>This QueryBuilder instance.</dd>
 </dl>
 </div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 408</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 414</div>
 <h3 id="addSelect()">addSelect</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>addSelect</strong>(mixed select)</code>
 <div class="details">
-<p>Add to the SELECT statement</p><p>[php]
+<p>Adds an item that is to be returned in the query result.</p><p><code>
 $qb = $em->createQueryBuilder()
 ->select('u')
 ->addSelect('p')
 ->from('User', 'u')
-->leftJoin('u.Phonenumbers', 'p');</p><dl>
+->leftJoin('u.Phonenumbers', 'p');
+</code></p><dl>
 <dt>Parameters:</dt>
-<dd>select - String SELECT statement or SELECT Expr instance</dd>
+<dd>select - The selection expression.</dd>
 <dt>Returns:</dt>
 <dd>This QueryBuilder instance.</dd>
 </dl>
@@ -442,32 +397,37 @@ $qb = $em->createQueryBuilder()
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 715</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 753</div>
 <h3 id="andHaving()">andHaving</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>andHaving</strong>(mixed having)</code>
 <div class="details">
-<p>Add to the existing HAVING clause with an AND</p><dl>
+<p>Adds a restriction over the groups of the query, forming a logical
+conjunction with any existing having restrictions.</p><dl>
+<dt>Parameters:</dt>
+<dd>having - The restriction to append.</dd>
 <dt>Returns:</dt>
-<dd>$qb</dd>
+<dd>This QueryBuilder instance.</dd>
 </dl>
 </div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 614</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 645</div>
 <h3 id="andWhere()">andWhere</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>andWhere</strong>(mixed where)</code>
 <div class="details">
-<p>Add a new WHERE statement with an AND</p><p>[php]
+<p>Adds one or more restrictions to the query results, forming a logical
+conjunction with any previously specified restrictions.</p><p><code>
 $qb = $em->createQueryBuilder()
 ->select('u')
 ->from('User', 'u')
 ->where('u.username LIKE ?')
-->andWhere('u.is_active = 1');</p><dl>
+->andWhere('u.is_active = 1');
+</code></p><dl>
 <dt>Parameters:</dt>
-<dd>where - The WHERE statement</dd>
+<dd>where - The query restrictions.</dd>
 <dt>Returns:</dt>
-<dd>$qb</dd>
+<dd>This QueryBuilder instance.</dd>
 <dt>See Also:</dt>
 <dd>where()</dd>
 </dl>
@@ -475,18 +435,20 @@ $qb = $em->createQueryBuilder()
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 434</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 442</div>
 <h3 id="delete()">delete</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>delete</strong>(string delete, string alias)</code>
 <div class="details">
-<p>Construct a DQL DELETE query</p><p>[php]
+<p>Turns the query being built into a bulk delete query that ranges over
+a certain entity type.</p><p><code>
 $qb = $em->createQueryBuilder()
 ->delete('User', 'u')
 ->where('u.id = :user_id');
-->setParameter(':user_id', 1);</p><dl>
+->setParameter(':user_id', 1);
+</code></p><dl>
 <dt>Parameters:</dt>
-<dd>delete - The model to delete</dd>
-<dd>alias - The alias of the model</dd>
+<dd>delete - The class/type whose instances are subject to the deletion.</dd>
+<dd>alias - The class/type alias used in the constructed query.</dd>
 <dt>Returns:</dt>
 <dd>This QueryBuilder instance.</dd>
 </dl>
@@ -494,27 +456,31 @@ $qb = $em->createQueryBuilder()
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 118</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 119</div>
 <h3 id="expr()">expr</h3>
 <code class="signature">public  <a href="../../doctrine/orm/query/expr.html">Expr</a> <strong>expr</strong>()</code>
 <div class="details">
 <p>Gets an ExpressionBuilder used for object-oriented construction of query expressions.
-Intended for convenient inline usage. Example:</p><p>[php]
+This producer method is intended for convenient inline usage. Example:</p><p><code>
 $qb = $em->createQueryBuilder()
 ->select('u')
 ->from('User', 'u')
-->where($qb->expr()->eq('u.id', 1));</p></div>
+->where($qb->expr()->eq('u.id', 1));
+</code></p><p>For more complex expression construction, consider storing the expression
+builder object in a local variable.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 481</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 493</div>
 <h3 id="from()">from</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>from</strong>(string from, string alias)</code>
 <div class="details">
-<p>Specify the FROM part when constructing a SELECT DQL query</p><p>[php]
+<p>Create and add a query root corresponding to the entity identified by the given alias,
+forming a cartesian product with any existing query roots.</p><p><code>
 $qb = $em->createQueryBuilder()
 ->select('u')
-->from('User', 'u')</p><dl>
+->from('User', 'u')
+</code></p><dl>
 <dt>Parameters:</dt>
 <dd>from - The class name.</dd>
 <dd>alias - The alias of the class.</dd>
@@ -525,47 +491,52 @@ $qb = $em->createQueryBuilder()
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 171</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 166</div>
 <h3 id="getDQL()">getDQL</h3>
 <code class="signature">public  string <strong>getDQL</strong>()</code>
 <div class="details">
-<p>Get the complete DQL string for this query builder instance</p><p>[php]
+<p>Get the complete DQL string formed by the current specifications of this QueryBuilder.</p><p><code>
 $qb = $em->createQueryBuilder()
 ->select('u')
 ->from('User', 'u')
-echo $qb->getDql(); // SELECT u FROM User u</p><dl>
+echo $qb->getDql(); // SELECT u FROM User u
+</code></p><dl>
 <dt>Returns:</dt>
-<dd>The DQL string</dd>
+<dd>The DQL query string.</dd>
 </dl>
 </div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 782</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 823</div>
 <h3 id="getDQLPart()">getDQLPart</h3>
 <code class="signature">public  mixed <strong>getDQLPart</strong>(string queryPartName)</code>
 <div class="details">
-<p>Get a DQL part or parts by the part name</p><dl>
+<p>Get a query part by its name.</p><dl>
 <dt>Returns:</dt>
 <dd>$queryPart</dd>
+<dt>Todo:</dt>
+<dd>Rename: getQueryPart (or remove?)</dd>
 </dl>
 </div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 792</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 834</div>
 <h3 id="getDQLParts()">getDQLParts</h3>
 <code class="signature">public  array <strong>getDQLParts</strong>()</code>
 <div class="details">
-<p>Get the full DQL parts array</p><dl>
+<p>Get all query parts.</p><dl>
 <dt>Returns:</dt>
 <dd>$dqlParts</dd>
+<dt>Todo:</dt>
+<dd>Rename: getQueryParts (or remove?)</dd>
 </dl>
 </div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 138</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 139</div>
 <h3 id="getEntityManager()">getEntityManager</h3>
 <code class="signature">public  <a href="../../doctrine/orm/entitymanager.html">EntityManager</a> <strong>getEntityManager</strong>()</code>
 <div class="details">
@@ -578,7 +549,7 @@ echo $qb->getDql(); // SELECT u FROM User u</p><dl>
 <code class="signature">public  integer <strong>getFirstResult</strong>()</code>
 <div class="details">
 <p>Gets the position of the first result the query object was set to retrieve (the "offset").
-Returns NULL if <code><a href="../../doctrine/orm/query.html#setFirstResult()">setFirstResult</a></code> was not applied to this query builder.</p><dl>
+Returns NULL if <code><a href="../../doctrine/orm/query.html#setFirstResult()">setFirstResult</a></code> was not applied to this QueryBuilder.</p><dl>
 <dt>Returns:</dt>
 <dd>The position of the first result.</dd>
 </dl>
@@ -603,7 +574,7 @@ Returns NULL if <code><a href="../../doctrine/orm/query.html#setMaxResults()">se
 <h3 id="getParameter()">getParameter</h3>
 <code class="signature">public  mixed <strong>getParameter</strong>(mixed key)</code>
 <div class="details">
-<p>Gets a query parameter.</p><dl>
+<p>Gets a (previously set) query parameter of the query being constructed.</p><dl>
 <dt>Parameters:</dt>
 <dd>key - The key (index or name) of the bound parameter.</dd>
 <dt>Returns:</dt>
@@ -615,59 +586,62 @@ Returns NULL if <code><a href="../../doctrine/orm/query.html#setMaxResults()">se
 
 <div class="location">/Doctrine/ORM/QueryBuilder.php at line 285</div>
 <h3 id="getParameters()">getParameters</h3>
-<code class="signature">public  array <strong>getParameters</strong>(mixed params)</code>
+<code class="signature">public  array <strong>getParameters</strong>()</code>
 <div class="details">
-<p>Get all defined parameters</p><dl>
+<p>Gets all defined query parameters for the query being constructed.</p><dl>
 <dt>Returns:</dt>
-<dd>Defined parameters</dd>
+<dd>The currently defined query parameters.</dd>
 </dl>
 </div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 212</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 208</div>
 <h3 id="getQuery()">getQuery</h3>
 <code class="signature">public  <a href="../../doctrine/orm/query.html">Query</a> <strong>getQuery</strong>()</code>
 <div class="details">
-<p>Constructs a Query instance from the current configuration of the builder.</p><p>[php]
+<p>Constructs a Query instance from the current specifications of the builder.</p><p><code>
 $qb = $em->createQueryBuilder()
 ->select('u')
 ->from('User', 'u');
 $q = $qb->getQuery();
-$results = $q->execute();</p></div>
+$results = $q->execute();
+</code></p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 233</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 231</div>
 <h3 id="getRootAlias()">getRootAlias</h3>
 <code class="signature">public  string <strong>getRootAlias</strong>()</code>
 <div class="details">
-<p>Get the root alias for the query. This is the first entity alias involved
-in the construction of the query</p><p>[php]
+<p>Gets the root alias of the query. This is the first entity alias involved
+in the construction of the query.</p><p><code>
 $qb = $em->createQueryBuilder()
 ->select('u')
-->from('User', 'u');</p><p>echo $qb->getRootAlias(); // u</p><dl>
+->from('User', 'u');</p><p>echo $qb->getRootAlias(); // u
+</code></p><dl>
 <dt>Returns:</dt>
 <dd>$rootAlias</dd>
+<dt>Todo:</dt>
+<dd>Rename/Refactor: getRootAliases(), there can be multiple roots!</dd>
 </dl>
 </div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 155</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 149</div>
 <h3 id="getState()">getState</h3>
 <code class="signature">public  integer <strong>getState</strong>()</code>
 <div class="details">
-<p>Get the state of this query builder instance</p><p>[php]
-if ($qb->getState() == QueryBuilder::STATE_DIRTY) {
-echo 'Query builder is dirty';
-} else {
-echo 'Query builder is clean';
-}</p></div>
+<p>Get the state of this query builder instance.</p><dl>
+<dt>Returns:</dt>
+<dd>Either QueryBuilder::STATE_DIRTY or QueryBuilder::STATE_CLEAN.</dd>
+</dl>
+</div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 128</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 129</div>
 <h3 id="getType()">getType</h3>
 <code class="signature">public  integer <strong>getType</strong>()</code>
 <div class="details">
@@ -675,41 +649,48 @@ echo 'Query builder is clean';
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 670</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 705</div>
 <h3 id="groupBy()">groupBy</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>groupBy</strong>(string groupBy)</code>
 <div class="details">
-<p>Set the GROUP BY clause</p><p>[php]
+<p>Specifies a grouping over the results of the query.
+Replaces any previously specified groupings, if any.</p><p><code>
 $qb = $em->createQueryBuilder()
 ->select('u')
 ->from('User', 'u')
-->groupBy('u.id');</p><dl>
+->groupBy('u.id');
+</code></p><dl>
 <dt>Parameters:</dt>
-<dd>groupBy - The GROUP BY clause</dd>
+<dd>groupBy - The grouping expression.</dd>
 <dt>Returns:</dt>
-<dd>$qb</dd>
+<dd>This QueryBuilder instance.</dd>
 </dl>
 </div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 700</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 737</div>
 <h3 id="having()">having</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>having</strong>(mixed having)</code>
 <div class="details">
-<p>Set the HAVING clause</p><dl>
+<p>Specifies a restriction over the groups of the query.
+Replaces any previous having restrictions, if any.</p><dl>
+<dt>Parameters:</dt>
+<dd>having - The restriction over the groups.</dd>
 <dt>Returns:</dt>
-<dd>$qb</dd>
+<dd>This QueryBuilder instance.</dd>
 </dl>
 </div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 521</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 542</div>
 <h3 id="innerJoin()">innerJoin</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>innerJoin</strong>(string join, string alias, string conditionType, string condition)</code>
 <div class="details">
-<p>Add an INNER JOIN to an associated class.</p><p>[php]
+<p>Creates and adds a join over an entity association to the query.</p><p>The entities in the joined association will be fetched as part of the query
+result if the alias used for the joined association is placed in the select
+expressions.</p><p>[php]
 $qb = $em->createQueryBuilder()
 ->select('u')
 ->from('User', 'u')
@@ -726,15 +707,18 @@ $qb = $em->createQueryBuilder()
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 501</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 518</div>
 <h3 id="join()">join</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>join</strong>(string join, string alias, string conditionType, string condition)</code>
 <div class="details">
-<p>Add a INNER JOIN to an associated class.</p><p>[php]
+<p>Creates and adds a join over an entity association to the query.</p><p>The entities in the joined association will be fetched as part of the query
+result if the alias used for the joined association is placed in the select
+expressions.</p><p><code>
 $qb = $em->createQueryBuilder()
 ->select('u')
 ->from('User', 'u')
-->innerJoin('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');</p><dl>
+->join('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');
+</code></p><dl>
 <dt>Parameters:</dt>
 <dd>join - The relationship to join</dd>
 <dd>alias - The alias of the join</dd>
@@ -747,49 +731,57 @@ $qb = $em->createQueryBuilder()
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 543</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 569</div>
 <h3 id="leftJoin()">leftJoin</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>leftJoin</strong>(string join, string alias, string conditionType, string condition)</code>
 <div class="details">
-<p>Add a LEFT JOIN</p><p>[php]
+<p>Creates and adds a left join over an entity association to the query.</p><p>The entities in the joined association will be fetched as part of the query
+result if the alias used for the joined association is placed in the select
+expressions.</p><p><code>
 $qb = $em->createQueryBuilder()
 ->select('u')
 ->from('User', 'u')
-->leftJoin('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');</p><dl>
+->leftJoin('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');
+</code></p><dl>
 <dt>Parameters:</dt>
 <dd>join - The relationship to join</dd>
 <dd>alias - The alias of the join</dd>
 <dd>conditionType - The condition type constant. Either ON or WITH.</dd>
 <dd>condition - The condition for the join</dd>
 <dt>Returns:</dt>
-<dd>$qb</dd>
+<dd>This QueryBuilder instance.</dd>
 </dl>
 </div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 736</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 775</div>
 <h3 id="orHaving()">orHaving</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>orHaving</strong>(mixed having)</code>
 <div class="details">
-<p>Add to the existing HAVING clause with an OR</p><dl>
+<p>Adds a restriction over the groups of the query, forming a logical
+disjunction with any existing having restrictions.</p><dl>
+<dt>Parameters:</dt>
+<dd>having - The restriction to add.</dd>
 <dt>Returns:</dt>
-<dd>$qb</dd>
+<dd>This QueryBuilder instance.</dd>
 </dl>
 </div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 643</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 676</div>
 <h3 id="orWhere()">orWhere</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>orWhere</strong>(mixed where)</code>
 <div class="details">
-<p>Add a new WHERE statement with an OR</p><p>[php]
+<p>Adds one or more restrictions to the query results, forming a logical
+disjunction with any previously specified restrictions.</p><p><code>
 $qb = $em->createQueryBuilder()
 ->select('u')
 ->from('User', 'u')
 ->where('u.id = 1')
-->orWhere('u.id = 2');</p><dl>
+->orWhere('u.id = 2');
+</code></p><dl>
 <dt>Parameters:</dt>
 <dd>where - The WHERE statement</dd>
 <dt>Returns:</dt>
@@ -801,32 +793,15 @@ $qb = $em->createQueryBuilder()
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 758</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 798</div>
 <h3 id="orderBy()">orderBy</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>orderBy</strong>(string sort, string order)</code>
 <div class="details">
-<p>Set the ORDER BY clause</p><dl>
+<p>Specifies an ordering for the query results.
+Replaces any previously specified orderings, if any.</p><dl>
 <dt>Parameters:</dt>
-<dd>sort - What to sort on</dd>
-<dd>order - Optional: The order to sort the results.</dd>
-<dt>Returns:</dt>
-<dd>$qb</dd>
-</dl>
-</div>
-
-<hr>
-
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 382</div>
-<h3 id="select()">select</h3>
-<code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>select</strong>(mixed select)</code>
-<div class="details">
-<p>Set the SELECT statement</p><p>[php]
-$qb = $em->createQueryBuilder()
-->select('u', 'p')
-->from('User', 'u')
-->leftJoin('u.Phonenumbers', 'p');</p><dl>
-<dt>Parameters:</dt>
-<dd>select - String SELECT statement or SELECT Expr instance</dd>
+<dd>sort - The ordering expression.</dd>
+<dd>order - The ordering direction.</dd>
 <dt>Returns:</dt>
 <dd>This QueryBuilder instance.</dd>
 </dl>
@@ -834,20 +809,41 @@ $qb = $em->createQueryBuilder()
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 563</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 387</div>
+<h3 id="select()">select</h3>
+<code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>select</strong>(mixed select)</code>
+<div class="details">
+<p>Specifies an item that is to be returned in the query result.
+Replaces any previously specified selections, if any.</p><p><code>
+$qb = $em->createQueryBuilder()
+->select('u', 'p')
+->from('User', 'u')
+->leftJoin('u.Phonenumbers', 'p');
+</code></p><dl>
+<dt>Parameters:</dt>
+<dd>select - The selection expressions.</dd>
+<dt>Returns:</dt>
+<dd>This QueryBuilder instance.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 590</div>
 <h3 id="set()">set</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>set</strong>(string key, string value)</code>
 <div class="details">
-<p>Add a SET statement for a DQL UPDATE query</p><p>[php]
+<p>Sets a new value for a field in a bulk update query.</p><p><code>
 $qb = $em->createQueryBuilder()
 ->update('User', 'u')
 ->set('u.password', md5('password'))
-->where('u.id = ?');</p><dl>
+->where('u.id = ?');
+</code></p><dl>
 <dt>Parameters:</dt>
-<dd>key - The key/field to set</dd>
-<dd>value - The value, expression, placeholder, etc. to use in the SET</dd>
+<dd>key - The key/field to set.</dd>
+<dd>value - The value, expression, placeholder, etc.</dd>
 <dt>Returns:</dt>
-<dd>$qb</dd>
+<dd>This QueryBuilder instance.</dd>
 </dl>
 </div>
 
@@ -872,6 +868,8 @@ $qb = $em->createQueryBuilder()
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>setMaxResults</strong>(integer maxResults)</code>
 <div class="details">
 <p>Sets the maximum number of results to retrieve (the "limit").</p><dl>
+<dt>Parameters:</dt>
+<dd>maxResults - The maximum number of results to retrieve.</dd>
 <dt>Returns:</dt>
 <dd>This QueryBuilder instance.</dd>
 </dl>
@@ -879,16 +877,17 @@ $qb = $em->createQueryBuilder()
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 252</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 251</div>
 <h3 id="setParameter()">setParameter</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>setParameter</strong>(string|integer key, mixed value)</code>
 <div class="details">
-<p>Sets a query parameter.</p><p>[php]
+<p>Sets a query parameter for the query being constructed.</p><p><code>
 $qb = $em->createQueryBuilder()
 ->select('u')
 ->from('User', 'u')
 ->where('u.id = :user_id')
-->setParameter(':user_id', 1);</p><dl>
+->setParameter(':user_id', 1);
+</code></p><dl>
 <dt>Parameters:</dt>
 <dd>key - The parameter position or name.</dd>
 <dd>value - The parameter value.</dd>
@@ -903,7 +902,7 @@ $qb = $em->createQueryBuilder()
 <h3 id="setParameters()">setParameters</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>setParameters</strong>(array params)</code>
 <div class="details">
-<p>Sets a collection of query parameters.</p><p>[php]
+<p>Sets a collection of query parameters for the query being constructed.</p><p><code>
 $qb = $em->createQueryBuilder()
 ->select('u')
 ->from('User', 'u')
@@ -911,7 +910,10 @@ $qb = $em->createQueryBuilder()
 ->setParameters(array(
 ':user_id1' => 1,
 ':user_id2' => 2
-));</p><dl>
+));
+</code></p><dl>
+<dt>Parameters:</dt>
+<dd>params - The query parameters to set.</dd>
 <dt>Returns:</dt>
 <dd>This QueryBuilder instance.</dd>
 </dl>
@@ -919,18 +921,20 @@ $qb = $em->createQueryBuilder()
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 458</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 468</div>
 <h3 id="update()">update</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>update</strong>(string update, string alias)</code>
 <div class="details">
-<p>Construct a DQL UPDATE query</p><p>[php]
+<p>Turns the query being built into a bulk update query that ranges over
+a certain entity type.</p><p><code>
 $qb = $em->createQueryBuilder()
 ->update('User', 'u')
 ->set('u.password', md5('password'))
-->where('u.id = ?');</p><dl>
+->where('u.id = ?');
+</code></p><dl>
 <dt>Parameters:</dt>
-<dd>update - The model to update</dd>
-<dd>alias - The alias of the model</dd>
+<dd>update - The class/type whose instances are subject to the update.</dd>
+<dd>alias - The class/type alias used in the constructed query.</dd>
 <dt>Returns:</dt>
 <dd>This QueryBuilder instance.</dd>
 </dl>
@@ -938,11 +942,12 @@ $qb = $em->createQueryBuilder()
 
 <hr>
 
-<div class="location">/Doctrine/ORM/QueryBuilder.php at line 591</div>
+<div class="location">/Doctrine/ORM/QueryBuilder.php at line 620</div>
 <h3 id="where()">where</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>where</strong>(mixed predicates)</code>
 <div class="details">
-<p>Set and override any existing WHERE statements</p><p>[php]
+<p>Specifies one or more restrictions to the query result.
+Replaces any previously specified restrictions, if any.</p><p><code>
 $qb = $em->createQueryBuilder()
 ->select('u')
 ->from('User', 'u')
@@ -951,9 +956,12 @@ $qb = $em->createQueryBuilder();</p><p>$or = $qb->expr()->orx();
 $or->add($qb->expr()->eq('u.id', 1));
 $or->add($qb->expr()->eq('u.id', 2));</p><p>$qb->update('User', 'u')
 ->set('u.password', md5('password'))
-->where($or);</p><dl>
+->where($or);
+</code></p><dl>
 <dt>Parameters:</dt>
-<dd>predicates - The predicates.</dd>
+<dd>predicates - The restriction predicates.</dd>
+<dt>Returns:</dt>
+<dd>This QueryBuilder instance.</dd>
 </dl>
 </div>
 

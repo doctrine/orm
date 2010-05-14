@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:06 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:39 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css">
 <link rel="start" href="../../../../../overview-summary.html">
@@ -72,7 +72,7 @@ which can be found in Doctrine\ORM\Tools\Export\Driver</p></div>
 </tr>
 <tr>
 <td class="type">protected  mixed</td>
-<td class="description"><p class="name"><a href="#_metadatas">$_metadatas</a></p></td>
+<td class="description"><p class="name"><a href="#_metadata">$_metadata</a></p></td>
 </tr>
 <tr>
 <td class="type">protected  mixed</td>
@@ -106,16 +106,16 @@ and returns it</p></td>
 <tr>
 <td class="type"> void</td>
 <td class="description"><p class="name"><a href="#setExtension()">setExtension</a>(string extension)</p><p class="description">Set the directory to output the mapping files to[php]
-$exporter = new YamlExporter($metadatas, __DIR__ . </p></td>
+$exporter = new YamlExporter($metadata, __DIR__ . </p></td>
 </tr>
 <tr>
 <td class="type"> void</td>
-<td class="description"><p class="name"><a href="#setMetadatas()">setMetadatas</a>(array metadatas)</p><p class="description">Set the array of ClassMetadataInfo instances to export</p></td>
+<td class="description"><p class="name"><a href="#setMetadata()">setMetadata</a>(array metadata)</p><p class="description">Set the array of ClassMetadataInfo instances to export</p></td>
 </tr>
 <tr>
 <td class="type"> void</td>
 <td class="description"><p class="name"><a href="#setOutputDir()">setOutputDir</a>(string dir)</p><p class="description">Set the directory to output the mapping files to[php]
-$exporter = new YamlExporter($metadatas);
+$exporter = new YamlExporter($metadata);
 $exporter->setOutputDir(__DIR__ . </p></td>
 </tr>
 </table>
@@ -130,8 +130,8 @@ $exporter->setOutputDir(__DIR__ . </p></td>
 <hr>
 
 <div class="location">/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php at line 39</div>
-<h3 id="_metadatas">_metadatas</h3>
-<code class="signature">protected  mixed <strong>$_metadatas</strong> = array()</code>
+<h3 id="_metadata">_metadata</h3>
+<code class="signature">protected  mixed <strong>$_metadata</strong> = array()</code>
 <div class="details">
 </div>
 
@@ -194,15 +194,15 @@ and returns it</p><dl>
 <code class="signature">public  void <strong>setExtension</strong>(string extension)</code>
 <div class="details">
 <p>Set the directory to output the mapping files to</p><p>[php]
-$exporter = new YamlExporter($metadatas, __DIR__ . '/yaml');
+$exporter = new YamlExporter($metadata, __DIR__ . '/yaml');
 $exporter->setExtension('.yml');
 $exporter->export();</p></div>
 
 <hr>
 
 <div class="location">/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php at line 63</div>
-<h3 id="setMetadatas()">setMetadatas</h3>
-<code class="signature">public  void <strong>setMetadatas</strong>(array metadatas)</code>
+<h3 id="setMetadata()">setMetadata</h3>
+<code class="signature">public  void <strong>setMetadata</strong>(array metadata)</code>
 <div class="details">
 <p>Set the array of ClassMetadataInfo instances to export</p></div>
 
@@ -213,7 +213,7 @@ $exporter->export();</p></div>
 <code class="signature">public  void <strong>setOutputDir</strong>(string dir)</code>
 <div class="details">
 <p>Set the directory to output the mapping files to</p><p>[php]
-$exporter = new YamlExporter($metadatas);
+$exporter = new YamlExporter($metadata);
 $exporter->setOutputDir(__DIR__ . '/yaml');
 $exporter->export();</p></div>
 

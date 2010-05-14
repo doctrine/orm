@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:38 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
 <link rel="start" href="../../../overview-summary.html">
@@ -37,7 +37,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\ORM\Query\Parser</div>
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 39</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 34</div>
 
 <h1>Class Parser</h1>
 
@@ -51,14 +51,8 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 Parses a DQL query, reports any errors in it, and generates an AST.</p></div>
 
 <dl>
-<dt>License:</dt>
-<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
-<dt>See Also:</dt>
-<dd><code>www.doctrine-project.org</code></dd>
 <dt>Since:</dt>
 <dd>2.0</dd>
-<dt>Version:</dt>
-<dd>$Revision: 3938 $</dd>
 <dt>Author:</dt>
 <dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
 <dd>Jonathan Wage <jonwage@gmail.com></dd>
@@ -150,7 +144,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></td>
 <td class="description"><p class="name"><a href="#ConditionalFactor()">ConditionalFactor</a>()</p><p class="description">ConditionalFactor ::= ["NOT"] ConditionalPrimary</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\Query\AST\ConditionalPrimary</td>
+<td class="type"> <a href="../../../doctrine/orm/query/ast/conditionalprimary.html">ConditionalPrimary</a></td>
 <td class="description"><p class="name"><a href="#ConditionalPrimary()">ConditionalPrimary</a>()</p><p class="description">ConditionalPrimary ::= SimpleConditionalExpression | "(" ConditionalExpression ")"</p></td>
 </tr>
 <tr>
@@ -249,7 +243,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></td>
 <td class="description"><p class="name"><a href="#InParameter()">InParameter</a>()</p><p class="description">InParameter ::= Literal | InputParameter</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\Query\AST\IndexBy</td>
+<td class="type"> <a href="../../../doctrine/orm/query/ast/indexby.html">IndexBy</a></td>
 <td class="description"><p class="name"><a href="#IndexBy()">IndexBy</a>()</p><p class="description">IndexBy ::= "INDEX" "BY" SimpleStateFieldPathExpression</p></td>
 </tr>
 <tr>
@@ -257,7 +251,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></td>
 <td class="description"><p class="name"><a href="#InputParameter()">InputParameter</a>()</p><p class="description">InputParameter ::= PositionalParameter | NamedParameter</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\Query\AST\Join</td>
+<td class="type"> <a href="../../../doctrine/orm/query/ast/join.html">Join</a></td>
 <td class="description"><p class="name"><a href="#Join()">Join</a>()</p><p class="description">Join ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression
 ["AS"] AliasIdentificationVariable ["WITH" ConditionalExpression]</p></td>
 </tr>
@@ -315,7 +309,7 @@ based on expected types.
 <td class="description"><p class="name"><a href="#QueryLanguage()">QueryLanguage</a>()</p><p class="description">QueryLanguage ::= SelectStatement | UpdateStatement | DeleteStatement</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\Query\AST\RangeVariableDeclaration</td>
+<td class="type"> <a href="../../../doctrine/orm/query/ast/rangevariabledeclaration.html">RangeVariableDeclaration</a></td>
 <td class="description"><p class="name"><a href="#RangeVariableDeclaration()">RangeVariableDeclaration</a>()</p><p class="description">RangeVariableDeclaration ::= AbstractSchemaName ["AS"] AliasIdentificationVariable</p></td>
 </tr>
 <tr>
@@ -333,7 +327,7 @@ EntityTypeExpression</p></td>
 <td class="description"><p class="name"><a href="#SelectClause()">SelectClause</a>()</p><p class="description">SelectClause ::= "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\Query\AST\SelectExpression</td>
+<td class="type"> <a href="../../../doctrine/orm/query/ast/selectexpression.html">SelectExpression</a></td>
 <td class="description"><p class="name"><a href="#SelectExpression()">SelectExpression</a>()</p><p class="description">SelectExpression ::=
 IdentificationVariable | StateFieldPathExpression |
 (AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable]</p></td>
@@ -434,11 +428,11 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></td>
 <td class="description"><p class="name"><a href="#getEntityManager()">getEntityManager</a>()</p><p class="description">Gets the EntityManager used by the parser.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\Query\Lexer</td>
+<td class="type"> <a href="../../../doctrine/orm/query/lexer.html">Lexer</a></td>
 <td class="description"><p class="name"><a href="#getLexer()">getLexer</a>()</p><p class="description">Gets the lexer used by the parser.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\Query\ParserResult</td>
+<td class="type"> <a href="../../../doctrine/orm/query/parserresult.html">ParserResult</a></td>
 <td class="description"><p class="name"><a href="#getParserResult()">getParserResult</a>()</p><p class="description">Gets the ParserResult that is being filled with information during parsing.</p></td>
 </tr>
 <tr>
@@ -466,7 +460,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></td>
 </table>
 
 <h2 id="detail_constr">Constructor Detail</h2>
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 137</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 132</div>
 <h3 id="Parser()">Parser</h3>
 <code class="signature">public <strong>Parser</strong>(<a href="../../../doctrine/orm/query.html">Query</a> query)</code>
 <div class="details">
@@ -479,7 +473,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></td>
 <hr>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 816</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 820</div>
 <h3 id="AbstractSchemaName()">AbstractSchemaName</h3>
 <code class="signature">public  string <strong>AbstractSchemaName</strong>()</code>
 <div class="details">
@@ -487,7 +481,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2280</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2324</div>
 <h3 id="AggregateExpression()">AggregateExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\AggregateExpression <strong>AggregateExpression</strong>()</code>
 <div class="details">
@@ -497,7 +491,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 795</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 799</div>
 <h3 id="AliasIdentificationVariable()">AliasIdentificationVariable</h3>
 <code class="signature">public  string <strong>AliasIdentificationVariable</strong>()</code>
 <div class="details">
@@ -505,7 +499,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 841</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 845</div>
 <h3 id="AliasResultVariable()">AliasResultVariable</h3>
 <code class="signature">public  string <strong>AliasResultVariable</strong>()</code>
 <div class="details">
@@ -513,7 +507,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2065</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2089</div>
 <h3 id="ArithmeticExpression()">ArithmeticExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\ArithmeticExpression <strong>ArithmeticExpression</strong>()</code>
 <div class="details">
@@ -521,7 +515,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2131</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2167</div>
 <h3 id="ArithmeticFactor()">ArithmeticFactor</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\ArithmeticFactor <strong>ArithmeticFactor</strong>()</code>
 <div class="details">
@@ -529,7 +523,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2148</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2192</div>
 <h3 id="ArithmeticPrimary()">ArithmeticPrimary</h3>
 <code class="signature">public  void <strong>ArithmeticPrimary</strong>()</code>
 <div class="details">
@@ -539,7 +533,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2111</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2141</div>
 <h3 id="ArithmeticTerm()">ArithmeticTerm</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\ArithmeticTerm <strong>ArithmeticTerm</strong>()</code>
 <div class="details">
@@ -547,7 +541,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 943</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 947</div>
 <h3 id="AssociationPathExpression()">AssociationPathExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\PathExpression <strong>AssociationPathExpression</strong>()</code>
 <div class="details">
@@ -555,7 +549,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2354</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2398</div>
 <h3 id="BetweenExpression()">BetweenExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\BetweenExpression <strong>BetweenExpression</strong>()</code>
 <div class="details">
@@ -563,7 +557,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1646</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1650</div>
 <h3 id="CaseExpression()">CaseExpression</h3>
 <code class="signature">public  void <strong>CaseExpression</strong>()</code>
 <div class="details">
@@ -571,7 +565,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1978</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2002</div>
 <h3 id="CollectionMemberExpression()">CollectionMemberExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\CollectionMemberExpression <strong>CollectionMemberExpression</strong>()</code>
 <div class="details">
@@ -580,7 +574,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 989</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 993</div>
 <h3 id="CollectionValuedPathExpression()">CollectionValuedPathExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\PathExpression <strong>CollectionValuedPathExpression</strong>()</code>
 <div class="details">
@@ -588,7 +582,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2380</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2424</div>
 <h3 id="ComparisonExpression()">ComparisonExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\ComparisonExpression <strong>ComparisonExpression</strong>()</code>
 <div class="details">
@@ -596,7 +590,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2526</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2570</div>
 <h3 id="ComparisonOperator()">ComparisonOperator</h3>
 <code class="signature">public  string <strong>ComparisonOperator</strong>()</code>
 <div class="details">
@@ -604,7 +598,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1775</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1779</div>
 <h3 id="ConditionalExpression()">ConditionalExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\ConditionalExpression <strong>ConditionalExpression</strong>()</code>
 <div class="details">
@@ -612,7 +606,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1811</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1827</div>
 <h3 id="ConditionalFactor()">ConditionalFactor</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\ConditionalFactor <strong>ConditionalFactor</strong>()</code>
 <div class="details">
@@ -620,15 +614,15 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1831</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1855</div>
 <h3 id="ConditionalPrimary()">ConditionalPrimary</h3>
-<code class="signature">public  Doctrine\ORM\Query\AST\ConditionalPrimary <strong>ConditionalPrimary</strong>()</code>
+<code class="signature">public  <a href="../../../doctrine/orm/query/ast/conditionalprimary.html">ConditionalPrimary</a> <strong>ConditionalPrimary</strong>()</code>
 <div class="details">
 <p>ConditionalPrimary ::= SimpleConditionalExpression | "(" ConditionalExpression ")"</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1793</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1803</div>
 <h3 id="ConditionalTerm()">ConditionalTerm</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\ConditionalTerm <strong>ConditionalTerm</strong>()</code>
 <div class="details">
@@ -636,7 +630,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2643</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2688</div>
 <h3 id="CustomFunctionsReturningDatetime()">CustomFunctionsReturningDatetime</h3>
 <code class="signature">public  void <strong>CustomFunctionsReturningDatetime</strong>()</code>
 <div class="details">
@@ -644,7 +638,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2620</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2664</div>
 <h3 id="CustomFunctionsReturningNumerics()">CustomFunctionsReturningNumerics</h3>
 <code class="signature">public  void <strong>CustomFunctionsReturningNumerics</strong>()</code>
 <div class="details">
@@ -652,7 +646,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2671</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2717</div>
 <h3 id="CustomFunctionsReturningStrings()">CustomFunctionsReturningStrings</h3>
 <code class="signature">public  void <strong>CustomFunctionsReturningStrings</strong>()</code>
 <div class="details">
@@ -660,7 +654,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1111</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1115</div>
 <h3 id="DeleteClause()">DeleteClause</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\DeleteClause <strong>DeleteClause</strong>()</code>
 <div class="details">
@@ -668,7 +662,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 761</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 765</div>
 <h3 id="DeleteStatement()">DeleteStatement</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\DeleteStatement <strong>DeleteStatement</strong>()</code>
 <div class="details">
@@ -676,7 +670,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1953</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1977</div>
 <h3 id="EmptyCollectionComparisonExpression()">EmptyCollectionComparisonExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\EmptyCollectionComparisonExpression <strong>EmptyCollectionComparisonExpression</strong>()</code>
 <div class="details">
@@ -684,7 +678,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2248</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2292</div>
 <h3 id="EntityExpression()">EntityExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\SingleValuedAssociationPathExpression <strong>EntityExpression</strong>()</code>
 <div class="details">
@@ -696,7 +690,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2503</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2547</div>
 <h3 id="ExistsExpression()">ExistsExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\ExistsExpression <strong>ExistsExpression</strong>()</code>
 <div class="details">
@@ -704,7 +698,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1150</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1154</div>
 <h3 id="FromClause()">FromClause</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\FromClause <strong>FromClause</strong>()</code>
 <div class="details">
@@ -712,7 +706,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2573</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2617</div>
 <h3 id="FunctionDeclaration()">FunctionDeclaration</h3>
 <code class="signature">public  void <strong>FunctionDeclaration</strong>()</code>
 <div class="details">
@@ -720,7 +714,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2633</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2678</div>
 <h3 id="FunctionsReturningDatetime()">FunctionsReturningDatetime</h3>
 <code class="signature">public  void <strong>FunctionsReturningDatetime</strong>()</code>
 <div class="details">
@@ -728,7 +722,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2610</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2654</div>
 <h3 id="FunctionsReturningNumerics()">FunctionsReturningNumerics</h3>
 <code class="signature">public  void <strong>FunctionsReturningNumerics</strong>()</code>
 <div class="details">
@@ -742,7 +736,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2661</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2707</div>
 <h3 id="FunctionsReturningStrings()">FunctionsReturningStrings</h3>
 <code class="signature">public  void <strong>FunctionsReturningStrings</strong>()</code>
 <div class="details">
@@ -755,7 +749,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1212</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1216</div>
 <h3 id="GroupByClause()">GroupByClause</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\GroupByClause <strong>GroupByClause</strong>()</code>
 <div class="details">
@@ -763,7 +757,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1316</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1320</div>
 <h3 id="GroupByItem()">GroupByItem</h3>
 <code class="signature">public  string <strong>GroupByItem</strong>()</code>
 <div class="details">
@@ -775,7 +769,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1200</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1204</div>
 <h3 id="HavingClause()">HavingClause</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\HavingClause <strong>HavingClause</strong>()</code>
 <div class="details">
@@ -783,7 +777,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 775</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 779</div>
 <h3 id="IdentificationVariable()">IdentificationVariable</h3>
 <code class="signature">public  string <strong>IdentificationVariable</strong>()</code>
 <div class="details">
@@ -791,7 +785,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1395</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1399</div>
 <h3 id="IdentificationVariableDeclaration()">IdentificationVariableDeclaration</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\IdentificationVariableDeclaration <strong>IdentificationVariableDeclaration</strong>()</code>
 <div class="details">
@@ -799,7 +793,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2401</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2445</div>
 <h3 id="InExpression()">InExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\InExpression <strong>InExpression</strong>()</code>
 <div class="details">
@@ -807,7 +801,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2039</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2063</div>
 <h3 id="InParameter()">InParameter</h3>
 <code class="signature">public  string <strong>InParameter</strong>()</code>
 <div class="details">
@@ -819,15 +813,15 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1594</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1598</div>
 <h3 id="IndexBy()">IndexBy</h3>
-<code class="signature">public  Doctrine\ORM\Query\AST\IndexBy <strong>IndexBy</strong>()</code>
+<code class="signature">public  <a href="../../../doctrine/orm/query/ast/indexby.html">IndexBy</a> <strong>IndexBy</strong>()</code>
 <div class="details">
 <p>IndexBy ::= "INDEX" "BY" SimpleStateFieldPathExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2053</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2077</div>
 <h3 id="InputParameter()">InputParameter</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\InputParameter <strong>InputParameter</strong>()</code>
 <div class="details">
@@ -835,16 +829,16 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1524</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1528</div>
 <h3 id="Join()">Join</h3>
-<code class="signature">public  Doctrine\ORM\Query\AST\Join <strong>Join</strong>()</code>
+<code class="signature">public  <a href="../../../doctrine/orm/query/ast/join.html">Join</a> <strong>Join</strong>()</code>
 <div class="details">
 <p>Join ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression
 ["AS"] AliasIdentificationVariable ["WITH" ConditionalExpression]</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 883</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 887</div>
 <h3 id="JoinAssociationPathExpression()">JoinAssociationPathExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\JoinAssociationPathExpression <strong>JoinAssociationPathExpression</strong>()</code>
 <div class="details">
@@ -852,7 +846,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1441</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1445</div>
 <h3 id="JoinVariableDeclaration()">JoinVariableDeclaration</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\JoinVariableDeclaration <strong>JoinVariableDeclaration</strong>()</code>
 <div class="details">
@@ -860,7 +854,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2437</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2481</div>
 <h3 id="LikeExpression()">LikeExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\LikeExpression <strong>LikeExpression</strong>()</code>
 <div class="details">
@@ -868,7 +862,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2008</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2032</div>
 <h3 id="Literal()">Literal</h3>
 <code class="signature">public  string <strong>Literal</strong>()</code>
 <div class="details">
@@ -876,7 +870,7 @@ SimpleEntityExpression ::= IdentificationVariable | InputParameter</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1377</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1381</div>
 <h3 id="NewValue()">NewValue</h3>
 <code class="signature">public  void <strong>NewValue</strong>()</code>
 <div class="details">
@@ -886,7 +880,7 @@ grammar that needs to be supported:</p><p>NewValue ::= SimpleArithmeticExpressio
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2476</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2520</div>
 <h3 id="NullComparisonExpression()">NullComparisonExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\NullComparisonExpression <strong>NullComparisonExpression</strong>()</code>
 <div class="details">
@@ -894,7 +888,7 @@ grammar that needs to be supported:</p><p>NewValue ::= SimpleArithmeticExpressio
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1232</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1236</div>
 <h3 id="OrderByClause()">OrderByClause</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\OrderByClause <strong>OrderByClause</strong>()</code>
 <div class="details">
@@ -902,7 +896,7 @@ grammar that needs to be supported:</p><p>NewValue ::= SimpleArithmeticExpressio
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1339</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1343</div>
 <h3 id="OrderByItem()">OrderByItem</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\OrderByItem <strong>OrderByItem</strong>()</code>
 <div class="details">
@@ -914,7 +908,7 @@ grammar that needs to be supported:</p><p>NewValue ::= SimpleArithmeticExpressio
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1487</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1491</div>
 <h3 id="PartialObjectExpression()">PartialObjectExpression</h3>
 <code class="signature">public  array <strong>PartialObjectExpression</strong>()</code>
 <div class="details">
@@ -923,7 +917,7 @@ PartialFieldSet ::= "{" SimpleStateField {"," SimpleStateField}* "}"</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 912</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 916</div>
 <h3 id="PathExpression()">PathExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\PathExpression <strong>PathExpression</strong>(integer expectedTypes)</code>
 <div class="details">
@@ -932,7 +926,7 @@ based on expected types.</p><p>PathExpression ::= IdentificationVariable {"." id
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2324</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2368</div>
 <h3 id="QuantifiedExpression()">QuantifiedExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\QuantifiedExpression <strong>QuantifiedExpression</strong>()</code>
 <div class="details">
@@ -940,7 +934,7 @@ based on expected types.</p><p>PathExpression ::= IdentificationVariable {"." id
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 691</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 695</div>
 <h3 id="QueryLanguage()">QueryLanguage</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\SelectStatement <strong>QueryLanguage</strong>()</code>
 <div class="details">
@@ -952,15 +946,15 @@ based on expected types.</p><p>PathExpression ::= IdentificationVariable {"." id
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1455</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1459</div>
 <h3 id="RangeVariableDeclaration()">RangeVariableDeclaration</h3>
-<code class="signature">public  Doctrine\ORM\Query\AST\RangeVariableDeclaration <strong>RangeVariableDeclaration</strong>()</code>
+<code class="signature">public  <a href="../../../doctrine/orm/query/ast/rangevariabledeclaration.html">RangeVariableDeclaration</a> <strong>RangeVariableDeclaration</strong>()</code>
 <div class="details">
 <p>RangeVariableDeclaration ::= AbstractSchemaName ["AS"] AliasIdentificationVariable</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 862</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 866</div>
 <h3 id="ResultVariable()">ResultVariable</h3>
 <code class="signature">public  string <strong>ResultVariable</strong>()</code>
 <div class="details">
@@ -968,7 +962,7 @@ based on expected types.</p><p>PathExpression ::= IdentificationVariable {"." id
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1614</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1618</div>
 <h3 id="ScalarExpression()">ScalarExpression</h3>
 <code class="signature">public  mixed <strong>ScalarExpression</strong>()</code>
 <div class="details">
@@ -982,7 +976,7 @@ EntityTypeExpression</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1019</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1023</div>
 <h3 id="SelectClause()">SelectClause</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\SelectClause <strong>SelectClause</strong>()</code>
 <div class="details">
@@ -990,9 +984,9 @@ EntityTypeExpression</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1662</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1666</div>
 <h3 id="SelectExpression()">SelectExpression</h3>
-<code class="signature">public  Doctrine\ORM\Query\AST\SelectExpression <strong>SelectExpression</strong>()</code>
+<code class="signature">public  <a href="../../../doctrine/orm/query/ast/selectexpression.html">SelectExpression</a> <strong>SelectExpression</strong>()</code>
 <div class="details">
 <p>SelectExpression ::=
 IdentificationVariable | StateFieldPathExpression |
@@ -1000,7 +994,7 @@ IdentificationVariable | StateFieldPathExpression |
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 723</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 727</div>
 <h3 id="SelectStatement()">SelectStatement</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\SelectStatement <strong>SelectStatement</strong>()</code>
 <div class="details">
@@ -1008,7 +1002,7 @@ IdentificationVariable | StateFieldPathExpression |
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2091</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2115</div>
 <h3 id="SimpleArithmeticExpression()">SimpleArithmeticExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\SimpleArithmeticExpression <strong>SimpleArithmeticExpression</strong>()</code>
 <div class="details">
@@ -1016,7 +1010,7 @@ IdentificationVariable | StateFieldPathExpression |
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1865</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1889</div>
 <h3 id="SimpleConditionalExpression()">SimpleConditionalExpression</h3>
 <code class="signature">public  void <strong>SimpleConditionalExpression</strong>()</code>
 <div class="details">
@@ -1027,7 +1021,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2264</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2308</div>
 <h3 id="SimpleEntityExpression()">SimpleEntityExpression</h3>
 <code class="signature">public  string <strong>SimpleEntityExpression</strong>()</code>
 <div class="details">
@@ -1039,7 +1033,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1047</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1051</div>
 <h3 id="SimpleSelectClause()">SimpleSelectClause</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\SimpleSelectClause <strong>SimpleSelectClause</strong>()</code>
 <div class="details">
@@ -1047,7 +1041,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1733</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1737</div>
 <h3 id="SimpleSelectExpression()">SimpleSelectExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\SimpleSelectExpression <strong>SimpleSelectExpression</strong>()</code>
 <div class="details">
@@ -1055,7 +1049,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 999</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1003</div>
 <h3 id="SimpleStateFieldPathExpression()">SimpleStateFieldPathExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\PathExpression <strong>SimpleStateFieldPathExpression</strong>()</code>
 <div class="details">
@@ -1063,7 +1057,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 979</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 983</div>
 <h3 id="SingleValuedAssociationPathExpression()">SingleValuedAssociationPathExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\PathExpression <strong>SingleValuedAssociationPathExpression</strong>()</code>
 <div class="details">
@@ -1071,7 +1065,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 956</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 960</div>
 <h3 id="SingleValuedPathExpression()">SingleValuedPathExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\PathExpression <strong>SingleValuedPathExpression</strong>()</code>
 <div class="details">
@@ -1079,7 +1073,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 969</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 973</div>
 <h3 id="StateFieldPathExpression()">StateFieldPathExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\PathExpression <strong>StateFieldPathExpression</strong>()</code>
 <div class="details">
@@ -1087,7 +1081,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2197</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2241</div>
 <h3 id="StringExpression()">StringExpression</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\StringPrimary <strong>StringExpression</strong>()</code>
 <div class="details">
@@ -1099,7 +1093,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 2217</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 2261</div>
 <h3 id="StringPrimary()">StringPrimary</h3>
 <code class="signature">public  void <strong>StringPrimary</strong>()</code>
 <div class="details">
@@ -1107,7 +1101,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1253</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1257</div>
 <h3 id="Subselect()">Subselect</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\Subselect <strong>Subselect</strong>()</code>
 <div class="details">
@@ -1115,7 +1109,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1169</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1173</div>
 <h3 id="SubselectFromClause()">SubselectFromClause</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\SubselectFromClause <strong>SubselectFromClause</strong>()</code>
 <div class="details">
@@ -1123,7 +1117,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1420</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1424</div>
 <h3 id="SubselectIdentificationVariableDeclaration()">SubselectIdentificationVariableDeclaration</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\SubselectIdentificationVariableDeclaration <strong>SubselectIdentificationVariableDeclaration</strong>()</code>
 <div class="details">
@@ -1135,7 +1129,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1065</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1069</div>
 <h3 id="UpdateClause()">UpdateClause</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\UpdateClause <strong>UpdateClause</strong>()</code>
 <div class="details">
@@ -1143,7 +1137,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1283</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1287</div>
 <h3 id="UpdateItem()">UpdateItem</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\UpdateItem <strong>UpdateItem</strong>()</code>
 <div class="details">
@@ -1151,7 +1145,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 747</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 751</div>
 <h3 id="UpdateStatement()">UpdateStatement</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\UpdateStatement <strong>UpdateStatement</strong>()</code>
 <div class="details">
@@ -1159,7 +1153,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 1188</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 1192</div>
 <h3 id="WhereClause()">WhereClause</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\WhereClause <strong>WhereClause</strong>()</code>
 <div class="details">
@@ -1167,7 +1161,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 161</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 156</div>
 <h3 id="addCustomTreeWalker()">addCustomTreeWalker</h3>
 <code class="signature">public  void <strong>addCustomTreeWalker</strong>(string className)</code>
 <div class="details">
@@ -1175,7 +1169,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 249</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 247</div>
 <h3 id="free()">free</h3>
 <code class="signature">public  void <strong>free</strong>(boolean deep, integer position)</code>
 <div class="details">
@@ -1188,7 +1182,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 203</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 198</div>
 <h3 id="getAST()">getAST</h3>
 <code class="signature">public  \Doctrine\ORM\Query\AST\SelectStatement <strong>getAST</strong>()</code>
 <div class="details">
@@ -1200,7 +1194,7 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 191</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 186</div>
 <h3 id="getEntityManager()">getEntityManager</h3>
 <code class="signature">public  <a href="../../../doctrine/orm/entitymanager.html">EntityManager</a> <strong>getEntityManager</strong>()</code>
 <div class="details">
@@ -1208,23 +1202,23 @@ EmptyCollectionComparisonExpression | CollectionMemberExpression</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 171</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 166</div>
 <h3 id="getLexer()">getLexer</h3>
-<code class="signature">public  Doctrine\ORM\Query\Lexer <strong>getLexer</strong>()</code>
+<code class="signature">public  <a href="../../../doctrine/orm/query/lexer.html">Lexer</a> <strong>getLexer</strong>()</code>
 <div class="details">
 <p>Gets the lexer used by the parser.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 181</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 176</div>
 <h3 id="getParserResult()">getParserResult</h3>
-<code class="signature">public  Doctrine\ORM\Query\ParserResult <strong>getParserResult</strong>()</code>
+<code class="signature">public  <a href="../../../doctrine/orm/query/parserresult.html">ParserResult</a> <strong>getParserResult</strong>()</code>
 <div class="details">
 <p>Gets the ParserResult that is being filled with information during parsing.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 234</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 232</div>
 <h3 id="match()">match</h3>
 <code class="signature">public  void <strong>match</strong>(int|string token)</code>
 <div class="details">
@@ -1239,7 +1233,7 @@ error.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 268</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 266</div>
 <h3 id="parse()">parse</h3>
 <code class="signature">public  <a href="../../../doctrine/orm/query/parserresult.html">ParserResult</a> <strong>parse</strong>()</code>
 <div class="details">
@@ -1247,7 +1241,7 @@ error.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 353</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 351</div>
 <h3 id="semanticalError()">semanticalError</h3>
 <code class="signature">public  void <strong>semanticalError</strong>(string message, array token)</code>
 <div class="details">
@@ -1262,7 +1256,7 @@ error.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 151</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 146</div>
 <h3 id="setCustomOutputTreeWalker()">setCustomOutputTreeWalker</h3>
 <code class="signature">public  void <strong>setCustomOutputTreeWalker</strong>(string className)</code>
 <div class="details">
@@ -1271,7 +1265,7 @@ This tree walker will be run last over the AST, after any other walkers.</p></di
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/Parser.php at line 321</div>
+<div class="location">/Doctrine/ORM/Query/Parser.php at line 319</div>
 <h3 id="syntaxError()">syntaxError</h3>
 <code class="signature">public  void <strong>syntaxError</strong>(string expected, array token)</code>
 <div class="details">

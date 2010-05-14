@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:03 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:36 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
 <link rel="start" href="../../../overview-summary.html">
@@ -37,7 +37,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\Common\Annotations\AnnotationReader</div>
-<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 41</div>
+<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 36</div>
 
 <h1>Class AnnotationReader</h1>
 
@@ -50,14 +50,8 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <div class="comment" id="overview_description"><p>A reader for docblock annotations.</p></div>
 
 <dl>
-<dt>License:</dt>
-<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
-<dt>See Also:</dt>
-<dd><code>www.doctrine-project.org</code></dd>
 <dt>Since:</dt>
 <dd>2.0</dd>
-<dt>Version:</dt>
-<dd>$Revision: 3938 $</dd>
 <dt>Author:</dt>
 <dd>Benjamin Eberlei <kontakt@beberlei.de></dd>
 <dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
@@ -111,12 +105,11 @@ with not fully qualified names.</p></td>
 </table>
 
 <h2 id="detail_constr">Constructor Detail</h2>
-<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 71</div>
+<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 65</div>
 <h3 id="AnnotationReader()">AnnotationReader</h3>
 <code class="signature">public <strong>AnnotationReader</strong>(<a href="../../../doctrine/common/cache/cache.html">Cache</a> cache)</code>
 <div class="details">
-<p>Constructor. Initializes a new AnnotationReader that uses the given 
-Cache provider.</p><dl>
+<p>Constructor. Initializes a new AnnotationReader that uses the given Cache provider.</p><dl>
 <dt>Parameters:</dt>
 <dd>cache - The cache provider to use. If none is provided, ArrayCache is used.</dd>
 </dl>
@@ -125,7 +118,7 @@ Cache provider.</p><dl>
 <hr>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 128</div>
+<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 122</div>
 <h3 id="getClassAnnotation()">getClassAnnotation</h3>
 <code class="signature">public  The <strong>getClassAnnotation</strong>(mixed class, string annotation, $class )</code>
 <div class="details">
@@ -140,7 +133,7 @@ Cache provider.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 106</div>
+<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 100</div>
 <h3 id="getClassAnnotations()">getClassAnnotations</h3>
 <code class="signature">public  array <strong>getClassAnnotations</strong>(string|ReflectionClass class)</code>
 <div class="details">
@@ -154,7 +147,7 @@ Cache provider.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 202</div>
+<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 198</div>
 <h3 id="getMethodAnnotation()">getMethodAnnotation</h3>
 <code class="signature">public  The <strong>getMethodAnnotation</strong>(ReflectionMethod method, string annotation)</code>
 <div class="details">
@@ -169,7 +162,7 @@ Cache provider.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 179</div>
+<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 175</div>
 <h3 id="getMethodAnnotations()">getMethodAnnotations</h3>
 <code class="signature">public  array <strong>getMethodAnnotations</strong>(mixed method, string|ReflectionClass class, string|ReflectionMethod property)</code>
 <div class="details">
@@ -184,7 +177,7 @@ Cache provider.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 165</div>
+<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 160</div>
 <h3 id="getPropertyAnnotation()">getPropertyAnnotation</h3>
 <code class="signature">public  The <strong>getPropertyAnnotation</strong>(ReflectionProperty property, string annotation)</code>
 <div class="details">
@@ -199,7 +192,7 @@ Cache provider.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 142</div>
+<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 137</div>
 <h3 id="getPropertyAnnotations()">getPropertyAnnotations</h3>
 <code class="signature">public  array <strong>getPropertyAnnotations</strong>(string|ReflectionProperty property, string|ReflectionClass class)</code>
 <div class="details">
@@ -214,7 +207,7 @@ Cache provider.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 94</div>
+<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 88</div>
 <h3 id="setAnnotationNamespaceAlias()">setAnnotationNamespaceAlias</h3>
 <code class="signature">public  void <strong>setAnnotationNamespaceAlias</strong>(mixed namespace, mixed alias, $alias )</code>
 <div class="details">
@@ -222,7 +215,7 @@ Cache provider.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 83</div>
+<div class="location">/Doctrine/Common/Annotations/AnnotationReader.php at line 77</div>
 <h3 id="setDefaultAnnotationNamespace()">setDefaultAnnotationNamespace</h3>
 <code class="signature">public  void <strong>setDefaultAnnotationNamespace</strong>(string defaultNamespace)</code>
 <div class="details">

@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:03 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:36 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
 <link rel="start" href="../../../overview-summary.html">
@@ -37,7 +37,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\Common\Collections\ArrayCollection</div>
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 38</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 32</div>
 
 <h1>Class ArrayCollection</h1>
 
@@ -47,18 +47,11 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 
 <p class="signature">public  class <strong>ArrayCollection</strong></p>
 
-<div class="comment" id="overview_description"><p>An ArrayCollection is a Collection implementation that uses a regular PHP array
-internally.</p></div>
+<div class="comment" id="overview_description"><p>An ArrayCollection is a Collection implementation that wraps a regular PHP array.</p></div>
 
 <dl>
-<dt>License:</dt>
-<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
-<dt>See Also:</dt>
-<dd><code>www.doctrine-project.org</code></dd>
 <dt>Since:</dt>
 <dd>2.0</dd>
-<dt>Version:</dt>
-<dd>$Revision: 3938 $</dd>
 <dt>Author:</dt>
 <dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
 <dd>Jonathan Wage <jonwage@gmail.com></dd>
@@ -205,7 +198,7 @@ a new collection with the elements returned by the function.</p></td>
 </table>
 
 <h2 id="detail_constr">Constructor Detail</h2>
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 53</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 46</div>
 <h3 id="ArrayCollection()">ArrayCollection</h3>
 <code class="signature">public <strong>ArrayCollection</strong>(array elements)</code>
 <div class="details">
@@ -214,7 +207,7 @@ a new collection with the elements returned by the function.</p></td>
 <hr>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 321</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 314</div>
 <h3 id="add()">add</h3>
 <code class="signature">public  boolean <strong>add</strong>(mixed value)</code>
 <div class="details">
@@ -226,7 +219,7 @@ a new collection with the elements returned by the function.</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 426</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 419</div>
 <h3 id="clear()">clear</h3>
 <code class="signature">public  void <strong>clear</strong>()</code>
 <div class="details">
@@ -234,7 +227,7 @@ a new collection with the elements returned by the function.</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 223</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 216</div>
 <h3 id="contains()">contains</h3>
 <code class="signature">public  boolean <strong>contains</strong>(mixed element)</code>
 <div class="details">
@@ -249,7 +242,7 @@ For objects this means reference equality.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 208</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 201</div>
 <h3 id="containsKey()">containsKey</h3>
 <code class="signature">public  boolean <strong>containsKey</strong>(mixed key)</code>
 <div class="details">
@@ -263,7 +256,7 @@ For objects this means reference equality.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 296</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 289</div>
 <h3 id="count()">count</h3>
 <code class="signature">public  integer <strong>count</strong>()</code>
 <div class="details">
@@ -275,7 +268,7 @@ For objects this means reference equality.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 115</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 108</div>
 <h3 id="current()">current</h3>
 <code class="signature">public  mixed <strong>current</strong>()</code>
 <div class="details">
@@ -283,7 +276,7 @@ For objects this means reference equality.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 234</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 227</div>
 <h3 id="exists()">exists</h3>
 <code class="signature">public  boolean <strong>exists</strong>(Closure p)</code>
 <div class="details">
@@ -297,7 +290,7 @@ For objects this means reference equality.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 368</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 361</div>
 <h3 id="filter()">filter</h3>
 <code class="signature">public  <a href="../../../doctrine/common/collections/collection.html">Collection</a> <strong>filter</strong>(Closure p)</code>
 <div class="details">
@@ -312,7 +305,7 @@ The order of the elements is preserved.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 74</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 67</div>
 <h3 id="first()">first</h3>
 <code class="signature">public  mixed <strong>first</strong>()</code>
 <div class="details">
@@ -321,7 +314,7 @@ returns this element.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 380</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 373</div>
 <h3 id="forAll()">forAll</h3>
 <code class="signature">public  boolean <strong>forAll</strong>(Closure p)</code>
 <div class="details">
@@ -336,7 +329,7 @@ returning true, if the predicate yields true for all elements.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 261</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 254</div>
 <h3 id="get()">get</h3>
 <code class="signature">public  mixed <strong>get</strong>(mixed key)</code>
 <div class="details">
@@ -350,7 +343,7 @@ returning true, if the predicate yields true for all elements.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 344</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 337</div>
 <h3 id="getIterator()">getIterator</h3>
 <code class="signature">public  ArrayIterator <strong>getIterator</strong>()</code>
 <div class="details">
@@ -358,7 +351,7 @@ returning true, if the predicate yields true for all elements.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 274</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 267</div>
 <h3 id="getKeys()">getKeys</h3>
 <code class="signature">public  array <strong>getKeys</strong>()</code>
 <div class="details">
@@ -366,7 +359,7 @@ returning true, if the predicate yields true for all elements.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 284</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 277</div>
 <h3 id="getValues()">getValues</h3>
 <code class="signature">public  array <strong>getValues</strong>()</code>
 <div class="details">
@@ -374,7 +367,7 @@ returning true, if the predicate yields true for all elements.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 250</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 243</div>
 <h3 id="indexOf()">indexOf</h3>
 <code class="signature">public  mixed <strong>indexOf</strong>(mixed element)</code>
 <div class="details">
@@ -391,7 +384,7 @@ For objects this means reference equality.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 334</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 327</div>
 <h3 id="isEmpty()">isEmpty</h3>
 <code class="signature">public  boolean <strong>isEmpty</strong>()</code>
 <div class="details">
@@ -403,7 +396,7 @@ For objects this means reference equality.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 95</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 88</div>
 <h3 id="key()">key</h3>
 <code class="signature">public  mixed <strong>key</strong>()</code>
 <div class="details">
@@ -411,7 +404,7 @@ For objects this means reference equality.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 85</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 78</div>
 <h3 id="last()">last</h3>
 <code class="signature">public  mixed <strong>last</strong>()</code>
 <div class="details">
@@ -420,7 +413,7 @@ returns this element.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 356</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 349</div>
 <h3 id="map()">map</h3>
 <code class="signature">public  <a href="../../../doctrine/common/collections/collection.html">Collection</a> <strong>map</strong>(Closure func)</code>
 <div class="details">
@@ -429,7 +422,7 @@ a new collection with the elements returned by the function.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 105</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 98</div>
 <h3 id="next()">next</h3>
 <code class="signature">public  mixed <strong>next</strong>()</code>
 <div class="details">
@@ -437,7 +430,7 @@ a new collection with the elements returned by the function.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 163</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 156</div>
 <h3 id="offsetExists()">offsetExists</h3>
 <code class="signature">public  void <strong>offsetExists</strong>(mixed offset)</code>
 <div class="details">
@@ -449,7 +442,7 @@ a new collection with the elements returned by the function.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 173</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 166</div>
 <h3 id="offsetGet()">offsetGet</h3>
 <code class="signature">public  void <strong>offsetGet</strong>(mixed offset)</code>
 <div class="details">
@@ -461,7 +454,7 @@ a new collection with the elements returned by the function.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 184</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 177</div>
 <h3 id="offsetSet()">offsetSet</h3>
 <code class="signature">public  void <strong>offsetSet</strong>(mixed offset, mixed value)</code>
 <div class="details">
@@ -474,7 +467,7 @@ a new collection with the elements returned by the function.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 197</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 190</div>
 <h3 id="offsetUnset()">offsetUnset</h3>
 <code class="signature">public  void <strong>offsetUnset</strong>(mixed offset)</code>
 <div class="details">
@@ -486,7 +479,7 @@ a new collection with the elements returned by the function.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 400</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 393</div>
 <h3 id="partition()">partition</h3>
 <code class="signature">public  array <strong>partition</strong>(Closure p)</code>
 <div class="details">
@@ -501,15 +494,19 @@ Keys are preserved in the resulting collections.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 126</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 119</div>
 <h3 id="remove()">remove</h3>
 <code class="signature">public  mixed <strong>remove</strong>(mixed key)</code>
 <div class="details">
-<p>Removes an element with a specific key/index from the collection.</p></div>
+<p>Removes an element with a specific key/index from the collection.</p><dl>
+<dt>Returns:</dt>
+<dd>The removed element or NULL, if no element exists for the given key.</dd>
+</dl>
+</div>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 144</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 137</div>
 <h3 id="removeElement()">removeElement</h3>
 <code class="signature">public  boolean <strong>removeElement</strong>(mixed element)</code>
 <div class="details">
@@ -517,7 +514,7 @@ Keys are preserved in the resulting collections.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 310</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 303</div>
 <h3 id="set()">set</h3>
 <code class="signature">public  void <strong>set</strong>(mixed key, mixed value)</code>
 <div class="details">
@@ -526,7 +523,7 @@ When the collection is a List this is like add(position,value).</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 63</div>
+<div class="location">/Doctrine/Common/Collections/ArrayCollection.php at line 56</div>
 <h3 id="toArray()">toArray</h3>
 <code class="signature">public  array <strong>toArray</strong>()</code>
 <div class="details">

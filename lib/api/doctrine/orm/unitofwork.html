@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:37 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css">
 <link rel="start" href="../../overview-summary.html">
@@ -37,7 +37,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\ORM\UnitOfWork</div>
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 46</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 42</div>
 
 <h1>Class UnitOfWork</h1>
 
@@ -57,21 +57,15 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 in the correct order.</p></div>
 
 <dl>
-<dt>License:</dt>
-<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
-<dt>See Also:</dt>
-<dd><code>www.doctrine-project.org</code></dd>
 <dt>Since:</dt>
 <dd>2.0</dd>
-<dt>Version:</dt>
-<dd>$Revision$</dd>
 <dt>Author:</dt>
 <dd>Benjamin Eberlei <kontakt@beberlei.de></dd>
 <dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
 <dd>Jonathan Wage <jonwage@gmail.com></dd>
 <dd>Roman Borschel <roman@code-factory.org></dd>
 <dt>Internal:</dt>
-<dd>This class contains performance-critical code.</dd>
+<dd>This class contains highly performance-sensitive code.</dd>
 </dl>
 <hr>
 
@@ -101,7 +95,7 @@ deleted (or is scheduled for deletion).</p></td>
 <table id="summary_constr">
 <tr><th colspan="2">Constructor Summary</th></tr>
 <tr>
-<td class="description"><p class="name"><a href="#UnitOfWork()">UnitOfWork</a>(Doctrine\ORM\EntityManager em)</p><p class="description">Initializes a new UnitOfWork instance, bound to the given EntityManager.</p></td>
+<td class="description"><p class="name"><a href="#UnitOfWork()">UnitOfWork</a>(<a href="../../doctrine/orm/entitymanager.html">EntityManager</a> em)</p><p class="description">Initializes a new UnitOfWork instance, bound to the given EntityManager.</p></td>
 </tr>
 </table>
 
@@ -162,7 +156,7 @@ Gets an entity in the identity map by its identifier hash.</p></td>
 <td class="description"><p class="name"><a href="#getCollectionPersister()">getCollectionPersister</a>(<a href="../../doctrine/orm/mapping/associationmapping.html">AssociationMapping</a> association)</p><p class="description">Gets a collection persister for a collection-valued association.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\Internal\CommitOrderCalculator</td>
+<td class="type"> <a href="../../doctrine/orm/internal/commitordercalculator.html">CommitOrderCalculator</a></td>
 <td class="description"><p class="name"><a href="#getCommitOrderCalculator()">getCommitOrderCalculator</a>()</p><p class="description">Gets the CommitOrderCalculator used by the UnitOfWork to order commits.</p></td>
 </tr>
 <tr>
@@ -340,7 +334,7 @@ Tries to get an entity by its identifier hash. </p></td>
 </table>
 
 <h2 id="detail_field">Field Detail</h2>
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 63</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 59</div>
 <h3 id="STATE_DETACHED">STATE_DETACHED</h3>
 <code class="signature">public final  int <strong>STATE_DETACHED</strong> = 3</code>
 <div class="details">
@@ -349,7 +343,7 @@ Tries to get an entity by its identifier hash. </p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 51</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 47</div>
 <h3 id="STATE_MANAGED">STATE_MANAGED</h3>
 <code class="signature">public final  int <strong>STATE_MANAGED</strong> = 1</code>
 <div class="details">
@@ -357,7 +351,7 @@ Tries to get an entity by its identifier hash. </p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 57</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 53</div>
 <h3 id="STATE_NEW">STATE_NEW</h3>
 <code class="signature">public final  int <strong>STATE_NEW</strong> = 2</code>
 <div class="details">
@@ -366,7 +360,7 @@ and is not (yet) managed by an EntityManager.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 70</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 66</div>
 <h3 id="STATE_REMOVED">STATE_REMOVED</h3>
 <code class="signature">public final  int <strong>STATE_REMOVED</strong> = 4</code>
 <div class="details">
@@ -377,16 +371,16 @@ deleted (or is scheduled for deletion).</p></div>
 <hr>
 
 <h2 id="detail_constr">Constructor Detail</h2>
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 236</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 232</div>
 <h3 id="UnitOfWork()">UnitOfWork</h3>
-<code class="signature">public <strong>UnitOfWork</strong>(Doctrine\ORM\EntityManager em)</code>
+<code class="signature">public <strong>UnitOfWork</strong>(<a href="../../doctrine/orm/entitymanager.html">EntityManager</a> em)</code>
 <div class="details">
 <p>Initializes a new UnitOfWork instance, bound to the given EntityManager.</p></div>
 
 <hr>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1009</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1004</div>
 <h3 id="addToIdentityMap()">addToIdentityMap</h3>
 <code class="signature">public  boolean <strong>addToIdentityMap</strong>(object entity)</code>
 <div class="details">
@@ -404,7 +398,7 @@ the root entity.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1650</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1649</div>
 <h3 id="clear()">clear</h3>
 <code class="signature">public  void <strong>clear</strong>()</code>
 <div class="details">
@@ -412,7 +406,7 @@ the root entity.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2030</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2029</div>
 <h3 id="clearEntityChangeSet()">clearEntityChangeSet</h3>
 <code class="signature">public  void <strong>clearEntityChangeSet</strong>(string oid)</code>
 <div class="details">
@@ -425,7 +419,7 @@ Clears the property changeset of the entity with the given OID.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 257</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 253</div>
 <h3 id="commit()">commit</h3>
 <code class="signature">public  void <strong>commit</strong>()</code>
 <div class="details">
@@ -439,7 +433,7 @@ the database.</p><p>The operations are executed in the following order:</p><p>1)
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 404</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 399</div>
 <h3 id="computeChangeSet()">computeChangeSet</h3>
 <code class="signature">public  void <strong>computeChangeSet</strong>(<a href="../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a> class, object entity)</code>
 <div class="details">
@@ -464,7 +458,7 @@ then this collection is marked for deletion.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 508</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 503</div>
 <h3 id="computeChangeSets()">computeChangeSets</h3>
 <code class="signature">public  void <strong>computeChangeSets</strong>()</code>
 <div class="details">
@@ -474,7 +468,7 @@ temporarily for access by the persisters, until the UoW commit is finished.</p><
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1149</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1144</div>
 <h3 id="containsIdHash()">containsIdHash</h3>
 <code class="signature">public  boolean <strong>containsIdHash</strong>(string idHash, string rootClassName)</code>
 <div class="details">
@@ -486,7 +480,7 @@ Checks whether an identifier hash exists in the identity map.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1715</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1714</div>
 <h3 id="createEntity()">createEntity</h3>
 <code class="signature">public  object <strong>createEntity</strong>(string className, array data, array hints)</code>
 <div class="details">
@@ -508,7 +502,7 @@ Creates an entity. Used for reconstitution of entities during hydration.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1415</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1414</div>
 <h3 id="detach()">detach</h3>
 <code class="signature">public  void <strong>detach</strong>(object entity)</code>
 <div class="details">
@@ -521,7 +515,7 @@ no longer be managed by Doctrine.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1098</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1093</div>
 <h3 id="getByIdHash()">getByIdHash</h3>
 <code class="signature">public  object <strong>getByIdHash</strong>(string idHash, string rootClassName)</code>
 <div class="details">
@@ -533,7 +527,7 @@ Gets an entity in the identity map by its identifier hash.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1993</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1992</div>
 <h3 id="getCollectionPersister()">getCollectionPersister</h3>
 <code class="signature">public  <a href="../../doctrine/orm/persisters/abstractcollectionpersister.html">AbstractCollectionPersister</a> <strong>getCollectionPersister</strong>(<a href="../../doctrine/orm/mapping/associationmapping.html">AssociationMapping</a> association)</code>
 <div class="details">
@@ -541,15 +535,15 @@ Gets an entity in the identity map by its identifier hash.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1639</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1638</div>
 <h3 id="getCommitOrderCalculator()">getCommitOrderCalculator</h3>
-<code class="signature">public  Doctrine\ORM\Internal\CommitOrderCalculator <strong>getCommitOrderCalculator</strong>()</code>
+<code class="signature">public  <a href="../../doctrine/orm/internal/commitordercalculator.html">CommitOrderCalculator</a> <strong>getCommitOrderCalculator</strong>()</code>
 <div class="details">
 <p>Gets the CommitOrderCalculator used by the UnitOfWork to order commits.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 367</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 362</div>
 <h3 id="getEntityChangeSet()">getEntityChangeSet</h3>
 <code class="signature">public  array <strong>getEntityChangeSet</strong>(mixed entity)</code>
 <div class="details">
@@ -557,7 +551,7 @@ Gets an entity in the identity map by its identifier hash.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1904</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1903</div>
 <h3 id="getEntityIdentifier()">getEntityIdentifier</h3>
 <code class="signature">public  array <strong>getEntityIdentifier</strong>(object entity)</code>
 <div class="details">
@@ -572,7 +566,7 @@ order as the identifier field names as returned by ClassMetadata#getIdentifierFi
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1969</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1968</div>
 <h3 id="getEntityPersister()">getEntityPersister</h3>
 <code class="signature">public  Doctrine\ORM\Persister\AbstractEntityPersister <strong>getEntityPersister</strong>(string entityName)</code>
 <div class="details">
@@ -584,7 +578,7 @@ order as the identifier field names as returned by ClassMetadata#getIdentifierFi
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1040</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1035</div>
 <h3 id="getEntityState()">getEntityState</h3>
 <code class="signature">public  int <strong>getEntityState</strong>(object entity, integer assume)</code>
 <div class="details">
@@ -601,7 +595,7 @@ DETACHED. This can be incorrect for manually assigned identifiers.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1852</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1851</div>
 <h3 id="getIdentityMap()">getIdentityMap</h3>
 <code class="signature">public  array <strong>getIdentityMap</strong>()</code>
 <div class="details">
@@ -609,7 +603,7 @@ DETACHED. This can be incorrect for manually assigned identifiers.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1864</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1863</div>
 <h3 id="getOriginalEntityData()">getOriginalEntityData</h3>
 <code class="signature">public  array <strong>getOriginalEntityData</strong>(object entity)</code>
 <div class="details">
@@ -618,7 +612,7 @@ present at the time the entity was reconstituted from the database.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2102</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2107</div>
 <h3 id="getScheduledCollectionDeletions()">getScheduledCollectionDeletions</h3>
 <code class="signature">public  array <strong>getScheduledCollectionDeletions</strong>()</code>
 <div class="details">
@@ -626,7 +620,7 @@ present at the time the entity was reconstituted from the database.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2112</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2117</div>
 <h3 id="getScheduledCollectionUpdates()">getScheduledCollectionUpdates</h3>
 <code class="signature">public  array <strong>getScheduledCollectionUpdates</strong>()</code>
 <div class="details">
@@ -634,7 +628,7 @@ present at the time the entity was reconstituted from the database.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2092</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2097</div>
 <h3 id="getScheduledEntityDeletions()">getScheduledEntityDeletions</h3>
 <code class="signature">public  array <strong>getScheduledEntityDeletions</strong>()</code>
 <div class="details">
@@ -642,7 +636,7 @@ present at the time the entity was reconstituted from the database.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2072</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2077</div>
 <h3 id="getScheduledEntityInsertions()">getScheduledEntityInsertions</h3>
 <code class="signature">public  array <strong>getScheduledEntityInsertions</strong>()</code>
 <div class="details">
@@ -650,7 +644,7 @@ present at the time the entity was reconstituted from the database.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2082</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2087</div>
 <h3 id="getScheduledEntityUpdates()">getScheduledEntityUpdates</h3>
 <code class="signature">public  array <strong>getScheduledEntityUpdates</strong>()</code>
 <div class="details">
@@ -658,7 +652,7 @@ present at the time the entity was reconstituted from the database.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1943</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1942</div>
 <h3 id="hasPendingInsertions()">hasPendingInsertions</h3>
 <code class="signature">public  boolean <strong>hasPendingInsertions</strong>()</code>
 <div class="details">
@@ -670,7 +664,7 @@ present at the time the entity was reconstituted from the database.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1697</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1696</div>
 <h3 id="isCollectionScheduledForDeletion()">isCollectionScheduledForDeletion</h3>
 <code class="signature">public  void <strong>isCollectionScheduledForDeletion</strong>(mixed coll)</code>
 <div class="details">
@@ -678,7 +672,7 @@ present at the time the entity was reconstituted from the database.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 990</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 985</div>
 <h3 id="isEntityScheduled()">isEntityScheduled</h3>
 <code class="signature">public  boolean <strong>isEntityScheduled</strong>(mixed entity, $entity )</code>
 <div class="details">
@@ -686,7 +680,7 @@ present at the time the entity was reconstituted from the database.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1125</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1120</div>
 <h3 id="isInIdentityMap()">isInIdentityMap</h3>
 <code class="signature">public  boolean <strong>isInIdentityMap</strong>(object entity)</code>
 <div class="details">
@@ -694,7 +688,7 @@ present at the time the entity was reconstituted from the database.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 979</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 974</div>
 <h3 id="isScheduledForDelete()">isScheduledForDelete</h3>
 <code class="signature">public  boolean <strong>isScheduledForDelete</strong>(object entity)</code>
 <div class="details">
@@ -703,7 +697,7 @@ of work.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 880</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 875</div>
 <h3 id="isScheduledForInsert()">isScheduledForInsert</h3>
 <code class="signature">public  boolean <strong>isScheduledForInsert</strong>(object entity)</code>
 <div class="details">
@@ -711,7 +705,7 @@ of work.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 935</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 930</div>
 <h3 id="isScheduledForUpdate()">isScheduledForUpdate</h3>
 <code class="signature">public  boolean <strong>isScheduledForUpdate</strong>(object entity)</code>
 <div class="details">
@@ -721,19 +715,23 @@ at commit time.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1297</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1296</div>
 <h3 id="merge()">merge</h3>
 <code class="signature">public  object <strong>merge</strong>(object entity)</code>
 <div class="details">
 <p>Merges the state of the given detached entity into this UnitOfWork.</p><dl>
 <dt>Returns:</dt>
 <dd>The managed copy of the entity.</dd>
+<dt>Throws:</dt>
+<dd><a href="../../doctrine/orm/optimisticlockexception.html">If the entity uses optimistic locking through a version attribute and the version check against the managed copy fails.</a></dd>
+<dt>Todo:</dt>
+<dd>Require active transaction!? OptimisticLockException may result in undefined state!?</dd>
 </dl>
 </div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1159</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1154</div>
 <h3 id="persist()">persist</h3>
 <code class="signature">public  void <strong>persist</strong>(object entity)</code>
 <div class="details">
@@ -745,7 +743,7 @@ at commit time.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2045</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2044</div>
 <h3 id="propertyChanged()">propertyChanged</h3>
 <code class="signature">public  void <strong>propertyChanged</strong>(object entity, string propertyName, mixed oldValue, mixed newValue)</code>
 <div class="details">
@@ -760,7 +758,7 @@ at commit time.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 628</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 623</div>
 <h3 id="recomputeSingleEntityChangeSet()">recomputeSingleEntityChangeSet</h3>
 <code class="signature">public  void <strong>recomputeSingleEntityChangeSet</strong>(<a href="../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a> class, object entity)</code>
 <div class="details">
@@ -780,7 +778,7 @@ whereby changes detected in this method prevail.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1459</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1458</div>
 <h3 id="refresh()">refresh</h3>
 <code class="signature">public  void <strong>refresh</strong>(object entity)</code>
 <div class="details">
@@ -795,7 +793,7 @@ any local, unpersisted changes.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2015</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 2014</div>
 <h3 id="registerManaged()">registerManaged</h3>
 <code class="signature">public  void <strong>registerManaged</strong>(object entity, array id, array data)</code>
 <div class="details">
@@ -810,7 +808,7 @@ Registers an entity as managed.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1241</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1236</div>
 <h3 id="remove()">remove</h3>
 <code class="signature">public  void <strong>remove</strong>(object entity)</code>
 <div class="details">
@@ -822,7 +820,7 @@ Registers an entity as managed.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1071</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1066</div>
 <h3 id="removeFromIdentityMap()">removeFromIdentityMap</h3>
 <code class="signature">public  boolean <strong>removeFromIdentityMap</strong>(object entity)</code>
 <div class="details">
@@ -835,7 +833,7 @@ entity from the persistence management of Doctrine.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1690</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1689</div>
 <h3 id="scheduleCollectionDeletion()">scheduleCollectionDeletion</h3>
 <code class="signature">public  void <strong>scheduleCollectionDeletion</strong>(<a href="../../doctrine/orm/persistentcollection.html">PersistentCollection</a> coll)</code>
 <div class="details">
@@ -844,7 +842,7 @@ Schedules a complete collection for removal when this UnitOfWork commits.</p></d
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 916</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 911</div>
 <h3 id="scheduleExtraUpdate()">scheduleExtraUpdate</h3>
 <code class="signature">public  void <strong>scheduleExtraUpdate</strong>(object entity, array changeset)</code>
 <div class="details">
@@ -860,7 +858,7 @@ regular entity updates within the currently running commit cycle.</p><p>Extra up
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 946</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 941</div>
 <h3 id="scheduleForDelete()">scheduleForDelete</h3>
 <code class="signature">public  void <strong>scheduleForDelete</strong>(object entity)</code>
 <div class="details">
@@ -869,7 +867,7 @@ Schedules an entity for deletion.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1932</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1931</div>
 <h3 id="scheduleForDirtyCheck()">scheduleForDirtyCheck</h3>
 <code class="signature">public  void <strong>scheduleForDirtyCheck</strong>(object entity)</code>
 <div class="details">
@@ -881,7 +879,7 @@ Schedules an entity for deletion.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 853</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 848</div>
 <h3 id="scheduleForInsert()">scheduleForInsert</h3>
 <code class="signature">public  void <strong>scheduleForInsert</strong>(object entity)</code>
 <div class="details">
@@ -894,7 +892,7 @@ If the entity already has an identifier, it will be added to the identity map.</
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 890</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 885</div>
 <h3 id="scheduleForUpdate()">scheduleForUpdate</h3>
 <code class="signature">public  void <strong>scheduleForUpdate</strong>(object entity)</code>
 <div class="details">
@@ -906,7 +904,7 @@ If the entity already has an identifier, it will be added to the identity map.</
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1679</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1678</div>
 <h3 id="scheduleOrphanRemoval()">scheduleOrphanRemoval</h3>
 <code class="signature">public  void <strong>scheduleOrphanRemoval</strong>(object entity)</code>
 <div class="details">
@@ -920,7 +918,7 @@ UnitOfWork.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1876</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1875</div>
 <h3 id="setOriginalEntityData()">setOriginalEntityData</h3>
 <code class="signature">public  void <strong>setOriginalEntityData</strong>(mixed entity, mixed data)</code>
 <div class="details">
@@ -931,7 +929,7 @@ UnitOfWork.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1890</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1889</div>
 <h3 id="setOriginalEntityProperty()">setOriginalEntityProperty</h3>
 <code class="signature">public  void <strong>setOriginalEntityProperty</strong>(string oid, string property, mixed value)</code>
 <div class="details">
@@ -943,7 +941,7 @@ Sets a property value of the original data array of an entity.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1954</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1953</div>
 <h3 id="size()">size</h3>
 <code class="signature">public  integer <strong>size</strong>()</code>
 <div class="details">
@@ -952,7 +950,7 @@ number of entities in the identity map.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1918</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1917</div>
 <h3 id="tryGetById()">tryGetById</h3>
 <code class="signature">public  mixed <strong>tryGetById</strong>(mixed id, string rootClassName)</code>
 <div class="details">
@@ -968,7 +966,7 @@ this UnitOfWork.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1113</div>
+<div class="location">/Doctrine/ORM/UnitOfWork.php at line 1108</div>
 <h3 id="tryGetByIdHash()">tryGetByIdHash</h3>
 <code class="signature">public  mixed <strong>tryGetByIdHash</strong>(string idHash, string rootClassName)</code>
 <div class="details">

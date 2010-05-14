@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:03 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:36 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
 <link rel="start" href="../../../overview-summary.html">
@@ -37,16 +37,16 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\Common\Annotations\AnnotationException</div>
-<div class="location">/Doctrine/Common/Annotations/AnnotationException.php at line 35</div>
+<div class="location">/Doctrine/Common/Annotations/AnnotationException.php at line 36</div>
 
 <h1>Class AnnotationException</h1>
 
-<pre class="tree">Class:AnnotationException - Superclass: Doctrine
-Doctrine<br>&lfloor;&nbsp;<strong>AnnotationException</strong><br /></pre>
+<pre class="tree">Class:AnnotationException - Superclass: Exception
+Exception<br>&lfloor;&nbsp;<strong>AnnotationException</strong><br /></pre>
 
 <hr>
 
-<p class="signature">public  class <strong>AnnotationException</strong><br>extends Doctrine
+<p class="signature">public  class <strong>AnnotationException</strong><br>extends Exception
 
 </p>
 
@@ -60,8 +60,9 @@ Doctrine<br>&lfloor;&nbsp;<strong>AnnotationException</strong><br /></pre>
 <dt>Since:</dt>
 <dd>2.0</dd>
 <dt>Version:</dt>
-<dd>$Revision: 3938 $</dd>
+<dd>$Revision$</dd>
 <dt>Author:</dt>
+<dd>Benjamin Eberlei <kontakt@beberlei.de></dd>
 <dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
 <dd>Jonathan Wage <jonwage@gmail.com></dd>
 <dd>Roman Borschel <roman@code-factory.org></dd>
@@ -71,28 +72,36 @@ Doctrine<br>&lfloor;&nbsp;<strong>AnnotationException</strong><br /></pre>
 <table id="summary_method">
 <tr><th colspan="2">Method Summary</th></tr>
 <tr>
-<td class="type">static  void</td>
-<td class="description"><p class="name"><a href="#semanticalError()">semanticalError</a>(mixed message)</p></td>
+<td class="type">static  <a href="../../../doctrine/common/annotations/annotationexception.html">AnnotationException</a></td>
+<td class="description"><p class="name"><a href="#semanticalError()">semanticalError</a>(string message)</p><p class="description">Creates a new AnnotationException describing a Semantical error.</p></td>
 </tr>
 <tr>
-<td class="type">static  void</td>
-<td class="description"><p class="name"><a href="#syntaxError()">syntaxError</a>(mixed message)</p></td>
+<td class="type">static  <a href="../../../doctrine/common/annotations/annotationexception.html">AnnotationException</a></td>
+<td class="description"><p class="name"><a href="#syntaxError()">syntaxError</a>(string message)</p><p class="description">Creates a new AnnotationException describing a Syntax error.</p></td>
 </tr>
 </table>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/Common/Annotations/AnnotationException.php at line 43</div>
+<div class="location">/Doctrine/Common/Annotations/AnnotationException.php at line 55</div>
 <h3 id="semanticalError()">semanticalError</h3>
-<code class="signature">public static  void <strong>semanticalError</strong>(mixed message)</code>
+<code class="signature">public static  <a href="../../../doctrine/common/annotations/annotationexception.html">AnnotationException</a> <strong>semanticalError</strong>(string message)</code>
 <div class="details">
+<p>Creates a new AnnotationException describing a Semantical error.</p><dl>
+<dt>Parameters:</dt>
+<dd>message - Exception message</dd>
+</dl>
 </div>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Annotations/AnnotationException.php at line 37</div>
+<div class="location">/Doctrine/Common/Annotations/AnnotationException.php at line 44</div>
 <h3 id="syntaxError()">syntaxError</h3>
-<code class="signature">public static  void <strong>syntaxError</strong>(mixed message)</code>
+<code class="signature">public static  <a href="../../../doctrine/common/annotations/annotationexception.html">AnnotationException</a> <strong>syntaxError</strong>(string message)</code>
 <div class="details">
+<p>Creates a new AnnotationException describing a Syntax error.</p><dl>
+<dt>Parameters:</dt>
+<dd>message - Exception message</dd>
+</dl>
 </div>
 
 <hr>

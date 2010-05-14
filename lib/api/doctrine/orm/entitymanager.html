@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:37 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css">
 <link rel="start" href="../../overview-summary.html">
@@ -37,7 +37,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\ORM\EntityManager</div>
-<div class="location">/Doctrine/ORM/EntityManager.php at line 42</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 38</div>
 
 <h1>Class EntityManager</h1>
 
@@ -50,14 +50,8 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <div class="comment" id="overview_description"><p>The EntityManager is the central access point to ORM functionality.</p></div>
 
 <dl>
-<dt>License:</dt>
-<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
-<dt>See Also:</dt>
-<dd><code>www.doctrine-project.org</code></dd>
 <dt>Since:</dt>
 <dd>2.0</dd>
-<dt>Version:</dt>
-<dd>$Revision$</dd>
 <dt>Author:</dt>
 <dd>Benjamin Eberlei <kontakt@beberlei.de></dd>
 <dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
@@ -69,7 +63,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <table id="summary_constr">
 <tr><th colspan="2">Constructor Summary</th></tr>
 <tr>
-<td class="description"><p class="name"><a href="#EntityManager()">EntityManager</a>(Doctrine\DBAL\Connection conn, Doctrine\ORM\Configuration config, Doctrine\Common\EventManager eventManager)</p><p class="description">Creates a new EntityManager that operates on the given database connection
+<td class="description"><p class="name"><a href="#EntityManager()">EntityManager</a>(<a href="../../doctrine/dbal/connection.html">Connection</a> conn, <a href="../../doctrine/orm/configuration.html">Configuration</a> config, <a href="../../doctrine/common/eventmanager.html">EventManager</a> eventManager)</p><p class="description">Creates a new EntityManager that operates on the given database connection
 and uses the given Configuration and EventManager implementations.</p></td>
 </tr>
 </table>
@@ -105,11 +99,11 @@ and uses the given Configuration and EventManager implementations.</p></td>
 <td class="description"><p class="name"><a href="#create()">create</a>(mixed conn, <a href="../../doctrine/dbal/configuration.html">Configuration</a> config, <a href="../../doctrine/common/eventmanager.html">EventManager</a> eventManager)</p><p class="description">Factory method to create EntityManager instances.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\NativeQuery</td>
+<td class="type"> <a href="../../doctrine/orm/nativequery.html">NativeQuery</a></td>
 <td class="description"><p class="name"><a href="#createNamedNativeQuery()">createNamedNativeQuery</a>(string name)</p><p class="description">Creates a NativeQuery from a named native query.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\Query</td>
+<td class="type"> <a href="../../doctrine/orm/query.html">Query</a></td>
 <td class="description"><p class="name"><a href="#createNamedQuery()">createNamedQuery</a>(string name)</p><p class="description">Creates a Query from a named query.</p></td>
 </tr>
 <tr>
@@ -117,7 +111,7 @@ and uses the given Configuration and EventManager implementations.</p></td>
 <td class="description"><p class="name"><a href="#createNativeQuery()">createNativeQuery</a>(string sql, <a href="../../doctrine/orm/query/resultsetmapping.html">ResultSetMapping</a> rsm)</p><p class="description">Creates a native SQL query.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\Query</td>
+<td class="type"> <a href="../../doctrine/orm/query.html">Query</a></td>
 <td class="description"><p class="name"><a href="#createQuery()">createQuery</a>(mixed dql, string The)</p><p class="description">Creates a new Query object.</p></td>
 </tr>
 <tr>
@@ -140,19 +134,19 @@ become detached. </p></td>
 </p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\Mapping\ClassMetadata</td>
+<td class="type"> <a href="../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a></td>
 <td class="description"><p class="name"><a href="#getClassMetadata()">getClassMetadata</a>(mixed className)</p><p class="description">Returns the metadata for a class.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\Configuration</td>
+<td class="type"> <a href="../../doctrine/orm/configuration.html">Configuration</a></td>
 <td class="description"><p class="name"><a href="#getConfiguration()">getConfiguration</a>()</p><p class="description">Gets the Configuration used by the EntityManager.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\DBAL\Connection</td>
+<td class="type"> <a href="../../doctrine/dbal/connection.html">Connection</a></td>
 <td class="description"><p class="name"><a href="#getConnection()">getConnection</a>()</p><p class="description">Gets the database connection object used by the EntityManager.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\Common\EventManager</td>
+<td class="type"> <a href="../../doctrine/common/eventmanager.html">EventManager</a></td>
 <td class="description"><p class="name"><a href="#getEventManager()">getEventManager</a>()</p><p class="description">Gets the EventManager used by the EntityManager.</p></td>
 </tr>
 <tr>
@@ -161,12 +155,12 @@ become detached. </p></td>
 </p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\Internal\Hydration\AbstractHydrator</td>
+<td class="type"> <a href="../../doctrine/orm/internal/hydration/abstracthydrator.html">AbstractHydrator</a></td>
 <td class="description"><p class="name"><a href="#getHydrator()">getHydrator</a>(int hydrationMode)</p><p class="description">Gets a hydrator for the given hydration mode.
 </p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\Mapping\ClassMetadataFactory</td>
+<td class="type"> <a href="../../doctrine/orm/mapping/classmetadatafactory.html">ClassMetadataFactory</a></td>
 <td class="description"><p class="name"><a href="#getMetadataFactory()">getMetadataFactory</a>()</p><p class="description">Gets the metadata factory used to gather the metadata of classes.</p></td>
 </tr>
 <tr>
@@ -184,7 +178,7 @@ without actually loading it.
 <td class="description"><p class="name"><a href="#getRepository()">getRepository</a>(string entityName)</p><p class="description">Gets the repository for an entity class.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\UnitOfWork</td>
+<td class="type"> <a href="../../doctrine/orm/unitofwork.html">UnitOfWork</a></td>
 <td class="description"><p class="name"><a href="#getUnitOfWork()">getUnitOfWork</a>()</p><p class="description">Gets the UnitOfWork used by the EntityManager to coordinate operations.</p></td>
 </tr>
 <tr>
@@ -194,7 +188,7 @@ of this EntityManager and returns the managed copy of the entity.
 </p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\ORM\Internal\Hydration\AbstractHydrator</td>
+<td class="type"> <a href="../../doctrine/orm/internal/hydration/abstracthydrator.html">AbstractHydrator</a></td>
 <td class="description"><p class="name"><a href="#newHydrator()">newHydrator</a>(int hydrationMode)</p><p class="description">Create a new instance for the given hydration mode.</p></td>
 </tr>
 <tr>
@@ -214,15 +208,19 @@ overriding any local changes that have not yet been persisted.</p></td>
 </tr>
 <tr>
 <td class="type"> void</td>
-<td class="description"><p class="name"><a href="#rollback()">rollback</a>()</p><p class="description">Performs a rollback on the underlying database connection and closes the
-EntityManager as it may now be in a corrupted state.</p></td>
+<td class="description"><p class="name"><a href="#rollback()">rollback</a>()</p><p class="description">Performs a rollback on the underlying database connection.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#transactional()">transactional</a>(Closure func)</p><p class="description">Executes a function in a transaction.
+</p></td>
 </tr>
 </table>
 
 <h2 id="detail_constr">Constructor Detail</h2>
-<div class="location">/Doctrine/ORM/EntityManager.php at line 118</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 114</div>
 <h3 id="EntityManager()">EntityManager</h3>
-<code class="signature">public <strong>EntityManager</strong>(Doctrine\DBAL\Connection conn, Doctrine\ORM\Configuration config, Doctrine\Common\EventManager eventManager)</code>
+<code class="signature">public <strong>EntityManager</strong>(<a href="../../doctrine/dbal/connection.html">Connection</a> conn, <a href="../../doctrine/orm/configuration.html">Configuration</a> config, <a href="../../doctrine/common/eventmanager.html">EventManager</a> eventManager)</code>
 <div class="details">
 <p>Creates a new EntityManager that operates on the given database connection
 and uses the given Configuration and EventManager implementations.</p></div>
@@ -230,15 +228,19 @@ and uses the given Configuration and EventManager implementations.</p></div>
 <hr>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/ORM/EntityManager.php at line 176</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 175</div>
 <h3 id="beginTransaction()">beginTransaction</h3>
 <code class="signature">public  void <strong>beginTransaction</strong>()</code>
 <div class="details">
-<p>Starts a transaction on the underlying database connection.</p></div>
+<p>Starts a transaction on the underlying database connection.</p><dl>
+<dt>Deprecated:</dt>
+<dd>Use {@link getConnection}.beginTransaction().</dd>
+</dl>
+</div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 331</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 361</div>
 <h3 id="clear()">clear</h3>
 <code class="signature">public  void <strong>clear</strong>(string entityName)</code>
 <div class="details">
@@ -247,7 +249,7 @@ by this EntityManager become detached.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 346</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 376</div>
 <h3 id="close()">close</h3>
 <code class="signature">public  void <strong>close</strong>()</code>
 <div class="details">
@@ -257,15 +259,19 @@ be used after it is closed.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 184</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 211</div>
 <h3 id="commit()">commit</h3>
 <code class="signature">public  void <strong>commit</strong>()</code>
 <div class="details">
-<p>Commits a transaction on the underlying database connection.</p></div>
+<p>Commits a transaction on the underlying database connection.</p><dl>
+<dt>Deprecated:</dt>
+<dd>Use {@link getConnection}.commit().</dd>
+</dl>
+</div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 482</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 513</div>
 <h3 id="contains()">contains</h3>
 <code class="signature">public  boolean <strong>contains</strong>(object entity)</code>
 <div class="details">
@@ -277,7 +283,7 @@ be used after it is closed.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 445</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 476</div>
 <h3 id="copy()">copy</h3>
 <code class="signature">public  object <strong>copy</strong>(object entity, mixed deep)</code>
 <div class="details">
@@ -287,13 +293,13 @@ be used after it is closed.</p></div>
 <dt>Returns:</dt>
 <dd>The new entity.</dd>
 <dt>Todo:</dt>
-<dd>Implementation or remove.</dd>
+<dd>Implementation need. This is necessary since $e2 = clone $e1; throws an E_FATAL when access anything on $e: Fatal error: Maximum function nesting level of '100' reached, aborting!</dd>
 </dl>
 </div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 596</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 627</div>
 <h3 id="create()">create</h3>
 <code class="signature">public static  <a href="../../doctrine/orm/entitymanager.html">EntityManager</a> <strong>create</strong>(mixed conn, <a href="../../doctrine/dbal/configuration.html">Configuration</a> config, <a href="../../doctrine/common/eventmanager.html">EventManager</a> eventManager)</code>
 <div class="details">
@@ -309,23 +315,23 @@ be used after it is closed.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 257</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 284</div>
 <h3 id="createNamedNativeQuery()">createNamedNativeQuery</h3>
-<code class="signature">public  Doctrine\ORM\NativeQuery <strong>createNamedNativeQuery</strong>(string name)</code>
+<code class="signature">public  <a href="../../doctrine/orm/nativequery.html">NativeQuery</a> <strong>createNamedNativeQuery</strong>(string name)</code>
 <div class="details">
 <p>Creates a NativeQuery from a named native query.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 231</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 258</div>
 <h3 id="createNamedQuery()">createNamedQuery</h3>
-<code class="signature">public  Doctrine\ORM\Query <strong>createNamedQuery</strong>(string name)</code>
+<code class="signature">public  <a href="../../doctrine/orm/query.html">Query</a> <strong>createNamedQuery</strong>(string name)</code>
 <div class="details">
 <p>Creates a Query from a named query.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 243</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 270</div>
 <h3 id="createNativeQuery()">createNativeQuery</h3>
 <code class="signature">public  <a href="../../doctrine/orm/nativequery.html">NativeQuery</a> <strong>createNativeQuery</strong>(string sql, <a href="../../doctrine/orm/query/resultsetmapping.html">ResultSetMapping</a> rsm)</code>
 <div class="details">
@@ -338,9 +344,9 @@ be used after it is closed.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 216</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 243</div>
 <h3 id="createQuery()">createQuery</h3>
-<code class="signature">public  Doctrine\ORM\Query <strong>createQuery</strong>(mixed dql, string The)</code>
+<code class="signature">public  <a href="../../doctrine/orm/query.html">Query</a> <strong>createQuery</strong>(mixed dql, string The)</code>
 <div class="details">
 <p>Creates a new Query object.</p><dl>
 <dt>Parameters:</dt>
@@ -350,7 +356,7 @@ be used after it is closed.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 268</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 295</div>
 <h3 id="createQueryBuilder()">createQueryBuilder</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>createQueryBuilder</strong>()</code>
 <div class="details">
@@ -362,7 +368,7 @@ be used after it is closed.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 413</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 443</div>
 <h3 id="detach()">detach</h3>
 <code class="signature">public  void <strong>detach</strong>(object entity)</code>
 <div class="details">
@@ -378,7 +384,7 @@ reference it.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 293</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 323</div>
 <h3 id="find()">find</h3>
 <code class="signature">public  object <strong>find</strong>(string entityName, mixed identifier)</code>
 <div class="details">
@@ -386,19 +392,23 @@ reference it.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 278</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 308</div>
 <h3 id="flush()">flush</h3>
 <code class="signature">public  void <strong>flush</strong>()</code>
 <div class="details">
 <p>Flushes all changes to objects that have been queued up to now to the database.
 This effectively synchronizes the in-memory state of managed objects with the
-database.</p></div>
+database.</p><dl>
+<dt>Throws:</dt>
+<dd>If a version check on an entity that makes use of optimistic locking fails.</dd>
+</dl>
+</div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 205</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 232</div>
 <h3 id="getClassMetadata()">getClassMetadata</h3>
-<code class="signature">public  Doctrine\ORM\Mapping\ClassMetadata <strong>getClassMetadata</strong>(mixed className)</code>
+<code class="signature">public  <a href="../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a> <strong>getClassMetadata</strong>(mixed className)</code>
 <div class="details">
 <p>Returns the metadata for a class.</p><dl>
 <dt>Internal:</dt>
@@ -408,60 +418,61 @@ database.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 504</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 535</div>
 <h3 id="getConfiguration()">getConfiguration</h3>
-<code class="signature">public  Doctrine\ORM\Configuration <strong>getConfiguration</strong>()</code>
+<code class="signature">public  <a href="../../doctrine/orm/configuration.html">Configuration</a> <strong>getConfiguration</strong>()</code>
 <div class="details">
 <p>Gets the Configuration used by the EntityManager.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 137</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 133</div>
 <h3 id="getConnection()">getConnection</h3>
-<code class="signature">public  Doctrine\DBAL\Connection <strong>getConnection</strong>()</code>
+<code class="signature">public  <a href="../../doctrine/dbal/connection.html">Connection</a> <strong>getConnection</strong>()</code>
 <div class="details">
 <p>Gets the database connection object used by the EntityManager.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 494</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 525</div>
 <h3 id="getEventManager()">getEventManager</h3>
-<code class="signature">public  Doctrine\Common\EventManager <strong>getEventManager</strong>()</code>
+<code class="signature">public  <a href="../../doctrine/common/eventmanager.html">EventManager</a> <strong>getEventManager</strong>()</code>
 <div class="details">
 <p>Gets the EventManager used by the EntityManager.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 165</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 162</div>
 <h3 id="getExpressionBuilder()">getExpressionBuilder</h3>
 <code class="signature">public  ExpressionBuilder <strong>getExpressionBuilder</strong>()</code>
 <div class="details">
-<p>Gets an ExpressionBuilder used for object-oriented construction of query expressions.</p><p>Example:</p><p>[php]
+<p>Gets an ExpressionBuilder used for object-oriented construction of query expressions.</p><p>Example:</p><p><code>
 $qb = $em->createQueryBuilder();
 $expr = $em->getExpressionBuilder();
 $qb->select('u')->from('User', 'u')
-->where($expr->orX($expr->eq('u.id', 1), $expr->eq('u.id', 2)));</p></div>
+->where($expr->orX($expr->eq('u.id', 1), $expr->eq('u.id', 2)));
+</code></p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 540</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 571</div>
 <h3 id="getHydrator()">getHydrator</h3>
-<code class="signature">public  Doctrine\ORM\Internal\Hydration\AbstractHydrator <strong>getHydrator</strong>(int hydrationMode)</code>
+<code class="signature">public  <a href="../../doctrine/orm/internal/hydration/abstracthydrator.html">AbstractHydrator</a> <strong>getHydrator</strong>(int hydrationMode)</code>
 <div class="details">
 <p>Gets a hydrator for the given hydration mode.</p><p>This method caches the hydrator instances which is used for all queries that don't
 selectively iterate over the result.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 147</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 143</div>
 <h3 id="getMetadataFactory()">getMetadataFactory</h3>
-<code class="signature">public  Doctrine\ORM\Mapping\ClassMetadataFactory <strong>getMetadataFactory</strong>()</code>
+<code class="signature">public  <a href="../../doctrine/orm/mapping/classmetadatafactory.html">ClassMetadataFactory</a> <strong>getMetadataFactory</strong>()</code>
 <div class="details">
 <p>Gets the metadata factory used to gather the metadata of classes.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 582</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 613</div>
 <h3 id="getProxyFactory()">getProxyFactory</h3>
 <code class="signature">public  <a href="../../doctrine/orm/proxy/proxyfactory.html">ProxyFactory</a> <strong>getProxyFactory</strong>()</code>
 <div class="details">
@@ -469,7 +480,7 @@ selectively iterate over the result.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 308</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 338</div>
 <h3 id="getReference()">getReference</h3>
 <code class="signature">public  object <strong>getReference</strong>(mixed entityName, mixed identifier)</code>
 <div class="details">
@@ -484,7 +495,7 @@ loads itself on first access.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 456</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 487</div>
 <h3 id="getRepository()">getRepository</h3>
 <code class="signature">public  <a href="../../doctrine/orm/entityrepository.html">EntityRepository</a> <strong>getRepository</strong>(string entityName)</code>
 <div class="details">
@@ -498,15 +509,15 @@ loads itself on first access.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 526</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 557</div>
 <h3 id="getUnitOfWork()">getUnitOfWork</h3>
-<code class="signature">public  Doctrine\ORM\UnitOfWork <strong>getUnitOfWork</strong>()</code>
+<code class="signature">public  <a href="../../doctrine/orm/unitofwork.html">UnitOfWork</a> <strong>getUnitOfWork</strong>()</code>
 <div class="details">
 <p>Gets the UnitOfWork used by the EntityManager to coordinate operations.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 429</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 459</div>
 <h3 id="merge()">merge</h3>
 <code class="signature">public  object <strong>merge</strong>(object entity)</code>
 <div class="details">
@@ -522,15 +533,15 @@ The entity passed to merge will not become associated/managed with this EntityMa
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 555</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 586</div>
 <h3 id="newHydrator()">newHydrator</h3>
-<code class="signature">public  Doctrine\ORM\Internal\Hydration\AbstractHydrator <strong>newHydrator</strong>(int hydrationMode)</code>
+<code class="signature">public  <a href="../../doctrine/orm/internal/hydration/abstracthydrator.html">AbstractHydrator</a> <strong>newHydrator</strong>(int hydrationMode)</code>
 <div class="details">
 <p>Create a new instance for the given hydration mode.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 363</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 393</div>
 <h3 id="persist()">persist</h3>
 <code class="signature">public  void <strong>persist</strong>(mixed entity, object object)</code>
 <div class="details">
@@ -544,7 +555,7 @@ this EntityManager as NEW. Do not pass detached entities to the persist operatio
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 395</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 425</div>
 <h3 id="refresh()">refresh</h3>
 <code class="signature">public  void <strong>refresh</strong>(object entity)</code>
 <div class="details">
@@ -557,7 +568,7 @@ overriding any local changes that have not yet been persisted.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 380</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 410</div>
 <h3 id="remove()">remove</h3>
 <code class="signature">public  void <strong>remove</strong>(object entity)</code>
 <div class="details">
@@ -570,12 +581,28 @@ or as a result of the flush operation.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityManager.php at line 193</div>
+<div class="location">/Doctrine/ORM/EntityManager.php at line 221</div>
 <h3 id="rollback()">rollback</h3>
 <code class="signature">public  void <strong>rollback</strong>()</code>
 <div class="details">
-<p>Performs a rollback on the underlying database connection and closes the
-EntityManager as it may now be in a corrupted state.</p></div>
+<p>Performs a rollback on the underlying database connection.</p><dl>
+<dt>Deprecated:</dt>
+<dd>Use {@link getConnection}.rollback().</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/EntityManager.php at line 192</div>
+<h3 id="transactional()">transactional</h3>
+<code class="signature">public  void <strong>transactional</strong>(Closure func)</code>
+<div class="details">
+<p>Executes a function in a transaction.</p><p>The function gets passed this EntityManager instance as an (optional) parameter.</p><p><code><a href="../../doctrine/odm/couchdb/documentmanager.html#flush()">flush</a></code> is invoked prior to transaction commit.</p><p>If an exception occurs during execution of the function or flushing or transaction commit,
+the transaction is rolled back, the EntityManager closed and the exception re-thrown.</p><dl>
+<dt>Parameters:</dt>
+<dd>func - The function to execute transactionally.</dd>
+</dl>
+</div>
 
 <hr>
 

@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:37 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
 <link rel="start" href="../../../overview-summary.html">
@@ -37,13 +37,13 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\ORM\Persisters\JoinedSubclassPersister</div>
-<div class="location">/Doctrine/ORM/Persisters/JoinedSubclassPersister.php at line 36</div>
+<div class="location">/Doctrine/ORM/Persisters/JoinedSubclassPersister.php at line 33</div>
 
 <h1>Class JoinedSubclassPersister</h1>
 
 <pre class="tree">Class:JoinedSubclassPersister - Superclass: AbstractEntityInheritancePersister
-Class:AbstractEntityInheritancePersister - Superclass: StandardEntityPersister
-<a href="../../../doctrine/orm/persisters/standardentitypersister.html">StandardEntityPersister</a><br>   &lfloor;&nbsp;<a href="../../../doctrine/orm/persisters/abstractentityinheritancepersister.html">AbstractEntityInheritancePersister</a><br>      &lfloor;&nbsp;<strong>JoinedSubclassPersister</strong><br /></pre>
+Class:AbstractEntityInheritancePersister - Superclass: BasicEntityPersister
+<a href="../../../doctrine/orm/persisters/basicentitypersister.html">BasicEntityPersister</a><br>   &lfloor;&nbsp;<a href="../../../doctrine/orm/persisters/abstractentityinheritancepersister.html">AbstractEntityInheritancePersister</a><br>      &lfloor;&nbsp;<strong>JoinedSubclassPersister</strong><br /></pre>
 
 <hr>
 
@@ -57,16 +57,10 @@ database as it is defined by the <tt>Class Table Inheritance</tt> strategy.</p><
 <dl>
 <dt>Author:</dt>
 <dd>Roman Borschel <roman@code-factory.org></dd>
-<dt>License:</dt>
-<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
-<dt>See Also:</dt>
-<dd><code>www.doctrine-project.org</code></dd>
 <dt>Since:</dt>
 <dd>2.0</dd>
 <dt>See Also:</dt>
 <dd><a href="http://martinfowler.com/eaaCatalog/classTableInheritance.html">http://martinfowler.com/eaaCatalog/classTableInheritance.html</a></dd>
-<dt>Todo:</dt>
-<dd>Rename: BasicEntityPersister</dd>
 </dl>
 <hr>
 
@@ -91,7 +85,7 @@ database as it is defined by the <tt>Class Table Inheritance</tt> strategy.</p><
 </table>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/ORM/Persisters/JoinedSubclassPersister.php at line 210</div>
+<div class="location">/Doctrine/ORM/Persisters/JoinedSubclassPersister.php at line 207</div>
 <h3 id="delete()">delete</h3>
 <code class="signature">public  void <strong>delete</strong>(object entity)</code>
 <div class="details">
@@ -103,7 +97,7 @@ database as it is defined by the <tt>Class Table Inheritance</tt> strategy.</p><
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Persisters/JoinedSubclassPersister.php at line 100</div>
+<div class="location">/Doctrine/ORM/Persisters/JoinedSubclassPersister.php at line 97</div>
 <h3 id="executeInserts()">executeInserts</h3>
 <code class="signature">public  array <strong>executeInserts</strong>()</code>
 <div class="details">
@@ -115,7 +109,7 @@ database as it is defined by the <tt>Class Table Inheritance</tt> strategy.</p><
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Persisters/JoinedSubclassPersister.php at line 78</div>
+<div class="location">/Doctrine/ORM/Persisters/JoinedSubclassPersister.php at line 75</div>
 <h3 id="getOwningTable()">getOwningTable</h3>
 <code class="signature">public  string <strong>getOwningTable</strong>(string fieldName)</code>
 <div class="details">
@@ -126,7 +120,7 @@ database as it is defined by the <tt>Class Table Inheritance</tt> strategy.</p><
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Persisters/JoinedSubclassPersister.php at line 187</div>
+<div class="location">/Doctrine/ORM/Persisters/JoinedSubclassPersister.php at line 184</div>
 <h3 id="update()">update</h3>
 <code class="signature">public  void <strong>update</strong>(object entity)</code>
 <div class="details">

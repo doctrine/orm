@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:03 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:36 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css">
 <link rel="start" href="../../overview-summary.html">
@@ -37,7 +37,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\Common\Lexer</div>
-<div class="location">/Doctrine/Common/Lexer.php at line 35</div>
+<div class="location">/Doctrine/Common/Lexer.php at line 31</div>
 
 <h1>Class Lexer</h1>
 
@@ -47,28 +47,24 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 
 <p class="signature">public abstract  class <strong>Lexer</strong></p>
 
-<div class="comment" id="overview_description"><p>Simple generic lexical scanner.</p></div>
+<div class="comment" id="overview_description"><p>Base class for writing simple lexers, i.e. for creating small DSLs.</p></div>
 
 <dl>
-<dt>License:</dt>
-<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
-<dt>See Also:</dt>
-<dd><code>www.doctrine-project.org</code></dd>
 <dt>Since:</dt>
 <dd>2.0</dd>
-<dt>Version:</dt>
-<dd>$Revision: 3938 $</dd>
 <dt>Author:</dt>
 <dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
 <dd>Jonathan Wage <jonwage@gmail.com></dd>
 <dd>Roman Borschel <roman@code-factory.org></dd>
+<dt>Todo:</dt>
+<dd>Rename: AbstractLexer</dd>
 </dl>
 <hr>
 
 <table id="summary_field">
 <tr><th colspan="2">Field Summary</th></tr>
 <tr>
-<td class="type"> array The next token in the query string.</td>
+<td class="type"> array The next token in the input.</td>
 <td class="description"><p class="name"><a href="#lookahead">$lookahead</a></p><p class="description"></p></td>
 </tr>
 <tr>
@@ -81,7 +77,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <tr><th colspan="2">Method Summary</th></tr>
 <tr>
 <td class="type">protected abstract  array</td>
-<td class="description"><p class="name"><a href="#getCatchablePatterns()">getCatchablePatterns</a>()</p><p class="description">Lexical catchable patterns</p></td>
+<td class="description"><p class="name"><a href="#getCatchablePatterns()">getCatchablePatterns</a>()</p><p class="description">Lexical catchable patterns.</p></td>
 </tr>
 <tr>
 <td class="type"> string</td>
@@ -89,7 +85,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 </tr>
 <tr>
 <td class="type">protected abstract  array</td>
-<td class="description"><p class="name"><a href="#getNonCatchablePatterns()">getNonCatchablePatterns</a>()</p><p class="description">Lexical non-catchable patterns</p></td>
+<td class="description"><p class="name"><a href="#getNonCatchablePatterns()">getNonCatchablePatterns</a>()</p><p class="description">Lexical non-catchable patterns.</p></td>
 </tr>
 <tr>
 <td class="type"> array|null</td>
@@ -114,19 +110,20 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 </tr>
 <tr>
 <td class="type"> void</td>
-<td class="description"><p class="name"><a href="#reset()">reset</a>()</p><p class="description">Resets the scanner</p></td>
+<td class="description"><p class="name"><a href="#reset()">reset</a>()</p><p class="description">Resets the lexer.</p></td>
 </tr>
 <tr>
 <td class="type"> void</td>
-<td class="description"><p class="name"><a href="#resetPeek()">resetPeek</a>()</p><p class="description">Resets the peek pointer to 0</p></td>
+<td class="description"><p class="name"><a href="#resetPeek()">resetPeek</a>()</p><p class="description">Resets the peek pointer to 0.</p></td>
 </tr>
 <tr>
 <td class="type"> void</td>
-<td class="description"><p class="name"><a href="#resetPosition()">resetPosition</a>(integer position)</p><p class="description">Resets the lexer position on the input to the given position</p></td>
+<td class="description"><p class="name"><a href="#resetPosition()">resetPosition</a>(integer position)</p><p class="description">Resets the lexer position on the input to the given position.</p></td>
 </tr>
 <tr>
 <td class="type"> void</td>
-<td class="description"><p class="name"><a href="#setInput()">setInput</a>(string input)</p><p class="description">Inputs data to be tokenized</p></td>
+<td class="description"><p class="name"><a href="#setInput()">setInput</a>(string input)</p><p class="description">Sets the input data to be tokenized.
+</p></td>
 </tr>
 <tr>
 <td class="type"> void</td>
@@ -135,15 +132,15 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 </table>
 
 <h2 id="detail_field">Field Detail</h2>
-<div class="location">/Doctrine/Common/Lexer.php at line 55</div>
+<div class="location">/Doctrine/Common/Lexer.php at line 51</div>
 <h3 id="lookahead">lookahead</h3>
-<code class="signature">public  array The next token in the query string. <strong>$lookahead</strong></code>
+<code class="signature">public  array The next token in the input. <strong>$lookahead</strong></code>
 <div class="details">
 <p></p></div>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Lexer.php at line 60</div>
+<div class="location">/Doctrine/Common/Lexer.php at line 56</div>
 <h3 id="token">token</h3>
 <code class="signature">public  array The last matched/seen token. <strong>$token</strong></code>
 <div class="details">
@@ -152,15 +149,15 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/Common/Lexer.php at line 242</div>
+<div class="location">/Doctrine/Common/Lexer.php at line 239</div>
 <h3 id="getCatchablePatterns()">getCatchablePatterns</h3>
 <code class="signature">protected abstract  array <strong>getCatchablePatterns</strong>()</code>
 <div class="details">
-<p>Lexical catchable patterns</p></div>
+<p>Lexical catchable patterns.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Lexer.php at line 222</div>
+<div class="location">/Doctrine/Common/Lexer.php at line 219</div>
 <h3 id="getLiteral()">getLiteral</h3>
 <code class="signature">public  string <strong>getLiteral</strong>(integer token)</code>
 <div class="details">
@@ -168,15 +165,15 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 
 <hr>
 
-<div class="location">/Doctrine/Common/Lexer.php at line 249</div>
+<div class="location">/Doctrine/Common/Lexer.php at line 246</div>
 <h3 id="getNonCatchablePatterns()">getNonCatchablePatterns</h3>
 <code class="signature">protected abstract  array <strong>getNonCatchablePatterns</strong>()</code>
 <div class="details">
-<p>Lexical non-catchable patterns</p></div>
+<p>Lexical non-catchable patterns.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Lexer.php at line 180</div>
+<div class="location">/Doctrine/Common/Lexer.php at line 177</div>
 <h3 id="glimpse()">glimpse</h3>
 <code class="signature">public  array|null <strong>glimpse</strong>()</code>
 <div class="details">
@@ -188,7 +185,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 
 <hr>
 
-<div class="location">/Doctrine/Common/Lexer.php at line 156</div>
+<div class="location">/Doctrine/Common/Lexer.php at line 153</div>
 <h3 id="isA()">isA</h3>
 <code class="signature">public  boolean <strong>isA</strong>(mixed value, integer token)</code>
 <div class="details">
@@ -196,7 +193,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 
 <hr>
 
-<div class="location">/Doctrine/Common/Lexer.php at line 111</div>
+<div class="location">/Doctrine/Common/Lexer.php at line 108</div>
 <h3 id="isNextToken()">isNextToken</h3>
 <code class="signature">public  boolean <strong>isNextToken</strong>(integer|string token)</code>
 <div class="details">
@@ -204,7 +201,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 
 <hr>
 
-<div class="location">/Doctrine/Common/Lexer.php at line 127</div>
+<div class="location">/Doctrine/Common/Lexer.php at line 124</div>
 <h3 id="moveNext()">moveNext</h3>
 <code class="signature">public  array|null <strong>moveNext</strong>()</code>
 <div class="details">
@@ -220,7 +217,7 @@ parameter, none)
 
 <hr>
 
-<div class="location">/Doctrine/Common/Lexer.php at line 166</div>
+<div class="location">/Doctrine/Common/Lexer.php at line 163</div>
 <h3 id="peek()">peek</h3>
 <code class="signature">public  array <strong>peek</strong>()</code>
 <div class="details">
@@ -232,27 +229,27 @@ parameter, none)
 
 <hr>
 
-<div class="location">/Doctrine/Common/Lexer.php at line 78</div>
+<div class="location">/Doctrine/Common/Lexer.php at line 76</div>
 <h3 id="reset()">reset</h3>
 <code class="signature">public  void <strong>reset</strong>()</code>
 <div class="details">
-<p>Resets the scanner</p></div>
+<p>Resets the lexer.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Lexer.php at line 90</div>
+<div class="location">/Doctrine/Common/Lexer.php at line 87</div>
 <h3 id="resetPeek()">resetPeek</h3>
 <code class="signature">public  void <strong>resetPeek</strong>()</code>
 <div class="details">
-<p>Resets the peek pointer to 0</p></div>
+<p>Resets the peek pointer to 0.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Lexer.php at line 100</div>
+<div class="location">/Doctrine/Common/Lexer.php at line 97</div>
 <h3 id="resetPosition()">resetPosition</h3>
 <code class="signature">public  void <strong>resetPosition</strong>(integer position)</code>
 <div class="details">
-<p>Resets the lexer position on the input to the given position</p><dl>
+<p>Resets the lexer position on the input to the given position.</p><dl>
 <dt>Parameters:</dt>
 <dd>position - Position to place the lexical scanner</dd>
 </dl>
@@ -260,19 +257,20 @@ parameter, none)
 
 <hr>
 
-<div class="location">/Doctrine/Common/Lexer.php at line 67</div>
+<div class="location">/Doctrine/Common/Lexer.php at line 66</div>
 <h3 id="setInput()">setInput</h3>
 <code class="signature">public  void <strong>setInput</strong>(string input)</code>
 <div class="details">
-<p>Inputs data to be tokenized</p><dl>
+<p>Sets the input data to be tokenized.</p><p>The Lexer is immediately reset and the new input tokenized.
+Any unprocessed tokens from any previous input are lost.</p><dl>
 <dt>Parameters:</dt>
-<dd>input - input to be tokenized</dd>
+<dd>input - The input to be tokenized.</dd>
 </dl>
 </div>
 
 <hr>
 
-<div class="location">/Doctrine/Common/Lexer.php at line 142</div>
+<div class="location">/Doctrine/Common/Lexer.php at line 139</div>
 <h3 id="skipUntil()">skipUntil</h3>
 <code class="signature">public  void <strong>skipUntil</strong>(mixed type, $type The)</code>
 <div class="details">

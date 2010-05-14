@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:37 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
 <link rel="start" href="../../../overview-summary.html">
@@ -37,7 +37,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\ORM\Mapping\AssociationMapping</div>
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 36</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 37</div>
 
 <h1>Class AssociationMapping</h1>
 
@@ -58,6 +58,8 @@ the serialized representation).</p></div>
 <dd>Roman Borschel <roman@code-factory.org></dd>
 <dt>Since:</dt>
 <dd>2.0</dd>
+<dt>Todo:</dt>
+<dd>Potentially remove if assoc mapping objects get replaced by simple arrays.</dd>
 </dl>
 <hr>
 
@@ -103,7 +105,7 @@ to the target entity/entities.</p></td>
 </tr>
 <tr>
 <td class="type"> boolean</td>
-<td class="description"><p class="name"><a href="#isCascadePersist">$isCascadePersist</a></p><p class="description">READ-ONLY: Whether the association cascades save() operations from the source entity
+<td class="description"><p class="name"><a href="#isCascadePersist">$isCascadePersist</a></p><p class="description">READ-ONLY: Whether the association cascades persist() operations from the source entity
 to the target entity/entities.</p></td>
 </tr>
 <tr>
@@ -196,7 +198,7 @@ association).</p></td>
 </table>
 
 <h2 id="detail_field">Field Detail</h2>
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 50</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 51</div>
 <h3 id="FETCH_EAGER">FETCH_EAGER</h3>
 <code class="signature">public final  integer <strong>FETCH_EAGER</strong> = 3</code>
 <div class="details">
@@ -205,7 +207,7 @@ association is fetched.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 43</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 44</div>
 <h3 id="FETCH_LAZY">FETCH_LAZY</h3>
 <code class="signature">public final  integer <strong>FETCH_LAZY</strong> = 2</code>
 <div class="details">
@@ -213,7 +215,7 @@ association is fetched.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 169</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 170</div>
 <h3 id="declared">declared</h3>
 <code class="signature">public  string <strong>$declared</strong></code>
 <div class="details">
@@ -222,7 +224,7 @@ the association field in an inheritance hierarchy.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 97</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 98</div>
 <h3 id="fetchMode">fetchMode</h3>
 <code class="signature">public  integer <strong>$fetchMode</strong></code>
 <div class="details">
@@ -230,7 +232,7 @@ the association field in an inheritance hierarchy.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 161</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 162</div>
 <h3 id="inherited">inherited</h3>
 <code class="signature">public  string <strong>$inherited</strong></code>
 <div class="details">
@@ -239,7 +241,7 @@ inherited in an inheritance hierarchy.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 146</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 147</div>
 <h3 id="inversedBy">inversedBy</h3>
 <code class="signature">public  string <strong>$inversedBy</strong></code>
 <div class="details">
@@ -248,7 +250,7 @@ This is only set on the owning side of an association.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 90</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 91</div>
 <h3 id="isCascadeDetach">isCascadeDetach</h3>
 <code class="signature">public  boolean <strong>$isCascadeDetach</strong></code>
 <div class="details">
@@ -257,7 +259,7 @@ to the target entity/entities.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 82</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 83</div>
 <h3 id="isCascadeMerge">isCascadeMerge</h3>
 <code class="signature">public  boolean <strong>$isCascadeMerge</strong></code>
 <div class="details">
@@ -266,16 +268,16 @@ to the target entity/entities.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 66</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 67</div>
 <h3 id="isCascadePersist">isCascadePersist</h3>
 <code class="signature">public  boolean <strong>$isCascadePersist</strong></code>
 <div class="details">
-<p>READ-ONLY: Whether the association cascades save() operations from the source entity
+<p>READ-ONLY: Whether the association cascades persist() operations from the source entity
 to the target entity/entities.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 74</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 75</div>
 <h3 id="isCascadeRefresh">isCascadeRefresh</h3>
 <code class="signature">public  boolean <strong>$isCascadeRefresh</strong></code>
 <div class="details">
@@ -284,7 +286,7 @@ to the target entity/entities.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 58</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 59</div>
 <h3 id="isCascadeRemove">isCascadeRemove</h3>
 <code class="signature">public  boolean <strong>$isCascadeRemove</strong></code>
 <div class="details">
@@ -293,7 +295,7 @@ to the target entity/entities.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 105</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 106</div>
 <h3 id="isOwningSide">isOwningSide</h3>
 <code class="signature">public  boolean <strong>$isOwningSide</strong> = true</code>
 <div class="details">
@@ -302,7 +304,7 @@ the owning side of the association.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 153</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 154</div>
 <h3 id="joinTable">joinTable</h3>
 <code class="signature">public  array <strong>$joinTable</strong></code>
 <div class="details">
@@ -310,7 +312,7 @@ the owning side of the association.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 138</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 139</div>
 <h3 id="mappedBy">mappedBy</h3>
 <code class="signature">public  string <strong>$mappedBy</strong></code>
 <div class="details">
@@ -320,7 +322,7 @@ of an association.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 112</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 113</div>
 <h3 id="sourceEntityName">sourceEntityName</h3>
 <code class="signature">public  string <strong>$sourceEntityName</strong></code>
 <div class="details">
@@ -328,7 +330,7 @@ of an association.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 129</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 130</div>
 <h3 id="sourceFieldName">sourceFieldName</h3>
 <code class="signature">public  string <strong>$sourceFieldName</strong></code>
 <div class="details">
@@ -338,7 +340,7 @@ other entity/entities.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 120</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 121</div>
 <h3 id="targetEntityName">targetEntityName</h3>
 <code class="signature">public  string <strong>$targetEntityName</strong></code>
 <div class="details">
@@ -348,7 +350,7 @@ association).</p></div>
 <hr>
 
 <h2 id="detail_constr">Constructor Detail</h2>
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 176</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 177</div>
 <h3 id="AssociationMapping()">AssociationMapping</h3>
 <code class="signature">public <strong>AssociationMapping</strong>(array mapping)</code>
 <div class="details">
@@ -361,7 +363,7 @@ association).</p></div>
 <hr>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 337</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 338</div>
 <h3 id="getQuotedJoinTableName()">getQuotedJoinTableName</h3>
 <code class="signature">public  string <strong>getQuotedJoinTableName</strong>(<a href="../../../doctrine/dbal/platforms/abstractplatform.html">AbstractPlatform</a> platform)</code>
 <div class="details">
@@ -369,7 +371,7 @@ association).</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 309</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 310</div>
 <h3 id="hasCascades()">hasCascades</h3>
 <code class="signature">public  boolean <strong>hasCascades</strong>()</code>
 <div class="details">
@@ -377,7 +379,7 @@ association).</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 249</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 250</div>
 <h3 id="isEagerlyFetched()">isEagerlyFetched</h3>
 <code class="signature">public  boolean <strong>isEagerlyFetched</strong>()</code>
 <div class="details">
@@ -385,7 +387,7 @@ association).</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 259</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 260</div>
 <h3 id="isLazilyFetched()">isLazilyFetched</h3>
 <code class="signature">public  boolean <strong>isLazilyFetched</strong>()</code>
 <div class="details">
@@ -393,7 +395,7 @@ association).</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 289</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 290</div>
 <h3 id="isManyToMany()">isManyToMany</h3>
 <code class="signature">public  boolean <strong>isManyToMany</strong>()</code>
 <div class="details">
@@ -401,7 +403,7 @@ association).</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 279</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 280</div>
 <h3 id="isOneToMany()">isOneToMany</h3>
 <code class="signature">public  boolean <strong>isOneToMany</strong>()</code>
 <div class="details">
@@ -409,7 +411,7 @@ association).</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 269</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 270</div>
 <h3 id="isOneToOne()">isOneToOne</h3>
 <code class="signature">public  boolean <strong>isOneToOne</strong>()</code>
 <div class="details">
@@ -417,7 +419,7 @@ association).</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 329</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 330</div>
 <h3 id="load()">load</h3>
 <code class="signature">public abstract  void <strong>load</strong>(object sourceEntity, object target, <a href="../../../doctrine/orm/entitymanager.html">EntityManager</a> em, array joinColumnValues)</code>
 <div class="details">
@@ -434,7 +436,7 @@ using $em.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 299</div>
+<div class="location">/Doctrine/ORM/Mapping/AssociationMapping.php at line 300</div>
 <h3 id="usesJoinTable()">usesJoinTable</h3>
 <code class="signature">public  boolean <strong>usesJoinTable</strong>()</code>
 <div class="details">

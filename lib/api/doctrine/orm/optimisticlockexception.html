@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:37 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css">
 <link rel="start" href="../../overview-summary.html">
@@ -37,7 +37,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\ORM\OptimisticLockException</div>
-<div class="location">/Doctrine/ORM/OptimisticLockException.php at line 30</div>
+<div class="location">/Doctrine/ORM/OptimisticLockException.php at line 29</div>
 
 <h1>Class OptimisticLockException</h1>
 
@@ -51,7 +51,8 @@ Exception<br>&lfloor;&nbsp;<a href="../../doctrine/orm/ormexception.html">ORMExc
 
 </p>
 
-<div class="comment" id="overview_description"><p>OptimisticLockException</p></div>
+<div class="comment" id="overview_description"><p>An OptimisticLockException is thrown when a version check on an object
+that uses optimistic locking through a version field fails.</p></div>
 
 <dl>
 <dt>Author:</dt>
@@ -61,11 +62,22 @@ Exception<br>&lfloor;&nbsp;<a href="../../doctrine/orm/ormexception.html">ORMExc
 </dl>
 <hr>
 
+<table id="summary_constr">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="description"><p class="name"><a href="#OptimisticLockException()">OptimisticLockException</a>(mixed msg, mixed entity)</p></td>
+</tr>
+</table>
+
 <table id="summary_method">
 <tr><th colspan="2">Method Summary</th></tr>
 <tr>
+<td class="type"> object</td>
+<td class="description"><p class="name"><a href="#getEntity()">getEntity</a>()</p><p class="description">Gets the entity that caused the exception.</p></td>
+</tr>
+<tr>
 <td class="type">static  void</td>
-<td class="description"><p class="name"><a href="#lockFailed()">lockFailed</a>()</p></td>
+<td class="description"><p class="name"><a href="#lockFailed()">lockFailed</a>(mixed entity)</p></td>
 </tr>
 </table>
 
@@ -73,10 +85,27 @@ Exception<br>&lfloor;&nbsp;<a href="../../doctrine/orm/ormexception.html">ORMExc
 <tr><th colspan="2">Methods inherited from Doctrine\ORM\ORMException</th></tr>
 <tr><td><a href="../../doctrine/orm/ormexception.html#detachedEntityCannotBeRemoved()">detachedEntityCannotBeRemoved</a>, <a href="../../doctrine/orm/ormexception.html#entityManagerClosed()">entityManagerClosed</a>, <a href="../../doctrine/orm/ormexception.html#entityMissingAssignedId()">entityMissingAssignedId</a>, <a href="../../doctrine/orm/ormexception.html#findByRequiresParameter()">findByRequiresParameter</a>, <a href="../../doctrine/orm/ormexception.html#invalidEntityState()">invalidEntityState</a>, <a href="../../doctrine/orm/ormexception.html#invalidFindByCall()">invalidFindByCall</a>, <a href="../../doctrine/orm/ormexception.html#invalidFlushMode()">invalidFlushMode</a>, <a href="../../doctrine/orm/ormexception.html#invalidHydrationMode()">invalidHydrationMode</a>, <a href="../../doctrine/orm/ormexception.html#invalidResultCacheDriver()">invalidResultCacheDriver</a>, <a href="../../doctrine/orm/ormexception.html#metadataCacheNotConfigured()">metadataCacheNotConfigured</a>, <a href="../../doctrine/orm/ormexception.html#mismatchedEventManager()">mismatchedEventManager</a>, <a href="../../doctrine/orm/ormexception.html#missingMappingDriverImpl()">missingMappingDriverImpl</a>, <a href="../../doctrine/orm/ormexception.html#notSupported()">notSupported</a>, <a href="../../doctrine/orm/ormexception.html#proxyClassesAlwaysRegenerating()">proxyClassesAlwaysRegenerating</a>, <a href="../../doctrine/orm/ormexception.html#queryCacheNotConfigured()">queryCacheNotConfigured</a>, <a href="../../doctrine/orm/ormexception.html#removedEntityInCollectionDetected()">removedEntityInCollectionDetected</a>, <a href="../../doctrine/orm/ormexception.html#unknownEntityNamespace()">unknownEntityNamespace</a>, <a href="../../doctrine/orm/ormexception.html#unrecognizedField()">unrecognizedField</a></td></tr></table>
 
+<h2 id="detail_constr">Constructor Detail</h2>
+<div class="location">/Doctrine/ORM/OptimisticLockException.php at line 33</div>
+<h3 id="OptimisticLockException()">OptimisticLockException</h3>
+<code class="signature">public <strong>OptimisticLockException</strong>(mixed msg, mixed entity)</code>
+<div class="details">
+</div>
+
+<hr>
+
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/ORM/OptimisticLockException.php at line 32</div>
+<div class="location">/Doctrine/ORM/OptimisticLockException.php at line 43</div>
+<h3 id="getEntity()">getEntity</h3>
+<code class="signature">public  object <strong>getEntity</strong>()</code>
+<div class="details">
+<p>Gets the entity that caused the exception.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/OptimisticLockException.php at line 48</div>
 <h3 id="lockFailed()">lockFailed</h3>
-<code class="signature">public static  void <strong>lockFailed</strong>()</code>
+<code class="signature">public static  void <strong>lockFailed</strong>(mixed entity)</code>
 <div class="details">
 </div>
 

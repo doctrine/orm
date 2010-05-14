@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:36 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
 <link rel="start" href="../../../overview-summary.html">
@@ -67,6 +67,11 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <table id="summary_method">
 <tr><th colspan="2">Method Summary</th></tr>
 <tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#convertToPHPValue()">convertToPHPValue</a>(mixed value, <a href="../../../doctrine/dbal/platforms/abstractplatform.html">AbstractPlatform</a> platform)</p><p class="description">Converts a value from its database representation to its PHP representation
+of this type.</p></td>
+</tr>
+<tr>
 <td class="type"> string</td>
 <td class="description"><p class="name"><a href="#getName()">getName</a>()</p><p class="description">Gets the name of this type.</p></td>
 </tr>
@@ -81,7 +86,23 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <tr><td><a href="../../../doctrine/dbal/types/type.html#addType()">addType</a>, <a href="../../../doctrine/dbal/types/type.html#convertToDatabaseValue()">convertToDatabaseValue</a>, <a href="../../../doctrine/dbal/types/type.html#convertToPHPValue()">convertToPHPValue</a>, <a href="../../../doctrine/dbal/types/type.html#getBindingType()">getBindingType</a>, <a href="../../../doctrine/dbal/types/type.html#getDefaultLength()">getDefaultLength</a>, <a href="../../../doctrine/dbal/types/type.html#getName()">getName</a>, <a href="../../../doctrine/dbal/types/type.html#getSqlDeclaration()">getSqlDeclaration</a>, <a href="../../../doctrine/dbal/types/type.html#getType()">getType</a>, <a href="../../../doctrine/dbal/types/type.html#getTypesMap()">getTypesMap</a>, <a href="../../../doctrine/dbal/types/type.html#hasType()">hasType</a>, <a href="../../../doctrine/dbal/types/type.html#overrideType()">overrideType</a></td></tr></table>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/DBAL/Types/TextType.php at line 39</div>
+<div class="location">/Doctrine/DBAL/Types/TextType.php at line 47</div>
+<h3 id="convertToPHPValue()">convertToPHPValue</h3>
+<code class="signature">public  mixed <strong>convertToPHPValue</strong>(mixed value, <a href="../../../doctrine/dbal/platforms/abstractplatform.html">AbstractPlatform</a> platform)</code>
+<div class="details">
+<p>Converts a value from its database representation to its PHP representation
+of this type.</p><dl>
+<dt>Parameters:</dt>
+<dd>value - The value to convert.</dd>
+<dd>platform - The currently used database platform.</dd>
+<dt>Returns:</dt>
+<dd>The PHP representation of the value.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Types/TextType.php at line 52</div>
 <h3 id="getName()">getName</h3>
 <code class="signature">public  string <strong>getName</strong>()</code>
 <div class="details">

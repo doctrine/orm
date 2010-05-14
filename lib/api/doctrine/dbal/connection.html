@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:03 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:36 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css">
 <link rel="start" href="../../overview-summary.html">
@@ -37,7 +37,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\DBAL\Connection</div>
-<div class="location">/Doctrine/DBAL/Connection.php at line 45</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 43</div>
 
 <h1>Class Connection</h1>
 
@@ -88,23 +88,23 @@ lazy connecting and more.</p></div>
 <td class="description"><p class="name"><a href="#TRANSACTION_SERIALIZABLE">TRANSACTION_SERIALIZABLE</a></p><p class="description">Constant for transaction isolation level SERIALIZABLE.</p></td>
 </tr>
 <tr>
-<td class="type">protected  Doctrine\DBAL\Configuration</td>
+<td class="type">protected  <a href="../../doctrine/dbal/configuration.html">Configuration</a></td>
 <td class="description"><p class="name"><a href="#_config">$_config</a></p><p class="description"></p></td>
 </tr>
 <tr>
-<td class="type">protected  Doctrine\DBAL\Driver\Connection</td>
+<td class="type">protected  <a href="../../doctrine/dbal/driver/connection.html">Connection</a></td>
 <td class="description"><p class="name"><a href="#_conn">$_conn</a></p><p class="description">The wrapped driver connection.</p></td>
 </tr>
 <tr>
-<td class="type">protected  Doctrine\DBAL\Driver</td>
+<td class="type">protected  <a href="../../doctrine/dbal/driver.html">Driver</a></td>
 <td class="description"><p class="name"><a href="#_driver">$_driver</a></p><p class="description">The used DBAL driver.</p></td>
 </tr>
 <tr>
-<td class="type">protected  Doctrine\Common\EventManager</td>
+<td class="type">protected  <a href="../../doctrine/common/eventmanager.html">EventManager</a></td>
 <td class="description"><p class="name"><a href="#_eventManager">$_eventManager</a></p><p class="description"></p></td>
 </tr>
 <tr>
-<td class="type">protected  Doctrine\DBAL\Platforms\AbstractPlatform</td>
+<td class="type">protected  <a href="../../doctrine/dbal/platforms/abstractplatform.html">AbstractPlatform</a></td>
 <td class="description"><p class="name"><a href="#_platform">$_platform</a></p><p class="description">The DatabasePlatform object that provides information about the
 database platform used by the connection.</p></td>
 </tr>
@@ -166,7 +166,7 @@ rules of a specific DBAL mapping type.</p></td>
 <td class="description"><p class="name"><a href="#exec()">exec</a>(string statement)</p><p class="description">Execute an SQL statement and return the number of affected rows.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\DBAL\Driver\Statement</td>
+<td class="type"> <a href="../../doctrine/dbal/driver/statement.html">Statement</a></td>
 <td class="description"><p class="name"><a href="#executeQuery()">executeQuery</a>(string query, array params)</p><p class="description">Executes an, optionally parameterized, SQL query.
 </p></td>
 </tr>
@@ -186,17 +186,17 @@ and returns the number of affected rows.
 as a numerically indexed array.</p></td>
 </tr>
 <tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#fetchAssoc()">fetchAssoc</a>(string statement, array params)</p><p class="description">Prepares and executes an SQL query and returns the first row of the result
+as an associative array.</p></td>
+</tr>
+<tr>
 <td class="type"> mixed</td>
 <td class="description"><p class="name"><a href="#fetchColumn()">fetchColumn</a>(string statement, array params, int colnum)</p><p class="description">Prepares and executes an SQL query and returns the value of a single column
 of the first row of the result.</p></td>
 </tr>
 <tr>
-<td class="type"> array</td>
-<td class="description"><p class="name"><a href="#fetchRow()">fetchRow</a>(string statement, array params)</p><p class="description">Prepares and executes an SQL query and returns the first row of the result
-as an associative array.</p></td>
-</tr>
-<tr>
-<td class="type"> Doctrine\DBAL\Configuration</td>
+<td class="type"> <a href="../../doctrine/dbal/configuration.html">Configuration</a></td>
 <td class="description"><p class="name"><a href="#getConfiguration()">getConfiguration</a>()</p><p class="description">Gets the Configuration used by the Connection.</p></td>
 </tr>
 <tr>
@@ -204,15 +204,15 @@ as an associative array.</p></td>
 <td class="description"><p class="name"><a href="#getDatabase()">getDatabase</a>()</p><p class="description">Gets the name of the database this Connection is connected to.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\DBAL\Platforms\AbstractPlatform</td>
+<td class="type"> <a href="../../doctrine/dbal/platforms/abstractplatform.html">AbstractPlatform</a></td>
 <td class="description"><p class="name"><a href="#getDatabasePlatform()">getDatabasePlatform</a>()</p><p class="description">Gets the DatabasePlatform for the connection.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\DBAL\Driver</td>
+<td class="type"> <a href="../../doctrine/dbal/driver.html">Driver</a></td>
 <td class="description"><p class="name"><a href="#getDriver()">getDriver</a>()</p><p class="description">Gets the DBAL driver instance.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\Common\EventManager</td>
+<td class="type"> <a href="../../doctrine/common/eventmanager.html">EventManager</a></td>
 <td class="description"><p class="name"><a href="#getEventManager()">getEventManager</a>()</p><p class="description">Gets the EventManager used by the Connection.</p></td>
 </tr>
 <tr>
@@ -232,10 +232,6 @@ as an associative array.</p></td>
 <td class="description"><p class="name"><a href="#getPort()">getPort</a>()</p><p class="description">Gets the port of the currently connected database.</p></td>
 </tr>
 <tr>
-<td class="type"> boolean</td>
-<td class="description"><p class="name"><a href="#getRollbackOnly()">getRollbackOnly</a>()</p><p class="description">Check whether the current transaction is marked for rollback only.</p></td>
-</tr>
-<tr>
 <td class="type"> Doctrine\DBAL\Schema\SchemaManager</td>
 <td class="description"><p class="name"><a href="#getSchemaManager()">getSchemaManager</a>()</p><p class="description">Gets the SchemaManager that can be used to inspect or change the
 database schema through the connection.</p></td>
@@ -253,7 +249,7 @@ database schema through the connection.</p></td>
 <td class="description"><p class="name"><a href="#getUsername()">getUsername</a>()</p><p class="description">Gets the username used by this connection.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\DBAL\Driver\Connection</td>
+<td class="type"> <a href="../../doctrine/dbal/driver/connection.html">Connection</a></td>
 <td class="description"><p class="name"><a href="#getWrappedConnection()">getWrappedConnection</a>()</p><p class="description">Gets the wrapped driver connection.</p></td>
 </tr>
 <tr>
@@ -266,6 +262,10 @@ database schema through the connection.</p></td>
 </tr>
 <tr>
 <td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#isRollbackOnly()">isRollbackOnly</a>()</p><p class="description">Check whether the current transaction is marked for rollback only.</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
 <td class="description"><p class="name"><a href="#isTransactionActive()">isTransactionActive</a>()</p><p class="description">Checks whether a transaction is currently active.</p></td>
 </tr>
 <tr>
@@ -275,7 +275,7 @@ depending on the underlying driver.
 </p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\DBAL\Driver\Statement</td>
+<td class="type"> <a href="../../doctrine/dbal/driver/statement.html">Statement</a></td>
 <td class="description"><p class="name"><a href="#prepare()">prepare</a>(string statement)</p><p class="description">Prepares an SQL statement.</p></td>
 </tr>
 <tr>
@@ -284,7 +284,7 @@ depending on the underlying driver.
 applying a given projection/transformation function on each row of the result.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\DBAL\Driver\Statement</td>
+<td class="type"> <a href="../../doctrine/dbal/driver/statement.html">Statement</a></td>
 <td class="description"><p class="name"><a href="#query()">query</a>(string statement, integer fetchType)</p><p class="description">Executes an SQL statement, returning a result set as a Statement object.</p></td>
 </tr>
 <tr>
@@ -316,13 +316,18 @@ outcome for the transaction to be rolled back.</p></td>
 <td class="description"><p class="name"><a href="#setTransactionIsolation()">setTransactionIsolation</a>(integer level)</p><p class="description">Sets the transaction isolation level.</p></td>
 </tr>
 <tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#transactional()">transactional</a>(Closure func)</p><p class="description">Executes a function in a transaction.
+</p></td>
+</tr>
+<tr>
 <td class="type"> integer</td>
 <td class="description"><p class="name"><a href="#update()">update</a>(mixed tableName, mixed data, array identifier, string table)</p><p class="description">Executes an SQL UPDATE statement on a table.</p></td>
 </tr>
 </table>
 
 <h2 id="detail_field">Field Detail</h2>
-<div class="location">/Doctrine/DBAL/Connection.php at line 55</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 53</div>
 <h3 id="TRANSACTION_READ_COMMITTED">TRANSACTION_READ_COMMITTED</h3>
 <code class="signature">public final  int <strong>TRANSACTION_READ_COMMITTED</strong> = 2</code>
 <div class="details">
@@ -330,7 +335,7 @@ outcome for the transaction to be rolled back.</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 50</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 48</div>
 <h3 id="TRANSACTION_READ_UNCOMMITTED">TRANSACTION_READ_UNCOMMITTED</h3>
 <code class="signature">public final  int <strong>TRANSACTION_READ_UNCOMMITTED</strong> = 1</code>
 <div class="details">
@@ -338,7 +343,7 @@ outcome for the transaction to be rolled back.</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 60</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 58</div>
 <h3 id="TRANSACTION_REPEATABLE_READ">TRANSACTION_REPEATABLE_READ</h3>
 <code class="signature">public final  int <strong>TRANSACTION_REPEATABLE_READ</strong> = 3</code>
 <div class="details">
@@ -346,7 +351,7 @@ outcome for the transaction to be rolled back.</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 65</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 63</div>
 <h3 id="TRANSACTION_SERIALIZABLE">TRANSACTION_SERIALIZABLE</h3>
 <code class="signature">public final  int <strong>TRANSACTION_SERIALIZABLE</strong> = 4</code>
 <div class="details">
@@ -354,48 +359,48 @@ outcome for the transaction to be rolled back.</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 77</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 75</div>
 <h3 id="_config">_config</h3>
-<code class="signature">protected  Doctrine\DBAL\Configuration <strong>$_config</strong></code>
+<code class="signature">protected  <a href="../../doctrine/dbal/configuration.html">Configuration</a> <strong>$_config</strong></code>
 <div class="details">
 <p></p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 72</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 70</div>
 <h3 id="_conn">_conn</h3>
-<code class="signature">protected  Doctrine\DBAL\Driver\Connection <strong>$_conn</strong></code>
+<code class="signature">protected  <a href="../../doctrine/dbal/driver/connection.html">Connection</a> <strong>$_conn</strong></code>
 <div class="details">
 <p>The wrapped driver connection.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 132</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 130</div>
 <h3 id="_driver">_driver</h3>
-<code class="signature">protected  Doctrine\DBAL\Driver <strong>$_driver</strong></code>
+<code class="signature">protected  <a href="../../doctrine/dbal/driver.html">Driver</a> <strong>$_driver</strong></code>
 <div class="details">
 <p>The used DBAL driver.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 82</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 80</div>
 <h3 id="_eventManager">_eventManager</h3>
-<code class="signature">protected  Doctrine\Common\EventManager <strong>$_eventManager</strong></code>
+<code class="signature">protected  <a href="../../doctrine/common/eventmanager.html">EventManager</a> <strong>$_eventManager</strong></code>
 <div class="details">
 <p></p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 118</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 116</div>
 <h3 id="_platform">_platform</h3>
-<code class="signature">protected  Doctrine\DBAL\Platforms\AbstractPlatform <strong>$_platform</strong></code>
+<code class="signature">protected  <a href="../../doctrine/dbal/platforms/abstractplatform.html">AbstractPlatform</a> <strong>$_platform</strong></code>
 <div class="details">
 <p>The DatabasePlatform object that provides information about the
 database platform used by the connection.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 125</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 123</div>
 <h3 id="_schemaManager">_schemaManager</h3>
 <code class="signature">protected  Doctrine\DBAL\Schema\SchemaManager <strong>$_schemaManager</strong></code>
 <div class="details">
@@ -404,7 +409,7 @@ database platform used by the connection.</p></div>
 <hr>
 
 <h2 id="detail_constr">Constructor Detail</h2>
-<div class="location">/Doctrine/DBAL/Connection.php at line 149</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 147</div>
 <h3 id="Connection()">Connection</h3>
 <code class="signature">public <strong>Connection</strong>(array params, <a href="../../doctrine/dbal/driver.html">Driver</a> driver, <a href="../../doctrine/dbal/configuration.html">Configuration</a> config, <a href="../../doctrine/common/eventmanager.html">EventManager</a> eventManager)</code>
 <div class="details">
@@ -420,7 +425,7 @@ database platform used by the connection.</p></div>
 <hr>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/DBAL/Connection.php at line 716</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 735</div>
 <h3 id="beginTransaction()">beginTransaction</h3>
 <code class="signature">public  void <strong>beginTransaction</strong>()</code>
 <div class="details">
@@ -428,7 +433,7 @@ database platform used by the connection.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 396</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 393</div>
 <h3 id="close()">close</h3>
 <code class="signature">public  void <strong>close</strong>()</code>
 <div class="details">
@@ -436,7 +441,7 @@ database platform used by the connection.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 734</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 753</div>
 <h3 id="commit()">commit</h3>
 <code class="signature">public  void <strong>commit</strong>()</code>
 <div class="details">
@@ -448,7 +453,7 @@ database platform used by the connection.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 287</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 285</div>
 <h3 id="connect()">connect</h3>
 <code class="signature">public  boolean <strong>connect</strong>()</code>
 <div class="details">
@@ -460,7 +465,7 @@ database platform used by the connection.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 841</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 860</div>
 <h3 id="convertToDatabaseValue()">convertToDatabaseValue</h3>
 <code class="signature">public  mixed <strong>convertToDatabaseValue</strong>(mixed value, string type)</code>
 <div class="details">
@@ -476,7 +481,7 @@ rules of a specific DBAL mapping type.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 854</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 873</div>
 <h3 id="convertToPHPValue()">convertToPHPValue</h3>
 <code class="signature">public  mixed <strong>convertToPHPValue</strong>(mixed value, string type)</code>
 <div class="details">
@@ -492,7 +497,7 @@ rules of a specific DBAL mapping type.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 376</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 373</div>
 <h3 id="delete()">delete</h3>
 <code class="signature">public  integer <strong>delete</strong>(mixed tableName, array identifier, string table)</code>
 <div class="details">
@@ -507,7 +512,7 @@ rules of a specific DBAL mapping type.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 677</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 674</div>
 <h3 id="errorCode()">errorCode</h3>
 <code class="signature">public  integer <strong>errorCode</strong>()</code>
 <div class="details">
@@ -519,7 +524,7 @@ rules of a specific DBAL mapping type.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 688</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 685</div>
 <h3 id="errorInfo()">errorInfo</h3>
 <code class="signature">public  array <strong>errorInfo</strong>()</code>
 <div class="details">
@@ -531,7 +536,7 @@ rules of a specific DBAL mapping type.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 656</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 653</div>
 <h3 id="exec()">exec</h3>
 <code class="signature">public  integer <strong>exec</strong>(string statement)</code>
 <div class="details">
@@ -543,9 +548,9 @@ rules of a specific DBAL mapping type.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 554</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 551</div>
 <h3 id="executeQuery()">executeQuery</h3>
-<code class="signature">public  Doctrine\DBAL\Driver\Statement <strong>executeQuery</strong>(string query, array params)</code>
+<code class="signature">public  <a href="../../doctrine/dbal/driver/statement.html">Statement</a> <strong>executeQuery</strong>(string query, array params)</code>
 <div class="details">
 <p>Executes an, optionally parameterized, SQL query.</p><p>If the query is parameterized, a prepared statement is used.
 If an SQLLogger is configured, the execution is logged.</p><dl>
@@ -561,7 +566,7 @@ If an SQLLogger is configured, the execution is logged.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 626</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 623</div>
 <h3 id="executeUpdate()">executeUpdate</h3>
 <code class="signature">public  integer <strong>executeUpdate</strong>(string query, array params, array types)</code>
 <div class="details">
@@ -580,7 +585,7 @@ and returns the number of affected rows.</p><p>This method supports PDO binding 
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 525</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 522</div>
 <h3 id="fetchAll()">fetchAll</h3>
 <code class="signature">public  array <strong>fetchAll</strong>(string sql, array params)</code>
 <div class="details">
@@ -593,7 +598,7 @@ and returns the number of affected rows.</p><p>This method supports PDO binding 
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 330</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 327</div>
 <h3 id="fetchArray()">fetchArray</h3>
 <code class="signature">public  array <strong>fetchArray</strong>(string statement, array params)</code>
 <div class="details">
@@ -607,7 +612,21 @@ as a numerically indexed array.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 344</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 314</div>
+<h3 id="fetchAssoc()">fetchAssoc</h3>
+<code class="signature">public  array <strong>fetchAssoc</strong>(string statement, array params)</code>
+<div class="details">
+<p>Prepares and executes an SQL query and returns the first row of the result
+as an associative array.</p><dl>
+<dt>Parameters:</dt>
+<dd>statement - The SQL query.</dd>
+<dd>params - The query parameters.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Connection.php at line 341</div>
 <h3 id="fetchColumn()">fetchColumn</h3>
 <code class="signature">public  mixed <strong>fetchColumn</strong>(string statement, array params, int colnum)</code>
 <div class="details">
@@ -622,31 +641,15 @@ of the first row of the result.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 317</div>
-<h3 id="fetchRow()">fetchRow</h3>
-<code class="signature">public  array <strong>fetchRow</strong>(string statement, array params)</code>
-<div class="details">
-<p>Prepares and executes an SQL query and returns the first row of the result
-as an associative array.</p><dl>
-<dt>Parameters:</dt>
-<dd>statement - The SQL query.</dd>
-<dd>params - The query parameters.</dd>
-<dt>Todo:</dt>
-<dd>Rename: fetchAssoc</dd>
-</dl>
-</div>
-
-<hr>
-
-<div class="location">/Doctrine/DBAL/Connection.php at line 256</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 254</div>
 <h3 id="getConfiguration()">getConfiguration</h3>
-<code class="signature">public  Doctrine\DBAL\Configuration <strong>getConfiguration</strong>()</code>
+<code class="signature">public  <a href="../../doctrine/dbal/configuration.html">Configuration</a> <strong>getConfiguration</strong>()</code>
 <div class="details">
 <p>Gets the Configuration used by the Connection.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 196</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 194</div>
 <h3 id="getDatabase()">getDatabase</h3>
 <code class="signature">public  string <strong>getDatabase</strong>()</code>
 <div class="details">
@@ -658,31 +661,31 @@ as an associative array.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 276</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 274</div>
 <h3 id="getDatabasePlatform()">getDatabasePlatform</h3>
-<code class="signature">public  Doctrine\DBAL\Platforms\AbstractPlatform <strong>getDatabasePlatform</strong>()</code>
+<code class="signature">public  <a href="../../doctrine/dbal/platforms/abstractplatform.html">AbstractPlatform</a> <strong>getDatabasePlatform</strong>()</code>
 <div class="details">
 <p>Gets the DatabasePlatform for the connection.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 246</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 244</div>
 <h3 id="getDriver()">getDriver</h3>
-<code class="signature">public  Doctrine\DBAL\Driver <strong>getDriver</strong>()</code>
+<code class="signature">public  <a href="../../doctrine/dbal/driver.html">Driver</a> <strong>getDriver</strong>()</code>
 <div class="details">
 <p>Gets the DBAL driver instance.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 266</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 264</div>
 <h3 id="getEventManager()">getEventManager</h3>
-<code class="signature">public  Doctrine\Common\EventManager <strong>getEventManager</strong>()</code>
+<code class="signature">public  <a href="../../doctrine/common/eventmanager.html">EventManager</a> <strong>getEventManager</strong>()</code>
 <div class="details">
 <p>Gets the EventManager used by the Connection.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 206</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 204</div>
 <h3 id="getHost()">getHost</h3>
 <code class="signature">public  string <strong>getHost</strong>()</code>
 <div class="details">
@@ -690,7 +693,7 @@ as an associative array.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 186</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 184</div>
 <h3 id="getParams()">getParams</h3>
 <code class="signature">public  array <strong>getParams</strong>()</code>
 <div class="details">
@@ -702,7 +705,7 @@ as an associative array.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 236</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 234</div>
 <h3 id="getPassword()">getPassword</h3>
 <code class="signature">public  string <strong>getPassword</strong>()</code>
 <div class="details">
@@ -710,7 +713,7 @@ as an associative array.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 216</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 214</div>
 <h3 id="getPort()">getPort</h3>
 <code class="signature">public  mixed <strong>getPort</strong>()</code>
 <div class="details">
@@ -718,19 +721,7 @@ as an associative array.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 825</div>
-<h3 id="getRollbackOnly()">getRollbackOnly</h3>
-<code class="signature">public  boolean <strong>getRollbackOnly</strong>()</code>
-<div class="details">
-<p>Check whether the current transaction is marked for rollback only.</p><dl>
-<dt>Throws:</dt>
-<dd><a href="../../doctrine/dbal/connectionexception.html">If no transaction is active.</a></dd>
-</dl>
-</div>
-
-<hr>
-
-<div class="location">/Doctrine/DBAL/Connection.php at line 796</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 815</div>
 <h3 id="getSchemaManager()">getSchemaManager</h3>
 <code class="signature">public  Doctrine\DBAL\Schema\SchemaManager <strong>getSchemaManager</strong>()</code>
 <div class="details">
@@ -739,7 +730,7 @@ database schema through the connection.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 420</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 417</div>
 <h3 id="getTransactionIsolation()">getTransactionIsolation</h3>
 <code class="signature">public  integer <strong>getTransactionIsolation</strong>()</code>
 <div class="details">
@@ -751,7 +742,7 @@ database schema through the connection.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 667</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 664</div>
 <h3 id="getTransactionNestingLevel()">getTransactionNestingLevel</h3>
 <code class="signature">public  integer <strong>getTransactionNestingLevel</strong>()</code>
 <div class="details">
@@ -763,7 +754,7 @@ database schema through the connection.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 226</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 224</div>
 <h3 id="getUsername()">getUsername</h3>
 <code class="signature">public  string <strong>getUsername</strong>()</code>
 <div class="details">
@@ -771,15 +762,15 @@ database schema through the connection.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 783</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 802</div>
 <h3 id="getWrappedConnection()">getWrappedConnection</h3>
-<code class="signature">public  Doctrine\DBAL\Driver\Connection <strong>getWrappedConnection</strong>()</code>
+<code class="signature">public  <a href="../../doctrine/dbal/driver/connection.html">Connection</a> <strong>getWrappedConnection</strong>()</code>
 <div class="details">
 <p>Gets the wrapped driver connection.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 456</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 453</div>
 <h3 id="insert()">insert</h3>
 <code class="signature">public  integer <strong>insert</strong>(mixed tableName, array data, string table)</code>
 <div class="details">
@@ -794,7 +785,7 @@ database schema through the connection.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 354</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 351</div>
 <h3 id="isConnected()">isConnected</h3>
 <code class="signature">public  boolean <strong>isConnected</strong>()</code>
 <div class="details">
@@ -802,7 +793,19 @@ database schema through the connection.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 364</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 844</div>
+<h3 id="isRollbackOnly()">isRollbackOnly</h3>
+<code class="signature">public  boolean <strong>isRollbackOnly</strong>()</code>
+<div class="details">
+<p>Check whether the current transaction is marked for rollback only.</p><dl>
+<dt>Throws:</dt>
+<dd><a href="../../doctrine/dbal/connectionexception.html">If no transaction is active.</a></dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Connection.php at line 361</div>
 <h3 id="isTransactionActive()">isTransactionActive</h3>
 <code class="signature">public  boolean <strong>isTransactionActive</strong>()</code>
 <div class="details">
@@ -814,7 +817,7 @@ database schema through the connection.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 705</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 702</div>
 <h3 id="lastInsertId()">lastInsertId</h3>
 <code class="signature">public  string <strong>lastInsertId</strong>(string seqName)</code>
 <div class="details">
@@ -831,9 +834,9 @@ columns or sequences.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 536</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 533</div>
 <h3 id="prepare()">prepare</h3>
-<code class="signature">public  Doctrine\DBAL\Driver\Statement <strong>prepare</strong>(string statement)</code>
+<code class="signature">public  <a href="../../doctrine/dbal/driver/statement.html">Statement</a> <strong>prepare</strong>(string statement)</code>
 <div class="details">
 <p>Prepares an SQL statement.</p><dl>
 <dt>Parameters:</dt>
@@ -845,7 +848,7 @@ columns or sequences.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 588</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 585</div>
 <h3 id="project()">project</h3>
 <code class="signature">public  mixed <strong>project</strong>(string query, array params, mixed function, Closure mapper)</code>
 <div class="details">
@@ -862,15 +865,15 @@ applying a given projection/transformation function on each row of the result.</
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 609</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 606</div>
 <h3 id="query()">query</h3>
-<code class="signature">public  Doctrine\DBAL\Driver\Statement <strong>query</strong>(string statement, integer fetchType)</code>
+<code class="signature">public  <a href="../../doctrine/dbal/driver/statement.html">Statement</a> <strong>query</strong>(string statement, integer fetchType)</code>
 <div class="details">
 <p>Executes an SQL statement, returning a result set as a Statement object.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 511</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 508</div>
 <h3 id="quote()">quote</h3>
 <code class="signature">public  string <strong>quote</strong>(mixed input, string type)</code>
 <div class="details">
@@ -885,7 +888,7 @@ applying a given projection/transformation function on each row of the result.</
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 499</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 496</div>
 <h3 id="quoteIdentifier()">quoteIdentifier</h3>
 <code class="signature">public  string <strong>quoteIdentifier</strong>(string str)</code>
 <div class="details">
@@ -902,7 +905,7 @@ problems than they solve.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 760</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 779</div>
 <h3 id="rollback()">rollback</h3>
 <code class="signature">public  void <strong>rollback</strong>()</code>
 <div class="details">
@@ -915,7 +918,7 @@ eventlistener methods</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 481</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 478</div>
 <h3 id="setCharset()">setCharset</h3>
 <code class="signature">public  void <strong>setCharset</strong>(string charset)</code>
 <div class="details">
@@ -927,7 +930,7 @@ eventlistener methods</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 811</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 830</div>
 <h3 id="setRollbackOnly()">setRollbackOnly</h3>
 <code class="signature">public  void <strong>setRollbackOnly</strong>()</code>
 <div class="details">
@@ -940,7 +943,7 @@ outcome for the transaction to be rolled back.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 408</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 405</div>
 <h3 id="setTransactionIsolation()">setTransactionIsolation</h3>
 <code class="signature">public  void <strong>setTransactionIsolation</strong>(integer level)</code>
 <div class="details">
@@ -952,7 +955,20 @@ outcome for the transaction to be rolled back.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Connection.php at line 432</div>
+<div class="location">/Doctrine/DBAL/Connection.php at line 718</div>
+<h3 id="transactional()">transactional</h3>
+<code class="signature">public  void <strong>transactional</strong>(Closure func)</code>
+<div class="details">
+<p>Executes a function in a transaction.</p><p>The function gets passed this Connection instance as an (optional) parameter.</p><p>If an exception occurs during execution of the function or transaction commit,
+the transaction is rolled back and the exception re-thrown.</p><dl>
+<dt>Parameters:</dt>
+<dd>func - The function to execute transactionally.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Connection.php at line 429</div>
 <h3 id="update()">update</h3>
 <code class="signature">public  integer <strong>update</strong>(mixed tableName, mixed data, array identifier, string table)</code>
 <div class="details">

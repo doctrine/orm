@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:03 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:35 +0000">
 
 <link rel="stylesheet" type="text/css" href="stylesheet.css">
 <link rel="start" href="overview-summary.html">
@@ -18,8 +18,11 @@
 
 <h2>Classes</h2>
 <ul>
+<li><a href="doctrine/jsonproperty.html" target="main">JSONProperty</a></li>
 <li><a href="doctrine/common/classloader.html" target="main">ClassLoader</a></li>
 <li><a href="doctrine/common/commonexception.html" target="main">CommonException</a></li>
+<li><em><a href="doctrine/common/comparable.html" target="main">Comparable</a></em></li>
+<li><em><a href="doctrine/common/equatable.html" target="main">Equatable</a></em></li>
 <li><a href="doctrine/common/eventargs.html" target="main">EventArgs</a></li>
 <li><a href="doctrine/common/eventmanager.html" target="main">EventManager</a></li>
 <li><em><a href="doctrine/common/eventsubscriber.html" target="main">EventSubscriber</a></em></li>
@@ -40,6 +43,7 @@
 <li><a href="doctrine/common/cache/xcachecache.html" target="main">XcacheCache</a></li>
 <li><a href="doctrine/common/collections/arraycollection.html" target="main">ArrayCollection</a></li>
 <li><em><a href="doctrine/common/collections/collection.html" target="main">Collection</a></em></li>
+<li><em><a href="doctrine/common/proxy/valueholder.html" target="main">ValueHolder</a></em></li>
 <li><a href="doctrine/common/util/debug.html" target="main">Debug</a></li>
 <li><a href="doctrine/common/util/inflector.html" target="main">Inflector</a></li>
 <li><a href="doctrine/dbal/configuration.html" target="main">Configuration</a></li>
@@ -49,15 +53,21 @@
 <li><em><a href="doctrine/dbal/driver.html" target="main">Driver</a></em></li>
 <li><a href="doctrine/dbal/drivermanager.html" target="main">DriverManager</a></li>
 <li><a href="doctrine/dbal/events.html" target="main">Events</a></li>
+<li><a href="doctrine/dbal/sqlquery.html" target="main">SQLQuery</a></li>
 <li><a href="doctrine/dbal/statement.html" target="main">Statement</a></li>
 <li><em><a href="doctrine/dbal/driver/connection.html" target="main">Connection</a></em></li>
 <li><a href="doctrine/dbal/driver/pdoconnection.html" target="main">PDOConnection</a></li>
 <li><a href="doctrine/dbal/driver/pdostatement.html" target="main">PDOStatement</a></li>
 <li><em><a href="doctrine/dbal/driver/statement.html" target="main">Statement</a></em></li>
+<li><a href="doctrine/dbal/driver/ibmdb2/db2connection.html" target="main">DB2Connection</a></li>
+<li><a href="doctrine/dbal/driver/ibmdb2/db2driver.html" target="main">DB2Driver</a></li>
+<li><a href="doctrine/dbal/driver/ibmdb2/db2exception.html" target="main">DB2Exception</a></li>
+<li><a href="doctrine/dbal/driver/ibmdb2/db2statement.html" target="main">DB2Statement</a></li>
 <li><a href="doctrine/dbal/driver/oci8/driver.html" target="main">Driver</a></li>
 <li><a href="doctrine/dbal/driver/oci8/oci8connection.html" target="main">OCI8Connection</a></li>
 <li><a href="doctrine/dbal/driver/oci8/oci8exception.html" target="main">OCI8Exception</a></li>
 <li><a href="doctrine/dbal/driver/oci8/oci8statement.html" target="main">OCI8Statement</a></li>
+<li><a href="doctrine/dbal/driver/pdoibm/driver.html" target="main">Driver</a></li>
 <li><a href="doctrine/dbal/driver/pdomssql/connection.html" target="main">Connection</a></li>
 <li><a href="doctrine/dbal/driver/pdomssql/driver.html" target="main">Driver</a></li>
 <li><a href="doctrine/dbal/driver/pdomysql/driver.html" target="main">Driver</a></li>
@@ -71,6 +81,7 @@
 <li><a href="doctrine/dbal/logging/echosqllogger.html" target="main">EchoSQLLogger</a></li>
 <li><em><a href="doctrine/dbal/logging/sqllogger.html" target="main">SQLLogger</a></em></li>
 <li><a href="doctrine/dbal/platforms/abstractplatform.html" target="main">AbstractPlatform</a></li>
+<li><a href="doctrine/dbal/platforms/db2platform.html" target="main">DB2Platform</a></li>
 <li><a href="doctrine/dbal/platforms/mssqlplatform.html" target="main">MsSqlPlatform</a></li>
 <li><a href="doctrine/dbal/platforms/mysqlplatform.html" target="main">MySqlPlatform</a></li>
 <li><a href="doctrine/dbal/platforms/oracleplatform.html" target="main">OraclePlatform</a></li>
@@ -82,6 +93,7 @@
 <li><a href="doctrine/dbal/schema/columndiff.html" target="main">ColumnDiff</a></li>
 <li><a href="doctrine/dbal/schema/comparator.html" target="main">Comparator</a></li>
 <li><em><a href="doctrine/dbal/schema/constraint.html" target="main">Constraint</a></em></li>
+<li><a href="doctrine/dbal/schema/db2schemamanager.html" target="main">DB2SchemaManager</a></li>
 <li><a href="doctrine/dbal/schema/foreignkeyconstraint.html" target="main">ForeignKeyConstraint</a></li>
 <li><a href="doctrine/dbal/schema/index.html" target="main">Index</a></li>
 <li><a href="doctrine/dbal/schema/mssqlschemamanager.html" target="main">MsSqlSchemaManager</a></li>
@@ -117,11 +129,17 @@
 <li><a href="doctrine/dbal/types/texttype.html" target="main">TextType</a></li>
 <li><a href="doctrine/dbal/types/timetype.html" target="main">TimeType</a></li>
 <li><a href="doctrine/dbal/types/type.html" target="main">Type</a></li>
+<li><a href="doctrine/odm/couchdb/database.html" target="main">Database</a></li>
+<li><a href="doctrine/odm/couchdb/documentmanager.html" target="main">DocumentManager</a></li>
+<li><a href="doctrine/odm/couchdb/jsonconverter.html" target="main">JSONConverter</a></li>
+<li><em><a href="doctrine/odm/couchdb/jsonable.html" target="main">JSONable</a></em></li>
+<li><a href="doctrine/odm/couchdb/unitofwork.html" target="main">UnitOfWork</a></li>
 <li><a href="doctrine/orm/abstractquery.html" target="main">AbstractQuery</a></li>
 <li><a href="doctrine/orm/configuration.html" target="main">Configuration</a></li>
 <li><a href="doctrine/orm/entitymanager.html" target="main">EntityManager</a></li>
 <li><a href="doctrine/orm/entitynotfoundexception.html" target="main">EntityNotFoundException</a></li>
 <li><a href="doctrine/orm/entityrepository.html" target="main">EntityRepository</a></li>
+<li><a href="doctrine/orm/entitytransaction.html" target="main">EntityTransaction</a></li>
 <li><a href="doctrine/orm/events.html" target="main">Events</a></li>
 <li><a href="doctrine/orm/nativequery.html" target="main">NativeQuery</a></li>
 <li><a href="doctrine/orm/noresultexception.html" target="main">NoResultException</a></li>
@@ -140,7 +158,6 @@
 <li><a href="doctrine/orm/id/assignedgenerator.html" target="main">AssignedGenerator</a></li>
 <li><a href="doctrine/orm/id/identitygenerator.html" target="main">IdentityGenerator</a></li>
 <li><a href="doctrine/orm/id/sequencegenerator.html" target="main">SequenceGenerator</a></li>
-<li><a href="doctrine/orm/id/sequenceidentitygenerator.html" target="main">SequenceIdentityGenerator</a></li>
 <li><a href="doctrine/orm/id/tablegenerator.html" target="main">TableGenerator</a></li>
 <li><a href="doctrine/orm/internal/commitordercalculator.html" target="main">CommitOrderCalculator</a></li>
 <li><a href="doctrine/orm/internal/hydration/abstracthydrator.html" target="main">AbstractHydrator</a></li>
@@ -194,17 +211,18 @@
 <li><a href="doctrine/orm/mapping/driver/databasedriver.html" target="main">DatabaseDriver</a></li>
 <li><em><a href="doctrine/orm/mapping/driver/driver.html" target="main">Driver</a></em></li>
 <li><a href="doctrine/orm/mapping/driver/driverchain.html" target="main">DriverChain</a></li>
-<li><a href="doctrine/orm/mapping/driver/phpdriver.html" target="main">PhpDriver</a></li>
+<li><a href="doctrine/orm/mapping/driver/phpdriver.html" target="main">PHPDriver</a></li>
+<li><a href="doctrine/orm/mapping/driver/staticphpdriver.html" target="main">StaticPHPDriver</a></li>
 <li><a href="doctrine/orm/mapping/driver/xmldriver.html" target="main">XmlDriver</a></li>
 <li><a href="doctrine/orm/mapping/driver/yamldriver.html" target="main">YamlDriver</a></li>
 <li><a href="doctrine/orm/persisters/abstractcollectionpersister.html" target="main">AbstractCollectionPersister</a></li>
 <li><a href="doctrine/orm/persisters/abstractentityinheritancepersister.html" target="main">AbstractEntityInheritancePersister</a></li>
+<li><a href="doctrine/orm/persisters/basicentitypersister.html" target="main">BasicEntityPersister</a></li>
 <li><a href="doctrine/orm/persisters/elementcollectionpersister.html" target="main">ElementCollectionPersister</a></li>
 <li><a href="doctrine/orm/persisters/joinedsubclasspersister.html" target="main">JoinedSubclassPersister</a></li>
 <li><a href="doctrine/orm/persisters/manytomanypersister.html" target="main">ManyToManyPersister</a></li>
 <li><a href="doctrine/orm/persisters/onetomanypersister.html" target="main">OneToManyPersister</a></li>
 <li><a href="doctrine/orm/persisters/singletablepersister.html" target="main">SingleTablePersister</a></li>
-<li><a href="doctrine/orm/persisters/standardentitypersister.html" target="main">StandardEntityPersister</a></li>
 <li><a href="doctrine/orm/persisters/unionsubclasspersister.html" target="main">UnionSubclassPersister</a></li>
 <li><em><a href="doctrine/orm/proxy/proxy.html" target="main">Proxy</a></em></li>
 <li><a href="doctrine/orm/proxy/proxyexception.html" target="main">ProxyException</a></li>
@@ -300,9 +318,10 @@
 <li><a href="doctrine/orm/query/expr/orderby.html" target="main">OrderBy</a></li>
 <li><a href="doctrine/orm/query/expr/orx.html" target="main">Orx</a></li>
 <li><a href="doctrine/orm/query/expr/select.html" target="main">Select</a></li>
-<li><a href="doctrine/orm/tools/classmetadatareader.html" target="main">ClassMetadataReader</a></li>
 <li><a href="doctrine/orm/tools/convertdoctrine1schema.html" target="main">ConvertDoctrine1Schema</a></li>
+<li><a href="doctrine/orm/tools/disconnectedclassmetadatafactory.html" target="main">DisconnectedClassMetadataFactory</a></li>
 <li><a href="doctrine/orm/tools/entitygenerator.html" target="main">EntityGenerator</a></li>
+<li><a href="doctrine/orm/tools/entityrepositorygenerator.html" target="main">EntityRepositoryGenerator</a></li>
 <li><a href="doctrine/orm/tools/schematool.html" target="main">SchemaTool</a></li>
 <li><a href="doctrine/orm/tools/toolevents.html" target="main">ToolEvents</a></li>
 <li><a href="doctrine/orm/tools/toolsexception.html" target="main">ToolsException</a></li>
@@ -314,6 +333,7 @@
 <li><a href="doctrine/orm/tools/console/command/generateproxiescommand.html" target="main">GenerateProxiesCommand</a></li>
 <li><a href="doctrine/orm/tools/console/command/generaterepositoriescommand.html" target="main">GenerateRepositoriesCommand</a></li>
 <li><a href="doctrine/orm/tools/console/command/rundqlcommand.html" target="main">RunDqlCommand</a></li>
+<li><a href="doctrine/orm/tools/console/command/validateschemacommand.html" target="main">ValidateSchemaCommand</a></li>
 <li><a href="doctrine/orm/tools/console/command/clearcache/metadatacommand.html" target="main">MetadataCommand</a></li>
 <li><a href="doctrine/orm/tools/console/command/clearcache/querycommand.html" target="main">QueryCommand</a></li>
 <li><a href="doctrine/orm/tools/console/command/clearcache/resultcommand.html" target="main">ResultCommand</a></li>

@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:36 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css">
 <link rel="start" href="../../overview-summary.html">
@@ -37,7 +37,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\DBAL\Driver</div>
-<div class="location">/Doctrine/DBAL/Driver.php at line 11</div>
+<div class="location">/Doctrine/DBAL/Driver.php at line 28</div>
 
 <h1>Interface Driver</h1>
 
@@ -59,15 +59,15 @@ Interface that all DBAL drivers must implement.</p></div>
 <table id="summary_method">
 <tr><th colspan="2">Method Summary</th></tr>
 <tr>
-<td class="type"> Doctrine\DBAL\Driver\Connection</td>
+<td class="type"> <a href="../../doctrine/dbal/driver/connection.html">Connection</a></td>
 <td class="description"><p class="name"><a href="#connect()">connect</a>(array params, string username, string password, array driverOptions)</p><p class="description">Attempts to create a connection with the database.</p></td>
 </tr>
 <tr>
 <td class="type"> string</td>
-<td class="description"><p class="name"><a href="#getDatabase()">getDatabase</a>(Doctrine\DBAL\Connection conn)</p><p class="description">Get the name of the database connected to for this driver.</p></td>
+<td class="description"><p class="name"><a href="#getDatabase()">getDatabase</a>(<a href="../../doctrine/dbal/connection.html">Connection</a> conn)</p><p class="description">Get the name of the database connected to for this driver.</p></td>
 </tr>
 <tr>
-<td class="type"> Doctrine\DBAL\Platforms\AbstractPlatform</td>
+<td class="type"> <a href="../../doctrine/dbal/platforms/abstractplatform.html">AbstractPlatform</a></td>
 <td class="description"><p class="name"><a href="#getDatabasePlatform()">getDatabasePlatform</a>()</p><p class="description">Gets the DatabasePlatform instance that provides all the metadata about
 the platform this driver connects to.</p></td>
 </tr>
@@ -77,15 +77,15 @@ the platform this driver connects to.</p></td>
 </tr>
 <tr>
 <td class="type"> Doctrine\DBAL\SchemaManager</td>
-<td class="description"><p class="name"><a href="#getSchemaManager()">getSchemaManager</a>(Doctrine\DBAL\Connection conn)</p><p class="description">Gets the SchemaManager that can be used to inspect and change the underlying
+<td class="description"><p class="name"><a href="#getSchemaManager()">getSchemaManager</a>(<a href="../../doctrine/dbal/connection.html">Connection</a> conn)</p><p class="description">Gets the SchemaManager that can be used to inspect and change the underlying
 database schema of the platform this driver connects to.</p></td>
 </tr>
 </table>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/DBAL/Driver.php at line 22</div>
+<div class="location">/Doctrine/DBAL/Driver.php at line 39</div>
 <h3 id="connect()">connect</h3>
-<code class="signature">public  Doctrine\DBAL\Driver\Connection <strong>connect</strong>(array params, string username, string password, array driverOptions)</code>
+<code class="signature">public  <a href="../../doctrine/dbal/driver/connection.html">Connection</a> <strong>connect</strong>(array params, string username, string password, array driverOptions)</code>
 <div class="details">
 <p>Attempts to create a connection with the database.</p><dl>
 <dt>Parameters:</dt>
@@ -100,9 +100,9 @@ database schema of the platform this driver connects to.</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Driver.php at line 54</div>
+<div class="location">/Doctrine/DBAL/Driver.php at line 71</div>
 <h3 id="getDatabase()">getDatabase</h3>
-<code class="signature">public  string <strong>getDatabase</strong>(Doctrine\DBAL\Connection conn)</code>
+<code class="signature">public  string <strong>getDatabase</strong>(<a href="../../doctrine/dbal/connection.html">Connection</a> conn)</code>
 <div class="details">
 <p>Get the name of the database connected to for this driver.</p><dl>
 <dt>Returns:</dt>
@@ -112,9 +112,9 @@ database schema of the platform this driver connects to.</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Driver.php at line 30</div>
+<div class="location">/Doctrine/DBAL/Driver.php at line 47</div>
 <h3 id="getDatabasePlatform()">getDatabasePlatform</h3>
-<code class="signature">public  Doctrine\DBAL\Platforms\AbstractPlatform <strong>getDatabasePlatform</strong>()</code>
+<code class="signature">public  <a href="../../doctrine/dbal/platforms/abstractplatform.html">AbstractPlatform</a> <strong>getDatabasePlatform</strong>()</code>
 <div class="details">
 <p>Gets the DatabasePlatform instance that provides all the metadata about
 the platform this driver connects to.</p><dl>
@@ -125,7 +125,7 @@ the platform this driver connects to.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Driver.php at line 46</div>
+<div class="location">/Doctrine/DBAL/Driver.php at line 63</div>
 <h3 id="getName()">getName</h3>
 <code class="signature">public  string <strong>getName</strong>()</code>
 <div class="details">
@@ -137,9 +137,9 @@ the platform this driver connects to.</p><dl>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Driver.php at line 39</div>
+<div class="location">/Doctrine/DBAL/Driver.php at line 56</div>
 <h3 id="getSchemaManager()">getSchemaManager</h3>
-<code class="signature">public  Doctrine\DBAL\SchemaManager <strong>getSchemaManager</strong>(Doctrine\DBAL\Connection conn)</code>
+<code class="signature">public  Doctrine\DBAL\SchemaManager <strong>getSchemaManager</strong>(<a href="../../doctrine/dbal/connection.html">Connection</a> conn)</code>
 <div class="details">
 <p>Gets the SchemaManager that can be used to inspect and change the underlying
 database schema of the platform this driver connects to.</p></div>

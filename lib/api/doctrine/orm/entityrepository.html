@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:37 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../stylesheet.css">
 <link rel="start" href="../../overview-summary.html">
@@ -37,7 +37,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\ORM\EntityRepository</div>
-<div class="location">/Doctrine/ORM/EntityRepository.php at line 40</div>
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 35</div>
 
 <h1>Class EntityRepository</h1>
 
@@ -52,14 +52,8 @@ business specific methods for retrieving entities.</p><p>This class is designed 
 write their own repositories with business-specific methods to locate entities.</p></div>
 
 <dl>
-<dt>License:</dt>
-<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
-<dt>See Also:</dt>
-<dd><code>www.doctrine-project.org</code></dd>
 <dt>Since:</dt>
 <dd>2.0</dd>
-<dt>Version:</dt>
-<dd>$Revision$</dd>
 <dt>Author:</dt>
 <dd>Benjamin Eberlei <kontakt@beberlei.de></dd>
 <dd>Guilherme Blanco <guilhermeblanco@hotmail.com></dd>
@@ -71,7 +65,7 @@ write their own repositories with business-specific methods to locate entities.<
 <table id="summary_field">
 <tr><th colspan="2">Field Summary</th></tr>
 <tr>
-<td class="type">protected  Doctrine\ORM\Mapping\ClassMetadata</td>
+<td class="type">protected  <a href="../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a></td>
 <td class="description"><p class="name"><a href="#_class">$_class</a></p><p class="description"></p></td>
 </tr>
 <tr>
@@ -117,18 +111,30 @@ write their own repositories with business-specific methods to locate entities.<
 <td class="type"> object</td>
 <td class="description"><p class="name"><a href="#findOneBy()">findOneBy</a>(mixed criteria, string column, string value)</p><p class="description">Finds a single entity by a set of criteria.</p></td>
 </tr>
+<tr>
+<td class="type">protected  Mapping\ClassMetadata</td>
+<td class="description"><p class="name"><a href="#getClassMetadata()">getClassMetadata</a>()</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  <a href="../../doctrine/orm/entitymanager.html">EntityManager</a></td>
+<td class="description"><p class="name"><a href="#getEntityManager()">getEntityManager</a>()</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type">protected  string</td>
+<td class="description"><p class="name"><a href="#getEntityName()">getEntityName</a>()</p><p class="description"></p></td>
+</tr>
 </table>
 
 <h2 id="detail_field">Field Detail</h2>
-<div class="location">/Doctrine/ORM/EntityRepository.php at line 55</div>
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 50</div>
 <h3 id="_class">_class</h3>
-<code class="signature">protected  Doctrine\ORM\Mapping\ClassMetadata <strong>$_class</strong></code>
+<code class="signature">protected  <a href="../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a> <strong>$_class</strong></code>
 <div class="details">
 <p></p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityRepository.php at line 50</div>
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 45</div>
 <h3 id="_em">_em</h3>
 <code class="signature">protected  <a href="../../doctrine/orm/entitymanager.html">EntityManager</a> <strong>$_em</strong></code>
 <div class="details">
@@ -136,7 +142,7 @@ write their own repositories with business-specific methods to locate entities.<
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityRepository.php at line 45</div>
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 40</div>
 <h3 id="_entityName">_entityName</h3>
 <code class="signature">protected  string <strong>$_entityName</strong></code>
 <div class="details">
@@ -145,7 +151,7 @@ write their own repositories with business-specific methods to locate entities.<
 <hr>
 
 <h2 id="detail_constr">Constructor Detail</h2>
-<div class="location">/Doctrine/ORM/EntityRepository.php at line 63</div>
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 58</div>
 <h3 id="EntityRepository()">EntityRepository</h3>
 <code class="signature">public <strong>EntityRepository</strong>(<a href="../../doctrine/orm/entitymanager.html">EntityManager</a> em, mixed class, <a href="../../doctrine/orm/mapping/classmetadata.html">ClassMetadata</a> classMetadata)</code>
 <div class="details">
@@ -159,7 +165,7 @@ write their own repositories with business-specific methods to locate entities.<
 <hr>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/ORM/EntityRepository.php at line 86</div>
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 81</div>
 <h3 id="clear()">clear</h3>
 <code class="signature">public  void <strong>clear</strong>()</code>
 <div class="details">
@@ -167,7 +173,7 @@ write their own repositories with business-specific methods to locate entities.<
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityRepository.php at line 76</div>
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 71</div>
 <h3 id="createQueryBuilder()">createQueryBuilder</h3>
 <code class="signature">public  <a href="../../doctrine/orm/querybuilder.html">QueryBuilder</a> <strong>createQueryBuilder</strong>(string alias)</code>
 <div class="details">
@@ -179,7 +185,7 @@ write their own repositories with business-specific methods to locate entities.<
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityRepository.php at line 98</div>
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 93</div>
 <h3 id="find()">find</h3>
 <code class="signature">public  object <strong>find</strong>(mixed id, $id The, int hydrationMode)</code>
 <div class="details">
@@ -194,7 +200,7 @@ write their own repositories with business-specific methods to locate entities.<
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityRepository.php at line 120</div>
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 115</div>
 <h3 id="findAll()">findAll</h3>
 <code class="signature">public  array <strong>findAll</strong>(int hydrationMode)</code>
 <div class="details">
@@ -206,7 +212,7 @@ write their own repositories with business-specific methods to locate entities.<
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityRepository.php at line 132</div>
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 127</div>
 <h3 id="findBy()">findBy</h3>
 <code class="signature">public  array <strong>findBy</strong>(mixed criteria, string column, string value)</code>
 <div class="details">
@@ -214,11 +220,35 @@ write their own repositories with business-specific methods to locate entities.<
 
 <hr>
 
-<div class="location">/Doctrine/ORM/EntityRepository.php at line 144</div>
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 139</div>
 <h3 id="findOneBy()">findOneBy</h3>
 <code class="signature">public  object <strong>findOneBy</strong>(mixed criteria, string column, string value)</code>
 <div class="details">
 <p>Finds a single entity by a set of criteria.</p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 199</div>
+<h3 id="getClassMetadata()">getClassMetadata</h3>
+<code class="signature">protected  Mapping\ClassMetadata <strong>getClassMetadata</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 191</div>
+<h3 id="getEntityManager()">getEntityManager</h3>
+<code class="signature">protected  <a href="../../doctrine/orm/entitymanager.html">EntityManager</a> <strong>getEntityManager</strong>()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/EntityRepository.php at line 183</div>
+<h3 id="getEntityName()">getEntityName</h3>
+<code class="signature">protected  string <strong>getEntityName</strong>()</code>
+<div class="details">
+<p></p></div>
 
 <hr>
 

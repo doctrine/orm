@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:37 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
 <link rel="start" href="../../../overview-summary.html">
@@ -41,12 +41,12 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 
 <h1>Class AbstractEntityInheritancePersister</h1>
 
-<pre class="tree">Class:AbstractEntityInheritancePersister - Superclass: StandardEntityPersister
-<a href="../../../doctrine/orm/persisters/standardentitypersister.html">StandardEntityPersister</a><br>   &lfloor;&nbsp;<strong>AbstractEntityInheritancePersister</strong><br /></pre>
+<pre class="tree">Class:AbstractEntityInheritancePersister - Superclass: BasicEntityPersister
+<a href="../../../doctrine/orm/persisters/basicentitypersister.html">BasicEntityPersister</a><br>   &lfloor;&nbsp;<strong>AbstractEntityInheritancePersister</strong><br /></pre>
 
 <hr>
 
-<p class="signature">public abstract  class <strong>AbstractEntityInheritancePersister</strong><br>extends <a href="../../../doctrine/orm/persisters/standardentitypersister.html">StandardEntityPersister</a>
+<p class="signature">public abstract  class <strong>AbstractEntityInheritancePersister</strong><br>extends <a href="../../../doctrine/orm/persisters/basicentitypersister.html">BasicEntityPersister</a>
 
 </p>
 
@@ -59,20 +59,16 @@ types in the hierarchy.</p></div>
 <dd>Roman Borschel <roman@code-factory.org></dd>
 <dt>Since:</dt>
 <dd>2.0</dd>
-<dt>License:</dt>
-<dd>http://www.opensource.org/licenses/lgpl-license.php LGPL</dd>
-<dt>Todo:</dt>
-<dd>Rename: BasicEntityPersister</dd>
 </dl>
 <hr>
 
 <table class="inherit">
-<tr><th colspan="2">Fields inherited from Doctrine\ORM\Persisters\StandardEntityPersister</th></tr>
-<tr><td><a href="../../../doctrine/orm/persisters/standardentitypersister.html#_class">_class</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#_columnTypes">_columnTypes</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#_conn">_conn</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#_em">_em</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#_platform">_platform</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#_queuedInserts">_queuedInserts</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#_resultColumnNames">_resultColumnNames</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#_selectColumnListSql">_selectColumnListSql</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#_sqlAliasCounter">_sqlAliasCounter</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#_sqlTableAliases">_sqlTableAliases</a></td></tr></table>
+<tr><th colspan="2">Fields inherited from Doctrine\ORM\Persisters\BasicEntityPersister</th></tr>
+<tr><td><a href="../../../doctrine/orm/persisters/basicentitypersister.html#_class">_class</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#_columnTypes">_columnTypes</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#_conn">_conn</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#_em">_em</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#_platform">_platform</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#_queuedInserts">_queuedInserts</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#_resultColumnNames">_resultColumnNames</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#_selectColumnListSql">_selectColumnListSql</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#_sqlAliasCounter">_sqlAliasCounter</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#_sqlTableAliases">_sqlTableAliases</a></td></tr></table>
 
 <table class="inherit">
-<tr><th colspan="2">Methods inherited from Doctrine\ORM\Persisters\StandardEntityPersister</th></tr>
-<tr><td><a href="../../../doctrine/orm/persisters/standardentitypersister.html#addInsert()">addInsert</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#delete()">delete</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#executeInserts()">executeInserts</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#getClassMetadata()">getClassMetadata</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#getInsertSQL()">getInsertSQL</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#getOwningTable()">getOwningTable</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#load()">load</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#loadAll()">loadAll</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#loadManyToManyCollection()">loadManyToManyCollection</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#loadOneToManyCollection()">loadOneToManyCollection</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#refresh()">refresh</a>, <a href="../../../doctrine/orm/persisters/standardentitypersister.html#update()">update</a></td></tr></table>
+<tr><th colspan="2">Methods inherited from Doctrine\ORM\Persisters\BasicEntityPersister</th></tr>
+<tr><td><a href="../../../doctrine/orm/persisters/basicentitypersister.html#addInsert()">addInsert</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#delete()">delete</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#executeInserts()">executeInserts</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#getClassMetadata()">getClassMetadata</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#getOwningTable()">getOwningTable</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#load()">load</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#loadAll()">loadAll</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#loadManyToManyCollection()">loadManyToManyCollection</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#loadOneToManyCollection()">loadOneToManyCollection</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#loadOneToOneEntity()">loadOneToOneEntity</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#refresh()">refresh</a>, <a href="../../../doctrine/orm/persisters/basicentitypersister.html#update()">update</a></td></tr></table>
 
 <div class="header">
 <h1>Doctrine</h1>

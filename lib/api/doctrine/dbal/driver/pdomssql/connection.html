@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:04 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:36 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css">
 <link rel="start" href="../../../../overview-summary.html">
@@ -44,11 +44,6 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <pre class="tree">Class:Connection - Superclass: PDO
 PDO<br>&lfloor;&nbsp;<strong>Connection</strong><br /></pre>
 
-<dl>
-<dt>All Implemented Interfaces:</dt>
-<dd>Driver Connection </dt>
-</dl>
-
 <hr>
 
 <p class="signature">public  class <strong>Connection</strong><br>extends PDO
@@ -67,49 +62,52 @@ PDO<br>&lfloor;&nbsp;<strong>Connection</strong><br /></pre>
 <tr><th colspan="2">Method Summary</th></tr>
 <tr>
 <td class="type"> void</td>
-<td class="description"><p class="name"><a href="#beginTransaction()">beginTransaction</a>()</p><p class="description">Begins a database transaction.</p></td>
+<td class="description"><p class="name"><a href="#beginTransaction()">beginTransaction</a>()</p><p class="description">{@inheritdoc}</p></td>
 </tr>
 <tr>
 <td class="type"> void</td>
-<td class="description"><p class="name"><a href="#commit()">commit</a>()</p><p class="description">Performs the commit.</p></td>
+<td class="description"><p class="name"><a href="#commit()">commit</a>()</p><p class="description">{@inheritdoc}</p></td>
 </tr>
 <tr>
 <td class="type"> void</td>
-<td class="description"><p class="name"><a href="#rollback()">rollback</a>()</p><p class="description">Performs the rollback.</p></td>
+<td class="description"><p class="name"><a href="#lastInsertId()">lastInsertId</a>(mixed name)</p><p class="description">{@inheritdoc}</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#rollback()">rollback</a>()</p><p class="description">{@inheritdoc}</p></td>
 </tr>
 </table>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/DBAL/Driver/PDOMsSql/Connection.php at line 56</div>
+<div class="location">/Doctrine/DBAL/Driver/PDOMsSql/Connection.php at line 50</div>
 <h3 id="beginTransaction()">beginTransaction</h3>
 <code class="signature">public  void <strong>beginTransaction</strong>()</code>
 <div class="details">
-<p>Begins a database transaction.</p><dl>
-<dt>Override.</dt>
-</dl>
-</div>
+<p></p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Driver/PDOMsSql/Connection.php at line 46</div>
+<div class="location">/Doctrine/DBAL/Driver/PDOMsSql/Connection.php at line 42</div>
 <h3 id="commit()">commit</h3>
 <code class="signature">public  void <strong>commit</strong>()</code>
 <div class="details">
-<p>Performs the commit.</p><dl>
-<dt>Override.</dt>
-</dl>
-</div>
+<p></p></div>
 
 <hr>
 
-<div class="location">/Doctrine/DBAL/Driver/PDOMsSql/Connection.php at line 36</div>
+<div class="location">/Doctrine/DBAL/Driver/PDOMsSql/Connection.php at line 58</div>
+<h3 id="lastInsertId()">lastInsertId</h3>
+<code class="signature">public  void <strong>lastInsertId</strong>(mixed name)</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<div class="location">/Doctrine/DBAL/Driver/PDOMsSql/Connection.php at line 34</div>
 <h3 id="rollback()">rollback</h3>
 <code class="signature">public  void <strong>rollback</strong>()</code>
 <div class="details">
-<p>Performs the rollback.</p><dl>
-<dt>Override.</dt>
-</dl>
-</div>
+<p></p></div>
 
 <hr>
 

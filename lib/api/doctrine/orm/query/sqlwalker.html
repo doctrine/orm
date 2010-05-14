@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:38 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
 <link rel="start" href="../../../overview-summary.html">
@@ -37,7 +37,7 @@ Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> 
 <hr>
 
 <div class="qualifiedName">Doctrine\ORM\Query\SqlWalker</div>
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 36</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 34</div>
 
 <h1>Class SqlWalker</h1>
 
@@ -117,6 +117,10 @@ generating an alias on its own.</p></td>
 </tr>
 <tr>
 <td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkArithmeticPrimary()">walkArithmeticPrimary</a>(mixed primary, mixed )</p><p class="description">Walks down an ArithmeticPrimary that represents an AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
 <td class="description"><p class="name"><a href="#walkArithmeticTerm()">walkArithmeticTerm</a>(mixed term, mixed )</p><p class="description">Walks down an ArithmeticTerm AST node, thereby generating the appropriate SQL.</p></td>
 </tr>
 <tr>
@@ -133,7 +137,15 @@ generating an alias on its own.</p></td>
 </tr>
 <tr>
 <td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkConditionalExpression()">walkConditionalExpression</a>(mixed condExpr, <a href="../../../doctrine/orm/query/ast/conditionalexpression.html">ConditionalExpression</a> )</p><p class="description">Walk down a ConditionalExpression AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
 <td class="description"><p class="name"><a href="#walkConditionalFactor()">walkConditionalFactor</a>(mixed factor, <a href="../../../doctrine/orm/query/ast/conditionalfactor.html">ConditionalFactor</a> )</p><p class="description">Walks down a ConditionalFactor AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkConditionalPrimary()">walkConditionalPrimary</a>(mixed primary, <a href="../../../doctrine/orm/query/ast/conditionalprimary.html">ConditionalPrimary</a> )</p><p class="description">Walks down a ConditionalPrimary AST node, thereby generating the appropriate SQL.</p></td>
 </tr>
 <tr>
 <td class="type"> string</td>
@@ -282,7 +294,7 @@ generating an alias on its own.</p></td>
 </table>
 
 <h2 id="detail_constr">Constructor Detail</h2>
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 102</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 100</div>
 <h3 id="SqlWalker()">SqlWalker</h3>
 <code class="signature">public <strong>SqlWalker</strong>(mixed query, mixed parserResult, mixed queryComponents)</code>
 <div class="details">
@@ -291,7 +303,7 @@ generating an alias on its own.</p></td>
 <hr>
 
 <h2 id="detail_method">Method Detail</h2>
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 128</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 126</div>
 <h3 id="getConnection()">getConnection</h3>
 <code class="signature">public  <a href="../../../doctrine/dbal/connection.html">Connection</a> <strong>getConnection</strong>()</code>
 <div class="details">
@@ -299,7 +311,7 @@ generating an alias on its own.</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 138</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 136</div>
 <h3 id="getEntityManager()">getEntityManager</h3>
 <code class="signature">public  <a href="../../../doctrine/orm/entitymanager.html">EntityManager</a> <strong>getEntityManager</strong>()</code>
 <div class="details">
@@ -307,7 +319,7 @@ generating an alias on its own.</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 159</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 157</div>
 <h3 id="getExecutor()">getExecutor</h3>
 <code class="signature">public  AbstractExecutor <strong>getExecutor</strong>(mixed AST)</code>
 <div class="details">
@@ -315,7 +327,7 @@ generating an alias on its own.</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 118</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 116</div>
 <h3 id="getQuery()">getQuery</h3>
 <code class="signature">public  Query. <strong>getQuery</strong>()</code>
 <div class="details">
@@ -323,7 +335,7 @@ generating an alias on its own.</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 149</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 147</div>
 <h3 id="getQueryComponent()">getQueryComponent</h3>
 <code class="signature">public  array <strong>getQueryComponent</strong>(string dqlAlias)</code>
 <div class="details">
@@ -335,7 +347,7 @@ generating an alias on its own.</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 226</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 224</div>
 <h3 id="getSqlColumnAlias()">getSqlColumnAlias</h3>
 <code class="signature">public  string <strong>getSqlColumnAlias</strong>(string columnName)</code>
 <div class="details">
@@ -343,7 +355,7 @@ generating an alias on its own.</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 195</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 193</div>
 <h3 id="getSqlTableAlias()">getSqlTableAlias</h3>
 <code class="signature">public  string <strong>getSqlTableAlias</strong>(mixed tableName, string dqlAlias)</code>
 <div class="details">
@@ -357,7 +369,7 @@ generating an alias on its own.</p></td>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 213</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 211</div>
 <h3 id="setSqlTableAlias()">setSqlTableAlias</h3>
 <code class="signature">public  void <strong>setSqlTableAlias</strong>(string tableName, string alias)</code>
 <div class="details">
@@ -366,7 +378,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1091</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1095</div>
 <h3 id="walkAggregateExpression()">walkAggregateExpression</h3>
 <code class="signature">public  string <strong>walkAggregateExpression</strong>(mixed aggExpression, <a href="../../../doctrine/orm/query/ast/aggregateexpression.html">AggregateExpression</a> )</code>
 <div class="details">
@@ -378,7 +390,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1597</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1619</div>
 <h3 id="walkArithmeticExpression()">walkArithmeticExpression</h3>
 <code class="signature">public  string <strong>walkArithmeticExpression</strong>(mixed arithmeticExpr, <a href="../../../doctrine/orm/query/ast/arithmeticexpression.html">ArithmeticExpression</a> )</code>
 <div class="details">
@@ -390,7 +402,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1638</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1668</div>
 <h3 id="walkArithmeticFactor()">walkArithmeticFactor</h3>
 <code class="signature">public  string <strong>walkArithmeticFactor</strong>(mixed factor, mixed )</code>
 <div class="details">
@@ -402,7 +414,19 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1610</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1688</div>
+<h3 id="walkArithmeticPrimary()">walkArithmeticPrimary</h3>
+<code class="signature">public  string <strong>walkArithmeticPrimary</strong>(mixed primary, mixed )</code>
+<div class="details">
+<p>Walks down an ArithmeticPrimary that represents an AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1647</div>
 <h3 id="walkArithmeticTerm()">walkArithmeticTerm</h3>
 <code class="signature">public  string <strong>walkArithmeticTerm</strong>(mixed term, mixed )</code>
 <div class="details">
@@ -414,7 +438,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1499</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1521</div>
 <h3 id="walkBetweenExpression()">walkBetweenExpression</h3>
 <code class="signature">public  string <strong>walkBetweenExpression</strong>(mixed betweenExpr, <a href="../../../doctrine/orm/query/ast/betweenexpression.html">BetweenExpression</a> )</code>
 <div class="details">
@@ -426,7 +450,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1288</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1310</div>
 <h3 id="walkCollectionMemberExpression()">walkCollectionMemberExpression</h3>
 <code class="signature">public  string <strong>walkCollectionMemberExpression</strong>(mixed collMemberExpr, <a href="../../../doctrine/orm/query/ast/collectionmemberexpression.html">CollectionMemberExpression</a> )</code>
 <div class="details">
@@ -438,7 +462,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1555</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1577</div>
 <h3 id="walkComparisonExpression()">walkComparisonExpression</h3>
 <code class="signature">public  string <strong>walkComparisonExpression</strong>(mixed compExpr, <a href="../../../doctrine/orm/query/ast/comparisonexpression.html">ComparisonExpression</a> )</code>
 <div class="details">
@@ -450,7 +474,19 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1248</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1229</div>
+<h3 id="walkConditionalExpression()">walkConditionalExpression</h3>
+<code class="signature">public  string <strong>walkConditionalExpression</strong>(mixed condExpr, <a href="../../../doctrine/orm/query/ast/conditionalexpression.html">ConditionalExpression</a> )</code>
+<div class="details">
+<p>Walk down a ConditionalExpression AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1263</div>
 <h3 id="walkConditionalFactor()">walkConditionalFactor</h3>
 <code class="signature">public  string <strong>walkConditionalFactor</strong>(mixed factor, <a href="../../../doctrine/orm/query/ast/conditionalfactor.html">ConditionalFactor</a> )</code>
 <div class="details">
@@ -462,7 +498,19 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1235</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1278</div>
+<h3 id="walkConditionalPrimary()">walkConditionalPrimary</h3>
+<code class="signature">public  string <strong>walkConditionalPrimary</strong>(mixed primary, <a href="../../../doctrine/orm/query/ast/conditionalprimary.html">ConditionalPrimary</a> )</code>
+<div class="details">
+<p>Walks down a ConditionalPrimary AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1246</div>
 <h3 id="walkConditionalTerm()">walkConditionalTerm</h3>
 <code class="signature">public  string <strong>walkConditionalTerm</strong>(mixed condTerm, <a href="../../../doctrine/orm/query/ast/conditionalterm.html">ConditionalTerm</a> )</code>
 <div class="details">
@@ -474,7 +522,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1127</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1131</div>
 <h3 id="walkDeleteClause()">walkDeleteClause</h3>
 <code class="signature">public  string <strong>walkDeleteClause</strong>(mixed deleteClause, <a href="../../../doctrine/orm/query/ast/deleteclause.html">DeleteClause</a> )</code>
 <div class="details">
@@ -486,7 +534,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 403</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 398</div>
 <h3 id="walkDeleteStatement()">walkDeleteStatement</h3>
 <code class="signature">public  string <strong>walkDeleteStatement</strong>(mixed AST, <a href="../../../doctrine/orm/query/ast/deletestatement.html">DeleteStatement</a> )</code>
 <div class="details">
@@ -498,7 +546,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1410</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1432</div>
 <h3 id="walkEmptyCollectionComparisonExpression()">walkEmptyCollectionComparisonExpression</h3>
 <code class="signature">public  string <strong>walkEmptyCollectionComparisonExpression</strong>(mixed emptyCollCompExpr, <a href="../../../doctrine/orm/query/ast/emptycollectioncomparisonexpression.html">EmptyCollectionComparisonExpression</a> )</code>
 <div class="details">
@@ -510,7 +558,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1273</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1295</div>
 <h3 id="walkExistsExpression()">walkExistsExpression</h3>
 <code class="signature">public  string <strong>walkExistsExpression</strong>(mixed existsExpr, <a href="../../../doctrine/orm/query/ast/existsexpression.html">ExistsExpression</a> )</code>
 <div class="details">
@@ -522,7 +570,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 583</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 584</div>
 <h3 id="walkFromClause()">walkFromClause</h3>
 <code class="signature">public  string <strong>walkFromClause</strong>(mixed fromClause)</code>
 <div class="details">
@@ -534,7 +582,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 613</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 614</div>
 <h3 id="walkFunction()">walkFunction</h3>
 <code class="signature">public  string <strong>walkFunction</strong>(mixed function)</code>
 <div class="details">
@@ -546,7 +594,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1103</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1107</div>
 <h3 id="walkGroupByClause()">walkGroupByClause</h3>
 <code class="signature">public  string <strong>walkGroupByClause</strong>(mixed groupByClause, <a href="../../../doctrine/orm/query/ast/groupbyclause.html">GroupByClause</a> )</code>
 <div class="details">
@@ -558,7 +606,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1116</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1120</div>
 <h3 id="walkGroupByItem()">walkGroupByItem</h3>
 <code class="signature">public  string <strong>walkGroupByItem</strong>(mixed pathExpr, GroupByItem )</code>
 <div class="details">
@@ -570,7 +618,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 665</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 666</div>
 <h3 id="walkHavingClause()">walkHavingClause</h3>
 <code class="signature">public  string <strong>walkHavingClause</strong>(mixed havingClause, <a href="../../../doctrine/orm/query/ast/havingclause.html">HavingClause</a> )</code>
 <div class="details">
@@ -582,7 +630,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 424</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 419</div>
 <h3 id="walkIdentificationVariable()">walkIdentificationVariable</h3>
 <code class="signature">public  string <strong>walkIdentificationVariable</strong>(string identificationVariable, mixed fieldName)</code>
 <div class="details">
@@ -594,7 +642,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1448</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1470</div>
 <h3 id="walkInExpression()">walkInExpression</h3>
 <code class="signature">public  string <strong>walkInExpression</strong>(mixed inExpr, <a href="../../../doctrine/orm/query/ast/inexpression.html">InExpression</a> )</code>
 <div class="details">
@@ -606,7 +654,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1464</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1486</div>
 <h3 id="walkInParameter()">walkInParameter</h3>
 <code class="signature">public  void <strong>walkInParameter</strong>(mixed inParam)</code>
 <div class="details">
@@ -614,7 +662,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1584</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1606</div>
 <h3 id="walkInputParameter()">walkInputParameter</h3>
 <code class="signature">public  string <strong>walkInputParameter</strong>(mixed inputParam, <a href="../../../doctrine/orm/query/ast/inputparameter.html">InputParameter</a> )</code>
 <div class="details">
@@ -626,7 +674,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 678</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 677</div>
 <h3 id="walkJoinVariableDeclaration()">walkJoinVariableDeclaration</h3>
 <code class="signature">public  string <strong>walkJoinVariableDeclaration</strong>(<a href="../../../doctrine/orm/query/ast/joinvariabledeclaration.html">JoinVariableDeclaration</a> joinVarDecl)</code>
 <div class="details">
@@ -638,7 +686,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1517</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1539</div>
 <h3 id="walkLikeExpression()">walkLikeExpression</h3>
 <code class="signature">public  string <strong>walkLikeExpression</strong>(mixed likeExpr, <a href="../../../doctrine/orm/query/ast/likeexpression.html">LikeExpression</a> )</code>
 <div class="details">
@@ -650,7 +698,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1477</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1499</div>
 <h3 id="walkLiteral()">walkLiteral</h3>
 <code class="signature">public  string <strong>walkLiteral</strong>(mixed literal, mixed )</code>
 <div class="details">
@@ -662,7 +710,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1424</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1446</div>
 <h3 id="walkNullComparisonExpression()">walkNullComparisonExpression</h3>
 <code class="signature">public  string <strong>walkNullComparisonExpression</strong>(mixed nullCompExpr, <a href="../../../doctrine/orm/query/ast/nullcomparisonexpression.html">NullComparisonExpression</a> )</code>
 <div class="details">
@@ -674,7 +722,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 624</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 625</div>
 <h3 id="walkOrderByClause()">walkOrderByClause</h3>
 <code class="signature">public  string <strong>walkOrderByClause</strong>(mixed orderByClause, <a href="../../../doctrine/orm/query/ast/orderbyclause.html">OrderByClause</a> )</code>
 <div class="details">
@@ -686,7 +734,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 643</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 644</div>
 <h3 id="walkOrderByItem()">walkOrderByItem</h3>
 <code class="signature">public  string <strong>walkOrderByItem</strong>(mixed orderByItem, <a href="../../../doctrine/orm/query/ast/orderbyitem.html">OrderByItem</a> )</code>
 <div class="details">
@@ -698,7 +746,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 444</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 439</div>
 <h3 id="walkPathExpression()">walkPathExpression</h3>
 <code class="signature">public  string <strong>walkPathExpression</strong>(mixed pathExpr, mixed )</code>
 <div class="details">
@@ -710,7 +758,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 983</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 987</div>
 <h3 id="walkQuantifiedExpression()">walkQuantifiedExpression</h3>
 <code class="signature">public  string <strong>walkQuantifiedExpression</strong>(mixed qExpr, <a href="../../../doctrine/orm/query/ast/quantifiedexpression.html">QuantifiedExpression</a> )</code>
 <div class="details">
@@ -722,7 +770,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 500</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 501</div>
 <h3 id="walkSelectClause()">walkSelectClause</h3>
 <code class="signature">public  string <strong>walkSelectClause</strong>(mixed selectClause, $selectClause )</code>
 <div class="details">
@@ -734,7 +782,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 803</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 802</div>
 <h3 id="walkSelectExpression()">walkSelectExpression</h3>
 <code class="signature">public  string <strong>walkSelectExpression</strong>(<a href="../../../doctrine/orm/query/ast/selectexpression.html">SelectExpression</a> selectExpression)</code>
 <div class="details">
@@ -746,7 +794,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 349</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 344</div>
 <h3 id="walkSelectStatement()">walkSelectStatement</h3>
 <code class="signature">public  string <strong>walkSelectStatement</strong>(mixed AST)</code>
 <div class="details">
@@ -758,7 +806,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1662</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1632</div>
 <h3 id="walkSimpleArithmeticExpression()">walkSimpleArithmeticExpression</h3>
 <code class="signature">public  string <strong>walkSimpleArithmeticExpression</strong>(mixed simpleArithmeticExpr, <a href="../../../doctrine/orm/query/ast/simplearithmeticexpression.html">SimpleArithmeticExpression</a> )</code>
 <div class="details">
@@ -770,7 +818,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1046</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1050</div>
 <h3 id="walkSimpleSelectClause()">walkSimpleSelectClause</h3>
 <code class="signature">public  string <strong>walkSimpleSelectClause</strong>(mixed simpleSelectClause, <a href="../../../doctrine/orm/query/ast/simpleselectclause.html">SimpleSelectClause</a> )</code>
 <div class="details">
@@ -782,7 +830,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1058</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1062</div>
 <h3 id="walkSimpleSelectExpression()">walkSimpleSelectExpression</h3>
 <code class="signature">public  string <strong>walkSimpleSelectExpression</strong>(mixed simpleSelectExpression, <a href="../../../doctrine/orm/query/ast/simpleselectexpression.html">SimpleSelectExpression</a> )</code>
 <div class="details">
@@ -794,7 +842,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1544</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1566</div>
 <h3 id="walkStateFieldPathExpression()">walkStateFieldPathExpression</h3>
 <code class="signature">public  string <strong>walkStateFieldPathExpression</strong>(mixed stateFieldPathExpression, StateFieldPathExpression )</code>
 <div class="details">
@@ -806,7 +854,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1625</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1706</div>
 <h3 id="walkStringPrimary()">walkStringPrimary</h3>
 <code class="signature">public  string <strong>walkStringPrimary</strong>(mixed stringPrimary, mixed )</code>
 <div class="details">
@@ -818,7 +866,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 995</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 999</div>
 <h3 id="walkSubselect()">walkSubselect</h3>
 <code class="signature">public  string <strong>walkSubselect</strong>(mixed subselect, <a href="../../../doctrine/orm/query/ast/subselect.html">Subselect</a> )</code>
 <div class="details">
@@ -830,7 +878,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1018</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1022</div>
 <h3 id="walkSubselectFromClause()">walkSubselectFromClause</h3>
 <code class="signature">public  string <strong>walkSubselectFromClause</strong>(mixed subselectFromClause, <a href="../../../doctrine/orm/query/ast/subselectfromclause.html">SubselectFromClause</a> )</code>
 <div class="details">
@@ -842,7 +890,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1148</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1152</div>
 <h3 id="walkUpdateClause()">walkUpdateClause</h3>
 <code class="signature">public  string <strong>walkUpdateClause</strong>(mixed updateClause, <a href="../../../doctrine/orm/query/ast/updateclause.html">UpdateClause</a> )</code>
 <div class="details">
@@ -854,7 +902,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1173</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1177</div>
 <h3 id="walkUpdateItem()">walkUpdateItem</h3>
 <code class="signature">public  string <strong>walkUpdateItem</strong>(mixed updateItem, <a href="../../../doctrine/orm/query/ast/updateitem.html">UpdateItem</a> )</code>
 <div class="details">
@@ -866,7 +914,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 383</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 378</div>
 <h3 id="walkUpdateStatement()">walkUpdateStatement</h3>
 <code class="signature">public  string <strong>walkUpdateStatement</strong>(mixed AST, <a href="../../../doctrine/orm/query/ast/updatestatement.html">UpdateStatement</a> )</code>
 <div class="details">
@@ -878,7 +926,7 @@ generating an alias on its own.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1211</div>
+<div class="location">/Doctrine/ORM/Query/SqlWalker.php at line 1215</div>
 <h3 id="walkWhereClause()">walkWhereClause</h3>
 <code class="signature">public  string <strong>walkWhereClause</strong>(mixed whereClause, <a href="../../../doctrine/orm/query/ast/whereclause.html">WhereClause</a> )</code>
 <div class="details">

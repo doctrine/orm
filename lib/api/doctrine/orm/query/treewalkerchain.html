@@ -4,7 +4,7 @@
 <head>
 
 <meta name="generator" content="PHPDoctor 2RC4 (http://phpdoctor.sourceforge.net/)">
-<meta name="when" content="Wed, 14 Apr 2010 15:12:05 +0000">
+<meta name="when" content="Wed, 12 May 2010 22:47:38 +0000">
 
 <link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
 <link rel="start" href="../../../overview-summary.html">
@@ -111,7 +111,15 @@ the AST to influence the final output produced by the last walker.</p></div>
 </tr>
 <tr>
 <td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkConditionalExpression()">walkConditionalExpression</a>(mixed condExpr, <a href="../../../doctrine/orm/query/ast/conditionalexpression.html">ConditionalExpression</a> )</p><p class="description">Walks down a ConditionalExpression AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
 <td class="description"><p class="name"><a href="#walkConditionalFactor()">walkConditionalFactor</a>(mixed factor, <a href="../../../doctrine/orm/query/ast/conditionalfactor.html">ConditionalFactor</a> )</p><p class="description">Walks down a ConditionalFactor AST node, thereby generating the appropriate SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#walkConditionalPrimary()">walkConditionalPrimary</a>(mixed condPrimary, <a href="../../../doctrine/orm/query/ast/conditionalprimary.html">ConditionalPrimary</a> )</p><p class="description">Walks down a ConditionalPrimary AST node, thereby generating the appropriate SQL.</p></td>
 </tr>
 <tr>
 <td class="type"> string</td>
@@ -276,7 +284,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 610</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 636</div>
 <h3 id="getExecutor()">getExecutor</h3>
 <code class="signature">public  AbstractExecutor <strong>getExecutor</strong>(mixed AST)</code>
 <div class="details">
@@ -296,7 +304,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 533</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 559</div>
 <h3 id="walkArithmeticExpression()">walkArithmeticExpression</h3>
 <code class="signature">public  string <strong>walkArithmeticExpression</strong>(mixed arithmeticExpr, <a href="../../../doctrine/orm/query/ast/arithmeticexpression.html">ArithmeticExpression</a> )</code>
 <div class="details">
@@ -308,7 +316,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 572</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 598</div>
 <h3 id="walkArithmeticFactor()">walkArithmeticFactor</h3>
 <code class="signature">public  string <strong>walkArithmeticFactor</strong>(mixed factor, mixed )</code>
 <div class="details">
@@ -320,7 +328,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 546</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 572</div>
 <h3 id="walkArithmeticTerm()">walkArithmeticTerm</h3>
 <code class="signature">public  string <strong>walkArithmeticTerm</strong>(mixed term, mixed )</code>
 <div class="details">
@@ -332,7 +340,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 468</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 494</div>
 <h3 id="walkBetweenExpression()">walkBetweenExpression</h3>
 <code class="signature">public  string <strong>walkBetweenExpression</strong>(mixed betweenExpr, <a href="../../../doctrine/orm/query/ast/betweenexpression.html">BetweenExpression</a> )</code>
 <div class="details">
@@ -344,7 +352,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 403</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 429</div>
 <h3 id="walkCollectionMemberExpression()">walkCollectionMemberExpression</h3>
 <code class="signature">public  string <strong>walkCollectionMemberExpression</strong>(mixed collMemberExpr, <a href="../../../doctrine/orm/query/ast/collectionmemberexpression.html">CollectionMemberExpression</a> )</code>
 <div class="details">
@@ -356,7 +364,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 507</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 533</div>
 <h3 id="walkComparisonExpression()">walkComparisonExpression</h3>
 <code class="signature">public  string <strong>walkComparisonExpression</strong>(mixed compExpr, <a href="../../../doctrine/orm/query/ast/comparisonexpression.html">ComparisonExpression</a> )</code>
 <div class="details">
@@ -368,7 +376,19 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 377</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 364</div>
+<h3 id="walkConditionalExpression()">walkConditionalExpression</h3>
+<code class="signature">public  string <strong>walkConditionalExpression</strong>(mixed condExpr, <a href="../../../doctrine/orm/query/ast/conditionalexpression.html">ConditionalExpression</a> )</code>
+<div class="details">
+<p>Walks down a ConditionalExpression AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 390</div>
 <h3 id="walkConditionalFactor()">walkConditionalFactor</h3>
 <code class="signature">public  string <strong>walkConditionalFactor</strong>(mixed factor, <a href="../../../doctrine/orm/query/ast/conditionalfactor.html">ConditionalFactor</a> )</code>
 <div class="details">
@@ -380,7 +400,19 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 364</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 403</div>
+<h3 id="walkConditionalPrimary()">walkConditionalPrimary</h3>
+<code class="signature">public  string <strong>walkConditionalPrimary</strong>(mixed condPrimary, <a href="../../../doctrine/orm/query/ast/conditionalprimary.html">ConditionalPrimary</a> )</code>
+<div class="details">
+<p>Walks down a ConditionalPrimary AST node, thereby generating the appropriate SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>The SQL.</dd>
+</dl>
+</div>
+
+<hr>
+
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 377</div>
 <h3 id="walkConditionalTerm()">walkConditionalTerm</h3>
 <code class="signature">public  string <strong>walkConditionalTerm</strong>(mixed condTerm, <a href="../../../doctrine/orm/query/ast/conditionalterm.html">ConditionalTerm</a> )</code>
 <div class="details">
@@ -416,7 +448,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 416</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 442</div>
 <h3 id="walkEmptyCollectionComparisonExpression()">walkEmptyCollectionComparisonExpression</h3>
 <code class="signature">public  string <strong>walkEmptyCollectionComparisonExpression</strong>(mixed emptyCollCompExpr, <a href="../../../doctrine/orm/query/ast/emptycollectioncomparisonexpression.html">EmptyCollectionComparisonExpression</a> )</code>
 <div class="details">
@@ -428,7 +460,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 390</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 416</div>
 <h3 id="walkExistsExpression()">walkExistsExpression</h3>
 <code class="signature">public  string <strong>walkExistsExpression</strong>(mixed existsExpr, <a href="../../../doctrine/orm/query/ast/existsexpression.html">ExistsExpression</a> )</code>
 <div class="details">
@@ -500,7 +532,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 442</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 468</div>
 <h3 id="walkInExpression()">walkInExpression</h3>
 <code class="signature">public  string <strong>walkInExpression</strong>(mixed inExpr, <a href="../../../doctrine/orm/query/ast/inexpression.html">InExpression</a> )</code>
 <div class="details">
@@ -512,7 +544,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 520</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 546</div>
 <h3 id="walkInputParameter()">walkInputParameter</h3>
 <code class="signature">public  string <strong>walkInputParameter</strong>(mixed inputParam, <a href="../../../doctrine/orm/query/ast/inputparameter.html">InputParameter</a> )</code>
 <div class="details">
@@ -536,7 +568,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 481</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 507</div>
 <h3 id="walkLikeExpression()">walkLikeExpression</h3>
 <code class="signature">public  string <strong>walkLikeExpression</strong>(mixed likeExpr, <a href="../../../doctrine/orm/query/ast/likeexpression.html">LikeExpression</a> )</code>
 <div class="details">
@@ -548,7 +580,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 455</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 481</div>
 <h3 id="walkLiteral()">walkLiteral</h3>
 <code class="signature">public  string <strong>walkLiteral</strong>(mixed literal, mixed )</code>
 <div class="details">
@@ -560,7 +592,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 429</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 455</div>
 <h3 id="walkNullComparisonExpression()">walkNullComparisonExpression</h3>
 <code class="signature">public  string <strong>walkNullComparisonExpression</strong>(mixed nullCompExpr, <a href="../../../doctrine/orm/query/ast/nullcomparisonexpression.html">NullComparisonExpression</a> )</code>
 <div class="details">
@@ -596,7 +628,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 598</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 624</div>
 <h3 id="walkPathExpression()">walkPathExpression</h3>
 <code class="signature">public  string <strong>walkPathExpression</strong>(mixed pathExpr, mixed )</code>
 <div class="details">
@@ -656,7 +688,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 585</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 611</div>
 <h3 id="walkSimpleArithmeticExpression()">walkSimpleArithmeticExpression</h3>
 <code class="signature">public  string <strong>walkSimpleArithmeticExpression</strong>(mixed simpleArithmeticExpr, <a href="../../../doctrine/orm/query/ast/simplearithmeticexpression.html">SimpleArithmeticExpression</a> )</code>
 <div class="details">
@@ -692,7 +724,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 494</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 520</div>
 <h3 id="walkStateFieldPathExpression()">walkStateFieldPathExpression</h3>
 <code class="signature">public  string <strong>walkStateFieldPathExpression</strong>(mixed stateFieldPathExpression, StateFieldPathExpression )</code>
 <div class="details">
@@ -704,7 +736,7 @@ the AST to influence the final output produced by the last walker.</p></div>
 
 <hr>
 
-<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 559</div>
+<div class="location">/Doctrine/ORM/Query/TreeWalkerChain.php at line 585</div>
 <h3 id="walkStringPrimary()">walkStringPrimary</h3>
 <code class="signature">public  string <strong>walkStringPrimary</strong>(mixed stringPrimary, mixed )</code>
 <div class="details">
