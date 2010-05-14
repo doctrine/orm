@@ -19,5 +19,4 @@
 + Improving Performance
 + Tools
 + Metadata Drivers
-+ DBAL
 + Best Practices
