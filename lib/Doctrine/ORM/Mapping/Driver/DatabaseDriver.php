@@ -100,7 +100,7 @@ class DatabaseDriver implements Driver
             } else if ($column->getType() instanceof \Doctrine\DBAL\Types\IntegerType) {
                 $fieldMapping['unsigned'] = $column->getUnsigned();
             }
-            $fieldMapping['notnull'] = $column->getNotNull();
+            $fieldMapping['nullable'] = $column->getNotNull() ? false : true;
 
             if (isset($fieldMapping['id'])) {
                 $ids[] = $fieldMapping;
