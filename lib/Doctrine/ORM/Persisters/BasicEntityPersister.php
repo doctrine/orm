@@ -482,12 +482,13 @@ class BasicEntityPersister
      *        a new entity is created.
      * @param $assoc The association that connects the entity to load to another entity, if any.
      * @param array $hints Hints for entity creation.
+     * @param int $lockMode
      * @return object The loaded and managed entity instance or NULL if the entity can not be found.
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
-    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array())
+    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0)
     {
-        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc);
+        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, $lockMode);
         $stmt = $this->_conn->executeQuery($sql, array_values($criteria));
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
@@ -772,10 +773,12 @@ class BasicEntityPersister
      *
      * @param array $criteria
      * @param AssociationMapping $assoc
+     * @param string $orderBy
+     * @param int $lockMode
      * @return string
      * @todo Refactor: _getSelectSQL(...)
      */
-    protected function _getSelectEntitiesSQL(array $criteria, $assoc = null)
+    protected function _getSelectEntitiesSQL(array $criteria, $assoc = null, $lockMode = 0)
     {
         $joinSql = $assoc != null && $assoc->isManyToMany() ?
                 $this->_getSelectManyToManyJoinSQL($assoc) : '';
@@ -786,12 +789,20 @@ class BasicEntityPersister
                 $this->_getCollectionOrderBySQL($assoc->orderBy, $this->_getSQLTableAlias($this->_class->name))
                 : '';
 
+        $lockSql = '';
+        if ($lockMode == \Doctrine\ORM\LockMode::PESSIMISTIC_READ) {
+            $lockSql = ' ' . $this->_platform->getReadLockSql();
+        } else if ($lockMode == \Doctrine\ORM\LockMode::PESSIMISTIC_WRITE) {
+            $lockSql = ' ' . $this->_platform->getWriteLockSql();
+        }
+
         return 'SELECT ' . $this->_getSelectColumnListSQL() 
              . ' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' '
              . $this->_getSQLTableAlias($this->_class->name)
              . $joinSql
              . ($conditionSql ? ' WHERE ' . $conditionSql : '')
-             . $orderBySql;
+             . $orderBySql 
+             . $lockSql;
     }
 
     /**
@@ -1007,6 +1018,30 @@ class BasicEntityPersister
     }
 
     /**
+     * Lock all rows of this entity matching the given criteria with the specified pessimistic lock mode
+     *
+     * @param array $criteria
+     * @param int $lockMode
+     * @return void
+     */
+    public function lock(array $criteria, $lockMode)
+    {
+        $conditionSql = $this->_getSelectConditionSQL($criteria);
+
+        if ($lockMode == \Doctrine\ORM\LockMode::PESSIMISTIC_READ) {
+            $lockSql = $this->_platform->getReadLockSql();
+        } else if ($lockMode == \Doctrine\ORM\LockMode::PESSIMISTIC_WRITE) {
+            $lockSql = $this->_platform->getWriteLockSql();
+        }
+
+        $sql = 'SELECT 1 FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' '
+             . $this->_getSQLTableAlias($this->_class->name)
+             . ($conditionSql ? ' WHERE ' . $conditionSql : '') . ' ' . $lockSql;
+        $params = array_values($criteria);
+        $this->_conn->executeQuery($sql, $params);
+    }
+
+    /**
      * Gets the conditional SQL fragment used in the WHERE clause when selecting
      * entities in this persister.
      *
@@ -1043,7 +1078,6 @@ class BasicEntityPersister
             }
             $conditionSql .= ' = ?';
         }
-
         return $conditionSql;
     }
 

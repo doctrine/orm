@@ -318,11 +318,13 @@ class EntityManager
      *
      * @param string $entityName
      * @param mixed $identifier
+     * @param int $lockMode
+     * @param int $lockVersion
      * @return object
      */
-    public function find($entityName, $identifier)
+    public function find($entityName, $identifier, $lockMode = LockMode::NONE, $lockVersion = null)
     {
-        return $this->getRepository($entityName)->find($identifier);
+        return $this->getRepository($entityName)->find($identifier, $lockMode, $lockVersion);
     }
 
     /**
@@ -476,6 +478,20 @@ class EntityManager
     public function copy($entity, $deep = false)
     {
         throw new \BadMethodCallException("Not implemented.");
+    }
+
+    /**
+     * Acquire a lock on the given entity.
+     *
+     * @param object $entity
+     * @param int $lockMode
+     * @param int $lockVersion
+     * @throws OptimisticLockException
+     * @throws PessimisticLockException
+     */
+    public function lock($entity, $lockMode, $lockVersion = null)
+    {
+        $this->_unitOfWork->lock($entity, $lockMode, $lockVersion);
     }
 
     /**

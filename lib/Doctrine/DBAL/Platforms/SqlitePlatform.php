@@ -428,4 +428,9 @@ class SqlitePlatform extends AbstractPlatform
         }
         return 0;
     }
+
+    public function getForUpdateSql()
+    {
+        return '';
+    }
 }

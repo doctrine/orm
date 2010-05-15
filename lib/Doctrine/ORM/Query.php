@@ -94,6 +94,11 @@ final class Query extends AbstractQuery
     const HINT_INTERNAL_ITERATION = 'doctrine.internal.iteration';
 
     /**
+     * @var string
+     */
+    const HINT_LOCK_MODE = 'doctrine.lockMode';
+
+    /**
      * @var integer $_state   The current state of this query.
      */
     private $_state = self::STATE_CLEAN;
@@ -485,6 +490,39 @@ final class Query extends AbstractQuery
     {
         $this->_state = self::STATE_DIRTY;
         return parent::setHydrationMode($hydrationMode);
+    }
+
+    /**
+     * Set the lock mode for this Query.
+     *
+     * @see Doctrine\ORM\LockMode
+     * @param  int $lockMode
+     * @return Query
+     */
+    public function setLockMode($lockMode)
+    {
+        if ($lockMode == LockMode::PESSIMISTIC_READ || $lockMode == LockMode::PESSIMISTIC_WRITE) {
+            if (!$this->_em->getConnection()->isTransactionActive()) {
+                throw TransactionRequiredException::transactionRequired();
+            }
+        }
+
+        $this->setHint(self::HINT_LOCK_MODE, $lockMode);
+        return $this;
+    }
+
+    /**
+     * Get the current lock mode for this query.
+     *
+     * @return int
+     */
+    public function getLockMode()
+    {
+        $lockMode = $this->getHint(self::HINT_LOCK_MODE);
+        if (!$lockMode) {
+            return LockMode::NONE;
+        }
+        return $lockMode;
     }
 
     /**

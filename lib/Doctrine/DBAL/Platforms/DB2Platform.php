@@ -513,4 +513,9 @@ class DB2Platform extends AbstractPlatform
     {
         return strtoupper($column);
     }
+
+    public function getForUpdateSQL()
+    {
+        return ' WITH RR USE AND KEEP UPDATE LOCKS';
+    }
 }

@@ -1346,7 +1346,7 @@ class UnitOfWork implements PropertyChangedListener
                 $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
                 // Throw exception if versions dont match.
                 if ($managedCopyVersion != $entityVersion) {
-                    throw OptimisticLockException::lockFailed($entity);
+                    throw OptimisticLockException::lockFailedVersionMissmatch($entityVersion, $managedCopyVersion);
                 }
             }
 
@@ -1627,6 +1627,48 @@ class UnitOfWork implements PropertyChangedListener
             } else if ($relatedEntities !== null) {
                 $this->_doRemove($relatedEntities, $visited);
             }
+        }
+    }
+
+    /**
+     * Acquire a lock on the given entity.
+     *
+     * @param object $entity
+     * @param int $lockMode
+     * @param int $lockVersion
+     */
+    public function lock($entity, $lockMode, $lockVersion = null)
+    {
+        if ($this->getEntityState($entity) != self::STATE_MANAGED) {
+            throw new \InvalidArgumentException("Entity is not MANAGED.");
+        }
+        
+        $entityName = get_class($entity);
+        $class = $this->_em->getClassMetadata($entityName);
+
+        if ($lockMode == LockMode::OPTIMISTIC) {
+            if (!$class->isVersioned) {
+                throw OptimisticLockException::notVersioned($entityName);
+            }
+
+            if ($lockVersion != null) {
+                $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
+                if ($entityVersion != $lockVersion) {
+                    throw OptimisticLockException::lockFailedVersionMissmatch($entity, $lockVersion, $entityVersion);
+                }
+            }
+        } else if ($lockMode == LockMode::PESSIMISTIC_READ || $lockMode == LockMode::PESSIMISTIC_WRITE) {
+
+            if (!$this->_em->getConnection()->isTransactionActive()) {
+                throw TransactionRequiredException::transactionRequired();
+            }
+            
+            $oid = spl_object_hash($entity);
+
+            $this->getEntityPersister($class->name)->lock(
+                array_combine($class->getIdentifierColumnNames(), $this->_entityIdentifiers[$oid]),
+                $lockMode
+            );
         }
     }
 
