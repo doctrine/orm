@@ -11,6 +11,11 @@ use Doctrine\DBAL\Events;
  
 class ConnectionTest extends \Doctrine\Tests\DbalTestCase
 {
+    /**
+     * @var Doctrine\DBAL\Connection
+     */
+    protected $_conn = null;
+
     public function setUp()
     {
         $params = array(
@@ -21,6 +26,47 @@ class ConnectionTest extends \Doctrine\Tests\DbalTestCase
             'port' => '1234'
         );
         $this->_conn = \Doctrine\DBAL\DriverManager::getConnection($params);
+    }
+
+    public function testIsConnected()
+    {
+        $this->assertFalse($this->_conn->isConnected());
+    }
+
+    public function testNoTransactionActiveByDefault()
+    {
+        $this->assertFalse($this->_conn->isTransactionActive());
+    }
+
+    public function testCommitWithNoActiveTransaction_ThrowsException()
+    {
+        $this->setExpectedException('Doctrine\DBAL\ConnectionException');
+        $this->_conn->commit();
+    }
+
+    public function testRollbackWithNoActiveTransaction_ThrowsException()
+    {
+        $this->setExpectedException('Doctrine\DBAL\ConnectionException');
+        $this->_conn->rollback();
+    }
+
+    public function testSetRollbackOnlyNoActiveTransaction_ThrowsException()
+    {
+        $this->setExpectedException('Doctrine\DBAL\ConnectionException');
+        $this->_conn->setRollbackOnly();
+    }
+
+    public function testIsRollbackOnlyNoActiveTransaction_ThrowsException()
+    {
+        $this->setExpectedException('Doctrine\DBAL\ConnectionException');
+        $this->_conn->isRollbackOnly();
+    }
+
+    public function testGetConfiguration()
+    {
+        $config = $this->_conn->getConfiguration();
+
+        $this->assertType('Doctrine\DBAL\Configuration', $config);
     }
 
     public function testGetHost()
