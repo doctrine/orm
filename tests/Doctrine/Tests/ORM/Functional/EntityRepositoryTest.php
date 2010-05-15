@@ -103,7 +103,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->setExpectedException('Doctrine\ORM\TransactionRequiredException');
 
         $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
-                  ->find(1, \Doctrine\ORM\LockMode::PESSIMISTIC_READ);
+                  ->find(1, \Doctrine\DBAL\LockMode::PESSIMISTIC_READ);
     }
 
     /**
@@ -115,7 +115,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->setExpectedException('Doctrine\ORM\TransactionRequiredException');
 
         $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
-                  ->find(1, \Doctrine\ORM\LockMode::PESSIMISTIC_WRITE);
+                  ->find(1, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE);
     }
 
     /**
@@ -127,7 +127,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->setExpectedException('Doctrine\ORM\OptimisticLockException');
 
         $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
-                  ->find(1, \Doctrine\ORM\LockMode::OPTIMISTIC);
+                  ->find(1, \Doctrine\DBAL\LockMode::OPTIMISTIC);
     }
 
     /**
@@ -148,7 +148,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $userId);
         
         $this->setExpectedException('Doctrine\ORM\OptimisticLockException');
-        $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $userId, \Doctrine\ORM\LockMode::OPTIMISTIC);
+        $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $userId, \Doctrine\DBAL\LockMode::OPTIMISTIC);
     }
 }
 

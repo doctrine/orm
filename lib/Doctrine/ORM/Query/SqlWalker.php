@@ -367,11 +367,11 @@ class SqlWalker implements TreeWalker
         );
 
         if (($lockMode = $this->_query->getHint(Query::HINT_LOCK_MODE)) !== false) {
-            if ($lockMode == \Doctrine\ORM\LockMode::PESSIMISTIC_READ) {
+            if ($lockMode == \Doctrine\DBAL\LockMode::PESSIMISTIC_READ) {
                 $sql .= " " . $this->_platform->getReadLockSQL();
-            } else if ($lockMode == \Doctrine\ORM\LockMode::PESSIMISTIC_WRITE) {
+            } else if ($lockMode == \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE) {
                 $sql .= " " . $this->_platform->getWriteLockSQL();
-            } else if ($lockMode == \Doctrine\ORM\LockMode::OPTIMISTIC) {
+            } else if ($lockMode == \Doctrine\DBAL\LockMode::OPTIMISTIC) {
                 $versionedClassFound = false;
                 foreach ($this->_selectedClasses AS $class) {
                     if ($class->isVersioned) {

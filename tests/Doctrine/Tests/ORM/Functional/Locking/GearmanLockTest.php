@@ -4,7 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use Doctrine\Tests\Models\CMS\CmsArticle,
     Doctrine\Tests\Models\CMS\CmsUser,
-    Doctrine\ORM\LockMode,
+    Doctrine\DBAL\LockMode,
     Doctrine\ORM\EntityManager;
 
 require_once __DIR__ . '/../../../TestInit.php';

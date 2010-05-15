@@ -19,7 +19,8 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\ORM\Query\Parser,
+use Doctrine\DBAL\LockMode,
+    Doctrine\ORM\Query\Parser,
     Doctrine\ORM\Query\QueryException;
 
 /**
@@ -495,7 +496,7 @@ final class Query extends AbstractQuery
     /**
      * Set the lock mode for this Query.
      *
-     * @see Doctrine\ORM\LockMode
+     * @see Doctrine\DBAL\LockMode
      * @param  int $lockMode
      * @return Query
      */

@@ -1646,7 +1646,7 @@ class UnitOfWork implements PropertyChangedListener
         $entityName = get_class($entity);
         $class = $this->_em->getClassMetadata($entityName);
 
-        if ($lockMode == LockMode::OPTIMISTIC) {
+        if ($lockMode == \Doctrine\DBAL\LockMode::OPTIMISTIC) {
             if (!$class->isVersioned) {
                 throw OptimisticLockException::notVersioned($entityName);
             }
@@ -1657,7 +1657,7 @@ class UnitOfWork implements PropertyChangedListener
                     throw OptimisticLockException::lockFailedVersionMissmatch($entity, $lockVersion, $entityVersion);
                 }
             }
-        } else if ($lockMode == LockMode::PESSIMISTIC_READ || $lockMode == LockMode::PESSIMISTIC_WRITE) {
+        } else if (in_array($lockMode, array(\Doctrine\DBAL\LockMode::PESSIMISTIC_READ, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE))) {
 
             if (!$this->_em->getConnection()->isTransactionActive()) {
                 throw TransactionRequiredException::transactionRequired();
