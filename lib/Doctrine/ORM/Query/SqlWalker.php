@@ -372,15 +372,10 @@ class SqlWalker implements TreeWalker
             } else if ($lockMode == \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE) {
                 $sql .= " " . $this->_platform->getWriteLockSQL();
             } else if ($lockMode == \Doctrine\DBAL\LockMode::OPTIMISTIC) {
-                $versionedClassFound = false;
                 foreach ($this->_selectedClasses AS $class) {
-                    if ($class->isVersioned) {
-                        $versionedClassFound = true;
+                    if (!$class->isVersioned) {
+                        throw \Doctrine\ORM\OptimisticLockException::lockFailed();
                     }
-                }
-
-                if (!$versionedClassFound) {
-                    throw \Doctrine\ORM\OptimisticLockException::lockFailed();
                 }
             }
         }
