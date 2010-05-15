@@ -140,7 +140,7 @@ class GearmanLockTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     protected function asyncFindWithLock($entityName, $entityId, $lockMode)
     {
-        $this->startGearmanJob('findWithLock', array(
+        $this->startJob('findWithLock', array(
             'entityName' => $entityName,
             'entityId' => $entityId,
             'lockMode' => $lockMode,
@@ -149,7 +149,7 @@ class GearmanLockTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     protected function asyncDqlWithLock($dql, $params, $lockMode)
     {
-        $this->startGearmanJob('dqlWithLock', array(
+        $this->startJob('dqlWithLock', array(
             'dql' => $dql,
             'dqlParams' => $params,
             'lockMode' => $lockMode,
@@ -158,14 +158,14 @@ class GearmanLockTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     protected function asyncLock($entityName, $entityId, $lockMode)
     {
-        $this->startGearmanJob('lock', array(
+        $this->startJob('lock', array(
             'entityName' => $entityName,
             'entityId' => $entityId,
             'lockMode' => $lockMode,
         ));
     }
 
-    protected function startGearmanJob($fn, $fixture)
+    protected function startJob($fn, $fixture)
     {
         $this->gearman->addTask($fn, serialize(array(
             'conn' => $this->_em->getConnection()->getParams(),

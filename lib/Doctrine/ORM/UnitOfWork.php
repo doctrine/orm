@@ -1654,7 +1654,7 @@ class UnitOfWork implements PropertyChangedListener
             if ($lockVersion != null) {
                 $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
                 if ($entityVersion != $lockVersion) {
-                    throw OptimisticLockException::lockFailedVersionMissmatch($lockVersion, $entityVersion);
+                    throw OptimisticLockException::lockFailedVersionMissmatch($entity, $lockVersion, $entityVersion);
                 }
             }
         } else if ($lockMode == LockMode::PESSIMISTIC_READ || $lockMode == LockMode::PESSIMISTIC_WRITE) {
