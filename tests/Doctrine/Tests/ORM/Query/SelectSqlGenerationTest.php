@@ -603,7 +603,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 ".
             "FROM cms_users c0_ WHERE c0_.username = 'gblanco' FOR UPDATE",
-            array(Query::HINT_LOCK_MODE => \Doctrine\ORM\LockMode::PESSIMISTIC_WRITE)
+            array(Query::HINT_LOCK_MODE => \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE)
         );
     }
 
@@ -619,7 +619,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 ".
             "FROM cms_users c0_ WHERE c0_.username = 'gblanco' FOR SHARE",
-            array(Query::HINT_LOCK_MODE => \Doctrine\ORM\LockMode::PESSIMISTIC_READ)
+            array(Query::HINT_LOCK_MODE => \Doctrine\DBAL\LockMode::PESSIMISTIC_READ)
                 );
     }
 
@@ -646,7 +646,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 ".
             "FROM cms_users c0_ WHERE c0_.username = 'gblanco' LOCK IN SHARE MODE",
-            array(Query::HINT_LOCK_MODE => \Doctrine\ORM\LockMode::PESSIMISTIC_READ)
+            array(Query::HINT_LOCK_MODE => \Doctrine\DBAL\LockMode::PESSIMISTIC_READ)
         );
     }
 
@@ -662,7 +662,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 ".
             "FROM cms_users c0_ WHERE c0_.username = 'gblanco' FOR UPDATE",
-            array(Query::HINT_LOCK_MODE => \Doctrine\ORM\LockMode::PESSIMISTIC_READ)
+            array(Query::HINT_LOCK_MODE => \Doctrine\DBAL\LockMode::PESSIMISTIC_READ)
         );
     }
 

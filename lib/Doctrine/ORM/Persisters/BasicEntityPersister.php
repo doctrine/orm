@@ -790,9 +790,9 @@ class BasicEntityPersister
                 : '';
 
         $lockSql = '';
-        if ($lockMode == \Doctrine\ORM\LockMode::PESSIMISTIC_READ) {
+        if ($lockMode == \Doctrine\DBAL\LockMode::PESSIMISTIC_READ) {
             $lockSql = ' ' . $this->_platform->getReadLockSql();
-        } else if ($lockMode == \Doctrine\ORM\LockMode::PESSIMISTIC_WRITE) {
+        } else if ($lockMode == \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE) {
             $lockSql = ' ' . $this->_platform->getWriteLockSql();
         }
 
@@ -1028,9 +1028,9 @@ class BasicEntityPersister
     {
         $conditionSql = $this->_getSelectConditionSQL($criteria);
 
-        if ($lockMode == \Doctrine\ORM\LockMode::PESSIMISTIC_READ) {
+        if ($lockMode == \Doctrine\DBAL\LockMode::PESSIMISTIC_READ) {
             $lockSql = $this->_platform->getReadLockSql();
-        } else if ($lockMode == \Doctrine\ORM\LockMode::PESSIMISTIC_WRITE) {
+        } else if ($lockMode == \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE) {
             $lockSql = $this->_platform->getWriteLockSql();
         }
 

@@ -22,6 +22,7 @@ namespace Doctrine\ORM;
 use Closure, Exception,
     Doctrine\Common\EventManager,
     Doctrine\DBAL\Connection,
+    Doctrine\DBAL\LockMode,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\ClassMetadataFactory,
     Doctrine\ORM\Proxy\ProxyFactory;
