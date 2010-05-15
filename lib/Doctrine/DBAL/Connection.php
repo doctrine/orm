@@ -19,7 +19,7 @@
 
 namespace Doctrine\DBAL;
 
-use PDO, Closure,
+use PDO, Closure, Exception,
     Doctrine\DBAL\Types\Type,
     Doctrine\DBAL\Driver\Connection as DriverConnection,
     Doctrine\Common\EventManager,
@@ -703,6 +703,28 @@ class Connection implements DriverConnection
     {
         $this->connect();
         return $this->_conn->lastInsertId($seqName);
+    }
+
+    /**
+     * Executes a function in a transaction.
+     *
+     * The function gets passed this Connection instance as an (optional) parameter.
+     *
+     * If an exception occurs during execution of the function or transaction commit,
+     * the transaction is rolled back and the exception re-thrown.
+     *
+     * @param Closure $func The function to execute transactionally.
+     */
+    public function transactional(Closure $func)
+    {
+        $this->beginTransaction();
+        try {
+            $func($this);
+            $this->commit();
+        } catch (Exception $e) {
+            $this->rollback();
+            throw $e;
+        }
     }
 
     /**

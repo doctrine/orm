@@ -93,5 +93,62 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
                   ->findByThisFieldDoesNotExist('testvalue');
     }
+
+    /**
+     * @group locking
+     * @group DDC-178
+     */
+    public function testPessimisticReadLockWithoutTransaction_ThrowsException()
+    {
+        $this->setExpectedException('Doctrine\ORM\TransactionRequiredException');
+
+        $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
+                  ->find(1, \Doctrine\ORM\LockMode::PESSIMISTIC_READ);
+    }
+
+    /**
+     * @group locking
+     * @group DDC-178
+     */
+    public function testPessimisticWriteLockWithoutTransaction_ThrowsException()
+    {
+        $this->setExpectedException('Doctrine\ORM\TransactionRequiredException');
+
+        $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
+                  ->find(1, \Doctrine\ORM\LockMode::PESSIMISTIC_WRITE);
+    }
+
+    /**
+     * @group locking
+     * @group DDC-178
+     */
+    public function testOptimisticLockUnversionedEntity_ThrowsException()
+    {
+        $this->setExpectedException('Doctrine\ORM\OptimisticLockException');
+
+        $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
+                  ->find(1, \Doctrine\ORM\LockMode::OPTIMISTIC);
+    }
+
+    /**
+     * @group locking
+     * @group DDC-178
+     */
+    public function testIdentityMappedOptimisticLockUnversionedEntity_ThrowsException()
+    {
+        $user = new CmsUser;
+        $user->name = 'Roman';
+        $user->username = 'romanb';
+        $user->status = 'freak';
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $userId = $user->id;
+
+        $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $userId);
+        
+        $this->setExpectedException('Doctrine\ORM\OptimisticLockException');
+        $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $userId, \Doctrine\ORM\LockMode::OPTIMISTIC);
+    }
 }
 

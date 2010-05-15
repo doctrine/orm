@@ -59,6 +59,16 @@ class ConnectionTest extends \Doctrine\Tests\DbalFunctionalTestCase
             $this->_conn->rollback();
             $this->assertEquals(0, $this->_conn->getTransactionNestingLevel());
         }
+
+        $this->assertEquals(0, $this->_conn->getTransactionNestingLevel());
+        try {
+            $this->_conn->transactional(function($conn) {
+                $conn->executeQuery("select 1");
+                throw new \RuntimeException("Ooops!");
+            });
+        } catch (\RuntimeException $expected) {
+            $this->assertEquals(0, $this->_conn->getTransactionNestingLevel());
+        }
     }
     
 }

@@ -1,6 +1,8 @@
 <?php
 
-namespace Doctrine\Models\DBAL\Functional;
+namespace Doctrine\Tests\DBAL\Functional;
+
+require_once __DIR__ . '/../../TestInit.php';
 
 class DataAccessTest extends \Doctrine\Tests\DbalFunctionalTestCase
 {
@@ -41,7 +43,7 @@ class DataAccessTest extends \Doctrine\Tests\DbalFunctionalTestCase
     public function testFetchRow()
     {
         $sql = "SELECT test_int, test_string FROM fetch_table WHERE test_int = ? AND test_string = ?";
-        $row = $this->_conn->fetchRow($sql, array(1, 'foo'));
+        $row = $this->_conn->fetchAssoc($sql, array(1, 'foo'));
 
         $row = array_change_key_case($row, \CASE_LOWER);
         

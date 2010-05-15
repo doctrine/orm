@@ -20,6 +20,7 @@ class AllTests
         $suite = new \Doctrine\Tests\DoctrineTestSuite('Doctrine Orm Functional Locking');
 
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\Locking\OptimisticTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\Locking\LockTest');
 
         return $suite;
     }
