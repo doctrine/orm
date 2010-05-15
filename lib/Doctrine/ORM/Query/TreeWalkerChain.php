@@ -356,6 +356,19 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
+     * Walks down a ConditionalExpression AST node, thereby generating the appropriate SQL.
+     *
+     * @param ConditionalExpression
+     * @return string The SQL.
+     */
+    public function walkConditionalExpression($condExpr)
+    {
+        foreach ($this->_walkers as $walker) {
+            $walker->walkConditionalExpression($condExpr);
+        }
+    }
+
+    /**
      * Walks down a ConditionalTerm AST node, thereby generating the appropriate SQL.
      *
      * @param ConditionalTerm
@@ -378,6 +391,19 @@ class TreeWalkerChain implements TreeWalker
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkConditionalFactor($factor);
+        }
+    }
+
+    /**
+     * Walks down a ConditionalPrimary AST node, thereby generating the appropriate SQL.
+     *
+     * @param ConditionalPrimary
+     * @return string The SQL.
+     */
+    public function walkConditionalPrimary($condPrimary)
+    {
+        foreach ($this->_walkers as $walker) {
+            $walker->walkConditionalPrimary($condPrimary);
         }
     }
 

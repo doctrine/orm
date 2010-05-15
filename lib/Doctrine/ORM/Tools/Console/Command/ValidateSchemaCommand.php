@@ -44,35 +44,46 @@ class ValidateSchemaCommand extends Console\Command\Command
      */
     protected function configure()
     {
-        $this->setName('orm:validate-schema')
-             ->setDescription('Validate that the current metadata schema is valid.');
+        $this
+        ->setName('orm:validate-schema')
+        ->setDescription('Validate that the mapping files.')
+        ->setHelp(<<<EOT
+'Validate that the mapping files are correct and in sync with the database.'
+EOT
+        );
     }
-    
+
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output 
+     * @see Console\Command\Command
      */
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
-        $emHelper = $this->getHelper('em');
+        $em = $this->getHelper('em')->getEntityManager();
 
-        /* @var $em \Doctrine\ORM\EntityManager */
-        $em = $emHelper->getEntityManager();
+        $validator = new \Doctrine\ORM\Tools\SchemaValidator($em);
+        $errors = $validator->validateMapping();
 
-        $metadatas = $em->getMetadataFactory()->getAllMetadata();
-
-        if ( ! empty($metadatas)) {
-            // Create SchemaTool
-            $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
-            $updateSql = $tool->getUpdateSchemaSql($metadatas, false);
-
-            if (count($updateSql) == 0) {
-                $output->write("[Database] OK - Metadata schema exactly matches the database schema.");
-            } else {
-                $output->write("[Database] FAIL - There are differences between metadata and database schema.");
+        $exit = 0;
+        if ($errors) {
+            foreach ($errors AS $className => $errorMessages) {
+                $output->write("<error>[Mapping]  FAIL - The entity-class '" . $className . "' mapping is invalid:</error>\n");
+                foreach ($errorMessages AS $errorMessage) {
+                    $output->write('* ' . $errorMessage . "\n");
+                }
+                $output->write("\n");
             }
+            $exit += 1;
         } else {
-            $output->write("No metadata mappings found");
+            $output->write('<info>[Mapping]  OK - The mapping files are correct.</info>' . "\n");
         }
+
+        if (!$validator->schemaInSyncWithMetadata()) {
+            $output->write('<error>[Database] FAIL - The database schema is not in sync with the current mapping file.</error>' . "\n");
+            $exit += 2;
+        } else {
+            $output->write('<info>[Database] OK - The database schema is in sync with the mapping files.</info>' . "\n");
+        }
+
+        exit($exit);
     }
 }

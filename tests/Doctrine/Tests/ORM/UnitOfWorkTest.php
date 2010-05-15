@@ -140,6 +140,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
 
         $entity->setData('newdata');
+        $entity->setTransient('newtransientvalue');
 
         $this->assertTrue($this->_unitOfWork->isScheduledForUpdate($entity));
 
@@ -206,8 +207,17 @@ class NotifyChangedEntity implements \Doctrine\Common\NotifyPropertyChanged
      */
     private $data;
 
+    private $transient; // not persisted
+
     public function getId() {
         return $this->id;
+    }
+
+    public function setTransient($value) {
+        if ($value != $this->transient) {
+            $this->_onPropertyChanged('transient', $this->transient, $value);
+            $this->transient = $value;
+        }
     }
 
     public function getData() {

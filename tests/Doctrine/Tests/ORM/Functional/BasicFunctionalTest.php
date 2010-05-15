@@ -643,9 +643,10 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $address->zip = '12345';
         
         $user->setAddress($address);
-        
-        $this->_em->persist($user);
-        $this->_em->flush();
+
+        $this->_em->transactional(function($em) use($user) {
+            $em->persist($user);
+        });
         $this->_em->clear();
         
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
@@ -661,7 +662,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Germany', $address2->country);
         $this->assertEquals('Berlin', $address2->city);
         $this->assertEquals('12345', $address2->zip);
-        
     }
     
     //DRAFT OF EXPECTED/DESIRED BEHAVIOR

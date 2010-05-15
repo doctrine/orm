@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\Tests\TestUtil;
@@ -37,15 +38,17 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->assertEquals(1, $test->version);
+
+        return $test;
     }
 
     /**
-     * @expectedException Doctrine\ORM\OptimisticLockException
+     * @depends testJoinedChildInsertSetsInitialVersionValue
      */
-    public function testJoinedChildFailureThrowsException()
+    public function testJoinedChildFailureThrowsException(OptimisticJoinedChild $child)
     {
-        $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedChild t WHERE t.name = :name');
-        $q->setParameter('name', 'child');
+        $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedChild t WHERE t.id = :id');
+        $q->setParameter('id', $child->id);
         $test = $q->getSingleResult();
 
         // Manually update/increment the version so we can try and save the same
@@ -55,7 +58,11 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // Now lets change a property and try and save it again
         $test->whatever = 'ok';
-        $this->_em->flush();
+        try {
+            $this->_em->flush();
+        } catch (OptimisticLockException $e) {
+            $this->assertSame($test, $e->getEntity());
+        }
     }
 
     public function testJoinedParentInsertSetsInitialVersionValue()
@@ -66,15 +73,17 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->assertEquals(1, $test->version);
+
+        return $test;
     }
 
     /**
-     * @expectedException Doctrine\ORM\OptimisticLockException
+     * @depends testJoinedParentInsertSetsInitialVersionValue
      */
-    public function testJoinedParentFailureThrowsException()
+    public function testJoinedParentFailureThrowsException(OptimisticJoinedParent $parent)
     {
-        $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedParent t WHERE t.name = :name');
-        $q->setParameter('name', 'parent');
+        $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedParent t WHERE t.id = :id');
+        $q->setParameter('id', $parent->id);
         $test = $q->getSingleResult();
 
         // Manually update/increment the version so we can try and save the same
@@ -84,7 +93,11 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // Now lets change a property and try and save it again
         $test->name = 'WHATT???';
-        $this->_em->flush();
+        try {
+            $this->_em->flush();
+        } catch (OptimisticLockException $e) {
+            $this->assertSame($test, $e->getEntity());
+        }
     }
 
     public function testStandardInsertSetsInitialVersionValue()
@@ -95,15 +108,17 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->assertEquals(1, $test->getVersion());
+
+        return $test;
     }
 
     /**
-     * @expectedException Doctrine\ORM\OptimisticLockException
+     * @depends testStandardInsertSetsInitialVersionValue
      */
-    public function testStandardFailureThrowsException()
+    public function testStandardFailureThrowsException(OptimisticStandard $entity)
     {
-        $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticStandard t WHERE t.name = :name');
-        $q->setParameter('name', 'test');
+        $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticStandard t WHERE t.id = :id');
+        $q->setParameter('id', $entity->id);
         $test = $q->getSingleResult();
 
         // Manually update/increment the version so we can try and save the same
@@ -113,7 +128,11 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // Now lets change a property and try and save it again
         $test->name = 'WHATT???';
-        $this->_em->flush();
+        try {
+            $this->_em->flush();
+        } catch (OptimisticLockException $e) {
+            $this->assertSame($test, $e->getEntity());
+        }
     }
 
     public function testOptimisticTimestampSetsDefaultValue()
@@ -124,15 +143,17 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->assertTrue(strtotime($test->version) > 0);
+
+        return $test;
     }
 
     /**
-     * @expectedException Doctrine\ORM\OptimisticLockException
+     * @depends testOptimisticTimestampSetsDefaultValue
      */
-    public function testOptimisticTimestampFailureThrowsException()
+    public function testOptimisticTimestampFailureThrowsException(OptimisticTimestamp $entity)
     {
-        $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticTimestamp t WHERE t.name = :name');
-        $q->setParameter('name', 'Testing');
+        $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticTimestamp t WHERE t.id = :id');
+        $q->setParameter('id', $entity->id);
         $test = $q->getSingleResult();
 
         $this->assertType('DateTime', $test->version);
@@ -143,7 +164,11 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // Try and update the record and it should throw an exception
         $test->name = 'Testing again';
-        $this->_em->flush();
+        try {
+            $this->_em->flush();
+        } catch (OptimisticLockException $e) {
+            $this->assertSame($test, $e->getEntity());
+        }
     }
 }
 

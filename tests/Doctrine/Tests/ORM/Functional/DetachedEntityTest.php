@@ -84,6 +84,44 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $phonenumbers = $user->getPhonenumbers();
         $this->assertTrue($this->_em->contains($phonenumbers[0]));
         $this->assertTrue($this->_em->contains($phonenumbers[1]));
-    }    
+    }
+
+    /**
+     * @group DDC-518
+     */
+    /*public function testMergeDetachedEntityWithNewlyPersistentOneToOneAssoc()
+    {
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        // Create a detached user
+        $user = new CmsUser;
+        $user->name = 'Roman';
+        $user->username = 'romanb';
+        $user->status = 'dev';
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        //$address = new CmsAddress;
+        //$address->city = 'Berlin';
+        //$address->country = 'Germany';
+        //$address->street = 'Sesamestreet';
+        //$address->zip = 12345;
+        //$address->setUser($user);
+
+        $phone = new CmsPhonenumber();
+        $phone->phonenumber = '12345';
+
+        $user2 = $this->_em->merge($user);
+        
+        $user2->addPhonenumber($phone);
+        $this->_em->persist($phone);
+
+        //$address->setUser($user2);
+        //$this->_em->persist($address);
+        
+        $this->_em->flush();
+
+        $this->assertEquals(1,1);
+    }*/
 }
 

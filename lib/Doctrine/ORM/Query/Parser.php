@@ -267,11 +267,11 @@ class Parser
     {
         $AST = $this->getAST();
 
-        if ($customWalkers = $this->_query->getHint(Query::HINT_CUSTOM_TREE_WALKERS)) {
+        if (($customWalkers = $this->_query->getHint(Query::HINT_CUSTOM_TREE_WALKERS)) !== false) {
             $this->_customTreeWalkers = $customWalkers;
         }
 
-        if ($customOutputWalker = $this->_query->getHint(Query::HINT_CUSTOM_OUTPUT_WALKER)) {
+        if (($customOutputWalker = $this->_query->getHint(Query::HINT_CUSTOM_OUTPUT_WALKER)) !== false) {
             $this->_customOutputWalker = $customOutputWalker;
         }
 
@@ -1786,6 +1786,12 @@ class Parser
             $conditionalTerms[] = $this->ConditionalTerm();
         }
 
+        // Phase 1 AST optimization: Prevent AST\ConditionalExpression
+        // if only one AST\ConditionalTerm is defined
+        if (count($conditionalTerms) == 1) {
+            return $conditionalTerms[0];
+        }
+
         return new AST\ConditionalExpression($conditionalTerms);
     }
 
@@ -1804,6 +1810,12 @@ class Parser
             $conditionalFactors[] = $this->ConditionalFactor();
         }
 
+        // Phase 1 AST optimization: Prevent AST\ConditionalTerm
+        // if only one AST\ConditionalFactor is defined
+        if (count($conditionalFactors) == 1) {
+            return $conditionalFactors[0];
+        }
+
         return new AST\ConditionalTerm($conditionalFactors);
     }
 
@@ -1820,11 +1832,19 @@ class Parser
             $this->match(Lexer::T_NOT);
             $not = true;
         }
+        
+        $conditionalPrimary = $this->ConditionalPrimary();
 
-        $condFactor = new AST\ConditionalFactor($this->ConditionalPrimary());
-        $condFactor->not = $not;
+        // Phase 1 AST optimization: Prevent AST\ConditionalFactor
+        // if only one AST\ConditionalPrimary is defined
+        if ( ! $not) {
+            return $conditionalPrimary;
+        }
 
-        return $condFactor;
+        $conditionalFactor = new AST\ConditionalFactor($conditionalPrimary);
+        $conditionalFactor->not = $not;
+
+        return $conditionalFactor;
     }
 
     /**
@@ -2104,6 +2124,12 @@ class Parser
             $terms[] = $this->ArithmeticTerm();
         }
 
+        // Phase 1 AST optimization: Prevent AST\SimpleArithmeticExpression
+        // if only one AST\ArithmeticTerm is defined
+        if (count($terms) == 1) {
+            return $terms[0];
+        }
+
         return new AST\SimpleArithmeticExpression($terms);
     }
 
@@ -2124,6 +2150,12 @@ class Parser
             $factors[] = $this->ArithmeticFactor();
         }
 
+        // Phase 1 AST optimization: Prevent AST\ArithmeticTerm
+        // if only one AST\ArithmeticFactor is defined
+        if (count($factors) == 1) {
+            return $factors[0];
+        }
+
         return new AST\ArithmeticTerm($factors);
     }
 
@@ -2134,14 +2166,22 @@ class Parser
      */
     public function ArithmeticFactor()
     {
-       $sign = null;
+        $sign = null;
 
-       if (($isPlus = $this->_lexer->isNextToken(Lexer::T_PLUS)) || $this->_lexer->isNextToken(Lexer::T_MINUS)) {
-           $this->match(($isPlus) ? Lexer::T_PLUS : Lexer::T_MINUS);
-           $sign = $isPlus;
-       }
+        if (($isPlus = $this->_lexer->isNextToken(Lexer::T_PLUS)) || $this->_lexer->isNextToken(Lexer::T_MINUS)) {
+            $this->match(($isPlus) ? Lexer::T_PLUS : Lexer::T_MINUS);
+            $sign = $isPlus;
+        }
+        
+        $primary = $this->ArithmeticPrimary();
 
-        return new AST\ArithmeticFactor($this->ArithmeticPrimary(), $sign);
+        // Phase 1 AST optimization: Prevent AST\ArithmeticFactor
+        // if only one AST\ArithmeticPrimary is defined
+        if ($sign === null) {
+            return $primary;
+        }
+
+        return new AST\ArithmeticFactor($primary, $sign);
     }
 
     /**

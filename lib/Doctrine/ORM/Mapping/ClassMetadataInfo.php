@@ -317,7 +317,7 @@ class ClassMetadataInfo
      * READ-ONLY: The ID generator used for generating IDs for this class.
      *
      * @var AbstractIdGenerator
-     * @todo Remove
+     * @todo Remove!
      */
     public $idGenerator;
 
@@ -335,6 +335,7 @@ class ClassMetadataInfo
      * </code>
      *
      * @var array
+     * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
      */
     public $sequenceGeneratorDefinition;
 
@@ -343,6 +344,7 @@ class ClassMetadataInfo
      * TABLE generation strategy.
      *
      * @var array
+     * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
      */
     public $tableGeneratorDefinition;
 
@@ -395,7 +397,7 @@ class ClassMetadataInfo
     public function getReflectionClass()
     {
         if ( ! $this->reflClass) {
-            $this->reflClass = new ReflectionClass($entityName);
+            $this->reflClass = new ReflectionClass($this->name);
         }
         return $this->reflClass;
     }
@@ -901,8 +903,8 @@ class ClassMetadataInfo
     /**
      * Sets the name of the primary table the class is mapped to.
      *
-     * @param string $tableName  The table name.
-     * @deprecated
+     * @param string $tableName The table name.
+     * @deprecated Use {@link setPrimaryTable}.
      */
     public function setTableName($tableName)
     {
@@ -910,18 +912,22 @@ class ClassMetadataInfo
     }
 
     /**
-     * Sets the primary table definition. The provided array must have the
+     * Sets the primary table definition. The provided array supports the
      * following structure:
      *
-     * name => <tableName>
-     * schema => <schemaName>
-     * catalog => <catalogName>
+     * name => <tableName> (optional, defaults to class name)
+     * indexes => array of indexes (optional)
+     * uniqueConstraints => array of constraints (optional)
      *
-     * @param array $primaryTableDefinition
+     * @param array $table
      */
-    public function setPrimaryTable(array $primaryTableDefinition)
+    public function setPrimaryTable(array $table)
     {
-        $this->table = $primaryTableDefinition;
+        if (isset($table['name']) && $table['name'][0] == '`') {
+            $table['name'] = trim($table['name'], '`');
+            $table['quoted'] = true;
+        }
+        $this->table = $table;
     }
 
     /**

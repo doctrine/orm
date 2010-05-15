@@ -19,7 +19,8 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Collections\ArrayCollection,
+use Exception,
+    Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\Collections\Collection,
     Doctrine\Common\NotifyPropertyChanged,
     Doctrine\Common\PropertyChangedListener,
@@ -280,13 +281,13 @@ class UnitOfWork implements PropertyChangedListener
         $conn = $this->_em->getConnection();
 
         $conn->beginTransaction();
-        try {            
+        try {
             if ($this->_entityInsertions) {
                 foreach ($commitOrder as $class) {
                     $this->_executeInserts($class);
                 }
             }
-            
+
             if ($this->_entityUpdates) {
                 foreach ($commitOrder as $class) {
                     $this->_executeUpdates($class);
@@ -317,10 +318,9 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             $conn->commit();
-        } catch (\Exception $e) {
-            $conn->setRollbackOnly();
-            $conn->rollback();
+        } catch (Exception $e) {
             $this->_em->close();
+            $conn->rollback();
             throw $e;
         }
 
@@ -485,7 +485,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
         }
-        
+
         // Look for changes in associations of the entity
         foreach ($class->associationMappings as $assoc) {
             $val = $class->reflFields[$assoc->sourceFieldName]->getValue($entity);
@@ -1288,6 +1288,10 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      * @return object The managed copy of the entity.
+     * @throws OptimisticLockException If the entity uses optimistic locking through a version
+     *         attribute and the version check against the managed copy fails.
+     *
+     * @todo Require active transaction!? OptimisticLockException may result in undefined state!?
      */
     public function merge($entity)
     {
@@ -1314,7 +1318,7 @@ class UnitOfWork implements PropertyChangedListener
             throw new \InvalidArgumentException('New entity detected during merge.'
                     . ' Persist the new entity before merging.');
         }
-        
+
         // MANAGED entities are ignored by the merge operation
         if ($this->getEntityState($entity, self::STATE_DETACHED) == self::STATE_MANAGED) {
             $managedCopy = $entity;
@@ -1476,7 +1480,7 @@ class UnitOfWork implements PropertyChangedListener
         $class = $this->_em->getClassMetadata(get_class($entity));
         if ($this->getEntityState($entity) == self::STATE_MANAGED) {
             $this->getEntityPersister($class->name)->refresh(
-                array_combine($class->getIdentifierColumnNames(), $this->_entityIdentifiers[$oid]),
+                array_combine($class->getIdentifierFieldNames(), $this->_entityIdentifiers[$oid]),
                 $entity
             );
         } else {
@@ -2084,9 +2088,15 @@ class UnitOfWork implements PropertyChangedListener
         $oid = spl_object_hash($entity);
         $class = $this->_em->getClassMetadata(get_class($entity));
 
+        $isAssocField = isset($class->associationMappings[$propertyName]);
+
+        if ( ! $isAssocField && ! isset($class->fieldMappings[$propertyName])) {
+            return; // ignore non-persistent fields
+        }
+
         $this->_entityChangeSets[$oid][$propertyName] = array($oldValue, $newValue);
 
-        if (isset($class->associationMappings[$propertyName])) {
+        if ($isAssocField) {
             $assoc = $class->associationMappings[$propertyName];
             if ($assoc->isOneToOne() && $assoc->isOwningSide) {
                 $this->_entityUpdates[$oid] = $entity;

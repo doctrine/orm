@@ -19,7 +19,7 @@
 
 namespace Doctrine\DBAL;
 
-use PDO, Closure,
+use PDO, Closure, Exception,
     Doctrine\DBAL\Types\Type,
     Doctrine\DBAL\Driver\Connection as DriverConnection,
     Doctrine\Common\EventManager,
@@ -310,9 +310,8 @@ class Connection implements DriverConnection
      * @param string $statement The SQL query.
      * @param array $params The query parameters.
      * @return array
-     * @todo Rename: fetchAssoc
      */
-    public function fetchRow($statement, array $params = array())
+    public function fetchAssoc($statement, array $params = array())
     {
         return $this->executeQuery($statement, $params)->fetch(PDO::FETCH_ASSOC);
     }
@@ -583,10 +582,10 @@ class Connection implements DriverConnection
      *                        represents a row of the result set.
      * @return mixed The projected result of the query.
      */
-    public function project($query, array $params = array(), Closure $function)
+    public function project($query, array $params, Closure $function)
     {
         $result = array();
-        $stmt = $this->executeQuery($query, $params);
+        $stmt = $this->executeQuery($query, $params ?: array());
 
         while ($row = $stmt->fetch()) {
             $result[] = $function($row);
@@ -707,6 +706,28 @@ class Connection implements DriverConnection
     }
 
     /**
+     * Executes a function in a transaction.
+     *
+     * The function gets passed this Connection instance as an (optional) parameter.
+     *
+     * If an exception occurs during execution of the function or transaction commit,
+     * the transaction is rolled back and the exception re-thrown.
+     *
+     * @param Closure $func The function to execute transactionally.
+     */
+    public function transactional(Closure $func)
+    {
+        $this->beginTransaction();
+        try {
+            $func($this);
+            $this->commit();
+        } catch (Exception $e) {
+            $this->rollback();
+            throw $e;
+        }
+    }
+
+    /**
      * Starts a transaction by suspending auto-commit mode.
      *
      * @return void
@@ -789,7 +810,7 @@ class Connection implements DriverConnection
      * Gets the SchemaManager that can be used to inspect or change the
      * database schema through the connection.
      *
-     * @return Doctrine\DBAL\Schema\AbstractSchemaManager
+     * @return Doctrine\DBAL\Schema\SchemaManager
      */
     public function getSchemaManager()
     {
@@ -820,7 +841,7 @@ class Connection implements DriverConnection
      * @return boolean
      * @throws ConnectionException If no transaction is active.
      */
-    public function getRollbackOnly()
+    public function isRollbackOnly()
     {
         if ($this->_transactionNestingLevel == 0) {
             throw ConnectionException::noActiveTransaction();

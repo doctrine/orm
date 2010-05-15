@@ -136,7 +136,7 @@ EOT
         $converter = new ConvertDoctrine1Schema($fromPaths);
         $metadata = $converter->getMetadata();
 
-        if ($metadatas) {
+        if ($metadata) {
             $output->write(PHP_EOL);
 
             foreach ($metadata as $class) {

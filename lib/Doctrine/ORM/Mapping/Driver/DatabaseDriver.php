@@ -78,13 +78,6 @@ class DatabaseDriver implements Driver
         $ids = array();
         $fieldMappings = array();
         foreach ($columns as $column) {
-            // Skip columns that are foreign keys
-            foreach ($foreignKeys as $foreignKey) {
-                if (in_array(strtolower($column->getName()), array_map('strtolower', $foreignKey->getColumns()))) {
-                    continue(2);
-                }
-            }
-
             $fieldMapping = array();
             if (isset($indexes['primary']) && in_array($column->getName(), $indexes['primary']->getColumns())) {
                 $fieldMapping['id'] = true;
@@ -100,7 +93,7 @@ class DatabaseDriver implements Driver
             } else if ($column->getType() instanceof \Doctrine\DBAL\Types\IntegerType) {
                 $fieldMapping['unsigned'] = $column->getUnsigned();
             }
-            $fieldMapping['notnull'] = $column->getNotNull();
+            $fieldMapping['nullable'] = $column->getNotNull() ? false : true;
 
             if (isset($fieldMapping['id'])) {
                 $ids[] = $fieldMapping;

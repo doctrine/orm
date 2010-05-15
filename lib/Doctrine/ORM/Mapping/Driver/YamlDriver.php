@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -27,14 +25,11 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo,
 /**
  * The YamlDriver reads the mapping metadata from yaml schema files.
  *
- * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    	www.doctrine-project.org
- * @since   	2.0
- * @version     $Revision$
- * @author		Benjamin Eberlei <kontakt@beberlei.de>
- * @author		Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
+ * @since 2.0
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author Jonathan H. Wage <jonwage@gmail.com>
+ * @author Roman Borschel <roman@code-factory.org>
  */
 class YamlDriver extends AbstractFileDriver
 {
@@ -61,13 +56,16 @@ class YamlDriver extends AbstractFileDriver
         }
 
         // Evaluate root level properties
+        $table = array();
         if (isset($element['table'])) {
-            $metadata->table['name'] = $element['table'];
+            $table['name'] = $element['table'];
         }
+        $metadata->setPrimaryTable($table);
 
+        /* not implemented specially anyway. use table = schema.table
         if (isset($element['schema'])) {
             $metadata->table['schema'] = $element['schema'];
-        }
+        }*/
 
         if (isset($element['inheritanceType'])) {
             $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . strtoupper($element['inheritanceType'])));

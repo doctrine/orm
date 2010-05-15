@@ -27,6 +27,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Tools\ConvertDoctrine1SchemaTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Tools\SchemaToolTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Tools\EntityGeneratorTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Tools\SchemaValidatorTest');
 
         return $suite;
     }
