@@ -1775,6 +1775,10 @@ class UnitOfWork implements PropertyChangedListener
             if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
                 $entity->__isInitialized__ = true;
                 $overrideLocalValues = true;
+                $this->_originalEntityData[$oid] = $data;
+                if ($entity instanceof NotifyPropertyChanged) {
+                    $entity->addPropertyChangedListener($this);
+                }
             } else {
                 $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
             }
@@ -1844,6 +1848,7 @@ class UnitOfWork implements PropertyChangedListener
                                         $this->_entityIdentifiers[$newValueOid] = $associatedId;
                                         $this->_identityMap[$targetClass->rootEntityName][$relatedIdHash] = $newValue;
                                         $this->_entityStates[$newValueOid] = self::STATE_MANAGED;
+                                        // make sure that when an proxy is then finally loaded, $this->_originalEntityData is set also!
                                     }
                                 }
                                 $this->_originalEntityData[$oid][$field] = $newValue;
