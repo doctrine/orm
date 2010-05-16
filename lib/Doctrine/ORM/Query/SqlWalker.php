@@ -1620,7 +1620,7 @@ class SqlWalker implements TreeWalker
     {
         return ($arithmeticExpr->isSimpleArithmeticExpression())
         	? $this->walkSimpleArithmeticExpression($arithmeticExpr->simpleArithmeticExpression)
-        	: $this->walkSubselect($arithmeticExpr->subselect);
+        	: '(' . $this->walkSubselect($arithmeticExpr->subselect) . ')';
     }
 
     /**
