@@ -93,9 +93,7 @@ class SchemaValidator
                     if (!$targetMetadata->hasAssociation($assoc->mappedBy)) {
                         $ce[] = "The association " . $class->name . "#" . $fieldName . " refers to the owning side ".
                                 "field " . $assoc->targetEntityName . "#" . $assoc->mappedBy . " which does not exist.";
-                    }
-
-                    if ($targetMetadata->associationMappings[$assoc->mappedBy]->inversedBy == null) {
+                    } else if ($targetMetadata->associationMappings[$assoc->mappedBy]->inversedBy == null) {
                         $ce[] = "The field " . $class->name . "#" . $fieldName . " is on the inverse side of a ".
                                 "bi-directional relationship, but the specified mappedBy association on the target-entity ".
                                 $assoc->targetEntityName . "#" . $assoc->mappedBy . " does not contain the required ".
@@ -115,11 +113,8 @@ class SchemaValidator
                     if (!$targetMetadata->hasAssociation($assoc->inversedBy)) {
                         $ce[] = "The association " . $class->name . "#" . $fieldName . " refers to the inverse side ".
                                 "field " . $assoc->targetEntityName . "#" . $assoc->inversedBy . " which does not exist.";
-                    }
-
-                    if (isset($targetMetadata->associationMappings[$assoc->mappedBy]) &&
-                            $targetMetadata->associationMappings[$assoc->mappedBy]->mappedBy == null) {
-                        $ce[] = "The field " . $class->name . "#" . $fieldName . " is on the inverse side of a ".
+                    } else if ($targetMetadata->associationMappings[$assoc->inversedBy]->mappedBy == null) {
+                        $ce[] = "The field " . $class->name . "#" . $fieldName . " is on the owning side of a ".
                                 "bi-directional relationship, but the specified mappedBy association on the target-entity ".
                                 $assoc->targetEntityName . "#" . $assoc->mappedBy . " does not contain the required ".
                                 "'inversedBy' attribute.";
@@ -175,8 +170,6 @@ class SchemaValidator
                             }
                         }
                     }
-                } else {
-                    
                 }
 
                 if ($ce) {

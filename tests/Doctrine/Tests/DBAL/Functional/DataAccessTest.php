@@ -25,6 +25,101 @@ class DataAccessTest extends \Doctrine\Tests\DbalFunctionalTestCase
         }
     }
 
+    public function testPrepareWithBindValue()
+    {
+        $sql = "SELECT test_int, test_string FROM fetch_table WHERE test_int = ? AND test_string = ?";
+        $stmt = $this->_conn->prepare($sql);
+        $this->assertType('Doctrine\DBAL\Statement', $stmt);
+
+        $stmt->bindValue(1, 1);
+        $stmt->bindValue(2, 'foo');
+        $stmt->execute();
+
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $row = array_change_key_case($row, \CASE_LOWER);
+        $this->assertEquals(array('test_int' => 1, 'test_string' => 'foo'), $row);
+    }
+
+    public function testPrepareWithBindParam()
+    {
+        $paramInt = 1;
+        $paramStr = 'foo';
+
+        $sql = "SELECT test_int, test_string FROM fetch_table WHERE test_int = ? AND test_string = ?";
+        $stmt = $this->_conn->prepare($sql);
+        $this->assertType('Doctrine\DBAL\Statement', $stmt);
+
+        $stmt->bindParam(1, $paramInt);
+        $stmt->bindParam(2, $paramStr);
+        $stmt->execute();
+
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $row = array_change_key_case($row, \CASE_LOWER);
+        $this->assertEquals(array('test_int' => 1, 'test_string' => 'foo'), $row);
+    }
+
+    public function testPrepareWithFetchAll()
+    {
+        $paramInt = 1;
+        $paramStr = 'foo';
+
+        $sql = "SELECT test_int, test_string FROM fetch_table WHERE test_int = ? AND test_string = ?";
+        $stmt = $this->_conn->prepare($sql);
+        $this->assertType('Doctrine\DBAL\Statement', $stmt);
+
+        $stmt->bindParam(1, $paramInt);
+        $stmt->bindParam(2, $paramStr);
+        $stmt->execute();
+
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $rows[0] = array_change_key_case($rows[0], \CASE_LOWER);
+        $this->assertEquals(array('test_int' => 1, 'test_string' => 'foo'), $rows[0]);
+    }
+
+    public function testPrepareWithFetchColumn()
+    {
+        $paramInt = 1;
+        $paramStr = 'foo';
+
+        $sql = "SELECT test_int FROM fetch_table WHERE test_int = ? AND test_string = ?";
+        $stmt = $this->_conn->prepare($sql);
+        $this->assertType('Doctrine\DBAL\Statement', $stmt);
+
+        $stmt->bindParam(1, $paramInt);
+        $stmt->bindParam(2, $paramStr);
+        $stmt->execute();
+
+        $column = $stmt->fetchColumn();
+        $this->assertEquals(1, $column);
+    }
+
+    public function testPrepareWithQuoted()
+    {
+        $table = 'fetch_table';
+        $paramInt = 1;
+        $paramStr = 'foo';
+
+        $sql = "SELECT test_int, test_string FROM " . $this->_conn->quoteIdentifier($table) . " ".
+               "WHERE test_int = " . $this->_conn->quote($paramInt) . " AND test_string = " . $this->_conn->quote($paramStr);
+        $stmt = $this->_conn->prepare($sql);
+        $this->assertType('Doctrine\DBAL\Statement', $stmt);
+    }
+
+    public function testPrepareWithExecuteParams()
+    {
+        $paramInt = 1;
+        $paramStr = 'foo';
+
+        $sql = "SELECT test_int, test_string FROM fetch_table WHERE test_int = ? AND test_string = ?";
+        $stmt = $this->_conn->prepare($sql);
+        $this->assertType('Doctrine\DBAL\Statement', $stmt);
+        $stmt->execute(array($paramInt, $paramStr));
+
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $row = array_change_key_case($row, \CASE_LOWER);
+        $this->assertEquals(array('test_int' => 1, 'test_string' => 'foo'), $row);
+    }
+
     public function testFetchAll()
     {
         $sql = "SELECT test_int, test_string FROM fetch_table WHERE test_int = ? AND test_string = ?";
@@ -60,4 +155,16 @@ class DataAccessTest extends \Doctrine\Tests\DbalFunctionalTestCase
         $this->assertEquals('foo', $row[1]);
     }
 
+    public function testFetchColumn()
+    {
+        $sql = "SELECT test_int, test_string FROM fetch_table WHERE test_int = ? AND test_string = ?";
+        $testInt = $this->_conn->fetchColumn($sql, array(1, 'foo'), 0);
+
+        $this->assertEquals(1, $testInt);
+
+        $sql = "SELECT test_int, test_string FROM fetch_table WHERE test_int = ? AND test_string = ?";
+        $testString = $this->_conn->fetchColumn($sql, array(1, 'foo'), 1);
+
+        $this->assertEquals('foo', $testString);
+    }
 }

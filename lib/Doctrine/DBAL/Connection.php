@@ -753,7 +753,7 @@ class Connection implements DriverConnection
     public function commit()
     {
         if ($this->_transactionNestingLevel == 0) {
-            throw ConnectionException::commitFailedNoActiveTransaction();
+            throw ConnectionException::noActiveTransaction();
         }
         if ($this->_isRollbackOnly) {
             throw ConnectionException::commitFailedRollbackOnly();
@@ -779,7 +779,7 @@ class Connection implements DriverConnection
     public function rollback()
     {
         if ($this->_transactionNestingLevel == 0) {
-            throw ConnectionException::rollbackFailedNoActiveTransaction();
+            throw ConnectionException::noActiveTransaction();
         }
 
         $this->connect();

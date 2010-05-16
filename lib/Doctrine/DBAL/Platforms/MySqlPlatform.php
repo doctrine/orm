@@ -583,4 +583,9 @@ class MySqlPlatform extends AbstractPlatform
     {
         return true;
     }
+
+    public function getReadLockSQL()
+    {
+        return 'LOCK IN SHARE MODE';
+    }
 }
