@@ -192,6 +192,7 @@ exporter:
 
 Now you can export some `ClassMetadata` instances:
 
+    [php]
     $classes = array(
       $em->getClassMetadata('Entities\User'),
       $em->getClassMetadata('Entities\Profile')
@@ -224,6 +225,7 @@ First you need to retrieve the metadata instances with the `DatabaseDriver`:
 
 Now you can get an exporter instance and export the loaded metadata to yml:
 
+    [php]
     $exporter = $cme->getExporter('yml', '/path/to/export/yml');
     $exporter->setMetadata($metadatas);
     $exporter->export();
