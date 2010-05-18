@@ -231,7 +231,11 @@ class Parser
      */
     public function match($token)
     {
-        if ( ! ($this->_lexer->lookahead['type'] === $token)) {
+        // short-circuit on first condition, usually types match
+        if ($this->_lexer->lookahead['type'] !== $token &&
+                $token !== Lexer::T_IDENTIFIER &&
+                $this->_lexer->lookahead['type'] <= Lexer::T_IDENTIFIER
+         ) {
             $this->syntaxError($this->_lexer->getLiteral($token));
         }
 
@@ -890,7 +894,8 @@ class Parser
 
         $identVariable = $this->IdentificationVariable();
         $this->match(Lexer::T_DOT);
-        $this->match($this->_lexer->lookahead['type']);
+        $this->match(Lexer::T_IDENTIFIER);
+        //$this->match($this->_lexer->lookahead['type']);
         $field = $this->_lexer->token['value'];
 
         // Validate association field
