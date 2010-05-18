@@ -134,4 +134,4 @@ final class PostUpdate extends Annotation {}
 final class PreRemove extends Annotation {}
 final class PostRemove extends Annotation {}
 final class PostLoad extends Annotation {}
-
+final class OnFlush extends Annotation {}
