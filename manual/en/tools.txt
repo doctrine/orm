@@ -178,67 +178,59 @@ Before using the orm:schema-tool commands, remember to configure your cli-config
 
 ++ Convert Mapping Information
 
-Doctrine comes with some special tools for working with the various supported
-formats for specifying mapping information.
-
-You have the ability to convert from a few different sources.
-
-* An existing database
-* A directory of YAML schema files
-* A directory of XML schema files
-* A directory of PHP scripts which populate `ClassMetadataInfo` instances
-* A directory of PHP classes defining Doctrine entities with annotations
-
-To convert a mapping source you can do everything you need with the `ClassMetadataExporter`.
+To convert some mapping information between the various supported formats you can
+use the `ClassMetadataExporter` to get exporter instances for the different formats:
 
     [php]
     $cme = new \Doctrine\ORM\Tools\Export\ClassMetadataExporter();
 
-Once you have an instance you can start adding mapping sources to convert.
+Once you have a instance you can use it to get an exporter. For example, the yml
+exporter:
 
     [php]
-    $cme->addMappingSource('/path/to/yml', 'yml');
-    $cme->addMappingSource('/path/to/xml', 'xml');
-    $cme->addMappingSource('/path/to/php', 'php');
-    $cme->addMappingSource('/path/to/annotations', 'annotation');
-
-Now to convert the added mapping sources you can do so by using the exporter drivers.
-
-    [php]
-    $metadatas = $cme->getMetadatasForMappingSources();
-    
     $exporter = $cme->getExporter('yml', '/path/to/export/yml');
-    $exporter->setMetadatas($metadatas);
+
+Now you can export some `ClassMetadata` instances:
+
+    $classes = array(
+      $em->getClassMetadata('Entities\User'),
+      $em->getClassMetadata('Entities\Profile')
+    );
+    $exporter->setMetadata($classes);
     $exporter->export();
 
-This functionality functionality is also available from the command line to for 
-example convert some YAML mapping files to XML.
+This functionality is also available from the command line to convert your 
+loaded mapping information to another format. The `orm:convert-mapping` command
+accepts two arguments, the type to convert to and the path to generate it:
 
-    $ php doctrine orm:convert-mapping /path/to/mapping-path xml /path/to/mapping-path-converted-to-xml
-
-It is even possible to define more than one path as source:
-
-    $ php doctrine orm:convert-mapping --from /path/to/mapping-path1 --from /path/to/mapping-path2 /path/to/mapping-path3 xml /path/to/mapping-path-converted-to-xml
+    $ php doctrine orm:convert-mapping xml /path/to/mapping-path-converted-to-xml
 
 ++ Reverse Engineering
 
-You can use the same `ClassMetadataExporter` to reverse engineer a database and 
-generate YAML, XML, etc. from your existing databases.
+You can use the `DatabaseDriver` to reverse engineer a database to an array of
+`ClassMetadataInfo` instances and generate YAML, XML, etc. from them.
+
+First you need to retrieve the metadata instances with the `DatabaseDriver`:
 
     [php]
-    $sm = $em->getConnection()->getSchemaManager();
+    $em->getConfiguration()->setMetadataDriverImpl(
+        new \Doctrine\ORM\Mapping\Driver\DatabaseDriver(
+            $em->getConnection()->getSchemaManager()
+        )
+    );
 
-    $cme->addMappingSource($sm, 'database');
-    $metadatas = $cme->getMetadatasForMappingSources();
+    $cmf = new DisconnectedClassMetadataFactory($em);
+    $metadata = $cmf->getAllMetadata();
+
+Now you can get an exporter instance and export the loaded metadata to yml:
 
     $exporter = $cme->getExporter('yml', '/path/to/export/yml');
-    $exporter->setMetadatas($metadatas);
+    $exporter->setMetadata($metadatas);
     $exporter->export();
 
-From the command line it is very simple to do something like reverse engineer
-your existing database to set of YAML mapping files.
+You can also reverse engineer a database using the `orm:convert-mapping` command:
 
-    $ php doctrine orm:convert-mapping database yml /path/to/mapping-path-converted-to-yml
+    $ php doctrine orm:convert-mapping --from-database yml /path/to/mapping-path-converted-to-yml
 
 > **CAUTION**
 > Reverse Engineering is not always working perfectly depending on special cases.
