@@ -1,8 +1,14 @@
 ++ Transaction Demarcation
 
-Transaction demarcation is the task of defining your transaction boundaries. Proper transaction demarcation is very important because if not done properly it can negatively affect the performance of your application. Many databases and database abstraction layers like PDO by default operate in auto-commit mode, which means that every single SQL statement is wrapped in a small transaction. Without any explicit transaction demarcation from your side, this quickly results in poor performance because transactions are not cheap.
+Transaction demarcation is the task of defining your transaction boundaries. Proper transaction demarcation is very
+important because if not done properly it can negatively affect the performance of your application.
+Many databases and database abstraction layers like PDO by default operate in auto-commit mode,
+which means that every single SQL statement is wrapped in a small transaction. Without any explicit
+transaction demarcation from your side, this quickly results in poor performance because transactions are not cheap.
 
-For the most part, Doctrine 2 already takes care of proper transaction demarcation for you: All the write operations (INSERT/UPDATE/DELETE) are queued until `EntityManager#flush()` is invoked which wraps all of these changes in a single transaction.
+For the most part, Doctrine 2 already takes care of proper transaction demarcation for you: All the write
+operations (INSERT/UPDATE/DELETE) are queued until `EntityManager#flush()` is invoked which wraps all
+of these changes in a single transaction.
 
 However, Doctrine 2 also allows (and ecourages) you to take over and control transaction demarcation yourself.
 
@@ -92,12 +98,25 @@ accurate.
 
 If you intend to start another unit of work after an exception has occured you should do that with a new `EntityManager`.
 
+++ Locking Support
 
-++ Optimistic Locking
+Doctrine 2 offers support for Pessimistic- and Optimistic-locking strategies natively. This allows to take
+very fine-grained control over what kind of locking is required for your Entities in your application.
 
-Database transactions are fine for concurrency control during a single request. However, a database transaction should not span across requests, the so-called "user think time". Therefore a long-running "business transaction" that spans multiple requests needs to involve several database transactions. Thus, database transactions alone can no longer control concurrency during such a long-running business transaction. Concurrency control becomes the partial responsibility of the application itself.
++++ Optimistic Locking
 
-Doctrine has integrated support for automatic optimistic locking via a version field. In this approach any entity that should be protected against concurrent modifications during long-running business transactions gets a version field that is either a simple number (mapping type: integer) or a timestamp (mapping type: datetime). When changes to such an entity are persisted at the end of a long-running conversation the version of the entity is compared to the version in the database and if they dont match, an `OptimisticLockException` is thrown, indicating that the entity has been modified by someone else already.
+Database transactions are fine for concurrency control during a single request. However, a database transaction
+should not span across requests, the so-called "user think time". Therefore a long-running "business transaction"
+that spans multiple requests needs to involve several database transactions. Thus, database transactions alone
+can no longer control concurrency during such a long-running business transaction. Concurrency control becomes
+the partial responsibility of the application itself.
+
+Doctrine has integrated support for automatic optimistic locking via a version field. In this approach any entity
+that should be protected against concurrent modifications during long-running business transactions gets a version
+field that is either a simple number (mapping type: integer) or a timestamp (mapping type: datetime). When changes
+to such an entity are persisted at the end of a long-running conversation the version of the entity is compared to
+the version in the database and if they dont match, an `OptimisticLockException` is thrown, indicating that the
+entity has been modified by someone else already.
 
 You designate a version field in an entity as follows. In this example we'll use an integer.
 
@@ -130,7 +149,101 @@ and the active transaction rolled back (or marked for rollback). This exception 
 Potential responses to an OptimisticLockException are to present the conflict to the user or to
 refresh or reload objects in a new transaction and then retrying the transaction.
 
+With PHP promoting a share-nothing architecture, the time between showing an update form and actually modifying the entity can in the worst scenario be
+as long as your applications session timeout. If changes happen to the entity in that time frame you want to know directly
+when retrieving the entity that you will hit an optimistic locking exception:
 
+You can always verify the version of an entity during a request either when calling `EntityManager#find()`:
 
+    [php]
+    use Doctrine\DBAL\LockMode;
+    use Doctrine\ORM\OptimisticLockException;
 
+    $theEntityId = 1;
+    $expectedVersion = 184;
+
+    try {
+        $entity = $em->find('User', $theEntityId, LockMode::OPTIMISTIC, $expectedVersion);
+
+        // do the work
+
+        $em->flush();
+    } catch(OptimisticLockException $e) {
+        echo "Sorry, but someone else has already changed this entity. Please apply the changes again!";
+    }
+
+Or you can use `EntityManager#lock()` to find out:
+
+    [php]
+    use Doctrine\DBAL\LockMode;
+    use Doctrine\ORM\OptimisticLockException;
+
+    $theEntityId = 1;
+    $expectedVersion = 184;
+
+    $entity = $em->find('User', $theEntityId);
+
+    try {
+        // assert version
+        $em->lock($entity, LockMode::OPTIMISTIC, $expectedVersion);
+
+    } catch(OptimisticLockException $e) {
+        echo "Sorry, but someone else has already changed this entity. Please apply the changes again!";
+    }
+
+++++ Important Implementation Notes
+
+You can easily get the optimistic locking workflow wrong if you compare the wrong versions.
+Say you have Alice and Bob accessing a hypothetical bank account:
+
+* Alice reads the headline of the blog post being "Foo", at optimistic lock version 1 (GET Request)
+* Bob reads the headline of the blog post being "Foo", at optimistic lock version 1 (GET Request)
+* Bob updates the headline to "Bar", upgrading the optimistic lock version to 2 (POST Request of a Form)
+* Alice updates the headline to "Baz", ... (POST Request of a Form)
+
+Now at the last stage of this scenario the blog post has to be read again from the database before
+Alice's headline can be applied. At this point you will want to check if the blog post is still at version 1
+(which it is not in this scenario).
+
+Using optimistic locking correctly, you *have* to add the version as an additional hidden field
+(or into the SESSION for more safety). Otherwise you cannot verify the version is still the one being originally read from
+the database when Alice performed her GET request for the blog post. If this happens you might
+see lost updates you wanted to prevent with Optimistic Locking.
+
+See the example code, The form (GET Request):
+
+    [php]
+    $post = $em->find('BlogPost', 123456);
+
+    echo '<input type="hidden" name="id" value="' . $post->getId() . '" />';
+    echo '<input type="hidden" name="version" value="' . $post->getCurrentVersion() . '" />';
+
+And the change headline action (POST Request):
+
+    [php]
+    $postId = (int)$_GET['id'];
+    $postVersion = (int)$_GET['version'];
+
+    $post = $em->find('BlogPost', $postId, \Doctrine\DBAL\LockMode::OPTIMISTIC, $postVersion);
+
++++ Pessimistic Locking
+
+Doctrine 2 supports Pessimistic Locking at the database level. No attempt is being made to implement pessimistic locking
+inside Doctrine, rather vendor-specific and ANSI-SQL commands are used to aquire row-level locks. Every Entity can
+be part of a pessimistic lock, there is no special metadata required to use this feature.
+
+However for Pessimistic Locking to work you have to disable the Auto-Commit Mode of your Database and start a
+transaction around your pessimistic lock use-case using the "Approach 2: Explicit Transaction Demarcation" described
+above. Doctrine 2 will throw an Exception if you attempt to aquire an pessimistic lock and no transaction is running.
+
+Doctrine 2 currently supports two pessimistic lock modes:
+
+* Pessimistic Write (`Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE`), locks the underlying database rows for concurrent Read and Write Operations.
+* Pessimistic Read (`Doctrine\DBAL\LockMode::PESSIMISTIC_READ`), locks other concurrent requests that attempt to update or lock rows in write mode.
+
+You can use pessimistic locks in three different scenarios:
+
+1. Using `EntityManager#find($className, $id, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE)` or `EntityManager#find($className, $id, \Doctrine\DBAL\LockMode::PESSIMISTIC_READ)`
+2. Using `EntityManager#lock($entity, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE)` or `EntityManager#lock($entity, \Doctrine\DBAL\LockMode::PESSIMISTIC_READ)`
+3. Using `Query#setLockMode(\Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE)` or `Query#setLockMode(\Doctrine\DBAL\LockMode::PESSIMISTIC_READ)`
 
