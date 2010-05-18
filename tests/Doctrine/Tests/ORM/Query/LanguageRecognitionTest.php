@@ -413,10 +413,21 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertValidDql('SELECT u, u.id + ?1 AS someNumber FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
-    
+
+    /**
+     * @group DDC-505
+     */
     public function testDQLKeywordInJoinIsAllowed()
     {
         $this->assertValidDql('SELECT u FROM ' . __NAMESPACE__ . '\DQLKeywordsModelUser u JOIN u.group g');
+    }
+
+    /**
+     * @group DDC-505
+     */
+    public function testDQLKeywordInConditionIsAllowed()
+    {
+        $this->assertValidDql('SELECT g FROM ' . __NAMESPACE__ . '\DQLKeywordsModelGroup g WHERE g.from=0');
     }
 
     /* The exception is currently thrown in the SQLWalker, not earlier.
@@ -441,4 +452,6 @@ class DQLKeywordsModelGroup
 {
     /** @Id @Column(type="integer") @GeneratedValue */
     private $id;
+    /** @Column */
+    private $from;
 }
