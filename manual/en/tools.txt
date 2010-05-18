@@ -227,7 +227,7 @@ Now you can get an exporter instance and export the loaded metadata to yml:
 
     [php]
     $exporter = $cme->getExporter('yml', '/path/to/export/yml');
-    $exporter->setMetadata($metadatas);
+    $exporter->setMetadata($metadata);
     $exporter->export();
 
 You can also reverse engineer a database using the `orm:convert-mapping` command:
