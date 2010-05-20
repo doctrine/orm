@@ -55,12 +55,13 @@ class SchemaValidator
     /**
      * Checks the internal consistency of mapping files.
      *
-     * There are several checks that can't be done at runtime or are to expensive, which can be verified
+     * There are several checks that can't be done at runtime or are too expensive, which can be verified
      * with this command. For example:
      *
      * 1. Check if a relation with "mappedBy" is actually connected to that specified field.
      * 2. Check if "mappedBy" and "inversedBy" are consistent to each other.
      * 3. Check if "referencedColumnName" attributes are really pointing to primary key columns.
+     * 4. Check if there are public properties that might cause problems with lazy loading.
      *
      * @return array
      */
@@ -71,9 +72,9 @@ class SchemaValidator
         $classes = $cmf->getAllMetadata();
 
         foreach ($classes AS $class) {
+            $ce = array();
             /* @var $class ClassMetadata */
             foreach ($class->associationMappings AS $fieldName => $assoc) {
-                $ce = array();
                 if (!$cmf->hasMetadataFor($assoc->targetEntityName)) {
                     $ce[] = "The target entity '" . $assoc->targetEntityName . "' specified on " . $class->name . '#' . $fieldName . ' is unknown.';
                 }
@@ -171,10 +172,16 @@ class SchemaValidator
                         }
                     }
                 }
+            }
 
-                if ($ce) {
-                    $errors[$class->name] = $ce;
-                }
+            foreach ($class->reflClass->getProperties(\ReflectionProperty::IS_PUBLIC) as $publicAttr) {
+                $ce[] = "Attribute '".$publicAttr->getName()."' in class '".$class->name."' is marked as public. Make sure you initialize your entities manually"
+                       ." before accessing these properties or you will experience strange behaviour as using public properties will disallow Doctrine to use lazy loading. The Doctrine Team strongly"
+                       ." recommends using protected / private properties on entities only. See the manual for more detailed information.";
+            }
+
+            if ($ce) {
+                $errors[$class->name] = $ce;
             }
         }
 
@@ -183,7 +190,7 @@ class SchemaValidator
 
     /**
      * Check if the Database Schema is in sync with the current metadata state.
-     * 
+     *
      * @return bool
      */
     public function schemaInSyncWithMetadata()
