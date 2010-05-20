@@ -60,7 +60,7 @@ class DatabaseDriver implements Driver
     public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
     {
         $tableName = $className;
-        $className = Inflector::classify($tableName);
+        $className = Inflector::classify(strtolower($tableName));
 
         $metadata->name = $className;
         $metadata->table['name'] = $tableName;
@@ -153,7 +153,9 @@ class DatabaseDriver implements Driver
         $classes = array();
         
         foreach ($this->_sm->listTables() as $table) {
-            $classes[] = $table->getName(); // TODO: Why is this not correct? Inflector::classify($table->getName());
+            // This method must return an array of table names because we need
+            // to know the table name after we inflect it to create the entity class name.
+            $classes[] = $table->getName();
         }
 
         return $classes;
