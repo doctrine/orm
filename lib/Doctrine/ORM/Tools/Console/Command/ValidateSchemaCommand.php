@@ -66,13 +66,15 @@ EOT
         $exit = 0;
         if ($errors) {
             foreach ($errors AS $className => $errorMessages) {
-                $output->write("<error>[Mapping] FAIL - The entity-class '" . $className . "' mapping is invalid:</error>\n");
+                $output->write("<error>[Mapping]  FAIL - The entity-class '" . $className . "' mapping is invalid:</error>\n");
                 foreach ($errorMessages AS $errorMessage) {
                     $output->write('* ' . $errorMessage . "\n");
                 }
                 $output->write("\n");
             }
             $exit += 1;
+        } else {
+            $output->write('<info>[Mapping]  OK - The mapping files are correct.</info>' . "\n");
         }
 
         if (!$validator->schemaInSyncWithMetadata()) {

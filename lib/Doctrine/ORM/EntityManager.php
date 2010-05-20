@@ -19,8 +19,10 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\EventManager,
+use Closure, Exception,
+    Doctrine\Common\EventManager,
     Doctrine\DBAL\Connection,
+    Doctrine\DBAL\LockMode,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\ClassMetadataFactory,
     Doctrine\ORM\Proxy\ProxyFactory;
@@ -177,6 +179,32 @@ class EntityManager
     }
 
     /**
+     * Executes a function in a transaction.
+     *
+     * The function gets passed this EntityManager instance as an (optional) parameter.
+     *
+     * {@link flush} is invoked prior to transaction commit.
+     *
+     * If an exception occurs during execution of the function or flushing or transaction commit,
+     * the transaction is rolled back, the EntityManager closed and the exception re-thrown.
+     *
+     * @param Closure $func The function to execute transactionally.
+     */
+    public function transactional(Closure $func)
+    {
+        $this->_conn->beginTransaction();
+        try {
+            $func($this);
+            $this->flush();
+            $this->_conn->commit();
+        } catch (Exception $e) {
+            $this->close();
+            $this->_conn->rollback();
+            throw $e;
+        }
+    }
+
+    /**
      * Commits a transaction on the underlying database connection.
      *
      * @deprecated Use {@link getConnection}.commit().
@@ -291,11 +319,13 @@ class EntityManager
      *
      * @param string $entityName
      * @param mixed $identifier
+     * @param int $lockMode
+     * @param int $lockVersion
      * @return object
      */
-    public function find($entityName, $identifier)
+    public function find($entityName, $identifier, $lockMode = LockMode::NONE, $lockVersion = null)
     {
-        return $this->getRepository($entityName)->find($identifier);
+        return $this->getRepository($entityName)->find($identifier, $lockMode, $lockVersion);
     }
 
     /**
@@ -449,6 +479,20 @@ class EntityManager
     public function copy($entity, $deep = false)
     {
         throw new \BadMethodCallException("Not implemented.");
+    }
+
+    /**
+     * Acquire a lock on the given entity.
+     *
+     * @param object $entity
+     * @param int $lockMode
+     * @param int $lockVersion
+     * @throws OptimisticLockException
+     * @throws PessimisticLockException
+     */
+    public function lock($entity, $lockMode, $lockVersion = null)
+    {
+        $this->_unitOfWork->lock($entity, $lockMode, $lockVersion);
     }
 
     /**
