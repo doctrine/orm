@@ -31,6 +31,11 @@ class CmsArticle
      * @OneToMany(targetEntity="CmsComment", mappedBy="article")
      */
     public $comments;
+
+    /**
+     * @Version @column(type="integer")
+     */
+    public $version;
     
     public function setAuthor(CmsUser $author) {
         $this->user = $author;

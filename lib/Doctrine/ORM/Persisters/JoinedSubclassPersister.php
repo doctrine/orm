@@ -228,7 +228,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    protected function _getSelectEntitiesSQL(array $criteria, $assoc = null)
+    protected function _getSelectEntitiesSQL(array $criteria, $assoc = null, $lockMode = 0)
     {
         $idColumns = $this->_class->getIdentifierColumnNames();
         $baseTableAlias = $this->_getSQLTableAlias($this->_class->name);
@@ -344,6 +344,18 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 . ' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' ' . $baseTableAlias
                 . $joinSql
                 . ($conditionSql != '' ? ' WHERE ' . $conditionSql : '') . $orderBySql;
+    }
+
+    /**
+     * Lock all rows of this entity matching the given criteria with the specified pessimistic lock mode
+     *
+     * @param array $criteria
+     * @param int $lockMode
+     * @return void
+     */
+    public function lock(array $criteria, $lockMode)
+    {
+        throw new \BadMethodCallException("lock() is not yet supported for JoinedSubclassPersister");
     }
     
     /* Ensure this method is never called. This persister overrides _getSelectEntitiesSQL directly. */

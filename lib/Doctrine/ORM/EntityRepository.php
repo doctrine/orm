@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\DBAL\LockMode;
+
 /**
  * An EntityRepository serves as a repository for entities with generic as well as
  * business specific methods for retrieving entities.
@@ -87,23 +89,45 @@ class EntityRepository
      * Finds an entity by its primary key / identifier.
      *
      * @param $id The identifier.
-     * @param int $hydrationMode The hydration mode to use.
+     * @param int $lockMode
+     * @param int $lockVersion
      * @return object The entity.
      */
-    public function find($id)
+    public function find($id, $lockMode = LockMode::NONE, $lockVersion = null)
     {
         // Check identity map first
         if ($entity = $this->_em->getUnitOfWork()->tryGetById($id, $this->_class->rootEntityName)) {
+            if ($lockMode != LockMode::NONE) {
+                $this->_em->lock($entity, $lockMode, $lockVersion);
+            }
+
             return $entity; // Hit!
         }
 
         if ( ! is_array($id) || count($id) <= 1) {
-            //FIXME: Not correct. Relies on specific order.
+            // @todo FIXME: Not correct. Relies on specific order.
             $value = is_array($id) ? array_values($id) : array($id);
             $id = array_combine($this->_class->identifier, $value);
         }
 
-        return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($id);
+        if ($lockMode == LockMode::NONE) {
+            return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($id);
+        } else if ($lockMode == LockMode::OPTIMISTIC) {
+            if (!$this->_class->isVersioned) {
+                throw OptimisticLockException::notVersioned($this->_entityName);
+            }
+            $entity = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($id);
+
+            $this->_em->getUnitOfWork()->lock($entity, $lockMode, $lockVersion);
+
+            return $entity;
+        } else {
+            if (!$this->_em->getConnection()->isTransactionActive()) {
+                throw TransactionRequiredException::transactionRequired();
+            }
+            
+            return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($id, null, null, array(), $lockMode);
+        }
     }
 
     /**

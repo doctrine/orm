@@ -366,6 +366,20 @@ class SqlWalker implements TreeWalker
             $sql, $this->_query->getMaxResults(), $this->_query->getFirstResult()
         );
 
+        if (($lockMode = $this->_query->getHint(Query::HINT_LOCK_MODE)) !== false) {
+            if ($lockMode == \Doctrine\DBAL\LockMode::PESSIMISTIC_READ) {
+                $sql .= " " . $this->_platform->getReadLockSQL();
+            } else if ($lockMode == \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE) {
+                $sql .= " " . $this->_platform->getWriteLockSQL();
+            } else if ($lockMode == \Doctrine\DBAL\LockMode::OPTIMISTIC) {
+                foreach ($this->_selectedClasses AS $class) {
+                    if (!$class->isVersioned) {
+                        throw \Doctrine\ORM\OptimisticLockException::lockFailed();
+                    }
+                }
+            }
+        }
+
         return $sql;
     }
 
@@ -603,7 +617,7 @@ class SqlWalker implements TreeWalker
             $sql .= $this->walkJoinVariableDeclaration($joinVarDecl);
         }
 
-        return $sql;
+        return $this->_platform->appendLockHint($sql, $this->_query->getHint(Query::HINT_LOCK_MODE));
     }
 
     /**
@@ -1620,7 +1634,7 @@ class SqlWalker implements TreeWalker
     {
         return ($arithmeticExpr->isSimpleArithmeticExpression())
         	? $this->walkSimpleArithmeticExpression($arithmeticExpr->simpleArithmeticExpression)
-        	: $this->walkSubselect($arithmeticExpr->subselect);
+        	: '(' . $this->walkSubselect($arithmeticExpr->subselect) . ')';
     }
 
     /**
