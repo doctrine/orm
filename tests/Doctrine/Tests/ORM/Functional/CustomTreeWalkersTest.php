@@ -39,20 +39,43 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->useModelSet('cms');
         parent::setUp();
     }
-    
+
+    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed)
+    {
+        try {
+            $query = $this->_em->createQuery($dqlToBeTested);
+            $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\Tests\ORM\Functional\CustomTreeWalker'))
+                  ->useQueryCache(false);
+
+            parent::assertEquals($sqlToBeConfirmed, $query->getSql());
+            $query->free();
+        } catch (\Exception $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
     public function testSupportsQueriesWithoutWhere()
     {
-        
-        $q = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name or u.name = :otherName');
-        $q->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\Tests\ORM\Functional\CustomTreeWalker'));
-        
-        $this->assertEquals("SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (c0_.name = ? OR c0_.name = ?) AND c0_.id = 1", $q->getSql());
-        
-        $q->setDql('select u from Doctrine\Tests\Models\CMS\CmsUser u');
-        $this->assertEquals("SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id = 1", $q->getSql());
-        
-        $q->setDql('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name');
-        $this->assertEquals("SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.name = ? AND c0_.id = 1", $q->getSql());
+        $this->assertSqlGeneration(
+            'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name or u.name = :otherName',
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (c0_.name = ? OR c0_.name = ?) AND c0_.id = 1"
+        );
+    }
+    
+    public function testSupportsQueriesWithSimpleConditionalExpressions()
+    {
+        $this->assertSqlGeneration(
+            'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name',
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.name = ? AND c0_.id = 1"
+        );
+    }
+
+    public function testSupportsQueriesWithMultipleConditionalExpressions()
+    {
+        $this->assertSqlGeneration(
+            'select u from Doctrine\Tests\Models\CMS\CmsUser u',
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id = 1"
+        );
     }
 }
 
@@ -62,6 +85,7 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
     {
         // Get the DQL aliases of all the classes we want to modify
         $dqlAliases = array();
+
         foreach ($this->_getQueryComponents() as $dqlAlias => $comp) {
             // Hard-coded check just for demonstration: We want to modify the query if
             // it involves the CmsUser class.
@@ -84,10 +108,19 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
             $factors[] = $factor;
         }
         
-        if ($selectStatement->whereClause !== null) {
+        if (($whereClause = $selectStatement->whereClause) !== null) {
             // There is already a WHERE clause, so append the conditions
-             
-            $existingTerms = $selectStatement->whereClause->conditionalExpression->conditionalTerms;
+            $condExpr = $whereClause->conditionalExpression;
+
+            // Since Phase 1 AST optimizations were included, we need to re-add the ConditionalExpression
+            if ( ! ($condExpr instanceof Query\AST\ConditionalExpression)) {
+                $condExpr = new Query\AST\ConditionalExpression(array($condExpr));
+
+                $whereClause->conditionalExpression = $condExpr;
+            }
+            
+            $existingTerms = $whereClause->conditionalExpression->conditionalTerms;
+            
             if (count($existingTerms) > 1) {
                 // More than one term, so we need to wrap all these terms in a single root term
                 // i.e: "WHERE u.name = :foo or u.other = :bar" => "WHERE (u.name = :foo or u.other = :bar) AND <our condition>"
@@ -100,8 +133,15 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
                 $selectStatement->whereClause->conditionalExpression->conditionalTerms = array($term);
             } else {
                 // Just one term so we can simply append our factors to that term
-                
                 $singleTerm = $selectStatement->whereClause->conditionalExpression->conditionalTerms[0];
+
+                // Since Phase 1 AST optimizations were included, we need to re-add the ConditionalExpression
+                if ( ! ($singleTerm instanceof Query\AST\ConditionalTerm)) {
+                    $singleTerm = new Query\AST\ConditionalTerm(array($singleTerm));
+
+                    $selectStatement->whereClause->conditionalExpression->conditionalTerms[0] = $singleTerm;
+                }
+
                 $singleTerm->conditionalFactors = array_merge($singleTerm->conditionalFactors, $factors);
                 $selectStatement->whereClause->conditionalExpression->conditionalTerms = array($singleTerm);
             }

@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -27,30 +25,29 @@ use Doctrine\ORM\Query\Expr;
  * This class is responsible for building DQL query strings via an object oriented
  * PHP interface.
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
- * @since   2.0
- * @version $Revision$
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
+ * @since 2.0
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author Jonathan Wage <jonwage@gmail.com>
+ * @author Roman Borschel <roman@code-factory.org>
  */
 class QueryBuilder
 {
+    /* The query types. */
     const SELECT = 0;
     const DELETE = 1;
     const UPDATE = 2;
 
+    /** The builder states. */
     const STATE_DIRTY = 0;
     const STATE_CLEAN = 1;
 
     /**
-     * @var EntityManager $em The EntityManager used by this QueryBuilder.
+     * @var EntityManager The EntityManager used by this QueryBuilder.
      */
     private $_em;
 
     /**
-     * @var array $dqlParts The array of DQL parts collected.
+     * @var array The array of DQL parts collected.
      */
     private $_dqlParts = array(
         'select'  => array(),
@@ -105,13 +102,17 @@ class QueryBuilder
 
     /**
      * Gets an ExpressionBuilder used for object-oriented construction of query expressions.
-     * Intended for convenient inline usage. Example:
+     * This producer method is intended for convenient inline usage. Example:
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->from('User', 'u')
      *         ->where($qb->expr()->eq('u.id', 1));
+     * </code>
+     *
+     * For more complex expression construction, consider storing the expression
+     * builder object in a local variable.
      *
      * @return Expr
      */
@@ -141,16 +142,9 @@ class QueryBuilder
     }
 
     /**
-     * Get the state of this query builder instance
+     * Get the state of this query builder instance.
      *
-     *     [php]
-     *     if ($qb->getState() == QueryBuilder::STATE_DIRTY) {
-     *         echo 'Query builder is dirty';
-     *     } else {
-     *         echo 'Query builder is clean';
-     *     }
-     *
-     * @return integer
+     * @return integer Either QueryBuilder::STATE_DIRTY or QueryBuilder::STATE_CLEAN.
      */
     public function getState()
     {
@@ -158,15 +152,16 @@ class QueryBuilder
     }
 
     /**
-     * Get the complete DQL string for this query builder instance
+     * Get the complete DQL string formed by the current specifications of this QueryBuilder.
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->from('User', 'u')
      *     echo $qb->getDql(); // SELECT u FROM User u
+     * </code>
      *
-     * @return string The DQL string
+     * @return string The DQL query string.
      */
     public function getDQL()
     {
@@ -198,14 +193,15 @@ class QueryBuilder
     }
 
     /**
-     * Constructs a Query instance from the current configuration of the builder.
+     * Constructs a Query instance from the current specifications of the builder.
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->from('User', 'u');
      *     $q = $qb->getQuery();
      *     $results = $q->execute();
+     * </code>
      *
      * @return Query
      */
@@ -218,17 +214,19 @@ class QueryBuilder
     }
 
     /**
-     * Get the root alias for the query. This is the first entity alias involved
-     * in the construction of the query
+     * Gets the root alias of the query. This is the first entity alias involved
+     * in the construction of the query.
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->from('User', 'u');
      *
      *     echo $qb->getRootAlias(); // u
+     * </code>
      *
      * @return string $rootAlias
+     * @todo Rename/Refactor: getRootAliases(), there can be multiple roots!
      */
     public function getRootAlias()
     {
@@ -236,14 +234,15 @@ class QueryBuilder
     }
 
     /**
-     * Sets a query parameter.
+     * Sets a query parameter for the query being constructed.
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->from('User', 'u')
      *         ->where('u.id = :user_id')
      *         ->setParameter(':user_id', 1);
+     * </code>
      *
      * @param string|integer $key The parameter position or name.
      * @param mixed $value The parameter value.
@@ -256,9 +255,9 @@ class QueryBuilder
     }
     
     /**
-     * Sets a collection of query parameters.
+     * Sets a collection of query parameters for the query being constructed.
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->from('User', 'u')
@@ -267,8 +266,9 @@ class QueryBuilder
      *             ':user_id1' => 1,
      *             ':user_id2' => 2
      *         ));
+     * </code>
      *
-     * @param array $params
+     * @param array $params The query parameters to set.
      * @return QueryBuilder This QueryBuilder instance.
      */
     public function setParameters(array $params)
@@ -278,17 +278,17 @@ class QueryBuilder
     }
 
     /**
-     * Get all defined parameters
+     * Gets all defined query parameters for the query being constructed.
      *
-     * @return array Defined parameters
+     * @return array The currently defined query parameters.
      */
-    public function getParameters($params = array())
+    public function getParameters()
     {
         return $this->_params;
     }
-    
+
     /**
-     * Gets a query parameter.
+     * Gets a (previously set) query parameter of the query being constructed.
      * 
      * @param mixed $key The key (index or name) of the bound parameter.
      * @return mixed The value of the bound parameter.
@@ -297,7 +297,7 @@ class QueryBuilder
     {
         return isset($this->_params[$key]) ? $this->_params[$key] : null;
     }
-    
+
     /**
      * Sets the position of the first result to retrieve (the "offset").
      *
@@ -309,10 +309,10 @@ class QueryBuilder
         $this->_firstResult = $firstResult;
         return $this;
     }
-    
+
     /**
      * Gets the position of the first result the query object was set to retrieve (the "offset").
-     * Returns NULL if {@link setFirstResult} was not applied to this query builder.
+     * Returns NULL if {@link setFirstResult} was not applied to this QueryBuilder.
      * 
      * @return integer The position of the first result.
      */
@@ -324,7 +324,7 @@ class QueryBuilder
     /**
      * Sets the maximum number of results to retrieve (the "limit").
      * 
-     * @param integer $maxResults
+     * @param integer $maxResults The maximum number of results to retrieve.
      * @return QueryBuilder This QueryBuilder instance.
      */
     public function setMaxResults($maxResults)
@@ -345,7 +345,10 @@ class QueryBuilder
     }
 
     /**
-     * Add a single DQL query part to the array of parts
+     * Either appends to or replaces a single, generic query part.
+     *
+     * The available parts are: 'select', 'from', 'join', 'set', 'where',
+     * 'groupBy', 'having' and 'orderBy'.
      *
      * @param string $dqlPartName 
      * @param string $dqlPart 
@@ -368,15 +371,17 @@ class QueryBuilder
     }
 
     /**
-     * Set the SELECT statement
+     * Specifies an item that is to be returned in the query result.
+     * Replaces any previously specified selections, if any.
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u', 'p')
      *         ->from('User', 'u')
      *         ->leftJoin('u.Phonenumbers', 'p');
+     * </code>
      *
-     * @param mixed $select  String SELECT statement or SELECT Expr instance
+     * @param mixed $select The selection expressions.
      * @return QueryBuilder This QueryBuilder instance.
      */
     public function select($select = null)
@@ -393,16 +398,17 @@ class QueryBuilder
     }
 
     /**
-     * Add to the SELECT statement
+     * Adds an item that is to be returned in the query result.
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->addSelect('p')
      *         ->from('User', 'u')
      *         ->leftJoin('u.Phonenumbers', 'p');
+     * </code>
      *
-     * @param mixed $select  String SELECT statement or SELECT Expr instance
+     * @param mixed $select The selection expression.
      * @return QueryBuilder This QueryBuilder instance.
      */
     public function addSelect($select = null)
@@ -419,16 +425,18 @@ class QueryBuilder
     }
 
     /**
-     * Construct a DQL DELETE query
+     * Turns the query being built into a bulk delete query that ranges over
+     * a certain entity type.
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->delete('User', 'u')
      *         ->where('u.id = :user_id');
      *         ->setParameter(':user_id', 1);
+     * </code>
      *
-     * @param string $delete    The model to delete 
-     * @param string $alias     The alias of the model
+     * @param string $delete The class/type whose instances are subject to the deletion.
+     * @param string $alias The class/type alias used in the constructed query.
      * @return QueryBuilder This QueryBuilder instance.
      */
     public function delete($delete = null, $alias = null)
@@ -443,16 +451,18 @@ class QueryBuilder
     }
 
     /**
-     * Construct a DQL UPDATE query
+     * Turns the query being built into a bulk update query that ranges over
+     * a certain entity type.
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->update('User', 'u')
      *         ->set('u.password', md5('password'))
      *         ->where('u.id = ?');
+     * </code>
      *
-     * @param string $update   The model to update
-     * @param string $alias    The alias of the model
+     * @param string $update The class/type whose instances are subject to the update.
+     * @param string $alias The class/type alias used in the constructed query.
      * @return QueryBuilder This QueryBuilder instance.
      */
     public function update($update = null, $alias = null)
@@ -467,12 +477,14 @@ class QueryBuilder
     }
 
     /**
-     * Specify the FROM part when constructing a SELECT DQL query
+     * Create and add a query root corresponding to the entity identified by the given alias,
+     * forming a cartesian product with any existing query roots.
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->from('User', 'u')
+     * </code>
      *
      * @param string $from   The class name.
      * @param string $alias  The alias of the class.
@@ -482,20 +494,25 @@ class QueryBuilder
     {
         return $this->add('from', new Expr\From($from, $alias), true);
     }
-    
+
     /**
-     * Add a INNER JOIN to an associated class.
+     * Creates and adds a join over an entity association to the query.
      *
-     *     [php]
+     * The entities in the joined association will be fetched as part of the query
+     * result if the alias used for the joined association is placed in the select
+     * expressions.
+     *
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->from('User', 'u')
-     *         ->innerJoin('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');
+     *         ->join('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');
+     * </code>
      *
-     * @param string $join           The relationship to join
-     * @param string $alias          The alias of the join
-     * @param string $conditionType  The condition type constant. Either ON or WITH.
-     * @param string $condition      The condition for the join
+     * @param string $join The relationship to join
+     * @param string $alias The alias of the join
+     * @param string $conditionType The condition type constant. Either ON or WITH.
+     * @param string $condition The condition for the join
      * @return QueryBuilder This QueryBuilder instance.
      */
     public function join($join, $alias, $conditionType = null, $condition = null)
@@ -504,7 +521,11 @@ class QueryBuilder
     }
 
     /**
-     * Add an INNER JOIN to an associated class.
+     * Creates and adds a join over an entity association to the query.
+     * 
+     * The entities in the joined association will be fetched as part of the query
+     * result if the alias used for the joined association is placed in the select
+     * expressions.
      *
      *     [php]
      *     $qb = $em->createQueryBuilder()
@@ -512,10 +533,10 @@ class QueryBuilder
      *         ->from('User', 'u')
      *         ->innerJoin('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');
      *
-     * @param string $join           The relationship to join
-     * @param string $alias          The alias of the join
-     * @param string $conditionType  The condition type constant. Either ON or WITH.
-     * @param string $condition      The condition for the join
+     * @param string $join The relationship to join
+     * @param string $alias The alias of the join
+     * @param string $conditionType The condition type constant. Either ON or WITH.
+     * @param string $condition The condition for the join
      * @return QueryBuilder This QueryBuilder instance.
      */
     public function innerJoin($join, $alias, $conditionType = null, $condition = null)
@@ -526,19 +547,24 @@ class QueryBuilder
     }
 
     /**
-     * Add a LEFT JOIN
+     * Creates and adds a left join over an entity association to the query.
      *
-     *     [php]
+     * The entities in the joined association will be fetched as part of the query
+     * result if the alias used for the joined association is placed in the select
+     * expressions.
+     *
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->from('User', 'u')
      *         ->leftJoin('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');
+     * </code>
      *
-     * @param string $join           The relationship to join
-     * @param string $alias          The alias of the join
-     * @param string $conditionType  The condition type constant. Either ON or WITH.
-     * @param string $condition      The condition for the join
-     * @return QueryBuilder $qb
+     * @param string $join The relationship to join
+     * @param string $alias The alias of the join
+     * @param string $conditionType The condition type constant. Either ON or WITH.
+     * @param string $condition The condition for the join
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function leftJoin($join, $alias, $conditionType = null, $condition = null)
     {
@@ -548,17 +574,18 @@ class QueryBuilder
     }
 
     /**
-     * Add a SET statement for a DQL UPDATE query
+     * Sets a new value for a field in a bulk update query.
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->update('User', 'u')
      *         ->set('u.password', md5('password'))
      *         ->where('u.id = ?');
+     * </code>
      *
-     * @param string $key     The key/field to set
-     * @param string $value   The value, expression, placeholder, etc. to use in the SET
-     * @return QueryBuilder $qb
+     * @param string $key The key/field to set.
+     * @param string $value The value, expression, placeholder, etc.
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function set($key, $value)
     {
@@ -566,9 +593,10 @@ class QueryBuilder
     }
 
     /**
-     * Set and override any existing WHERE statements
+     * Specifies one or more restrictions to the query result.
+     * Replaces any previously specified restrictions, if any.
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->from('User', 'u')
@@ -584,9 +612,10 @@ class QueryBuilder
      *     $qb->update('User', 'u')
      *         ->set('u.password', md5('password'))
      *         ->where($or);
+     * </code>
      *
-     * @param mixed $predicates The predicates.
-     * @return QueryBuilder
+     * @param mixed $predicates The restriction predicates.
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function where($predicates)
     {
@@ -598,17 +627,19 @@ class QueryBuilder
     }
 
     /**
-     * Add a new WHERE statement with an AND
+     * Adds one or more restrictions to the query results, forming a logical
+     * conjunction with any previously specified restrictions.
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->from('User', 'u')
      *         ->where('u.username LIKE ?')
      *         ->andWhere('u.is_active = 1');
+     * </code>
      *
-     * @param mixed $where The WHERE statement
-     * @return QueryBuilder $qb
+     * @param mixed $where The query restrictions.
+     * @return QueryBuilder This QueryBuilder instance.
      * @see where()
      */
     public function andWhere($where)
@@ -627,14 +658,16 @@ class QueryBuilder
     }
 
     /**
-     * Add a new WHERE statement with an OR
+     * Adds one or more restrictions to the query results, forming a logical
+     * disjunction with any previously specified restrictions.
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->from('User', 'u')
      *         ->where('u.id = 1')
      *         ->orWhere('u.id = 2');
+     * </code>
      *
      * @param mixed $where The WHERE statement
      * @return QueryBuilder $qb
@@ -656,16 +689,18 @@ class QueryBuilder
     }
 
     /**
-     * Set the GROUP BY clause
+     * Specifies a grouping over the results of the query.
+     * Replaces any previously specified groupings, if any.
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->from('User', 'u')
      *         ->groupBy('u.id');
+     * </code>
      *
-     * @param string $groupBy  The GROUP BY clause
-     * @return QueryBuilder $qb
+     * @param string $groupBy The grouping expression.
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function groupBy($groupBy)
     {
@@ -674,17 +709,18 @@ class QueryBuilder
 
 
     /**
-     * Add to the existing GROUP BY clause
+     * Adds a grouping expression to the query.
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder()
      *         ->select('u')
      *         ->from('User', 'u')
-     *         ->groupBy('u.last_login');
-     *         ->addGroupBy('u.created_at')
+     *         ->groupBy('u.lastLogin');
+     *         ->addGroupBy('u.createdAt')
+     * </code>
      *
-     * @param string $groupBy  The GROUP BY clause
-     * @return QueryBuilder $qb
+     * @param string $groupBy The grouping expression.
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function addGroupBy($groupBy)
     {
@@ -692,10 +728,11 @@ class QueryBuilder
     }
 
     /**
-     * Set the HAVING clause
+     * Specifies a restriction over the groups of the query.
+     * Replaces any previous having restrictions, if any.
      *
-     * @param mixed $having 
-     * @return QueryBuilder $qb
+     * @param mixed $having The restriction over the groups.
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function having($having)
     {
@@ -707,10 +744,11 @@ class QueryBuilder
     }
 
     /**
-     * Add to the existing HAVING clause with an AND
+     * Adds a restriction over the groups of the query, forming a logical
+     * conjunction with any existing having restrictions.
      *
-     * @param mixed $having 
-     * @return QueryBuilder $qb
+     * @param mixed $having The restriction to append.
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function andHaving($having)
     {
@@ -728,10 +766,11 @@ class QueryBuilder
     }
 
     /**
-     * Add to the existing HAVING clause with an OR
+     * Adds a restriction over the groups of the query, forming a logical
+     * disjunction with any existing having restrictions.
      *
-     * @param mixed $having 
-     * @return QueryBuilder $qb
+     * @param mixed $having The restriction to add.
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function orHaving($having)
     {
@@ -749,11 +788,12 @@ class QueryBuilder
     }
 
     /**
-     * Set the ORDER BY clause
+     * Specifies an ordering for the query results.
+     * Replaces any previously specified orderings, if any.
      *
-     * @param string $sort    What to sort on
-     * @param string $order   Optional: The order to sort the results.
-     * @return QueryBuilder $qb
+     * @param string $sort The ordering expression.
+     * @param string $order The ordering direction.
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function orderBy($sort, $order = null)
     {
@@ -762,11 +802,11 @@ class QueryBuilder
     }
 
     /**
-     * Add to the existing ORDER BY clause
+     * Adds an ordering to the query results.
      *
-     * @param string $sort    What to sort on
-     * @param string $order   Optional: The order to sort the results.
-     * @return QueryBuilder $qb
+     * @param string $sort The ordering expression.
+     * @param string $order The ordering direction.
+     * @return QueryBuilder This QueryBuilder instance.
      */
     public function addOrderBy($sort, $order = null)
     {
@@ -774,10 +814,11 @@ class QueryBuilder
     }
 
     /**
-     * Get a DQL part or parts by the part name
+     * Get a query part by its name.
      *
      * @param string $queryPartName
      * @return mixed $queryPart
+     * @todo Rename: getQueryPart (or remove?)
      */
     public function getDQLPart($queryPartName)
     {
@@ -785,9 +826,10 @@ class QueryBuilder
     }
 
     /**
-     * Get the full DQL parts array
+     * Get all query parts.
      *
      * @return array $dqlParts
+     * @todo Rename: getQueryParts (or remove?)
      */
     public function getDQLParts()
     {
@@ -836,6 +878,12 @@ class QueryBuilder
              . (isset($options['post']) ? $options['post'] : '');
     }
 
+    /**
+     * Gets a string representation of this QueryBuilder which corresponds to
+     * the final DQL query being constructed.
+     *
+     * @return string The string representation of this QueryBuilder.
+     */
     public function __toString()
     {
         return $this->getDQL();

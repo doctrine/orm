@@ -19,13 +19,15 @@
 
 namespace Doctrine\ORM;
 
+use Exception;
+
 /**
  * Base exception class for all ORM exceptions.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class ORMException extends \Exception
+class ORMException extends Exception
 {
     public static function missingMappingDriverImpl()
     {

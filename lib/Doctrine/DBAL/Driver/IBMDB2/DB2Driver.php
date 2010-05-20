@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -25,13 +23,10 @@ use Doctrine\DBAL\Driver,
     Doctrine\DBAL\Connection;
 
 /**
- * IBM Db2 Driver
+ * IBM DB2 Driver
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
- * @since       1.0
- * @version     $Revision$
- * @author      Benjamin Eberlei <kontakt@beberlei.de>
+ * @since 2.0
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 class DB2Driver implements Driver
 {

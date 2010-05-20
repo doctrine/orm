@@ -26,6 +26,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
 
         // Self-made metadata
         $cm1 = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
+        $cm1->setPrimaryTable(array('name' => '`group`'));
         // Add a mapped field
         $cm1->mapField(array('fieldName' => 'name', 'type' => 'varchar'));
         // Add a mapped field
@@ -54,6 +55,8 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         // Go
         $cm1 = $cmf->getMetadataFor('Doctrine\Tests\ORM\Mapping\TestEntity1');
 
+        $this->assertEquals('group', $cm1->table['name']);
+        $this->assertTrue($cm1->table['quoted']);
         $this->assertEquals(array(), $cm1->parentClasses);
         $this->assertTrue($cm1->hasField('name'));
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_SEQUENCE, $cm1->generatorType);

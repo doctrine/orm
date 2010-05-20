@@ -665,9 +665,7 @@ class SqlWalker implements TreeWalker
      */
     public function walkHavingClause($havingClause)
     {
-        return ' HAVING ' . implode(
-            ' OR ', array_map(array($this, 'walkConditionalTerm'), $havingClause->conditionalExpression->conditionalTerms)
-        );
+        return ' HAVING ' . $this->walkConditionalExpression($havingClause->conditionalExpression);
     }
 
     /**
@@ -775,10 +773,10 @@ class SqlWalker implements TreeWalker
         }
 
         // Handle WITH clause
-        if ($join->conditionalExpression !== null) {
-            $sql .= ' AND (' . implode(' OR ',
-                array_map(array($this, 'walkConditionalTerm'), $join->conditionalExpression->conditionalTerms)
-            ). ')';
+        if (($condExpr = $join->conditionalExpression) !== null) {
+            // Phase 2 AST optimization: Skip processment of ConditionalExpression
+            // if only one ConditionalTerm is defined
+            $sql .= ' AND (' . $this->walkConditionalExpression($condExpr) . ')';
         }
 
         $discrSql = $this->_generateDiscriminatorColumnConditionSQL($joinedDqlAlias);
@@ -787,7 +785,7 @@ class SqlWalker implements TreeWalker
             $sql .= ' AND ' . $discrSql;
         }
 
-        //FIXME: these should either be nested or all forced to be left joins (DDC-XXX)
+        // FIXME: these should either be nested or all forced to be left joins (DDC-XXX)
         if ($targetClass->isInheritanceTypeJoined()) {
             $sql .= $this->_generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
         }
@@ -879,7 +877,12 @@ class SqlWalker implements TreeWalker
             $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
             $this->_rsm->addScalarResult($columnAlias, $resultAlias);
         }
-        else if ($expr instanceof AST\SimpleArithmeticExpression) {
+        else if (
+            $expr instanceof AST\SimpleArithmeticExpression ||
+            $expr instanceof AST\ArithmeticTerm ||
+            $expr instanceof AST\ArithmeticFactor ||
+            $expr instanceof AST\ArithmeticPrimary
+        ) {
             if ( ! $selectExpression->fieldIdentificationVariable) {
                 $resultAlias = $this->_scalarResultCounter++;
             } else {
@@ -1211,20 +1214,27 @@ class SqlWalker implements TreeWalker
      */
     public function walkWhereClause($whereClause)
     {
-        $sql = ' WHERE ';
-        $condExpr = $whereClause->conditionalExpression;
+        $discrSql = $this->_generateDiscriminatorColumnConditionSql($this->_currentRootAlias);
+        $condSql = $this->walkConditionalExpression($whereClause->conditionalExpression);
 
-        $sql .= implode(
-            ' OR ', array_map(array($this, 'walkConditionalTerm'), $condExpr->conditionalTerms)
-        );
+        return ' WHERE ' . (( ! $discrSql) ? $condSql : '(' . $condSql . ') AND ' . $discrSql);
+    }
 
-        $discrSql = $this->_generateDiscriminatorColumnConditionSQL($this->_currentRootAlias);
-
-        if ($discrSql) {
-            $sql .= ' AND ' . $discrSql;
-        }
-
-        return $sql;
+    /**
+     * Walk down a ConditionalExpression AST node, thereby generating the appropriate SQL.
+     *
+     * @param ConditionalExpression
+     * @return string The SQL.
+     */
+    public function walkConditionalExpression($condExpr)
+    {
+        // Phase 2 AST optimization: Skip processment of ConditionalExpression
+        // if only one ConditionalTerm is defined
+        return ( ! ($condExpr instanceof AST\ConditionalExpression))
+            ? $this->walkConditionalTerm($condExpr)
+            : implode(
+                ' OR ', array_map(array($this, 'walkConditionalTerm'), $condExpr->conditionalTerms)
+            );
     }
 
     /**
@@ -1235,9 +1245,13 @@ class SqlWalker implements TreeWalker
      */
     public function walkConditionalTerm($condTerm)
     {
-        return implode(
-            ' AND ', array_map(array($this, 'walkConditionalFactor'), $condTerm->conditionalFactors)
-        );
+        // Phase 2 AST optimization: Skip processment of ConditionalTerm
+        // if only one ConditionalFactor is defined
+        return ( ! ($condTerm instanceof AST\ConditionalTerm))
+            ? $this->walkConditionalFactor($condTerm)
+            : implode(
+                ' AND ', array_map(array($this, 'walkConditionalFactor'), $condTerm->conditionalFactors)
+            );
     }
 
     /**
@@ -1248,21 +1262,28 @@ class SqlWalker implements TreeWalker
      */
     public function walkConditionalFactor($factor)
     {
-        $sql = ($factor->not) ? 'NOT ' : '';
+        // Phase 2 AST optimization: Skip processment of ConditionalFactor
+        // if only one ConditionalPrimary is defined
+        return ( ! ($factor instanceof AST\ConditionalFactor))
+            ? $this->walkConditionalPrimary($factor)
+            : ($factor->not ? 'NOT ' : '') . $this->walkConditionalPrimary($factor->conditionalPrimary);
+    }
 
-        $primary = $factor->conditionalPrimary;
-
+    /**
+     * Walks down a ConditionalPrimary AST node, thereby generating the appropriate SQL.
+     *
+     * @param ConditionalPrimary
+     * @return string The SQL.
+     */
+    public function walkConditionalPrimary($primary)
+    {
         if ($primary->isSimpleConditionalExpression()) {
-            $sql .= $primary->simpleConditionalExpression->dispatch($this);
+            return $primary->simpleConditionalExpression->dispatch($this);
         } else if ($primary->isConditionalExpression()) {
             $condExpr = $primary->conditionalExpression;
 
-            $sql .= '(' . implode(
-                ' OR ', array_map(array($this, 'walkConditionalTerm'), $condExpr->conditionalTerms)
-            ) . ')';
+            return '(' . $this->walkConditionalExpression($condExpr) . ')';
         }
-
-        return $sql;
     }
 
     /**
@@ -1603,6 +1624,21 @@ class SqlWalker implements TreeWalker
     }
 
     /**
+     * Walks down an SimpleArithmeticExpression AST node, thereby generating the appropriate SQL.
+     *
+     * @param SimpleArithmeticExpression
+     * @return string The SQL.
+     */
+    public function walkSimpleArithmeticExpression($simpleArithmeticExpr)
+    {
+        return ( ! ($simpleArithmeticExpr instanceof AST\SimpleArithmeticExpression))
+            ? $this->walkArithmeticTerm($simpleArithmeticExpr)
+            : implode(
+                ' ', array_map(array($this, 'walkArithmeticTerm'), $simpleArithmeticExpr->arithmeticTerms)
+            );
+    }
+
+    /**
      * Walks down an ArithmeticTerm AST node, thereby generating the appropriate SQL.
      *
      * @param mixed
@@ -1610,11 +1646,55 @@ class SqlWalker implements TreeWalker
      */
     public function walkArithmeticTerm($term)
     {
-        if (is_string($term)) return $term;
+        if (is_string($term)) {
+            return $term;
+        }
 
-        return implode(
-            ' ', array_map(array($this, 'walkArithmeticFactor'), $term->arithmeticFactors)
-        );
+        // Phase 2 AST optimization: Skip processment of ArithmeticTerm
+        // if only one ArithmeticFactor is defined
+        return ( ! ($term instanceof AST\ArithmeticTerm))
+            ? $this->walkArithmeticFactor($term)
+            : implode(
+                ' ', array_map(array($this, 'walkArithmeticFactor'), $term->arithmeticFactors)
+            );
+    }
+
+    /**
+     * Walks down an ArithmeticFactor that represents an AST node, thereby generating the appropriate SQL.
+     *
+     * @param mixed
+     * @return string The SQL.
+     */
+    public function walkArithmeticFactor($factor)
+    {
+        if (is_string($factor)) {
+            return $factor;
+        }
+        
+        // Phase 2 AST optimization: Skip processment of ArithmeticFactor
+        // if only one ArithmeticPrimary is defined
+        return ( ! ($factor instanceof AST\ArithmeticFactor))
+            ? $this->walkArithmeticPrimary($factor)
+            : ($factor->isNegativeSigned() ? '-' : ($factor->isPositiveSigned() ? '+' : '')) 
+                . $this->walkArithmeticPrimary($factor->arithmeticPrimary);
+    }
+
+    /**
+     * Walks down an ArithmeticPrimary that represents an AST node, thereby generating the appropriate SQL.
+     *
+     * @param mixed
+     * @return string The SQL.
+     */
+    public function walkArithmeticPrimary($primary)
+    {
+        if ($primary instanceof AST\SimpleArithmeticExpression) {
+            return '(' . $this->walkSimpleArithmeticExpression($primary) . ')';
+        } else if ($primary instanceof AST\Node) {
+            return $primary->dispatch($this);
+        }
+
+        // We need to deal with IdentificationVariable here
+        return '';
     }
 
     /**
@@ -1628,42 +1708,5 @@ class SqlWalker implements TreeWalker
         return (is_string($stringPrimary))
             ? $this->_conn->quote($stringPrimary)
             : $stringPrimary->dispatch($this);
-    }
-
-    /**
-     * Walks down an ArithmeticFactor that represents an AST node, thereby generating the appropriate SQL.
-     *
-     * @param mixed
-     * @return string The SQL.
-     */
-    public function walkArithmeticFactor($factor)
-    {
-        if (is_string($factor)) return $factor;
-
-        $sql = ($factor->isNegativeSigned() ? '-' : ($factor->isPositiveSigned() ? '+' : ''));
-        $primary = $factor->arithmeticPrimary;
-
-        if ($primary instanceof AST\SimpleArithmeticExpression) {
-            $sql .= '(' . $this->walkSimpleArithmeticExpression($primary) . ')';
-        } else if ($primary instanceof AST\Node) {
-            $sql .= $primary->dispatch($this);
-        } else if (is_string($primary)) {
-            // We need to deal with IdentificationVariable here
-        }
-
-        return $sql;
-    }
-
-    /**
-     * Walks down an SimpleArithmeticExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param SimpleArithmeticExpression
-     * @return string The SQL.
-     */
-    public function walkSimpleArithmeticExpression($simpleArithmeticExpr)
-    {
-        return implode(
-            ' ', array_map(array($this, 'walkArithmeticTerm'), $simpleArithmeticExpr->arithmeticTerms)
-        );
     }
 }

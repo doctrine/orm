@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -30,10 +28,7 @@ use Doctrine\Common\EventManager,
 /**
  * The EntityManager is the central access point to ORM functionality.
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision$
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -154,11 +149,12 @@ class EntityManager
      *
      * Example:
      *
-     *     [php]
+     * <code>
      *     $qb = $em->createQueryBuilder();
      *     $expr = $em->getExpressionBuilder();
      *     $qb->select('u')->from('User', 'u')
      *         ->where($expr->orX($expr->eq('u.id', 1), $expr->eq('u.id', 2)));
+     * </code>
      *
      * @return ExpressionBuilder
      */
@@ -172,6 +168,8 @@ class EntityManager
 
     /**
      * Starts a transaction on the underlying database connection.
+     *
+     * @deprecated Use {@link getConnection}.beginTransaction().
      */
     public function beginTransaction()
     {
@@ -180,6 +178,8 @@ class EntityManager
 
     /**
      * Commits a transaction on the underlying database connection.
+     *
+     * @deprecated Use {@link getConnection}.commit().
      */
     public function commit()
     {
@@ -187,13 +187,13 @@ class EntityManager
     }
 
     /**
-     * Performs a rollback on the underlying database connection and closes the
-     * EntityManager as it may now be in a corrupted state.
+     * Performs a rollback on the underlying database connection.
+     *
+     * @deprecated Use {@link getConnection}.rollback().
      */
     public function rollback()
     {
         $this->_conn->rollback();
-        $this->close();
     }
 
     /**
@@ -274,6 +274,9 @@ class EntityManager
      * Flushes all changes to objects that have been queued up to now to the database.
      * This effectively synchronizes the in-memory state of managed objects with the
      * database.
+     *
+     * @throws Doctrine\ORM\OptimisticLockException If a version check on an entity that
+     *         makes use of optimistic locking fails.
      */
     public function flush()
     {

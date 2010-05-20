@@ -179,7 +179,7 @@ class AnnotationReader
         // Attempt to grab data from cache
         if (($data = $this->_cache->fetch($cacheKey)) !== false) {
             return $data;
-        }
+        } 
 
         $context = 'method ' . $method->getDeclaringClass()->getName() . '::' . $method->getName() . '()';
         $annotations = $this->_parser->parse($method->getDocComment(), $context);

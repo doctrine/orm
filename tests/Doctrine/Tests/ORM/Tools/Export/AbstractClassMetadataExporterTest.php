@@ -67,7 +67,16 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
 
     protected function _createMetadataDriver($type, $path)
     {
-        $class = 'Doctrine\ORM\Mapping\Driver\\' . ucfirst($type) . 'Driver';
+        $mappingDriver = array(
+            'php' => 'PHPDriver',
+            'annotation' => 'AnnotationDriver',
+            'xml' => 'XmlDriver',
+            'yaml' => 'YamlDriver',
+        );
+        $this->assertArrayHasKey($type, $mappingDriver, "There is no metadata driver for the type '" . $type . "'.");
+        $driverName = $mappingDriver[$type];
+
+        $class = 'Doctrine\ORM\Mapping\Driver\\' . $driverName;
         if ($type === 'annotation') {
             $driver = $class::create($path);
         } else {
