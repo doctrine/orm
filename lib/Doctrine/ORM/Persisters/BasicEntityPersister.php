@@ -513,10 +513,12 @@ class BasicEntityPersister
         $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
 
         if ($assoc->isOwningSide) {
+            $isInverseSingleValued = $assoc->inversedBy && ! $targetClass->isCollectionValuedAssociation($assoc->inversedBy);
+
             // Mark inverse side as fetched in the hints, otherwise the UoW would
             // try to load it in a separate query (remember: to-one inverse sides can not be lazy).
             $hints = array();
-            if ($assoc->inversedBy) {
+            if ($isInverseSingleValued) {
                 $hints['fetched'][$targetClass->name][$assoc->inversedBy] = true;
                 if ($targetClass->subClasses) {
                     foreach ($targetClass->subClasses as $targetSubclassName) {
@@ -533,7 +535,7 @@ class BasicEntityPersister
             $targetEntity = $this->load($identifier, $targetEntity, $assoc, $hints);
 
             // Complete bidirectional association, if necessary
-            if ($targetEntity !== null && $assoc->inversedBy && ! $targetClass->isCollectionValuedAssociation($assoc->inversedBy)) {
+            if ($targetEntity !== null && $isInverseSingleValued) {
                 $targetClass->reflFields[$assoc->inversedBy]->setValue($targetEntity, $sourceEntity);
             }
         } else {
