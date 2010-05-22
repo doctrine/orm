@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<project name="Doctrine Dependency Management" default="resolve-dependencies" basedir=".">
+
+    <property file="build-dependencies.properties" />
+    <property name="download.dir" value="download"/>
+
+    <target name="resolve-dependencies" description="Resolves the project dependencies.">
+        <echo message="Resolving dependencies"/>
+        <foreach list="${dependencies}" param="dependency" target="resolve-dependency" />
+    </target>
+
+    <target name="resolve-dependency">
+        <fail unless="${dependency}.version" message="${dependency}.version not set."/>
+        <fail unless="${dependency}.srcdir" message="${dependency}.srcdir not set."/>
+        <fail unless="${dependency}.targetdir" message="${dependency}.targetdir not set."/>
+
+        <property name="dependency.version" value="${${dependency}.version}"/>
+        <property name="dependency.srcdir" value="${${dependency}.srcdir}"/>
+        <property name="dependency.targetdir" value="${${dependency}.targetdir}"/>
+
+        <echo message="${dependency.targetdir}"/>
+
+        <!--
+            Check out dependency. If ${dependency.targetdir} does not exist or versions dont match.
+            When done, place version info file into ${dependency.targetdir}.
+        -->
+        <available file="${dependency.targetdir}" type="dir" property="target.dir.exists" />
+        <if>
+            <istrue value="${target.dir.exists}"/>
+            <then>
+                <property file="${dependency.targetdir}/current-version.properties" />
+            </then>
+        </if>
+        <if>
+            <or>
+                <isfalse value="${target.dir.exists}" />
+                <not><equals arg1="${dependency.version}" arg2="${current.version}"/></not>
+            </or>
+            <then>
+                <echo message="Fetching dependency '${dependency}' at version '${dependency.version}'." />
+                <delete dir="${download.dir}/${dependency}" includeemptydirs="true" />
+                <mkdir dir="${download.dir}/${dependency}" />
+                <exec command="git clone git://github.com/doctrine/${dependency}.git ${download.dir}/${dependency}" />
+                <exec command="git checkout ${dependency.version}" dir="${download.dir}/${dependency}" />
+                <delete dir="${dependency.targetdir}" includeemptydirs="true" />
+                <copy todir="${dependency.targetdir}">
+                    <fileset dir="${download.dir}/${dependency}/${dependency.srcdir}">
+                        <include name="**" />
+                    </fileset>
+                </copy>
+                <delete file="${dependency.targetdir}/current-version.properties" />
+                <touch file="${dependency.targetdir}/current-version.properties"/>
+                <append destFile="${dependency.targetdir}/current-version.properties" text="current.version=${dependency.version}"/>
+                <delete dir="${download.dir}/${dependency}" includeemptydirs="true" />
+            </then>
+            <else>
+                <echo message="Dependency ${dependency} is available in the correct version: ${dependency.version}." />
+            </else>
+        </if>
+    </target>
+</project>
