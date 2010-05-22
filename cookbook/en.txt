@@ -7,3 +7,4 @@
 + DQL Custom Walkers
 + DQL User Defined Functions
 + SQL Table Prefixes
++ Strategy Cookbook Introduction
