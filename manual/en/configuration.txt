@@ -33,7 +33,7 @@ The following example shows the setup of a `ClassLoader`
     // test.php
 
     require '/path/to/lib/Doctrine/Common/ClassLoader.php';
-    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine', '/path/to/Doctrine2/lib);
+    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine', '/path/to/Doctrine2/lib');
     $classLoader->register(); // register on SPL autoload stack
 
 For best class loading performance it is recommended that you keep your include_path short, ideally it should only contain the path to the PEAR libraries, and any other class libraries should be registered with their full base path.
