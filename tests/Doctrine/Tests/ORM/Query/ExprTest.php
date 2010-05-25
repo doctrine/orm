@@ -27,7 +27,7 @@ use Doctrine\ORM\Query;
 require_once __DIR__ . '/../../TestInit.php';
 
 /**
- * Test case for the DQL Expr class used for generating DQL snippets through 
+ * Test case for the DQL Expr class used for generating DQL snippets through
  * a programmatic interface
  *
  * @author      Jonathan H. Wage <jonwage@gmail.com>
@@ -75,7 +75,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
-        
+
         $this->assertEquals('EXISTS(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->_expr->exists($qb));
     }
 
@@ -83,7 +83,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
-    
+
         $this->assertEquals('ALL(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->_expr->all($qb));
     }
 
@@ -91,7 +91,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
-    
+
         $this->assertEquals('SOME(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->_expr->some($qb));
     }
 
@@ -99,7 +99,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
-    
+
         $this->assertEquals('ANY(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->_expr->any($qb));
     }
 
@@ -107,7 +107,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
-    
+
         $this->assertEquals('NOT(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->_expr->not($qb));
     }
 
@@ -115,11 +115,11 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertEquals('(1 = 1) AND (2 = 2)', (string) $this->_expr->andx((string) $this->_expr->eq(1, 1), (string) $this->_expr->eq(2, 2)));
     }
-    
+
     public function testIntelligentParenthesisPreventionAndExpr()
     {
         $this->assertEquals(
-            '(1 = 1) AND (2 = 2)', 
+            '(1 = 1) AND (2 = 2)',
             (string) $this->_expr->andx($this->_expr->orx($this->_expr->andx($this->_expr->eq(1, 1))), (string) $this->_expr->eq(2, 2))
         );
     }
@@ -153,7 +153,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertEquals('10 / 2', (string) $this->_expr->quot(10, 2));
     }
-    
+
     public function testScopeInArithmeticExpr()
     {
         $this->assertEquals('(100 - 20) / 2', (string) $this->_expr->quot($this->_expr->diff(100, 20), 2));
@@ -220,6 +220,15 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(5, (string) $this->_expr->literal(5));
     }
 
+    /**
+     * @group regression
+     * @group DDC-610
+     */
+    public function testLiteralExprProperlyQuotesStrings()
+    {
+       $this->assertEquals("'00010001'", (string) $this->_expr->literal('00010001'));
+    }
+
     public function testGreaterThanOrEqualToExpr()
     {
         $this->assertEquals('5 >= 2', (string) $this->_expr->gte(5, 2));
@@ -266,7 +275,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals('(1 = 1) OR (1 < 5)', (string) $orExpr);
     }
-    
+
     public function testOrderByCountExpr()
     {
         $orderExpr = $this->_expr->desc('u.username');
