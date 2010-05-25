@@ -5,5 +5,5 @@ reports/
 dist/
 download/
 lib/api/
-lib/Doctrine/Common/
-lib/Doctrine/DBAL/
+lib/Doctrine/Common
+lib/Doctrine/DBAL
