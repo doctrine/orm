@@ -7,7 +7,7 @@
 <project name="Doctrine2" default="build" basedir=".">
     <import file="build-dependencies.xml"/>
 
-    <taskdef classname="NativePhpunitTask" classpath="./tools/" name="nativephpunit" />
+    <taskdef classname="NativePhpunitTask" classpath="./tests/" name="nativephpunit" />
     <taskdef classname="phing.tasks.ext.d51PearPkg2Task" name="d51pearpkg2" />
 
     <property file="build.properties" />
