@@ -3,8 +3,8 @@ Doctrine 2. It is recommended to read this chapter carefully.
 
 ++ Entities
 
-An entity is a lightweight persistent domain object. An entity can be any regular 
-php class that obeys to the following restrictions:
+An entity is a lightweight, persistent domain object. An entity can be any regular
+PHP class observing the following restrictions:
 
 * An entity class must not be final or contain final methods.
 * An entity class must not implement `__clone` or [do so safely](http://www.doctrine-project.org/documentation/cookbook/2_0/en/implementing-wakeup-or-clone).
