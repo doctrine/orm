@@ -8,7 +8,13 @@ error_reporting(E_ALL | E_STRICT);
 
 require_once 'PHPUnit/Framework.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
-require_once __DIR__ . '/../../../lib/Doctrine/Common/ClassLoader.php';
+require_once __DIR__ . '/../../../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
+
+$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Common', __DIR__ . '/../../../lib/vendor/doctrine-common/lib');
+$classLoader->register();
+
+$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\DBAL', __DIR__ . '/../../../lib/vendor/doctrine-dbal/lib');
+$classLoader->register();
 
 $classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
 $classLoader->register();
