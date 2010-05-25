@@ -4,7 +4,8 @@ namespace Doctrine\Tests\ORM\Functional;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadataInfo,
+    Doctrine\Common\Util\Inflector;
 
 class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -29,7 +30,7 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $table = new \Doctrine\DBAL\Schema\Table("dbdriver_foo");
         $table->addColumn('id', 'integer');
         $table->setPrimaryKey(array('id'));
-        $table->addColumn('bar', 'string', array('length' => 200));
+        $table->addColumn('bar', 'string', array('notnull' => false, 'length' => 200));
 
         $this->_sm->dropAndCreateTable($table);
 
@@ -39,14 +40,13 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('id',               $metadata->fieldMappings['id']['fieldName']);
         $this->assertEquals('id',               strtolower($metadata->fieldMappings['id']['columnName']));
         $this->assertEquals('integer',          (string)$metadata->fieldMappings['id']['type']);
-        $this->assertTrue($metadata->fieldMappings['id']['notnull']);
 
         $this->assertArrayHasKey('bar',         $metadata->fieldMappings);
         $this->assertEquals('bar',              $metadata->fieldMappings['bar']['fieldName']);
         $this->assertEquals('bar',              strtolower($metadata->fieldMappings['bar']['columnName']));
         $this->assertEquals('string',           (string)$metadata->fieldMappings['bar']['type']);
         $this->assertEquals(200,                $metadata->fieldMappings['bar']['length']);
-        $this->assertTrue($metadata->fieldMappings['bar']['notnull']);
+        $this->assertTrue($metadata->fieldMappings['bar']['nullable']);
     }
 
     public function testCreateYamlWithForeignKeyFromDatabase()
@@ -88,12 +88,13 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function extractClassMetadata($className)
     {
         $driver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($this->_sm);
-        foreach ($driver->getAllClassNames() as $dbClassName) {
-            $class = new ClassMetadataInfo($dbClassName);
-            $driver->loadMetadataForClass($dbClassName, $class);
-            if (strtolower($class->name) == strtolower($className)) {
-                return $class;
+        foreach ($driver->getAllClassNames() as $dbTableName) {
+            if (strtolower(Inflector::classify($dbTableName)) != strtolower($className)) {
+                continue;
             }
+            $class = new ClassMetadataInfo($dbTableName);
+            $driver->loadMetadataForClass($dbTableName, $class);
+            return $class;
         }
 
         $this->fail("No class matching the name '".$className."' was found!");
