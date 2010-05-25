@@ -185,6 +185,15 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('SUBSTRING(a.title, 0, 25)', (string) $this->_expr->substring('a.title', 0, 25));
     }
 
+    /**
+     * @group regression
+     * @group DDC-612
+     */
+    public function testSubstringExprAcceptsTwoArguments()
+    {
+        $this->assertEquals('SUBSTRING(a.title, 0)', (string) $this->_expr->substring('a.title', 5));
+    }
+
     public function testLowerExpr()
     {
         $this->assertEquals('LOWER(u.first_name)', (string) $this->_expr->lower('u.first_name'));
