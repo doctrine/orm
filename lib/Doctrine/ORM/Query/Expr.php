@@ -470,9 +470,13 @@ class Expr
      * @param integer $len Length of crop. May accept negative values.
      * @return Expr\Func
      */
-    public function substring($x, $from, $len)
+    public function substring($x, $from, $len = null)
     {
-        return new Expr\Func('SUBSTRING', array($x, $from, $len));
+        $args = array($x, $from);
+        if (null !== $len) {
+            $args[] = $len;
+        }
+        return new Expr\Func('SUBSTRING', $args);
     }
 
     /**
