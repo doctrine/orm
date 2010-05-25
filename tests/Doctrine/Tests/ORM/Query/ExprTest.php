@@ -191,7 +191,7 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testSubstringExprAcceptsTwoArguments()
     {
-        $this->assertEquals('SUBSTRING(a.title, 0)', (string) $this->_expr->substring('a.title', 5));
+        $this->assertEquals('SUBSTRING(a.title, 5)', (string) $this->_expr->substring('a.title', 5));
     }
 
     public function testLowerExpr()
