@@ -146,7 +146,7 @@
 
         <d51pearpkg2 baseinstalldir="/" dir="${build.dir}/orm">
            <name>DoctrineORM</name>
-           <summary>Doctrine Object Relationl Mapper</summary>
+           <summary>Doctrine Object Relational Mapper</summary>
            <channel>pear.doctrine-project.org</channel>
            <description>The Doctrine ORM package is the primary package containing the object relational mapper.</description>
            <lead user="jwage" name="Jonathan H. Wage" email="jonwage@gmail.com" />
