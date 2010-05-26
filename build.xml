@@ -11,8 +11,8 @@
     <taskdef classname="phing.tasks.ext.d51PearPkg2Task" name="d51pearpkg2" />
 
     <property file="build.properties" />
-    
-    <!-- 
+
+    <!--
         Fileset for artifacts shared across all distributed packages.
     -->
     <fileset id="shared-artifacts" dir=".">
@@ -27,35 +27,35 @@
         <include name="doctrine.php"/>
     </fileset>
 
-    <!-- 
+    <!--
         Fileset for the sources of the Doctrine Common dependency.
     -->
     <fileset id="common-sources" dir="./lib">
         <include name="Doctrine/Common/**"/>
     </fileset>
 
-    <!-- 
+    <!--
         Fileset for the sources of the Doctrine DBAL dependency.
     -->
     <fileset id="dbal-sources" dir="./lib">
         <include name="Doctrine/DBAL/**"/>
     </fileset>
-    
-    <!-- 
+
+    <!--
         Fileset for the sources of the Doctrine ORM.
     -->
     <fileset id="orm-sources" dir="./lib">
         <include name="Doctrine/ORM/**"/>
     </fileset>
-    
+
     <!--
       Fileset for source of the Symfony YAML and Console components.
     -->
     <fileset id="symfony-sources" dir="./lib/vendor">
         <include name="Symfony/Components/**"/>
     </fileset>
-    
-    <!-- 
+
+    <!--
         Fileset for the Doctrine ORM tools + sandbox.
     -->
     <fileset id="orm-tools" dir=".">
@@ -69,6 +69,9 @@
         <include name="tools/sandbox/index.php"/>
     </fileset>
 
+    <!--
+        Clean the directory for the next build.
+    -->
     <target name="clean">
         <available file="./build.properties" property="build_properties_exist" value="true"/>
         <fail unless="build_properties_exist" message="The build.properties file is missing." />
@@ -78,6 +81,9 @@
         <delete dir="${report.dir}" includeemptydirs="true" />
     </target>
 
+    <!--
+        Prepare the new build directories after cleaning
+    -->
     <target name="prepare" depends="clean">
         <phingcall target="resolve-dependencies"/>
         <echo msg="Creating build directory: ${build.dir}" />
@@ -89,9 +95,9 @@
         <mkdir dir="${build.dir}/logs"/>
         <mkdir dir="${report.dir}/tests"/>
     </target>
-    
-    <!-- 
-        Builds all packages, preparing them for distribution.
+
+    <!--
+        Builds ORM package, preparing it for distribution.
     -->
     <target name="build-orm" depends="test">
         <copy todir="${build.dir}/orm">
@@ -109,15 +115,16 @@
         <copy todir="${build.dir}/orm/bin">
             <fileset refid="bin-scripts"/>
         </copy>
+        <exec command="sed 's/${version}-DEV/${version}/' ${build.dir}/orm/Doctrine/ORM/Version.php > ${build.dir}/orm/Doctrine/ORM/Version2.php" passthru="true" />
+        <exec command="mv ${build.dir}/orm/Doctrine/ORM/Version2.php ${build.dir}/orm/Doctrine/ORM/Version.php" passthru="true" />
     </target>
-    
+
     <target name="build" depends="test, build-orm"/>
-    
-    <!-- 
+
+    <!--
         Runs the full test suite.
     -->
     <target name="test" depends="prepare">
-
         <if><equals arg1="${test.phpunit_generate_coverage}" arg2="1" />
             <then>
                 <property name="test.phpunit_coverage_file" value="${build.dir}/logs/clover.xml" />
@@ -126,7 +133,7 @@
                 <property name="test.phpunit_coverage_file" value="false" />
             </else>
         </if>
-        
+
         <nativephpunit
             testfile="./tests/Doctrine/Tests/AllTests.php" junitlogfile="${build.dir}/logs/testsuites.xml"
             testdirectory="./tests"  coverageclover="${test.phpunit_coverage_file}" configuration="${test.phpunit_configuration_file}"
@@ -135,7 +142,6 @@
 
         <nativephpunit testfile="./tests/Doctrine/Tests/ORM/Performance/AllTests.php" testdirectory="./tests" haltonfailure="false" haltonerror="false" />
         <tstamp/>
-        <!--<svnlastrevision svnpath="${svn.path}" workingcopy="." propertyname="svn.lastrevision"/>-->
         <copy file="${build.dir}/logs/testsuites.xml" tofile="${log.archive.dir}/latest/log.xml" overwrite="true"/>
 
         <if><equals arg1="${test.pmd_reports}" arg2="1" />
@@ -149,11 +155,10 @@
         </if>
     </target>
 
-    <!-- 
+    <!--
         Builds distributable PEAR packages.
     -->
     <target name="build-packages" depends="build-orm">
-
         <d51pearpkg2 baseinstalldir="/" dir="${build.dir}/orm">
            <name>DoctrineORM</name>
            <summary>Doctrine Object Relational Mapper</summary>
@@ -180,8 +185,6 @@
            </release>
         </d51pearpkg2>
         <exec command="pear package" dir="${build.dir}/orm" passthru="true" />
-        <exec command="cp DoctrineORM-${version}.tgz ../../dist" dir="${build.dir}/orm" passthru="true" />
-        <!--<tar destfile="${dist.dir}/DoctrineORM-${version}.tgz" basedir="${build.dir}/orm" compression="gzip" />-->
+        <exec command="mv DoctrineORM-${version}.tgz ../../dist" dir="${build.dir}/orm" passthru="true" />
     </target>
-
 </project>
