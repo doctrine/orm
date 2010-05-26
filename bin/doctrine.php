@@ -2,10 +2,10 @@
 
 require_once 'Doctrine/Common/ClassLoader.php';
 
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine', __DIR__ . '/../lib');
+$classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
 $classLoader->register();
 
-$classLoader = new \Doctrine\Common\ClassLoader('Symfony', __DIR__ . '/../lib/vendor');
+$classLoader = new \Doctrine\Common\ClassLoader('Symfony', 'Doctrine');
 $classLoader->register();
 
 $configFile = getcwd() . DIRECTORY_SEPARATOR . 'cli-config.php';
