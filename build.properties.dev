@@ -1,6 +1,5 @@
-version_name=2.0.0BETA2
-version=2.0.0
-stability=alpha
+version=2.0.0BETA2
+stability=beta
 build.dir=build
 dist.dir=dist
 report.dir=reports

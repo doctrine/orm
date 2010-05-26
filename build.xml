@@ -180,8 +180,8 @@
            </release>
         </d51pearpkg2>
         <exec command="pear package" dir="${build.dir}/orm" passthru="true" />
-        <exec command="cp DoctrineORM-${version}.tgz ../../dist/DoctrineORM-${version_name}.tgz" dir="${build.dir}/orm" passthru="true" />
-        <!--<tar destfile="${dist.dir}/DoctrineORM-${version_name}.tgz" basedir="${build.dir}/orm" compression="gzip" />-->
+        <exec command="cp DoctrineORM-${version}.tgz ../../dist" dir="${build.dir}/orm" passthru="true" />
+        <!--<tar destfile="${dist.dir}/DoctrineORM-${version}.tgz" basedir="${build.dir}/orm" compression="gzip" />-->
     </target>
 
 </project>
