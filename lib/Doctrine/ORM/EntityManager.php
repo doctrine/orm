@@ -616,6 +616,10 @@ class EntityManager
                 $hydrator = new Internal\Hydration\SingleScalarHydrator($this);
                 break;
             default:
+                if ($class = $this->_config->getHydrator($hydrationMode)) {
+                    $hydrator = new $class($this);
+                    break;
+                }
                 throw ORMException::invalidHydrationMode($hydrationMode);
         }
 
