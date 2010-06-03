@@ -464,26 +464,25 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Get a custom hydrator class name if it exists or return null if it
-     * does not.
+     * Get the hydrator class for the given hydration mode name.
      *
-     * @param string $name
-     * @return string $className
+     * @param string $modeName The hydration mode name.
+     * @return string $hydrator The hydrator class name.
      */
-    public function getHydrator($name)
+    public function getCustomHydrationMode($modeName)
     {
-        return isset($this->_attributes['customHydrators'][$name]) ?
-            $this->_attributes['customHydrators'][$name] : null;
+        return isset($this->_attributes['customHydrationModes'][$modeName]) ?
+            $this->_attributes['customHydrationModes'][$modeName] : null;
     }
 
     /**
-     * Add a hydrator class associated with a hydration mode name.
+     * Add a custom hydration mode.
      *
-     * @param string $name The name of the hydration mode.
-     * @param string $class The class name associated with the name.
+     * @param string $modeName The hydration mode name.
+     * @param string $hydrator The hydrator class name.
      */
-    public function addHydrator($name, $class)
+    public function addCustomHydrationMode($modeName, $hydrator)
     {
-        $this->_attributes['customHydrators'][$name] = $class;
+        $this->_attributes['customHydrationModes'][$modeName] = $hydrator;
     }
 }
