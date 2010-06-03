@@ -603,6 +603,34 @@ You can use the `getSingleScalarResult()` shortcut as well:
     [php]
     $numArticles = $query->getSingleScalarResult();
 
+++++ Custom Hydration Modes
+
+You can easily add your own custom hydration modes by first creating a class which extends `AbstractHydrator`:
+
+    [php]
+    namespace MyProject\Hydrators;
+
+    use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+
+    class CustomHydrator extends AbstractHydrator
+    {
+        protected function _hydrateAll()
+        {
+            return $this->_stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+    }
+
+Next you just need to add the class to the ORM configuration:
+
+    [php]
+    $em->getConfiguration()->addHydrator('CustomHydrator', 'MyProject\Hydrators\CustomHydrator');
+
+Now the hydrator is ready to be used in your queries:
+
+    [php]
+    $query = $em->createQuery('SELECT u FROM CmsUser u');
+    $results = $query->getResult('CustomHydrator');
+
 +++ Iterating Large Resultsets
 
 There are situations when a query you want to execute returns a very large result-set that needs
