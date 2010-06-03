@@ -623,7 +623,7 @@ You can easily add your own custom hydration modes by first creating a class whi
 Next you just need to add the class to the ORM configuration:
 
     [php]
-    $em->getConfiguration()->addHydrator('CustomHydrator', 'MyProject\Hydrators\CustomHydrator');
+    $em->getConfiguration()->addCustomHydrationMode('CustomHydrator', 'MyProject\Hydrators\CustomHydrator');
 
 Now the hydrator is ready to be used in your queries:
 
