@@ -832,6 +832,17 @@ class UnitOfWork implements PropertyChangedListener
                         $calc->addClass($targetClass);
                     }
                     $calc->addDependency($targetClass, $class);
+                    // If the target class has mapped subclasses,
+                    // these share the same dependency.
+                    if ($targetClass->subClasses) {
+                        foreach ($targetClass->subClasses as $subClassName) {
+                            $targetSubClass = $this->_em->getClassMetadata($subClassName);
+                            if ( ! $calc->hasClass($subClassName)) {
+                                $calc->addClass($targetSubClass);
+                            }
+                            $calc->addDependency($targetSubClass, $class);
+                        }
+                    }
                 }
             }
         }
