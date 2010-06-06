@@ -10,15 +10,12 @@ class DDC353Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-
         try {
             $this->_schemaTool->createSchema(array(
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC353File'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC353Picture'),
             ));
-        } catch(\Exception $e) {
-            
-        }
+        } catch(\Exception $ignored) {}
     }
 
     public function testWorkingCase()

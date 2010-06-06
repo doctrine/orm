@@ -125,7 +125,13 @@ class LockTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $this->_em->flush();
 
         $this->_em->beginTransaction();
-        $this->_em->lock($article, LockMode::PESSIMISTIC_WRITE);
+        try {
+            $this->_em->lock($article, LockMode::PESSIMISTIC_WRITE);
+            $this->_em->commit();
+        } catch (\Exception $e) {
+            $this->_em->rollback();
+            throw $e;
+        }
 
         $query = array_pop( $this->_sqlLoggerStack->queries );
         $this->assertContains($writeLockSql, $query['sql']);
@@ -149,7 +155,13 @@ class LockTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $this->_em->flush();
 
         $this->_em->beginTransaction();
-        $this->_em->lock($article, LockMode::PESSIMISTIC_READ);
+        try {
+            $this->_em->lock($article, LockMode::PESSIMISTIC_READ);
+            $this->_em->commit();
+        } catch (\Exception $e) {
+            $this->_em->rollback();
+            throw $e;
+        }
 
         $query = array_pop( $this->_sqlLoggerStack->queries );
         $this->assertContains($readLockSql, $query['sql']);
