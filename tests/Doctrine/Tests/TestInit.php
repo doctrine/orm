@@ -10,10 +10,18 @@ require_once 'PHPUnit/Framework.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 require_once __DIR__ . '/../../../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
 
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Common', __DIR__ . '/../../../lib/vendor/doctrine-common/lib');
+if (isset($GLOBALS['DOCTRINE_COMMON_PATH'])) {
+    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Common', $GLOBALS['DOCTRINE_COMMON_PATH']);
+} else {
+    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Common', __DIR__ . '/../../../lib/vendor/doctrine-common/lib');
+}
 $classLoader->register();
 
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\DBAL', __DIR__ . '/../../../lib/vendor/doctrine-dbal/lib');
+if (isset($GLOBALS['DOCTRINE_DBAL_PATH'])) {
+    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\DBAL', $GLOBALS['DOCTRINE_DBAL_PATH']);
+} else {
+    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\DBAL', __DIR__ . '/../../../lib/vendor/doctrine-dbal/lib');
+}
 $classLoader->register();
 
 $classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
