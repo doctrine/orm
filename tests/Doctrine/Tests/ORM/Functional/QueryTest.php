@@ -281,4 +281,34 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->getConfiguration()->setEntityNamespaces(array());
     }
+
+    /**
+     * @group DDC-604
+     */
+    public function testEntityParameters()
+    {
+        $article = new CmsArticle;
+        $article->topic = "dr. dolittle";
+        $article->text = "Once upon a time ...";
+        $author = new CmsUser;
+        $author->name = "anonymous";
+        $author->username = "anon";
+        $author->status = "here";
+        $article->user = $author;
+        $this->_em->persist($author);
+        $this->_em->persist($article);
+        $this->_em->flush();
+        $this->_em->clear();
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $q = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a where a.topic = :topic and a.user = :user")
+                ->setParameter("user", $this->_em->getReference('Doctrine\Tests\Models\CMS\CmsUser', $author->id))
+                ->setParameter("topic", "dr. dolittle");
+
+        $result = $q->getResult();
+        $this->assertEquals(1, count($result));
+        $this->assertTrue($result[0] instanceof CmsArticle);
+        $this->assertEquals("dr. dolittle", $result[0]->topic);
+        $this->assertTrue($result[0]->user instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertFalse($result[0]->user->__isInitialized__);
+    }
 }
