@@ -596,7 +596,7 @@ hydration:
     [php]
     $query = $em->createQuery('SELECT COUNT(a.id) FROM CmsUser u LEFT JOIN u.articles a WHERE u.username = ?1 GROUP BY u.id');
     $query->setParameter(1, 'jwage');
-    $numArticles = $query->getResult(Query::HYDRATE_SCALAR);
+    $numArticles = $query->getResult(Query::HYDRATE_SINGLE_SCALAR);
 
 You can use the `getSingleScalarResult()` shortcut as well:
 
