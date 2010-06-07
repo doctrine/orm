@@ -295,6 +295,9 @@ class ClassMetadata extends ClassMetadataInfo
 
         if ($this->generatorType != self::GENERATOR_TYPE_NONE) {
             $serialized[] = 'generatorType';
+            if ($this->generatorType == self::GENERATOR_TYPE_SEQUENCE) {
+                $serialized[] = 'sequenceGeneratorDefinition';
+            }
         }
 
         if ($this->isMappedSuperclass) {
