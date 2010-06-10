@@ -267,15 +267,166 @@ Although you get passed the EntityManager in all of these events, you have to fo
 carefully since operations in the wrong event may produce lots of different errors, such as inconsistent data and
 lost updates/persists/removes.
 
+For the described events that are also lifecycle callback events the restrictions
+apply aswell, with the additional restriction that you do not have access to the EntityManager
+or UnitOfWork APIs inside these events.
+
 +++ prePersist
+
+There are two ways for the `prePersist` event to be triggered. One is obviously
+when you call `EntityManager#persist()`. The event is also called for all
+cascaded associations.
+
+There is another way for `prePersist` to be called, inside the `flush()`
+method when changes to associations are computed and this association
+is marked as cascade persist. Any new entity found during this operation
+is also persisted and `prePersist` called on it. This is called "persistence by reachability".
+
+In both cases you get passed a `LifecycleEventArgs`
+instance which has access to the entity and the entity manager.
+
+The following restrictions apply to `prePersist`:
+
+* If you are using a PrePersist Identity Generator such as sequences the ID value
+  will *NOT* be available within any PrePersist events.
+* Doctrine will not recognize changes made to relations in a pre persist event
+  called by "reachibility" through a cascade persist unless you use the internal
+  `UnitOfWork` API. We do not recommend such operations in the persistence by
+  reachability context, so do this at your own risk and possibly supported by unit-tests.
 
 +++ preRemove
 
+The `preRemove` event is called on every entity when its passed to
+the `EntityManager#remove()` method. It is cascaded for all
+associations that are marked as cascade delete.
+
+There are no restrictions to what methods can be called inside
+the `preRemove` event, except when the remove method itself was
+called during a flush operation.
+
 +++ onFlush
+
+OnFlush is a very powerful event. It is called inside `EntityManager#flush()`
+after the changes to all the managed entities and their associations have
+been computed. This means, the `onFlush` event has access to the sets of:
+
+* Entities scheduled for insert
+* Entities scheduled for update
+* Entities scheduled for removal
+* Collections scheduled for update
+* Collections scheduled for removal
+
+To make use of the onFlush event you have to be familiar with interal UnitOfWork API,
+which grants you access to the previously mentioned sets. See this example:
+
+    [php]
+    class FlushExampleListener
+    {
+        public function onFlush(OnFlushEventArgs $eventArgs)
+        {
+            $em = $eventArgs->getEntityManager();
+            $uow = $em->getUnitOfWork();
+
+            foreach ($uow->getScheduledEntityInsertions() AS $entity) {
+
+            }
+
+            foreach ($uow->getScheduledEntityUpdates() AS $entity) {
+
+            }
+
+            foreach ($uow->getScheduledEntityDeletions() AS $entity) {
+
+            }
+
+            foreach ($uow->getScheduledCollectionDeletions() AS $col) {
+
+            }
+
+            foreach ($uow->getScheduledCollectionUpdates() AS $col) {
+
+            }
+        }
+    }
+
+The following restrictions apply to the onFlush event:
+
+* Calling `EntityManager#persist()` does not suffice to trigger a persist on an entity.
+  You have to execute an additional call to `$unitOfWork->computeChangeSet($classMetadata, $entity)`.
+* Changing primitive fields or associations requires you to explicitly trigger
+  a re-computation of the changeset of the affected entity. This can be done
+  by either calling `$unitOfWork->computeChangeSet($classMetadata, $entity)`
+  or `$unitOfWork->recomputeSingleEntityChangeSet($classMetadata, $entity)`. The second
+  method has lower overhead, but only re-computes primitive fields, never associations.
 
 +++ preUpdate
 
+PreUpdate is the most restrictive to use event, since it is called right before
+an update statement is called for an entity inside the `EntityManager#flush()`
+method.
+
+Changes to associations of the updated entity are never allowed in this event, since Doctrine cannot guarantee to
+correctly handle referential integrity at this point of the flush operation. This
+event has a powerful feature however, it is executed with a `PreUpdateEventArgs`
+instance, which contains a reference to the computed change-set of this entity.
+
+This means you have access to all the fields that have changed for this entity
+with their old and new value. The following methods are available on the `PreUpdateEventArgs`:
+
+* `getEntity()` to get access to the actual entity.
+* `getEntityChangeSet()` to get a copy of the changeset array. Changes to this returned array do not affect updating.
+* `hasChangedField($fieldName)` to check if the given field name of the current entity changed.
+* `getOldValue($fieldName)` and `getNewValue($fieldName)` to access the values of a field.
+* `setNewValue($fieldName, $value)` to change the value of a field to be updated.
+
+A simple example for this event looks like:
+
+    [php]
+    class NeverAliceOnlyBobListener
+    {
+        public function preUpdate(PreUpdateEventArgs $eventArgs)
+        {
+            if ($eventArgs->getEntity() instanceof User) {
+                if ($eventArgs->hasChangedField('name') && $eventArgs->getNewValue() == 'Alice') {
+                    $eventArgs->setNewValue('name', 'Bob');
+                }
+            }
+        }
+    }
+
+You could also use this listener to implement validation of all the fields that have changed.
+This is more efficient than using a lifecycle callback when there are expensive validations
+to call:
+
+    [php]
+    class ValidCreditCardListener
+    {
+        public function preUpdate(PreUpdateEventArgs $eventArgs)
+        {
+            if ($eventArgs->getEntity() instanceof Account) {
+                if ($eventArgs->hasChangedField('creditCard')) {
+                    $this->validateCreditCard($eventArgs->getNewValue('creditCard'));
+                }
+            }
+        }
+
+        private function validateCreditCard($no)
+        {
+            // throw an exception to interupt flush event. Transaction will be rolled back.
+        }
+    }
+
+Restrictions for this event:
+
+* Changes to associations of the passed entities are not recognized by the flush operation anymore.
+* Changes to fields of the passed entities are not recognized by the flush operation anymore, use the computed change-set passed to the event to modify primitive field values.
+* Any calls to `EntityManager#persist()` or `EntityManager#remove()`, even in combination with the UnitOfWork API are strongly discouraged and don't work as expected outside the flush operation.
+
 +++ postUpdate, postRemove, postPersist
+
+The three post events are called inside `EntityManager#flush()`. Changes in here
+are not relevant to the persistence in the database, but you can use this events
+to
 
 ++ Load ClassMetadata Event
 
