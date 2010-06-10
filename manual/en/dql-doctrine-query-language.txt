@@ -596,12 +596,40 @@ hydration:
     [php]
     $query = $em->createQuery('SELECT COUNT(a.id) FROM CmsUser u LEFT JOIN u.articles a WHERE u.username = ?1 GROUP BY u.id');
     $query->setParameter(1, 'jwage');
-    $numArticles = $query->getResult(Query::HYDRATE_SCALAR);
+    $numArticles = $query->getResult(Query::HYDRATE_SINGLE_SCALAR);
 
 You can use the `getSingleScalarResult()` shortcut as well:
 
     [php]
     $numArticles = $query->getSingleScalarResult();
+
+++++ Custom Hydration Modes
+
+You can easily add your own custom hydration modes by first creating a class which extends `AbstractHydrator`:
+
+    [php]
+    namespace MyProject\Hydrators;
+
+    use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+
+    class CustomHydrator extends AbstractHydrator
+    {
+        protected function _hydrateAll()
+        {
+            return $this->_stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+    }
+
+Next you just need to add the class to the ORM configuration:
+
+    [php]
+    $em->getConfiguration()->addCustomHydrationMode('CustomHydrator', 'MyProject\Hydrators\CustomHydrator');
+
+Now the hydrator is ready to be used in your queries:
+
+    [php]
+    $query = $em->createQuery('SELECT u FROM CmsUser u');
+    $results = $query->getResult('CustomHydrator');
 
 +++ Iterating Large Resultsets
 
