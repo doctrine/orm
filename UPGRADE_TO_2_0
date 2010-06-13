@@ -1,3 +1,10 @@
+# Update from 2.0-BETA2 to 2.0-BETA3
+
+## Default Allocation Size for Sequences
+
+The default allocation size for sequences has been changed from 10 to 1. This step was made
+to not cause confusion with users and also because it is partly some kind of premature optimization.
+
 # Update from 2.0-BETA1 to 2.0-BETA2
 
 There are no backwards incompatible changes in this release.
