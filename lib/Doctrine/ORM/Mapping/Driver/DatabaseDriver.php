@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -34,9 +32,9 @@ use Doctrine\Common\Cache\ArrayCache,
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision$
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
 class DatabaseDriver implements Driver
 {
@@ -83,13 +81,11 @@ class DatabaseDriver implements Driver
         $ids = array();
         $fieldMappings = array();
         foreach ($columns as $column) {
-            if (in_array($column->getName(), $allForeignKeyColumns)) {
-                continue;
-            }
-
             $fieldMapping = array();
             if (isset($indexes['primary']) && in_array($column->getName(), $indexes['primary']->getColumns())) {
                 $fieldMapping['id'] = true;
+            } else if (in_array($column->getName(), $allForeignKeyColumns)) {
+                continue;
             }
 
             $fieldMapping['fieldName'] = Inflector::camelize(strtolower($column->getName()));
