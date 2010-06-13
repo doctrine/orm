@@ -73,11 +73,20 @@ class DatabaseDriver implements Driver
             $foreignKeys = array();
         }
 
+        $allForeignKeyColumns = array();
+        foreach ($foreignKeys AS $foreignKey) {
+            $allForeignKeyColumns = array_merge($allForeignKeyColumns, $foreignKey->getLocalColumns());
+        }
+
         $indexes = $this->_sm->listTableIndexes($tableName);
 
         $ids = array();
         $fieldMappings = array();
         foreach ($columns as $column) {
+            if (in_array($column->getName(), $allForeignKeyColumns)) {
+                continue;
+            }
+
             $fieldMapping = array();
             if (isset($indexes['primary']) && in_array($column->getName(), $indexes['primary']->getColumns())) {
                 $fieldMapping['id'] = true;
@@ -123,7 +132,7 @@ class DatabaseDriver implements Driver
             $fkCols = $foreignKey->getForeignColumns();
 
             $associationMapping = array();
-            $associationMapping['fieldName'] = Inflector::camelize(str_ireplace('_id', '', $localColumn));
+            $associationMapping['fieldName'] = Inflector::camelize(str_replace('_id', '', strtolower($localColumn)));
             $associationMapping['targetEntity'] = Inflector::classify($foreignKey->getForeignTableName());
 
             for ($i = 0; $i < count($cols); $i++) {
@@ -146,16 +155,19 @@ class DatabaseDriver implements Driver
     }
 
     /**
-     * {@inheritDoc}
+     * Return all the class names supported by this driver.
+     *
+     * IMPORTANT: This method must return an array of table names because we need
+     * to know the table name after we inflect it to create the entity class name.
+     *
+     * @return array
      */
     public function getAllClassNames()
     {
         $classes = array();
         
-        foreach ($this->_sm->listTables() as $table) {
-            // This method must return an array of table names because we need
-            // to know the table name after we inflect it to create the entity class name.
-            $classes[] = $table->getName();
+        foreach ($this->_sm->listTableNames() as $tableName) {
+            $classes[] = $tableName;
         }
 
         return $classes;
