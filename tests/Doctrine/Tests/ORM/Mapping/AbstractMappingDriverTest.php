@@ -40,6 +40,21 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      * @depends testEntityTableNameAndInheritance
      * @param ClassMetadata $class
      */
+    public function testEntityIndexes($class)
+    {
+        $this->assertArrayHasKey('indexes', $class->table, 'ClassMetadata should have indexes key in table property.');
+        $this->assertEquals(array(
+            'name_idx' => array('columns' => array('name')),
+            0 => array('columns' => array('user_email'))
+        ), $class->table['indexes']);
+
+        return $class;
+    }
+
+    /**
+     * @depends testEntityTableNameAndInheritance
+     * @param ClassMetadata $class
+     */
     public function testEntityUniqueConstraints($class)
     {
         $this->assertArrayHasKey('uniqueConstraints', $class->table,
@@ -240,7 +255,11 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
 /**
  * @Entity
  * @HasLifecycleCallbacks
- * @Table(name="cms_users", uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"})})
+ * @Table(
+ *  name="cms_users",
+ *  uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"})},
+ *  indexes={@Index(name="name_idx", columns={"name"}), @Index(name="0", columns={"user_email"})}
+ * )
  */
 class User
 {
@@ -410,6 +429,9 @@ class User
           ));
         $metadata->table['uniqueConstraints'] = array(
             'search_idx' => array('columns' => array('name', 'user_email')),
+        );
+        $metadata->table['indexes'] = array(
+            'name_idx' => array('columns' => array('name')), 0 => array('columns' => array('user_email'))
         );
         $metadata->setSequenceGeneratorDefinition(array(
                 'sequenceName' => 'tablename_seq',
