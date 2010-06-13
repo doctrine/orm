@@ -156,7 +156,7 @@
     <!--
         Builds distributable PEAR packages.
     -->
-    <target name="build-packages" depends="build-orm">
+    <target name="build-packages" depends="build">
         <d51pearpkg2 baseinstalldir="/" dir="${build.dir}/orm">
            <name>DoctrineORM</name>
            <summary>Doctrine Object Relational Mapper</summary>
