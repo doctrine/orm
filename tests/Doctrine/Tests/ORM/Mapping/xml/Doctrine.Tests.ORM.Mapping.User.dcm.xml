@@ -7,6 +7,11 @@
                               
     <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
 
+        <indexes>
+            <index name="name_idx" columns="name"/>
+            <index columns="user_email"/>
+        </indexes>
+
         <unique-constraints>
             <unique-constraint columns="name,user_email" name="search_idx" />
         </unique-constraints>

@@ -106,21 +106,25 @@ class XmlDriver extends AbstractFileDriver
 
         // Evaluate <indexes...>
         if (isset($xmlRoot->indexes)) {
+            $metadata->table['indexes'] = array();
             foreach ($xmlRoot->indexes->index as $index) {
-                if (is_string($index['columns'])) {
-                    $columns = explode(',', $index['columns']);
-                } else {
-                    $columns = $index['columns'];
-                }
+                $columns = explode(',', (string)$index['columns']);
 
-                $metadata->table['indexes'][$index['name']] = array(
-                    'columns' => $columns
-                );
+                if (isset($index['name'])) {
+                    $metadata->table['indexes'][(string)$index['name']] = array(
+                        'columns' => $columns
+                    );
+                } else {
+                    $metadata->table['indexes'][] = array(
+                        'columns' => $columns
+                    );
+                }
             }
         }
 
         // Evaluate <unique-constraints..>
         if (isset($xmlRoot->{'unique-constraints'})) {
+            $metadata->table['uniqueConstraints'] = array();
             foreach ($xmlRoot->{'unique-constraints'}->{'unique-constraint'} as $unique) {
                 $columns = explode(',', (string)$unique['columns']);
 
