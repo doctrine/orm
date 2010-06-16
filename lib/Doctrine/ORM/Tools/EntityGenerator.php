@@ -698,6 +698,10 @@ public function <methodName>()
                 $typeOptions[] = 'targetEntity="' . $associationMapping->targetEntityName . '"';
             }
 
+            if (isset($associationMapping->inversedBy)) {
+                $typeOptions[] = 'inversedBy="' . $associationMapping->inversedBy . '"';
+            }
+
             if (isset($associationMapping->mappedBy)) {
                 $typeOptions[] = 'mappedBy="' . $associationMapping->mappedBy . '"';
             }

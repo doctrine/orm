@@ -113,6 +113,7 @@ class PhpExporter extends AbstractExporter
                 $method = 'mapOneToOne';
                 $oneToOneMappingArray = array(
                     'mappedBy'      => $associationMapping->mappedBy,
+                    'inversedBy'    => $associationMapping->inversedBy,
                     'joinColumns'   => $associationMapping->joinColumns,
                     'orphanRemoval' => $associationMapping->orphanRemoval,
                 );

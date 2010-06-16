@@ -196,6 +196,9 @@ class XmlExporter extends AbstractExporter
             if (isset($associationMapping->mappedBy)) {
                 $associationMappingXml->addAttribute('mapped-by', $associationMapping->mappedBy);
             }
+            if (isset($associationMapping->inversedBy)) {
+                $associationMappingXml->addAttribute('inversed-by', $associationMapping->inversedBy);
+            }
             if (isset($associationMapping->orphanRemoval)) {
                 $associationMappingXml->addAttribute('orphan-removal', $associationMapping->orphanRemoval);
             }

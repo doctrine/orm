@@ -34,6 +34,7 @@ $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
 $metadata->mapOneToOne(array(
    'fieldName' => 'address',
    'targetEntity' => 'Doctrine\\Tests\\ORM\\Tools\\Export\\Address',
+   'inversedBy' => 'user',
    'cascade' => 
    array(
    0 => 'remove',
