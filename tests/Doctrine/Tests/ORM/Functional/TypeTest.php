@@ -91,4 +91,49 @@ class TypeTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertType('stdClass', $serialize->object);
     }
+
+    public function testDate()
+    {
+        $dateTime = new DateTimeModel();
+        $dateTime->date = new \DateTime('2009-10-01', new \DateTimeZone('Europe/Berlin'));
+
+        $this->_em->persist($dateTime);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $dateTimeDb = $this->_em->find('Doctrine\Tests\Models\Generic\DateTimeModel', $dateTime->id);
+
+        $this->assertType('DateTime', $dateTimeDb->date);
+        $this->assertEquals('2009-10-01', $dateTimeDb->date->format('Y-m-d'));
+    }
+
+    public function testDateTime()
+    {
+        $dateTime = new DateTimeModel();
+        $dateTime->datetime = new \DateTime('2009-10-02 20:10:52', new \DateTimeZone('Europe/Berlin'));
+
+        $this->_em->persist($dateTime);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $dateTimeDb = $this->_em->find('Doctrine\Tests\Models\Generic\DateTimeModel', $dateTime->id);
+
+        $this->assertType('DateTime', $dateTime->datetime);
+        $this->assertEquals('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
+    }
+
+    public function testTime()
+    {
+        $dateTime = new DateTimeModel();
+        $dateTime->time = new \DateTime('2010-01-01 19:27:20');
+
+        $this->_em->persist($dateTime);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $dateTimeDb = $this->_em->find('Doctrine\Tests\Models\Generic\DateTimeModel', $dateTime->id);
+
+        $this->assertType('DateTime', $dateTime->time);
+        $this->assertEquals('19:27:20', $dateTime->time->format('H:i:s'));
+    }
 }

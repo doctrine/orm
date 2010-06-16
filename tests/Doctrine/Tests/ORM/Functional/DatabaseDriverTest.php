@@ -21,7 +21,7 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_sm = $this->_em->getConnection()->getSchemaManager();
     }
 
-    public function testCreateSimpleYamlFromDatabase()
+    public function testLoadMetadataFromDatabase()
     {
         if (!$this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Platform does not support foreign keys.');
@@ -34,7 +34,10 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_sm->dropAndCreateTable($table);
 
-        $metadata = $this->extractClassMetadata("DbdriverFoo");
+        $metadatas = $this->extractClassMetadata(array("DbdriverFoo"));
+
+        $this->assertArrayHasKey('dbdriver_foo', $metadatas);
+        $metadata = $metadatas['dbdriver_foo'];
 
         $this->assertArrayHasKey('id',          $metadata->fieldMappings);
         $this->assertEquals('id',               $metadata->fieldMappings['id']['fieldName']);
@@ -49,7 +52,7 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($metadata->fieldMappings['bar']['nullable']);
     }
 
-    public function testCreateYamlWithForeignKeyFromDatabase()
+    public function testLoadMetadataWithForeignKeyFromDatabase()
     {
         if (!$this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Platform does not support foreign keys.');
@@ -69,15 +72,18 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_sm->dropAndCreateTable($tableA);
 
-        $metadata = $this->extractClassMetadata("DbdriverBaz");
+        $metadatas = $this->extractClassMetadata(array("DbdriverBar", "DbdriverBaz"));
 
-        $this->assertArrayNotHasKey('bar', $metadata->fieldMappings);
-        $this->assertArrayHasKey('id', $metadata->fieldMappings);
+        $this->assertArrayHasKey('dbdriver_baz', $metadatas);
+        $bazMetadata = $metadatas['dbdriver_baz'];
 
-        $metadata->associationMappings = \array_change_key_case($metadata->associationMappings, \CASE_LOWER);
+        $this->assertArrayNotHasKey('barId', $bazMetadata->fieldMappings, "The foreign Key field should not be inflected as 'barId' field, its an association.");
+        $this->assertArrayHasKey('id', $bazMetadata->fieldMappings);
 
-        $this->assertArrayHasKey('bar', $metadata->associationMappings);
-        $this->assertType('Doctrine\ORM\Mapping\OneToOneMapping', $metadata->associationMappings['bar']);
+        $bazMetadata->associationMappings = \array_change_key_case($bazMetadata->associationMappings, \CASE_LOWER);
+
+        $this->assertArrayHasKey('bar', $bazMetadata->associationMappings);
+        $this->assertType('Doctrine\ORM\Mapping\OneToOneMapping', $bazMetadata->associationMappings['bar']);
     }
 
     /**
@@ -85,18 +91,24 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
      * @param  string $className
      * @return ClassMetadata
      */
-    protected function extractClassMetadata($className)
+    protected function extractClassMetadata(array $classNames)
     {
+        $classNames = array_map('strtolower', $classNames);
+        $metadatas = array();
+
         $driver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($this->_sm);
         foreach ($driver->getAllClassNames() as $dbTableName) {
-            if (strtolower(Inflector::classify($dbTableName)) != strtolower($className)) {
+            if (!in_array(strtolower(Inflector::classify($dbTableName)), $classNames)) {
                 continue;
             }
             $class = new ClassMetadataInfo($dbTableName);
             $driver->loadMetadataForClass($dbTableName, $class);
-            return $class;
+            $metadatas[strtolower($dbTableName)] = $class;
         }
 
-        $this->fail("No class matching the name '".$className."' was found!");
+        if (count($metadatas) != count($classNames)) {
+            $this->fail("Have not found all classes matching the names '" . implode(", ", $classNames) . "' only tables " . implode(", ", array_keys($metadatas)));
+        }
+        return $metadatas;
     }
 }
