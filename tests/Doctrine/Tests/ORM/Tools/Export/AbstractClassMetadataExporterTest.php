@@ -290,6 +290,20 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         return $class;
     }
 
+    /**
+     * @depends testLifecycleCallbacksAreExported
+     * @param ClassMetadataInfo $class
+     */
+    public function testCascadeIsExported($class)
+    {
+        $this->assertTrue($class->associationMappings['phonenumbers']->isCascadePersist);
+        $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeMerge);
+        $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeRemove);
+        $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeRefresh);
+
+        return $class;
+    }
+
     public function __destruct()
     {
         $type = $this->_getType();
