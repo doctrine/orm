@@ -521,7 +521,7 @@ automatically:
 Now lets run a simple query to retrieve the `Employee` we just created:
 
     [sql]
-    select e from Entities\Employee e where e.name = 'test'
+    SELECT e FROM Entities\Employee e WHERE e.name = 'test'
 
 If we check the generated SQL you will notice it has some special conditions added to
 ensure that we will only get back `Employee` entities:
