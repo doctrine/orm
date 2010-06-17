@@ -540,6 +540,7 @@ Doctrine 2 implements this strategy through the use of a discriminator column in
 The example for class table inheritance is the same as single table, you just need to
 change the inheritance type from `SINGLE_TABLE` to `JOINED`:
 
+    [php]
     /**
      * @Entity
      * @InheritanceType("JOINED")
