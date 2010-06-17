@@ -17,7 +17,7 @@ that contains the data which is persisted and retrieved by Doctrine's data mappi
 ## An Example Model: Bug Tracker
 
 For this Getting Started Guide for Doctrine we will implement the Bug Tracker domain model from the [Zend_Db_Table](http://framework.zend.com/manual/en/zend.db.table.html)
-documentation. Reading that documentat we can extract the requirements to be:
+documentation. Reading their documentation we can extract the requirements to be:
 
 * A Bugs has a description, creation date, status, reporter and engineer
 * A bug can occour on different products (platforms)
@@ -491,7 +491,7 @@ Having created the schema we can now start and save entities in the database. Fo
     $entityManager->persist($user);
     $entityManager->flush();
 
-Having a user, he can create products:
+Products can also be created:
 
     [php]
     $newProductName = "My Product";
@@ -509,12 +509,16 @@ You have to explicitly call `flush()` to have the EntityManager write those two 
 
 You might wonder why does this distinction between persist notification and flush exist? Doctrine 2 uses the
 UnitOfWork pattern to aggregate all writes (INSERT, UDPATE, DELETE) into one single fast transaction, which
-is executed when flushing. This way the write-performance is unbelievable fast. Also in more complex scenarios
-than those two before you can request updates on many different entities and all flush them at once.
+is executed when flush is called. Using this approach the write-performance is significantly faster than
+in a scenario where updates are done for each entity in isolation. In more complex scenarios than the
+previous two, you are free to request updates on many different entities and all flush them at once.
 
-Doctrine's UnitOfWork even detects entities that have been retrieved from the database and changed when calling
-flush, so that you only have to keep track of those entities that are new or to be removed and pass them to
-`EntityManager#persist()` and `EntityManager#remove()` respectively.
+Doctrine's UnitOfWork detects entities that have changed after retrieval from the database automatically when
+the flush operation is called, so that you only have to keep track of those entities that are new or to be removed and pass them to
+`EntityManager#persist()` and `EntityManager#remove()` respectively. This comparison to find dirty
+entities that need updating is using a very efficient algorithm that has almost no additional
+memory overhead and can even save you computing power by only updating those database columns
+that really changed.
 
 We are now getting to the "Create a New Bug" requirement and the code for this scenario may look like this:
 
@@ -549,6 +553,8 @@ in the "A first prototype" section. The UnitOfWork will detect this relations wh
 is called and relate them in the database appropriately.
 
 ## Queries for Application Use-Cases
+
+### List of Bugs
 
 Using the previous examples we can fill up the database quite a bit, however we now need to discuss how to query the underlying
 mapper for the required view representations. When opening the application, bugs can be paginated through a list-view, which is the first
@@ -605,6 +611,38 @@ in one single SQL statement. The console output of this script is then:
 > Using Native SQL you could even use stored procedures for data retrieval, or make use of advanced non-portable
 > database queries like PostgreSql's recursive queries.
 
+### Array Hydration of the Bug List
+
+In the previous use-case we retrieved the result as their respective object instances.
+We are not limitied to retrieving objects only from Doctrine however. For a simple list view
+like the previous one we only need read access to our entities and can switch the hydration
+from objects to simple PHP arrays instead. This can obviously yiel considerable performance benefits for read-only requests.
+
+Implementing the same list view as before using array hydration we can rewrite our code:
+
+    [php]
+    $dql = "SELECT b, e, r, p FROM Bug b JOIN b.engineer e ".
+           "JOIN b.reporter r JOIN b.products p ORDER BY b.created DESC";
+    $query = $em->createQuery($dql);
+    $bugs = $query->getArrayResult();
+
+    foreach ($bugs AS $bug) {
+        echo $bug['description'] . " - " . $bug['created']->format('d.m.Y')."\n";
+        echo "    Reported by: ".$bug['reporter']['name']."\n";
+        echo "    Assigned to: ".$bug['engineer']['name']."\n";
+        foreach($bug['products'] AS $product) {
+            echo "    Platform: ".$product['name']."\n";
+        }
+        echo "\n";
+    }
+
+There is one significant difference in the DQL query however, we have
+to add an additional fetch-join for the products connected to a bug. The resulting
+SQL query for this single select statement is pretty large, however still
+more efficient to retrieve compared to hydrating objects.
+
+### Find by Primary Key
+
 The next Use-Case is displaying a Bug by primary key. This could be done using DQL as in the previous example with a where clause,
 however there is a convenience method on the Entity Manager that handles loading by primary key, which we have already
 seen in the write scenarios:
@@ -619,8 +657,10 @@ However we will soon see another problem with our entities using this approach. 
     echo "Engineer: ".$bug->getEngineer()->name."\n";
 
 It will be null! What is happening? It worked in the previous example, so it can't be a problem with the persistance
-code of Doctrine. You walked in the public property trap. Since we only retrieved the bug by primary key both the
-engineer and reporter are not immediately loaded from the database but are replaced by LazyLoading proxies. Sample
+code of Doctrine. What is it then? You walked in the public property trap.
+
+Since we only retrieved the bug by primary key both the engineer and reporter are not immediately loaded
+from the database but are replaced by LazyLoading proxies. Sample
 code of this proxy generated code can be found in the specified Proxy Directory, it looks like:
 
     [php]
@@ -647,8 +687,8 @@ code of this proxy generated code can be found in the specified Proxy Directory,
     }
 
 See how upon each method call the proxy is lazily loaded from the database? Using public properties however
-we never call a method and Doctrine has no way to hook into the PHP Engine to detect this access and trigger
-the lazy load. We need to revise our entities, make all the properties private or protected and add getters
+we never call a method and Doctrine has no way to hook into the PHP Engine to detect a direct access to a public property
+and trigger the lazy load. We need to rewrite our entities, make all the properties private or protected and add getters
 and setters to get a working example:
 
     [php]
@@ -659,6 +699,11 @@ and setters to get a working example:
     Bug: Something does not work!
     Engineer: beberlei
     */
+
+Being required to use private or protected properties Doctrine 2 actually enforces you to encapsulate
+your objects according to object-oriented best-practices.
+
+## Dashboard of the User
 
 For the next use-case we want to retrieve the dashboard view, a list of all open bugs the user reported or
 was assigned to. This will be achieved using DQL again, this time with some WHERE clauses and usage of bound parameters:
@@ -678,6 +723,23 @@ was assigned to. This will be achieved using DQL again, this time with some WHER
 
 That is it for the read-scenarios of this example, we will continue with the last missing bit, engineers
 being able to close a bug.
+
+## Number of Bugs
+
+Until now we only retrieved entities or their array representation. Doctrine also supports the retrieval
+of non-entities through DQL. These values are called "scalar result values" and may even be aggregate
+values using COUNT, SUM, MIN, MAX or AVG functions.
+
+We will need this knowledge to retrieve the number of open bugs grouped by product:
+
+    [php]
+    $dql = "SELECT p.id, p.name, count(b.id) AS openBugs FROM Bug b ".
+           "JOIN b.products p WHERE b.status = 'OPEN' GROUP BY p.id";
+    $productBugs = $em->createQuery($dql)->getScalarResult();
+
+    foreach($productBugs as $productBug) {
+        echo $productBug['name']." has " . $productBug['openBugs'] . " open bugs!\n";
+    }
 
 ## Updating Entities
 
