@@ -56,6 +56,7 @@ Optional attributes:
 
 Examples:
 
+    [php]
     /**
      * @Column(type="string", length=32, unique=true, nullable=false)
      */
@@ -85,6 +86,7 @@ can be found in the configuration section.
 
 Example:
 
+    [php]
     /**
      * @Entity
      * @ChangeTrackingPolicy("DEFERRED_IMPLICIT")
@@ -116,6 +118,7 @@ an array as only argument which defines which class should be saved under which 
 are the database value and values are the classes, either as fully- or as unqualified class names depending
 if the classes are in the namespace or not.
 
+    [php]
     /**
      * @Entity
      * @InheritanceType("JOINED")
@@ -139,6 +142,7 @@ Optional attributes:
 
 Example:
 
+    [php]
     /**
      * @Entity(repositoryClass="MyProject\UserRepository")
      */
@@ -161,6 +165,7 @@ Required attributes:
 
 Example:
 
+    [php]
     /**
      * @Id
      * @Column(type="integer")
@@ -177,6 +182,7 @@ callback annotations set on at least one of its methods. Using @PostLoad, @PrePe
 
 Example:
 
+    [php]
     /**
      * @Entity
      * @HasLifecycleCallbacks
@@ -203,6 +209,7 @@ Required attributes:
 
 Example:
 
+    [php]
     /**
      * @Entity
      * @Table(name="ecommerce_products",indexes={@index(name="search_idx", columns={"name", "email"})})
@@ -220,6 +227,7 @@ identifier columns each column has to be marked with @Id.
 
 Example:
 
+    [php]
     /**
      * @Id
      * @Column(type="integer")
@@ -237,6 +245,7 @@ This annotation has always been used in conjunction with the [@DiscriminatorMap]
 
 Examples:
 
+    [php]
     /**
      * @Entity
      * @InheritanceType("SINGLE_TABLE")
@@ -281,6 +290,7 @@ Optional attributes:
 
 Example:
 
+    [php]
     /**
      * @OneToOne(targetEntity="Customer")
      * @JoinColumn(name="customer_id", referencedColumnName="id")
@@ -312,6 +322,7 @@ Optional attributes:
 
 Example:
 
+    [php]
     /**
      * @ManyToMany(targetEntity="Phonenumber")
      * @JoinTable(name="users_phonenumbers",
@@ -338,6 +349,7 @@ Optional attributes:
 
 Example:
 
+    [php]
     /**
      * @ManyToOne(targetEntity="Cart", cascade="ALL", fetch="EAGER")
      */
@@ -368,6 +380,7 @@ Optional attributes:
 
 Example:
 
+    [php]
     /**
      * Owning Side
      *
@@ -417,6 +430,7 @@ owning instance, should be removed by Doctrine. Defaults to false.
 
 Example:
 
+    [php]
     /**
      * @OneToOne(targetEntity="Customer")
      * @JoinColumn(name="customer_id", referencedColumnName="id")
@@ -439,6 +453,7 @@ owning instance, should be removed by Doctrine. Defaults to false.
 
 Example:
 
+    [php]
     /**
      * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
      */
@@ -455,6 +470,7 @@ This annotation requires a single non-attributed value with an DQL snippet:
 
 Example:
 
+    [php]
     /**
      * @ManyToMany(targetEntity="Group")
      * @OrderBy({"name" = "ASC"})
@@ -519,6 +535,7 @@ Optional attributes:
 
 Example:
 
+    [php]
     /**
      * @Id
      * @GeneratedValue(strategy="SEQUENCE")
@@ -545,6 +562,7 @@ Optional attributes:
 
 Example:
 
+    [php]
     /**
      * @Entity
      * @Table(name="user",
@@ -568,6 +586,7 @@ Required attributes:
 
 Example:
 
+    [php]
     /**
      * @Entity
      * @Table(name="ecommerce_products",uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "email"})})
@@ -584,6 +603,7 @@ It only works on [@Column](#ann_column) annotations that have the type integer o
 
 Example:
 
+    [php]
     /**
      * @column(type="integer")
      * @version
