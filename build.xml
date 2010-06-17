@@ -55,20 +55,6 @@
     </fileset>
 
     <!--
-        Fileset for the Doctrine ORM tools + sandbox.
-    -->
-    <fileset id="orm-tools" dir=".">
-        <include name="tools/sandbox/Entities"/>
-        <include name="tools/sandbox/xml"/>
-        <include name="tools/sandbox/yaml"/>
-        <include name="tools/sandbox/cli-config.php"/>
-        <include name="tools/sandbox/config.php"/>
-        <include name="tools/sandbox/doctrine"/>
-        <include name="tools/sandbox/doctrine.php"/>
-        <include name="tools/sandbox/index.php"/>
-    </fileset>
-
-    <!--
         Clean the directory for the next build.
     -->
     <target name="clean">
@@ -100,7 +86,6 @@
     <target name="build-orm" depends="test">
         <copy todir="${build.dir}/orm">
             <fileset refid="shared-artifacts"/>
-            <fileset refid="orm-tools"/>
         </copy>
         <copy todir="${build.dir}/orm">
             <fileset refid="common-sources"/>
