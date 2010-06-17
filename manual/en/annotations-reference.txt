@@ -334,6 +334,7 @@ Optional attributes:
 
 * cascade - Cascade Option
 * fetch - One of LAZY or EAGER
+* inversedBy - The inversedBy attribute designates the ﬁeld in the entity that is the inverse side of the relationship.
 
 Example:
 
@@ -356,15 +357,21 @@ Required attributes:
 Optional attributes:
 
 * mappedBy - This option specifies the property name on the targetEntity that is the owning side of this relation. Its a required attribute for the inverse side of a relationship.
+* inversedBy - The inversedBy attribute designates the ﬁeld in the entity that is the inverse side of the relationship.
 * cascade - Cascade Option
 * fetch - One of LAZY or EAGER
+
+> **NOTE**
+> For ManyToMany bidirectional relationships either side may be the owning side (the side 
+> that defines the @JoinTable and/or does not make use of the mappedBy attribute, thus 
+> using a default join table).
 
 Example:
 
     /**
      * Owning Side
      *
-     * @ManyToMany(targetEntity="Group")
+     * @ManyToMany(targetEntity="Group", inversedBy="features")
      * @JoinTable(name="user_groups",
      *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
@@ -390,7 +397,7 @@ The @MappedSuperclass annotation cannot be used in conjunction with @Entity. See
 section for [more details on the restrictions of mapped superclasses](/../inheritance-mapping#mapped-superclasses).
 
 <a name="ann_onetoone"></a>
-+++ @OnetoOne
++++ @OneToOne
 
 The @OneToOne annotation works almost exactly as the [@ManyToOne](#ann_manytoone) with one additional option
 that can be specified. The configuration defaults for [@JoinColumn](#ann_joincolumn) using the target entity table and primary key column names
@@ -406,9 +413,36 @@ Optional attributes:
 * fetch - One of LAZY or EAGER
 * orphanRemoval - Boolean that specifies if orphans, inverse OneToOne entities that are not connected to any
 owning instance, should be removed by Doctrine. Defaults to false.
+* inversedBy - The inversedBy attribute designates the ﬁeld in the entity that is the inverse side of the relationship.
+
+Example:
+
+    /**
+     * @OneToOne(targetEntity="Customer")
+     * @JoinColumn(name="customer_id", referencedColumnName="id")
+     */
+    private $customer;
 
 <a name="ann_onetomany"></a>
 +++ @OneToMany
+
+Required attributes:
+
+* targetEntity - FQCN of the referenced target entity. Can be the unqualified class name if both classes are in the same namespace.
+
+Optional attributes:
+
+* cascade - Cascade Option
+* orphanRemoval - Boolean that specifies if orphans, inverse OneToOne entities that are not connected to any
+owning instance, should be removed by Doctrine. Defaults to false.
+* mappedBy - This option specifies the property name on the targetEntity that is the owning side of this relation. Its a required attribute for the inverse side of a relationship.
+
+Example:
+
+    /**
+     * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
+     */
+    public $phonenumbers;
 
 <a name="ann_orderby"></a>
 +++ @OrderBy

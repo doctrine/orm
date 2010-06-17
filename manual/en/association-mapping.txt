@@ -9,7 +9,6 @@ When mapping bidirectional associations it is important to understand the concep
 * A unidirectional relationship only has an owning side.
 * The owning side of a relationship determines the updates to the relationship in the database.
 
-
 The following rules apply to *bidirectional* associations:
 
 * The inverse side of a bidirectional relationship must refer to its owning side by use of the mappedBy attribute of the OneToOne, OneToMany, or ManyToMany mapping declaration. The mappedBy attribute designates the ﬁeld in the entity that is the owner of the relationship.
@@ -27,7 +26,7 @@ in the object world. There are 2 references on each side of the association
 and these 2 references both represent the same association but can change 
 independently of one another. Of course, in a correct application the semantics
 of the bidirectional association are properly maintained by the application
-developer (that's his responsiblity). Doctrine needs to know which of
+developer (that's his responsibility). Doctrine needs to know which of
 these two in-memory references is the one that should be persisted and which
 not. This is what the owning/inverse concept is mainly used for.
 
