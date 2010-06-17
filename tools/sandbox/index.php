@@ -19,11 +19,11 @@ require_once '../../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.p
 
 // Set up class loading. You could use different autoloaders, provided by your favorite framework,
 // if you want to.
-$classLoader = new ClassLoader('Doctrine\\ORM', realpath(__DIR__ . '/../../lib'));
+$classLoader = new ClassLoader('Doctrine\ORM', realpath(__DIR__ . '/../../lib'));
 $classLoader->register();
-$classLoader = new ClassLoader('Doctrine\\DBAL', realpath(__DIR__ . '/../../lib/vendor/doctrine-dbal/lib'));
+$classLoader = new ClassLoader('Doctrine\DBAL', realpath(__DIR__ . '/../../lib/vendor/doctrine-dbal/lib'));
 $classLoader->register();
-$classLoader = new ClassLoader('Doctrine\\Common', realpath(__DIR__ . '/../../lib/vendor/doctrine-common/lib'));
+$classLoader = new ClassLoader('Doctrine\Common', realpath(__DIR__ . '/../../lib/vendor/doctrine-common/lib'));
 $classLoader->register();
 $classLoader = new ClassLoader('Symfony', realpath(__DIR__ . '/../../lib/vendor'));
 $classLoader->register();
