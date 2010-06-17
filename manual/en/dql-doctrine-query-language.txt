@@ -520,17 +520,14 @@ automatically:
 
 Now lets run a simple query to retrieve the `Employee` we just created:
 
-    [php]
-    $query = $em->createQuery('select e from Entities\Employee e where e.name = ?1');
-    $query->setParameter('1', 'test');
+    [sql]
+    select e from Entities\Employee e where e.name = 'test'
 
 If we check the generated SQL you will notice it has some special conditions added to
 ensure that we will only get back `Employee` entities:
 
-    [php]
-    echo $query->getSql();
-
-    // SELECT p0_.id AS id0, p0_.name AS name1, p0_.department AS department2, p0_.discr AS discr3 FROM Person p0_ WHERE (p0_.name = ?) AND p0_.discr IN ('employee')
+    [sql]
+    SELECT p0_.id AS id0, p0_.name AS name1, p0_.department AS department2, p0_.discr AS discr3 FROM Person p0_ WHERE (p0_.name = ?) AND p0_.discr IN ('employee')
 
 +++ Class Table Inheritance
 
