@@ -48,6 +48,8 @@ class DatabaseDriver implements Driver
      */
     private $tables = null;
 
+    private $classes = array();
+
     /**
      * @var array
      */
@@ -71,8 +73,7 @@ class DatabaseDriver implements Driver
         }
 
         foreach ($this->_sm->listTableNames() as $tableName) {
-            $tableName = strtolower($tableName);
-            $tables[$tableName] = $this->_sm->listTableDetails($tableName);
+            $tables[strtolower($tableName)] = $this->_sm->listTableDetails($tableName);
         }
 
         $this->tables = array();
@@ -94,15 +95,17 @@ class DatabaseDriver implements Driver
             sort($allForeignKeyColumns);
 
             if ($pkColumns == $allForeignKeyColumns) {
-                if (count($table->getForeignKeys()) != 2) {
-                    throw new \InvalidArgumentException("ManyToMany tables with more or less than two foreign keys are not supported by the Database Reverese Engineering Driver.");
+                if (count($table->getForeignKeys()) > 2) {
+                    throw new \InvalidArgumentException("ManyToMany table '" . $name . "' with more or less than two foreign keys are not supported by the Database Reverese Engineering Driver.");
                 }
 
                 $this->manyToManyTables[$name] = $table;
             } else {
+                $className = Inflector::classify($name);
                 $this->tables[$name] = $table;
+                $this->classes[$className] = $name;
             }
-        }        
+        }
     }
     
     /**
@@ -112,14 +115,14 @@ class DatabaseDriver implements Driver
     {
         $this->reverseEngineerMappingFromDatabase();
 
+        if (!isset($this->classes[$className])) {
+            throw new \InvalidArgumentException("Unknown class " . $className);
+        }
+
         $tableName = Inflector::tableize($className);
 
         $metadata->name = $className;
         $metadata->table['name'] = $tableName;
-
-        if (!isset($this->tables[$tableName])) {
-            throw new \InvalidArgumentException("Unknown table " . $tableName . " referred from class " . $className);
-        }
 
         $columns = $this->tables[$tableName]->getColumns();
         $indexes = $this->tables[$tableName]->getIndexes();
@@ -266,6 +269,6 @@ class DatabaseDriver implements Driver
     {
         $this->reverseEngineerMappingFromDatabase();
 
-        return array_map(array('Doctrine\Common\Util\Inflector', 'classify'), array_keys($this->tables));
+        return array_keys($this->classes);
     }
 }
