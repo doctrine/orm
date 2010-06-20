@@ -16,6 +16,7 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function setUp()
     {
+        $this->useModelSet('cms');
         parent::setUp();
 
         $this->_sm = $this->_em->getConnection()->getSchemaManager();
@@ -36,8 +37,8 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $metadatas = $this->extractClassMetadata(array("DbdriverFoo"));
 
-        $this->assertArrayHasKey('dbdriver_foo', $metadatas);
-        $metadata = $metadatas['dbdriver_foo'];
+        $this->assertArrayHasKey('DbdriverFoo', $metadatas);
+        $metadata = $metadatas['DbdriverFoo'];
 
         $this->assertArrayHasKey('id',          $metadata->fieldMappings);
         $this->assertEquals('id',               $metadata->fieldMappings['id']['fieldName']);
@@ -74,8 +75,8 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $metadatas = $this->extractClassMetadata(array("DbdriverBar", "DbdriverBaz"));
 
-        $this->assertArrayHasKey('dbdriver_baz', $metadatas);
-        $bazMetadata = $metadatas['dbdriver_baz'];
+        $this->assertArrayHasKey('DbdriverBaz', $metadatas);
+        $bazMetadata = $metadatas['DbdriverBaz'];
 
         $this->assertArrayNotHasKey('barId', $bazMetadata->fieldMappings, "The foreign Key field should not be inflected as 'barId' field, its an association.");
         $this->assertArrayHasKey('id', $bazMetadata->fieldMappings);
@@ -85,6 +86,24 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertArrayHasKey('bar', $bazMetadata->associationMappings);
         $this->assertType('Doctrine\ORM\Mapping\OneToOneMapping', $bazMetadata->associationMappings['bar']);
     }
+
+    public function testDetectManyToManyTables()
+    {
+        if (!$this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            $this->markTestSkipped('Platform does not support foreign keys.');
+        }
+
+        $metadatas = $this->extractClassMetadata(array("CmsUsers", "CmsGroups"));
+
+        $this->assertArrayHasKey('CmsUsers', $metadatas, 'CmsUsers entity was not detected.');
+        $this->assertArrayHasKey('CmsGroups', $metadatas, 'CmsGroups entity was not detected.');
+
+        $this->assertEquals(1, count($metadatas['CmsUsers']->associationMappings));
+        $this->assertArrayHasKey('group', $metadatas['CmsUsers']->associationMappings);
+        $this->assertEquals(1, count($metadatas['CmsGroups']->associationMappings));
+        $this->assertArrayHasKey('user', $metadatas['CmsGroups']->associationMappings);
+    }
+
 
     /**
      *
@@ -97,13 +116,13 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $metadatas = array();
 
         $driver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($this->_sm);
-        foreach ($driver->getAllClassNames() as $dbTableName) {
-            if (!in_array(strtolower(Inflector::classify($dbTableName)), $classNames)) {
+        foreach ($driver->getAllClassNames() as $className) {
+            if (!in_array(strtolower($className), $classNames)) {
                 continue;
             }
-            $class = new ClassMetadataInfo($dbTableName);
-            $driver->loadMetadataForClass($dbTableName, $class);
-            $metadatas[strtolower($dbTableName)] = $class;
+            $class = new ClassMetadataInfo($className);
+            $driver->loadMetadataForClass($className, $class);
+            $metadatas[$className] = $class;
         }
 
         if (count($metadatas) != count($classNames)) {
