@@ -96,10 +96,32 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(isset($class->fieldMappings['name']));
         $this->assertTrue(isset($class->fieldMappings['email']));
 
+        return $class;
+    }
+
+    /**
+     * @depends testEntityTableNameAndInheritance
+     * @param ClassMetadata $class
+     */
+    public function testFieldMappingsColumnNames($class)
+    {
+        $this->assertEquals("id", $class->fieldMappings['id']['columnName']);
+        $this->assertEquals("name", $class->fieldMappings['name']['columnName']);
+        $this->assertEquals("user_email", $class->fieldMappings['email']['columnName']);
+
+        return $class;
+    }
+
+    /**
+     * @depends testEntityTableNameAndInheritance
+     * @param ClassMetadata $class
+     */
+    public function testStringFieldMappings($class)
+    {
         $this->assertEquals('string', $class->fieldMappings['name']['type']);
+        $this->assertEquals(50, $class->fieldMappings['name']['length']);
         $this->assertTrue($class->fieldMappings['name']['nullable']);
         $this->assertTrue($class->fieldMappings['name']['unique']);
-        $this->assertEquals("user_email", $class->fieldMappings['email']['columnName']);
 
         return $class;
     }
