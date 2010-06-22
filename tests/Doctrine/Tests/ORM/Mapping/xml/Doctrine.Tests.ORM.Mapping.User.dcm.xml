@@ -7,6 +7,11 @@
                               
     <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
 
+        <indexes>
+            <index name="name_idx" columns="name"/>
+            <index columns="user_email"/>
+        </indexes>
+
         <unique-constraints>
             <unique-constraint columns="name,user_email" name="search_idx" />
         </unique-constraints>
@@ -18,8 +23,8 @@
         </lifecycle-callbacks>
 
         <id name="id" type="integer" column="id">
-            <sequence-generator sequence-name="tablename_seq" allocation-size="100" initial-value="1" />
             <generator strategy="AUTO"/>
+            <sequence-generator sequence-name="tablename_seq" allocation-size="100" initial-value="1" />
         </id>
         
         <field name="name" column="name" type="string" length="50" nullable="true" unique="true" />
@@ -31,12 +36,12 @@
         </one-to-one>
         
         <one-to-many field="phonenumbers" target-entity="Phonenumber" mapped-by="user">
-            <order-by>
-                <order-by-field name="number" direction="ASC" />
-            </order-by>
             <cascade>
                 <cascade-persist/>
             </cascade>
+            <order-by>
+                <order-by-field name="number" direction="ASC" />
+            </order-by>
         </one-to-many>
         
         <many-to-many field="groups" target-entity="Group">

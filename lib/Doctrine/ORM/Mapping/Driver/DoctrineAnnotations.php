@@ -119,7 +119,7 @@ final class JoinTable extends Annotation {
 }
 final class SequenceGenerator extends Annotation {
     public $sequenceName;
-    public $allocationSize = 10;
+    public $allocationSize = 1;
     public $initialValue = 1;
 }
 final class ChangeTrackingPolicy extends Annotation {}

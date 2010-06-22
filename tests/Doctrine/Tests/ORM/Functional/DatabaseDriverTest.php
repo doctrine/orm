@@ -4,7 +4,8 @@ namespace Doctrine\Tests\ORM\Functional;
 
 require_once __DIR__ . '/../../TestInit.php';
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadataInfo,
+    Doctrine\Common\Util\Inflector;
 
 class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -15,12 +16,13 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function setUp()
     {
+        $this->useModelSet('cms');
         parent::setUp();
 
         $this->_sm = $this->_em->getConnection()->getSchemaManager();
     }
 
-    public function testCreateSimpleYamlFromDatabase()
+    public function testLoadMetadataFromDatabase()
     {
         if (!$this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Platform does not support foreign keys.');
@@ -29,27 +31,29 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $table = new \Doctrine\DBAL\Schema\Table("dbdriver_foo");
         $table->addColumn('id', 'integer');
         $table->setPrimaryKey(array('id'));
-        $table->addColumn('bar', 'string', array('length' => 200));
+        $table->addColumn('bar', 'string', array('notnull' => false, 'length' => 200));
 
         $this->_sm->dropAndCreateTable($table);
 
-        $metadata = $this->extractClassMetadata("DbdriverFoo");
+        $metadatas = $this->extractClassMetadata(array("DbdriverFoo"));
+
+        $this->assertArrayHasKey('DbdriverFoo', $metadatas);
+        $metadata = $metadatas['DbdriverFoo'];
 
         $this->assertArrayHasKey('id',          $metadata->fieldMappings);
         $this->assertEquals('id',               $metadata->fieldMappings['id']['fieldName']);
         $this->assertEquals('id',               strtolower($metadata->fieldMappings['id']['columnName']));
         $this->assertEquals('integer',          (string)$metadata->fieldMappings['id']['type']);
-        $this->assertTrue($metadata->fieldMappings['id']['notnull']);
 
         $this->assertArrayHasKey('bar',         $metadata->fieldMappings);
         $this->assertEquals('bar',              $metadata->fieldMappings['bar']['fieldName']);
         $this->assertEquals('bar',              strtolower($metadata->fieldMappings['bar']['columnName']));
         $this->assertEquals('string',           (string)$metadata->fieldMappings['bar']['type']);
         $this->assertEquals(200,                $metadata->fieldMappings['bar']['length']);
-        $this->assertTrue($metadata->fieldMappings['bar']['notnull']);
+        $this->assertTrue($metadata->fieldMappings['bar']['nullable']);
     }
 
-    public function testCreateYamlWithForeignKeyFromDatabase()
+    public function testLoadMetadataWithForeignKeyFromDatabase()
     {
         if (!$this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Platform does not support foreign keys.');
@@ -69,33 +73,61 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_sm->dropAndCreateTable($tableA);
 
-        $metadata = $this->extractClassMetadata("DbdriverBaz");
+        $metadatas = $this->extractClassMetadata(array("DbdriverBar", "DbdriverBaz"));
 
-        $this->assertArrayNotHasKey('bar', $metadata->fieldMappings);
-        $this->assertArrayHasKey('id', $metadata->fieldMappings);
+        $this->assertArrayHasKey('DbdriverBaz', $metadatas);
+        $bazMetadata = $metadatas['DbdriverBaz'];
 
-        $metadata->associationMappings = \array_change_key_case($metadata->associationMappings, \CASE_LOWER);
+        $this->assertArrayNotHasKey('barId', $bazMetadata->fieldMappings, "The foreign Key field should not be inflected as 'barId' field, its an association.");
+        $this->assertArrayHasKey('id', $bazMetadata->fieldMappings);
 
-        $this->assertArrayHasKey('bar', $metadata->associationMappings);
-        $this->assertType('Doctrine\ORM\Mapping\OneToOneMapping', $metadata->associationMappings['bar']);
+        $bazMetadata->associationMappings = \array_change_key_case($bazMetadata->associationMappings, \CASE_LOWER);
+
+        $this->assertArrayHasKey('bar', $bazMetadata->associationMappings);
+        $this->assertType('Doctrine\ORM\Mapping\OneToOneMapping', $bazMetadata->associationMappings['bar']);
     }
+
+    public function testDetectManyToManyTables()
+    {
+        if (!$this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            $this->markTestSkipped('Platform does not support foreign keys.');
+        }
+
+        $metadatas = $this->extractClassMetadata(array("CmsUsers", "CmsGroups"));
+
+        $this->assertArrayHasKey('CmsUsers', $metadatas, 'CmsUsers entity was not detected.');
+        $this->assertArrayHasKey('CmsGroups', $metadatas, 'CmsGroups entity was not detected.');
+
+        $this->assertEquals(1, count($metadatas['CmsUsers']->associationMappings));
+        $this->assertArrayHasKey('group', $metadatas['CmsUsers']->associationMappings);
+        $this->assertEquals(1, count($metadatas['CmsGroups']->associationMappings));
+        $this->assertArrayHasKey('user', $metadatas['CmsGroups']->associationMappings);
+    }
+
 
     /**
      *
      * @param  string $className
      * @return ClassMetadata
      */
-    protected function extractClassMetadata($className)
+    protected function extractClassMetadata(array $classNames)
     {
+        $classNames = array_map('strtolower', $classNames);
+        $metadatas = array();
+
         $driver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($this->_sm);
-        foreach ($driver->getAllClassNames() as $dbClassName) {
-            $class = new ClassMetadataInfo($dbClassName);
-            $driver->loadMetadataForClass($dbClassName, $class);
-            if (strtolower($class->name) == strtolower($className)) {
-                return $class;
+        foreach ($driver->getAllClassNames() as $className) {
+            if (!in_array(strtolower($className), $classNames)) {
+                continue;
             }
+            $class = new ClassMetadataInfo($className);
+            $driver->loadMetadataForClass($className, $class);
+            $metadatas[$className] = $class;
         }
 
-        $this->fail("No class matching the name '".$className."' was found!");
+        if (count($metadatas) != count($classNames)) {
+            $this->fail("Have not found all classes matching the names '" . implode(", ", $classNames) . "' only tables " . implode(", ", array_keys($metadatas)));
+        }
+        return $metadatas;
     }
 }

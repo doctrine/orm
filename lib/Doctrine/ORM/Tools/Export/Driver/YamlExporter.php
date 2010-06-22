@@ -168,6 +168,7 @@ class YamlExporter extends AbstractExporter
                 }
                 $oneToOneMappingArray = array(
                     'mappedBy'      => $associationMapping->mappedBy,
+                    'inversedBy'    => $associationMapping->inversedBy,
                     'joinColumns'   => $newJoinColumns,
                     'orphanRemoval' => $associationMapping->orphanRemoval,
                 );
@@ -177,6 +178,7 @@ class YamlExporter extends AbstractExporter
             } else if ($associationMapping instanceof OneToManyMapping) {
                 $oneToManyMappingArray = array(
                     'mappedBy'      => $associationMapping->mappedBy,
+                    'inversedBy'    => $associationMapping->inversedBy,
                     'orphanRemoval' => $associationMapping->orphanRemoval,
                     'orderBy' => $associationMapping->orderBy
                 );
@@ -185,8 +187,9 @@ class YamlExporter extends AbstractExporter
                 $array['oneToMany'][$name] = $associationMappingArray;
             } else if ($associationMapping instanceof ManyToManyMapping) {
                 $manyToManyMappingArray = array(
-                    'mappedBy'  => $associationMapping->mappedBy,
-                    'joinTable' => $associationMapping->joinTable,
+                    'mappedBy'   => $associationMapping->mappedBy,
+                    'inversedBy' => $associationMapping->inversedBy,
+                    'joinTable'  => $associationMapping->joinTable,
                     'orderBy' => $associationMapping->orderBy
                 );
                 

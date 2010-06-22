@@ -102,7 +102,9 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $cmf = $this->_createClassMetadataFactory($em, $type);
         $metadata = $cmf->getAllMetadata();
 
-        $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\User', $metadata[0]->name);
+        $metadata[0]->name = 'Doctrine\Tests\ORM\Tools\Export\ExportedUser';
+
+        $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\ExportedUser', $metadata[0]->name);
 
         $type = $this->_getType();
         $cme = new ClassMetadataExporter();
@@ -117,9 +119,9 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $exporter->export();
 
         if ($type == 'annotation') {
-            $this->assertTrue(file_exists(__DIR__ . '/export/' . $type . '/'.str_replace('\\', '/', 'Doctrine\Tests\ORM\Tools\Export\User').$this->_extension));
+            $this->assertTrue(file_exists(__DIR__ . '/export/' . $type . '/'.str_replace('\\', '/', 'Doctrine\Tests\ORM\Tools\Export\ExportedUser').$this->_extension));
         } else {
-            $this->assertTrue(file_exists(__DIR__ . '/export/' . $type . '/Doctrine.Tests.ORM.Tools.Export.User'.$this->_extension));
+            $this->assertTrue(file_exists(__DIR__ . '/export/' . $type . '/Doctrine.Tests.ORM.Tools.Export.ExportedUser'.$this->_extension));
         }
     }
 
@@ -130,14 +132,14 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     {
         $type = $this->_getType();
         
-        $metadataDriver = $this->_createMetadataDriver($type, __DIR__ . '/' . $type);
+        $metadataDriver = $this->_createMetadataDriver($type, __DIR__ . '/export/' . $type);
         $em = $this->_createEntityManager($metadataDriver);
         $cmf = $this->_createClassMetadataFactory($em, $type);
         $metadata = $cmf->getAllMetadata();
 
         $class = current($metadata);
     
-        $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\User', $class->name);
+        $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\ExportedUser', $class->name);
 
         return $class;
     }
@@ -288,6 +290,29 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertEquals('doStuffOnPostPersist', $class->lifecycleCallbacks['postPersist'][0]);
 
         return $class;
+    }
+
+    /**
+     * @depends testLifecycleCallbacksAreExported
+     * @param ClassMetadataInfo $class
+     */
+    public function testCascadeIsExported($class)
+    {
+        $this->assertTrue($class->associationMappings['phonenumbers']->isCascadePersist);
+        $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeMerge);
+        $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeRemove);
+        $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeRefresh);
+
+        return $class;
+    }
+
+    /**
+     * @depends testCascadeIsExported
+     * @param ClassMetadataInfo $class
+     */
+    public function testInversedByIsExported($class)
+    {
+        $this->assertEquals('user', $class->associationMappings['address']->inversedBy);
     }
 
     public function __destruct()

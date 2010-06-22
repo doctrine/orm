@@ -1,11 +1,18 @@
 <?php
 
-require __DIR__ . '/../../lib/Doctrine/Common/ClassLoader.php';
+require_once '../../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
 
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine', __DIR__ . '/../../lib');
+$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\ORM', realpath(__DIR__ . '/../../lib'));
 $classLoader->register();
-
-$classLoader = new \Doctrine\Common\ClassLoader('Symfony', __DIR__ . '/../../lib/vendor');
+$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\DBAL', realpath(__DIR__ . '/../../lib/vendor/doctrine-dbal/lib'));
+$classLoader->register();
+$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Common', realpath(__DIR__ . '/../../lib/vendor/doctrine-common/lib'));
+$classLoader->register();
+$classLoader = new \Doctrine\Common\ClassLoader('Symfony', realpath(__DIR__ . '/../../lib/vendor'));
+$classLoader->register();
+$classLoader = new \Doctrine\Common\ClassLoader('Entities', __DIR__);
+$classLoader->register();
+$classLoader = new \Doctrine\Common\ClassLoader('Proxies', __DIR__);
 $classLoader->register();
 
 // Variable $helperSet is defined inside cli-config.php

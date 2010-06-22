@@ -462,4 +462,27 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $this->_attributes['customDatetimeFunctions'] = array_change_key_case($functions);
     }
+
+    /**
+     * Get the hydrator class for the given hydration mode name.
+     *
+     * @param string $modeName The hydration mode name.
+     * @return string $hydrator The hydrator class name.
+     */
+    public function getCustomHydrationMode($modeName)
+    {
+        return isset($this->_attributes['customHydrationModes'][$modeName]) ?
+            $this->_attributes['customHydrationModes'][$modeName] : null;
+    }
+
+    /**
+     * Add a custom hydration mode.
+     *
+     * @param string $modeName The hydration mode name.
+     * @param string $hydrator The hydrator class name.
+     */
+    public function addCustomHydrationMode($modeName, $hydrator)
+    {
+        $this->_attributes['customHydrationModes'][$modeName] = $hydrator;
+    }
 }

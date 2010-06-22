@@ -196,6 +196,9 @@ class XmlExporter extends AbstractExporter
             if (isset($associationMapping->mappedBy)) {
                 $associationMappingXml->addAttribute('mapped-by', $associationMapping->mappedBy);
             }
+            if (isset($associationMapping->inversedBy)) {
+                $associationMappingXml->addAttribute('inversed-by', $associationMapping->inversedBy);
+            }
             if (isset($associationMapping->orphanRemoval)) {
                 $associationMappingXml->addAttribute('orphan-removal', $associationMapping->orphanRemoval);
             }
@@ -266,19 +269,19 @@ class XmlExporter extends AbstractExporter
             }
             $cascade = array();
             if ($associationMapping->isCascadeRemove) {
-                $cascade[] = 'remove';
+                $cascade[] = 'cascade-remove';
             }
             if ($associationMapping->isCascadePersist) {
-                $cascade[] = 'persist';
+                $cascade[] = 'cascade-persist';
             }
             if ($associationMapping->isCascadeRefresh) {
-                $cascade[] = 'refresh';
+                $cascade[] = 'cascade-refresh';
             }
             if ($associationMapping->isCascadeMerge) {
-                $cascade[] = 'merge';
+                $cascade[] = 'cascade-merge';
             }
             if ($associationMapping->isCascadeDetach) {
-                $cascade[] = 'detach';
+                $cascade[] = 'cascade-detach';
             }
             if ($cascade) {
                 $cascadeXml = $associationMappingXml->addChild('cascade');

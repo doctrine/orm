@@ -25,6 +25,7 @@ Doctrine\Tests\ORM\Tools\Export\User:
         onDelete: CASCADE
         onUpdate: CASCADE
       cascade: [ remove ]
+      inversedBy: user
   oneToMany:
     phonenumbers:
       targetEntity: Doctrine\Tests\ORM\Tools\Export\Phonenumber

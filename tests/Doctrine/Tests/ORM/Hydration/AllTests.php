@@ -25,6 +25,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Hydration\ScalarHydratorTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Hydration\SingleScalarHydratorTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Hydration\ResultSetMappingTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Hydration\CustomHydratorTest');
 
         return $suite;
     }

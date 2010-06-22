@@ -32,6 +32,19 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $this->assertEquals(3, count($class->discriminatorMap));
         $this->assertEquals($expectedMap, $class->discriminatorMap);
     }
+
+    public function testValidateXmlSchema()
+    {
+        $xsdSchemaFile = __DIR__ . "/../../../../../doctrine-mapping.xsd";
+
+        $dom = new \DOMDocument('UTF-8');
+        $dom->load(__DIR__ . "/xml/Doctrine.Tests.ORM.Mapping.CTI.dcm.xml");
+        $this->assertTrue($dom->schemaValidate($xsdSchemaFile));
+        
+        $dom = new \DOMDocument('UTF-8');
+        $dom->load(__DIR__ . "/xml/Doctrine.Tests.ORM.Mapping.User.dcm.xml");
+        $this->assertTrue($dom->schemaValidate($xsdSchemaFile));
+    }
 }
 
 class CTI

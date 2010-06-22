@@ -516,4 +516,13 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(QueryBuilder::STATE_DIRTY, $qb->getState());
     }
+
+    public function testSelectWithFuncExpression()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $expr = $qb->expr();
+        $qb->select($expr->count('e.id'));
+
+        $this->assertValidQueryBuilder($qb, 'SELECT COUNT(e.id)');
+    }
 }

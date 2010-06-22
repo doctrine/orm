@@ -124,6 +124,8 @@
     <xs:attribute name="nullable" type="xs:boolean" default="false" />
     <xs:attribute name="version" type="xs:boolean" />
     <xs:attribute name="column-definition" type="xs:string" />
+    <xs:attribute name="precision" type="xs:integer" use="optional" />
+    <xs:attribute name="scale" type="xs:integer" use="optional" />
   </xs:complexType>
   
   <xs:complexType name="discriminator-column">
@@ -135,7 +137,7 @@
   
   <xs:complexType name="unique-constraint">
     <xs:attribute name="name" type="xs:NMTOKEN" use="optional"/>
-    <xs:attribute name="columns" type="xs:NMTOKENS" use="required"/>
+    <xs:attribute name="columns" type="xs:string" use="required"/>
   </xs:complexType>
   
   <xs:complexType name="unique-constraints">
