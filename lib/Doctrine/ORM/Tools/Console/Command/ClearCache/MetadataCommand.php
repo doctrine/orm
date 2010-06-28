@@ -66,6 +66,10 @@ EOT
             throw new \InvalidArgumentException('No Metadata cache driver is configured on given EntityManager.');
         }
 
+        if ($cacheDriver instanceof \Doctrine\Common\Cache\ApcCache) {
+            throw new \LogicException("Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.");
+        }
+
         $output->write('Clearing ALL Metadata cache entries' . PHP_EOL);
 
         $cacheIds = $cacheDriver->deleteAll();
