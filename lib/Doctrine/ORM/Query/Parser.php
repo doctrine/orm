@@ -1610,7 +1610,7 @@ class Parser
         $parts = $pathExp->parts;
         $this->_queryComponents[$pathExp->identificationVariable]['map'] = $parts[0];
 
-        return $pathExp;
+        return new AST\IndexBy($pathExp);
     }
 
     /**

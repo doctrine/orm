@@ -617,6 +617,13 @@ class SqlWalker implements TreeWalker
             $sql .= $this->walkJoinVariableDeclaration($joinVarDecl);
         }
 
+        if ($firstIdentificationVarDecl->indexBy) {
+            $this->_rsm->addIndexBy(
+                $firstIdentificationVarDecl->indexBy->simpleStateFieldPathExpression->identificationVariable,
+                $firstIdentificationVarDecl->indexBy->simpleStateFieldPathExpression->parts[0]
+            );
+        }
+
         return $this->_platform->appendLockHint($sql, $this->_query->getHint(Query::HINT_LOCK_MODE));
     }
 
