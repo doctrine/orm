@@ -21,15 +21,17 @@ require_once __DIR__ . '/../../../TestInit.php';
  *
  * @author markus
  */
-class DDC501Test extends OrmFunctionalTestCase {
-    protected function setUp() {
+class DDC501Test extends OrmFunctionalTestCase
+{
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testCreateUser()
+    public function testMergeUnitializedManyToManyAndOneToManyCollections()
     {
-        ### Create User
+        // Create User
         $user = $this->createAndPersistUser();
         $this->_em->flush();
 
@@ -39,7 +41,7 @@ class DDC501Test extends OrmFunctionalTestCase {
 
         unset($user);
 
-        ### Reload User from DB *without* any associations
+        // Reload User from DB *without* any associations (i.e. an uninitialized PersistantCollection)
         $userReloaded = $this->loadUserFromEntityManager();
 
         $this->assertTrue($this->_em->contains($userReloaded));
@@ -52,22 +54,20 @@ class DDC501Test extends OrmFunctionalTestCase {
 
         // detached user can't know about his phonenumbers
         $this->assertEquals(0, count($userClone->getPhonenumbers()));
+        $this->assertFalse($userClone->getPhonenumbers()->isInitialized(), "User::phonenumbers should not be marked initialized.");
 
         // detached user can't know about his groups either
         $this->assertEquals(0, count($userClone->getGroups()));
+        $this->assertFalse($userClone->getGroups()->isInitialized(), "User::groups should not be marked initialized.");
 
-        ### Merge back and flush
+        // Merge back and flush
         $userClone = $this->_em->merge($userClone);
 
-        /*
-		 * Back in managed world I would expect to have my phonenumbers back but they aren't!
-		 * Remember I didn't touch (and propably didn't need) them at all while in detached mode.
-        */
+        // Back in managed world I would expect to have my phonenumbers back but they aren't!
+	// Remember I didn't touch (and propably didn't need) them at all while in detached mode.
         $this->assertEquals(4, count($userClone->getPhonenumbers()), 'Phonenumbers are not available anymore');
 
-        /*
-		 * This works fine as long as cmUser::groups doesn't cascade "merge"
-        */
+        // This works fine as long as cmUser::groups doesn't cascade "merge"
         $this->assertEquals(2, count($userClone->getGroups()));
 
         $this->_em->flush();
@@ -75,18 +75,14 @@ class DDC501Test extends OrmFunctionalTestCase {
 
         $this->assertFalse($this->_em->contains($userClone));
 
-        ### Reload user from DB
+        // Reload user from DB
         $userFromEntityManager = $this->loadUserFromEntityManager();
 
-        /*
-     * Strange: Now the phonenumbers are back again
-        */
+        //Strange: Now the phonenumbers are back again
         $this->assertEquals(4, count($userFromEntityManager->getPhonenumbers()));
 
-        /*
-		 * This works fine as long as cmUser::groups doesn't cascade "merge"
-		 * Otherwise group memberships are physically deleted now! 
-        */
+        // This works fine as long as cmUser::groups doesn't cascade "merge"
+        // Otherwise group memberships are physically deleted now! 
         $this->assertEquals(2, count($userClone->getGroups()));
     }
 
