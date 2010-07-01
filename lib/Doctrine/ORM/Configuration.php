@@ -323,13 +323,13 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function ensureProductionSettings()
     {
-        if ( ! $this->_attributes['queryCacheImpl']) {
+        if ( !$this->getQueryCacheImpl()) {
             throw ORMException::queryCacheNotConfigured();
         }
-        if ( ! $this->_attributes['metadataCacheImpl']) {
+        if ( !$this->getMetadataCacheImpl()) {
             throw ORMException::metadataCacheNotConfigured();
         }
-        if ($this->_attributes['autoGenerateProxyClasses']) {
+        if ($this->getAutoGenerateProxyClasses()) {
             throw ORMException::proxyClassesAlwaysRegenerating();
         }
     }
