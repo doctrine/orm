@@ -1366,6 +1366,7 @@ class UnitOfWork implements PropertyChangedListener
                 if ( ! isset($class->associationMappings[$name])) {
                     $prop->setValue($managedCopy, $prop->getValue($entity));
                 } else {
+                    // why $assoc2? See the method signature, there is $assoc already!
                     $assoc2 = $class->associationMappings[$name];
                     if ($assoc2->isOneToOne()) {
                         if ( ! $assoc2->isCascadeMerge) {
@@ -1379,6 +1380,12 @@ class UnitOfWork implements PropertyChangedListener
                             }
                         }
                     } else {
+                        $mergeCol = $prop->getValue($entity);
+                        if ($mergeCol instanceof PersistentCollection && !$mergeCol->isInitialized()) {
+                            // keep the lazy persistent collection of the managed copy.
+                            continue;
+                        }
+
                         $coll = new PersistentCollection($this->_em,
                                 $this->_em->getClassMetadata($assoc2->targetEntityName),
                                 new ArrayCollection

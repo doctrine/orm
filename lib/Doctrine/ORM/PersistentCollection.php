@@ -199,7 +199,7 @@ final class PersistentCollection implements Collection
      */
     private function _initialize()
     {
-        if ( ! $this->_initialized) {
+        if ( ! $this->_initialized && $this->_association) {
             if ($this->_isDirty) {
                 // Has NEW objects added through add(). Remember them.
                 $newObjects = $this->_coll->toArray();
@@ -580,7 +580,7 @@ final class PersistentCollection implements Collection
      */
     public function __sleep()
     {
-        return array('_coll');
+        return array('_coll', '_initialized');
     }
     
     /* ArrayAccess implementation */
