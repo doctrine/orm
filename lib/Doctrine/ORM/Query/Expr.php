@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -27,10 +25,10 @@ namespace Doctrine\ORM\Query;
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision$
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @todo Rename: ExpressionBuilder
  */
 class Expr
@@ -435,6 +433,13 @@ class Expr
      */
     public function notIn($x, $y)
     {
+        if (is_array($y)) {
+            foreach ($y as &$literal) {
+                if ( ! ($literal instanceof Expr\Literal)) {
+                    $literal = $this->_quoteLiteral($literal);
+                }
+            }
+        }
         return new Expr\Func($x . ' NOT IN', (array) $y);
     }
 
