@@ -20,27 +20,57 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $this->useModelSet('cms');
         parent::setUp();
     }
+
+    public function testUnsetManyToMany()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(1);
+
+        unset($user->groups[0]->users[0]); // inverse side
+        unset($user->groups[0]); // owning side!
+
+        $this->_em->flush();
+
+        // Check that the link in the association table has been deleted
+        $this->assertGblancoGroupCountIs(0);
+    }
+
+    public function testBasicManyToManyJoin()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(1);
+        $this->_em->clear();
+
+        $this->assertEquals(0, $this->_em->getUnitOfWork()->size());
+
+        $query = $this->_em->createQuery("select u, g from Doctrine\Tests\Models\CMS\CmsUser u join u.groups g");
+
+        $result = $query->getResult();
+
+        $this->assertEquals(2, $this->_em->getUnitOfWork()->size());
+        $this->assertTrue($result[0] instanceof CmsUser);
+        $this->assertEquals('Guilherme', $result[0]->name);
+        $this->assertEquals(1, $result[0]->getGroups()->count());
+        $groups = $result[0]->getGroups();
+        $this->assertEquals('Developers_0', $groups[0]->getName());
+
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($result[0]));
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($groups[0]));
+
+        $this->assertTrue($groups instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertTrue($groups[0]->getUsers() instanceof \Doctrine\ORM\PersistentCollection);
+
+        $groups[0]->getUsers()->clear();
+        $groups->clear();
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery("select u, g from Doctrine\Tests\Models\CMS\CmsUser u join u.groups g");
+        $this->assertEquals(0, count($query->getResult()));
+    }
     
     public function testManyToManyAddRemove()
     {
-        // Set up user with 2 groups
-        $user = new CmsUser;
-        $user->username = 'romanb';
-        $user->status = 'dev';
-        $user->name = 'Roman B.';
-        
-        $group1 = new CmsGroup;
-        $group1->name = 'Developers';
-        
-        $group2 = new CmsGroup;
-        $group2->name = 'Humans';
-        
-        $user->addGroup($group1);
-        $user->addGroup($group2);
-        
-        $this->_em->persist($user); // cascades to groups
-        
-        $this->_em->flush();
+        $user = $this->addCmsUserGblancoWithGroups(2);
         $this->_em->clear();
         
         $uRep = $this->_em->getRepository(get_class($user));
@@ -73,10 +103,7 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
     
     public function testManyToManyInverseSideIgnored()
     {
-        $user = new CmsUser;
-        $user->username = 'romanb';
-        $user->status = 'dev';
-        $user->name = 'Roman B.';
+        $user = $this->addCmsUserGblancoWithGroups(0);
         
         $group = new CmsGroup;
         $group->name = 'Humans';
@@ -95,5 +122,76 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $this->assertNotNull($user2, "Has to return exactly one entry.");
         $this->assertEquals(0, $user2->getGroups()->count());
     }
-    
+
+    public function testManyToManyCollectionClearing()
+    {
+        $user = $this->addCmsUserGblancoWithGroups($groupCount = 10);
+
+        // Check that there are indeed 10 links in the association table
+        $this->assertGblancoGroupCountIs($groupCount);
+
+        $user->groups->clear();
+
+        $this->_em->flush();
+
+        // Check that the links in the association table have been deleted
+        $this->assertGblancoGroupCountIs(0);
+    }
+
+    public function testManyToManyCollectionClearAndAdd()
+    {
+        $user = $this->addCmsUserGblancoWithGroups($groupCount = 10);
+
+        $groups = $user->groups->toArray();
+        $user->groups->clear();
+
+        foreach ($groups AS $group) {
+            $user->groups[] = $group;
+        }
+
+        $this->assertType('Doctrine\ORM\PersistentCollection', $user->groups);
+        $this->assertTrue($user->groups->isDirty());
+        
+        $this->assertEquals($groupCount, count($user->groups), "There should be 10 groups in the collection.");
+        
+        $this->_em->flush();
+        
+        $this->assertGblancoGroupCountIs($groupCount);
+    }
+
+    /**
+     * @param int $expectedGroupCount
+     */
+    public function assertGblancoGroupCountIs($expectedGroupCount)
+    {
+        $countDql = "SELECT count(g.id) FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g WHERE u.username = 'gblanco'";
+        $this->assertEquals(
+            $expectedGroupCount,
+            $this->_em->createQuery($countDql)->getSingleScalarResult(),
+            "Failed to verify that CmsUser with username 'gblanco' has a group count of 10 with a DQL count query."
+        );
+    }
+
+    /**
+     * @param  int $groupCount
+     * @return CmsUser
+     */
+    public function addCmsUserGblancoWithGroups($groupCount = 1)
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        for ($i=0; $i < $groupCount; ++$i) {
+            $group = new CmsGroup;
+            $group->name = 'Developers_' . $i;
+            $user->addGroup($group);
+        }
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        return $user;
+    }
 }

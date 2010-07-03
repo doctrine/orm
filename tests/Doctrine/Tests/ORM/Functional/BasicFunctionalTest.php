@@ -135,71 +135,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($user2->address instanceof CmsAddress);
         $this->assertFalse($user2->address instanceof \Doctrine\ORM\Proxy\Proxy);
     }
-
-    public function testBasicManyToMany()
-    {        
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
-        $user->username = 'gblanco';
-        $user->status = 'developer';
-
-        $group = new CmsGroup;
-        $group->name = 'Developers';
-
-        $user->groups[] = $group;
-        $group->users[] = $user;
-
-        $this->_em->persist($user);
-
-        $this->_em->flush();
-
-        unset($group->users[0]); // inverse side
-        unset($user->groups[0]); // owning side!
-
-        $this->_em->flush();
-
-        // Check that the link in the association table has been deleted
-        $count = $this->_em->getConnection()->executeQuery(
-            "SELECT COUNT(*) FROM cms_users_groups", array()
-        )->fetchColumn();
-        $this->assertEquals(0, $count);
-    }
-
-    public function testManyToManyCollectionClearing()
-    {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
-        $user->username = 'gblanco';
-        $user->status = 'developer';
-
-        for ($i=0; $i<10; ++$i) {
-            $group = new CmsGroup;
-            $group->name = 'Developers_' . $i;
-            $user->groups[] = $group;
-            $group->users[] = $user;
-        }
-
-        $this->_em->persist($user);
-
-        $this->_em->flush();
-        
-        // Check that there are indeed 10 links in the association table
-        $count = $this->_em->getConnection()->executeQuery(
-            "SELECT COUNT(*) FROM cms_users_groups", array()
-        )->fetchColumn();
-        $this->assertEquals(10, $count);
-
-        $user->groups->clear();
-        //unset($user->groups);
-
-        $this->_em->flush();
-
-        // Check that the links in the association table have been deleted
-        $count = $this->_em->getConnection()->executeQuery(
-            "SELECT COUNT(*) FROM cms_users_groups", array()
-        )->fetchColumn();
-        $this->assertEquals(0, $count);
-    }
     
     public function testOneToManyOrphanRemoval()
     {
@@ -304,52 +239,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($users[0]->phonenumbers->isInitialized());
         $this->assertEquals(0, $users[0]->phonenumbers->count());
         //$this->assertNull($users[0]->articles);
-    }
-
-    public function testBasicManyToManyJoin()
-    {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
-        $user->username = 'gblanco';
-        $user->status = 'developer';
-
-        $group1 = new CmsGroup;
-        $group1->setName('Doctrine Developers');
-
-        $user->addGroup($group1);
-
-        $this->_em->persist($user);
-        
-        $this->_em->flush();
-        $this->_em->clear();
-
-        $this->assertEquals(0, $this->_em->getUnitOfWork()->size());
-
-        $query = $this->_em->createQuery("select u, g from Doctrine\Tests\Models\CMS\CmsUser u join u.groups g");
-
-        $result = $query->getResult();
-        
-        $this->assertEquals(2, $this->_em->getUnitOfWork()->size());
-        $this->assertTrue($result[0] instanceof CmsUser);
-        $this->assertEquals('Guilherme', $result[0]->name);
-        $this->assertEquals(1, $result[0]->getGroups()->count());
-        $groups = $result[0]->getGroups();
-        $this->assertEquals('Doctrine Developers', $groups[0]->getName());
-
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($result[0]));
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($groups[0]));
-
-        $this->assertTrue($groups instanceof \Doctrine\ORM\PersistentCollection);
-        $this->assertTrue($groups[0]->getUsers() instanceof \Doctrine\ORM\PersistentCollection);
-
-        $groups[0]->getUsers()->clear();
-        $groups->clear();
-
-        $this->_em->flush();
-        $this->_em->clear();
-
-        $query = $this->_em->createQuery("select u, g from Doctrine\Tests\Models\CMS\CmsUser u join u.groups g");
-        $this->assertEquals(0, count($query->getResult()));
     }
     
     public function testBasicRefresh()

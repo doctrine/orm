@@ -566,6 +566,7 @@ final class PersistentCollection implements Collection
         if ($this->_association->isOwningSide) {
             $this->_changed();
             $this->_em->getUnitOfWork()->scheduleCollectionDeletion($this);
+            $this->takeSnapshot();
         }
         
         return $result;
