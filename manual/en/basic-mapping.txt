@@ -71,6 +71,8 @@ For example, the Doctrine Mapping Type `string` defines the mapping from a PHP s
 * `time`: Type that maps an SQL TIME to a PHP DateTime object.
 * `datetime`: Type that maps an SQL DATETIME/TIMESTAMP to a PHP DateTime object.
 * `text`: Type that maps an SQL CLOB to a PHP string.
+* `object`: Type that maps a SQL CLOB to a PHP object using `serialize()` and `unserialize()`
+* `array`: Type that maps a SQL CLOB to a PHP object using `serialize()` and `unserialize()`
 
 > **NOTE**
 > Doctrine Mapping Types are NOT SQL types and NOT PHP types! They are mapping types
@@ -188,6 +190,17 @@ for the mapping type and map that to the corresponding fully qualified class nam
         /** @Column(type="mytype") */
         private $field;
     }
+
+To have Schema-Tool convert the underlying database type of your new "mytype" directly into an instance of `MyType`
+you have to additionally register this mapping with your database platform:
+
+    [php]
+    $conn = $em->getConnection();
+    $conn->getDatabasePlatform()->registerDoctrineTypeMapping('db_mytype', 'mytype');
+
+Now using Schema-Tool, whenever it detects a column having the `db_mytype` it will convert it into a `mytype`
+Doctrine Type instance for Schema representation. Keep in mind that you can easily produce clashes this way,
+each database type can only map to exactly one Doctrine mapping type.
 
 ++ Identifiers / Primary Keys
 
