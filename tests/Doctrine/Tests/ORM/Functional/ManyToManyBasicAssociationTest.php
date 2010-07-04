@@ -172,6 +172,35 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         );
     }
 
+    public function testRetrieveManyToManyAndAddMore()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(2);
+
+        $group = new CmsGroup();
+        $group->name = 'Developers_Fresh';
+        $this->_em->persist($group);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        /* @var $freshUser CmsUser */
+        $freshUser = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $user->getId());
+        $freshUser->addGroup($group);
+
+        $this->assertFalse($freshUser->groups->isInitialized(), "CmsUser::groups Collection has to be uninitialized for this test.");
+
+        $this->_em->flush();
+
+        $this->assertFalse($freshUser->groups->isInitialized(), "CmsUser::groups Collection has to be uninitialized for this test.");
+        $this->assertEquals(3, count($freshUser->getGroups()));
+        $this->assertEquals(3, count($freshUser->getGroups()->getSnapshot()), "Snapshot of CmsUser::groups should contain 3 entries.");
+        
+        $this->_em->clear();
+
+        $freshUser = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $user->getId());
+        $this->assertEquals(3, count($freshUser->getGroups()));
+    }
+
     /**
      * @param  int $groupCount
      * @return CmsUser
