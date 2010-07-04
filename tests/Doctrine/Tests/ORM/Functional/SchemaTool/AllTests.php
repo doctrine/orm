@@ -21,6 +21,7 @@ class AllTests
 
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\SchemaTool\MySqlSchemaToolTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\SchemaTool\PostgreSqlSchemaToolTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\SchemaTool\DDC214Test');
 
         return $suite;
     }
