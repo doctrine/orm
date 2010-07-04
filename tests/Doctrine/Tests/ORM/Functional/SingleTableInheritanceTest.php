@@ -2,337 +2,292 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Query;
-
 require_once __DIR__ . '/../../TestInit.php';
 
-/**
- * Functional tests for the Single Table Inheritance mapping strategy.
- *
- * @author robo
- */
 class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp() {
+    private $salesPerson;
+    private $engineers = array();
+    private $fix;
+    private $flex;
+    private $ultra;
+
+    public function setUp()
+    {
+        $this->useModelSet('company');
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\ParentEntity'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\ChildEntity'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\RelatedEntity'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\ParentRelatedEntity')
-            ));
-        } catch (\Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
     }
 
-    public function testCRUD()
-    {        
-        $parent = new ParentEntity;
-        $parent->setData('foobar');
+    public function persistRelatedEmployees()
+    {
+        $this->salesPerson = new \Doctrine\Tests\Models\Company\CompanyEmployee();
+        $this->salesPerson->setName('Poor Sales Guy');
+        $this->salesPerson->setDepartment('Sales');
+        $this->salesPerson->setSalary(100);
 
-        $this->_em->persist($parent);
+        $engineer1 = new \Doctrine\Tests\Models\Company\CompanyEmployee();
+        $engineer1->setName('Roman B.');
+        $engineer1->setDepartment('IT');
+        $engineer1->setSalary(100);
+        $this->engineers[] = $engineer1;
 
-        $child = new ChildEntity;
-        $child->setData('thedata');
-        $child->setNumber(1234);
+        $engineer2 = new \Doctrine\Tests\Models\Company\CompanyEmployee();
+        $engineer2->setName('Jonathan W.');
+        $engineer2->setDepartment('IT');
+        $engineer2->setSalary(100);
+        $this->engineers[] = $engineer2;
 
-        $this->_em->persist($child);
+        $engineer3 = new \Doctrine\Tests\Models\Company\CompanyEmployee();
+        $engineer3->setName('Benjamin E.');
+        $engineer3->setDepartment('IT');
+        $engineer3->setSalary(100);
+        $this->engineers[] = $engineer3;
 
-        $relatedEntity = new RelatedEntity;
-        $relatedEntity->setName('theRelatedOne');
-        $relatedEntity->setOwner($child);
+        $engineer4 = new \Doctrine\Tests\Models\Company\CompanyEmployee();
+        $engineer4->setName('Guilherme B.');
+        $engineer4->setDepartment('IT');
+        $engineer4->setSalary(100);
+        $this->engineers[] = $engineer4;
 
-        $this->_em->persist($relatedEntity);
+        $this->_em->persist($this->salesPerson);
+        $this->_em->persist($engineer1);
+        $this->_em->persist($engineer2);
+        $this->_em->persist($engineer3);
+        $this->_em->persist($engineer4);
+    }
+
+    public function loadFullFixture()
+    {
+        $this->persistRelatedEmployees();
+
+        $this->fix = new \Doctrine\Tests\Models\Company\CompanyFixContract();
+        $this->fix->setFixPrice(1000);
+        $this->fix->setSalesPerson($this->salesPerson);
+        $this->fix->addEngineer($this->engineers[0]);
+        $this->fix->addEngineer($this->engineers[1]);
+        $this->fix->markCompleted();
+
+        $this->flex = new \Doctrine\Tests\Models\Company\CompanyFlexContract();
+        $this->flex->setSalesPerson($this->salesPerson);
+        $this->flex->setHoursWorked(100);
+        $this->flex->setPricePerHour(100);
+        $this->flex->addEngineer($this->engineers[2]);
+        $this->flex->addEngineer($this->engineers[1]);
+        $this->flex->addEngineer($this->engineers[3]);
+        $this->flex->markCompleted();
+
+        $this->ultra = new \Doctrine\Tests\Models\Company\CompanyFlexUltraContract();
+        $this->ultra->setSalesPerson($this->salesPerson);
+        $this->ultra->setHoursWorked(150);
+        $this->ultra->setPricePerHour(150);
+        $this->ultra->setMaxPrice(7000);
+        $this->ultra->addEngineer($this->engineers[3]);
+        $this->ultra->addEngineer($this->engineers[0]);
+
+        $this->_em->persist($this->fix);
+        $this->_em->persist($this->flex);
+        $this->_em->persist($this->ultra);
+        $this->_em->flush();
+        $this->_em->clear();
+    }
+
+    public function testPersistChildOfBaseClass()
+    {
+        $this->persistRelatedEmployees();
+
+        $fixContract = new \Doctrine\Tests\Models\Company\CompanyFixContract();
+        $fixContract->setFixPrice(1000);
+        $fixContract->setSalesPerson($this->salesPerson);
+
+        $this->_em->persist($fixContract);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $contract = $this->_em->find('Doctrine\Tests\Models\Company\CompanyFixContract', $fixContract->getId());
+
+        $this->assertType('Doctrine\Tests\Models\Company\CompanyFixContract', $contract);
+        $this->assertEquals(1000, $contract->getFixPrice());
+        $this->assertEquals($this->salesPerson->getId(), $contract->getSalesPerson()->getId());
+    }
+
+    public function testPersistDeepChildOfBaseClass()
+    {
+        $this->persistRelatedEmployees();
+
+        $ultraContract = new \Doctrine\Tests\Models\Company\CompanyFlexUltraContract();
+        $ultraContract->setSalesPerson($this->salesPerson);
+        $ultraContract->setHoursWorked(100);
+        $ultraContract->setPricePerHour(50);
+        $ultraContract->setMaxPrice(7000);
+
+        $this->_em->persist($ultraContract);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $contract = $this->_em->find('Doctrine\Tests\Models\Company\CompanyFlexUltraContract', $ultraContract->getId());
+
+        $this->assertType('Doctrine\Tests\Models\Company\CompanyFlexUltraContract', $contract);
+        $this->assertEquals(7000, $contract->getMaxPrice());
+        $this->assertEquals(100, $contract->getHoursWorked());
+        $this->assertEquals(50, $contract->getPricePerHour());
+    }
+
+    public function testChildClassLifecycleUpdate()
+    {
+        $this->loadFullFixture();
+
+        $fix = $this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->fix->getId());
+        $fix->setFixPrice(2500);
 
         $this->_em->flush();
         $this->_em->clear();
 
-        $query = $this->_em->createQuery("select e from Doctrine\Tests\ORM\Functional\ParentEntity e order by e.data asc");
-        $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
-        $entities = $query->getResult();
-        
-        $this->assertEquals(2, count($entities));
-        $this->assertTrue(is_numeric($entities[0]->getId()));
-        $this->assertTrue(is_numeric($entities[1]->getId()));
-        $this->assertTrue($entities[0] instanceof ParentEntity);
-        $this->assertTrue($entities[1] instanceof ChildEntity);
-        $this->assertNull($entities[0]->getParentRelated());
-        $this->assertNull($entities[1]->getParentRelated());
-        $this->assertEquals('foobar', $entities[0]->getData());
-        $this->assertEquals('thedata', $entities[1]->getData());
-        $this->assertEquals(1234, $entities[1]->getNumber());
+        $newFix = $this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->fix->getId());
+        $this->assertEquals(2500, $newFix->getFixPrice());
+    }
 
-        $this->_em->clear();
+    public function testChildClassLifecycleRemove()
+    {
+        $this->loadFullFixture();
 
-        // READ by DQL on subtype
-        $query = $this->_em->createQuery("select e from Doctrine\Tests\ORM\Functional\ChildEntity e");
-        $entities = $query->getResult();
-        $this->assertEquals(1, count($entities));
-        $this->assertTrue($entities[0] instanceof ChildEntity);
-        $this->assertTrue(is_numeric($entities[0]->getId()));
-        $this->assertEquals('thedata', $entities[0]->getData());
-        $this->assertEquals(1234, $entities[0]->getNumber());
-        $this->assertNull($entities[0]->getParentRelated());
+        $fix = $this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->fix->getId());
+        $this->_em->remove($fix);
+        $this->_em->flush();
 
-        $this->_em->clear();
+        $this->assertNull($this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->fix->getId()));
+    }
 
-        // READ by findAll() on subtype
-        $entities = $this->_em->getRepository('Doctrine\Tests\ORM\Functional\ChildEntity')->findAll();
-        $this->assertEquals(1, count($entities));
-        $this->assertTrue($entities[0] instanceof ChildEntity);
-        $this->assertTrue(is_numeric($entities[0]->getId()));
-        $this->assertEquals('thedata', $entities[0]->getData());
-        $this->assertEquals(1234, $entities[0]->getNumber());
-        $this->assertNull($entities[0]->getParentRelated());
+    public function testFindAllForAbstractBaseClass()
+    {
+        $this->loadFullFixture();
+        $contracts = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyContract')->findAll();
 
-        $this->_em->clear();
+        $this->assertEquals(3, count($contracts));
+        $this->assertContainsOnly('Doctrine\Tests\Models\Company\CompanyContract', $contracts);
+    }
 
-        // READ by joining into an STI hierarchy from outwards
-        $query = $this->_em->createQuery("select r,o from Doctrine\Tests\ORM\Functional\RelatedEntity r join r.owner o");
+    public function testFindAllForChildClass()
+    {
+        $this->loadFullFixture();
 
-        $entities = $query->getResult();
-        $this->assertEquals(1, count($entities));
-        $this->assertTrue($entities[0] instanceof RelatedEntity);
-        $this->assertTrue(is_numeric($entities[0]->getId()));
-        $this->assertEquals('theRelatedOne', $entities[0]->getName());
-        $this->assertTrue($entities[0]->getOwner() instanceof ChildEntity);
-        $this->assertEquals('thedata', $entities[0]->getOwner()->getData());
-        $this->assertSame($entities[0], $entities[0]->getOwner()->getRelatedEntity());
-        $this->assertNull($entities[0]->getOwner()->getParentRelated());
+        $this->assertEquals(1, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFixContract')->findAll()));
+        $this->assertEquals(2, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexContract')->findAll()));
+        $this->assertEquals(1, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexUltraContract')->findAll()));
+    }
 
-        $query = $this->_em->createQuery("update Doctrine\Tests\ORM\Functional\ChildEntity e set e.data = 'newdata'");
+    public function testFindForAbstractBaseClass()
+    {
+        $this->loadFullFixture();
 
-        $affected = $query->execute();
+        $contract = $this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->fix->getId());
+
+        $this->assertType('Doctrine\Tests\Models\Company\CompanyFixContract', $contract);
+        $this->assertEquals(1000, $contract->getFixPrice());
+    }
+
+    public function testQueryForAbstractBaseClass()
+    {
+        $this->loadFullFixture();
+
+        $contracts = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c')->getResult();
+
+        $this->assertEquals(3, count($contracts));
+        $this->assertContainsOnly('Doctrine\Tests\Models\Company\CompanyContract', $contracts);
+    }
+
+    public function testQueryForChildClass()
+    {
+        $this->loadFullFixture();
+
+        $this->assertEquals(1, count($this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyFixContract c')->getResult()));
+        $this->assertEquals(2, count($this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyFlexContract c')->getResult()));
+        $this->assertEquals(1, count($this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract c')->getResult()));
+    }
+
+    public function testQueryBaseClassWithJoin()
+    {
+        $this->loadFullFixture();
+
+        $contracts = $this->_em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\Company\CompanyContract c JOIN c.salesPerson p')->getResult();
+        $this->assertEquals(3, count($contracts));
+        $this->assertContainsOnly('Doctrine\Tests\Models\Company\CompanyContract', $contracts);
+    }
+
+    public function testQueryScalarWithDiscrimnatorValue()
+    {
+        $this->loadFullFixture();
+
+        $contracts = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c ORDER BY c.id')->getScalarResult();
+
+        $this->assertEquals('fix', $contracts[0]['c_discr']);
+        $this->assertEquals('flexible', $contracts[1]['c_discr']);
+        $this->assertEquals('flexultra', $contracts[2]['c_discr']);
+    }
+
+    public function testQueryChildClassWithCondition()
+    {
+        $this->loadFullFixture();
+
+        $dql = 'SELECT c FROM Doctrine\Tests\Models\Company\CompanyFixContract c WHERE c.fixPrice = ?1';
+        $contract = $this->_em->createQuery($dql)->setParameter(1, 1000)->getSingleResult();
+
+        $this->assertType('Doctrine\Tests\Models\Company\CompanyFixContract', $contract);
+        $this->assertEquals(1000, $contract->getFixPrice());
+    }
+
+    public function testUpdateChildClassWithCondition()
+    {
+        $this->loadFullFixture();
+
+        $dql = 'UPDATE Doctrine\Tests\Models\Company\CompanyFlexContract c SET c.hoursWorked = c.hoursWorked * 2 WHERE c.hoursWorked = 150';
+        $affected = $this->_em->createQuery($dql)->execute();
+
         $this->assertEquals(1, $affected);
-        
-        $query = $this->_em->createQuery("delete Doctrine\Tests\ORM\Functional\ParentEntity e");
 
-        $affected = $query->execute();
+        $flexContract = $this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->flex->getId());
+        $ultraContract = $this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->ultra->getId());
+
+        $this->assertEquals(300, $ultraContract->getHoursWorked());
+        $this->assertEquals(100, $flexContract->getHoursWorked());
+    }
+
+    public function testUpdateBaseClassWithCondition()
+    {
+        $this->loadFullFixture();
+
+        $dql = 'UPDATE Doctrine\Tests\Models\Company\CompanyContract c SET c.completed = true WHERE c.completed = false';
+        $affected = $this->_em->createQuery($dql)->execute();
+
+        $this->assertEquals(1, $affected);
+
+        $dql = 'UPDATE Doctrine\Tests\Models\Company\CompanyContract c SET c.completed = false';
+        $affected = $this->_em->createQuery($dql)->execute();
+
+        $this->assertEquals(3, $affected);
+    }
+
+    public function testDeleteByChildClassCondition()
+    {
+        $this->loadFullFixture();
+
+        $dql = 'DELETE Doctrine\Tests\Models\Company\CompanyFlexContract c';
+        $affected = $this->_em->createQuery($dql)->execute();
+
         $this->assertEquals(2, $affected);
-        
-        $this->_em->clear();
-        
-        // DQL query with WHERE clause
-        $child = new ChildEntity;
-        $child->setData('thedata');
-        $child->setNumber(1234);
-
-        $this->_em->persist($child);
-        $this->_em->flush();
-        $this->_em->clear();
-        
-        $query = $this->_em->createQuery('select e from Doctrine\Tests\ORM\Functional\ParentEntity e where e.id=?1');
-        $query->setParameter(1, $child->getId());
-        
-        $child2 = $query->getSingleResult();
-        $this->assertTrue($child2 instanceof ChildEntity);
-        $this->assertEquals('thedata', $child2->getData());
-        $this->assertEquals(1234, $child2->getNumber());
-        $this->assertEquals($child->getId(), $child2->getId());
-        $this->assertFalse($child === $child2);
-        $this->assertNull($child2->getParentRelated());
     }
-    
-    public function testGetScalarResult()
+
+    public function testDeleteByBaseClassCondition()
     {
-        $child = new ChildEntity;
-        $child->setData('thedata');
-        $child->setNumber(1234);
+        $this->loadFullFixture();
 
-        $this->_em->persist($child);
-        $this->_em->flush();
-        
-        $query = $this->_em->createQuery('select e from Doctrine\Tests\ORM\Functional\ParentEntity e where e.id=?1');
-        $query->setParameter(1, $child->getId());
-        
-        $result = $query->getScalarResult();
-        
-        $this->assertEquals(1, count($result));
-        $this->assertEquals($child->getId(), $result[0]['e_id']);
-        $this->assertEquals('thedata', $result[0]['e_data']);
-        $this->assertEquals(1234, $result[0]['e_number']);
-        $this->assertNull($result[0]['e_related_entity_id']);
-        $this->assertEquals('child', $result[0]['e_discr']);
+        $dql = "DELETE Doctrine\Tests\Models\Company\CompanyContract c WHERE c.completed = true";
+        $affected = $this->_em->createQuery($dql)->execute();
+
+        $this->assertEquals(2, $affected);
+
+        $contracts = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c')->getResult();
+        $this->assertEquals(1, count($contracts));
+
+        $this->assertFalse($contracts[0]->isCompleted(), "Only non completed contracts should be left.");
     }
-    
-    public function testPolymorphicFindAndQuery()
-    {
-        $child = new ChildEntity;
-        $child->setData('thedata');
-        $child->setNumber(1234);
-
-        $this->_em->persist($child);
-        $this->_em->flush();
-        
-        $this->_em->clear();
-        
-        $child2 = $this->_em->find('Doctrine\Tests\ORM\Functional\ParentEntity', $child->getId());
-        
-        $this->assertTrue($child2 instanceof ChildEntity);
-        $this->assertEquals('thedata', $child2->getData());
-        $this->assertSame(1234, $child2->getNumber());
-        
-        $parentRelated = new ParentRelatedEntity;
-        $parentRelated->setData('related to parent!');
-        $child2->setParentRelated($parentRelated);
-        $parentRelated->setParent($child2);
-        $this->_em->persist($parentRelated);
-        
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        
-        $this->_em->flush();
-        $this->_em->clear();
-        
-        $query = $this->_em->createQuery("select p, r from Doctrine\Tests\ORM\Functional\ParentEntity p join p.parentRelated r");
-        $result = $query->getResult();
-        
-        $this->assertEquals(1, count($result));
-        $this->assertTrue($result[0] instanceof ChildEntity);
-        $related = $result[0]->getParentRelated();
-        $this->assertFalse($related instanceof \Doctrine\ORM\Proxy\Proxy);
-        $this->assertTrue($related instanceof ParentRelatedEntity);
-        $this->assertEquals('related to parent!', $related->getData());
-    }
-    
-}
-
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"parent"="ParentEntity", "child"="ChildEntity"})
- */
-class ParentEntity {
-    /**
-     * @Id
-     * @Column(name="parent_id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
-    /**
-     * @Column(name="DATA", type="string")
-     */
-    private $data;
-    
-    /** @OneToOne(targetEntity="ParentRelatedEntity", mappedBy="parent") */
-    private $parentRelated;
-
-    public function getId() {
-        return $this->id;
-    }
-
-    public function getData() {
-        return $this->data;
-    }
-
-    public function setData($data) {
-        $this->data = $data;
-    }
-    
-    public function getParentRelated() {
-        return $this->parentRelated;
-    }
-    
-    public function setParentRelated($parentRelated) {
-        $this->parentRelated = $parentRelated;
-    }
-}
-
-/**
- * @Entity
- */
-class ChildEntity extends ParentEntity {
-    /**
-     * @Column(name="`number`", type="integer", nullable=true)
-     */
-    private $number;
-    /**
-     * @OneToOne(targetEntity="RelatedEntity")
-     * @JoinColumn(name="related_entity_id", referencedColumnName="id")
-     */
-    private $relatedEntity;
-
-    public function getNumber() {
-        return $this->number;
-    }
-
-    public function setNumber($number) {
-        $this->number = $number;
-    }
-
-    public function getRelatedEntity() {
-        return $this->relatedEntity;
-    }
-
-    public function setRelatedEntity($relatedEntity) {
-        $this->relatedEntity = $relatedEntity;
-        $relatedEntity->setOwner($this);
-    }
-}
-
-/**
- * @Entity
- */
-class RelatedEntity {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-    /**
-     * @Column(type="string", length=50)
-     */
-    private $name;
-    /**
-     * @OneToOne(targetEntity="ChildEntity", mappedBy="relatedEntity")
-     */
-    private $owner;
-
-    public function getId() {
-        return $this->id;
-    }
-
-    public function getName() {
-        return $this->name;
-    }
-
-    public function setName($name) {
-        $this->name = $name;
-    }
-
-    public function getOwner() {
-        return $this->owner;
-    }
-
-    public function setOwner($owner) {
-        $this->owner = $owner;
-        if ($owner->getRelatedEntity() !== $this) {
-            $owner->setRelatedEntity($this);
-        }
-    }
-}
-
-/** @Entity */
-class ParentRelatedEntity {
-    /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-    public function getId() {return $this->id;}
-    /** @Column(type="string") */
-    private $data;
-    public function getData() {return $this->data;}
-    public function setData($data) {$this->data = $data;}
-    /**
-     * @OneToOne(targetEntity="ParentEntity")
-     * @JoinColumn(name="parent_id", referencedColumnName="parent_id")
-     */
-    private $parent;
-    public function getParent() {return $this->parent;}
-    public function setParent($parent) {$this->parent = $parent;}
 }

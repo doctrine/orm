@@ -56,7 +56,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Company\CompanyEvent',
             'Doctrine\Tests\Models\Company\CompanyAuction',
             'Doctrine\Tests\Models\Company\CompanyRaffle',
-            'Doctrine\Tests\Models\Company\CompanyCar'
+            'Doctrine\Tests\Models\Company\CompanyCar',
+            'Doctrine\Tests\Models\Company\CompanyContract',
         ),
         'ecommerce' => array(
             'Doctrine\Tests\Models\ECommerce\ECommerceCart',
@@ -123,6 +124,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
         
         if (isset($this->_usedModelSets['company'])) {
+            $conn->executeUpdate('DELETE FROM company_contract_employees');
+            $conn->executeUpdate('DELETE FROM company_contracts');
             $conn->executeUpdate('DELETE FROM company_persons_friends');
             $conn->executeUpdate('DELETE FROM company_managers');
             $conn->executeUpdate('DELETE FROM company_employees');
