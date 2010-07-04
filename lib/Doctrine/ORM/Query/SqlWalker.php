@@ -497,7 +497,6 @@ class SqlWalker implements TreeWalker
 
                     $sql .= reset($assoc->targetToSourceKeyColumns);
                 } else {
-                    // 2- Inverse side: NOT (YET?) SUPPORTED
                     throw QueryException::associationPathInverseSideNotSupported();
                 }
                 break;

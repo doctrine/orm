@@ -32,12 +32,11 @@ use Doctrine\ORM\Mapping\AssociationMapping,
  * Similarly, if you remove entities from a collection that is part of a one-many
  * mapping this will only result in the nulling out of the foreign keys on flush.
  *
- * @license   http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @since     2.0
- * @version   $Revision: 4930 $
  * @author    Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author    Roman Borschel <roman@code-factory.org>
  * @author    Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
+ * @todo Design for inheritance to allow custom implementations?
  */
 final class PersistentCollection implements Collection
 {

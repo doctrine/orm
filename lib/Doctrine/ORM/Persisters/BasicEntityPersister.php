@@ -57,9 +57,9 @@ use PDO,
  *
  *   - {@link load} : Loads (the state of) a single, managed entity.
  *   - {@link loadAll} : Loads multiple, managed entities.
- *   - {@link loadOneToOneEntity} : Loads a one/many-to-one association (lazy-loading).
- *   - {@link loadOneToManyCollection} : Loads a one-to-many association (lazy-loading).
- *   - {@link loadManyToManyCollection} : Loads a many-to-many association (lazy-loading).
+ *   - {@link loadOneToOneEntity} : Loads a one/many-to-one entity association (lazy-loading).
+ *   - {@link loadOneToManyCollection} : Loads a one-to-many entity association (lazy-loading).
+ *   - {@link loadManyToManyCollection} : Loads a many-to-many entity association (lazy-loading).
  *
  * The BasicEntityPersister implementation provides the default behavior for
  * persisting and querying entities that are mapped to a single database table.
@@ -712,7 +712,7 @@ class BasicEntityPersister
      * Creates or fills a single entity object from an SQL result.
      * 
      * @param $result The SQL result.
-     * @param object $entity The entity object to fill.
+     * @param object $entity The entity object to fill, if any.
      * @param array $hints Hints for entity creation.
      * @return object The filled and managed entity object or NULL, if the SQL result is empty.
      */
@@ -1117,6 +1117,22 @@ class BasicEntityPersister
             $coll->hydrateAdd($this->_createEntity($result));
         }
         $stmt->closeCursor();
+    }
+
+    /**
+     * Checks whether the given managed entity exists in the database.
+     *
+     * @param object $entity
+     * @return boolean TRUE if the entity exists in the database, FALSE otherwise.
+     */
+    public function exists($entity)
+    {
+        $criteria = $this->_class->getIdentifierValues($entity);
+        $sql = 'SELECT 1 FROM ' . $this->_class->getQuotedTableName($this->_platform)
+                . ' ' . $this->_getSQLTableAlias($this->_class->name)
+                . ' WHERE ' . $this->_getSelectConditionSQL($criteria);
+
+        return (bool) $this->_conn->fetchColumn($sql, array_values($criteria));
     }
 
     //TODO

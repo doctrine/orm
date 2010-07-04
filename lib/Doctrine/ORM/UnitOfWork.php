@@ -556,7 +556,7 @@ class UnitOfWork implements PropertyChangedListener
             return; // "Persistence by reachability" only if persist cascade specified
         }
         
-        // Look through the entities, and in any of their associations, for transient
+        // Look through the entities, and in any of their associations, for transient (new)
         // enities, recursively. ("Persistence by reachability")
         if ($assoc->isOneToOne()) {
             if ($value instanceof Proxy && ! $value->__isInitialized__) {
@@ -569,41 +569,44 @@ class UnitOfWork implements PropertyChangedListener
         
         $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
         foreach ($value as $entry) {
-            $state = $this->getEntityState($entry, self::STATE_NEW);
+            $state = $this->getEntityState($entry);
             $oid = spl_object_hash($entry);
             if ($state == self::STATE_NEW) {
-                if (isset($targetClass->lifecycleCallbacks[Events::prePersist])) {
-                    $targetClass->invokeLifecycleCallbacks(Events::prePersist, $entry);
-                }
-                if ($this->_evm->hasListeners(Events::prePersist)) {
-                    $this->_evm->dispatchEvent(Events::prePersist, new LifecycleEventArgs($entry, $this->_em));
-                }
-                
-                // Get identifier, if possible (not post-insert)
-                $idGen = $targetClass->idGenerator;
-                if ( ! $idGen->isPostInsertGenerator()) {
-                    $idValue = $idGen->generate($this->_em, $entry);
-                    if ( ! $idGen instanceof \Doctrine\ORM\Id\AssignedGenerator) {
-                        $this->_entityIdentifiers[$oid] = array($targetClass->identifier[0] => $idValue);
-                        $targetClass->getSingleIdReflectionProperty()->setValue($entry, $idValue);
-                    } else {
-                        $this->_entityIdentifiers[$oid] = $idValue;
-                    }
-                    $this->addToIdentityMap($entry);
-                }
-                $this->_entityStates[$oid] = self::STATE_MANAGED;
-
-                // NEW entities are INSERTed within the current unit of work.
-                $this->_entityInsertions[$oid] = $entry;
-
+                $this->persistNew($targetClass, $entry);
                 $this->computeChangeSet($targetClass, $entry);
-                
             } else if ($state == self::STATE_REMOVED) {
-                throw ORMException::removedEntityInCollectionDetected($entity, $assoc);
+                throw ORMException::removedEntityInCollectionDetected($entry, $assoc);
+            } else if ($state == self::STATE_DETACHED) {
+                throw new \InvalidArgumentException("Detached entity in association during cascading a persist operation.");
             }
             // MANAGED associated entities are already taken into account
             // during changeset calculation anyway, since they are in the identity map.
         }
+    }
+
+    private function persistNew($class, $entity)
+    {
+        $oid = spl_object_hash($entity);
+        if (isset($class->lifecycleCallbacks[Events::prePersist])) {
+            $class->invokeLifecycleCallbacks(Events::prePersist, $entity);
+        }
+        if ($this->_evm->hasListeners(Events::prePersist)) {
+            $this->_evm->dispatchEvent(Events::prePersist, new LifecycleEventArgs($entity, $this->_em));
+        }
+
+        $idGen = $class->idGenerator;
+        if ( ! $idGen->isPostInsertGenerator()) {
+            $idValue = $idGen->generate($this->_em, $entity);
+            if ( ! $idGen instanceof \Doctrine\ORM\Id\AssignedGenerator) {
+                $this->_entityIdentifiers[$oid] = array($class->identifier[0] => $idValue);
+                $class->setIdentifierValues($entity, $idValue);
+            } else {
+                $this->_entityIdentifiers[$oid] = $idValue;
+            }
+        }
+        $this->_entityStates[$oid] = self::STATE_MANAGED;
+
+        $this->scheduleForInsert($entity);
     }
     
     /**
@@ -1031,35 +1034,54 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Gets the state of an entity within the current unit of work.
-     * 
-     * NOTE: This method sees entities that are not MANAGED or REMOVED and have a
-     *       populated identifier, whether it is generated or manually assigned, as
-     *       DETACHED. This can be incorrect for manually assigned identifiers.
+     * Gets the state of an entity with regard to the current unit of work.
      *
      * @param object $entity
-     * @param integer $assume The state to assume if the state is not yet known. This is usually
-     *                        used to avoid costly state lookups, in the worst case with a database
-     *                        lookup.
+     * @param integer $assume The state to assume if the state is not yet known (not MANAGED or REMOVED).
+     *                        This parameter can be set to improve performance of entity state detection
+     *                        by potentially avoiding a database lookup if the distinction between NEW and DETACHED
+     *                        is either known or does not matter for the caller of the method.
      * @return int The entity state.
      */
     public function getEntityState($entity, $assume = null)
     {
         $oid = spl_object_hash($entity);
         if ( ! isset($this->_entityStates[$oid])) {
-            // State can only be NEW or DETACHED, because MANAGED/REMOVED states are immediately
-            // set by the UnitOfWork directly. We treat all entities that have a populated
-            // identifier as DETACHED and all others as NEW. This is not really correct for
-            // manually assigned identifiers but in that case we would need to hit the database
-            // and we would like to avoid that.
+            // State can only be NEW or DETACHED, because MANAGED/REMOVED states are known.
+            // Note that you can not remember the NEW or DETACHED state in _entityStates since
+            // the UoW does not hold references to such objects and the object hash can be reused.
+            // More generally because the state may "change" between NEW/DETACHED without the UoW being aware of it.
             if ($assume === null) {
-                if ($this->_em->getClassMetadata(get_class($entity))->getIdentifierValues($entity)) {
-                    $this->_entityStates[$oid] = self::STATE_DETACHED;
+                $class = $this->_em->getClassMetadata(get_class($entity));
+                $id = $class->getIdentifierValues($entity);
+                if ( ! $id) {
+                    return self::STATE_NEW;
+                } else if ($class->isIdentifierNatural()) {
+                    // Check for a version field, if available, to avoid a db lookup.
+                    if ($class->isVersioned) {
+                        if ($class->getFieldValue($entity, $class->versionField)) {
+                            return self::STATE_DETACHED;
+                        } else {
+                            return self::STATE_NEW;
+                        }
+                    } else {
+                        // Last try before db lookup: check the identity map.
+                        if ($this->tryGetById($id, $class->rootEntityName)) {
+                            return self::STATE_DETACHED;
+                        } else {
+                            // db lookup
+                            if ($this->getEntityPersister(get_class($entity))->exists($entity)) {
+                                return self::STATE_DETACHED;
+                            } else {
+                                return self::STATE_NEW;
+                            }
+                        }
+                    }
                 } else {
-                    $this->_entityStates[$oid] = self::STATE_NEW;
+                    return self::STATE_DETACHED;
                 }
             } else {
-                $this->_entityStates[$oid] = $assume;
+                return $assume;
             }
         }
         return $this->_entityStates[$oid];
@@ -1169,12 +1191,10 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Saves an entity as part of the current unit of work.
-     * This method is internally called during save() cascades as it tracks
-     * the already visited entities to prevent infinite recursions.
+     * Persists an entity as part of the current unit of work.
      * 
-     * NOTE: This method always considers entities that are not yet known to
-     * this UnitOfWork as NEW.
+     * This method is internally called during persist() cascades as it tracks
+     * the already visited entities to prevent infinite recursions.
      *
      * @param object $entity The entity to persist.
      * @param array $visited The already visited entities.
@@ -1189,8 +1209,8 @@ class UnitOfWork implements PropertyChangedListener
         $visited[$oid] = $entity; // Mark visited
 
         $class = $this->_em->getClassMetadata(get_class($entity));
-        $entityState = $this->getEntityState($entity, self::STATE_NEW);
-        
+        $entityState = $this->getEntityState($entity);
+
         switch ($entityState) {
             case self::STATE_MANAGED:
                 // Nothing to do, except if policy is "deferred explicit"
@@ -1199,30 +1219,10 @@ class UnitOfWork implements PropertyChangedListener
                 }
                 break;
             case self::STATE_NEW:
-                if (isset($class->lifecycleCallbacks[Events::prePersist])) {
-                    $class->invokeLifecycleCallbacks(Events::prePersist, $entity);
-                }
-                if ($this->_evm->hasListeners(Events::prePersist)) {
-                    $this->_evm->dispatchEvent(Events::prePersist, new LifecycleEventArgs($entity, $this->_em));
-                }
-                
-                $idGen = $class->idGenerator;
-                if ( ! $idGen->isPostInsertGenerator()) {
-                    $idValue = $idGen->generate($this->_em, $entity);
-                    if ( ! $idGen instanceof \Doctrine\ORM\Id\AssignedGenerator) {
-                        $this->_entityIdentifiers[$oid] = array($class->identifier[0] => $idValue);
-                        $class->setIdentifierValues($entity, $idValue);
-                    } else {
-                        $this->_entityIdentifiers[$oid] = $idValue;
-                    }
-                }
-                $this->_entityStates[$oid] = self::STATE_MANAGED;
-                
-                $this->scheduleForInsert($entity);
+                $this->persistNew($class, $entity);
                 break;
             case self::STATE_DETACHED:
-                throw new \InvalidArgumentException(
-                        "Behavior of persist() for a detached entity is not yet defined.");
+                throw new \InvalidArgumentException("Detached entity passed to persist().");
             case self::STATE_REMOVED:
                 // Entity becomes managed again
                 if ($this->isScheduledForDelete($entity)) {
@@ -1235,7 +1235,7 @@ class UnitOfWork implements PropertyChangedListener
             default:
                 throw ORMException::invalidEntityState($entityState);
         }
-        
+
         $this->_cascadePersist($entity, $visited);
     }
 
@@ -1440,7 +1440,6 @@ class UnitOfWork implements PropertyChangedListener
      * 
      * @param object $entity
      * @param array $visited
-     * @internal This method always considers entities with an assigned identifier as DETACHED.
      */
     private function _doDetach($entity, array &$visited)
     {
@@ -1657,7 +1656,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function lock($entity, $lockMode, $lockVersion = null)
     {
-        if ($this->getEntityState($entity) != self::STATE_MANAGED) {
+        if ($this->getEntityState($entity, self::STATE_NEW) != self::STATE_MANAGED) {
             throw new \InvalidArgumentException("Entity is not MANAGED.");
         }
         
@@ -2182,5 +2181,48 @@ class UnitOfWork implements PropertyChangedListener
     public function getScheduledCollectionUpdates()
     {
         return $this->_collectionUpdates;
+    }
+
+    /**
+     * Specifically tells this UnitOfWork that the given entity should be treated
+     * as NEW. This can be useful in the case of manually assigned identifiers to
+     * avoid a database lookup that is used to tell NEW and DETACHED entities apart.
+     * Use setNew($entity) prior to persist($entity) to avoid the database lookup.
+     *
+     * Note that the UnitOfWork uses the spl_object_hash() of the object to associate the
+     * state with the object. Thus the UnitOfWork does not prevent the object from being
+     * garbage collected which can result in the object hash being reused for other objects.
+     *
+     * @param object $entity The entity to mark as NEW.
+     * @throws InvalidArgumentException If the entity is already known to this UnitOfWork.
+     */
+    public function setNew($entity)
+    {
+        $oid = spl_object_hash($entity);
+        if (isset($this->_entityStates[$oid])) {
+            throw new \InvalidArgumentException("The passed entity must not be already known to this UnitOfWork.");
+        }
+        $this->_entityStates[$oid] = self::STATE_NEW;
+    }
+
+    /**
+     * Specifically tells this UnitOfWork that the given entity should be treated
+     * as DETACHED. This can be useful in the case of manually assigned identifiers to
+     * avoid a database lookup that is used to tell NEW and DETACHED entities apart.
+     *
+     * Note that the UnitOfWork uses the spl_object_hash() of the object to associate the
+     * state with the object. Thus the UnitOfWork does not prevent the object from being
+     * garbage collected which can result in the object hash being reused for other objects.
+     *
+     * @param object $entity The entity to mark as DETACHED.
+     * @throws InvalidArgumentException If the entity is already known to this UnitOfWork.
+     */
+    public function setDetached($entity)
+    {
+        $oid = spl_object_hash($entity);
+        if (isset($this->_entityStates[$oid])) {
+            throw new \InvalidArgumentException("The passed entity must not be already known to this UnitOfWork.");
+        }
+        $this->_entityStates[$oid] = self::STATE_DETACHED;
     }
 }

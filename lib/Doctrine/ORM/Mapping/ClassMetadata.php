@@ -143,7 +143,11 @@ class ClassMetadata extends ClassMetadataInfo
             }
             return $id;
         } else {
-            return array($this->identifier[0] => $this->reflFields[$this->identifier[0]]->getValue($entity));
+            $value = $this->reflFields[$this->identifier[0]]->getValue($entity);
+            if ($value !== null) {
+                return array($this->identifier[0] => $value);
+            }
+            return array();
         }
     }
 

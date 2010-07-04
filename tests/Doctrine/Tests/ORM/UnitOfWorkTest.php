@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
@@ -147,47 +148,46 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(array('data' => array('thedata', 'newdata')), $this->_unitOfWork->getEntityChangeSet($entity));
     }
 
-    /*
-    public function testSavingSingleEntityWithSequenceIdGeneratorSchedulesInsert()
+    public function testGetEntityStateOnVersionedEntityWithAssignedIdentifier()
     {
-        //...
+        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\ORM\VersionedAssignedIdentifierEntity"));
+        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\VersionedAssignedIdentifierEntity', $persister);
+
+        $e = new VersionedAssignedIdentifierEntity();
+        $e->id = 42;
+        $this->assertEquals(UnitOfWork::STATE_NEW, $this->_unitOfWork->getEntityState($e));
+        $this->assertFalse($persister->isExistsCalled());
     }
-    
-    public function testSavingSingleEntityWithTableIdGeneratorSchedulesInsert()
+
+    public function testGetEntityStateWithAssignedIdentity()
     {
-        //...
+        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\CMS\CmsPhonenumber"));
+        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\CMS\CmsPhonenumber', $persister);
+
+        $ph = new \Doctrine\Tests\Models\CMS\CmsPhonenumber();
+        $ph->phonenumber = '12345';
+
+        $this->assertEquals(UnitOfWork::STATE_NEW, $this->_unitOfWork->getEntityState($ph));
+        $this->assertTrue($persister->isExistsCalled());
+
+        $persister->reset();
+
+        // setNew should avoid exists() check
+        $this->_unitOfWork->setNew($ph);
+        $this->assertEquals(UnitOfWork::STATE_NEW, $this->_unitOfWork->getEntityState($ph));
+        $this->assertFalse($persister->isExistsCalled());
+
+        $persister->reset();
+
+        // if the entity is already managed the exists() check should also be skipped
+        $this->_unitOfWork->registerManaged($ph, array('phonenumber' => '12345'), array());
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_unitOfWork->getEntityState($ph));
+        $this->assertFalse($persister->isExistsCalled());
+        $ph2 = new \Doctrine\Tests\Models\CMS\CmsPhonenumber();
+        $ph2->phonenumber = '12345';
+        $this->assertEquals(UnitOfWork::STATE_DETACHED, $this->_unitOfWork->getEntityState($ph2));
+        $this->assertFalse($persister->isExistsCalled());
     }
-    
-    public function testSavingSingleEntityWithSingleNaturalIdForcesInsert()
-    {
-        //...
-    }
-    
-    public function testSavingSingleEntityWithCompositeIdForcesInsert()
-    {
-        //...
-    }
-    
-    public function testSavingEntityGraphWithIdentityColumnsForcesInserts()
-    {
-        //...
-    }
-    
-    public function testSavingEntityGraphWithSequencesDelaysInserts()
-    {
-        //...
-    }
-    
-    public function testSavingEntityGraphWithNaturalIdsForcesInserts()
-    {
-        //...
-    }
-    
-    public function testSavingEntityGraphWithMixedIdGenerationStrategies()
-    {
-        //...
-    }
-    */
 }
 
 /**
@@ -243,4 +243,17 @@ class NotifyChangedEntity implements \Doctrine\Common\NotifyPropertyChanged
             }
         }
     }
+}
+
+/** @Entity */
+class VersionedAssignedIdentifierEntity
+{
+    /**
+     * @Id @Column(type="integer")
+     */
+    public $id;
+    /**
+     * @Version @Column(type="integer")
+     */
+    public $version;
 }

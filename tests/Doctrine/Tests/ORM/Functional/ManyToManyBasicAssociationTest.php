@@ -185,7 +185,9 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
 
         /* @var $freshUser CmsUser */
         $freshUser = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $user->getId());
-        $freshUser->addGroup($group);
+        $newGroup = new CmsGroup();
+        $newGroup->setName('12Monkeys');
+        $freshUser->addGroup($newGroup);
 
         $this->assertFalse($freshUser->groups->isInitialized(), "CmsUser::groups Collection has to be uninitialized for this test.");
 

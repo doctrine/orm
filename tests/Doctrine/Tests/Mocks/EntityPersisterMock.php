@@ -13,6 +13,7 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
     private $_identityColumnValueCounter = 0;
     private $_mockIdGeneratorType;
     private $_postInsertIds = array();
+    private $existsCalled = false;
 
     /**
      * @param <type> $entity
@@ -57,6 +58,11 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
     {
         $this->_updates[] = $entity;
     }
+
+    public function exists($entity)
+    {
+        $this->existsCalled = true;
+    }
     
     public function delete($entity)
     {
@@ -80,9 +86,15 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
     
     public function reset()
     {
+        $this->existsCalled = false;
         $this->_identityColumnValueCounter = 0;
         $this->_inserts = array();
         $this->_updates = array();
         $this->_deletes = array();
+    }
+
+    public function isExistsCalled()
+    {
+        return $this->existsCalled;
     }
 }
