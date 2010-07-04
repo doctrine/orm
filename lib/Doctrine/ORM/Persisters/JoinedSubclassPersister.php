@@ -347,15 +347,28 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     }
 
     /**
-     * Lock all rows of this entity matching the given criteria with the specified pessimistic lock mode
+     * Get the FROM and optionally JOIN conditions to lock the entity managed by this persister.
      *
-     * @param array $criteria
-     * @param int $lockMode
-     * @return void
+     * @return string
      */
-    public function lock(array $criteria, $lockMode)
+    public function getLockTablesSql()
     {
-        throw new \BadMethodCallException("lock() is not yet supported for JoinedSubclassPersister");
+        $baseTableAlias = $this->_getSQLTableAlias($this->_class->name);
+
+        // INNER JOIN parent tables
+        $joinSql = '';
+        foreach ($this->_class->parentClasses as $parentClassName) {
+            $parentClass = $this->_em->getClassMetadata($parentClassName);
+            $tableAlias = $this->_getSQLTableAlias($parentClassName);
+            $joinSql .= ' INNER JOIN ' . $parentClass->getQuotedTableName($this->_platform) . ' ' . $tableAlias . ' ON ';
+            $first = true;
+            foreach ($idColumns as $idColumn) {
+                if ($first) $first = false; else $joinSql .= ' AND ';
+                $joinSql .= $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
+            }
+        }
+
+        return 'FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' ' . $baseTableAlias . $joinSql;
     }
     
     /* Ensure this method is never called. This persister overrides _getSelectEntitiesSQL directly. */
