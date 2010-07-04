@@ -57,9 +57,10 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\PostgreSQLIdentityStrategyTest');
         
         $suite->addTest(Locking\AllTests::suite());
-        $suite->addTest(SchemaTool\AllTests::suite());
         $suite->addTest(Ticket\AllTests::suite());
+        $suite->addTest(SchemaTool\AllTests::suite());
 
+        
         return $suite;
     }
 }

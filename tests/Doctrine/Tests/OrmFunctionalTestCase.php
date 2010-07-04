@@ -180,6 +180,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
                 $forceCreateTables = true;
             }
         }
+
+        if (isset($GLOBALS['DOCTRINE_MARK_SQL_LOGS'])) {
+            if (in_array($this->sharedFixture['conn']->getDatabasePlatform()->getName(), array("mysql", "postgresql"))) {
+                $this->sharedFixture['conn']->executeQuery('SELECT 1 /*' . get_class($this) . '*/');
+            } else if ($this->sharedFixture['conn']->getDatabasePlatform()->getName() == "oracle") {
+                $this->sharedFixture['conn']->executeQuery('SELECT 1 /*' . get_class($this) . '*/ FROM dual');
+            }
+        }
         
         if ( ! $this->_em) {
             $this->_em = $this->_getEntityManager();

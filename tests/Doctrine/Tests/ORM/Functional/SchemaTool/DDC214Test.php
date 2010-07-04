@@ -1,12 +1,15 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Functional\Ticket;
+namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\ORM\Tools;
 
 
 require_once __DIR__ . '/../../../TestInit.php';
 
+/**
+ * WARNING: This test should be run as last test! It can affect others very easily!
+ */
 class DDC214Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp() {
