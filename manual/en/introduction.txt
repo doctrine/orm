@@ -185,7 +185,7 @@ Here is a short overview of the purpose of these folders and files:
 1) From within the tools/sandbox folder, run the following command and you should
 see the same output.
 
-    $ php doctrine orm:schema-tool:create ./Entities
+    $ php doctrine orm:schema-tool:create
     Creating database schema...
     Database schema created successfully!
     
