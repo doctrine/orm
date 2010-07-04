@@ -1036,11 +1036,22 @@ class BasicEntityPersister
             $lockSql = $this->_platform->getWriteLockSql();
         }
 
-        $sql = 'SELECT 1 FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' '
-             . $this->_getSQLTableAlias($this->_class->name)
+        $sql = 'SELECT 1 '
+             . $this->getLockTablesSql()
              . ($conditionSql ? ' WHERE ' . $conditionSql : '') . ' ' . $lockSql;
         $params = array_values($criteria);
         $this->_conn->executeQuery($sql, $params);
+    }
+
+    /**
+     * Get the FROM and optionally JOIN conditions to lock the entity managed by this persister.
+     *
+     * @return string
+     */
+    protected function getLockTablesSql()
+    {
+        return 'FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' '
+                . $this->_getSQLTableAlias($this->_class->name);
     }
 
     /**
