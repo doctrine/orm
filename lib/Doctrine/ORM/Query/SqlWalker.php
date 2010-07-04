@@ -320,7 +320,10 @@ class SqlWalker implements TreeWalker
 
             if ($class->isInheritanceTypeSingleTable()) {
                 $conn = $this->_em->getConnection();
-                $values = array($conn->quote($class->discriminatorValue));
+                $values = array();
+                if ($class->discriminatorValue !== null) { // discrimnators can be 0
+                    $values[] = $conn->quote($class->discriminatorValue);
+                }
 
                 foreach ($class->subClasses as $subclassName) {
                     $values[] = $conn->quote($this->_em->getClassMetadata($subclassName)->discriminatorValue);

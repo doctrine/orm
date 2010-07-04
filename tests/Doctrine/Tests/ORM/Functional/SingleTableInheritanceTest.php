@@ -219,9 +219,13 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $contracts = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c ORDER BY c.id')->getScalarResult();
 
-        $this->assertEquals('fix', $contracts[0]['c_discr']);
-        $this->assertEquals('flexible', $contracts[1]['c_discr']);
-        $this->assertEquals('flexultra', $contracts[2]['c_discr']);
+        $discrValues = \array_map(function($a) {
+            return $a['c_discr'];
+        }, $contracts);
+
+        sort($discrValues);
+
+        $this->assertEquals(array('fix', 'flexible', 'flexultra'), $discrValues);
     }
 
     public function testQueryChildClassWithCondition()
