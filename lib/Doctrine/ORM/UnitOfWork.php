@@ -658,7 +658,7 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($changeSet) {
             if (isset($this->_entityChangeSets[$oid])) {
-                $this->_entityChangeSets[$oid] = $changeSet + $this->_entityChangeSets[$oid];
+                $this->_entityChangeSets[$oid] = array_merge($this->_entityChangeSets[$oid], $changeSet);
             }
             $this->_originalEntityData[$oid] = $actualData;
         }
