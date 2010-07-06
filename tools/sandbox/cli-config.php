@@ -1,34 +1,61 @@
 <?php
 
-require_once '../../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
+require_once __DIR__ . '/../../lib/Doctrine/Common/ClassLoader.php';
 
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\ORM', realpath(__DIR__ . '/../../lib'));
-$classLoader->register();
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\DBAL', realpath(__DIR__ . '/../../lib/vendor/doctrine-dbal/lib'));
-$classLoader->register();
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Common', realpath(__DIR__ . '/../../lib/vendor/doctrine-common/lib'));
-$classLoader->register();
-$classLoader = new \Doctrine\Common\ClassLoader('Symfony', realpath(__DIR__ . '/../../lib/vendor'));
-$classLoader->register();
 $classLoader = new \Doctrine\Common\ClassLoader('Entities', __DIR__);
 $classLoader->register();
+
 $classLoader = new \Doctrine\Common\ClassLoader('Proxies', __DIR__);
 $classLoader->register();
 
+require_once '/var/workspaces/nexxone/library/Zend/Acl/Resource/Interface.php';
+require_once '/var/workspaces/nexxone/library/Zend/Acl/Role/Interface.php';
+
+$classLoader = new \Doctrine\Common\ClassLoader('Core\Model', '/var/workspaces/nexxone/application/modules/core/models/');
+$classLoader->register();
+
+$classLoader = new \Doctrine\Common\ClassLoader('Content\Model', '/var/workspaces/nexxone/application/modules/content/models/');
+$classLoader->register();
+
+$classLoader = new \Doctrine\Common\ClassLoader('User\Model', '/var/workspaces/nexxone/application/modules/user/models/');
+$classLoader->register();
+
+
 $config = new \Doctrine\ORM\Configuration();
 $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache);
-$driverImpl = $config->newDefaultAnnotationDriver(array(__DIR__."/Entities"));
-$config->setMetadataDriverImpl($driverImpl);
 
 $config->setProxyDir(__DIR__ . '/Proxies');
-$config->setProxyNamespace('Proxies');
 
-$connectionOptions = array(
-    'driver' => 'pdo_sqlite',
-    'path' => 'database.sqlite'
+$config->setProxyNamespace('LivandoCMSProxies');
+$driver =  new Doctrine\ORM\Mapping\Driver\YamlDriver(
+    array(
+        '/var/workspaces/nexxone/application/modules/core/config/schema',
+        '/var/workspaces/nexxone/application/modules/content/config/schema',
+        '/var/workspaces/nexxone/application/modules/user/config/schema',
+    )
 );
+#$driver = new Doctrine\ORM\Mapping\Driver\YamlDriver(array('./yaml/'), YamlDriver::PRELOAD);
+$config->setMetadataDriverImpl($driver);
 
-$em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);
+$conn = new \Doctrine\DBAL\Connection(
+            array (
+                'pdo' => new PDO(
+                    "mysql:host=localhost;dbname=nexxone;unix_socket=/var/run/mysqld/mysqld.sock",
+                    'root',
+                    'mysql5023'
+                )
+            ),
+            new Doctrine\DBAL\Driver\PDOMySql\Driver(),
+            $config
+        );
+
+//$connectionOptions = array(
+//    'driver' => 'pdo_sqlite',
+//    'path' => 'database.sqlite'
+//);
+
+// These are required named variables (names can't change!)
+$em = \Doctrine\ORM\EntityManager::create($conn, $config);
 
 $helpers = array(
     'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
