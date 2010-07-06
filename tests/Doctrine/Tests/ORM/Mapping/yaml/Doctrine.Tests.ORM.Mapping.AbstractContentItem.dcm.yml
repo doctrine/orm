@@ -1,0 +1,17 @@
+Doctrine\Tests\ORM\Mapping\AbstractContentItem:
+  type: mappedSuperclass
+  table: abstract_item
+  id:
+    id: 
+      type: integer
+      unsigned: true
+      generator:
+        strategy: AUTO
+  fields:
+    # FilesystemIdentifier
+  manyToOne:
+    parentDirectory:
+      targetEntity: Doctrine\Tests\ORM\Mapping\Directory
+      joinColumn:
+        name: parent_directory_id
+        referencedColumnName: id
