@@ -8,3 +8,4 @@
 + DQL User Defined Functions
 + SQL Table Prefixes
 + Strategy Cookbook Introduction
++ Aggregate Fields
