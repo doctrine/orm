@@ -36,7 +36,7 @@ class CmsUser
      */
     public $articles;
     /**
-     * @OneToOne(targetEntity="CmsAddress", mappedBy="user", cascade={"persist"})
+     * @OneToOne(targetEntity="CmsAddress", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      */
     public $address;
     /**

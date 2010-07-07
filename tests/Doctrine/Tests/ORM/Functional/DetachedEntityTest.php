@@ -87,10 +87,9 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
-     * @expectedException InvalidArgumentException
      * @group DDC-203
      */
-    public function testDetachedEntityWithAssignedIdentityThrowsExceptionOnPersist()
+    public function testDetachedEntityThrowsExceptionOnFlush()
     {
         $ph = new CmsPhonenumber();
         $ph->phonenumber = '12345';
@@ -98,6 +97,10 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
         $this->_em->persist($ph);
+        try {
+            $this->_em->flush();
+            $this->fail();
+        } catch (\Exception $expected) {}
     }
 
     /**

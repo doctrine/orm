@@ -172,14 +172,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
 
         $persister->reset();
 
-        // setNew should avoid exists() check
-        $this->_unitOfWork->setNew($ph);
-        $this->assertEquals(UnitOfWork::STATE_NEW, $this->_unitOfWork->getEntityState($ph));
-        $this->assertFalse($persister->isExistsCalled());
-
-        $persister->reset();
-
-        // if the entity is already managed the exists() check should also be skipped
+        // if the entity is already managed the exists() check should be skipped
         $this->_unitOfWork->registerManaged($ph, array('phonenumber' => '12345'), array());
         $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_unitOfWork->getEntityState($ph));
         $this->assertFalse($persister->isExistsCalled());

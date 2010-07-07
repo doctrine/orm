@@ -27,4 +27,12 @@ class CmsComment
      * @JoinColumn(name="article_id", referencedColumnName="id")
      */
     public $article;
+
+    public function setArticle(CmsArticle $article) {
+        $this->article = $article;
+    }
+
+    public function __toString() {
+        return __CLASS__."[id=".$this->id."]";
+    }
 }

@@ -20,9 +20,10 @@
 namespace Doctrine\ORM\Persisters;
 
 use PDO,
+    Doctrine\DBAL\LockMode,
+    Doctrine\DBAL\Types\Type,
     Doctrine\ORM\ORMException,
     Doctrine\ORM\OptimisticLockException,
-    Doctrine\DBAL\Types\Type,
     Doctrine\ORM\EntityManager,
     Doctrine\ORM\Query,
     Doctrine\ORM\PersistentCollection,
@@ -393,7 +394,7 @@ class BasicEntityPersister
         }
 
         foreach ($uow->getEntityChangeSet($entity) as $field => $change) {
-            if ($versioned && $versionField == $field) { //TODO: Needed?
+            if ($versioned && $versionField == $field) {
                 continue;
             }
 
@@ -792,9 +793,9 @@ class BasicEntityPersister
                 : '';
 
         $lockSql = '';
-        if ($lockMode == \Doctrine\DBAL\LockMode::PESSIMISTIC_READ) {
+        if ($lockMode == LockMode::PESSIMISTIC_READ) {
             $lockSql = ' ' . $this->_platform->getReadLockSql();
-        } else if ($lockMode == \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE) {
+        } else if ($lockMode == LockMode::PESSIMISTIC_WRITE) {
             $lockSql = ' ' . $this->_platform->getWriteLockSql();
         }
 
@@ -1006,7 +1007,7 @@ class BasicEntityPersister
      * 
      * @param string $className
      * @return string The SQL table alias.
-     * @todo Remove. Binding table aliases to class names is not such a good idea.
+     * @todo Reconsider. Binding table aliases to class names is not such a good idea.
      */
     protected function _getSQLTableAlias($className)
     {
@@ -1030,9 +1031,9 @@ class BasicEntityPersister
     {
         $conditionSql = $this->_getSelectConditionSQL($criteria);
 
-        if ($lockMode == \Doctrine\DBAL\LockMode::PESSIMISTIC_READ) {
+        if ($lockMode == LockMode::PESSIMISTIC_READ) {
             $lockSql = $this->_platform->getReadLockSql();
-        } else if ($lockMode == \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE) {
+        } else if ($lockMode == LockMode::PESSIMISTIC_WRITE) {
             $lockSql = $this->_platform->getWriteLockSql();
         }
 

@@ -7,6 +7,8 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\Models\CMS\CmsComment;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -448,7 +450,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $articleNew = $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $articleId);
         $this->assertEquals("Lorem ipsum dolor sunt. And stuff!", $articleNew->text);
     }
-    
+
     public function testFlushDoesNotIssueUnnecessaryUpdates()
     {
         $user = new CmsUser;
@@ -515,10 +517,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(null);
     }
-    
-    /**
-     * @group ref
-     */
+
     public function testQueryEntityByReference()
     {
         $user = new CmsUser;
@@ -551,6 +550,168 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Germany', $address2->country);
         $this->assertEquals('Berlin', $address2->city);
         $this->assertEquals('12345', $address2->zip);
+    }
+
+    public function testOneToOneNullUpdate()
+    {
+        $user = new CmsUser();
+        $user->username = "beberlei";
+        $user->name = "Benjamin E.";
+        $user->status = 'active';
+
+        $address = new CmsAddress();
+        $address->city = "Bonn";
+        $address->zip = "12354";
+        $address->country = "Germany";
+        $address->street = "somestreet";
+        $address->user = $user;
+
+        $this->_em->persist($address);
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->assertEquals(1, $this->_em->getConnection()->fetchColumn("select 1 from cms_addresses where user_id = ".$user->id));
+
+        $address->user = null;
+        $this->_em->flush();
+
+        $this->assertFalse($this->_em->getConnection()->fetchColumn("select 1 from cms_addresses where user_id = ".$user->id));
+    }
+
+    /**
+     * @group DDC-600
+     * @group DDC-455
+     */
+    public function testNewAssociatedEntityDuringFlushThrowsException()
+    {
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $user = new CmsUser();
+        $user->username = "beberlei";
+        $user->name = "Benjamin E.";
+        $user->status = 'active';
+
+        $address = new CmsAddress();
+        $address->city = "Bonn";
+        $address->zip = "12354";
+        $address->country = "Germany";
+        $address->street = "somestreet";
+        $address->user = $user;
+
+        $this->_em->persist($address);
+        // pretend we forgot to persist $user
+        try {
+            $this->_em->flush(); // should raise an exception
+            $this->fail();
+        } catch (\InvalidArgumentException $expected) {}
+    }
+
+    /**
+     * @group DDC-600
+     * @group DDC-455
+     */
+    public function testNewAssociatedEntityDuringFlushThrowsException2()
+    {
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $user = new CmsUser();
+        $user->username = "beberlei";
+        $user->name = "Benjamin E.";
+        $user->status = 'active';
+
+        $address = new CmsAddress();
+        $address->city = "Bonn";
+        $address->zip = "12354";
+        $address->country = "Germany";
+        $address->street = "somestreet";
+        $address->user = $user;
+
+        $this->_em->persist($address);
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $u2 = new CmsUser;
+        $u2->username = "beberlei";
+        $u2->name = "Benjamin E.";
+        $u2->status = 'inactive';
+        $address->user = $u2;
+        // pretend we forgot to persist $u2
+        try {
+            $this->_em->flush(); // should raise an exception
+            $this->fail();
+        } catch (\InvalidArgumentException $expected) {}
+    }
+
+    /**
+     * @group DDC-600
+     * @group DDC-455
+     */
+    public function testNewAssociatedEntityDuringFlushThrowsException3()
+    {
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $art = new CmsArticle();
+        $art->topic = 'topic';
+        $art->text = 'the text';
+
+        $com = new CmsComment();
+        $com->topic = 'Good';
+        $com->text = 'Really good!';
+        $art->addComment($com);
+        
+        $this->_em->persist($art);
+        // pretend we forgot to persist $com
+        try {
+            $this->_em->flush(); // should raise an exception
+            $this->fail();
+        } catch (\InvalidArgumentException $expected) {}
+    }
+
+    /**
+     * @group orphan
+     */
+    public function testOneToOneOrphanRemoval()
+    {
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $user = new CmsUser();
+        $user->username = "beberlei";
+        $user->name = "Benjamin E.";
+        $user->status = 'active';
+
+        $address = new CmsAddress();
+        $address->city = "Bonn";
+        $address->zip = "12354";
+        $address->country = "Germany";
+        $address->street = "somestreet";
+        $address->user = $user;
+        $user->address = $address;
+
+        $this->_em->persist($address);
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $addressId = $address->getId();
+
+        $user->address = null;
+
+        $this->_em->flush();
+
+        $this->assertEquals(0, $this->_em->getConnection()->fetchColumn("select count(*) from cms_addresses"));
+
+        // check orphan removal through replacement
+        $user->address = $address;
+        $address->user = $user;
+
+        $this->_em->flush();
+        $this->assertEquals(1, $this->_em->getConnection()->fetchColumn("select count(*) from cms_addresses"));
+
+        $newAddress = new CmsAddress();
+        $newAddress->city = "NewBonn";
+        $newAddress->zip = "12354";
+        $newAddress->country = "NewGermany";
+        $newAddress->street = "somenewstreet";
+        $newAddress->user = $user;
+        $user->address = $newAddress;
+
+        $this->_em->flush();
+        $this->assertEquals(1, $this->_em->getConnection()->fetchColumn("select count(*) from cms_addresses"));
+        $this->assertEquals(0, $this->_em->getConnection()->fetchColumn("select count(*) from cms_addresses where id=".$addressId.""));
     }
     
     //DRAFT OF EXPECTED/DESIRED BEHAVIOR
