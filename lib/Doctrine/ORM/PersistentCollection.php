@@ -560,15 +560,20 @@ final class PersistentCollection implements Collection
      */
     public function clear()
     {
-        $this->initialize(); // TODO: not needed!?
-        $result = $this->coll->clear();
+        if ($this->initialized && $this->isEmpty()) {
+            return;
+        }
+        if ($this->association->isOneToMany() && $this->association->orphanRemoval) {
+            foreach ($this->coll as $element) {
+                $this->em->getUnitOfWork()->scheduleOrphanRemoval($element);
+            }
+        }
+        $this->coll->clear();
         if ($this->association->isOwningSide) {
             $this->changed();
             $this->em->getUnitOfWork()->scheduleCollectionDeletion($this);
             $this->takeSnapshot();
         }
-
-        return $result;
     }
     
     /**

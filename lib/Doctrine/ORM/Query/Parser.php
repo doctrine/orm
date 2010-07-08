@@ -1291,28 +1291,9 @@ class Parser
      */
     public function UpdateItem()
     {
-        $token = $this->_lexer->lookahead;
-
-        $identVariable = $this->IdentificationVariable();
-        $this->match(Lexer::T_DOT);
-        $this->match(Lexer::T_IDENTIFIER);
-        $field = $this->_lexer->token['value'];
-
-        // Check if field exists
-        $class = $this->_queryComponents[$identVariable]['metadata'];
-
-        if ( ! isset($class->associationMappings[$field]) && ! isset($class->fieldMappings[$field])) {
-            $this->semanticalError(
-                'Class ' . $class->name . ' has no field named ' . $field, $token
-            );
-        }
-
+        $pathExpr = $this->PathExpression(AST\PathExpression::TYPE_STATE_FIELD | AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION);
         $this->match(Lexer::T_EQUALS);
-
-        $newValue = $this->NewValue();
-
-        $updateItem = new AST\UpdateItem($field, $newValue);
-        $updateItem->identificationVariable = $identVariable;
+        $updateItem = new AST\UpdateItem($pathExpr, $this->NewValue());
 
         return $updateItem;
     }

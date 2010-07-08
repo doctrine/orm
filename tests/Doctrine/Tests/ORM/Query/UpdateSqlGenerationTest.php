@@ -167,4 +167,12 @@ class UpdateSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "UPDATE cms_phonenumbers SET phonenumber = 1234 WHERE user_id = ?"
         );
     }
+
+    public function testSingleValuedAssociationFieldInSetClause()
+    {
+        $this->assertSqlGeneration(
+            "update Doctrine\Tests\Models\CMS\CmsComment c set c.article = null where c.article=?1",
+            "UPDATE cms_comments SET article_id = NULL WHERE article_id = ?"
+        );
+    }
 }

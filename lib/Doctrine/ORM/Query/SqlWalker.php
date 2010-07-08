@@ -1202,26 +1202,16 @@ class SqlWalker implements TreeWalker
         $useTableAliasesBefore = $this->_useSqlTableAliases;
         $this->_useSqlTableAliases = false;
 
-        $sql = '';
-        $dqlAlias = $updateItem->identificationVariable;
-        $qComp = $this->_queryComponents[$dqlAlias];
-
-        if ($this->_useSqlTableAliases) {
-            $sql .= $this->getSqlTableAlias($qComp['metadata']->getTableName()) . '.';
-        }
-
-        $sql .= $qComp['metadata']->getQuotedColumnName($updateItem->field, $this->_platform) . ' = ';
+        $sql = $this->walkPathExpression($updateItem->pathExpression) . ' = ';
 
         $newValue = $updateItem->newValue;
 
-        if ($newValue instanceof AST\Node) {
+        if ($newValue === null) {
+            $sql .= 'NULL';
+        } else if ($newValue instanceof AST\Node) {
             $sql .= $newValue->dispatch($this);
-        } else if (is_string($newValue)) {
-            if (strcasecmp($newValue, 'NULL') === 0) {
-                $sql .= 'NULL';
-            } else {
-                $sql .= $this->_conn->quote($newValue);
-            }
+        } else {
+            $sql .= $this->_conn->quote($newValue);
         }
 
         $this->_useSqlTableAliases = $useTableAliasesBefore;
