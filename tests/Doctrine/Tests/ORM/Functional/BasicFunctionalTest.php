@@ -452,6 +452,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $articleNew = $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $articleId);
         $this->assertEquals("Lorem ipsum dolor sunt. And stuff!", $articleNew->text);
+        $this->assertTrue($this->_em->contains($articleNew));
     }
 
     public function testFlushDoesNotIssueUnnecessaryUpdates()
