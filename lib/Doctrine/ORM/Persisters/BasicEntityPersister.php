@@ -335,6 +335,55 @@ class BasicEntityPersister
         }
     }
 
+    private $requiredJoinTableDeletions = null;
+
+    /**
+     * @todo Add check for platform if it supports foreign keys/cascading.
+     * @param array $identifier
+     * @return void
+     */
+    protected function deleteJoinTableRecords($identifier)
+    {
+        if ($this->requiredJoinTableDeletions === null) {
+            $this->requiredJoinTableDeletions = array();
+            foreach ($this->_class->associationMappings AS $mapping) {
+                /* @var $mapping \Doctrine\ORM\Mapping\AssociationMapping */
+                if ($mapping->isManyToMany()) {
+                    // TODO: Write test for composite keys
+                    if (!$mapping->isOwningSide) {
+                        $relatedClass = $this->_em->getClassMetadata($mapping->targetEntityName);
+                        $mapping = $relatedClass->associationMappings[$mapping->mappedBy];
+                        $keys = array_keys($mapping->relationToTargetKeyColumns);
+
+                        // this is not semantically correct, onDelete should be an option of the joinColumns
+                        // @todo optimize this (potentially in the validate association/metadata already)
+                        foreach ($mapping->joinTable['inverseJoinColumns'] AS $joinColumn) {
+                            if (strtoupper($joinColumn['onDelete']) == 'CASCADE') {
+                                continue;
+                            }
+                        }
+                    } else {
+                        // this is not semantically correct, onDelete should be an option of the joinColumns
+                        // @todo optimize this (potentially in the validate association/metadata already)
+                        foreach ($mapping->joinTable['joinColumns'] AS $joinColumn) {
+                            if (strtoupper($joinColumn['onDelete']) == 'CASCADE') {
+                                continue;
+                            }
+                        }
+
+                        $keys = array_keys($mapping->relationToSourceKeyColumns);
+                    }
+                    $this->requiredJoinTableDeletions[$mapping->joinTable['name']] = $keys;
+                }
+            }
+        }
+
+        foreach ($this->requiredJoinTableDeletions AS $table => $keys) {
+            $id = array_combine($keys, $identifier);
+            $this->_conn->delete($table, $id);
+        }
+    }
+
     /**
      * Deletes a managed entity.
      *
@@ -347,10 +396,10 @@ class BasicEntityPersister
      */
     public function delete($entity)
     {
-        $id = array_combine(
-            $this->_class->getIdentifierColumnNames(),
-            $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
-        );
+        $identifier = $this->_em->getUnitOfWork()->getEntityIdentifier($entity);
+        $this->deleteJoinTableRecords($identifier);
+
+        $id = array_combine($this->_class->getIdentifierColumnNames(), $identifier);
         $this->_conn->delete($this->_class->table['name'], $id);
     }
 

@@ -294,4 +294,33 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
             ->getResult()) > 0);
         
     }
+
+    /**
+     * @group DDC-130
+     */
+    public function testDeleteJoinTableRecords()
+    {
+        $this->markTestSkipped('Nightmare! friends adds both ID 6-7 and 7-6 into two rows of the join table. How to detect this?');
+
+        $employee1 = new CompanyEmployee();
+        $employee1->setName('gblanco');
+        $employee1->setSalary(0);
+        $employee1->setDepartment('IT');
+
+        $employee2 = new CompanyEmployee();
+        $employee2->setName('jwage');
+        $employee2->setSalary(0);
+        $employee2->setDepartment('IT');
+
+        $employee1->addFriend($employee2);
+
+        $this->_em->persist($employee1);
+        $this->_em->persist($employee2);
+        $this->_em->flush();
+
+        $this->_em->remove($employee1);
+        $this->_em->flush();
+
+        $this->assertNull($this->_em->find(get_class($employee1), $employee1->getId()));
+    }
 }

@@ -294,4 +294,18 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertFalse($contracts[0]->isCompleted(), "Only non completed contracts should be left.");
     }
+
+    /**
+     * @group DDC-130
+     */
+    public function testDeleteJoinTableRecords()
+    {
+        $this->loadFullFixture();
+
+        // remove managed copy of the fix contract
+        $this->_em->remove($this->_em->find(get_class($this->fix), $this->fix->getId()));
+        $this->_em->flush();
+
+        $this->assertNull($this->_em->find(get_class($this->fix), $this->fix->getId()), "Contract should not be present in the database anymore.");
+    }
 }
