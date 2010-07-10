@@ -178,7 +178,15 @@ class SchemaValidator
                 if ($publicAttr->isStatic()) {
                     continue;
                 }
-                $ce[] = "Field '".$publicAttr->getName()."' in class '".$class->name."' must be private or protected. Public fields break lazy-loading.";
+                $ce[] = "Field '".$publicAttr->getName()."' in class '".$class->name."' must be private ".
+                        "or protected. Public fields may break lazy-loading.";
+            }
+
+            foreach ($class->subClasses AS $subClass) {
+                if (!in_array($class->name, class_parents($subClass))) {
+                    $ce[] = "According to the discriminator map class '" . $subClass . "' has to be a child ".
+                            "of '" . $class->name . "' but these entities are not related through inheritance.";
+                }
             }
 
             if ($ce) {
