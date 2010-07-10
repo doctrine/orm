@@ -1697,7 +1697,7 @@ class UnitOfWork implements PropertyChangedListener
             $oid = spl_object_hash($entity);
 
             $this->getEntityPersister($class->name)->lock(
-                array_combine($class->getIdentifierColumnNames(), $this->entityIdentifiers[$oid]),
+                array_combine($class->getIdentifierFieldNames(), $this->entityIdentifiers[$oid]),
                 $lockMode
             );
         }
