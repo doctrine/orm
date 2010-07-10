@@ -56,6 +56,7 @@ Optional attributes:
 
 Examples:
 
+    [php]
     /**
      * @Column(type="string", length=32, unique=true, nullable=false)
      */
@@ -85,6 +86,7 @@ can be found in the configuration section.
 
 Example:
 
+    [php]
     /**
      * @Entity
      * @ChangeTrackingPolicy("DEFERRED_IMPLICIT")
@@ -116,6 +118,7 @@ an array as only argument which defines which class should be saved under which 
 are the database value and values are the classes, either as fully- or as unqualified class names depending
 if the classes are in the namespace or not.
 
+    [php]
     /**
      * @Entity
      * @InheritanceType("JOINED")
@@ -139,6 +142,7 @@ Optional attributes:
 
 Example:
 
+    [php]
     /**
      * @Entity(repositoryClass="MyProject\UserRepository")
      */
@@ -161,6 +165,7 @@ Required attributes:
 
 Example:
 
+    [php]
     /**
      * @Id
      * @Column(type="integer")
@@ -177,6 +182,7 @@ callback annotations set on at least one of its methods. Using @PostLoad, @PrePe
 
 Example:
 
+    [php]
     /**
      * @Entity
      * @HasLifecycleCallbacks
@@ -203,6 +209,7 @@ Required attributes:
 
 Example:
 
+    [php]
     /**
      * @Entity
      * @Table(name="ecommerce_products",indexes={@index(name="search_idx", columns={"name", "email"})})
@@ -220,6 +227,7 @@ identifier columns each column has to be marked with @Id.
 
 Example:
 
+    [php]
     /**
      * @Id
      * @Column(type="integer")
@@ -237,6 +245,7 @@ This annotation has always been used in conjunction with the [@DiscriminatorMap]
 
 Examples:
 
+    [php]
     /**
      * @Entity
      * @InheritanceType("SINGLE_TABLE")
@@ -281,6 +290,7 @@ Optional attributes:
 
 Example:
 
+    [php]
     /**
      * @OneToOne(targetEntity="Customer")
      * @JoinColumn(name="customer_id", referencedColumnName="id")
@@ -312,6 +322,7 @@ Optional attributes:
 
 Example:
 
+    [php]
     /**
      * @ManyToMany(targetEntity="Phonenumber")
      * @JoinTable(name="users_phonenumbers",
@@ -334,9 +345,11 @@ Optional attributes:
 
 * cascade - Cascade Option
 * fetch - One of LAZY or EAGER
+* inversedBy - The inversedBy attribute designates the ﬁeld in the entity that is the inverse side of the relationship.
 
 Example:
 
+    [php]
     /**
      * @ManyToOne(targetEntity="Cart", cascade="ALL", fetch="EAGER")
      */
@@ -356,15 +369,22 @@ Required attributes:
 Optional attributes:
 
 * mappedBy - This option specifies the property name on the targetEntity that is the owning side of this relation. Its a required attribute for the inverse side of a relationship.
+* inversedBy - The inversedBy attribute designates the ﬁeld in the entity that is the inverse side of the relationship.
 * cascade - Cascade Option
 * fetch - One of LAZY or EAGER
 
+> **NOTE**
+> For ManyToMany bidirectional relationships either side may be the owning side (the side 
+> that defines the @JoinTable and/or does not make use of the mappedBy attribute, thus 
+> using a default join table).
+
 Example:
 
+    [php]
     /**
      * Owning Side
      *
-     * @ManyToMany(targetEntity="Group")
+     * @ManyToMany(targetEntity="Group", inversedBy="features")
      * @JoinTable(name="user_groups",
      *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
@@ -390,7 +410,7 @@ The @MappedSuperclass annotation cannot be used in conjunction with @Entity. See
 section for [more details on the restrictions of mapped superclasses](/../inheritance-mapping#mapped-superclasses).
 
 <a name="ann_onetoone"></a>
-+++ @OnetoOne
++++ @OneToOne
 
 The @OneToOne annotation works almost exactly as the [@ManyToOne](#ann_manytoone) with one additional option
 that can be specified. The configuration defaults for [@JoinColumn](#ann_joincolumn) using the target entity table and primary key column names
@@ -406,9 +426,38 @@ Optional attributes:
 * fetch - One of LAZY or EAGER
 * orphanRemoval - Boolean that specifies if orphans, inverse OneToOne entities that are not connected to any
 owning instance, should be removed by Doctrine. Defaults to false.
+* inversedBy - The inversedBy attribute designates the ﬁeld in the entity that is the inverse side of the relationship.
+
+Example:
+
+    [php]
+    /**
+     * @OneToOne(targetEntity="Customer")
+     * @JoinColumn(name="customer_id", referencedColumnName="id")
+     */
+    private $customer;
 
 <a name="ann_onetomany"></a>
 +++ @OneToMany
+
+Required attributes:
+
+* targetEntity - FQCN of the referenced target entity. Can be the unqualified class name if both classes are in the same namespace.
+
+Optional attributes:
+
+* cascade - Cascade Option
+* orphanRemoval - Boolean that specifies if orphans, inverse OneToOne entities that are not connected to any
+owning instance, should be removed by Doctrine. Defaults to false.
+* mappedBy - This option specifies the property name on the targetEntity that is the owning side of this relation. Its a required attribute for the inverse side of a relationship.
+
+Example:
+
+    [php]
+    /**
+     * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
+     */
+    public $phonenumbers;
 
 <a name="ann_orderby"></a>
 +++ @OrderBy
@@ -421,6 +470,7 @@ This annotation requires a single non-attributed value with an DQL snippet:
 
 Example:
 
+    [php]
     /**
      * @ManyToMany(targetEntity="Group")
      * @OrderBy({"name" = "ASC"})
@@ -485,6 +535,7 @@ Optional attributes:
 
 Example:
 
+    [php]
     /**
      * @Id
      * @GeneratedValue(strategy="SEQUENCE")
@@ -511,6 +562,7 @@ Optional attributes:
 
 Example:
 
+    [php]
     /**
      * @Entity
      * @Table(name="user",
@@ -534,6 +586,7 @@ Required attributes:
 
 Example:
 
+    [php]
     /**
      * @Entity
      * @Table(name="ecommerce_products",uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "email"})})
@@ -550,6 +603,7 @@ It only works on [@Column](#ann_column) annotations that have the type integer o
 
 Example:
 
+    [php]
     /**
      * @column(type="integer")
      * @version

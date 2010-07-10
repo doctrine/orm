@@ -1,4 +1,3 @@
-++ Understanding
 
 In this chapter we will help you understand the `EntityManager` and the `UnitOfWork`. 
 A Unit of Work is similar to an object-level transaction. A new Unit of Work is 
@@ -8,49 +7,7 @@ implicity started when an EntityManager is initially created or after
 
 A Unit of Work can be manually closed by calling EntityManager#close(). Any 
 changes to objects within this Unit of Work that have not yet been persisted 
-are lost. 
-
-+++ The size of a Unit of Work
-
-The size of a Unit of Work mainly refers to the number of managed entities at 
-a particular point in time.
-
-+++ The cost of flush()
-
-How costly a flush operation is in terms of performance mainly depends on 2 factors:
-
-* The size of your current Unit of Work
-* The configured change tracking policies 
-
-You can get the size of your Unit of Work as follows:
-
-    [php]
-    $uowSize = $em->getUnitOfWork()->size();
-
-The size represents the number of managed entities in the Unit of Work. This 
-size affects the performance of flush() operations due to change tracking 
-(see "Change Tracking Policies") and, of course, memory consumption, so you 
-may want to check it from time to time during development.
-
-> **CAUTION**
-> Do not invoke `flush` after every change to an entity or every single invocation of
-> persist/remove/merge/... This is an anti-pattern and unnecessarily reduces the
-> performance of your application. Instead, form units of work that operate on your objects
-> and call `flush` when you are done. While serving a single HTTP request there should
-> be usually no need for invoking `flush` more than 0-2 times.
-
-+++ Direct access to a Unit of Work
-
-You can get direct access to the Unit of Work by calling `EntityManager#getUnitOfWork()`. 
-This will return the UnitOfWork instance the EntityManager is currently using.
-
-    [php]
-    $uow = $em->getUnitOfWork();
-
-> **NOTE**
-> Directly manipulating a UnitOfWork is not recommended. When working directly with the
-> UnitOfWork API, respect methods marked as INTERNAL by not using them and carefully read
-> the API documentation.
+are lost.
 
 ++ Persisting entities
 
@@ -79,7 +36,7 @@ Example:
 > **CAUTION**
 > Generated entity identifiers / primary keys are guaranteed to be available after the
 > next successful flush operation that involves the entity in question.
-> You can not reply on a generated identifier to be available directly after invoking `persist`.
+> You can not rely on a generated identifier to be available directly after invoking `persist`.
 > The inverse is also true. You can not rely on a generated identifier being not available
 > after a failed flush operation.
 
@@ -88,15 +45,12 @@ The semantics of the persist operation, applied on an entity X, are as follows:
 * If X is a new entity, it becomes managed. The entity X will be entered into the database as a result of the flush operation. 
 * If X is a preexisting managed entity, it is ignored by the persist operation. However, the persist operation is cascaded to entities referenced by X, if the relationships from X to these other entities are mapped with cascade=PERSIST or cascade=ALL (see "Transitive Persistence").
 * If X is a removed entity, it becomes managed. 
-* If X is a detached entity, the behavior is undefined.
-
-> **CAUTION**
-> Do not pass detached entities to the persist operation.
+* If X is a detached entity, an exception will be thrown on flush.
 
 
 ++ Removing entities
 
-An entity can be removed from persistent storage by passing it to the `EntityManager#remove($entity)` method. By applying the `remove` operation on some entity, that entity becomes REMOVED, which means that its persistent state will be deleted once `EntityManager#flush()` is invoked. The in-memory state of an entity is unaffected by the `remove` operation.
+An entity can be removed from persistent storage by passing it to the `EntityManager#remove($entity)` method. By applying the `remove` operation on some entity, that entity becomes REMOVED, which means that its persistent state will be deleted once `EntityManager#flush()` is invoked.
 
 > **CAUTION**
 > Just like `persist`, invoking `remove` on an entity does NOT cause an immediate SQL
@@ -115,7 +69,9 @@ The semantics of the remove operation, applied to an entity X are as follows:
 * If X is a managed entity, the remove operation causes it to become removed. The remove operation is cascaded to entities referenced by X, if the relationships from X to these other entities is mapped with cascade=REMOVE or cascade=ALL (see "Transitive Persistence"). 
 * If X is a detached entity, an InvalidArgumentException will be thrown.
 * If X is a removed entity, it is ignored by the remove operation. 
-* A removed entity X will be removed from the database as a result of the flush operation. 
+* A removed entity X will be removed from the database as a result of the flush operation.
+
+After an entity has been removed its in-memory state is the same as before the removal, except for generated identifiers.
 
 Removing an entity will also automatically delete any exisiting records in many-to-many
 join tables that link this entity. The action taken depends on the value of the `@joinColumn`
@@ -280,6 +236,15 @@ that has O(n) complexity, where n is the size of the map.
 
 Since Doctrine always only looks at the owning side of a bidirectional association, it is essentially not necessary that an inverse collection of a bidirectional one-to-many or many-to-many association is updated. This knowledge can often be used to improve performance by avoiding the loading of the inverse collection.
 
+> **NOTE*
+>
+> You can also clear the contents of a whole collection using the `Collections::clear()` method. You
+> should be aware that using this method can lead to a straight and optimized database delete or update call
+> during the flush operation that is not aware of entities that have been re-added to the collection.
+>
+> Say you clear a collection of tags by calling `$post->getTags()->clear();` and then call
+> `$post->getTags()->add($tag)`. This will not recognize tag being already added before and issue
+> two database calls.
 
 ++ Association Management Methods
 
@@ -353,6 +318,107 @@ Address entities in the $addresses collection.
 Even though automatic cascading is convenient it should be used with care. 
 Do not blindly apply cascade=all to all associations as it will unnecessarily 
 degrade the performance of your application.
+
+
+++ Synchronization with the Database
+
+The state of persistent entities is synchronized with the database on flush of an `EntityManager`
+which commits the underlying `UnitOfWork`. The synchronization involves writing any updates to
+persistent entities and their relationships to the database. Thereby bidirectional relationships
+are persisted based on the references held by the owning side of the relationship as explained
+in the Association Mapping chapter.
+
+The flush operation applies to a managed entity with the following semantics:
+
+* The entity itself is synchronized to the database, if it has changed.
+
+For all (initialized) relationships of the entity the following semantics apply to each
+associated entity X:
+
+* If X is new and persist operations are configured to cascade on the relationship,
+  X will be persisted.
+* If X is new and no persist operations are configured to cascade on the relationship,
+  an exception will be thrown as this indicates a programming error.
+* If X is removed and persist operations are configured to cascade on the relationship,
+  an exception will be thrown as this indicates a programming error (X would be re-persisted by the cascade).
+* If X is detached and persist operations are configured to cascade on the relationship,
+  an exception will be thrown (This is semantically the same as passing X to persist()). 
+
+The flush operation applies to a removed entity by deleting its persistent state from the database.
+No cascade options are relevant for removed entities on flush.
+
++++ The size of a Unit of Work
+
+The size of a Unit of Work mainly refers to the number of managed entities at 
+a particular point in time.
+
++++ The cost of flushing
+
+How costly a flush operation is, mainly depends on two factors:
+
+* The size of the EntityManager's current UnitOfWork.
+* The configured change tracking policies 
+
+You can get the size of a UnitOfWork as follows:
+
+    [php]
+    $uowSize = $em->getUnitOfWork()->size();
+
+The size represents the number of managed entities in the Unit of Work. This 
+size affects the performance of flush() operations due to change tracking 
+(see "Change Tracking Policies") and, of course, memory consumption, so you 
+may want to check it from time to time during development.
+
+> **CAUTION**
+> Do not invoke `flush` after every change to an entity or every single invocation of
+> persist/remove/merge/... This is an anti-pattern and unnecessarily reduces the
+> performance of your application. Instead, form units of work that operate on your objects
+> and call `flush` when you are done. While serving a single HTTP request there should
+> be usually no need for invoking `flush` more than 0-2 times.
+
++++ Direct access to a Unit of Work
+
+You can get direct access to the Unit of Work by calling `EntityManager#getUnitOfWork()`. 
+This will return the UnitOfWork instance the EntityManager is currently using.
+
+    [php]
+    $uow = $em->getUnitOfWork();
+
+> **NOTE**
+> Directly manipulating a UnitOfWork is not recommended. When working directly with the
+> UnitOfWork API, respect methods marked as INTERNAL by not using them and carefully read
+> the API documentation.
+
++++ Entity State
+
+As outlined in the architecture overview an entity can be in one of four possible states:
+NEW, MANAGED, REMOVED, DETACHED. If you explicitly need to find out what the current state
+of an entity is in the context of a certain `EntityManager` you can ask the underlying
+`UnitOfWork`:
+
+    [php]
+    switch ($em->getUnitOfWork()->getEntityState($entity)) {
+        case UnitOfWork::MANAGED:
+            ...
+        case UnitOfWork::REMOVED:
+            ...
+        case UnitOfWork::DETACHED:
+            ...
+        case UnitOfWork::NEW:
+            ...
+    }
+
+An entity is in MANAGED state if it is associated with an `EntityManager` and it is not REMOVED.
+
+An entity is in REMOVED state after it has been passed to `EntityManager#remove()` until the
+next flush operation of the same EntityManager. A REMOVED entity is still associated with an
+`EntityManager` until the next flush operation.
+
+An entity is in DETACHED state if it has persistent state and identity but is currently not
+associated with an `EntityManager`.
+
+An entity is in NEW state if has no persistent state and identity and is not associated with an
+`EntityManager` (for example those just created via the "new" operator).
 
 
 ++ Querying

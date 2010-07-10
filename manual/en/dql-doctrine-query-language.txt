@@ -188,11 +188,12 @@ With Nested Conditions in WHERE Clause:
 With COUNT DISTINCT:
 
     [php]
-    $query = $em->createQuery('SELECT COUNT(DISTINCT u.name) FROM CmsUser
+    $query = $em->createQuery('SELECT COUNT(DISTINCT u.name) FROM CmsUser');
     $users = $query->getResult(); // array of ForumUser objects
 
 With Arithmetic Expression in WHERE clause:
 
+    [php]
     $query = $em->createQuery('SELECT u FROM CmsUser u WHERE ((u.id + 5000) * u.id + 3) < 10000000');
     $users = $query->getResult(); // array of ForumUser objects
 
@@ -451,6 +452,121 @@ We will register the function by calling and can then use it:
     [php]
     \Doctrine\ORM\Query\Parser::registerNumericFunction('FLOOR', 'MyProject\Query\MysqlFloor');
     $dql = "SELECT FLOOR(person.salary * 1.75) FROM CompanyPerson person";
+
+++ Querying Inherited Classes
+
+This section demonstrates how you can query inherited classes and what type of results
+to expect.
+
++++ Single Table
+
+[Single Table Inheritance](http://martinfowler.com/eaaCatalog/singleTableInheritance.html) is an inheritance mapping strategy where all classes of a hierarchy are mapped to a single database table. In order to distinguish which row represents which type in the hierarchy a so-called discriminator column is used.
+
+First we need to setup an example set of entities to use. In this scenario it is a generic
+Person and Employee example:
+
+    [php]
+    namespace Entities;
+
+    /**
+     * @Entity
+     * @InheritanceType("SINGLE_TABLE")
+     * @DiscriminatorColumn(name="discr", type="string")
+     * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
+     */
+    class Person
+    {
+        /**
+         * @Id @Column(type="integer")
+         * @GeneratedValue
+         */
+        protected $id;
+
+        /**
+         * @Column(type="string", length=50)
+         */
+        protected $name;
+
+        // ...
+    }
+
+    /**
+     * @Entity
+     */
+    class Employee extends Person
+    {
+        /**
+         * @Column(type="string", length=50)
+         */
+        private $department;
+
+        // ...
+    }
+
+First notice that the generated SQL to create the tables for these entities looks like
+the following:
+
+    [sql]
+    CREATE TABLE Person (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name VARCHAR(50) NOT NULL, discr VARCHAR(255) NOT NULL, department VARCHAR(50) NOT NULL)
+
+Now when persist a new `Employee` instance it will set the discriminator value for us
+automatically:
+
+    [php]
+    $employee = new \Entities\Employee();
+    $employee->setName('test');
+    $employee->setDepartment('testing');
+    $em->persist($employee);
+    $em->flush();
+
+Now lets run a simple query to retrieve the `Employee` we just created:
+
+    [sql]
+    SELECT e FROM Entities\Employee e WHERE e.name = 'test'
+
+If we check the generated SQL you will notice it has some special conditions added to
+ensure that we will only get back `Employee` entities:
+
+    [sql]
+    SELECT p0_.id AS id0, p0_.name AS name1, p0_.department AS department2, p0_.discr AS discr3 FROM Person p0_ WHERE (p0_.name = ?) AND p0_.discr IN ('employee')
+
++++ Class Table Inheritance
+
+[Class Table Inheritance](http://martinfowler.com/eaaCatalog/classTableInheritance.html) is an inheritance mapping strategy where each class in a hierarchy is mapped to several tables: its own table and the tables of all parent classes. The table of a child class is linked to the table of a parent class through a foreign key constraint.
+Doctrine 2 implements this strategy through the use of a discriminator column in the topmost table of the hierarchy because this is the easiest way to achieve polymorphic queries with Class Table Inheritance.
+
+The example for class table inheritance is the same as single table, you just need to
+change the inheritance type from `SINGLE_TABLE` to `JOINED`:
+
+    [php]
+    /**
+     * @Entity
+     * @InheritanceType("JOINED")
+     * @DiscriminatorColumn(name="discr", type="string")
+     * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
+     */
+    class Person
+    {
+        // ...
+    }
+
+Now take a look at the SQL which is generated to create the table, you'll notice some
+differences:
+
+    [sql]
+    CREATE TABLE Person (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(50) NOT NULL, discr VARCHAR(255) NOT NULL, PRIMARY KEY(id)) ENGINE = InnoDB;
+    CREATE TABLE Employee (id INT NOT NULL, department VARCHAR(50) NOT NULL, PRIMARY KEY(id)) ENGINE = InnoDB;
+    ALTER TABLE Employee ADD FOREIGN KEY (id) REFERENCES Person(id) ON DELETE CASCADE
+
+* The data is split between two tables
+* A foreign key exists between the two tables
+
+Now if were to insert the same `Employee` as we did in the `SINGLE_TABLE` example and run
+the same example query it will generate different SQL joining the `Person` information
+automatically for you:
+
+    [sql]
+    SELECT p0_.id AS id0, p0_.name AS name1, e1_.department AS department2, p0_.discr AS discr3 FROM Employee e1_ INNER JOIN Person p0_ ON e1_.id = p0_.id WHERE p0_.name = ?
 
 ++ The Query class
 

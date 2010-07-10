@@ -27,7 +27,7 @@ It is recommended to put all XML mapping documents in a single folder but you ca
 
     [php]
     // $config instanceof Doctrine\ORM\Configuration
-    $driver = new XmlDriver(array('/path/to/files'));
+    $driver = new \Doctrine\ORM\Mapping\Driver\XmlDriver(array('/path/to/files'));
     $config->setMetadataDriverImpl($driver);
 
 
