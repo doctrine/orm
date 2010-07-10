@@ -209,11 +209,12 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
     public function testRemoveUserWithManyGroups()
     {
         $user = $this->addCmsUserGblancoWithGroups(2);
+        $userId = $user->getId();
 
         $this->_em->remove($user);
         $this->_em->flush();
 
-        $newUser = $this->_em->find(get_class($user), $user->getId());
+        $newUser = $this->_em->find(get_class($user), $userId);
         $this->assertNull($newUser);
     }
 
@@ -253,6 +254,8 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
 
         $this->_em->persist($user);
         $this->_em->flush();
+
+        $this->assertNotNull($user->getId(), "User 'gblanco' should have an ID assigned after the persist()/flush() operation.");
 
         return $user;
     }

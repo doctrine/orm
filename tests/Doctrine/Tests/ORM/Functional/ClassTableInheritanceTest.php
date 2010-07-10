@@ -318,9 +318,11 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($employee2);
         $this->_em->flush();
 
+        $employee1Id = $employee1->getId();
+
         $this->_em->remove($employee1);
         $this->_em->flush();
 
-        $this->assertNull($this->_em->find(get_class($employee1), $employee1->getId()));
+        $this->assertNull($this->_em->find(get_class($employee1), $employee1Id));
     }
 }
