@@ -345,21 +345,16 @@ class BasicEntityPersister
         foreach ($this->_class->associationMappings AS $mapping) {
             /* @var $mapping \Doctrine\ORM\Mapping\AssociationMapping */
             if ($mapping->isManyToMany()) {
-                if($mapping->isOwningSide && (!$mapping->owningIsOnDeleteCascade || !$this->_platform->supportsForeignKeyConstraints())) {
-                    $this->_conn->delete(
-                        $mapping->joinTable['name'],
-                        array_combine(array_keys($mapping->relationToSourceKeyColumns), $identifier)
-                    );
-                } else if (!$mapping->isOwningSide) {
+                if (!$mapping->isOwningSide) {
                     $relatedClass = $this->_em->getClassMetadata($mapping->targetEntityName);
-                    $relatedMapping = $relatedClass->associationMappings[$mapping->mappedBy];
+                    $mapping = $relatedClass->associationMappings[$mapping->mappedBy];
+                    $keys = array_keys($mapping->relationToTargetKeyColumns);
+                } else {
+                    $keys = array_keys($mapping->relationToSourceKeyColumns);
+                }
 
-                    if (!$relatedMapping->inverseIsOnDeleteCascade || !$this->_platform->supportsForeignKeyConstraints()) {
-                        $this->_conn->delete(
-                            $relatedMapping->joinTable['name'],
-                            array_combine(array_keys($relatedMapping->relationToTargetKeyColumns), $identifier)
-                        );
-                    }
+                if(!$mapping->isOnDeleteCascade) {
+                    $this->_conn->delete($mapping->joinTable['name'], array_combine($keys, $identifier));
                 }
             }
         }

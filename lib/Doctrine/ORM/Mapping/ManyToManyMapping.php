@@ -69,18 +69,11 @@ class ManyToManyMapping extends AssociationMapping
     public $orderBy;
 
     /**
-     * READ-ONLY: Are entries on the owning side of this join-table deleted through a database onDelete="CASCADE" operation?
+     * READ-ONLY: Are entries on the owning AND inverse side of this join-table deleted through a database onDelete="CASCADE" operation?
      *
      * @var bool
      */
-    public $owningIsOnDeleteCascade = false;
-
-    /**
-     * READ-ONLY: Are entries on the inverse side of this join-table deleted through a database onDelete="CASCADE" operation?
-     *
-     * @var bool
-     */
-    public $inverseIsOnDeleteCascade = false;
+    public $isOnDeleteCascade = false;
 
     /**
      * {@inheritdoc}
@@ -130,7 +123,7 @@ class ManyToManyMapping extends AssociationMapping
             
             foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
                 if (isset($joinColumn['onDelete']) && strtolower($joinColumn['onDelete']) == 'cascade') {
-                    $this->owningIsOnDeleteCascade = true;
+                    $this->isOnDeleteCascade = true;
                 }
 
                 $this->relationToSourceKeyColumns[$joinColumn['name']] = $joinColumn['referencedColumnName'];
@@ -139,7 +132,7 @@ class ManyToManyMapping extends AssociationMapping
             
             foreach ($mapping['joinTable']['inverseJoinColumns'] as $inverseJoinColumn) {
                 if (isset($inverseJoinColumn['onDelete']) && strtolower($inverseJoinColumn['onDelete']) == 'cascade') {
-                    $this->inverseIsOnDeleteCascade = true;
+                    $this->isOnDeleteCascade = true;
                 }
 
                 $this->relationToTargetKeyColumns[$inverseJoinColumn['name']] = $inverseJoinColumn['referencedColumnName'];
@@ -191,11 +184,8 @@ class ManyToManyMapping extends AssociationMapping
         $serialized[] = 'joinTableColumns';
         $serialized[] = 'relationToSourceKeyColumns';
         $serialized[] = 'relationToTargetKeyColumns';
-        if ($this->owningIsOnDeleteCascade) {
-            $serialized[] = 'owningIsOnDeleteCascade';
-        }
-        if ($this->inverseIsOnDeleteCascade) {
-            $serialized[] = 'inverseIsOnDeleteCascade';
+        if ($this->isOnDeleteCascade) {
+            $serialized[] = 'isOnDeleteCascade';
         }
         if ($this->orderBy) {
             $serialized[] = 'orderBy';
