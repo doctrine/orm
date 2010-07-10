@@ -300,7 +300,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testDeleteJoinTableRecords()
     {
-        $this->markTestSkipped('Nightmare! friends adds both ID 6-7 and 7-6 into two rows of the join table. How to detect this?');
+        #$this->markTestSkipped('Nightmare! friends adds both ID 6-7 and 7-6 into two rows of the join table. How to detect this?');
 
         $employee1 = new CompanyEmployee();
         $employee1->setName('gblanco');
