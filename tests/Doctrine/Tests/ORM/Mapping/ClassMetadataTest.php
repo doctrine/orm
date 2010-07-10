@@ -107,6 +107,23 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
             'joinColumns' => array(array('name' => 'CmsUser_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE')),
             'inverseJoinColumns' => array(array('name' => 'CmsGroup_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE'))
         ), $assoc->joinTable);
+        $this->assertTrue($assoc->isOnDeleteCascade);
+    }
+
+    public function testSerializeManyToManyJoinTableCascade()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->mapManyToMany(
+            array(
+            'fieldName' => 'groups',
+            'targetEntity' => 'CmsGroup'
+        ));
+
+        /* @var $assoc \Doctrine\ORM\Mapping\ManyToManyMapping */
+        $assoc = $cm->associationMappings['groups'];
+        $assoc = unserialize(serialize($assoc));
+
+        $this->assertTrue($assoc->isOnDeleteCascade);
     }
 
     /**

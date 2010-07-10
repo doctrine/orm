@@ -204,6 +204,37 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
     }
 
     /**
+     * @group DDC-130
+     */
+    public function testRemoveUserWithManyGroups()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(2);
+
+        $this->_em->remove($user);
+        $this->_em->flush();
+
+        $newUser = $this->_em->find(get_class($user), $user->getId());
+        $this->assertNull($newUser);
+    }
+
+    /**
+     * @group DDC-130
+     */
+    public function testRemoveGroupWithUser()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(2);
+
+        foreach ($user->getGroups() AS $group) {
+            $this->_em->remove($group);
+        }
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $newUser = $this->_em->find(get_class($user), $user->getId());
+        $this->assertEquals(0, count($newUser->getGroups()));
+    }
+
+    /**
      * @param  int $groupCount
      * @return CmsUser
      */

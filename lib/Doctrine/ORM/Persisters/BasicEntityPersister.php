@@ -336,6 +336,45 @@ class BasicEntityPersister
     }
 
     /**
+     * @todo Add check for platform if it supports foreign keys/cascading.
+     * @param array $identifier
+     * @return void
+     */
+    protected function deleteJoinTableRecords($identifier)
+    {
+        foreach ($this->_class->associationMappings AS $mapping) {
+            /* @var $mapping \Doctrine\ORM\Mapping\AssociationMapping */
+            if ($mapping->isManyToMany()) {
+                // @Todo this only covers scenarios with no inheritance or of the same level. Is there something
+                // like self-referential relationship between different levels of an inheritance hierachy? I hope not!
+                $selfReferential = ($mapping->targetEntityName == $mapping->sourceEntityName);
+                
+                if (!$mapping->isOwningSide) {
+                    $relatedClass = $this->_em->getClassMetadata($mapping->targetEntityName);
+                    $mapping = $relatedClass->associationMappings[$mapping->mappedBy];
+                    $keys = array_keys($mapping->relationToTargetKeyColumns);
+                    if ($selfReferential) {
+                        $otherKeys = array_keys($mapping->relationToSourceKeyColumns);
+                    }
+                } else {
+                    $keys = array_keys($mapping->relationToSourceKeyColumns);
+                    if ($selfReferential) {
+                        $otherKeys = array_keys($mapping->relationToTargetKeyColumns);
+                    }
+                }
+
+                if(!$mapping->isOnDeleteCascade) {
+                    $this->_conn->delete($mapping->joinTable['name'], array_combine($keys, $identifier));
+
+                    if ($selfReferential) {
+                        $this->_conn->delete($mapping->joinTable['name'], array_combine($otherKeys, $identifier));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Deletes a managed entity.
      *
      * The entity to delete must be managed and have a persistent identifier.
@@ -347,10 +386,10 @@ class BasicEntityPersister
      */
     public function delete($entity)
     {
-        $id = array_combine(
-            $this->_class->getIdentifierColumnNames(),
-            $this->_em->getUnitOfWork()->getEntityIdentifier($entity)
-        );
+        $identifier = $this->_em->getUnitOfWork()->getEntityIdentifier($entity);
+        $this->deleteJoinTableRecords($identifier);
+
+        $id = array_combine($this->_class->getIdentifierColumnNames(), $identifier);
         $this->_conn->delete($this->_class->table['name'], $id);
     }
 
