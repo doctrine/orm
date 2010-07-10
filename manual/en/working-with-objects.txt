@@ -117,6 +117,30 @@ The semantics of the remove operation, applied to an entity X are as follows:
 * If X is a removed entity, it is ignored by the remove operation. 
 * A removed entity X will be removed from the database as a result of the flush operation. 
 
+Removing an entity will also automatically delete any exisiting records in many-to-many
+join tables that link this entity. The action taken depends on the value of the `@joinColumn`
+mapping attribute "onDelete". Either Doctrine issues a dedicated `DELETE` statement
+for records of each join table or it depends on the foreign key semantics of
+onDelete="CASCADE".
+
+Deleting an object with all its associated objects can be achieved in multiple
+ways with very different performance impacts.
+
+1. If an association is marked as `CASCADE=REMOVE` Doctrine 2 will fetch this
+   association. If its a Single association it will pass this entity to
+   ´EntityManager#remove()`. If the association is a collection, Doctrine will loop over all
+   its elements and pass them to `EntityManager#remove()`. In both cases the
+   cascade remove semantics are applied recursively. For large object graphs
+   this removal strategy can be very costly.
+2. Using a DQL `DELETE` statement allows you to delete multiple entities of a
+   type with a single command and without hydrating these entities. This
+   can be very efficient to delete large object graphs from the database.
+3. Using foreign key semantics `onDelete="CASCADE"` can force the database
+   to remove all associated objects internally. This strategy is a bit
+   tricky to get right but can be very powerful and fast. You should be aware
+   however that using strategy 1 (`CASCADE=REMOVE`) completly by-passes
+   any foreign key `onDelete=CASCADE` option, because Doctrine will fetch and remove
+   all associated entities explicitly nevertheless.
 
 ++ Detaching entities
 
