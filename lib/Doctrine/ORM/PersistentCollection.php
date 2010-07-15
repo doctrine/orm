@@ -279,14 +279,15 @@ final class PersistentCollection implements Collection
     {
         if ( ! $this->isDirty) {
             $this->isDirty = true;
-            //if ($this->isNotifyRequired) {
-                //$this->em->getUnitOfWork()->scheduleCollectionUpdate($this);
-            //}
+            if ($this->association !== null && $this->association->isOwningSide && $this->association->isManyToMany() &&
+                    $this->em->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()) {
+                $this->em->getUnitOfWork()->scheduleForDirtyCheck($this->owner);
+            }
         }
     }
 
     /**
-     * Gets a boolean flag indicating whether this colleciton is dirty which means
+     * Gets a boolean flag indicating whether this collection is dirty which means
      * its state needs to be synchronized with the database.
      *
      * @return boolean TRUE if the collection is dirty, FALSE otherwise.

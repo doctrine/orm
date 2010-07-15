@@ -1656,6 +1656,7 @@ class Parser
         $peek = $this->_lexer->glimpse();
 
         $supportsAlias = true;
+
         if ($peek['value'] != '(' && $this->_lexer->lookahead['type'] === Lexer::T_IDENTIFIER) {
             if ($peek['value'] == '.') {
                 // ScalarExpression

@@ -405,8 +405,6 @@ class UnitOfWork implements PropertyChangedListener
         }
         
         $oid = spl_object_hash($entity);
-
-        //TODO: Skip this step if changetracking = NOTIFY
         $actualData = array();
         foreach ($class->reflFields as $name => $refProp) {
             $value = $refProp->getValue($entity);
@@ -455,7 +453,8 @@ class UnitOfWork implements PropertyChangedListener
             // Entity is "fully" MANAGED: it was already fully persisted before
             // and we have a copy of the original data
             $originalData = $this->originalEntityData[$oid];
-            $changeSet = array();
+            $isChangeTrackingNotify = isset($this->entityChangeSets[$oid]);
+            $changeSet = $isChangeTrackingNotify ? $this->entityChangeSets[$oid] : array();
 
             foreach ($actualData as $propName => $actualValue) {
                 $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
@@ -474,6 +473,8 @@ class UnitOfWork implements PropertyChangedListener
                             $this->collectionDeletions[] = $orgValue;
                         }
                     }
+                } else if ($isChangeTrackingNotify) {
+                    continue;
                 } else if (is_object($orgValue) && $orgValue !== $actualValue) {
                     $changeSet[$propName] = array($orgValue, $actualValue);
                 } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
@@ -513,13 +514,14 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($this->identityMap as $className => $entities) {
             $class = $this->em->getClassMetadata($className);
 
-            // Skip class if change tracking happens through notification
-            if ($class->isChangeTrackingNotify() /* || $class->isReadOnly*/) {
-                continue;
-            }
+            // Skip class if instances are read-only
+            //if ($class->isReadOnly) {
+            //    continue;
+            //}
 
-            // If change tracking is explicit, then only compute changes on explicitly persisted entities
-            $entitiesToProcess = $class->isChangeTrackingDeferredExplicit() ?
+            // If change tracking is explicit or happens through notification, then only compute
+            // changes on entities of that type that are explicitly marked for synchronization.
+            $entitiesToProcess = ! $class->isChangeTrackingDeferredImplicit() ?
                     (isset($this->scheduledForDirtyCheck[$className]) ?
                         $this->scheduledForDirtyCheck[$className] : array())
                     : $entities;
@@ -956,6 +958,12 @@ class UnitOfWork implements PropertyChangedListener
     public function isScheduledForUpdate($entity)
     {
         return isset($this->entityUpdates[spl_object_hash($entity)]);
+    }
+
+    public function isScheduledForDirtyCheck($entity)
+    {
+        $rootEntityName = $this->em->getClassMetadata(get_class($entity))->rootEntityName;
+        return isset($this->scheduledForDirtyCheck[$rootEntityName][spl_object_hash($entity)]);
     }
 
     /**
@@ -2010,7 +2018,7 @@ class UnitOfWork implements PropertyChangedListener
     public function scheduleForDirtyCheck($entity)
     {
         $rootClassName = $this->em->getClassMetadata(get_class($entity))->rootEntityName;
-        $this->scheduledForDirtyCheck[$rootClassName][] = $entity;
+        $this->scheduledForDirtyCheck[$rootClassName][spl_object_hash($entity)] = $entity;
     }
 
     /**
@@ -2119,7 +2127,6 @@ class UnitOfWork implements PropertyChangedListener
      * @param string $propertyName The name of the property that changed.
      * @param mixed $oldValue The old value of the property.
      * @param mixed $newValue The new value of the property.
-     * @todo Simply use _scheduledForDirtyCheck, otherwise a lot of behavior is potentially inconsistent.
      */
     public function propertyChanged($entity, $propertyName, $oldValue, $newValue)
     {
@@ -2132,24 +2139,13 @@ class UnitOfWork implements PropertyChangedListener
             return; // ignore non-persistent fields
         }
 
-        //$this->scheduleForDirtyCheck($entity);
+        // Update changeset and mark entity for synchronization
         $this->entityChangeSets[$oid][$propertyName] = array($oldValue, $newValue);
-
-        if ($isAssocField) {
-            $assoc = $class->associationMappings[$propertyName];
-            if ($assoc->isOneToOne() && $assoc->isOwningSide) {
-                $this->entityUpdates[$oid] = $entity;
-            } else if ($oldValue instanceof PersistentCollection) {
-                // A PersistentCollection was de-referenced, so delete it.
-                if  ( ! in_array($oldValue, $this->collectionDeletions, true)) {
-                    $this->collectionDeletions[] = $oldValue;
-                }
-            }
-        } else {
-            $this->entityUpdates[$oid] = $entity;
+        if ( ! isset($this->scheduledForDirtyCheck[$class->rootEntityName][$oid])) {
+            $this->scheduleForDirtyCheck($entity);
         }
     }
-    
+
     /**
      * Gets the currently scheduled entity insertions in this UnitOfWork.
      * 

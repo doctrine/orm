@@ -131,21 +131,44 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     {
         $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\ORM\NotifyChangedEntity"));
         $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedEntity', $persister);
+        $itemPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\ORM\NotifyChangedRelatedItem"));
+        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedRelatedItem', $itemPersister);
 
         $entity = new NotifyChangedEntity;
         $entity->setData('thedata');
         $this->_unitOfWork->persist($entity);
         
         $this->_unitOfWork->commit();
+        $this->assertEquals(1, count($persister->getInserts()));
+        $persister->reset();
 
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
 
         $entity->setData('newdata');
         $entity->setTransient('newtransientvalue');
 
-        $this->assertTrue($this->_unitOfWork->isScheduledForUpdate($entity));
+        $this->assertTrue($this->_unitOfWork->isScheduledForDirtyCheck($entity));
 
         $this->assertEquals(array('data' => array('thedata', 'newdata')), $this->_unitOfWork->getEntityChangeSet($entity));
+
+        $item = new NotifyChangedRelatedItem();
+        $entity->getItems()->add($item);
+        $item->setOwner($entity);
+        $this->_unitOfWork->persist($item);
+
+        $this->_unitOfWork->commit();
+        $this->assertEquals(1, count($itemPersister->getInserts()));
+        $persister->reset();
+        $itemPersister->reset();
+
+        
+        $entity->getItems()->removeElement($item);
+        $item->setOwner(null);
+        $this->assertTrue($entity->getItems()->isDirty());
+        $this->_unitOfWork->commit();
+        $updates = $itemPersister->getUpdates();
+        $this->assertEquals(1, count($updates));
+        $this->assertTrue($updates[0] === $item);
     }
 
     public function testGetEntityStateOnVersionedEntityWithAssignedIdentifier()
@@ -192,7 +215,7 @@ class NotifyChangedEntity implements \Doctrine\Common\NotifyPropertyChanged
     /**
      * @Id
      * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @GeneratedValue
      */
     private $id;
     /**
@@ -202,8 +225,19 @@ class NotifyChangedEntity implements \Doctrine\Common\NotifyPropertyChanged
 
     private $transient; // not persisted
 
+    /** @OneToMany(targetEntity="NotifyChangedRelatedItem", mappedBy="owner") */
+    private $items;
+
+    public function  __construct() {
+        $this->items = new \Doctrine\Common\Collections\ArrayCollection;
+    }
+
     public function getId() {
         return $this->id;
+    }
+
+    public function getItems() {
+        return $this->items;
     }
 
     public function setTransient($value) {
@@ -235,6 +269,32 @@ class NotifyChangedEntity implements \Doctrine\Common\NotifyPropertyChanged
                 $listener->propertyChanged($this, $propName, $oldValue, $newValue);
             }
         }
+    }
+}
+
+/** @Entity */
+class NotifyChangedRelatedItem
+{
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
+    private $id;
+
+    /** @ManyToOne(targetEntity="NotifyChangedEntity", inversedBy="items") */
+    private $owner;
+
+    public function getId() {
+        return $this->id;
+    }
+
+    public function getOwner() {
+        return $this->owner;
+    }
+
+    public function setOwner($owner) {
+        $this->owner = $owner;
     }
 }
 
