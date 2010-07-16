@@ -453,7 +453,7 @@ class UnitOfWork implements PropertyChangedListener
             // Entity is "fully" MANAGED: it was already fully persisted before
             // and we have a copy of the original data
             $originalData = $this->originalEntityData[$oid];
-            $isChangeTrackingNotify = isset($this->entityChangeSets[$oid]);
+            $isChangeTrackingNotify = $class->isChangeTrackingNotify();
             $changeSet = $isChangeTrackingNotify ? $this->entityChangeSets[$oid] : array();
 
             foreach ($actualData as $propName => $actualValue) {
