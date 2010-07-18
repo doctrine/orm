@@ -91,7 +91,7 @@ available on your system. Now when you run the `doctrine` command you will
 see what you can do with it.
 
     $ doctrine
-    Doctrine Command Line Interface version 2.0-DEV
+    Doctrine Command Line Interface version 2.0.0BETA3-DEV
 
     Usage:
       [options] command [arguments]
@@ -111,9 +111,6 @@ see what you can do with it.
       :import                      Import SQL file(s) directly to Database.
       :run-sql                     Executes arbitrary SQL directly from the command line.
     orm
-      :clear-cache:metadata        Clear all metadata cache of the various cache drivers.
-      :clear-cache:query           Clear all query cache of the various cache drivers.
-      :clear-cache:result          Clear result cache of the various cache drivers.
       :convert-d1-schema           Converts Doctrine 1.X schema into a Doctrine 2.X schema.
       :convert-mapping             Convert mapping information between supported formats.
       :ensure-production-settings  Verify that Doctrine is properly configured for a production environment.
@@ -121,9 +118,15 @@ see what you can do with it.
       :generate-proxies            Generates proxy classes for entity classes.
       :generate-repositories       Generate repository classes from your mapping information.
       :run-dql                     Executes arbitrary DQL directly from the command line.
-      :schema-tool:create          Processes the schema and either create it directly on EntityManager Storage Connection or generate the SQL output.
-      :schema-tool:drop            Processes the schema and either drop the database schema of EntityManager Storage Connection or generate the SQL output.
-      :schema-tool:update          Processes the schema and either update the database schema of EntityManager Storage Connection or generate the SQL output.
+      :validate-schema             Validate that the mapping files.
+    orm:clear-cache
+      :metadata                    Clear all metadata cache of the various cache drivers.
+      :query                       Clear all query cache of the various cache drivers.
+      :result                      Clear result cache of the various cache drivers.
+    orm:schema-tool
+      :create                      Processes the schema and either create it directly on EntityManager Storage Connection or generate the SQL output.
+      :drop                        Processes the schema and either drop the database schema of EntityManager Storage Connection or generate the SQL output.
+      :update                      Processes the schema and either update the database schema of EntityManager Storage Connection or generate the SQL output.
 
 +++ Package Download
 
@@ -136,18 +139,37 @@ Alternatively you can clone the latest version of Doctrine 2 via GitHub.com:
 
     $ git clone git://github.com/doctrine/doctrine2.git doctrine
 
+This downloads all the sources of the ORM package. You need to initialize the Github
+submodules for the Common and DBAL package dependencies:
+
+    $ git submodule init
+    $ git submodule update
+
+This updates your Git checkout to use the Doctrine\Common and Doctrine\DBAL package
+versions that are recommended for the cloned Master version of Doctrine 2.
+
 +++ Subversion
+
+> *NOTE*
+>
+> Using the SVN Mirror is not recommended. It only allows access to the latest master commit
+> and does not automatically fetch the submodules.
 
 If you prefer subversion you can also checkout the code from GitHub.com through 
 the subversion protocol:
 
     $ svn co http://svn.github.com/doctrine/doctrine2.git doctrine2
 
+However this only allows you to check out the current master of Doctrine 2, without
+the Common and DBAL dependencies. You have to grab them yourself, but might run
+into version incompatibilities between the different master branches of Common, DBAL
+and ORM.
+
 ++ Sandbox Quickstart
 
 > **NOTE**
-> The sandbox is only available via SVN or soon as a separate download on the downloads
-> page.
+> The sandbox is only available via the Doctrine2 Github Repository or soon as a separate download on the downloads
+> page. You will find it in the $root/tools/sandbox folder.
 
 The sandbox is a pre-configured environment for evaluating and playing
 with Doctrine 2.
@@ -209,7 +231,7 @@ have been created with the name `database.sqlite`.
 Open index.php in your browser or execute it on the command line. You should see
 the output "User saved!".
 
-5) Inspect the SQLite database. Again from within the tools/sandbox folder, 
+4) Inspect the SQLite database. Again from within the tools/sandbox folder,
 execute the following command:
 
     $ php doctrine dbal:run-sql "select * from users"
@@ -228,7 +250,7 @@ You should get the following output:
     
 You just saved your first entity with a generated ID in an SQLite database.
 
-6) Replace the contents of index.php with the following:
+5) Replace the contents of index.php with the following:
 
     [php]
     //... bootstrap stuff
@@ -250,4 +272,4 @@ but we wanted to introduce you to DQL at this point. Can you **find** the easier
 > schema with the command `doctrine orm:schema-tool --drop` followed by
 > `doctrine orm:schema-tool --create`.
 
-7) Explore Doctrine 2!
+6) Explore Doctrine 2!
