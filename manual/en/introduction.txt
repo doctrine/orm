@@ -148,6 +148,12 @@ submodules for the Common and DBAL package dependencies:
 This updates your Git checkout to use the Doctrine\Common and Doctrine\DBAL package
 versions that are recommended for the cloned Master version of Doctrine 2.
 
+> **NOTE**
+>
+> You should not combine the Doctrine-Common, Doctrine-DBAL and Doctrine-ORM master commits
+> with each other in combination. The ORM may not work with the current Common or DBAL master versions.
+> Instead the ORM ships with the Git Submodules that are required.
+
 +++ Subversion
 
 > **NOTE**
