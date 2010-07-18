@@ -1,9 +1,7 @@
 # Aggregate Fields
 
-You will is often the requirement to display aggregate values of data that
-can be computed by using the MIN, MAX, COUNT or SUM SQL functions. Doctrine 2
-offers several ways to get access to these values and this article will
-describe all of them from different perspectives.
+You will often come across the requirement to display aggregate values of data that
+can be computed by using the MIN, MAX, COUNT or SUM SQL functions. For any ORM this is a tricky issue traditionally. Doctrine 2 offers several ways to get access to these values and this article will describe all of them from different perspectives.
 
 You will see that aggregate fields can become very explicit
 features in your domain model and how this potentially complex business rules
@@ -34,7 +32,7 @@ Our entities look like:
         /** @Id @GeneratedValue @Column(type="integer") */
         private $id;
 
-        /** @Column(type="string", unique=true)
+        /** @Column(type="string", unique=true) */
         private $no;
 
         /**
@@ -156,7 +154,7 @@ relation with this method:
         {
             $this->assertAcceptEntryAllowed($amount);
 
-            $e = new Entry($e, $amount);
+            $e = new Entry($this, $amount);
             $this->entries[] = $e;
             return $e;
         }
@@ -184,7 +182,7 @@ Now look at the following test-code for our entities:
             $account = new Account("123456", $maxCredit = 200);
 
             $this->setExpectedException("Exception");
-            $account->addEntriy(-1000);
+            $account->addEntry(-1000);
         }
     }
 
@@ -242,7 +240,7 @@ code in `Account::getBalance()` and `Account:addEntry()`:
         {
             $this->assertAcceptEntryAllowed($amount);
 
-            $e = new Entry($e, $amount);
+            $e = new Entry($this, $amount);
             $this->entries[] = $e;
             $this->balance += $amount;
             return $e;

@@ -81,27 +81,29 @@ This is essentially the same as the following, more verbose, mapping:
 The @JoinTable definition used for many-to-many mappings has similar defaults. As an example, consider this mapping:
 
     [php]
-    class User {
-      //...
-      /** @ManyToMany(targetEntity="Group") */
-      private $groups;
-      //...
+    class User
+    {
+        //...
+        /** @ManyToMany(targetEntity="Group") */
+        private $groups;
+        //...
     }
 
 This is essentially the same as the following, more verbose, mapping:
 
     [php]
-    class User {
-      //...
-      /**
-       * @ManyToMany(targetEntity="Group")
-       * @JoinTable(name="User_Group",
-       *      joinColumns={@JoinColumn(name="User_id", referencedColumnName="id")},
-       *      inverseJoinColumns={@JoinColumn(name="Group_id", referencedColumnName="id")}
-       *      )
-       */
-      private $groups;
-      //...
+    class User
+    {
+        //...
+        /**
+         * @ManyToMany(targetEntity="Group")
+         * @JoinTable(name="User_Group",
+         *      joinColumns={@JoinColumn(name="User_id", referencedColumnName="id")},
+         *      inverseJoinColumns={@JoinColumn(name="Group_id", referencedColumnName="id")}
+         *      )
+         */
+        private $groups;
+        //...
     }
     
 In that case, the name of the join table defaults to a combination of the simple, unqualified class names of the participating classes, separated by an underscore character. The names of the join columns default to the simple, unqualified class name of the targeted class followed by "_id". The referencedColumnName always defaults to "id", just as in one-to-one or many-to-one mappings.
@@ -134,6 +136,20 @@ A unidirectional one-to-one association is very common. Here is an example of a 
     }
     
 Note that the @JoinColumn is not really necessary in this example, as the defaults would be the same.
+
+Generated MySQL Schema:
+
+    [sql]
+    CREATE TABLE Product (
+        id INT AUTO_INCREMENT NOT NULL,
+        shipping_id INT DEFAULT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+    CREATE TABLE Shipping (
+        id INT AUTO_INCREMENT NOT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+    ALTER TABLE Product ADD FOREIGN KEY (shipping_id) REFERENCES Shipping(id);
 
 ++ One-To-One, Bidirectional
 
@@ -170,18 +186,34 @@ has a reference back to the `Customer` so it is bidirectional.
     
 Note that the @JoinColumn is not really necessary in this example, as the defaults would be the same.
 
+Generated MySQL Schema:
+
+    [sql]
+    CREATE TABLE Cart (
+        id INT AUTO_INCREMENT NOT NULL,
+        customer_id INT DEFAULT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+    CREATE TABLE Customer (
+        id INT AUTO_INCREMENT NOT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+    ALTER TABLE Cart ADD FOREIGN KEY (customer_id) REFERENCES Customer(id);
+
+See how the foreign key is defined on the owning side of the relation, the table `Cart`.
+
 ++ One-To-One, Self-referencing
 
 You can easily have self referencing one-to-one relationships like below.
 
     [php]
     /** @Entity */
-    class Customer
+    class Student
     {
         // ...
         
         /**
-         * @OneToOne(targetEntity="Customer")
+         * @OneToOne(targetEntity="Student")
          * @JoinColumn(name="mentor_id", referencedColumnName="id")
          */
         private $mentor;
@@ -190,6 +222,16 @@ You can easily have self referencing one-to-one relationships like below.
     }
     
 Note that the @JoinColumn is not really necessary in this example, as the defaults would be the same.
+
+With the generated MySQL Schema:
+
+    [sql]
+    CREATE TABLE Student (
+        id INT AUTO_INCREMENT NOT NULL,
+        mentor_id INT DEFAULT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+    ALTER TABLE Student ADD FOREIGN KEY (mentor_id) REFERENCES Student(id);
 
 ++ One-To-Many, Unidirectional with Join Table
 
@@ -200,18 +242,18 @@ The following example sets up such a unidirectional one-to-many association:
     /** @Entity */
     class User
     {
-      // ...
+        // ...
 
-      /**
-       * @ManyToMany(targetEntity="Phonenumber")
-       * @JoinTable(name="users_phonenumbers",
-       *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-       *      inverseJoinColumns={@JoinColumn(name="phonenumber_id", referencedColumnName="id", unique=true)}
-       *      )
-       */
-      private $phonenumbers;
+        /**
+         * @ManyToMany(targetEntity="Phonenumber")
+         * @JoinTable(name="users_phonenumbers",
+         *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+         *      inverseJoinColumns={@JoinColumn(name="phonenumber_id", referencedColumnName="id", unique=true)}
+         *      )
+         */
+        private $phonenumbers;
 
-      // ...
+        // ...
     }
 
     /** @Entity */
@@ -222,6 +264,29 @@ The following example sets up such a unidirectional one-to-many association:
 
 > **NOTE**
 > One-To-Many uni-directional relations with join-table only work using the @ManyToMany annotation and a unique-constraint.
+
+Generates the following MySQL Schema:
+
+    [sql]
+    CREATE TABLE User (
+        id INT AUTO_INCREMENT NOT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+
+    CREATE TABLE users_phonenumbers (
+        user_id INT NOT NULL,
+        phonenumber_id INT NOT NULL,
+        UNIQUE INDEX users_phonenumbers_phonenumber_id_uniq (phonenumber_id),
+        PRIMARY KEY(user_id, phonenumber_id)
+    ) ENGINE = InnoDB;
+
+    CREATE TABLE Phonenumber (
+        id INT AUTO_INCREMENT NOT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+
+    ALTER TABLE users_phonenumbers ADD FOREIGN KEY (user_id) REFERENCES User(id);
+    ALTER TABLE users_phonenumbers ADD FOREIGN KEY (phonenumber_id) REFERENCES Phonenumber(id);
 
 ++ Many-To-One, Unidirectional
 
@@ -237,7 +302,7 @@ You can easily implement a many-to-one unidirectional association with the follo
          * @ManyToOne(targetEntity="Address")
          * @JoinColumn(name="address_id", referencedColumnName="id")
          */
-        private $address
+        private $address;
     }
 
     /** @Entity */
@@ -249,6 +314,22 @@ You can easily implement a many-to-one unidirectional association with the follo
 > **TIP**
 > The above `@JoinColumn` is optional as it would default to `address_id` and `id`
 > anyways. You can omit it and let it use the defaults.
+
+Generated MySQL Schema:
+
+    [sql]
+    CREATE TABLE User (
+        id INT AUTO_INCREMENT NOT NULL,
+        address_id INT DEFAULT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+
+    CREATE TABLE Address (
+        id INT AUTO_INCREMENT NOT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+
+    ALTER TABLE User ADD FOREIGN KEY (address_id) REFERENCES Address(id);
 
 ++ One-To-Many, Bidirectional
 
@@ -280,6 +361,20 @@ Bidirectional one-to-many associations are very common. The following code shows
     
 Note that the @JoinColumn is not really necessary in this example, as the defaults would be the same.
 
+Generated MySQL Schema:
+
+    [sql]
+    CREATE TABLE Product (
+        id INT AUTO_INCREMENT NOT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+    CREATE TABLE Feature (
+        id INT AUTO_INCREMENT NOT NULL,
+        product_id INT DEFAULT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+    ALTER TABLE Feature ADD FOREIGN KEY (product_id) REFERENCES Product(id);
+
 ++ One-To-Many, Self-referencing
 
 You can also setup a one-to-many association that is self-referencing. In this example we 
@@ -306,6 +401,16 @@ This effectively models a hierarchy of categories and from the database perspect
     
 Note that the @JoinColumn is not really necessary in this example, as the defaults would be the same.
 
+Generated MySQL Schema:
+
+    [sql]
+    CREATE TABLE Category (
+        id INT AUTO_INCREMENT NOT NULL,
+        parent_id INT DEFAULT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+    ALTER TABLE Category ADD FOREIGN KEY (parent_id) REFERENCES Category(id);
+
 ++ Many-To-Many, Unidirectional
 
 Real many-to-many associations are less common. The following example shows a unidirectional association between User and Group entities:
@@ -314,18 +419,18 @@ Real many-to-many associations are less common. The following example shows a un
     /** @Entity */
     class User
     {
-      // ...
+        // ...
 
-      /**
-       * @ManyToMany(targetEntity="Group")
-       * @JoinTable(name="users_groups",
-       *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-       *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
-       *      )
-       */
-      private $groups;
+        /**
+         * @ManyToMany(targetEntity="Group")
+         * @JoinTable(name="users_groups",
+         *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+         *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
+         *      )
+         */
+        private $groups;
 
-      // ...
+        // ...
     }
 
     /** @Entity */
@@ -340,6 +445,25 @@ Real many-to-many associations are less common. The following example shows a un
 > class. Consequently, the direct many-to-many association disappears and is replaced
 > by one-to-many/many-to-one associations between the 3 participating classes.
 
+Generated MySQL Schema:
+
+    [sql]
+    CREATE TABLE User (
+        id INT AUTO_INCREMENT NOT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+    CREATE TABLE users_groups (
+        user_id INT NOT NULL,
+        group_id INT NOT NULL,
+        PRIMARY KEY(user_id, group_id)
+    ) ENGINE = InnoDB;
+    CREATE TABLE Group (
+        id INT AUTO_INCREMENT NOT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+    ALTER TABLE users_groups ADD FOREIGN KEY (user_id) REFERENCES User(id);
+    ALTER TABLE users_groups ADD FOREIGN KEY (group_id) REFERENCES Group(id);
+
 ++ Many-To-Many, Bidirectional
 
 Here is a similar many-to-many relationship as above except this one is bidirectional.
@@ -348,18 +472,18 @@ Here is a similar many-to-many relationship as above except this one is bidirect
     /** @Entity */
     class User
     {
-      // ...
+        // ...
 
-      /**
-       * @ManyToMany(targetEntity="Group", inversedBy="users")
-       * @JoinTable(name="users_groups",
-       *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-       *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
-       *      )
-       */
-      private $groups;
+        /**
+         * @ManyToMany(targetEntity="Group", inversedBy="users")
+         * @JoinTable(name="users_groups",
+         *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+         *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
+         *      )
+         */
+        private $groups;
 
-      // ...
+        // ...
     }
 
     /** @Entity */
@@ -373,6 +497,8 @@ Here is a similar many-to-many relationship as above except this one is bidirect
         // ...
     }
 
+The MySQL schema is exactly the same as for the Many-To-Many uni-directional case above.
+
 ++ Many-To-Many, Self-referencing
 
 You can even have a self-referencing many-to-many association. A common scenario is where a `User` has friends and the target entity of that relationship is a `User` so it is self referencing. In this example it is bidirectional so `User` has a field named `$friendsWithMe` and `$myFriends`.
@@ -381,24 +507,39 @@ You can even have a self-referencing many-to-many association. A common scenario
     /** @Entity */
     class User
     {
-      // ...
+        // ...
 
-      /**
-       * @ManyToMany(targetEntity="User", mappedBy="myFriends")
-       */
-      private $friendsWithMe;
+        /**
+         * @ManyToMany(targetEntity="User", mappedBy="myFriends")
+         */
+        private $friendsWithMe;
       
-      /**
-       * @ManyToMany(targetEntity="User", inversedBy="friendsWithMe")
-       * @JoinTable(name="friends",
-       *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-       *      inverseJoinColumns={@JoinColumn(name="friend_user_id", referencedColumnName="id")}
-       *      )
-       */
-      private $myFriends;
+        /**
+         * @ManyToMany(targetEntity="User", inversedBy="friendsWithMe")
+         * @JoinTable(name="friends",
+         *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+         *      inverseJoinColumns={@JoinColumn(name="friend_user_id", referencedColumnName="id")}
+         *      )
+         */
+        private $myFriends;
 
-      // ...
+        // ...
     }
+
+Generated MySQL Schema:
+
+    [sql]
+    CREATE TABLE User (
+        id INT AUTO_INCREMENT NOT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+    CREATE TABLE friends (
+        user_id INT NOT NULL,
+        friend_user_id INT NOT NULL,
+        PRIMARY KEY(user_id, friend_user_id)
+    ) ENGINE = InnoDB;
+    ALTER TABLE friends ADD FOREIGN KEY (user_id) REFERENCES User(id);
+    ALTER TABLE friends ADD FOREIGN KEY (friend_user_id) REFERENCES User(id);
 
 ++ Ordering To-Many Collections
 
@@ -415,13 +556,13 @@ in the following way:
     /** @Entity */
     class User
     {
-      // ...
+        // ...
 
-      /**
-       * @ManyToMany(targetEntity="Group")
-       * @OrderBy({"name" = "ASC"})
-       */
-      private $groups;
+        /**
+         * @ManyToMany(targetEntity="Group")
+         * @OrderBy({"name" = "ASC"})
+         */
+        private $groups;
     }
 
 The DQL Snippet in OrderBy is only allowed to consist of unqualified,
@@ -446,19 +587,19 @@ Given our previously defined example, the following would not add ORDER BY, sinc
 However the following:
 
     [sql]
-    SELECT u FROM User u JOIN u.groups g WHERE u.id = 10
+    SELECT u, g FROM User u JOIN u.groups g WHERE u.id = 10
 
 ...would internally be rewritten to:
 
     [sql]
-    SELECT u FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name ASC
+    SELECT u, g FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name ASC
 
-You can't reverse the order, an explicit:
+You can't reverse the order with an explicit DQL ORDER BY:
 
     [sql]
-    SELECT u FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name DESC
+    SELECT u, g FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name DESC
 
 ...is internally rewritten to:
 
     [sql]
-    SELECT u FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name DESC, g.name ASC
+    SELECT u, g FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name DESC, g.name ASC
