@@ -150,7 +150,7 @@ versions that are recommended for the cloned Master version of Doctrine 2.
 
 +++ Subversion
 
-> *NOTE*
+> **NOTE**
 >
 > Using the SVN Mirror is not recommended. It only allows access to the latest master commit
 > and does not automatically fetch the submodules.
