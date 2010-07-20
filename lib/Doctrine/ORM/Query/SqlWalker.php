@@ -77,9 +77,8 @@ class SqlWalker implements TreeWalker
 
     /**
      * The DQL alias of the root class of the currently traversed query.
-     * TODO: May need to be turned into a stack for usage in subqueries
      */
-    private $_currentRootAlias;
+    private $_rootAliases = array();
 
     /**
      * Flag that indicates whether to generate SQL table aliases in the SQL.
@@ -187,6 +186,7 @@ class SqlWalker implements TreeWalker
     /**
      * Generates a unique, short SQL table alias.
      *
+     * @param string $tableName Table name
      * @param string $dqlAlias The DQL alias.
      * @return string Generated table alias.
      */
@@ -308,14 +308,15 @@ class SqlWalker implements TreeWalker
     /**
      * Generates a discriminator column SQL condition for the class with the given DQL alias.
      *
-     * @param string $dqlAlias
+     * @param array $dqlAliases List of root DQL aliases to inspect for discriminator restrictions.
      * @return string
      */
-    private function _generateDiscriminatorColumnConditionSQL($dqlAlias)
+    private function _generateDiscriminatorColumnConditionSQL(array $dqlAliases)
     {
+        $encapsulate = false;
         $sql = '';
 
-        if ($dqlAlias) {
+        foreach ($dqlAliases as $dqlAlias) {
             $class = $this->_queryComponents[$dqlAlias]['metadata'];
 
             if ($class->isInheritanceTypeSingleTable()) {
@@ -329,14 +330,18 @@ class SqlWalker implements TreeWalker
                     $values[] = $conn->quote($this->_em->getClassMetadata($subclassName)->discriminatorValue);
                 }
 
-                $sql .= (($this->_useSqlTableAliases)
-                    ? $this->getSqlTableAlias($class->table['name'], $dqlAlias) . '.' : ''
-                ) . $class->discriminatorColumn['name']
-                . ' IN (' . implode(', ', $values) . ')';
+                if ($sql != '') {
+                    $sql .= ' AND ';
+                    $encapsulate = true;
+                }
+
+                $sql .= ($sql != '' ? ' AND ' : '')
+                      . (($this->_useSqlTableAliases) ? $this->getSqlTableAlias($class->table['name'], $dqlAlias) . '.' : '')
+                      . $class->discriminatorColumn['name'] . ' IN (' . implode(', ', $values) . ')';
             }
         }
 
-        return $sql;
+        return ($encapsulate) ? '(' . $sql . ')' : $sql;
     }
 
     /**
@@ -351,7 +356,7 @@ class SqlWalker implements TreeWalker
 
         if (($whereClause = $AST->whereClause) !== null) {
             $sql .= $this->walkWhereClause($whereClause);
-        } else if (($discSql = $this->_generateDiscriminatorColumnConditionSQL($this->_currentRootAlias)) !== '') {
+        } else if (($discSql = $this->_generateDiscriminatorColumnConditionSQL($this->_rootAliases)) !== '') {
             $sql .= ' WHERE ' . $discSql;
         }
 
@@ -399,7 +404,7 @@ class SqlWalker implements TreeWalker
 
         if (($whereClause = $AST->whereClause) !== null) {
             $sql .= $this->walkWhereClause($whereClause);
-        } else if (($discSql = $this->_generateDiscriminatorColumnConditionSQL($this->_currentRootAlias)) !== '') {
+        } else if (($discSql = $this->_generateDiscriminatorColumnConditionSQL($this->_rootAliases)) !== '') {
             $sql .= ' WHERE ' . $discSql;
         }
 
@@ -419,7 +424,7 @@ class SqlWalker implements TreeWalker
 
         if (($whereClause = $AST->whereClause) !== null) {
             $sql .= $this->walkWhereClause($whereClause);
-        } else if (($discSql = $this->_generateDiscriminatorColumnConditionSQL($this->_currentRootAlias)) !== '') {
+        } else if (($discSql = $this->_generateDiscriminatorColumnConditionSQL($this->_rootAliases)) !== '') {
             $sql .= ' WHERE ' . $discSql;
         }
 
@@ -599,34 +604,40 @@ class SqlWalker implements TreeWalker
      */
     public function walkFromClause($fromClause)
     {
-        $sql = ' FROM ';
         $identificationVarDecls = $fromClause->identificationVariableDeclarations;
-        $firstIdentificationVarDecl = $identificationVarDecls[0];
-        $rangeDecl = $firstIdentificationVarDecl->rangeVariableDeclaration;
-        $dqlAlias = $rangeDecl->aliasIdentificationVariable;
+        $sqlParts = array();
 
-        $this->_currentRootAlias = $dqlAlias;
+        foreach ($identificationVarDecls as $identificationVariableDecl) {
+            $sql = '';
 
-        $class = $this->_em->getClassMetadata($rangeDecl->abstractSchemaName);
-        $sql .= $class->getQuotedTableName($this->_platform) . ' '
-              . $this->getSqlTableAlias($class->table['name'], $dqlAlias);
+            $rangeDecl = $identificationVariableDecl->rangeVariableDeclaration;
+            $dqlAlias = $rangeDecl->aliasIdentificationVariable;
+        
+            $this->_rootAliases[] = $dqlAlias;
 
-        if ($class->isInheritanceTypeJoined()) {
-            $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
+            $class = $this->_em->getClassMetadata($rangeDecl->abstractSchemaName);
+            $sql .= $class->getQuotedTableName($this->_platform) . ' '
+                  . $this->getSqlTableAlias($class->table['name'], $dqlAlias);
+
+            if ($class->isInheritanceTypeJoined()) {
+                $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
+            }
+
+            foreach ($identificationVariableDecl->joinVariableDeclarations as $joinVarDecl) {
+                $sql .= $this->walkJoinVariableDeclaration($joinVarDecl);
+            }
+
+            if ($identificationVariableDecl->indexBy) {
+                $this->_rsm->addIndexBy(
+                    $identificationVariableDecl->indexBy->simpleStateFieldPathExpression->identificationVariable,
+                    $identificationVariableDecl->indexBy->simpleStateFieldPathExpression->parts[0]
+                );
+            }
+
+            $sqlParts[] = $this->_platform->appendLockHint($sql, $this->_query->getHint(Query::HINT_LOCK_MODE));
         }
 
-        foreach ($firstIdentificationVarDecl->joinVariableDeclarations as $joinVarDecl) {
-            $sql .= $this->walkJoinVariableDeclaration($joinVarDecl);
-        }
-
-        if ($firstIdentificationVarDecl->indexBy) {
-            $this->_rsm->addIndexBy(
-                $firstIdentificationVarDecl->indexBy->simpleStateFieldPathExpression->identificationVariable,
-                $firstIdentificationVarDecl->indexBy->simpleStateFieldPathExpression->parts[0]
-            );
-        }
-
-        return $this->_platform->appendLockHint($sql, $this->_query->getHint(Query::HINT_LOCK_MODE));
+        return ' FROM ' . implode(', ', $sqlParts);
     }
 
     /**
@@ -802,7 +813,7 @@ class SqlWalker implements TreeWalker
             $sql .= ' AND (' . $this->walkConditionalExpression($condExpr) . ')';
         }
 
-        $discrSql = $this->_generateDiscriminatorColumnConditionSQL($joinedDqlAlias);
+        $discrSql = $this->_generateDiscriminatorColumnConditionSQL(array($joinedDqlAlias));
 
         if ($discrSql) {
             $sql .= ' AND ' . $discrSql;
@@ -1045,23 +1056,30 @@ class SqlWalker implements TreeWalker
     public function walkSubselectFromClause($subselectFromClause)
     {
         $identificationVarDecls = $subselectFromClause->identificationVariableDeclarations;
-        $firstIdentificationVarDecl = $identificationVarDecls[0];
-        $rangeDecl = $firstIdentificationVarDecl->rangeVariableDeclaration;
-        $dqlAlias = $rangeDecl->aliasIdentificationVariable;
+        $sqlParts = array ();
 
-        $class = $this->_em->getClassMetadata($rangeDecl->abstractSchemaName);
-        $sql = ' FROM ' . $class->getQuotedTableName($this->_platform) . ' '
-             . $this->getSqlTableAlias($class->table['name'], $dqlAlias);
+        foreach ($identificationVarDecls as $subselectIdVarDecl) {
+            $sql = '';
 
-        if ($class->isInheritanceTypeJoined()) {
-            $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
+            $rangeDecl = $subselectIdVarDecl->rangeVariableDeclaration;
+            $dqlAlias = $rangeDecl->aliasIdentificationVariable;
+
+            $class = $this->_em->getClassMetadata($rangeDecl->abstractSchemaName);
+            $sql .= $class->getQuotedTableName($this->_platform) . ' '
+                  . $this->getSqlTableAlias($class->table['name'], $dqlAlias);
+
+            if ($class->isInheritanceTypeJoined()) {
+                $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
+            }
+
+            foreach ($subselectIdVarDecl->joinVariableDeclarations as $joinVarDecl) {
+                $sql .= $this->walkJoinVariableDeclaration($joinVarDecl);
+            }
+
+            $sqlParts[] = $this->_platform->appendLockHint($sql, $this->_query->getHint(Query::HINT_LOCK_MODE));
         }
 
-        foreach ($firstIdentificationVarDecl->joinVariableDeclarations as $joinVarDecl) {
-            $sql .= $this->walkJoinVariableDeclaration($joinVarDecl);
-        }
-
-        return $sql;
+        return ' FROM ' . implode(', ', $sqlParts);
     }
 
     /**
@@ -1161,7 +1179,7 @@ class SqlWalker implements TreeWalker
             $sql .= ' ' . $this->getSqlTableAlias($class->getTableName());
         }
 
-        $this->_currentRootAlias = $deleteClause->aliasIdentificationVariable;
+        $this->_rootAliases[] = $deleteClause->aliasIdentificationVariable;
 
         return $sql;
     }
@@ -1182,7 +1200,7 @@ class SqlWalker implements TreeWalker
             $sql .= ' ' . $this->getSqlTableAlias($class->getTableName());
         }
 
-        $this->_currentRootAlias = $updateClause->aliasIdentificationVariable;
+        $this->_rootAliases[] = $updateClause->aliasIdentificationVariable;
 
         $sql .= ' SET ' . implode(
             ', ', array_map(array($this, 'walkUpdateItem'), $updateClause->updateItems)
@@ -1227,7 +1245,7 @@ class SqlWalker implements TreeWalker
      */
     public function walkWhereClause($whereClause)
     {
-        $discrSql = $this->_generateDiscriminatorColumnConditionSql($this->_currentRootAlias);
+        $discrSql = $this->_generateDiscriminatorColumnConditionSql($this->_rootAliases);
         $condSql = $this->walkConditionalExpression($whereClause->conditionalExpression);
 
         return ' WHERE ' . (( ! $discrSql) ? $condSql : '(' . $condSql . ') AND ' . $discrSql);

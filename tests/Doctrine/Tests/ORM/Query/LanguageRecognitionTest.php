@@ -79,6 +79,11 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidDql('SELECT u.name, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
+    public function testSelectMultipleComponentsUsingMultipleFrom()
+    {
+        $this->assertValidDql('SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE u = p.user');
+    }
+
     public function testSelectMultipleComponentsWithAsterisk()
     {
         $this->assertValidDql('SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.phonenumbers p');
