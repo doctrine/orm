@@ -330,12 +330,10 @@ class EntityManager
 
     /**
      * Gets a reference to the entity identified by the given type and identifier
-     * without actually loading it.
+     * without actually loading it, if the entity is not yet loaded.
      *
-     * If partial objects are allowed, this method will return a partial object that only
-     * has its identifier populated. Otherwise a proxy is returned that automatically
-     * loads itself on first access.
-     *
+     * @param string $entityName The name of the entity type.
+     * @param mixed $identifier The entity identifier.
      * @return object The entity reference.
      */
     public function getReference($entityName, $identifier)
@@ -350,6 +348,44 @@ class EntityManager
             $identifier = array($class->identifier[0] => $identifier);
         }
         $entity = $this->proxyFactory->getProxy($class->name, $identifier);
+        $this->unitOfWork->registerManaged($entity, $identifier, array());
+
+        return $entity;
+    }
+
+    /**
+     * Gets a partial reference to the entity identified by the given type and identifier
+     * without actually loading it, if the entity is not yet loaded.
+     *
+     * The returned reference may be a partial object if the entity is not yet loaded/managed.
+     * If it is a partial object it will not initialize the rest of the entity state on access.
+     * Thus you can only ever safely access the identifier of an entity obtained through
+     * this method.
+     *
+     * The use-cases for partial references involve maintaining bidirectional associations
+     * without loading one side of the association or to update an entity without loading it.
+     * Note, however, that in the latter case the original (persistent) entity data will
+     * never be visible to the application (especially not event listeners) as it will
+     * never be loaded in the first place.
+     *
+     * @param string $entityName The name of the entity type.
+     * @param mixed $identifier The entity identifier.
+     * @return object The (partial) entity reference.
+     */
+    public function getPartialReference($entityName, $identifier)
+    {
+        $class = $this->metadataFactory->getMetadataFor($entityName);
+
+        // Check identity map first, if its already in there just return it.
+        if ($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) {
+            return $entity;
+        }
+        if ( ! is_array($identifier)) {
+            $identifier = array($class->identifier[0] => $identifier);
+        }
+
+        $entity = $class->newInstance();
+        $class->setIdentifierValues($entity, $identifier);
         $this->unitOfWork->registerManaged($entity, $identifier, array());
 
         return $entity;

@@ -76,6 +76,14 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         $this->assertType('\Doctrine\ORM\Query', $this->_em->createQuery());
     }
 
+    public function testGetPartialReference()
+    {
+        $user = $this->_em->getPartialReference('Doctrine\Tests\Models\CMS\CmsUser', 42);
+        $this->assertTrue($this->_em->contains($user));
+        $this->assertEquals(42, $user->id);
+        $this->assertNull($user->getName());
+    }
+
     public function testCreateQuery()
     {
         $q = $this->_em->createQuery('SELECT 1');

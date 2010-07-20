@@ -744,6 +744,30 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $this->assertEquals(0, $this->_em->getConnection()->fetchColumn("select count(*) from cms_users_groups"));
     }
+
+    public function testGetPartialReferenceToUpdateObjectWithoutLoadingIt()
+    {
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $user = new CmsUser();
+        $user->username = "beberlei";
+        $user->name = "Benjamin E.";
+        $user->status = 'active';
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $userId = $user->id;
+        $this->_em->clear();
+
+        $user = $this->_em->getPartialReference('Doctrine\Tests\Models\CMS\CmsUser', $userId);
+        $this->assertTrue($this->_em->contains($user));
+        $this->assertNull($user->getName());
+        $this->assertEquals($userId, $user->id);
+
+        $user->name = 'Stephan';
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $this->assertEquals('Stephan', $this->_em->find(get_class($user), $userId)->name);
+    }
     
     //DRAFT OF EXPECTED/DESIRED BEHAVIOR
     /*public function testPersistentCollectionContainsDoesNeverInitialize()

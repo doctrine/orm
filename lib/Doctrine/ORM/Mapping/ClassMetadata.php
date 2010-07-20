@@ -158,14 +158,10 @@ class ClassMetadata extends ClassMetadataInfo
      * @param mixed $id
      * @todo Rename to assignIdentifier()
      */
-    public function setIdentifierValues($entity, $id)
+    public function setIdentifierValues($entity, array $id)
     {
-        if ($this->isIdentifierComposite) {
-            foreach ($id as $idField => $idValue) {
-                $this->reflFields[$idField]->setValue($entity, $idValue);
-            }
-        } else {
-            $this->reflFields[$this->identifier[0]]->setValue($entity, $id);
+        foreach ($id as $idField => $idValue) {
+            $this->reflFields[$idField]->setValue($entity, $idValue);
         }
     }
 
