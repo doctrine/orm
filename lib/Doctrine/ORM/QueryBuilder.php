@@ -79,6 +79,11 @@ class QueryBuilder
      * @var array The query parameters.
      */
     private $_params = array();
+
+    /**
+     * @var array The parameter type map of this query.
+     */
+    private $_paramTypes = array();
     
     /**
      * @var integer The index of the first result to retrieve.
@@ -208,7 +213,7 @@ class QueryBuilder
     public function getQuery()
     {
         return $this->_em->createQuery($this->getDQL())
-                ->setParameters($this->_params)
+                ->setParameters($this->_params, $this->_paramTypes)
                 ->setFirstResult($this->_firstResult)
                 ->setMaxResults($this->_maxResults);
     }
@@ -246,10 +251,14 @@ class QueryBuilder
      *
      * @param string|integer $key The parameter position or name.
      * @param mixed $value The parameter value.
+     * @param string|null $type PDO::PARAM_* or \Doctrine\DBAL\Types\Type::* constant
      * @return QueryBuilder This QueryBuilder instance.
      */
-    public function setParameter($key, $value)
+    public function setParameter($key, $value, $type = null)
     {
+        if ($type !== null) {
+            $this->_paramTypes[$key] = $type;
+        }
         $this->_params[$key] = $value;
         return $this;
     }
@@ -271,8 +280,9 @@ class QueryBuilder
      * @param array $params The query parameters to set.
      * @return QueryBuilder This QueryBuilder instance.
      */
-    public function setParameters(array $params)
+    public function setParameters(array $params, array $types = array())
     {
+        $this->_paramTypes = $types;
         $this->_params = $params;
         return $this;
     }

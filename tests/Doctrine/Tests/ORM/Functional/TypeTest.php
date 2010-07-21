@@ -8,6 +8,7 @@ use Doctrine\Tests\Models\Generic\DecimalModel;
 use Doctrine\Tests\Models\Generic\SerializationModel;
 
 use Doctrine\ORM\Mapping\AssociationMapping;
+use Doctrine\DBAL\Types\Type;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -120,6 +121,41 @@ class TypeTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertType('DateTime', $dateTime->datetime);
         $this->assertEquals('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
+    }
+
+    public function testDqlQueryBindDateTimeInstance()
+    {
+        $date = new \DateTime('2009-10-02 20:10:52', new \DateTimeZone('Europe/Berlin'));
+
+        $dateTime = new DateTimeModel();
+        $dateTime->datetime = $date;
+
+        $this->_em->persist($dateTime);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $dateTimeDb = $this->_em->createQuery('SELECT d FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime = ?1')
+                                ->setParameter(1, $date, Type::DATETIME)
+                                ->getSingleResult();
+    }
+
+    public function testDqlQueryBuilderBindDateTimeInstance()
+    {
+        $date = new \DateTime('2009-10-02 20:10:52', new \DateTimeZone('Europe/Berlin'));
+
+        $dateTime = new DateTimeModel();
+        $dateTime->datetime = $date;
+
+        $this->_em->persist($dateTime);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $dateTimeDb = $this->_em->createQueryBuilder()
+                                 ->select('d')
+                                 ->from('Doctrine\Tests\Models\Generic\DateTimeModel', 'd')
+                                 ->where('d.datetime = ?1')
+                                 ->setParameter(1, $date, Type::DATETIME)
+                                 ->getQuery()->getSingleResult();
     }
 
     public function testTime()
