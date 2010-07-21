@@ -254,7 +254,7 @@ class ClassMetadataFactory
             // Invoke driver
             try {
                 $this->_driver->loadMetadataForClass($className, $class);
-            } catch(ReflectionException $e) { 
+            } catch(ReflectionException $e) {
                 throw MappingException::reflectionFailure($className, $e);
             }
 

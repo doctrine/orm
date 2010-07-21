@@ -50,17 +50,6 @@ class DriverChainTest extends \Doctrine\Tests\OrmTestCase
         $chain->loadMetadataForClass($className, $classMetadata);
     }
 
-    public function testIsTransient_NoDelegatorFound_ThrowsMappingException()
-    {
-        $className = 'Doctrine\Tests\ORM\Mapping\DriverChainEntity';
-        $classMetadata = new \Doctrine\ORM\Mapping\ClassMetadata($className);
-
-        $chain = new DriverChain();
-
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
-        $chain->isTransient($className);
-    }
-
     public function testGatherAllClassNames()
     {
         $className = 'Doctrine\Tests\ORM\Mapping\DriverChainEntity';
@@ -82,6 +71,21 @@ class DriverChainTest extends \Doctrine\Tests\OrmTestCase
         $chain->addDriver($driver2, 'Doctrine\Tests\ORM\Mapping');
 
         $this->assertEquals(array('Foo', 'Bar', 'Baz'), $chain->getAllClassNames());
+    }
+
+    /**
+     * @group DDC-706
+     */
+    public function testIsTransient()
+    {
+        $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache());
+        $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
+        
+        $chain = new DriverChain();
+        $chain->addDriver(new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader, array()), 'Doctrine\Tests\Models\CMS');
+
+        $this->assertTrue($chain->isTransient('stdClass'), "stdClass isTransient");
+        $this->assertFalse($chain->isTransient('Doctrine\Tests\Models\CMS\CmsUser'), "CmsUser is not Transient");
     }
 }
 

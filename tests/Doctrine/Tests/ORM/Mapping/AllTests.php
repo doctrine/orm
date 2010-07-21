@@ -28,6 +28,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\ClassMetadataFactoryTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\ClassMetadataLoadEventTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\BasicInheritanceMappingTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Mapping\DriverChainTest');
 
         return $suite;
     }

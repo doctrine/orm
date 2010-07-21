@@ -96,8 +96,8 @@ class DriverChain implements Driver
 
     /**
      * Whether the class with the specified name should have its metadata loaded.
-     * This is only the case if it is either mapped as an Entity or a
-     * MappedSuperclass.
+     *
+     * This is only the case for non-transient classes either mapped as an Entity or MappedSuperclass.
      *
      * @param string $className
      * @return boolean
@@ -110,6 +110,7 @@ class DriverChain implements Driver
             }
         }
 
-        throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
+        // class isTransient, i.e. not an entity or mapped superclass
+        return true;
     }
 }
