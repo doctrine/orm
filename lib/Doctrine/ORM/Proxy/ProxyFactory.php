@@ -144,7 +144,7 @@ class ProxyFactory
 
         $file = str_replace($placeholders, $replacements, $file);
 
-        file_put_contents($fileName, $file);
+        file_put_contents($fileName, $file, LOCK_EX);
     }
 
     /**
