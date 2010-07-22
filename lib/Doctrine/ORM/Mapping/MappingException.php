@@ -172,7 +172,7 @@ class MappingException extends \Doctrine\ORM\ORMException
 
     public static function fileMappingDriversRequireConfiguredDirectoryPath()
     {
-        return new self('File mapping drivers must have a directory path');
+        return new self('File mapping drivers must have a valid directory path, however the given path seems to be incorrect!');
     }
 
     /**
