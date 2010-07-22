@@ -170,11 +170,13 @@ The cache implementation must implement the `Doctrine\Common\Cache\Cache` interf
 
 Usage of a metadata cache is highly recommended.
 
-The recommended implementations are:
+The recommended implementations for production are:
 
  * `Doctrine\Common\Cache\ApcCache`
  * `Doctrine\Common\Cache\MemcacheCache`
  * `Doctrine\Common\Cache\XcacheCache`
+
+For development you should use the `Doctrine\Common\Cache\ArrayCache` which only caches data on a per-request basis.
 
 +++ Query Cache (***RECOMMENDED***)
 
@@ -186,11 +188,13 @@ Gets or sets the cache implementation to use for caching DQL queries, that is, t
 
 Usage of a query cache is highly recommended.
 
-The recommended implementations are:
+The recommended implementations for production are:
 
  * `Doctrine\Common\Cache\ApcCache`
  * `Doctrine\Common\Cache\MemcacheCache`
  * `Doctrine\Common\Cache\XcacheCache`
+
+For development you should use the `Doctrine\Common\Cache\ArrayCache` which only caches data on a per-request basis.
 
 +++ SQL Logger (***Optional***)
 
@@ -207,6 +211,19 @@ Gets or sets the logger to use for logging all SQL statements executed by Doctri
     $config->getAutoGenerateProxyClasses();
 
 Gets or sets whether proxy classes should be generated automatically at runtime by Doctrine. If set to `FALSE`, proxy classes must be generated manually through the doctrine command line task `generate-proxies`. The strongly recommended value for a production environment is `FALSE`.
+
+++ Development vs Production Configuration
+
+You should code your Doctrine2 bootstrapping with two different runtime models in mind. There are some serious
+benefits of using APC or Memcache in production. In development however this will frequently give you fatal
+errors, when you change your entities and the cache still keeps the outdated metadata. That is why we recommend
+the `ArrayCache` for development.
+
+Furthermore you should have the Auto-generating Proxy Classes option to true in development and to false
+in production. If this option is set to `TRUE` it can seriously hurt your script performance if several proxy
+classes are re-generated during script execution. Filesystem calls of that magnitude can even slower than all
+the database queries Doctrine issues. Additionally writing a proxy sets an exclusive file lock which can cause
+serious performance bottlenecks in systems with regular concurrent requests.
 
 ++ Connection Options
 
