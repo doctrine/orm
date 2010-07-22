@@ -76,8 +76,11 @@ For best class loading performance it is recommended that you keep your include_
 
 +++ Obtaining an EntityManager
 
-Once you have prepared the class loading, you acquire an EntityManager instance 
-with the following minimalist configuration:
+Once you have prepared the class loading, you acquire an *EntityManager* instance.
+The EntityManager class is the primary access point to ORM functionality provided by Doctrine.
+
+A simple configuration of the EntityManager requires a `Doctrine\ORM\Configuration`
+instance as well as some database connection parameters:
 
     [php]
     use Doctrine\ORM\EntityManager,
@@ -122,8 +125,6 @@ with the following minimalist configuration:
 > APC provides you with an opcode-cache (which is highly recommended anyway) and 
 > a very fast in-memory cache storage that you can use for the metadata and query
 > caches as seen in the previous code snippet.
-
-An EntityManager is your central access point to ORM functionality provided by Doctrine.
 
 ++ Configuration Options
 
