@@ -102,7 +102,7 @@ with the following minimalist configuration:
     if ($applicationMode == "development") {
         $config->setAutoGenerateProxyClasses(true);
     } else {
-        $config->setAutoGenerateProxyClasses(true);
+        $config->setAutoGenerateProxyClasses(false);
     }
 
     $connectionOptions = array(
