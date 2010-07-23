@@ -376,7 +376,7 @@ that has O(n) complexity using `array_search`, where n is the size of the map.
 > for write operations that an inverse collection of a bidirectional one-to-many or many-to-many association is updated.
 > This knowledge can often be used to improve performance by avoiding the loading of the inverse collection.
 
-> **NOTE*
+> **NOTE**
 >
 > You can also clear the contents of a whole collection using the `Collections::clear()` method. You
 > should be aware that using this method can lead to a straight and optimized database delete or update call
