@@ -84,7 +84,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             $updateSql = 'UPDATE ' . $class->getQuotedTableName($platform) . ' SET ';
 
             foreach ($updateItems as $updateItem) {
-                $field = $updateItem->pathExpression->parts[0];
+                $field = $updateItem->pathExpression->field;
                 if (isset($class->fieldMappings[$field]) && ! isset($class->fieldMappings[$field]['inherited']) ||
                         isset($class->associationMappings[$field]) && ! $class->associationMappings[$field]->inherited) {
                     $newValue = $updateItem->newValue;

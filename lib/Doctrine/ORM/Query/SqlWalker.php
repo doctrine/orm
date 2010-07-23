@@ -438,7 +438,7 @@ class SqlWalker implements TreeWalker
      * @param string $identificationVariable
      * @return string The SQL.
      */
-    public function walkIdentificationVariable($identificationVariable, $fieldName = null)
+    public function walkIdentificationVariable($identificationVariable, $fieldName)
     {
         $class = $this->_queryComponents[$identificationVariable]['metadata'];
 
@@ -464,9 +464,8 @@ class SqlWalker implements TreeWalker
 
         switch ($pathExpr->type) {
             case AST\PathExpression::TYPE_STATE_FIELD:
-                $parts = $pathExpr->parts;
-                $fieldName = array_pop($parts);
-                $dqlAlias = $pathExpr->identificationVariable . ( ! empty($parts) ? '.' . implode('.', $parts) : '');
+                $fieldName = $pathExpr->field;
+                $dqlAlias = $pathExpr->identificationVariable;
                 $class = $this->_queryComponents[$dqlAlias]['metadata'];
 
                 if ($this->_useSqlTableAliases) {
@@ -479,8 +478,7 @@ class SqlWalker implements TreeWalker
             case AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION:
                 // 1- the owning side:
                 //    Just use the foreign key, i.e. u.group_id
-                $parts = $pathExpr->parts;
-                $fieldName = array_pop($parts);
+                $fieldName = $pathExpr->field;
                 $dqlAlias = $pathExpr->identificationVariable;
                 $class = $this->_queryComponents[$dqlAlias]['metadata'];
 
@@ -630,7 +628,7 @@ class SqlWalker implements TreeWalker
             if ($identificationVariableDecl->indexBy) {
                 $this->_rsm->addIndexBy(
                     $identificationVariableDecl->indexBy->simpleStateFieldPathExpression->identificationVariable,
-                    $identificationVariableDecl->indexBy->simpleStateFieldPathExpression->parts[0]
+                    $identificationVariableDecl->indexBy->simpleStateFieldPathExpression->field
                 );
             }
 
@@ -840,9 +838,8 @@ class SqlWalker implements TreeWalker
 
         if ($expr instanceof AST\PathExpression) {
             if ($expr->type == AST\PathExpression::TYPE_STATE_FIELD) {
-                $parts = $expr->parts;
-                $fieldName = array_pop($parts);
-                $dqlAlias = $expr->identificationVariable . (( ! empty($parts)) ? '.' . implode('.', $parts) : '');
+                $fieldName = $expr->field;
+                $dqlAlias = $expr->identificationVariable;
                 $qComp = $this->_queryComponents[$dqlAlias];
                 $class = $qComp['metadata'];
 
@@ -1345,9 +1342,8 @@ class SqlWalker implements TreeWalker
         $entityExpr = $collMemberExpr->entityExpression;
         $collPathExpr = $collMemberExpr->collectionValuedPathExpression;
         
-        $parts = $collPathExpr->parts;
-        $fieldName = array_pop($parts);
-        $dqlAlias = $collPathExpr->identificationVariable . (( ! empty($parts)) ? '.' . implode('.', $parts) : '');
+        $fieldName = $collPathExpr->field;
+        $dqlAlias = $collPathExpr->identificationVariable;
         
         $class = $this->_queryComponents[$dqlAlias]['metadata'];
         

@@ -47,14 +47,23 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\Tests\ORM\Functional\CustomTreeWalker'))
                   ->useQueryCache(false);
 
-            parent::assertEquals($sqlToBeConfirmed, $query->getSql());
+            $this->assertEquals($sqlToBeConfirmed, $query->getSql());
             $query->free();
         } catch (\Exception $e) {
-            $this->fail($e->getMessage());
+            $this->fail($e->getMessage() . ' at "' . $e->getFile() . '" on line ' . $e->getLine());
+
         }
     }
 
     public function testSupportsQueriesWithoutWhere()
+    {
+        $this->assertSqlGeneration(
+            'select u from Doctrine\Tests\Models\CMS\CmsUser u',
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id = 1"
+        );
+    }
+
+    public function testSupportsQueriesWithMultipleConditionalExpressions()
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name or u.name = :otherName',
@@ -62,19 +71,11 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         );
     }
     
-    public function testSupportsQueriesWithSimpleConditionalExpressions()
+    public function testSupportsQueriesWithSimpleConditionalExpression()
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name',
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.name = ? AND c0_.id = 1"
-        );
-    }
-
-    public function testSupportsQueriesWithMultipleConditionalExpressions()
-    {
-        $this->assertSqlGeneration(
-            'select u from Doctrine\Tests\Models\CMS\CmsUser u',
-            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id = 1"
         );
     }
 }
@@ -97,7 +98,7 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
         // Create our conditions for all involved classes
         $factors = array();
         foreach ($dqlAliases as $alias) {
-            $pathExpr = new Query\AST\PathExpression(Query\AST\PathExpression::TYPE_STATE_FIELD, $alias, array('id'));
+            $pathExpr = new Query\AST\PathExpression(Query\AST\PathExpression::TYPE_STATE_FIELD, $alias, 'id');
             $pathExpr->type = Query\AST\PathExpression::TYPE_STATE_FIELD;
             $comparisonExpr = new Query\AST\ComparisonExpression($pathExpr, '=', 1);
 

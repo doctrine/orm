@@ -89,11 +89,6 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidDql('SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.phonenumbers p');
     }
 
-    public function testSelectMultipleComponentsWithAsterisk2()
-    {
-        $this->assertValidDql('SELECT a.user.name FROM Doctrine\Tests\Models\CMS\CmsArticle a');
-    }
-
     public function testSelectDistinctIsSupported()
     {
         $this->assertValidDql('SELECT DISTINCT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u');
@@ -294,13 +289,13 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         // This should be allowed because avatar is a single-value association.
         // SQL: SELECT ... FROM forum_user fu INNER JOIN forum_avatar fa ON fu.avatar_id = fa.id WHERE fa.id = ?
-        $this->assertValidDql("SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u WHERE u.avatar.id = ?1");
+        $this->assertValidDql("SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u JOIN u.avatar a WHERE a.id = ?1");
     }
 
     public function testImplicitJoinInWhereOnCollectionValuedPathExpression()
     {
         // This should be forbidden, because articles is a collection
-        $this->assertInvalidDql("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.articles.title = ?");
+        $this->assertInvalidDql("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.articles a WHERE a.title = ?");
     }
 
     public function testInvalidSyntaxIsRejected()

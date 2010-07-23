@@ -51,7 +51,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testSupportsSelectForOneNestedField()
     {
         $this->assertSqlGeneration(
-            'SELECT a.user.id FROM Doctrine\Tests\Models\CMS\CmsArticle a',
+            'SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsArticle a JOIN a.user u',
             'SELECT c0_.id AS id0 FROM cms_articles c1_ INNER JOIN cms_users c0_ ON c1_.user_id = c0_.id'
         );
     }
@@ -59,7 +59,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testSupportsSelectForAllNestedField()
     {
         $this->assertSqlGeneration(
-            'SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a ORDER BY a.user.name ASC',
+            'SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a JOIN a.user u ORDER BY u.name ASC',
             'SELECT c0_.id AS id0, c0_.topic AS topic1, c0_.text AS text2, c0_.version AS version3 FROM cms_articles c0_ INNER JOIN cms_users c1_ ON c0_.user_id = c1_.id ORDER BY c1_.name ASC'
         );
     }
