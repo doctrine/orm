@@ -180,29 +180,168 @@ and you want to modify and persist such an entity.
 Associations between entities are represented just like in regular object-oriented PHP, with references to other objects or collections of objects. When it comes to persistence, it is important to understand three main things:
 
  * The concept of owning and inverse sides in bidirectional associations as described [here](http://www.doctrine-project.org/documentation/manual/2_0/en/association-mapping#owning-side-and-inverse-side).
- * A collection of entities always only represents the association to the containing entities. If an entity is removed from a collection, the association is removed, not the entity itself.
- * Collection-valued persistent fields and properties must be defined in terms of the Doctrine\Common\Collections\Collection interface. [See here](http://www.doctrine-project.org/documentation/manual/2_0/en/architecture#entities:persistent-fields) for more details.
+ * If an entity is removed from a collection, the association is removed, not the entity itself. A collection of entities always only represents the association to the containing entities, not the entity itself.
+ * Collection-valued persistent fields have to be instances of the `Doctrine\Common\Collections\Collection` interface. [See here](http://www.doctrine-project.org/documentation/manual/2_0/en/architecture#entities:persistent-fields) for more details.
 
++++ Example Associations
+
+We will use a simple comment system with Users and Comments as entity to show examples of association management:
+
+    [php]
+    /** @Entity */
+    class User
+    {
+        /** @Id @GeneratedValue @Column(type="string") */
+        private $id;
+
+        /**
+         * Bidirectional - Many users have Many favorite comments (OWNING SIDE)
+         *
+         * @ManyToMany(targetEntity="Comment", inversedBy="userFavorites")
+         * @JoinTable(name="user_favorite_comments",
+         *   joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+         *   inverseJoinColumns={@JoinColumn(name="favorite_comment_id", referencedColumnName="id")}
+         * )
+         */
+        private $favorites;
+
+        /**
+         * Unidirectional - Many users have marked many comments as read
+         *
+         * @ManyToMany(targetEntity="Comment")
+         * @JoinTable(name="user_read_comments",
+         *   joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+         *   inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id")}
+         * )
+         */
+        private $commentsRead;
+
+        /**
+         * Bidirectional - One-To-Many (INVERSE SIDE)
+         *
+         * @OneToMany(targetEntity="Comment", mappedBy="author")
+         */
+        private $commentsAuthored;
+
+        /**
+         * Unidirectional - Many-To-One
+         *
+         * @ManyToOne(targetEntity="Comment")
+         */
+        private $firstComment;
+    }
+
+    /** @Entity */
+    class Comment
+    {
+        /** @Id @GeneratedValue @Column(type="string") */
+        private $id;
+
+        /**
+         * Bidirectional - Many comments are favorited by many users (INVERSE SIDE)
+         *
+         * @ManyToMany(targetEntity="User", mappedBy="favorites")
+         */
+        private $userFavorites;
+
+        /**
+         * Bidirectional - Many Comments are authored by one user (OWNING SIDE)
+         *
+         * @ManyToOne(targetEntity="User", inversedBy="authoredComments")
+         */
+         private $author;
+    }
+
+This two entities generate the following MySQL Schema (Foreign Key definitions omitted):
+
+    [sql]
+    CREATE TABLE User (
+        id VARCHAR(255) NOT NULL,
+        firstComment_id VARCHAR(255) DEFAULT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+
+    CREATE TABLE Comment (
+        id VARCHAR(255) NOT NULL,
+        author_id VARCHAR(255) DEFAULT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+
+    CREATE TABLE user_favorite_comments (
+        user_id VARCHAR(255) NOT NULL,
+        favorite_comment_id VARCHAR(255) NOT NULL,
+        PRIMARY KEY(user_id, favorite_comment_id)
+    ) ENGINE = InnoDB;
+
+    CREATE TABLE user_read_comments (
+        user_id VARCHAR(255) NOT NULL,
+        comment_id VARCHAR(255) NOT NULL,
+        PRIMARY KEY(user_id, comment_id)
+    ) ENGINE = InnoDB;
 
 ++ Establishing Associations
 
-Establishing an association between two entities is straight-forward. Here are some examples:
+Establishing an association between two entities is straight-forward. Here are some examples for the unidirectional
+relations of the `User`:
 
     [php]
-    // Article <- one-to-many -> Comment
-    $article->getComments()->add($comment);
-    $comment->setArticle($article);
+    class User
+    {
+        // ...
+        public function getReadComments() {
+             return $this->commentsRead;
+        }
+
+        public function setFirstComment(Comment $c) {
+            $this->firstComment = $c;
+        }
+    }
+
+    // unidirectional many to many
+    $user->getReadComments()->add($comment);
+
+    // unidirectional many to one
+    $user->setFirstComment($myFirstComment);
+
+In the case of bi-directional associations you have to update the fields on both sides:
+
+    [php]
+    class User
+    {
+        // ..
+
+        public function getAuthoredComments() {
+            return $this->commentsAuthored;
+        }
+
+        public function getFavoriteComments() {
+            return $this->favorites;
+        }
+    }
+
+    class Comment
+    {
+        // ...
+
+        public function getUserFavorites() {
+            return $this->userFavorites;
+        }
+
+        public function setAuthor(User $author = null) {
+            $this->author = $author;
+        }
+    }
+
+    // Many-to-Many
+    $user->getFavorites()->add($favoriteComment);
+    $favoriteComment->getUserFavorites()->add($user);
     
-    // User <- many-to-many -> Groups
-    $user->getGroups()->add($group);
-    $group->getUsers()->add($user);
-    
-    // User <- one-to-one -> Address
-    $user->setAddress($address);
-    $address->setUser($user);
+    // Many-To-One / One-To-Many Bidirectional
+    $user->getAuthoredComments()->add($newComment);
+    $newComment->setAuthor($user);
 
 
-Notice how always both sides of the bidirectional association are updated. Unidirectional associations are consequently simpler to handle.
+Notice how always both sides of the bidirectional association are updated. The previous unidirectional associations were simpler to handle.
 
 ++ Removing Associations
 
@@ -211,30 +350,31 @@ to do so, by key and by element. Here are some examples:
 
     [php]
     // Remove by Elements
-    // Article <- one-to-many -> Comment
-    $article->getComments()->removeElement($comment);
-    $comment->setArticle(null);
-    
-    // User <- many-to-many -> Group
-    $user->getGroups()->removeElement($group);
-    $group->getUsers()->removeElement($user);
+    $user->getComments()->removeElement($comment);
+    $comment->setAuthor(null);
 
-    // Remove by key
-    $article->getComments()->remove($ithComment);
-    $comment->setArticle(null);
+    $user->getFavorites()->removeElement($comment);
+    $comment->getUserFavorites()->removeElement($user);
 
-    // User <- one-to-one -> Address
-    $user->setAddress(null);
-    $address->setUser(null);
+    // Remove by Key
+    $user->getComments()->removeElement($ithComment);
+    $comment->setAuthor(null);
 
-
-Notice how both sides of the bidirectional association are always updated. Unidirectional associations are consequently simpler to handle. Also note that if you type-hint your methods, i.e. `setAddress(Address $address)`, then PHP does not allow null values and setAddress(null) will fail for removing the association. If you insist on type-hinting a typical way to deal with this is to provide a special method, like `removeAddress()`. This can also provide better encapsulation as it hides the internal meaning of not having an address.
+Notice how both sides of the bidirectional association are always updated. Unidirectional associations are consequently
+simpler to handle. Also note that if you type-hint your methods, i.e. `setAddress(Address $address)`, then PHP does only
+allows null values if `null` is set as default value. Otherwise setAddress(null) will fail for removing the association.
+If you insist on type-hinting a typical way to deal with this is to provide a special method, like `removeAddress()`.
+This can also provide better encapsulation as it hides the internal meaning of not having an address.
 
 When working with collections, keep in mind that a Collection is essentially an ordered map (just like a PHP array).
 That is why the `remove` operation accepts an index/key. `removeElement` is a separate method
-that has O(n) complexity, where n is the size of the map. 
+that has O(n) complexity using `array_search`, where n is the size of the map.
 
-Since Doctrine always only looks at the owning side of a bidirectional association, it is essentially not necessary that an inverse collection of a bidirectional one-to-many or many-to-many association is updated. This knowledge can often be used to improve performance by avoiding the loading of the inverse collection.
+> **NOTE**
+>
+> Since Doctrine always only looks at the owning side of a bidirectional association for updates, it is not necessary
+> for write operations that an inverse collection of a bidirectional one-to-many or many-to-many association is updated.
+> This knowledge can often be used to improve performance by avoiding the loading of the inverse collection.
 
 > **NOTE*
 >
@@ -250,38 +390,75 @@ Since Doctrine always only looks at the owning side of a bidirectional associati
 
 It is generally a good idea to encapsulate proper association management inside the entity classes. This makes it easier to use the class correctly and can encapsulate details about how the association is maintained.
 
-The following code shows a simple, idiomatic example for a bidirectional one-to-many association between an Article and its Comments.
+The following code shows updates to the previous User and Comment example that encapsulate much of
+the association management code:
 
     [php]
-    // Mappings not shown.
-    class Article {
-        // The comments of the article.
-        private $comments;
-        // ... constructor omitted ...
+    class User
+    {
+        //...
+        public function markCommentRead(Comment $comment) {
+            // Collections implement ArrayAccess
+            $this->commentsRead[] = $comment;
+        }
+
         public function addComment(Comment $comment) {
-            $this->comments->add($comment);
-            $comment->setArticle($this);
+            if (count($this->commentsAuthored) == 0) {
+                $this->setFirstComment($comment);
+            }
+            $this->comments[] = $comment;
+            $comment->setAuthor($this);
         }
-        public function getComments() {
-            return $this->comments;
+
+        private function setFirstComment(Comment $c) {
+            $this->firstComment = $c;
+        }
+
+        public function addFavorite(Comment $comment) {
+            $this->favorites->add($comment);
+            $comment->addUserFavorite($this);
+        }
+
+        public function removeFavorite(Comment $comment) {
+            $this->favorites->removeElement($comment);
+            $comment->removeUserFavorite($this);
         }
     }
-    class Comment {
-        // The article the comment refers to.
-        private $article;
-        // ... constructor omitted ...
-        public function setArticle($article) {
-            $this->article = $article;
+
+    class Comment
+    {
+        // ..
+
+        public function addUserFavorite(User $user) {
+            $this->userFavorites[] = $user;
         }
-        public function getArticle() {
-            return $this->article;
+
+        public function removeUserFavorite(User $user) {
+            $this->userFavorites->removeElement($user);
         }
     }
 
-With the above implementation, it is always ensured that at least the owning side from Doctrine's point of view (Comment) is properly updated. You will notice that `setArticle` does not call `addComment`, thus the bidirectional association is strictly-speaking still incomplete, if a user of the class only invokes `setArticle`. If you naively call `addComment` in `setArticle`, however, you end up with an infinite loop, so more work is needed. As you can see, proper bidirectional association management in plain OOP is a non-trivial task and encapsulating all the details inside the classes can be challenging.
+You will notice that `addUserFavorite` and `removeUserFavorite` do not call `addFavorite` and `removeFavorite`,
+thus the bidirectional association is strictly-speaking still incomplete. However if you would naively add the
+`addFavorite` in `addUserFavorite`, you end up with an infinite loop, so more work is needed.
+As you can see, proper bidirectional association management in plain OOP is a non-trivial task
+and encapsulating all the details inside the classes can be challenging.
 
-There is no single, best way for association management. It greatly depends on the requirements of your concrete domain model as well as your preferences.
+> **NOTE**
+>
+> If you want to make sure that your collections are perfectly encapsulated you should not return
+> them from a `getCollectionName()` method directly, but call `$collection->toArray()`. This way a client programmer
+> for the entity cannot circumvent the logic you implement on your entity for association management. Example:
+>
+>       [php]
+>       class User {
+>           public function getReadComments() {
+>               return $this->commentsRead->toArray();
+>           }
+>       }
 
+There is no single, best way for association management. It greatly depends on the requirements of your concrete
+domain model as well as your preferences.
 
 ++ Transitive persistence
 

@@ -573,6 +573,46 @@ Here is a similar many-to-many relationship as above except this one is bidirect
 
 The MySQL schema is exactly the same as for the Many-To-Many uni-directional case above.
 
++++ Picking the Owning and Inverse Side
+
+For Many-To-Many associations you can chose which entity is the owning and which the inverse side. There is
+a very simple semantic rule to decide which side is more suitable to be the owning side from a developers perspective.
+You only have to ask yourself, which entity is responsible for the connection management and pick that as the owning side.
+
+Take an example of two entities `Article` and `Tag`. Whenever you want to connect an Article to a Tag and vice-versa, it is mostly
+the Article that is responsible for this relation. Whenever you add a new article, you want to connect it with existing or new tags.
+Your create Article form will probably support this notion and allow to specify the tags directly. This is why you should
+pick the Article as owning side, as it makes the code more understandable:
+
+    [php]
+    class Article
+    {
+        private $tags;
+
+        public function addTag(Tag $tag)
+        {
+            $tag->addArticle($this); // synchronously updating inverse side
+            $this->tags[] = $tag;
+        }
+    }
+
+    class Tag
+    {
+        private $articles;
+
+        public function addArticle(Article $article)
+        {
+            $this->articles[] = $article;
+        }
+    }
+
+This allows to group the tag adding on the `Article` side of the association:
+
+    [php]
+    $article = new Article();
+    $article->addTag($tagA);
+    $article->addTag($tagB);
+
 ++ Many-To-Many, Self-referencing
 
 You can even have a self-referencing many-to-many association. A common scenario is where a `User` has friends and the target entity of that relationship is a `User` so it is self referencing. In this example it is bidirectional so `User` has a field named `$friendsWithMe` and `$myFriends`.
