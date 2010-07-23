@@ -110,6 +110,55 @@ In that case, the name of the join table defaults to a combination of the simple
 
 If you accept these defaults, you can reduce the mapping code to a minimum.
 
+++ Initializing Collections
+
+You have to be careful when using entity fields that contain a collection of related entities. Say we have a User entity that contains a collection of groups:
+
+    [php]
+    /** @Entity */
+    class User
+    {
+        /** @ManyToMany(targetEntity="Group") */
+        private $groups;
+
+        public function getGroups()
+        {
+            return $this->groups;
+        }
+    }
+
+With this code alone the `$groups` field only contains an instance of `Doctrine\Common\Collections\Collection` if the user is retrieved from
+Doctrine, however not after you instantiated a fresh instance of the User. When your user entity is still new `$groups` will obviously be null.
+
+This is why we recommend to initialize all collection fields to an empty `ArrayCollection` in your entities constructor:
+
+    [php]
+    use Doctrine\Common\Collections\ArrayCollection;
+
+    /** @Entity */
+    class User
+    {
+        /** @ManyToMany(targetEntity="Group") */
+        private $groups;
+
+        public function __construct()
+        {
+            $this->groups = new ArrayCollection();
+        }
+
+        public function getGroups()
+        {
+            return $this->groups;
+        }
+    }
+
+Now the following code will be working even if the Entity hasn't been associated with an EntityManager yet:
+
+    [php]
+    $group = $entityManager->find('Group', $groupId);
+    $user = new User();
+    $user->getGroups()->add($group);
+
 ++ One-To-One, Unidirectional
 
 A unidirectional one-to-one association is very common. Here is an example of a `Product` that has one `Shipping` object associated to it. The `Shipping` side does not reference back to the `Product` so it is unidirectional.
@@ -253,6 +302,10 @@ The following example sets up such a unidirectional one-to-many association:
          */
         private $phonenumbers;
 
+        public function __construct() {
+            $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
+        }
+
         // ...
     }
 
@@ -345,6 +398,10 @@ Bidirectional one-to-many associations are very common. The following code shows
          */
         private $features;
         // ...
+
+        public function __construct() {
+            $this->features = new \Doctrine\Common\Collections\ArrayCollection();
+        }
     }
     
     /** @Entity */
@@ -396,7 +453,11 @@ This effectively models a hierarchy of categories and from the database perspect
          * @JoinColumn(name="parent_id", referencedColumnName="id")
          */
         private $parent;
-        // ...        
+        // ...
+
+        public function __construct() {
+            $this->children = new \Doctrine\Common\Collections\ArrayCollection();
+        }
     }
     
 Note that the @JoinColumn is not really necessary in this example, as the defaults would be the same.
@@ -431,6 +492,10 @@ Real many-to-many associations are less common. The following example shows a un
         private $groups;
 
         // ...
+
+        public function __construct() {
+            $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+        }
     }
 
     /** @Entity */
@@ -483,6 +548,10 @@ Here is a similar many-to-many relationship as above except this one is bidirect
          */
         private $groups;
 
+        public function __construct() {
+            $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+        }
+
         // ...
     }
 
@@ -494,6 +563,11 @@ Here is a similar many-to-many relationship as above except this one is bidirect
          * @ManyToMany(targetEntity="User", mappedBy="groups")
          */
         private $users;
+
+        public function __construct() {
+            $this->users = new \Doctrine\Common\Collections\ArrayCollection();
+        }
+
         // ...
     }
 
@@ -522,6 +596,11 @@ You can even have a self-referencing many-to-many association. A common scenario
          *      )
          */
         private $myFriends;
+
+        public function __construct() {
+            $this->friendsWithMe = new \Doctrine\Common\Collections\ArrayCollection();
+            $this->myFriends = new \Doctrine\Common\Collections\ArrayCollection();
+        }
 
         // ...
     }
