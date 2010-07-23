@@ -119,13 +119,13 @@ Retrieve the IDs of all CmsUsers:
 Retrieve the IDs of all users that have written an article:
 
     [php]
-    $query = $em->createQuery('SELECT DISTINCT a.user.id FROM CmsArticle a');
+    $query = $em->createQuery('SELECT DISTINCT u.id FROM CmsArticle a JOIN a.user u');
     $ids = $query->getResult(); // array of CmsUser ids
 
 Retrieve all articles and sort them by the name of the articles users instance:
 
     [php]
-    $query = $em->createQuery('SELECT a FROM CmsArticle a ORDER BY a.user.name ASC');
+    $query = $em->createQuery('SELECT a FROM CmsArticle a JOIN a.user u ORDER BY u.name ASC');
     $articles = $query->getResult(); // array of CmsArticle objects
 
 Retrieve the Username and Name of a CmsUser:
