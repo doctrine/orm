@@ -46,10 +46,9 @@ class SizeFunction extends FunctionNode
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
         $dqlAlias = $this->collectionPathExpression->identificationVariable;
-        $parts = $this->collectionPathExpression->parts;
-        $assocField = array_pop($parts);
-
-        $qComp = $sqlWalker->getQueryComponent(implode('.', array_merge((array) $dqlAlias, $parts)));
+        $assocField = $this->collectionPathExpression->field;
+        
+        $qComp = $sqlWalker->getQueryComponent($dqlAlias);
         $assoc = $qComp['metadata']->associationMappings[$assocField];
         $sql = '';
         

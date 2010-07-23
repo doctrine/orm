@@ -490,6 +490,7 @@ class Parser
         foreach ($this->_deferredPartialObjectExpressions as $deferredItem) {
             $expr = $deferredItem['expression'];
             $class = $this->_queryComponents[$expr->identificationVariable]['metadata'];
+
             foreach ($expr->partialFieldSet as $field) {
                 if ( ! isset($class->fieldMappings[$field])) {
                     $this->semanticalError(
@@ -498,6 +499,7 @@ class Parser
                     );
                 }
             }
+
             if (array_intersect($class->identifier, $expr->partialFieldSet) != $class->identifier) {
                 $this->semanticalError(
                     "The partial field selection of class " . $class->name . " must contain the identifier.",
@@ -548,9 +550,9 @@ class Parser
      *
      * AssociationPathExpression             ::= CollectionValuedPathExpression | SingleValuedAssociationPathExpression
      * SingleValuedPathExpression            ::= StateFieldPathExpression | SingleValuedAssociationPathExpression
-     * StateFieldPathExpression              ::= IdentificationVariable "." StateField | SingleValuedAssociationPathExpression "." StateField
-     * SingleValuedAssociationPathExpression ::= IdentificationVariable "." {SingleValuedAssociationField "."}* SingleValuedAssociationField
-     * CollectionValuedPathExpression        ::= IdentificationVariable "." {SingleValuedAssociationField "."}* CollectionValuedAssociationField
+     * StateFieldPathExpression              ::= IdentificationVariable "." StateField
+     * SingleValuedAssociationPathExpression ::= IdentificationVariable "." SingleValuedAssociationField
+     * CollectionValuedPathExpression        ::= IdentificationVariable "." CollectionValuedAssociationField
      *
      * @param array $deferredItem
      * @param mixed $AST
@@ -561,93 +563,31 @@ class Parser
             $pathExpression = $deferredItem['expression'];
 
             $qComp = $this->_queryComponents[$pathExpression->identificationVariable];
-            $numParts = count($pathExpression->parts);
+            $class = $qComp['metadata'];
 
-            if ($numParts == 0) {
-                $pathExpression->parts = array($qComp['metadata']->identifier[0]);
-                $numParts++;
+            if (($field = $pathExpression->field) === null) {
+                $field = $pathExpression->field = $class->identifier[0];
             }
             
-            $parts = $pathExpression->parts;
-            $aliasIdentificationVariable = $pathExpression->identificationVariable;
-            $parentField = $pathExpression->identificationVariable;
-            $class = $qComp['metadata'];
-            $fieldType = null;
-            $curIndex = 0;
+            // Check if field or association exists
+            if ( ! isset($class->associationMappings[$field]) && ! isset($class->fieldMappings[$field])) {
+                $this->semanticalError(
+                    'Class ' . $class->name . ' has no field or association named ' . $field,
+                    $deferredItem['token']
+                );
+            }
 
-            foreach ($parts as $field) {
-                // Check if it is not in a state field
-                if ($fieldType & AST\PathExpression::TYPE_STATE_FIELD) {
-                    $this->semanticalError(
-                        'Cannot navigate through state field named ' . $field . ' on ' . $parentField,
-                        $deferredItem['token']
-                    );
-                }
+            if (isset($class->fieldMappings[$field])) {
+                $fieldType = AST\PathExpression::TYPE_STATE_FIELD;
+            } else {
+                $assoc = $class->associationMappings[$field];
+                $class = $this->_em->getClassMetadata($assoc->targetEntityName);
 
-                // Check if it is not a collection field
-                if ($fieldType & AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION) {
-                    $this->semanticalError(
-                        'Cannot navigate through collection field named ' . $field . ' on ' . $parentField,
-                        $deferredItem['token']
-                    );
-                }
-
-                // Check if field or association exists
-                if ( ! isset($class->associationMappings[$field]) && ! isset($class->fieldMappings[$field])) {
-                    $this->semanticalError(
-                        'Class ' . $class->name . ' has no field or association named ' . $field,
-                        $deferredItem['token']
-                    );
-                }
-
-                $parentField = $field;
-
-                if (isset($class->fieldMappings[$field])) {
-                    $fieldType = AST\PathExpression::TYPE_STATE_FIELD;
+                if ($assoc->isOneToOne()) {
+                    $fieldType = AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
                 } else {
-                    $assoc = $class->associationMappings[$field];
-                    $class = $this->_em->getClassMetadata($assoc->targetEntityName);
-
-                    if (
-                        ($curIndex != $numParts - 1) &&
-                        ! isset($this->_queryComponents[$aliasIdentificationVariable . '.' . $field])
-                    ) {
-                        // Building queryComponent
-                        $joinQueryComponent = array(
-                        'metadata'     => $class,
-                        'parent'       => $aliasIdentificationVariable,
-                        'relation'     => $assoc,
-                        'map'          => null,
-                        'nestingLevel' => $this->_nestingLevel,
-                        'token'        => $deferredItem['token'],
-                        );
-
-                        // Create AST node
-                        $joinVariableDeclaration = new AST\JoinVariableDeclaration(
-                            new AST\Join(
-                                AST\Join::JOIN_TYPE_INNER,
-                                new AST\JoinAssociationPathExpression($aliasIdentificationVariable, $field),
-                                $aliasIdentificationVariable . '.' . $field,
-                                false
-                            ),
-                            null
-                        );
-                        
-                        $AST->fromClause->identificationVariableDeclarations[0]->joinVariableDeclarations[] = $joinVariableDeclaration;
-
-                        $this->_queryComponents[$aliasIdentificationVariable . '.' . $field] = $joinQueryComponent;
-                    }
-
-                    $aliasIdentificationVariable .= '.' . $field;
-
-                    if ($assoc->isOneToOne()) {
-                        $fieldType = AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
-                    } else {
-                        $fieldType = AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION;
-                    }
+                    $fieldType = AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION;
                 }
-
-                ++$curIndex;
             }
 
             // Validate if PathExpression is one of the expected types
@@ -683,7 +623,7 @@ class Parser
 
                 $this->semanticalError($semanticalError, $deferredItem['token']);
             }
-
+            
             // We need to force the type in PathExpression
             $pathExpression->type = $fieldType;
         }
@@ -891,11 +831,11 @@ class Parser
     public function JoinAssociationPathExpression()
     {
         $token = $this->_lexer->lookahead;
-
         $identVariable = $this->IdentificationVariable();
+
         $this->match(Lexer::T_DOT);
         $this->match(Lexer::T_IDENTIFIER);
-        //$this->match($this->_lexer->lookahead['type']);
+
         $field = $this->_lexer->token['value'];
 
         // Validate association field
@@ -913,7 +853,7 @@ class Parser
      * Parses an arbitrary path expression and defers semantical validation
      * based on expected types.
      *
-     * PathExpression ::= IdentificationVariable {"." identifier}* "." identifier
+     * PathExpression ::= IdentificationVariable "." identifier
      *
      * @param integer $expectedTypes
      * @return \Doctrine\ORM\Query\AST\PathExpression
@@ -922,17 +862,17 @@ class Parser
     {
         $token = $this->_lexer->lookahead;
         $identVariable = $this->IdentificationVariable();
-        $parts = array();
+        $field = null;
 
-        while ($this->_lexer->isNextToken(Lexer::T_DOT)) {
+        if ($this->_lexer->isNextToken(Lexer::T_DOT)) {
             $this->match(Lexer::T_DOT);
             $this->match(Lexer::T_IDENTIFIER);
 
-            $parts[] = $this->_lexer->token['value'];
+            $field = $this->_lexer->token['value'];
         }
-
+        
         // Creating AST node
-        $pathExpr = new AST\PathExpression($expectedTypes, $identVariable, $parts);
+        $pathExpr = new AST\PathExpression($expectedTypes, $identVariable, $field);
 
         // Defer PathExpression validation if requested to be defered
         $this->_deferredPathExpressions[] = array(
@@ -971,7 +911,7 @@ class Parser
     }
 
     /**
-     * StateFieldPathExpression ::= SimpleStateFieldPathExpression | SimpleStateFieldAssociationPathExpression
+     * StateFieldPathExpression ::= IdentificationVariable "." StateField
      *
      * @return \Doctrine\ORM\Query\AST\PathExpression
      */
@@ -981,7 +921,7 @@ class Parser
     }
 
     /**
-     * SingleValuedAssociationPathExpression ::= IdentificationVariable "." {SingleValuedAssociationField "."}* SingleValuedAssociationField
+     * SingleValuedAssociationPathExpression ::= IdentificationVariable "." SingleValuedAssociationField
      *
      * @return \Doctrine\ORM\Query\AST\PathExpression
      */
@@ -991,33 +931,13 @@ class Parser
     }
 
     /**
-     * CollectionValuedPathExpression ::= IdentificationVariable "." {SingleValuedAssociationField "."}* CollectionValuedAssociationField
+     * CollectionValuedPathExpression ::= IdentificationVariable "." CollectionValuedAssociationField
      *
      * @return \Doctrine\ORM\Query\AST\PathExpression
      */
     public function CollectionValuedPathExpression()
     {
         return $this->PathExpression(AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION);
-    }
-
-    /**
-     * SimpleStateFieldPathExpression ::= IdentificationVariable "." StateField
-     *
-     * @return \Doctrine\ORM\Query\AST\PathExpression
-     */
-    public function SimpleStateFieldPathExpression()
-    {
-        $pathExpression = $this->PathExpression(AST\PathExpression::TYPE_STATE_FIELD);
-        $parts = $pathExpression->parts;
-
-        if (count($parts) > 1) {
-            $this->semanticalError(
-                "Invalid SimpleStateFieldPathExpression. " .
-                "Expected state field, got association '{$parts[0]}'."
-            );
-        }
-
-        return $pathExpression;
     }
 
     /**
@@ -1292,7 +1212,9 @@ class Parser
     public function UpdateItem()
     {
         $pathExpr = $this->PathExpression(AST\PathExpression::TYPE_STATE_FIELD | AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION);
+
         $this->match(Lexer::T_EQUALS);
+
         $updateItem = new AST\UpdateItem($pathExpr, $this->NewValue());
 
         return $updateItem;
@@ -1308,7 +1230,7 @@ class Parser
         // We need to check if we are in a IdentificationVariable or SingleValuedPathExpression
         $glimpse = $this->_lexer->glimpse();
 
-        if ($glimpse['value'] != '.') {
+        if ($glimpse['type'] != Lexer::T_DOT) {
             $token = $this->_lexer->lookahead;
             $identVariable = $this->IdentificationVariable();
 
@@ -1333,7 +1255,7 @@ class Parser
         // We need to check if we are in a ResultVariable or StateFieldPathExpression
         $glimpse = $this->_lexer->glimpse();
 
-        if ($glimpse['value'] != '.') {
+        if ($glimpse['type'] != Lexer::T_DOT) {
             $token = $this->_lexer->lookahead;
             $expr = $this->ResultVariable();
         } else {
@@ -1409,9 +1331,11 @@ class Parser
      */
     public function SubselectIdentificationVariableDeclaration()
     {
-        $peek = $this->_lexer->glimpse();
+        $glimpse = $this->_lexer->glimpse();
 
-        if ($peek['value'] == '.') {
+        /* NOT YET IMPLEMENTED!
+
+        if ($glimpse['type'] == Lexer::T_DOT) {
             $subselectIdVarDecl = new AST\SubselectIdentificationVariableDeclaration();
             $subselectIdVarDecl->associationPathExpression = $this->AssociationPathExpression();
             $this->match(Lexer::T_AS);
@@ -1419,6 +1343,7 @@ class Parser
 
             return $subselectIdVarDecl;
         }
+        */
 
         return $this->IdentificationVariableDeclaration();
     }
@@ -1486,11 +1411,13 @@ class Parser
         $this->match(Lexer::T_OPEN_CURLY_BRACE);
         $this->match(Lexer::T_IDENTIFIER);
         $partialFieldSet[] = $this->_lexer->token['value'];
+
         while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
             $this->match(Lexer::T_COMMA);
             $this->match(Lexer::T_IDENTIFIER);
             $partialFieldSet[] = $this->_lexer->token['value'];
         }
+        
         $this->match(Lexer::T_CLOSE_CURLY_BRACE);
 
         $partialObjectExpression = new AST\PartialObjectExpression($identificationVariable, $partialFieldSet);
@@ -1577,7 +1504,7 @@ class Parser
     }
 
     /**
-     * IndexBy ::= "INDEX" "BY" SimpleStateFieldPathExpression
+     * IndexBy ::= "INDEX" "BY" StateFieldPathExpression
      *
      * @return Doctrine\ORM\Query\AST\IndexBy
      */
@@ -1585,13 +1512,12 @@ class Parser
     {
         $this->match(Lexer::T_INDEX);
         $this->match(Lexer::T_BY);
-        $pathExp = $this->SimpleStateFieldPathExpression();
+        $pathExpr = $this->StateFieldPathExpression();
 
         // Add the INDEX BY info to the query component
-        $parts = $pathExp->parts;
-        $this->_queryComponents[$pathExp->identificationVariable]['map'] = $parts[0];
+        $this->_queryComponents[$pathExpr->identificationVariable]['map'] = $pathExpr->field;
 
-        return new AST\IndexBy($pathExp);
+        return new AST\IndexBy($pathExpr);
     }
 
     /**
@@ -1725,9 +1651,9 @@ class Parser
     {
         if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
             // SingleValuedPathExpression | IdentificationVariable
-            $peek = $this->_lexer->glimpse();
+            $glimpse = $this->_lexer->glimpse();
 
-            if ($peek['value'] == '.') {
+            if ($glimpse['type'] == Lexer::T_DOT) {
                 return new AST\SimpleSelectExpression($this->StateFieldPathExpression());
             }
 
@@ -2199,7 +2125,7 @@ class Parser
                     return $this->SingleValuedPathExpression();
                 }
 
-                return $this->SimpleStateFieldPathExpression();
+                return $this->StateFieldPathExpression();
 
             case Lexer::T_INPUT_PARAMETER:
                 return $this->InputParameter();

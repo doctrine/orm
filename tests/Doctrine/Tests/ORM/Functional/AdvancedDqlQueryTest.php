@@ -92,7 +92,7 @@ class AdvancedDqlQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testSelectSubselect()
     {
-        $dql = 'SELECT p, (SELECT c.brand FROM Doctrine\Tests\Models\Company\CompanyCar c WHERE p.car.id = c.id) brandName '.
+        $dql = 'SELECT p, (SELECT c.brand FROM Doctrine\Tests\Models\Company\CompanyCar c WHERE p.car = c) brandName '.
                'FROM Doctrine\Tests\Models\Company\CompanyManager p';
         $result = $this->_em->createQuery($dql)->getArrayResult();
 
