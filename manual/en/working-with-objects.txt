@@ -297,11 +297,22 @@ relations of the `User`:
         }
     }
 
+Interaction would then look like the following code parts, `$em` here is an instance of the EntityManager:
+
+    $user = $em->find('User', $userId);
+
     // unidirectional many to many
+    $comment = $em->find('Comment', $readCommentId);
     $user->getReadComments()->add($comment);
 
+    $em->flush();
+
     // unidirectional many to one
+    $myFirstComment = new Comment();
     $user->setFirstComment($myFirstComment);
+
+    $em->persist($myFirstComment);
+    $em->flush();
 
 In the case of bi-directional associations you have to update the fields on both sides:
 
@@ -335,10 +346,16 @@ In the case of bi-directional associations you have to update the fields on both
     // Many-to-Many
     $user->getFavorites()->add($favoriteComment);
     $favoriteComment->getUserFavorites()->add($user);
+
+    $em->flush();
     
     // Many-To-One / One-To-Many Bidirectional
+    $newComment = new Comment();
     $user->getAuthoredComments()->add($newComment);
     $newComment->setAuthor($user);
+
+    $em->persist();
+    $m->flush();
 
 
 Notice how always both sides of the bidirectional association are updated. The previous unidirectional associations were simpler to handle.
@@ -359,6 +376,8 @@ to do so, by key and by element. Here are some examples:
     // Remove by Key
     $user->getComments()->removeElement($ithComment);
     $comment->setAuthor(null);
+
+You need to call `$em->flush()` to make persist these changes in the database permanently.
 
 Notice how both sides of the bidirectional association are always updated. Unidirectional associations are consequently
 simpler to handle. Also note that if you type-hint your methods, i.e. `setAddress(Address $address)`, then PHP does only
