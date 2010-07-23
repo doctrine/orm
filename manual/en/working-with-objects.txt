@@ -448,14 +448,14 @@ and encapsulating all the details inside the classes can be challenging.
 >
 > If you want to make sure that your collections are perfectly encapsulated you should not return
 > them from a `getCollectionName()` method directly, but call `$collection->toArray()`. This way a client programmer
-> for the entity cannot circumvent the logic you implement on your entity for association management. Example:
->
->       [php]
->       class User {
->           public function getReadComments() {
->               return $this->commentsRead->toArray();
->           }
->       }
+> for the entity cannot circumvent the logic you implement on your entity for association management. For example:
+
+    [php]
+    class User {
+        public function getReadComments() {
+            return $this->commentsRead->toArray();
+        }
+    }
 
 There is no single, best way for association management. It greatly depends on the requirements of your concrete
 domain model as well as your preferences.
