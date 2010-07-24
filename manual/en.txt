@@ -5,6 +5,7 @@
 + Association Mapping
 + Inheritance Mapping
 + Working with objects
++ Working with associations
 + Transactions and Concurrency
 + Events
 + Batch processing

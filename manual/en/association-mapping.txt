@@ -57,7 +57,9 @@ In all the examples of many-valued associations in this manual we will make use 
 
 ++ Mapping Defaults
 
-The @JoinColumn and @JoinTable definitions are usually optional and have sensible default values. The defaults for a join column in a one-to-one/many-to-one association is as follows:
+Before we introduce all the association mappings in detailyou should note that the @JoinColumn and @JoinTable
+definitions are usually optional and have sensible default values.
+The defaults for a join column in a one-to-one/many-to-one association is as follows:
 
     name: "<fieldname>_id"
     referencedColumnName: "id"
@@ -573,7 +575,7 @@ Here is a similar many-to-many relationship as above except this one is bidirect
 
 The MySQL schema is exactly the same as for the Many-To-Many uni-directional case above.
 
-+++ Picking the Owning and Inverse Side
++++ Picking Owning and Inverse Side
 
 For Many-To-Many associations you can chose which entity is the owning and which the inverse side. There is
 a very simple semantic rule to decide which side is more suitable to be the owning side from a developers perspective.

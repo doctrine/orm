@@ -290,3 +290,7 @@ but we wanted to introduce you to DQL at this point. Can you **find** the easier
 > `doctrine orm:schema-tool --create`.
 
 6) Explore Doctrine 2!
+
+See the following links if you want to start with more complex tutorials rather than reading the manual:
+
+* Doctrine2 Cookbook: [Getting Started XML Edition](http://www.doctrine-project.org/projects/orm/2.0/docs/cookbook/getting-started-xml-edition/en)
