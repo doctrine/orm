@@ -10,7 +10,7 @@ Changes to associations in your code are not synchronized to the database direct
 To describe all the concepts of working with associations we introduce a specific set of example entities that show
 all the different flavors of association management in Doctrine.
 
-+++ Association Example Entities
+++ Association Example Entities
 
 We will use a simple comment system with Users and Comments as entities to show examples of association management.
 See the PHP docblocks of each association in the following example for information about its type and if its the owning or inverse side.
