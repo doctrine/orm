@@ -1,5 +1,3 @@
-++ Associations
-
 Associations between entities are represented just like in regular object-oriented PHP, with references to other objects
 or collections of objects. When it comes to persistence, it is important to understand three main things:
 
@@ -9,10 +7,13 @@ or collections of objects. When it comes to persistence, it is important to unde
 
 Changes to associations in your code are not synchronized to the database directly, but upon calling `EntityManager#flush()`.
 
-+++ Example: Entities with Associations
+To describe all the concepts of working with associations we introduce a specific set of example entities that show
+all the different flavors of association management in Doctrine.
+
++++ Association Example Entities
 
 We will use a simple comment system with Users and Comments as entities to show examples of association management.
-See the docblocks of each association in the following example for information about its type and if its the owning or inverse side.
+See the PHP docblocks of each association in the following example for information about its type and if its the owning or inverse side.
 
     [php]
     /** @Entity */
@@ -124,8 +125,9 @@ relations of the `User`:
         }
     }
 
-Interaction would then look like the following code parts, `$em` here is an instance of the EntityManager:
+The interaction code would then look like in the following snippet (`$em` here is an instance of the EntityManager):
 
+    [php]
     $user = $em->find('User', $userId);
 
     // unidirectional many to many
