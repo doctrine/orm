@@ -609,7 +609,7 @@ class UnitOfWork implements PropertyChangedListener
             $idValue = $idGen->generate($this->em, $entity);
             if ( ! $idGen instanceof \Doctrine\ORM\Id\AssignedGenerator) {
                 $this->entityIdentifiers[$oid] = array($class->identifier[0] => $idValue);
-                $class->setIdentifierValues($entity, $idValue);
+                $class->setIdentifierValues($entity, $this->entityIdentifiers[$oid]);
             } else {
                 $this->entityIdentifiers[$oid] = $idValue;
             }
