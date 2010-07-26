@@ -760,7 +760,7 @@ class SqlWalker implements TreeWalker
             $joinTableAlias = $this->getSqlTableAlias($joinTable['name'], $joinedDqlAlias);
             $sql .= $assoc->getQuotedJoinTableName($this->_platform) . ' ' . $joinTableAlias . ' ON ';
 
-            $first = true;
+			$first = true;
             if ($relation->isOwningSide) {
                 foreach ($assoc->relationToSourceKeyColumns as $relationColumn => $sourceColumn) {
                     if ( ! $first) $sql .= ' AND '; else $first = false;
@@ -773,7 +773,7 @@ class SqlWalker implements TreeWalker
                 foreach ($assoc->relationToTargetKeyColumns as $relationColumn => $targetColumn) {
                     if ( ! $first) $sql .= ' AND '; else $first = false;
 
-                    $sql .= $sourceTableAlias . '.' . $targetClass->getQuotedColumnName($targetClass->fieldNames[$targetColumn], $this->_platform)
+                    $sql .= $sourceTableAlias . '.' . $sourceClass->getQuotedColumnName($sourceClass->fieldNames[$targetColumn], $this->_platform)
                           . ' = '
                           . $joinTableAlias . '.' . $relationColumn;
                 }
@@ -784,7 +784,7 @@ class SqlWalker implements TreeWalker
             	? ' LEFT JOIN ' : ' INNER JOIN ';
             $sql .= $targetTableName . ' ' . $targetTableAlias . ' ON ';
 
-            $first = true;
+			$first = true;
             if ($relation->isOwningSide) {
                 foreach ($assoc->relationToTargetKeyColumns as $relationColumn => $targetColumn) {
                     if ( ! $first) $sql .= ' AND '; else $first = false;
@@ -797,7 +797,7 @@ class SqlWalker implements TreeWalker
                 foreach ($assoc->relationToSourceKeyColumns as $relationColumn => $sourceColumn) {
                     if ( ! $first) $sql .= ' AND '; else $first = false;
 
-                    $sql .= $targetTableAlias . '.' . $sourceClass->getQuotedColumnName($sourceClass->fieldNames[$sourceColumn], $this->_platform)
+                    $sql .= $targetTableAlias . '.' . $targetClass->getQuotedColumnName($targetClass->fieldNames[$sourceColumn], $this->_platform)
                           . ' = '
                           . $joinTableAlias . '.' . $relationColumn;
                 }
