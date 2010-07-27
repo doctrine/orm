@@ -152,12 +152,15 @@ class Lexer extends \Doctrine\Common\Lexer
             return self::T_STRING;
         } else if (ctype_alpha($value[0]) || $value[0] === '_') {
             $name = 'Doctrine\ORM\Query\Lexer::T_' . strtoupper($value);
+
             if (defined($name)) {
                 $type = constant($name);
+                
                 if ($type > 100) {
                     return $type;
                 }
             }
+
             return self::T_IDENTIFIER;
         } else if ($value[0] === '?' || $value[0] === ':') {
             return self::T_INPUT_PARAMETER;
@@ -172,7 +175,7 @@ class Lexer extends \Doctrine\Common\Lexer
                 case '<': return self::T_LOWER_THAN;
                 case '+': return self::T_PLUS;
                 case '-': return self::T_MINUS;
-                case '*': return self::Ts_MULTIPLY;
+                case '*': return self::T_MULTIPLY;
                 case '/': return self::T_DIVIDE;
                 case '!': return self::T_NEGATE;
                 case '{': return self::T_OPEN_CURLY_BRACE;
