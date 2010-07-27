@@ -151,7 +151,7 @@ class Lexer extends \Doctrine\Common\Lexer
             $value = str_replace("''", "'", substr($value, 1, strlen($value) - 2));
             return self::T_STRING;
         } else if (ctype_alpha($value[0]) || $value[0] === '_') {
-            $name = $this->getLexerClassName() . '::T_' . strtoupper($value);
+            $name = 'Doctrine\ORM\Query\Lexer::T_' . strtoupper($value);
             if (defined($name)) {
                 $type = constant($name);
                 if ($type > 100) {
@@ -172,7 +172,7 @@ class Lexer extends \Doctrine\Common\Lexer
                 case '<': return self::T_LOWER_THAN;
                 case '+': return self::T_PLUS;
                 case '-': return self::T_MINUS;
-                case '*': return self::T_MULTIPLY;
+                case '*': return self::Ts_MULTIPLY;
                 case '/': return self::T_DIVIDE;
                 case '!': return self::T_NEGATE;
                 case '{': return self::T_OPEN_CURLY_BRACE;
@@ -184,15 +184,5 @@ class Lexer extends \Doctrine\Common\Lexer
         }
 
         return $type;
-    }
-
-    /**
-     * Retrieve the class name (allows extensibility through Late Static Binding)
-     *
-     * @return string This class name
-     */
-    protected function getLexerClassName()
-    {
-        return __CLASS__;
     }
 }
