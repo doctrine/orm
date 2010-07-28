@@ -297,6 +297,11 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(2, count($data));
         $this->assertEquals('gblanco3', $data[0]->username);
         $this->assertEquals('gblanco4', $data[1]->username);
+
+        $data = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
+                  ->setFirstResult(3)
+                  ->setMaxResults(2)
+                  ->getScalarResult();
     }
 
     public function testSupportsQueriesWithEntityNamespaces()
