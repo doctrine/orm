@@ -736,4 +736,31 @@ class ArrayHydratorTest extends HydrationTestCase
             ++$rowNum;
         }
     }
+
+    /**
+     * @group DDC-644
+     */
+    public function testSkipUnknownColumns()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb',
+                'foo' => 'bar', // unknown!
+                ),
+        );
+
+        $stmt = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+
+        $result = $hydrator->hydrateAll($stmt, $rsm);
+
+        $this->assertEquals(1, count($result));
+    }
 }
