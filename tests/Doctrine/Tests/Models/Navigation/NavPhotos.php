@@ -25,7 +25,7 @@ class NavPhotos
     private $poi;
 
     /**
-     * @column(type="string")
+     * @column(type="string", name="file_name")
      */
     private $file;
 
