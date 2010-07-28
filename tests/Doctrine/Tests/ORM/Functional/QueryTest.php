@@ -267,6 +267,38 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
              ->getSingleScalarResult();
     }
 
+    public function testModifiedLimitQuery()
+    {
+        for ($i = 0; $i < 5; $i++) {
+            $user = new CmsUser;
+            $user->name = 'Guilherme' . $i;
+            $user->username = 'gblanco' . $i;
+            $user->status = 'developer';
+            $this->_em->persist($user);
+        }
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $data = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
+                  ->setFirstResult(1)
+                  ->setMaxResults(2)
+                  ->getResult();
+
+        $this->assertEquals(2, count($data));
+        $this->assertEquals('gblanco1', $data[0]->username);
+        $this->assertEquals('gblanco2', $data[1]->username);
+
+        $data = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
+                  ->setFirstResult(3)
+                  ->setMaxResults(2)
+                  ->getResult();
+
+        $this->assertEquals(2, count($data));
+        $this->assertEquals('gblanco3', $data[0]->username);
+        $this->assertEquals('gblanco4', $data[1]->username);
+    }
+
     public function testSupportsQueriesWithEntityNamespaces()
     {
         $this->_em->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
