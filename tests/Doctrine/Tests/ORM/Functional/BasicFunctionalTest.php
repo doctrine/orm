@@ -579,7 +579,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $address->user = null;
         $this->_em->flush();
 
-        $this->assertFalse($this->_em->getConnection()->fetchColumn("select 1 from cms_addresses where user_id = ".$user->id));
+        $this->assertNotEquals(1, $this->_em->getConnection()->fetchColumn("select 1 from cms_addresses where user_id = ".$user->id));
     }
 
     /**
