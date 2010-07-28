@@ -117,11 +117,12 @@ class SchemaTool
 
             $table = $schema->createTable($class->getQuotedTableName($this->_platform));
 
-            if ($class->isIdGeneratorIdentity()) {
+            // TODO: Remove
+            /**if ($class->isIdGeneratorIdentity()) {
                 $table->setIdGeneratorType(\Doctrine\DBAL\Schema\Table::ID_IDENTITY);
             } else if ($class->isIdGeneratorSequence()) {
                 $table->setIdGeneratorType(\Doctrine\DBAL\Schema\Table::ID_SEQUENCE);
-            }
+            }*/
 
             $columns = array(); // table columns
 
@@ -171,9 +172,10 @@ class SchemaTool
                     $columnName = $class->getQuotedColumnName($class->identifier[0], $this->_platform);
 
                     $pkColumns[] = $columnName;
-                    if ($table->isIdGeneratorIdentity()) {
+                    // TODO: REMOVE
+                    /*if ($table->isIdGeneratorIdentity()) {
                        $table->setIdGeneratorType(\Doctrine\DBAL\Schema\Table::ID_NONE);
-                    }
+                    }*/
 
                     // Add a FK constraint on the ID column
                     $table->addUnnamedForeignKeyConstraint(
@@ -320,6 +322,10 @@ class SchemaTool
 
         if (isset($mapping['columnDefinition'])) {
             $options['columnDefinition'] = $mapping['columnDefinition'];
+        }
+
+        if ($class->isIdGeneratorIdentity() && $class->getIdentifierFieldNames() == array($mapping['fieldName'])) {
+            $options['autoincrement'] = true;
         }
 
         if ($table->hasColumn($columnName)) {
