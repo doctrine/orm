@@ -768,37 +768,39 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals('Stephan', $this->_em->find(get_class($user), $userId)->name);
     }
-    
-    //DRAFT OF EXPECTED/DESIRED BEHAVIOR
-    /*public function testPersistentCollectionContainsDoesNeverInitialize()
+
+    public function testMergePersistsNewEntities()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
-        $user->username = 'gblanco';
-        $user->status = 'developer';
-        
-        $group = new CmsGroup;
-        $group->name = 'Developers';
-        
-        $user->addGroup($group);
-        
-        $this->_em->persist($user);
+        $user = new CmsUser();
+        $user->username = "beberlei";
+        $user->name = "Benjamin E.";
+        $user->status = 'active';
+
+        $managedUser = $this->_em->merge($user);
+        $this->assertEquals('beberlei', $managedUser->username);
+        $this->assertEquals('Benjamin E.', $managedUser->name);
+        $this->assertEquals('active', $managedUser->status);
+
+        $this->assertTrue($user !== $managedUser);
+        $this->assertTrue($this->_em->contains($managedUser));
+
         $this->_em->flush();
+        $userId = $managedUser->id;
         $this->_em->clear();
-        
-        $group = $this->_em->find(get_class($group), $group->getId());
-        
-        
-        
-        $user2 = new CmsUser;
-        $user2->id = $user->getId();
-        $this->assertFalse($group->getUsers()->contains($user2));
-        $this->assertFalse($group->getUsers()->isInitialized());
-        
-        $user2 = $this->_em->getReference(get_class($user), $user->getId());
-        $this->assertTrue($group->getUsers()->contains($user2));
-        $this->assertFalse($group->getUsers()->isInitialized());
-        
+
+        $this->assertTrue($this->_em->find(get_class($managedUser), $userId) instanceof CmsUser);
     }
-    */
+
+    public function testMergeThrowsExceptionIfEntityWithGeneratedIdentifierDoesNotExist()
+    {
+        $user = new CmsUser();
+        $user->username = "beberlei";
+        $user->name = "Benjamin E.";
+        $user->status = 'active';
+        $user->id = 42;
+        try {
+            $this->_em->merge($user);
+            $this->fail();
+        } catch (\Doctrine\ORM\EntityNotFoundException $enfe) {}
+    }
 }

@@ -1344,34 +1344,51 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function doMerge($entity, array &$visited, $prevManagedCopy = null, $assoc = null)
     {
-        $class = $this->em->getClassMetadata(get_class($entity));
-        $id = $class->getIdentifierValues($entity);
-
-        if ( ! $id) {
-            throw new InvalidArgumentException('New entity detected during merge.'
-                    . ' Persist the new entity before merging.');
+        $oid = spl_object_hash($entity);
+        if (isset($visited[$oid])) {
+            return; // Prevent infinite recursion
         }
 
-        // MANAGED entities are ignored by the merge operation
+        $class = $this->em->getClassMetadata(get_class($entity));
+
+        // First we assume DETACHED, although it can still be NEW but we can avoid
+        // an extra db-roundtrip this way. If it is DETACHED or NEW, we need to fetch
+        // it from the db anyway in order to merge.
+        // MANAGED entities are ignored by the merge operation.
         if ($this->getEntityState($entity, self::STATE_DETACHED) == self::STATE_MANAGED) {
             $managedCopy = $entity;
         } else {
             // Try to look the entity up in the identity map.
-            $managedCopy = $this->tryGetById($id, $class->rootEntityName);
-            if ($managedCopy) {
-                // We have the entity in-memory already, just make sure its not removed.
-                if ($this->getEntityState($managedCopy) == self::STATE_REMOVED) {
-                    throw new InvalidArgumentException('Removed entity detected during merge.'
-                            . ' Can not merge with a removed entity.');
-                }
-            } else {
-                // We need to fetch the managed copy in order to merge.
-                $managedCopy = $this->em->find($class->name, $id);
-            }
+            $id = $class->getIdentifierValues($entity);
 
-            if ($managedCopy === null) {
-                throw new InvalidArgumentException('New entity detected during merge.'
-                        . ' Persist the new entity before merging.');
+            // If there is no ID, it is actually NEW.
+            if ( ! $id) {
+                $managedCopy = $class->newInstance();
+                $this->persistNew($class, $managedCopy);
+            } else {
+                $managedCopy = $this->tryGetById($id, $class->rootEntityName);
+                if ($managedCopy) {
+                    // We have the entity in-memory already, just make sure its not removed.
+                    if ($this->getEntityState($managedCopy) == self::STATE_REMOVED) {
+                        throw new InvalidArgumentException('Removed entity detected during merge.'
+                                . ' Can not merge with a removed entity.');
+                    }
+                } else {
+                    // We need to fetch the managed copy in order to merge.
+                    $managedCopy = $this->em->find($class->name, $id);
+                }
+
+                if ($managedCopy === null) {
+                    // If the identifier is ASSIGNED, it is NEW, otherwise an error
+                    // since the managed entity was not found.
+                    if ($class->isIdentifierNatural()) {
+                        $managedCopy = $class->newInstance();
+                        $class->setIdentifierValues($managedCopy, $id);
+                        $this->persistNew($class, $managedCopy);
+                    } else {
+                        throw new EntityNotFoundException;
+                    }
+                }
             }
 
             if ($class->isVersioned) {
@@ -1388,17 +1405,20 @@ class UnitOfWork implements PropertyChangedListener
                 if ( ! isset($class->associationMappings[$name])) {
                     $prop->setValue($managedCopy, $prop->getValue($entity));
                 } else {
-                    // why $assoc2? See the method signature, there is $assoc already!
                     $assoc2 = $class->associationMappings[$name];
                     if ($assoc2->isOneToOne()) {
                         if ( ! $assoc2->isCascadeMerge) {
-                            $other = $class->reflFields[$name]->getValue($entity); //TODO: Just $prop->getValue($entity)?
+                            $other = $prop->getValue($entity);
                             if ($other !== null) {
-                                $targetClass = $this->em->getClassMetadata($assoc2->targetEntityName);
-                                $id = $targetClass->getIdentifierValues($other);
-                                $proxy = $this->em->getProxyFactory()->getProxy($assoc2->targetEntityName, $id);
-                                $prop->setValue($managedCopy, $proxy);
-                                $this->registerManaged($proxy, $id, array());
+                                if ($this->getEntityState($other, self::STATE_DETACHED) == self::STATE_MANAGED) {
+                                    $prop->setValue($managedCopy, $other);
+                                } else {
+                                    $targetClass = $this->em->getClassMetadata($assoc2->targetEntityName);
+                                    $id = $targetClass->getIdentifierValues($other);
+                                    $proxy = $this->em->getProxyFactory()->getProxy($assoc2->targetEntityName, $id);
+                                    $prop->setValue($managedCopy, $proxy);
+                                    $this->registerManaged($proxy, $id, array());
+                                }
                             }
                         }
                     } else {
@@ -1421,8 +1441,8 @@ class UnitOfWork implements PropertyChangedListener
                     //TODO: put changed fields in changeset...?
                 }
             }
-            if ($class->isChangeTrackingDeferredExplicit()) {
-                //TODO: Mark $managedCopy for dirty check...? ($this->scheduledForDirtyCheck)
+            if ( ! $class->isChangeTrackingDeferredImplicit()) {
+                $this->scheduleForDirtyCheck($entity);
             }
         }
 
