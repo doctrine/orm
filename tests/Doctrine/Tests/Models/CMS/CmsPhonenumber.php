@@ -13,7 +13,7 @@ class CmsPhonenumber
      */
     public $phonenumber;
     /**
-     * @ManyToOne(targetEntity="CmsUser", inversedBy="phonenumbers")
+     * @ManyToOne(targetEntity="CmsUser", inversedBy="phonenumbers", cascade={"merge"})
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;

@@ -1349,11 +1349,13 @@ class UnitOfWork implements PropertyChangedListener
             return; // Prevent infinite recursion
         }
 
+        $visited[$oid] = $entity; // mark visited
+
         $class = $this->em->getClassMetadata(get_class($entity));
 
         // First we assume DETACHED, although it can still be NEW but we can avoid
-        // an extra db-roundtrip this way. If it is DETACHED or NEW, we need to fetch
-        // it from the db anyway in order to merge.
+        // an extra db-roundtrip this way. If it is not MANAGED but has an identity,
+        // we need to fetch it from the db anyway in order to merge.
         // MANAGED entities are ignored by the merge operation.
         if ($this->getEntityState($entity, self::STATE_DETACHED) == self::STATE_MANAGED) {
             $managedCopy = $entity;
@@ -1407,23 +1409,27 @@ class UnitOfWork implements PropertyChangedListener
                 } else {
                     $assoc2 = $class->associationMappings[$name];
                     if ($assoc2->isOneToOne()) {
-                        if ( ! $assoc2->isCascadeMerge) {
-                            $other = $prop->getValue($entity);
-                            if ($other !== null) {
-                                if ($this->getEntityState($other, self::STATE_DETACHED) == self::STATE_MANAGED) {
-                                    $prop->setValue($managedCopy, $other);
-                                } else {
-                                    $targetClass = $this->em->getClassMetadata($assoc2->targetEntityName);
-                                    $id = $targetClass->getIdentifierValues($other);
-                                    $proxy = $this->em->getProxyFactory()->getProxy($assoc2->targetEntityName, $id);
-                                    $prop->setValue($managedCopy, $proxy);
-                                    $this->registerManaged($proxy, $id, array());
-                                }
+                        $other = $prop->getValue($entity);
+                        if ($other === null) {
+                            $prop->setValue($managedCopy, null);
+                        } else if ($other instanceof Proxy && !$other->__isInitialized__) {
+                            // do not merge fields marked lazy that have not been fetched.
+                            continue;
+                        } else if ( ! $assoc2->isCascadeMerge) {
+                            if ($this->getEntityState($other, self::STATE_DETACHED) == self::STATE_MANAGED) {
+                                $prop->setValue($managedCopy, $other);
+                            } else {
+                                $targetClass = $this->em->getClassMetadata($assoc2->targetEntityName);
+                                $id = $targetClass->getIdentifierValues($other);
+                                $proxy = $this->em->getProxyFactory()->getProxy($assoc2->targetEntityName, $id);
+                                $prop->setValue($managedCopy, $proxy);
+                                $this->registerManaged($proxy, $id, array());
                             }
                         }
                     } else {
                         $mergeCol = $prop->getValue($entity);
                         if ($mergeCol instanceof PersistentCollection && !$mergeCol->isInitialized()) {
+                            // do not merge fields marked lazy that have not been fetched.
                             // keep the lazy persistent collection of the managed copy.
                             continue;
                         }
@@ -1451,7 +1457,6 @@ class UnitOfWork implements PropertyChangedListener
             $prevClass = $this->em->getClassMetadata(get_class($prevManagedCopy));
             if ($assoc->isOneToOne()) {
                 $prevClass->reflFields[$assocField]->setValue($prevManagedCopy, $managedCopy);
-                //TODO: What about back-reference if bidirectional?
             } else {
                 $prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->unwrap()->add($managedCopy);
                 if ($assoc->isOneToMany()) {
@@ -1459,6 +1464,9 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
         }
+
+        // Mark the managed copy visited as well
+        $visited[spl_object_hash($managedCopy)] = true;
 
         $this->cascadeMerge($entity, $managedCopy, $visited);
 

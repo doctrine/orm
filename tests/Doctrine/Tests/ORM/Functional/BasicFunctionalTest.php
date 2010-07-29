@@ -788,7 +788,8 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $userId = $managedUser->id;
         $this->_em->clear();
 
-        $this->assertTrue($this->_em->find(get_class($managedUser), $userId) instanceof CmsUser);
+        $user2 = $this->_em->find(get_class($managedUser), $userId);
+        $this->assertTrue($user2 instanceof CmsUser);
     }
 
     public function testMergeThrowsExceptionIfEntityWithGeneratedIdentifierDoesNotExist()
@@ -802,5 +803,35 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->_em->merge($user);
             $this->fail();
         } catch (\Doctrine\ORM\EntityNotFoundException $enfe) {}
+    }
+
+    /**
+     * @group DDC-634
+     */
+    public function testOneToOneMergeSetNull()
+    {
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $user = new CmsUser();
+        $user->username = "beberlei";
+        $user->name = "Benjamin E.";
+        $user->status = 'active';
+
+        $ph = new CmsPhonenumber();
+        $ph->phonenumber = "12345";
+        $user->addPhonenumber($ph);
+
+        $this->_em->persist($user);
+        $this->_em->persist($ph);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        $ph->user = null;
+        $managedPh = $this->_em->merge($ph);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $this->assertNull($this->_em->find(get_class($ph), $ph->phonenumber)->getUser());
     }
 }

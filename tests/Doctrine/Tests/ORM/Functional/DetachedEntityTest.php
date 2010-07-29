@@ -44,9 +44,10 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($this->_em->contains($user2));
         $this->assertEquals('Roman B.', $user2->name);
     }
-    
+
     public function testSerializeUnserializeModifyMerge()
     {
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $user = new CmsUser;
         $user->name = 'Guilherme';
         $user->username = 'gblanco';
@@ -59,6 +60,7 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
         $this->assertTrue($this->_em->contains($user));
+        $this->assertTrue($user->phonenumbers->isInitialized());
         
         $serialized = serialize($user);
         $this->_em->clear();
@@ -103,42 +105,36 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         } catch (\Exception $expected) {}
     }
 
-    /**
-     * @group DDC-518
-     */
-    /*public function testMergeDetachedEntityWithNewlyPersistentOneToOneAssoc()
-    {
+    public function testUninitializedLazyAssociationsAreIgnoredOnMerge() {
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        // Create a detached user
         $user = new CmsUser;
-        $user->name = 'Roman';
-        $user->username = 'romanb';
-        $user->status = 'dev';
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        $address = new CmsAddress;
+        $address->city = 'Berlin';
+        $address->country = 'Germany';
+        $address->street = 'Sesamestreet';
+        $address->zip = 12345;
+        $address->setUser($user);
+        $this->_em->persist($address);
         $this->_em->persist($user);
+
         $this->_em->flush();
         $this->_em->clear();
 
-        //$address = new CmsAddress;
-        //$address->city = 'Berlin';
-        //$address->country = 'Germany';
-        //$address->street = 'Sesamestreet';
-        //$address->zip = 12345;
-        //$address->setUser($user);
+        $address2 = $this->_em->find(get_class($address), $address->id);
+        $this->assertTrue($address2->user instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertFalse($address2->user->__isInitialized__);
+        $detachedAddress2 = unserialize(serialize($address2));
+        $this->assertTrue($detachedAddress2->user instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertFalse($detachedAddress2->user->__isInitialized__);
 
-        $phone = new CmsPhonenumber();
-        $phone->phonenumber = '12345';
-
-        $user2 = $this->_em->merge($user);
-        
-        $user2->addPhonenumber($phone);
-        $this->_em->persist($phone);
-
-        //$address->setUser($user2);
-        //$this->_em->persist($address);
-        
-        $this->_em->flush();
-
-        $this->assertEquals(1,1);
-    }*/
+        $managedAddress2 = $this->_em->merge($detachedAddress2);
+        $this->assertTrue($managedAddress2->user instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertFalse($managedAddress2->user === $detachedAddress2->user);
+        $this->assertFalse($managedAddress2->user->__isInitialized__);
+    }
 }
 

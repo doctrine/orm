@@ -221,9 +221,9 @@ class ProxyFactory
         $sleepImpl = '';
 
         if ($class->reflClass->hasMethod('__sleep')) {
-            $sleepImpl .= 'return parent::__sleep();';
+            $sleepImpl .= "return array_merge(array('__isInitialized__'), parent::__sleep());";
         } else {
-            $sleepImpl .= 'return array(';
+            $sleepImpl .= "return array('__isInitialized__', ";
             $first = true;
 
             foreach ($class->getReflectionProperties() as $name => $prop) {
@@ -268,8 +268,7 @@ class <proxyClassName> extends \<className> implements \Doctrine\ORM\Proxy\Proxy
             if ($this->_entityPersister->load($this->_identifier, $this) === null) {
                 throw new \Doctrine\ORM\EntityNotFoundException();
             }
-            unset($this->_entityPersister);
-            unset($this->_identifier);
+            unset($this->_entityPersister, $this->_identifier);
         }
     }
 
@@ -277,9 +276,6 @@ class <proxyClassName> extends \<className> implements \Doctrine\ORM\Proxy\Proxy
 
     public function __sleep()
     {
-        if (!$this->__isInitialized__) {
-            throw new \RuntimeException("Not fully loaded proxy can not be serialized.");
-        }
         <sleepImpl>
     }
 }';
