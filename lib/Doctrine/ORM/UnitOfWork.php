@@ -1444,10 +1444,11 @@ class UnitOfWork implements PropertyChangedListener
                     }
                 }
                 if ($class->isChangeTrackingNotify()) {
-                    //TODO: put changed fields in changeset...?
+                    // Just treat all properties as changed, there is no other choice.
+                    $this->propertyChanged($managedCopy, $name, null, $prop->getValue($managedCopy));
                 }
             }
-            if ( ! $class->isChangeTrackingDeferredImplicit()) {
+            if ($class->isChangeTrackingDeferredExplicit()) {
                 $this->scheduleForDirtyCheck($entity);
             }
         }
