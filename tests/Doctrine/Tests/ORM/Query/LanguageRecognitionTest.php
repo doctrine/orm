@@ -134,6 +134,21 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN (1)');
     }
 
+    public function testInstanceOfExpressionSupportedInWherePart()
+    {
+        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF Doctrine\Tests\Models\Company\CompanyEmployee');
+    }
+
+    public function testInstanceOfExpressionWithInputParamSupportedInWherePart()
+    {
+        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF ?1');
+    }
+
+    public function testNotInstanceOfExpressionSupportedInWherePart()
+    {
+        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u NOT INSTANCE OF ?1');
+    }
+    
     public function testExistsExpressionSupportedInWherePart()
     {
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE EXISTS (SELECT p.phonenumber FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234)');

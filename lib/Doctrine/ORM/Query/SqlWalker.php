@@ -436,9 +436,10 @@ class SqlWalker implements TreeWalker
      * Walks down an IdentificationVariable (no AST node associated), thereby generating the SQL.
      *
      * @param string $identificationVariable
+     * @param string $fieldName
      * @return string The SQL.
      */
-    public function walkIdentificationVariable($identificationVariable, $fieldName)
+    public function walkIdentificationVariable($identificationVariable, $fieldName = null)
     {
         $class = $this->_queryComponents[$identificationVariable]['metadata'];
 
@@ -1510,6 +1511,66 @@ class SqlWalker implements TreeWalker
         return $sql;
     }
 
+    /**
+     * Walks down an InstanceOfExpression AST node, thereby generating the appropriate SQL.
+     *
+     * @param InstanceOfExpression
+     * @return string The SQL.
+     */
+    function walkInstanceOfExpression($instanceOfExpr)
+    {
+        $sql = '';
+
+        $dqlAlias = $instanceOfExpr->identificationVariable;
+        $discrClass = $class = $this->_queryComponents[$dqlAlias]['metadata'];
+        $fieldName = null;
+
+        if ($class->discriminatorColumn && isset($class->discriminatorColumn['inherited'])) {
+            $discrClass = $this->_em->getClassMetadata($class->discriminatorColumn['inherited']);
+        }
+
+        if ($this->_useSqlTableAliases) {
+            $sql .= $this->getSQLTableAlias($discrClass->table['name'], $dqlAlias) . '.';
+        }
+
+        $sql .= $class->discriminatorColumn['name'] . ($instanceOfExpr->not ? ' != ' : ' = ');
+
+        if ($instanceOfExpr->value instanceof AST\InputParameter) {
+            // We need to modify the parameter value to be its correspondent mapped value
+            $dqlParamKey = $instanceOfExpr->value->name;
+            $paramValue  = $this->_query->getParameter($dqlParamKey);
+            
+            if ( ! ($paramValue instanceof \Doctrine\ORM\Mapping\ClassMetadata)) {
+                throw QueryException::invalidParameterType('ClassMetadata', get_class($paramValue));
+            }
+            
+            $entityClassName = $paramValue->name;
+        } else {
+            $entityClassName = $instanceOfExpr->value;
+        }
+
+        $conn = $this->_em->getConnection();
+        
+        if ($entityClassName == $class->name) {
+            $sql .= $conn->quote($class->discriminatorValue);
+        } else {
+            foreach ($class->subClasses as $subclassName) {
+                if ($entityClassName === $subclassName) {
+                    $sql .= $conn->quote($this->_em->getClassMetadata($subclassName)->discriminatorValue);
+                    break;
+                }
+            }
+        }
+
+        return $sql;
+    }
+
+    /**
+     * Walks down an InParameter AST node, thereby generating the appropriate SQL.
+     *
+     * @param InParameter
+     * @return string The SQL.
+     */
     public function walkInParameter($inParam)
     {
         return $inParam instanceof AST\InputParameter ?

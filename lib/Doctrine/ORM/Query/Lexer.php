@@ -75,33 +75,34 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_IN                  = 121;
     const T_INDEX               = 122;
     const T_INNER               = 123;
-    const T_IS                  = 124;
-    const T_JOIN                = 125;
-    const T_LEADING             = 126;
-    const T_LEFT                = 127;
-    const T_LIKE                = 128;
-    const T_MAX                 = 129;
-    const T_MEMBER              = 130;
-    const T_MIN                 = 131;
-    const T_NOT                 = 132;
-    const T_NULL                = 133;
-    const T_OF                  = 134;
-    const T_OR                  = 135;
-    const T_ORDER               = 136;
-    const T_OUTER               = 137;
-    const T_SELECT              = 138;
-    const T_SET                 = 139;
-    const T_SIZE                = 140;
-    const T_SOME                = 141;
-    const T_SUM                 = 142;
-    const T_TRAILING            = 143;
-    const T_TRUE                = 144;
-    const T_UPDATE              = 145;
-    const T_WHERE               = 146;
-    const T_WITH                = 147;
-    const T_PARTIAL             = 148;
-    const T_MOD                 = 149;
-
+    const T_INSTANCE            = 124;
+    const T_IS                  = 125;
+    const T_JOIN                = 126;
+    const T_LEADING             = 127;
+    const T_LEFT                = 128;
+    const T_LIKE                = 129;
+    const T_MAX                 = 130;
+    const T_MEMBER              = 131;
+    const T_MIN                 = 132;
+    const T_NOT                 = 133;
+    const T_NULL                = 134;
+    const T_OF                  = 135;
+    const T_OR                  = 136;
+    const T_ORDER               = 137;
+    const T_OUTER               = 138;
+    const T_SELECT              = 139;
+    const T_SET                 = 140;
+    const T_SIZE                = 141;
+    const T_SOME                = 142;
+    const T_SUM                 = 143;
+    const T_TRAILING            = 144;
+    const T_TRUE                = 145;
+    const T_UPDATE              = 146;
+    const T_WHERE               = 147;
+    const T_WITH                = 148;
+    const T_PARTIAL             = 149;
+    const T_MOD                 = 150;
+    
     /**
      * Creates a new query scanner object.
      *

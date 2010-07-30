@@ -47,6 +47,11 @@ class QueryException extends \Doctrine\ORM\ORMException
         return new self('[Semantical Error] ' . $message);
     }
 
+    public static function invalidParameterType($expected, $received)
+    {
+        return new self('Invalid parameter type, ' . $received . ' given, but ' . $expected . ' expected.');
+    }
+
     public static function invalidParameterPosition($pos)
     {
         return new self('Invalid parameter position: ' . $pos);

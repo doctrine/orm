@@ -325,6 +325,14 @@ abstract class TreeWalkerAdapter implements TreeWalker
     public function walkInExpression($inExpr) {}
 
     /**
+     * Walks down an InstanceOfExpression AST node, thereby generating the appropriate SQL.
+     *
+     * @param InstanceOfExpression
+     * @return string The SQL.
+     */
+    function walkInstanceOfExpression($instanceOfExpr) {}
+
+    /**
      * Walks down a literal that represents an AST node, thereby generating the appropriate SQL.
      *
      * @param mixed

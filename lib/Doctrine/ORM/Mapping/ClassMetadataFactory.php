@@ -240,13 +240,13 @@ class ClassMetadataFactory
 
             if ($parent) {
                 $class->setInheritanceType($parent->inheritanceType);
-                $class->setDiscriminatorColumn($parent->discriminatorColumn);
                 $class->setIdGeneratorType($parent->generatorType);
                 $this->_addInheritedFields($class, $parent);
                 $this->_addInheritedRelations($class, $parent);
                 $class->setIdentifier($parent->identifier);
                 $class->setVersioned($parent->isVersioned);
                 $class->setVersionField($parent->versionField);
+                $this->_addInheritedDiscriminatorColumn($class, $parent);
                 $class->setDiscriminatorMap($parent->discriminatorMap);
                 $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
             }
@@ -312,6 +312,29 @@ class ClassMetadataFactory
     protected function _newClassMetadataInstance($className)
     {
         return new ClassMetadata($className);
+    }
+
+    /**
+     * Adds inherited discriminator column to the subclass mapping.
+     *
+     * @param Doctrine\ORM\Mapping\ClassMetadata $subClass
+     * @param Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     */
+    private function _addInheritedDiscriminatorColumn(ClassMetadata $subClass, ClassMetadata $parentClass)
+    {
+        if ($parentClass->discriminatorColumn) {
+            $columnDef = $parentClass->discriminatorColumn;
+
+            if ( ! isset($columnDef['inherited'])) {
+                $columnDef['inherited'] = $parentClass->name;
+            }
+
+            if ( ! isset($columnDef['declared'])) {
+                $columnDef['declared'] = $parentClass->name;
+            }
+
+            $subClass->setDiscriminatorColumn($columnDef);
+        }
     }
     
     /**
