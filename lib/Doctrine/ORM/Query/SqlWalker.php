@@ -19,7 +19,8 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\ORM\Query,
+use Doctrine\DBAL\LockMode,
+    Doctrine\ORM\Query,
     Doctrine\ORM\Query\QueryException;
 
 /**
@@ -375,13 +376,13 @@ class SqlWalker implements TreeWalker
         );
 
         if (($lockMode = $this->_query->getHint(Query::HINT_LOCK_MODE)) !== false) {
-            if ($lockMode == \Doctrine\DBAL\LockMode::PESSIMISTIC_READ) {
+            if ($lockMode == LockMode::PESSIMISTIC_READ) {
                 $sql .= " " . $this->_platform->getReadLockSQL();
-            } else if ($lockMode == \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE) {
+            } else if ($lockMode == LockMode::PESSIMISTIC_WRITE) {
                 $sql .= " " . $this->_platform->getWriteLockSQL();
-            } else if ($lockMode == \Doctrine\DBAL\LockMode::OPTIMISTIC) {
+            } else if ($lockMode == LockMode::OPTIMISTIC) {
                 foreach ($this->_selectedClasses AS $class) {
-                    if (!$class->isVersioned) {
+                    if ( ! $class->isVersioned) {
                         throw \Doctrine\ORM\OptimisticLockException::lockFailed();
                     }
                 }
@@ -1447,7 +1448,7 @@ class SqlWalker implements TreeWalker
                       . $targetClass->getQuotedColumnName($idField, $this->_platform) . ' = ?';
             }
         }
-        
+
         return $sql . ')';
     }
     
@@ -1517,7 +1518,7 @@ class SqlWalker implements TreeWalker
      * @param InstanceOfExpression
      * @return string The SQL.
      */
-    function walkInstanceOfExpression($instanceOfExpr)
+    public function walkInstanceOfExpression($instanceOfExpr)
     {
         $sql = '';
 
@@ -1525,15 +1526,15 @@ class SqlWalker implements TreeWalker
         $discrClass = $class = $this->_queryComponents[$dqlAlias]['metadata'];
         $fieldName = null;
 
-        if ($class->discriminatorColumn && isset($class->discriminatorColumn['inherited'])) {
-            $discrClass = $this->_em->getClassMetadata($class->discriminatorColumn['inherited']);
+        if ($class->discriminatorColumn) {
+            $discrClass = $this->_em->getClassMetadata($class->rootEntityName);
         }
 
         if ($this->_useSqlTableAliases) {
             $sql .= $this->getSQLTableAlias($discrClass->table['name'], $dqlAlias) . '.';
         }
 
-        $sql .= $class->discriminatorColumn['name'] . ($instanceOfExpr->not ? ' != ' : ' = ');
+        $sql .= $class->discriminatorColumn['name'] . ($instanceOfExpr->not ? ' <> ' : ' = ');
 
         if ($instanceOfExpr->value instanceof AST\InputParameter) {
             // We need to modify the parameter value to be its correspondent mapped value
@@ -1546,20 +1547,15 @@ class SqlWalker implements TreeWalker
             
             $entityClassName = $paramValue->name;
         } else {
-            $entityClassName = $instanceOfExpr->value;
+            // Get name from ClassMetadata to resolve aliases.
+            $entityClassName = $this->_em->getClassMetadata($instanceOfExpr->value)->name;
         }
 
-        $conn = $this->_em->getConnection();
-        
         if ($entityClassName == $class->name) {
-            $sql .= $conn->quote($class->discriminatorValue);
+            $sql .= $this->_conn->quote($class->discriminatorValue);
         } else {
-            foreach ($class->subClasses as $subclassName) {
-                if ($entityClassName === $subclassName) {
-                    $sql .= $conn->quote($this->_em->getClassMetadata($subclassName)->discriminatorValue);
-                    break;
-                }
-            }
+            $discrMap = array_flip($class->discriminatorMap);
+            $sql .= $this->_conn->quote($discrMap[$entityClassName]);
         }
 
         return $sql;
@@ -1781,7 +1777,7 @@ class SqlWalker implements TreeWalker
             return $primary->dispatch($this);
         }
 
-        // We need to deal with IdentificationVariable here
+        // TODO: We need to deal with IdentificationVariable here
         return '';
     }
 
