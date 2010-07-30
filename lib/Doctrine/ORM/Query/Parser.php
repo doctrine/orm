@@ -1205,13 +1205,13 @@ class Parser
     }
 
     /**
-     * UpdateItem ::= IdentificationVariable "." {StateField | SingleValuedAssociationField} "=" NewValue
+     * UpdateItem ::= SingleValuedPathExpression "=" NewValue
      *
      * @return \Doctrine\ORM\Query\AST\UpdateItem
      */
     public function UpdateItem()
     {
-        $pathExpr = $this->PathExpression(AST\PathExpression::TYPE_STATE_FIELD | AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION);
+        $pathExpr = $this->SingleValuedPathExpression();
 
         $this->match(Lexer::T_EQUALS);
 
@@ -1797,7 +1797,8 @@ class Parser
      * SimpleConditionalExpression ::=
      *      ComparisonExpression | BetweenExpression | LikeExpression |
      *      InExpression | NullComparisonExpression | ExistsExpression |
-     *      EmptyCollectionComparisonExpression | CollectionMemberExpression
+     *      EmptyCollectionComparisonExpression | CollectionMemberExpression |
+     *      InstanceOfExpression
      */
     public function SimpleConditionalExpression()
     {
@@ -1853,6 +1854,8 @@ class Parser
                 return $this->LikeExpression();
             case Lexer::T_IN:
                 return $this->InExpression();
+            case Lexer::T_INSTANCE:
+                return $this->InstanceOfExpression();
             case Lexer::T_IS:
                 if ($lookahead['type'] == Lexer::T_NULL) {
                     return $this->NullComparisonExpression();
@@ -2384,6 +2387,38 @@ class Parser
         $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
         return $inExpression;
+    }
+
+    /**
+     * InstanceOfExpression ::= IdentificationVariable ["NOT"] "INSTANCE" ["OF"] (AbstractSchemaName | InputParameter)
+     *
+     * @return \Doctrine\ORM\Query\AST\InstanceOfExpression
+     */
+    public function InstanceOfExpression()
+    {
+        $instanceOfExpression = new AST\InstanceOfExpression($this->IdentificationVariable());
+
+        if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
+            $this->match(Lexer::T_NOT);
+            $instanceOfExpression->not = true;
+        }
+
+        $this->match(Lexer::T_INSTANCE);
+
+        if ($this->_lexer->isNextToken(Lexer::T_OF)) {
+            $this->match(Lexer::T_OF);
+        }
+
+        if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
+            $this->match(Lexer::T_INPUT_PARAMETER);
+            $exprValue = new AST\InputParameter($this->_lexer->token['value']);
+        } else {
+            $exprValue = $this->AliasIdentificationVariable();
+        }
+
+        $instanceOfExpression->value = $exprValue;
+        
+        return $instanceOfExpression;
     }
 
     /**
