@@ -159,8 +159,8 @@ Example:
 
 The semantics of the merge operation, applied to an entity X, are as follows:
 
-* If X is a detached entity, the state of X is copied onto a pre-existing managed entity instance X' of the same identity or a new managed copy X' of X is created.
-* If X is a new entity instance, an InvalidArgumentException will be thrown. 
+* If X is a detached entity, the state of X is copied onto a pre-existing managed entity instance X' of the same identity.
+* If X is a new entity instance, a new managed copy X' will be created and the state of X is copied onto this managed instance. 
 * If X is a removed entity instance, an InvalidArgumentException will be thrown.
 * If X is a managed entity, it is ignored by the merge operation, however, the merge operation is cascaded to entities referenced by relationships from X if these relationships have been mapped with the cascade element value MERGE or ALL (see "Transitive Persistence"). 
 * For all entities Y referenced by relationships from X having the cascade element value 
