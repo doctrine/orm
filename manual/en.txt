@@ -12,6 +12,8 @@
 + DQL (Doctrine Query Language)
 + Query Builder
 + Native SQL
++ Change Tracking Policies
++ Partial Objects
 + XML Mapping
 + YAML Mapping
 + Annotations Reference
