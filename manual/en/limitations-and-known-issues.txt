@@ -1,12 +1,8 @@
+We try to make using Doctrine2 a very pleasant experience. Therefore it is our believe
+that being honest about the limitations to our users as early as possible is very important.
 Much like every other piece of software Doctrine2 is not perfect and far from feature complete.
-This section should give you an overview of current limitations of Doctrine 2 as well as known issues that
-you should know about. We try to make using Doctrine2 a very pleasant experience. Therefore it is our believe
-that stating the limitations to our users as early as possible is very important.
-
-The Known Issues section describes critical/blocker bugs and other issues that are either complicated to fix,
-not fixable due to backwards compatibility issues or where no simple fix exists (yet). We don't
-plan to add every bug in the tracker there, just those issues that can potentially cause nightmares
-or pain of any sort. Luckily this section is empty right now!
+This section should give you an overview of current limitations of Doctrine 2 as well as critical known issues that
+you should know about.
 
 ++ Current Limitations
 
@@ -159,4 +155,7 @@ to evaluate a feature that optionally persists and hydrates the keys of a Collec
 
 ++ Known Issues
 
-There are currently no known critical/blocker or backward compatibility issues.
+The Known Issues section describes critical/blocker bugs and other issues that are either complicated to fix,
+not fixable due to backwards compatibility issues or where no simple fix exists (yet). We don't
+plan to add every bug in the tracker there, just those issues that can potentially cause nightmares
+or pain of any sort. *Luckily this section is empty right now!*
