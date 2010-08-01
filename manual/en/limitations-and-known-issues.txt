@@ -82,8 +82,8 @@ how they translate into a Doctrine Mapping (Using Annotations):
         private $value;
     }
 
-The following Jira Issue currently contains the feature request to allow @ManyToOne and @OneToOne annotations
-along the @Id annotation: [http://www.doctrine-project.org/jira/browse/DDC-117]
+The following Jira Issue [contains the feature request to allow @ManyToOne and @OneToOne annotations
+along the @Id annotation](http://www.doctrine-project.org/jira/browse/DDC-117).
 
 +++ Mapping Arrays to a Join Table
 
