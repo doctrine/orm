@@ -1,5 +1,5 @@
-We try to make using Doctrine2 a very pleasant experience. Therefore it is our believe
-that being honest about the limitations to our users as early as possible is very important.
+We try to make using Doctrine2 a very pleasant experience. Therefore we think it is very important
+to be honest about the current limitations to our users.
 Much like every other piece of software Doctrine2 is not perfect and far from feature complete.
 This section should give you an overview of current limitations of Doctrine 2 as well as critical known issues that
 you should know about.
@@ -8,20 +8,6 @@ you should know about.
 
 There is a set of limitations that exist currently which might be solved in the future. Any of this
 limitations now stated has at least one ticket in the Tracker and is discussed for future releases.
-
-+++ Behaviors
-
-Doctrine 2 *will never* include a behavior system like Doctrine 1 in the core library. We don't think behaviors
-add more value than they cost pain and debugging hell. Please see the many different blog posts we have written on this
-topics:
-
-* [Doctrine2 "Behaviors" in a Nutshell](http://www.doctrine-project.org/blog/doctrine2-behaviours-nutshell)
-* [A re-usable Versionable behavior for Doctrine2](http://www.doctrine-project.org/blog/doctrine2-versionable)
-* [Write your own ORM on top of Doctrine2](http://www.doctrine-project.org/blog/your-own-orm-doctrine2)
-
-Doctrine 2 has enough hooks and extension points so that *you* can add whatever you wan't on top of it.
-None of this will ever become core functionality of Doctrine2 however, you will have to rely on third party extensions
-for magical behaviors.
 
 +++ Foreign Keys as Identifiers
 
@@ -166,6 +152,20 @@ PHP Arrays are ordered hash-maps and so should be the `Doctrine\Common\Collectio
 to evaluate a feature that optionally persists and hydrates the keys of a Collection instance.
 
 [Ticket DDC-213](http://www.doctrine-project.org/jira/browse/DDC-213)
+
++++ Behaviors
+
+Doctrine 2 *will never* include a behavior system like Doctrine 1 in the core library. We don't think behaviors
+add more value than they cost pain and debugging hell. Please see the many different blog posts we have written on this
+topics:
+
+* [Doctrine2 "Behaviors" in a Nutshell](http://www.doctrine-project.org/blog/doctrine2-behaviours-nutshell)
+* [A re-usable Versionable behavior for Doctrine2](http://www.doctrine-project.org/blog/doctrine2-versionable)
+* [Write your own ORM on top of Doctrine2](http://www.doctrine-project.org/blog/your-own-orm-doctrine2)
+
+Doctrine 2 has enough hooks and extension points so that *you* can add whatever you want on top of it.
+None of this will ever become core functionality of Doctrine2 however, you will have to rely on third party extensions
+for magical behaviors.
 
 +++ Nested Set
 
