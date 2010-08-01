@@ -167,6 +167,14 @@ to evaluate a feature that optionally persists and hydrates the keys of a Collec
 
 [Ticket DDC-213](http://www.doctrine-project.org/jira/browse/DDC-213)
 
++++ Nested Set
+
+NestedSet was offered as a behavior in Doctrine 1 and will not be included in the core of Doctrine 2. However there
+are already two extensions out there that offer support for Nested Set with Doctrine 2:
+
+* [Doctrine2 Hierachical-Structural Behavior](http://github.com/guilhermeblanco/Doctrine2-Hierarchical-Structural-Behavior)
+* [Doctrine2 NestedSet](http://github.com/blt04/doctrine2-nestedset)
+
 ++ Known Issues
 
 The Known Issues section describes critical/blocker bugs and other issues that are either complicated to fix,
