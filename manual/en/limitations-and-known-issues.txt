@@ -9,6 +9,20 @@ you should know about.
 There is a set of limitations that exist currently which might be solved in the future. Any of this
 limitations now stated has at least one ticket in the Tracker and is discussed for future releases.
 
++++ Behaviors
+
+Doctrine 2 *will never* include a behavior system like Doctrine 1 in the core library. We don't think behaviors
+add more value than they cost pain and debugging hell. Please see the many different blog posts we have written on this
+topics:
+
+* [Doctrine2 "Behaviors" in a Nutshell](http://www.doctrine-project.org/blog/doctrine2-behaviours-nutshell)
+* [A re-usable Versionable behavior for Doctrine2](http://www.doctrine-project.org/blog/doctrine2-versionable)
+* [Write your own ORM on top of Doctrine2](http://www.doctrine-project.org/blog/your-own-orm-doctrine2)
+
+Doctrine 2 has enough hooks and extension points so that *you* can add whatever you wan't on top of it.
+None of this will ever become core functionality of Doctrine2 however, you will have to rely on third party extensions
+for magical behaviors.
+
 +++ Foreign Keys as Identifiers
 
 There are many use-cases where you would want to use an Entity-Attribute-Value approach to modelling and
