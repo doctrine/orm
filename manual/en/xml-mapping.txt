@@ -147,7 +147,7 @@ used for primitive types that are not the ID of the entity. For the ID mapping y
         <field name="age" type="integer" nullable="true" />
         <field name="isActive" column="is_active" type="boolean" />
         <field name="weight" type="decimal" scale="5" precision="2" />
-   </entity>
+    </entity>
 
 Required attributes:
 
@@ -433,7 +433,7 @@ The mapping defaults would lead to a join-table with the name "User_Group" being
         </many-to-many>
     </entity>
 
-Here both the <join-columns> and <inverse-join-columns> tags are necessary to tell Doctrine for which side the
+Here both the `<join-columns>` and `<inverse-join-columns>` tags are necessary to tell Doctrine for which side the
 specified join-columns apply. These are nested inside a `<join-table />` attribute which allows to specify
 the table name of the many-to-many join-table.
 
@@ -453,10 +453,10 @@ operations in the `<cascade />` element inside any of the association mapping ta
 
 Besides `<cascade-all />` the following operations can be specifed by their respective tags:
 
-* <cascade-persist />
-* <cascade-merge />
-* <cascade-remove />
-* <cascade-refresh />
+* `<cascade-persist />`
+* `<cascade-merge />`
+* `<cascade-remove />`
+* `<cascade-refresh />`
 
 +++ Join Column Element
 
