@@ -268,7 +268,7 @@ carefully since operations in the wrong event may produce lots of different erro
 lost updates/persists/removes.
 
 For the described events that are also lifecycle callback events the restrictions
-apply aswell, with the additional restriction that you do not have access to the EntityManager
+apply as well, with the additional restriction that you do not have access to the EntityManager
 or UnitOfWork APIs inside these events.
 
 +++ prePersist
