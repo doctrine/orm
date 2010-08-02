@@ -137,7 +137,7 @@ class Lexer extends \Doctrine\Common\Lexer
     /**
      * @inheritdoc
      */
-    protected function _getType(&$value)
+    protected function getType(&$value)
     {
         $type = self::T_NONE;
 
