@@ -84,7 +84,7 @@ Now when you dispatch an event any event subscribers will be notified for that e
     [php]
     $evm->dispatchEvent(TestEventSubscriber::preFoo);
 
-Now the test the `$eventSubscriber` instance to see if the `preFoo()` method was invoked.
+Now you can test the `$eventSubscriber` instance to see if the `preFoo()` method was invoked.
 
     [php]
     if ($eventSubscriber->preFooInvoked) {
