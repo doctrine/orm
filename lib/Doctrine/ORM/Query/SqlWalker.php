@@ -1393,7 +1393,7 @@ class SqlWalker implements TreeWalker
             $targetClass = $this->_em->getClassMetadata($assoc->targetEntityName);
             
             $owningAssoc = $assoc->isOwningSide ? $assoc : $targetClass->associationMappings[$assoc->mappedBy];
-            $joinTable = $assoc->isOwningSide ? $assoc->joinTable : $owningAssoc->joinTable;
+            $joinTable = $owningAssoc->joinTable;
             
             // SQL table aliases
             $joinTableAlias = $this->getSqlTableAlias($joinTable['name']);
@@ -1401,7 +1401,7 @@ class SqlWalker implements TreeWalker
             $sourceTableAlias = $this->getSqlTableAlias($class->table['name'], $dqlAlias);
             
             // join to target table
-            $sql .= $assoc->getQuotedJoinTableName($this->_platform)
+            $sql .= $owningAssoc->getQuotedJoinTableName($this->_platform)
                   . ' ' . $joinTableAlias . ' INNER JOIN '
                   . $targetClass->getQuotedTableName($this->_platform)
                   . ' ' . $targetTableAlias . ' ON ';
