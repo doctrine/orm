@@ -1118,6 +1118,12 @@ class BasicEntityPersister
                     $conditionSql .= $this->_getSQLTableAlias($this->_class->name) . '.';
                 }
                 $conditionSql .= $this->_class->getQuotedColumnName($field, $this->_platform);
+            } else if (isset($this->_class->associationMappings[$field])) {
+                // TODO: Inherited?
+                // TODO: Composite Keys as Foreign Key PK? That would be super ugly! And should probably be disallowed ;)
+                $conditionSql .= $this->_getSQLTableAlias($this->_class->name) . '.';
+
+                $conditionSql .= $this->_class->associationMappings[$field]->joinColumns[0]['name'];
             } else if ($assoc !== null) {
                 if ($assoc->isManyToMany()) {
                     $owningAssoc = $assoc->isOwningSide ? $assoc : $this->_em->getClassMetadata($assoc->targetEntityName)

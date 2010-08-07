@@ -49,7 +49,12 @@ class AssignedGenerator extends AbstractIdGenerator
             foreach ($idFields as $idField) {
                 $value = $class->getReflectionProperty($idField)->getValue($entity);
                 if (isset($value)) {
-                    $identifier[$idField] = $value;
+                    if (is_object($value)) {
+                        // TODO: Single Id only, i enforce that. Compoite Key as Foreign Keys Primary Key part sounds ugly
+                        $identifier[$idField] = current($em->getUnitOfWork()->getEntityIdentifier($value));
+                    } else {
+                        $identifier[$idField] = $value;
+                    }
                 } else {
                     throw ORMException::entityMissingAssignedId($entity);
                 }
@@ -58,7 +63,12 @@ class AssignedGenerator extends AbstractIdGenerator
             $idField = $class->identifier[0];
             $value = $class->reflFields[$idField]->getValue($entity);
             if (isset($value)) {
-                $identifier[$idField] = $value;
+                if (is_object($value)) {
+                    // TODO: Single Id only, i enforce that. Compoite Key as Foreign Keys Primary Key part sounds ugly
+                    $identifier[$idField] = current($em->getUnitOfWork()->getEntityIdentifier($value));
+                } else {
+                    $identifier[$idField] = $value;
+                }
             } else {
                 throw ORMException::entityMissingAssignedId($entity);
             }

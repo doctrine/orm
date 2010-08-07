@@ -193,6 +193,22 @@ class SchemaTool
                 $this->_gatherRelationsSql($class, $table, $schema);
             }
 
+            $pkColumns = array();
+            foreach ($class->identifier AS $identifierField) {
+                if (isset($class->fieldMappings[$identifierField])) {
+                    $pkColumns[] = $class->getQuotedColumnName($identifierField, $this->_platform);
+                } else if (isset($class->associationMappings[$identifierField])) {
+                    /* @var $assoc \Doctrine\ORM\Mapping\OneToOne */
+                    $assoc = $class->associationMappings[$identifierField];
+                    foreach ($assoc->joinColumns AS $joinColumn) {
+                        $pkColumns[] = $joinColumn['name'];
+                    }
+                }
+            }
+            if (!$table->hasIndex('primary')) {
+                $table->setPrimaryKey($pkColumns);
+            }
+
             if (isset($class->table['indexes'])) {
                 foreach ($class->table['indexes'] AS $indexName => $indexData) {
                     $table->addIndex($indexData['columns'], $indexName);
@@ -275,10 +291,11 @@ class SchemaTool
                 $pkColumns[] = $class->getQuotedColumnName($mapping['fieldName'], $this->_platform);
             }
         }
+
         // For now, this is a hack required for single table inheritence, since this method is called
         // twice by single table inheritence relations
         if(!$table->hasIndex('primary')) {
-            $table->setPrimaryKey($pkColumns);
+            //$table->setPrimaryKey($pkColumns);
         }
 
         return $columns;

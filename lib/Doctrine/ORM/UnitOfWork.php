@@ -1831,7 +1831,11 @@ class UnitOfWork implements PropertyChangedListener
         if ($class->isIdentifierComposite) {
             $id = array();
             foreach ($class->identifier as $fieldName) {
-                $id[$fieldName] = $data[$fieldName];
+                if (isset($class->associationMappings[$fieldName])) {
+                    $id[$fieldName] = $data[$class->associationMappings[$fieldName]->joinColumns[0]['name']];
+                } else {
+                    $id[$fieldName] = $data[$fieldName];
+                }
             }
             $idHash = implode(' ', $id);
         } else {

@@ -957,6 +957,18 @@ class ClassMetadataInfo
         if (isset($mapping['targetEntity']) && strpos($mapping['targetEntity'], '\\') === false && strlen($this->namespace) > 0) {
             $mapping['targetEntity'] = $this->namespace . '\\' . $mapping['targetEntity'];
         }
+
+        // Complete id mapping
+        if (isset($mapping['id']) && $mapping['id'] === true) {
+            if ( ! in_array($mapping['fieldName'], $this->identifier)) {
+                $this->identifier[] = $mapping['fieldName'];
+            }
+            // Check for composite key
+            if ( ! $this->isIdentifierComposite && count($this->identifier) > 1) {
+                $this->isIdentifierComposite = true;
+            }
+        }
+        
         return $mapping;
     }
 
