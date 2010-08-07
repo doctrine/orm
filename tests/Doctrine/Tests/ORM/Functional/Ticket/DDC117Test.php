@@ -15,6 +15,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC117Article'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC117Reference'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC117Translation'),
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC117ArticleDetails'),
             ));
         } catch(\Exception $e) {
 
@@ -59,6 +60,45 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
+    public function testInverseSideAccess()
+    {
+        $article1 = new DDC117Article("Foo");
+        $article2 = new DDC117Article("Bar");
+
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+        $this->_em->flush();
+
+        $reference = new DDC117Reference($article1, $article2, "Test-Description");
+        $this->_em->persist($reference);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $article1 = $this->_em->find(__NAMESPACE__."\DDC117Article", $article1->id());
+
+        $this->assertEquals(1, count($article1->references()));
+        foreach ($article1->references() AS $reference) {
+            $this->assertType(__NAMESPACE__."\DDC117Reference", $reference);
+            $this->assertSame($article1, $reference->source());
+        }
+
+        $this->_em->clear();
+
+        $dql = 'SELECT a, r FROM '. __NAMESPACE__ . '\DDC117Article a INNER JOIN a.references r WHERE a.id = ?1';
+        $articleDql = $this->_em->createQuery($dql)
+                                ->setParameter(1, $article1->id())
+                                ->getSingleResult();
+
+        $this->assertEquals(1, count($article1->references()));
+        foreach ($article1->references() AS $reference) {
+            $this->assertType(__NAMESPACE__."\DDC117Reference", $reference);
+            $this->assertSame($article1, $reference->source());
+        }
+    }
+
+    /**
+     * @group DDC-117
+     */
     public function testMixedCompositeKey()
     {
         $article1 = new DDC117Article("Foo");
@@ -86,6 +126,20 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertType(__NAMESPACE__ . '\DDC117Translation', $translation);
     }
+
+    /**
+     * @group DDC-117
+     */
+    public function testOneToOneForeignObjectId()
+    {
+        $article1 = new DDC117Article("Foo");
+        $this->_em->persist($article1);
+        $this->_em->flush();
+
+        $details = new DDC117ArticleDetails($article1, "Very long text");
+        $this->_em->persist($details);
+        $this->_em->flush();
+    }
 }
 
 /**
@@ -103,10 +157,20 @@ class DDC117Article
      */
     private $references;
 
+    /**
+     * @OneToOne(targetEntity="DDC117ArticleDetails", mappedBy="article")
+     */
+    private $details;
+
     public function __construct($title)
     {
         $this->title = $title;
         $this->references = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    public function setDetails($details)
+    {
+        $this->details = $details;
     }
 
     public function id()
@@ -118,6 +182,33 @@ class DDC117Article
     {
         $this->references[] = $reference;
     }
+
+    public function references()
+    {
+        return $this->references;
+    }
+}
+
+/**
+ * @Entity
+ */
+class DDC117ArticleDetails
+{
+    /** @Id @OneToOne(targetEntity="DDC117Article", inversedBy="details") */
+    private $article;
+
+    /**
+     * @Column(type="text")
+     */
+    private $text;
+
+    public function __construct($article, $text)
+    {
+        $this->article = $article;
+        $article->setDetails($this);
+
+        $this->text = $text;
+    }
 }
 
 /**
@@ -126,12 +217,12 @@ class DDC117Article
 class DDC117Reference
 {
     /**
-     * @Id @ManyToOne(targetEntity="DDC117Article")
+     * @Id @ManyToOne(targetEntity="DDC117Article", inversedBy="references")
      */
     private $source;
 
     /**
-     * @Id @ManyToOne(targetEntity="DDC117Article")
+     * @Id @ManyToOne(targetEntity="DDC117Article", inversedBy="references")
      */
     private $target;
 

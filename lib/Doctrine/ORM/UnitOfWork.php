@@ -1839,7 +1839,11 @@ class UnitOfWork implements PropertyChangedListener
             }
             $idHash = implode(' ', $id);
         } else {
-            $idHash = $data[$class->identifier[0]];
+            if (isset($class->associationMappings[$class->identifier[0]])) {
+                $idHash = $data[$class->associationMappings[$class->identifier[0]]->joinColumns[0]['name']];
+            } else {
+                $idHash = $data[$class->identifier[0]];
+            }
             $id = array($class->identifier[0] => $idHash);
         }
 
