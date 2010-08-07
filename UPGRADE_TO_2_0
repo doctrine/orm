@@ -1,5 +1,60 @@
 # Update from 2.0-BETA2 to 2.0-BETA3
 
+## Serialization of Uninitialized Proxies
+
+As of Beta3 you can now serialize uninitialized proxies, an exception will only be thrown when
+trying to access methods on the unserialized proxy as long as it has not been re-attached to the
+EntityManager using `EntityManager#merge()`. See this example:
+
+    $proxy = $em->getReference('User', 1);
+
+    $serializedProxy = serialize($proxy);
+    $detachedProxy = unserialized($serializedProxy);
+
+    echo $em->contains($detachedProxy); // FALSE
+
+    try {
+        $detachedProxy->getId(); // uninitialized detached proxy
+    } catch(Exception $e) {
+
+    }
+    $attachedProxy = $em->merge($detachedProxy);
+    echo $attackedProxy->getId(); // works!
+
+## Changed SQL implementation of Postgres and Oracle DateTime types
+
+The DBAL Type "datetime" included the Timezone Offset in both Postgres and Oracle. As of this version they are now
+generated without Timezone (TIMESTAMP WITHOUT TIME ZONE instead of TIMESTAMP WITH TIME ZONE).
+See [this comment to Ticket DBAL-22](http://www.doctrine-project.org/jira/browse/DBAL-22?focusedCommentId=13396&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#action_13396)
+for more details as well as migration issues for PostgreSQL and Oracle.
+
+Both Postgres and Oracle will throw Exceptions during hydration of Objects with "DateTime" fields unless migration steps are taken!
+
+## Removed multi-dot/deep-path expressions in DQL
+
+The support for implicit joins in DQL through the multi-dot/Deep Path Expressions
+was dropped. For example:
+
+    SELECT u FROM User u WHERE u.group.name = ?1
+
+See the "u.group.id" here is using multi dots (deep expression) to walk
+through the graph of objects and properties. Internally the DQL parser
+would rewrite these queries to:
+
+    SELECT u FROM User u JOIN u.group g WHERE g.name = ?1
+
+This explicit notation will be the only supported notation as of now. The internal
+handling of multi-dots in the DQL Parser was very complex, error prone in edge cases
+and required special treatment for several features we added. Additionally
+it had edge cases that could not be solved without making the DQL Parser
+even much more complex. For this reason we will drop the support for the
+deep path expressions to increase maintainability and overall performance
+of the DQL parsing process. This will benefit any DQL query being parsed,
+even those not using deep path expressions.
+
+Note that the generated SQL of both notations is exactly the same! You
+don't loose anything through this.
+
 ## Default Allocation Size for Sequences
 
 The default allocation size for sequences has been changed from 10 to 1. This step was made
