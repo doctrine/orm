@@ -55,6 +55,9 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertType(__NAMESPACE__."\DDC117Article", $refRep->source());
 
         $this->assertSame($refRep, $this->_em->find(__NAMESPACE__."\DDC117Reference", array('source' => 1, 'target' => 2)));
+
+        $this->_em->remove($refRep);
+        $this->_em->flush();
     }
 
     /**

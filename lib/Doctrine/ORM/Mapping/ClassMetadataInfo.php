@@ -687,7 +687,11 @@ class ClassMetadataInfo
         if ($this->isIdentifierComposite) {
             $columnNames = array();
             foreach ($this->identifier as $idField) {
-                $columnNames[] = $this->fieldMappings[$idField]['columnName'];
+                if (isset($this->associationMappings[$idField])) {
+                    $columnNames[] = $this->associationMappings[$idField]->joinColumns[0]['name'];
+                } else {
+                    $columnNames[] = $this->fieldMappings[$idField]['columnName'];
+                }
             }
             return $columnNames;
         } else {
