@@ -235,6 +235,18 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $this->assertEquals(0, count($newUser->getGroups()));
     }
 
+    public function testDereferenceCollectionDelete()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(2);
+        $user->groups = null;
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $newUser = $this->_em->find(get_class($user), $user->getId());
+        $this->assertEquals(0, count($newUser->getGroups()));
+    }
+
     /**
      * @param  int $groupCount
      * @return CmsUser

@@ -1426,13 +1426,17 @@ class UnitOfWork implements PropertyChangedListener
                             continue;
                         }
 
-                        $coll = new PersistentCollection($this->em,
-                                $this->em->getClassMetadata($assoc2->targetEntityName),
-                                new ArrayCollection
-                                );
-                        $coll->setOwner($managedCopy, $assoc2);
-                        $coll->setInitialized($assoc2->isCascadeMerge);
-                        $prop->setValue($managedCopy, $coll);
+                        $managedCol = $prop->getValue($managedCopy);
+                        if (!$managedCol) {
+                            $managedCol = new PersistentCollection($this->em,
+                                    $this->em->getClassMetadata($assoc2->targetEntityName),
+                                    new ArrayCollection
+                                    );
+                            $managedCol->setOwner($managedCopy, $assoc2);
+                            $prop->setValue($managedCopy, $managedCol);
+                            $this->originalEntityData[$oid][$name] = $managedCol;
+                        }
+                        $managedCol->setInitialized($assoc2->isCascadeMerge);
                     }
                 }
                 if ($class->isChangeTrackingNotify()) {
