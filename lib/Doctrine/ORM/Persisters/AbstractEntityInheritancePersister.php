@@ -74,8 +74,12 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
                 $class = $this->_declaringClassMap[$column];
                 if ($class->name == $entityName || is_subclass_of($entityName, $class->name)) {
                     $field = $class->fieldNames[$realColumnName];
-                    $data[$field] = Type::getType($class->fieldMappings[$field]['type'])
-                            ->convertToPHPValue($value, $this->_platform);
+                    if (isset($data[$field])) {
+                        $data[$realColumnName] = $value;
+                    } else {
+                        $data[$field] = Type::getType($class->fieldMappings[$field]['type'])
+                                ->convertToPHPValue($value, $this->_platform);
+                    }
                 }
             } else {
                 $data[$realColumnName] = $value;

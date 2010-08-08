@@ -1870,7 +1870,7 @@ class UnitOfWork implements PropertyChangedListener
                 doctrine_populate_data($entity, $data);
             } else {
                 foreach ($data as $field => $value) {
-                    if (isset($class->reflFields[$field])) {
+                    if (isset($class->fieldMappings[$field])) {
                         $class->reflFields[$field]->setValue($entity, $value);
                     }
                 }
