@@ -200,15 +200,6 @@ class UnitOfWork implements PropertyChangedListener
      * @var array
      */
     private $collectionPersisters = array();
-
-    /**
-     * EXPERIMENTAL:
-     * Flag for whether or not to make use of the C extension which is an experimental
-     * library that aims to improve the performance of some critical code sections.
-     *
-     * @var boolean
-     */
-    private $useCExtension = false;
     
     /**
      * The EventManager used for dispatching events.
@@ -235,7 +226,6 @@ class UnitOfWork implements PropertyChangedListener
     {
         $this->em = $em;
         $this->evm = $em->getEventManager();
-        $this->useCExtension = $this->em->getConfiguration()->getUseCExtension();
     }
 
     /**
@@ -1866,13 +1856,9 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($overrideLocalValues) {
-            if ($this->useCExtension) {
-                doctrine_populate_data($entity, $data);
-            } else {
-                foreach ($data as $field => $value) {
-                    if (isset($class->fieldMappings[$field])) {
-                        $class->reflFields[$field]->setValue($entity, $value);
-                    }
+            foreach ($data as $field => $value) {
+                if (isset($class->fieldMappings[$field])) {
+                    $class->reflFields[$field]->setValue($entity, $value);
                 }
             }
             

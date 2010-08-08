@@ -240,29 +240,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Gets a boolean flag that indicates whether Doctrine should make use of the
-     * C extension.
-     *
-     * @return boolean TRUE if Doctrine is configured to use the C extension, FALSE otherwise.
-     */
-    public function getUseCExtension()
-    {
-        return isset($this->_attributes['useCExtension']) ?
-                $this->_attributes['useCExtension'] : false;
-    }
-
-    /**
-     * Sets a boolean flag that indicates whether Doctrine should make use of the
-     * C extension.
-     *
-     * @param boolean $boolean Whether to make use of the C extension or not.
-     */
-    public function setUseCExtension($boolean)
-    {
-        $this->_attributes['useCExtension'] = $boolean;
-    }
-
-    /**
      * Adds a named DQL query to the configuration.
      *
      * @param string $name The name of the query.
