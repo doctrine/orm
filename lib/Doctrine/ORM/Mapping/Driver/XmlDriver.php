@@ -99,9 +99,9 @@ class XmlDriver extends AbstractFileDriver
         }
 
         // Evaluate <change-tracking-policy...>
-        if (isset($xmlRoot->{'change-tracking-policy'})) {
+        if (isset($xmlRoot['change-tracking-policy'])) {
             $metadata->setChangeTrackingPolicy(constant('Doctrine\ORM\Mapping\ClassMetadata::CHANGETRACKING_'
-                    . strtoupper((string)$xmlRoot->{'change-tracking-policy'})));
+                    . strtoupper((string)$xmlRoot['change-tracking-policy'])));
         }
 
         // Evaluate <indexes...>

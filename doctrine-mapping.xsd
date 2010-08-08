@@ -75,6 +75,7 @@
     <xs:attribute name="schema" type="xs:NMTOKEN" />
     <xs:attribute name="repository-class" type="xs:NMTOKEN"/>
     <xs:attribute name="inheritance-type" type="orm:inheritance-type"/>
+    <xs:attribute name="change-tracking-policy" type="orm:change-tracking-policy" />
   </xs:complexType>
   
   <xs:complexType name="mapped-superclass" >
@@ -82,6 +83,14 @@
       <xs:extension base="orm:entity"/>
     </xs:complexContent>
   </xs:complexType>
+
+  <xs:simpleType name="change-tracking-policy">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="DEFERRED_IMPLICIT"/>
+      <xs:enumeration value="DEFERRED_EXPLICIT"/>
+      <xs:enumeration value="NOTIFY"/>
+    </xs:restriction>
+  </xs:simpleType>
   
   <xs:simpleType name="inheritance-type">
     <xs:restriction base="xs:token">
