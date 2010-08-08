@@ -200,15 +200,6 @@ class UnitOfWork implements PropertyChangedListener
      * @var array
      */
     private $collectionPersisters = array();
-
-    /**
-     * EXPERIMENTAL:
-     * Flag for whether or not to make use of the C extension which is an experimental
-     * library that aims to improve the performance of some critical code sections.
-     *
-     * @var boolean
-     */
-    private $useCExtension = false;
     
     /**
      * The EventManager used for dispatching events.
@@ -235,7 +226,6 @@ class UnitOfWork implements PropertyChangedListener
     {
         $this->em = $em;
         $this->evm = $em->getEventManager();
-        $this->useCExtension = $this->em->getConfiguration()->getUseCExtension();
     }
 
     /**
@@ -1812,13 +1802,13 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * INTERNAL:
-     * Creates an entity. Used for reconstitution of entities during hydration.
+     * Creates an entity. Used for reconstitution of persistent entities.
      *
      * @ignore
      * @param string $className The name of the entity class.
      * @param array $data The data for the entity.
      * @param array $hints Any hints to account for during reconstitution/lookup of the entity.
-     * @return object The entity instance.
+     * @return object The managed entity instance.
      * @internal Highly performance-sensitive method.
      * 
      * @todo Rename: getOrCreateEntity
@@ -1874,13 +1864,9 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($overrideLocalValues) {
-            if ($this->useCExtension) {
-                doctrine_populate_data($entity, $data);
-            } else {
-                foreach ($data as $field => $value) {
-                    if (isset($class->reflFields[$field])) {
-                        $class->reflFields[$field]->setValue($entity, $value);
-                    }
+            foreach ($data as $field => $value) {
+                if (isset($class->fieldMappings[$field])) {
+                    $class->reflFields[$field]->setValue($entity, $value);
                 }
             }
             
@@ -1920,7 +1906,13 @@ class UnitOfWork implements PropertyChangedListener
                                         // If it might be a subtype, it can not be lazy
                                         $newValue = $assoc->load($entity, null, $this->em, $associatedId);
                                     } else {
-                                        $newValue = $this->em->getProxyFactory()->getProxy($assoc->targetEntityName, $associatedId);
+                                        if ($assoc->fetchMode == Mapping\AssociationMapping::FETCH_EAGER) {
+                                            // TODO: Maybe it could be optimized to do an eager fetch with a JOIN inside
+                                            // the persister instead of this rather unperformant approach.
+                                            $newValue = $this->em->find($assoc->targetEntityName, $associatedId);
+                                        } else {
+                                            $newValue = $this->em->getProxyFactory()->getProxy($assoc->targetEntityName, $associatedId);
+                                        }
                                         // PERF: Inlined & optimized code from UnitOfWork#registerManaged()
                                         $newValueOid = spl_object_hash($newValue);
                                         $this->entityIdentifiers[$newValueOid] = $associatedId;

@@ -28,9 +28,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testColumnWithMissingTypeDefaultsToString()
     {
         $cm = new ClassMetadata('Doctrine\Tests\ORM\Mapping\ColumnWithoutType');
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache());
-        $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-        $annotationDriver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
+        $annotationDriver = $this->_loadDriver();
 
         $annotationDriver->loadMetadataForClass('Doctrine\Tests\ORM\Mapping\InvalidColumn', $cm);
         $this->assertEquals('string', $cm->fieldMappings['id']['type']);
@@ -92,6 +90,24 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $this->assertNotContains($extraneousClassName, $classes);
     }
 
+    public function testInheritenceWithoutDiscriminatorMap()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\ORM\Mapping\ClassWithoutDiscriminatorMap');
+        $annotationDriver = $this->_loadDriver();
+
+        $this->setExpectedException("Doctrine\ORM\Mapping\MappingException");
+        $annotationDriver->loadMetadataForClass($cm->name, $cm);
+    }
+
+    public function testInheritenceWithoutDiscriminatorColumn()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\ORM\Mapping\ClassWithoutDiscriminatorColumn');
+        $annotationDriver = $this->_loadDriver();
+
+        $this->setExpectedException("Doctrine\ORM\Mapping\MappingException");
+        $annotationDriver->loadMetadataForClass($cm->name, $cm);
+    }
+
     protected function _loadDriverForCMSModels()
     {
         $annotationDriver = $this->_loadDriver();
@@ -117,6 +133,28 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
  * @Entity
  */
 class ColumnWithoutType
+{
+    /** @Id @Column */
+    public $id;
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorMap({"a" = "ClassWithoutDiscriminatorColumn"})
+ */
+class ClassWithoutDiscriminatorColumn
+{
+    /** @Id @Column */
+    public $id;
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorColumn(name="discr", type="string")
+ */
+class ClassWithoutDiscriminatorMap
 {
     /** @Id @Column */
     public $id;

@@ -77,31 +77,38 @@ class XmlDriver extends AbstractFileDriver
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string)$xmlRoot['inheritance-type'];
             $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceType));
-        }
 
-        // Evaluate <discriminator-column...>
-        if (isset($xmlRoot->{'discriminator-column'})) {
-            $discrColumn = $xmlRoot->{'discriminator-column'};
-            $metadata->setDiscriminatorColumn(array(
-                'name' => (string)$discrColumn['name'],
-                'type' => (string)$discrColumn['type'],
-                'length' => (string)$discrColumn['length']
-            ));
-        }
+            if ($metadata->inheritanceType != \Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_NONE) {
+                // Evaluate <discriminator-column...>
+                if (isset($xmlRoot->{'discriminator-column'})) {
+                    $discrColumn = $xmlRoot->{'discriminator-column'};
+                    $metadata->setDiscriminatorColumn(array(
+                        'name' => (string)$discrColumn['name'],
+                        'type' => (string)$discrColumn['type'],
+                        'length' => (string)$discrColumn['length']
+                    ));
+                } else {
+                    throw MappingException::missingDiscriminatorColumn($className);
+                }
 
-        // Evaluate <discriminator-map...>
-        if (isset($xmlRoot->{'discriminator-map'})) {
-            $map = array();
-            foreach ($xmlRoot->{'discriminator-map'}->{'discriminator-mapping'} AS $discrMapElement) {
-                $map[(string)$discrMapElement['value']] = (string)$discrMapElement['class'];
+                // Evaluate <discriminator-map...>
+                if (isset($xmlRoot->{'discriminator-map'})) {
+                    $map = array();
+                    foreach ($xmlRoot->{'discriminator-map'}->{'discriminator-mapping'} AS $discrMapElement) {
+                        $map[(string)$discrMapElement['value']] = (string)$discrMapElement['class'];
+                    }
+                    $metadata->setDiscriminatorMap($map);
+                } else {
+                    throw MappingException::missingDiscriminatorMap($className);
+                }
             }
-            $metadata->setDiscriminatorMap($map);
         }
+
 
         // Evaluate <change-tracking-policy...>
-        if (isset($xmlRoot->{'change-tracking-policy'})) {
+        if (isset($xmlRoot['change-tracking-policy'])) {
             $metadata->setChangeTrackingPolicy(constant('Doctrine\ORM\Mapping\ClassMetadata::CHANGETRACKING_'
-                    . strtoupper((string)$xmlRoot->{'change-tracking-policy'})));
+                    . strtoupper((string)$xmlRoot['change-tracking-policy'])));
         }
 
         // Evaluate <indexes...>

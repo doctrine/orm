@@ -800,8 +800,12 @@ class BasicEntityPersister
             $column = $this->_resultColumnNames[$column];
             if (isset($this->_class->fieldNames[$column])) {
                 $field = $this->_class->fieldNames[$column];
-                $data[$field] = Type::getType($this->_class->fieldMappings[$field]['type'])
-                        ->convertToPHPValue($value, $this->_platform);
+                if (isset($data[$field])) {
+                    $data[$column] = $value;
+                } else {
+                    $data[$field] = Type::getType($this->_class->fieldMappings[$field]['type'])
+                            ->convertToPHPValue($value, $this->_platform);
+                }
             } else {
                 $data[$column] = $value;
             }

@@ -1,3 +1,11 @@
+# Update from 2.0-BETA3 to 2.0-BETA4
+
+## XML Driver <change-tracking-policy /> element demoted to attribute
+
+We changed how the XML Driver allows to define the change-tracking-policy. The working case is now:
+
+    <entity change-tracking-policy="DEFERRED_IMPLICT" />
+
 # Update from 2.0-BETA2 to 2.0-BETA3
 
 ## Serialization of Uninitialized Proxies
