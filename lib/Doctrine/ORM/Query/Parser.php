@@ -765,7 +765,7 @@ class Parser
     {
         $this->match(Lexer::T_IDENTIFIER);
 
-        $schemaName = $this->_lexer->token['value'];
+        $schemaName = ltrim($this->_lexer->token['value'], '\\');
 
         if (strrpos($schemaName, ':') !== false) {
             list($namespaceAlias, $simpleClassName) = explode(':', $schemaName);

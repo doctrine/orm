@@ -25,6 +25,7 @@ use Closure, Exception,
     Doctrine\DBAL\LockMode,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\ClassMetadataFactory,
+    Doctrine\ORM\Query\ResultSetMapping,
     Doctrine\ORM\Proxy\ProxyFactory;
 
 /**
@@ -225,7 +226,14 @@ class EntityManager
     }
 
     /**
-     * Returns the metadata for a class.
+     * Returns the ORM metadata descriptor for a class.
+     *
+     * The class name must be the fully-qualified class name without a leading backslash
+     * (as it is returned by get_class($obj)) or an aliased class name.
+     * 
+     * Examples:
+     * MyProject\Domain\User
+     * sales:PriceRequest
      *
      * @return Doctrine\ORM\Mapping\ClassMetadata
      * @internal Performance-sensitive method.
@@ -268,7 +276,7 @@ class EntityManager
      * @param ResultSetMapping $rsm The ResultSetMapping to use.
      * @return NativeQuery
      */
-    public function createNativeQuery($sql, \Doctrine\ORM\Query\ResultSetMapping $rsm)
+    public function createNativeQuery($sql, ResultSetMapping $rsm)
     {
         $query = new NativeQuery($this);
         $query->setSql($sql);
@@ -338,7 +346,7 @@ class EntityManager
      */
     public function getReference($entityName, $identifier)
     {
-        $class = $this->metadataFactory->getMetadataFor($entityName);
+        $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
         // Check identity map first, if its already in there just return it.
         if ($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) {
@@ -374,7 +382,7 @@ class EntityManager
      */
     public function getPartialReference($entityName, $identifier)
     {
-        $class = $this->metadataFactory->getMetadataFor($entityName);
+        $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
         // Check identity map first, if its already in there just return it.
         if ($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) {
@@ -534,11 +542,12 @@ class EntityManager
     /**
      * Gets the repository for an entity class.
      *
-     * @param string $entityName  The name of the Entity.
-     * @return EntityRepository  The repository.
+     * @param string $entityName The name of the entity.
+     * @return EntityRepository The repository class.
      */
     public function getRepository($entityName)
     {
+        $entityName = ltrim($entityName, '\\');
         if (isset($this->repositories[$entityName])) {
             return $this->repositories[$entityName];
         }
