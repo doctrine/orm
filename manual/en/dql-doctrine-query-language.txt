@@ -272,6 +272,12 @@ Get all users that have no phonenumber
     $query = $em->createQuery('SELECT u FROM CmsUser u WHERE u.phonenumbers IS EMPTY');
     $users = $query->getResult();
 
+Get all instances of a specific type, for use with inheritance hierachies:
+
+    [php]
+    $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF Doctrine\Tests\Models\Company\CompanyEmployee');
+    $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF ?1');
+
 ++++ Partial Object Syntax
 
 By default when you run a DQL query in Doctrine and select only a subset of the
