@@ -325,4 +325,32 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertNull($this->_em->find(get_class($employee1), $employee1Id));
     }
+
+    /**
+     * @group DDC-728
+     */
+    public function testQueryForInheritedSingleValuedAssociation()
+    {
+        $manager = new CompanyManager();
+        $manager->setName('gblanco');
+        $manager->setSalary(1234);
+        $manager->setTitle('Awesome!');
+        $manager->setDepartment('IT');
+
+        $person = new CompanyPerson();
+        $person->setName('spouse');
+
+        $manager->setSpouse($person);
+
+        $this->_em->persist($manager);
+        $this->_em->persist($person);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $dql = "SELECT m FROM Doctrine\Tests\Models\Company\CompanyManager m WHERE m.spouse = ?1";
+        $dqlManager = $this->_em->createQuery($dql)->setParameter(1, $person->getId())->getSingleResult();
+
+        $this->assertEquals($manager->getId(), $dqlManager->getId());
+        $this->assertEquals($person->getId(), $dqlManager->getSpouse()->getId());
+    }
 }
