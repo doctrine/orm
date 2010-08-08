@@ -146,12 +146,18 @@ can benefit from custom persister implementations:
 * [Evaluate possible ways in which stored-procedures can be used](http://www.doctrine-project.org/jira/browse/DDC-445)
 * The previous Filter Rules Feature Request
 
-+++ Order of Collections
++++ Persist Keys of Collections
 
 PHP Arrays are ordered hash-maps and so should be the `Doctrine\Common\Collections\Collection` interface. We plan
 to evaluate a feature that optionally persists and hydrates the keys of a Collection instance.
 
 [Ticket DDC-213](http://www.doctrine-project.org/jira/browse/DDC-213)
+
++++ Mapping many tables to one entity
+
+It is not possible to map several equally looking tables onto one entity. For example if you have
+a production and an archive table of a certain business concept then you cannot have both tables
+map to the same entity.
 
 +++ Behaviors
 
