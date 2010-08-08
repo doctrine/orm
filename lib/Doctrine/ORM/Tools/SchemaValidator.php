@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -169,6 +167,16 @@ class SchemaValidator
                                 $ce[] = "The referenced column name '" . $joinColumn['referencedColumnName'] . "' " .
                                         "has to be a primary key column.";
                             }
+                        }
+                    }
+                }
+
+                if (isset($assoc->orderBy) && $assoc->orderBy !== null) {
+                    $targetClass = $cmf->getMetadataFor($assoc->targetEntityName);
+                    foreach ($assoc->orderBy AS $orderField => $orientation) {
+                        if (!$targetClass->hasField($orderField)) {
+                            $ce[] = "The association " . $class->name."#".$fieldName." is ordered by a foreign field " .
+                                    $orderField . " that is not a field on the target entity " . $targetClass->name;
                         }
                     }
                 }
