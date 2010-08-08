@@ -62,7 +62,22 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $dql = "SELECT r, s FROM ".__NAMESPACE__."\DDC117Reference r JOIN r.source s WHERE r.source = ?1";
-        $ref = $this->_em->createQuery($dql)->setParameter(1, 1)->getSingleResult();
+        $dqlRef = $this->_em->createQuery($dql)->setParameter(1, 1)->getSingleResult();
+
+        $this->assertType(__NAMESPACE__."\DDC117Reference", $mapRef);
+        $this->assertType(__NAMESPACE__."\DDC117Article", $mapRef->target());
+        $this->assertType(__NAMESPACE__."\DDC117Article", $mapRef->source());
+        $this->assertSame($dqlRef, $this->_em->find(__NAMESPACE__."\DDC117Reference", $idCriteria));
+
+        $this->_em->clear();
+
+        $dql = "SELECT r, s FROM ".__NAMESPACE__."\DDC117Reference r JOIN r.source s WHERE s.title = ?1";
+        $dqlRef = $this->_em->createQuery($dql)->setParameter(1, 'Foo')->getSingleResult();
+
+        $this->assertType(__NAMESPACE__."\DDC117Reference", $mapRef);
+        $this->assertType(__NAMESPACE__."\DDC117Article", $mapRef->target());
+        $this->assertType(__NAMESPACE__."\DDC117Article", $mapRef->source());
+        $this->assertSame($dqlRef, $this->_em->find(__NAMESPACE__."\DDC117Reference", $idCriteria));
     }
 
     /**
