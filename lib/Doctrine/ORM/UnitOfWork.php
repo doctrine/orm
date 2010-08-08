@@ -1802,13 +1802,13 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * INTERNAL:
-     * Creates an entity. Used for reconstitution of entities during hydration.
+     * Creates an entity. Used for reconstitution of persistent entities.
      *
      * @ignore
      * @param string $className The name of the entity class.
      * @param array $data The data for the entity.
      * @param array $hints Any hints to account for during reconstitution/lookup of the entity.
-     * @return object The entity instance.
+     * @return object The managed entity instance.
      * @internal Highly performance-sensitive method.
      * 
      * @todo Rename: getOrCreateEntity
