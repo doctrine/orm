@@ -379,7 +379,7 @@ public function <methodName>()
     {
         $refl = new \ReflectionClass($this->_getClassToExtend());
 
-        return $refl->getShortName();
+        return $refl->getName();
     }
 
     private function _getClassToExtendNamespace()
