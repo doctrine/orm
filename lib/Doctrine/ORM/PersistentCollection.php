@@ -379,9 +379,15 @@ final class PersistentCollection implements Collection
         }*/
         
         $this->initialize();
-        $result = $this->coll->removeElement($element);
-        $this->changed();
-        return $result;
+        $removed = $this->coll->removeElement($element);
+        if ($removed) {
+            $this->changed();
+            if ($this->association !== null && $this->association->isOneToMany() &&
+                    $this->association->orphanRemoval) {
+                $this->em->getUnitOfWork()->scheduleOrphanRemoval($removed);
+            }
+        }
+        return $removed;
     }
 
     /**
