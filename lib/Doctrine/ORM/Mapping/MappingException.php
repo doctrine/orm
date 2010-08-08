@@ -190,6 +190,16 @@ class MappingException extends \Doctrine\ORM\ORMException
         );
     }
 
+    public static function missingDiscriminatorMap($className)
+    {
+        return new self("Entity class '$className' is using inheritance but no discriminator map was defined.");
+    }
+
+    public static function missingDiscriminatorColumn($className)
+    {
+        return new self("Entity class '$className' is using inheritance but no discriminator column was defined.");
+    }
+
     /**
      * @param  string $className
      * @param  string $columnName

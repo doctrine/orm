@@ -169,23 +169,30 @@ class AnnotationDriver implements Driver
         if (isset($classAnnotations['Doctrine\ORM\Mapping\InheritanceType'])) {
             $inheritanceTypeAnnot = $classAnnotations['Doctrine\ORM\Mapping\InheritanceType'];
             $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
+
+            if ($metadata->inheritanceType != \Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_NONE) {
+                // Evaluate DiscriminatorColumn annotation
+                if (isset($classAnnotations['Doctrine\ORM\Mapping\DiscriminatorColumn'])) {
+                    $discrColumnAnnot = $classAnnotations['Doctrine\ORM\Mapping\DiscriminatorColumn'];
+                    $metadata->setDiscriminatorColumn(array(
+                        'name' => $discrColumnAnnot->name,
+                        'type' => $discrColumnAnnot->type,
+                        'length' => $discrColumnAnnot->length
+                    ));
+                } else {
+                    throw MappingException::missingDiscriminatorColumn($className);
+                }
+
+                // Evaluate DiscriminatorMap annotation
+                if (isset($classAnnotations['Doctrine\ORM\Mapping\DiscriminatorMap'])) {
+                    $discrMapAnnot = $classAnnotations['Doctrine\ORM\Mapping\DiscriminatorMap'];
+                    $metadata->setDiscriminatorMap($discrMapAnnot->value);
+                } else {
+                    throw MappingException::missingDiscriminatorMap($className);
+                }
+            }
         }
 
-        // Evaluate DiscriminatorColumn annotation
-        if (isset($classAnnotations['Doctrine\ORM\Mapping\DiscriminatorColumn'])) {
-            $discrColumnAnnot = $classAnnotations['Doctrine\ORM\Mapping\DiscriminatorColumn'];
-            $metadata->setDiscriminatorColumn(array(
-                'name' => $discrColumnAnnot->name,
-                'type' => $discrColumnAnnot->type,
-                'length' => $discrColumnAnnot->length
-            ));
-        }
-
-        // Evaluate DiscriminatorMap annotation
-        if (isset($classAnnotations['Doctrine\ORM\Mapping\DiscriminatorMap'])) {
-            $discrMapAnnot = $classAnnotations['Doctrine\ORM\Mapping\DiscriminatorMap'];
-            $metadata->setDiscriminatorMap($discrMapAnnot->value);
-        }
 
         // Evaluate DoctrineChangeTrackingPolicy annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\ChangeTrackingPolicy'])) {

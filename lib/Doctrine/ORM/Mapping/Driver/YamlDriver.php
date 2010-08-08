@@ -69,22 +69,29 @@ class YamlDriver extends AbstractFileDriver
 
         if (isset($element['inheritanceType'])) {
             $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . strtoupper($element['inheritanceType'])));
+
+            if ($metadata->inheritanceType != \Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_NONE) {
+                // Evaluate discriminatorColumn
+                if (isset($element['discriminatorColumn'])) {
+                    $discrColumn = $element['discriminatorColumn'];
+                    $metadata->setDiscriminatorColumn(array(
+                        'name' => $discrColumn['name'],
+                        'type' => $discrColumn['type'],
+                        'length' => $discrColumn['length']
+                    ));
+                } else {
+                    throw MappingException::missingDiscriminatorColumn($className);
+                }
+
+                // Evaluate discriminatorMap
+                if (isset($element['discriminatorMap'])) {
+                    $metadata->setDiscriminatorMap($element['discriminatorMap']);
+                } else {
+                    throw MappingException::missingDiscriminatorMap($className);
+                }
+            }
         }
 
-        // Evaluate discriminatorColumn
-        if (isset($element['discriminatorColumn'])) {
-            $discrColumn = $element['discriminatorColumn'];
-            $metadata->setDiscriminatorColumn(array(
-                'name' => $discrColumn['name'],
-                'type' => $discrColumn['type'],
-                'length' => $discrColumn['length']
-            ));
-        }
-
-        // Evaluate discriminatorMap
-        if (isset($element['discriminatorMap'])) {
-            $metadata->setDiscriminatorMap($element['discriminatorMap']);
-        }
 
         // Evaluate changeTrackingPolicy
         if (isset($element['changeTrackingPolicy'])) {
