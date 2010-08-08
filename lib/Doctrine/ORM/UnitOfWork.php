@@ -1912,7 +1912,13 @@ class UnitOfWork implements PropertyChangedListener
                                         // If it might be a subtype, it can not be lazy
                                         $newValue = $assoc->load($entity, null, $this->em, $associatedId);
                                     } else {
-                                        $newValue = $this->em->getProxyFactory()->getProxy($assoc->targetEntityName, $associatedId);
+                                        if ($assoc->fetchMode == Mapping\AssociationMapping::FETCH_EAGER) {
+                                            // TODO: Maybe it could be optimized to do an eager fetch with a JOIN inside
+                                            // the persister instead of this rather unperformant approach.
+                                            $newValue = $this->em->find($assoc->targetEntityName, $associatedId);
+                                        } else {
+                                            $newValue = $this->em->getProxyFactory()->getProxy($assoc->targetEntityName, $associatedId);
+                                        }
                                         // PERF: Inlined & optimized code from UnitOfWork#registerManaged()
                                         $newValueOid = spl_object_hash($newValue);
                                         $this->entityIdentifiers[$newValueOid] = $associatedId;
