@@ -1173,22 +1173,6 @@ class ClassMetadataInfo
     }
 
     /**
-     * Makes some automatic additions to the association mapping to make the life
-     * easier for the user, and store join columns in the metadata.
-     *
-     * @param array $mapping
-     * @todo Pass param by ref?
-     */
-    /*private function _completeAssociationMapping(array $mapping)
-    {
-        $mapping['sourceEntity'] = $this->name;
-        if (isset($mapping['targetEntity']) && strpos($mapping['targetEntity'], '\\') === false && strlen($this->namespace) > 0) {
-            $mapping['targetEntity'] = $this->namespace . '\\' . $mapping['targetEntity'];
-        }
-        return $mapping;
-    }*/
-
-    /**
      * Adds a mapped field to the class.
      *
      * @param array $mapping The field mapping.

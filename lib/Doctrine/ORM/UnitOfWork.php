@@ -389,7 +389,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param ClassMetadata $class The class descriptor of the entity.
      * @param object $entity The entity for which to compute the changes.
      */
-    public function computeChangeSet(Mapping\ClassMetadata $class, $entity)
+    public function computeChangeSet(ClassMetadata $class, $entity)
     {
         if ( ! $class->isInheritanceTypeNone()) {
             $class = $this->em->getClassMetadata(get_class($entity));
@@ -1901,11 +1901,10 @@ class UnitOfWork implements PropertyChangedListener
                                 } else {
                                     if ($targetClass->subClasses) {
                                         // If it might be a subtype, it can not be lazy
-                                        //$newValue = $assoc->load($entity, null, $this->em, $associatedId);
                                         $newValue = $this->getEntityPersister($assoc['targetEntity'])
                                                 ->loadOneToOneEntity($assoc, $entity, null, $associatedId);
                                     } else {
-                                        if ($assoc['fetch'] == Mapping\ClassMetadata::FETCH_EAGER) {
+                                        if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER) {
                                             // TODO: Maybe it could be optimized to do an eager fetch with a JOIN inside
                                             // the persister instead of this rather unperformant approach.
                                             $newValue = $this->em->find($assoc['targetEntity'], $associatedId);
@@ -1938,10 +1937,9 @@ class UnitOfWork implements PropertyChangedListener
                         );
                         $pColl->setOwner($entity, $assoc);
                         $reflField->setValue($entity, $pColl);
-                        if ($assoc['fetch'] == Mapping\ClassMetadata::FETCH_LAZY) {
+                        if ($assoc['fetch'] == ClassMetadata::FETCH_LAZY) {
                             $pColl->setInitialized(false);
                         } else {
-                            //$assoc->load($entity, $pColl, $this->em);
                             $this->loadCollection($assoc, $entity, $pColl);
                         }
                         $this->originalEntityData[$oid][$field] = $pColl;
@@ -1961,6 +1959,14 @@ class UnitOfWork implements PropertyChangedListener
         return $entity;
     }
 
+    /**
+     * Initializes (loads) an associated collection of an entity.
+     *
+     * @param array $assoc The association mapping.
+     * @param object $sourceEntity The entity that "owns" the collection.
+     * @param PeristentCollection $targetCollection The collection to initialize.
+     * @todo Maybe later move to EntityManager#initialize($proxyOrCollection). See DDC-733.
+     */
     public function loadCollection(array $assoc, $sourceEntity, $targetCollection)
     {
         switch ($assoc['type']) {
