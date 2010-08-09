@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\ORM\Mapping\AssociationMapping;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 
 require_once __DIR__ . '/../../TestInit.php';
@@ -62,7 +63,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     public function testLazyLoadsObjects() {
         $this->_createFixture();
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
-        $metadata->getAssociationMapping('shipping')->fetchMode = AssociationMapping::FETCH_LAZY;
+        $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
 
         $query = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $result = $query->getResult();

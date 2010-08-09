@@ -29,7 +29,6 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->setCustomRepositoryClass("UserRepository");
         $cm->setDiscriminatorColumn(array('name' => 'disc', 'type' => 'integer'));
         $cm->mapOneToOne(array('fieldName' => 'phonenumbers', 'targetEntity' => 'Bar', 'mappedBy' => 'foo'));
-        $this->assertTrue($cm->getAssociationMapping('phonenumbers') instanceof \Doctrine\ORM\Mapping\OneToOneMapping);
         $this->assertEquals(1, count($cm->associationMappings));
 
         $serialized = serialize($cm);
@@ -45,12 +44,12 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(array('UserParent'), $cm->parentClasses);
         $this->assertEquals('UserRepository', $cm->customRepositoryClassName);
         $this->assertEquals(array('name' => 'disc', 'type' => 'integer', 'fieldName' => 'disc'), $cm->discriminatorColumn);
-        $this->assertTrue($cm->getAssociationMapping('phonenumbers') instanceof \Doctrine\ORM\Mapping\OneToOneMapping);
+        $this->assertTrue($cm->associationMappings['phonenumbers']['type'] == ClassMetadata::ONE_TO_ONE);
         $this->assertEquals(1, count($cm->associationMappings));
         $oneOneMapping = $cm->getAssociationMapping('phonenumbers');
-        $this->assertTrue($oneOneMapping->fetchMode == \Doctrine\ORM\Mapping\AssociationMapping::FETCH_LAZY);
-        $this->assertEquals('phonenumbers', $oneOneMapping->sourceFieldName);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\Bar', $oneOneMapping->targetEntityName);
+        $this->assertTrue($oneOneMapping['fetch'] == ClassMetadata::FETCH_LAZY);
+        $this->assertEquals('phonenumbers', $oneOneMapping['fieldName']);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\Bar', $oneOneMapping['targetEntity']);
     }
 
     public function testFieldIsNullable()
@@ -88,7 +87,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
             ),
         ));
 
-        $this->assertEquals("DoctrineGlobal_User", $cm->associationMappings['author']->targetEntityName);
+        $this->assertEquals("DoctrineGlobal_User", $cm->associationMappings['author']['targetEntity']);
     }
     
     public function testMapManyToManyJoinTableDefaults()
@@ -101,13 +100,13 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         ));
         
         $assoc = $cm->associationMappings['groups'];
-        $this->assertTrue($assoc instanceof \Doctrine\ORM\Mapping\ManyToManyMapping);
+        //$this->assertTrue($assoc instanceof \Doctrine\ORM\Mapping\ManyToManyMapping);
         $this->assertEquals(array(
             'name' => 'CmsUser_CmsGroup',
             'joinColumns' => array(array('name' => 'CmsUser_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE')),
             'inverseJoinColumns' => array(array('name' => 'CmsGroup_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE'))
-        ), $assoc->joinTable);
-        $this->assertTrue($assoc->isOnDeleteCascade);
+        ), $assoc['joinTable']);
+        $this->assertTrue($assoc['isOnDeleteCascade']);
     }
 
     public function testSerializeManyToManyJoinTableCascade()
@@ -123,7 +122,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $assoc = $cm->associationMappings['groups'];
         $assoc = unserialize(serialize($assoc));
 
-        $this->assertTrue($assoc->isOnDeleteCascade);
+        $this->assertTrue($assoc['isOnDeleteCascade']);
     }
 
     /**
@@ -180,8 +179,8 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     public function testDuplicateAssociationMappingException()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $a1 = new \Doctrine\ORM\Mapping\OneToOneMapping(array('fieldName' => 'foo', 'sourceEntity' => 'stdClass', 'targetEntity' => 'stdClass', 'mappedBy' => 'foo'));
-        $a2 = new \Doctrine\ORM\Mapping\OneToOneMapping(array('fieldName' => 'foo', 'sourceEntity' => 'stdClass', 'targetEntity' => 'stdClass', 'mappedBy' => 'foo'));
+        $a1 = array('fieldName' => 'foo', 'sourceEntity' => 'stdClass', 'targetEntity' => 'stdClass', 'mappedBy' => 'foo');
+        $a2 = array('fieldName' => 'foo', 'sourceEntity' => 'stdClass', 'targetEntity' => 'stdClass', 'mappedBy' => 'foo');
 
         $cm->addInheritedAssociationMapping($a1);
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');

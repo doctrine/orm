@@ -296,14 +296,14 @@ class AnnotationDriver implements Driver
                 $mapping['inversedBy'] = $oneToOneAnnot->inversedBy;
                 $mapping['cascade'] = $oneToOneAnnot->cascade;
                 $mapping['orphanRemoval'] = $oneToOneAnnot->orphanRemoval;
-                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $oneToOneAnnot->fetch);
+                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $oneToOneAnnot->fetch);
                 $metadata->mapOneToOne($mapping);
             } else if ($oneToManyAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OneToMany')) {
                 $mapping['mappedBy'] = $oneToManyAnnot->mappedBy;
                 $mapping['targetEntity'] = $oneToManyAnnot->targetEntity;
                 $mapping['cascade'] = $oneToManyAnnot->cascade;
                 $mapping['orphanRemoval'] = $oneToManyAnnot->orphanRemoval;
-                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $oneToManyAnnot->fetch);
+                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $oneToManyAnnot->fetch);
 
                 if ($orderByAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OrderBy')) {
                     $mapping['orderBy'] = $orderByAnnot->value;
@@ -315,7 +315,7 @@ class AnnotationDriver implements Driver
                 $mapping['cascade'] = $manyToOneAnnot->cascade;
                 $mapping['inversedBy'] = $manyToOneAnnot->inversedBy;
                 $mapping['targetEntity'] = $manyToOneAnnot->targetEntity;
-                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $manyToOneAnnot->fetch);
+                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $manyToOneAnnot->fetch);
                 $metadata->mapManyToOne($mapping);
             } else if ($manyToManyAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\ManyToMany')) {
                 $joinTable = array();
@@ -356,7 +356,7 @@ class AnnotationDriver implements Driver
                 $mapping['mappedBy'] = $manyToManyAnnot->mappedBy;
                 $mapping['inversedBy'] = $manyToManyAnnot->inversedBy;
                 $mapping['cascade'] = $manyToManyAnnot->cascade;
-                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $manyToManyAnnot->fetch);
+                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $manyToManyAnnot->fetch);
 
                 if ($orderByAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OrderBy')) {
                     $mapping['orderBy'] = $orderByAnnot->value;

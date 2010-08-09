@@ -22,10 +22,7 @@
 
 namespace Doctrine\ORM\Tools\Export\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Mapping\OneToOneMapping,
-    Doctrine\ORM\Mapping\OneToManyMapping,
-    Doctrine\ORM\Mapping\ManyToManyMapping;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * ClassMetadata exporter for Doctrine XML mapping files
@@ -182,31 +179,33 @@ class XmlExporter extends AbstractExporter
         }
 
         foreach ($metadata->associationMappings as $name => $associationMapping) {
-            if ($associationMapping instanceof OneToOneMapping) {
+            if ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_ONE) {
                 $associationMappingXml = $root->addChild('one-to-one');
-            } else if ($associationMapping instanceof OneToManyMapping) {
+            } else if ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_ONE) {
+                $associationMappingXml = $root->addChild('many-to-one');
+            } else if ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_MANY) {
                 $associationMappingXml = $root->addChild('one-to-many');
-            } else if ($associationMapping instanceof ManyToManyMapping) {
+            } else if ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
                 $associationMappingXml = $root->addChild('many-to-many');
             }
 
-            $associationMappingXml->addAttribute('field', $associationMapping->sourceFieldName);
-            $associationMappingXml->addAttribute('target-entity', $associationMapping->targetEntityName);
+            $associationMappingXml->addAttribute('field', $associationMapping['fieldName']);
+            $associationMappingXml->addAttribute('target-entity', $associationMapping['targetEntity']);
 
-            if (isset($associationMapping->mappedBy)) {
-                $associationMappingXml->addAttribute('mapped-by', $associationMapping->mappedBy);
+            if (isset($associationMapping['mappedBy'])) {
+                $associationMappingXml->addAttribute('mapped-by', $associationMapping['mappedBy']);
             }
-            if (isset($associationMapping->inversedBy)) {
-                $associationMappingXml->addAttribute('inversed-by', $associationMapping->inversedBy);
+            if (isset($associationMapping['inversedBy'])) {
+                $associationMappingXml->addAttribute('inversed-by', $associationMapping['inversedBy']);
             }
-            if (isset($associationMapping->orphanRemoval)) {
-                $associationMappingXml->addAttribute('orphan-removal', $associationMapping->orphanRemoval);
+            if (isset($associationMapping['orphanRemoval'])) {
+                $associationMappingXml->addAttribute('orphan-removal', $associationMapping['orphanRemoval']);
             }
-            if (isset($associationMapping->joinTable) && $associationMapping->joinTable) {
+            if (isset($associationMapping['joinTable']) && $associationMapping['joinTable']) {
                 $joinTableXml = $associationMappingXml->addChild('join-table');
-                $joinTableXml->addAttribute('name', $associationMapping->joinTable['name']);
+                $joinTableXml->addAttribute('name', $associationMapping['joinTable']['name']);
                 $joinColumnsXml = $joinTableXml->addChild('join-columns');
-                foreach ($associationMapping->joinTable['joinColumns'] as $joinColumn) {
+                foreach ($associationMapping['joinTable']['joinColumns'] as $joinColumn) {
                     $joinColumnXml = $joinColumnsXml->addChild('join-column');
                     $joinColumnXml->addAttribute('name', $joinColumn['name']);
                     $joinColumnXml->addAttribute('referenced-column-name', $joinColumn['referencedColumnName']);
@@ -218,7 +217,7 @@ class XmlExporter extends AbstractExporter
                     }
                 }
                 $inverseJoinColumnsXml = $joinTableXml->addChild('inverse-join-columns');
-                foreach ($associationMapping->joinTable['inverseJoinColumns'] as $inverseJoinColumn) {
+                foreach ($associationMapping['joinTable']['inverseJoinColumns'] as $inverseJoinColumn) {
                     $inverseJoinColumnXml = $inverseJoinColumnsXml->addChild('join-column');
                     $inverseJoinColumnXml->addAttribute('name', $inverseJoinColumn['name']);
                     $inverseJoinColumnXml->addAttribute('referenced-column-name', $inverseJoinColumn['referencedColumnName']);
@@ -239,9 +238,9 @@ class XmlExporter extends AbstractExporter
                     }
                 }
             }
-            if (isset($associationMapping->joinColumns)) {
+            if (isset($associationMapping['joinColumns'])) {
                 $joinColumnsXml = $associationMappingXml->addChild('join-columns');
-                foreach ($associationMapping->joinColumns as $joinColumn) {
+                foreach ($associationMapping['joinColumns'] as $joinColumn) {
                     $joinColumnXml = $joinColumnsXml->addChild('join-column');
                     $joinColumnXml->addAttribute('name', $joinColumn['name']);
                     $joinColumnXml->addAttribute('referenced-column-name', $joinColumn['referencedColumnName']);
@@ -259,28 +258,28 @@ class XmlExporter extends AbstractExporter
                     }
                 }
             }
-            if (isset($associationMapping->orderBy)) {
+            if (isset($associationMapping['orderBy'])) {
                 $orderByXml = $associationMappingXml->addChild('order-by');
-                foreach ($associationMapping->orderBy as $name => $direction) {
+                foreach ($associationMapping['orderBy'] as $name => $direction) {
                     $orderByFieldXml = $orderByXml->addChild('order-by-field');
                     $orderByFieldXml->addAttribute('name', $name);
                     $orderByFieldXml->addAttribute('direction', $direction);
                 }
             }
             $cascade = array();
-            if ($associationMapping->isCascadeRemove) {
+            if ($associationMapping['isCascadeRemove']) {
                 $cascade[] = 'cascade-remove';
             }
-            if ($associationMapping->isCascadePersist) {
+            if ($associationMapping['isCascadePersist']) {
                 $cascade[] = 'cascade-persist';
             }
-            if ($associationMapping->isCascadeRefresh) {
+            if ($associationMapping['isCascadeRefresh']) {
                 $cascade[] = 'cascade-refresh';
             }
-            if ($associationMapping->isCascadeMerge) {
+            if ($associationMapping['isCascadeMerge']) {
                 $cascade[] = 'cascade-merge';
             }
-            if ($associationMapping->isCascadeDetach) {
+            if ($associationMapping['isCascadeDetach']) {
                 $cascade[] = 'cascade-detach';
             }
             if ($cascade) {
