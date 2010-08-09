@@ -349,7 +349,7 @@ class ObjectHydrator extends AbstractHydrator
                                 // If there is an inverse mapping on the target class its bidirectional
                                 if ($relation['inversedBy']) {
                                     $inverseAssoc = $targetClass->associationMappings[$relation['inversedBy']];
-                                    if ($inverseAssoc['type'] == ClassMetadata::ONE_TO_ONE) {
+                                    if ($inverseAssoc['type'] & ClassMetadata::TO_ONE) {
                                         $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($element, $parentObject);
                                         $this->_uow->setOriginalEntityProperty(spl_object_hash($element), $inverseAssoc['fieldName'], $parentObject);
                                     }
