@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
 use Doctrine\ORM\Mapping\AssociationMapping;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -90,7 +91,7 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
     {
         $this->_createFixture();
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCategory');
-        $metadata->getAssociationMapping('children')->fetchMode = AssociationMapping::FETCH_LAZY;
+        $metadata->associationMappings['children']['fetch'] = ClassMetadata::FETCH_LAZY;
 
         $query = $this->_em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCategory c order by c.id asc');
         $result = $query->getResult();

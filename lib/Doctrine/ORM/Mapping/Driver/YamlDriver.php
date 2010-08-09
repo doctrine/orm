@@ -237,7 +237,7 @@ class YamlDriver extends AbstractFileDriver
                 );
 
                 if (isset($oneToOneElement['fetch'])) {
-                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $oneToOneElement['fetch']);
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $oneToOneElement['fetch']);
                 }
 
                 if (isset($oneToOneElement['mappedBy'])) {
@@ -282,7 +282,7 @@ class YamlDriver extends AbstractFileDriver
                 );
 
                 if (isset($oneToManyElement['fetch'])) {
-                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $oneToManyElement['fetch']);
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $oneToManyElement['fetch']);
                 }
 
                 if (isset($oneToManyElement['cascade'])) {
@@ -306,7 +306,7 @@ class YamlDriver extends AbstractFileDriver
                 );
 
                 if (isset($manyToOneElement['fetch'])) {
-                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $manyToOneElement['fetch']);
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $manyToOneElement['fetch']);
                 }
 
                 if (isset($manyToOneElement['inversedBy'])) {
@@ -346,7 +346,7 @@ class YamlDriver extends AbstractFileDriver
                 );
 
                 if (isset($manyToManyElement['fetch'])) {
-                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . $manyToManyElement['fetch']);
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $manyToManyElement['fetch']);
                 }
 
                 if (isset($manyToManyElement['mappedBy'])) {

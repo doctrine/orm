@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Persisters;
 
 use Doctrine\ORM\ORMException,
-    Doctrine\ORM\Mapping\ManyToManyMapping;
+    Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * The joined subclass persister maps a single entity instance to several tables in the
@@ -75,9 +75,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     public function getOwningTable($fieldName)
     {
         if ( ! isset($this->_owningTableMap[$fieldName])) {
-            if (isset($this->_class->associationMappings[$fieldName]->inherited)) {
+            if (isset($this->_class->associationMappings[$fieldName]['inherited'])) {
                 $this->_owningTableMap[$fieldName] = $this->_em->getClassMetadata(
-                    $this->_class->associationMappings[$fieldName]->inherited
+                    $this->_class->associationMappings[$fieldName]['inherited']
                     )->table['name'];
             } else if (isset($this->_class->fieldMappings[$fieldName]['inherited'])) {
                 $this->_owningTableMap[$fieldName] = $this->_em->getClassMetadata(
@@ -247,11 +247,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             // Add foreign key columns
             foreach ($this->_class->associationMappings as $assoc2) {
-                if ($assoc2->isOwningSide && $assoc2->isOneToOne()) {
-                    $tableAlias = $assoc2->inherited ?
-                            $this->_getSQLTableAlias($assoc2->inherited)
+                if ($assoc2['isOwningSide'] && $assoc2['type'] & ClassMetadata::TO_ONE) {
+                    $tableAlias = isset($assoc2['inherited']) ?
+                            $this->_getSQLTableAlias($assoc2['inherited'])
                             : $baseTableAlias;
-                    foreach ($assoc2->targetToSourceKeyColumns as $srcColumn) {
+                    foreach ($assoc2['targetToSourceKeyColumns'] as $srcColumn) {
                         $columnAlias = $srcColumn . $this->_sqlAliasCounter++;
                         $columnList .= ", $tableAlias.$srcColumn AS $columnAlias";
                         $resultColumnName = $this->_platform->getSQLResultCasing($columnAlias);
@@ -304,8 +304,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
                 // Add join columns (foreign keys)
                 foreach ($subClass->associationMappings as $assoc2) {
-                    if ($assoc2->isOwningSide && $assoc2->isOneToOne() && ! $assoc2->inherited) {
-                        foreach ($assoc2->targetToSourceKeyColumns as $srcColumn) {
+                    if ($assoc2['isOwningSide'] && $assoc2['type'] & ClassMetadata::TO_ONE
+                            && ! isset($assoc2['inherited'])) {
+                        foreach ($assoc2['targetToSourceKeyColumns'] as $srcColumn) {
                             $columnAlias = $srcColumn . $this->_sqlAliasCounter++;
                             $columnList .= ', ' . $tableAlias . ".$srcColumn AS $columnAlias";
                             $resultColumnName = $this->_platform->getSQLResultCasing($columnAlias);
@@ -326,14 +327,14 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             }
         }
 
-        $joinSql .= $assoc != null && $assoc->isManyToMany() ?
+        $joinSql .= $assoc != null && $assoc['type'] == ClassMetadata::MANY_TO_MANY ?
                 $this->_getSelectManyToManyJoinSQL($assoc) : '';
 
         $conditionSql = $this->_getSelectConditionSQL($criteria, $assoc);
 
         $orderBySql = '';
-        if ($assoc != null && isset($assoc->orderBy)) {
-            $orderBySql = $this->_getCollectionOrderBySQL($assoc->orderBy, $baseTableAlias);
+        if ($assoc != null && isset($assoc['orderBy'])) {
+            $orderBySql = $this->_getCollectionOrderBySQL($assoc['orderBy'], $baseTableAlias);
         }
 
         if ($this->_selectColumnListSql === null) {
@@ -385,15 +386,15 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         foreach ($this->_class->reflFields as $name => $field) {
             if (isset($this->_class->fieldMappings[$name]['inherited']) && ! isset($this->_class->fieldMappings[$name]['id'])
-                    || isset($this->_class->associationMappings[$name]->inherited)
+                    || isset($this->_class->associationMappings[$name]['inherited'])
                     || ($this->_class->isVersioned && $this->_class->versionField == $name)) {
                 continue;
             }
 
             if (isset($this->_class->associationMappings[$name])) {
                 $assoc = $this->_class->associationMappings[$name];
-                if ($assoc->isOneToOne() && $assoc->isOwningSide) {
-                    foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
+                if ($assoc['type'] & ClassMetadata::TO_ONE && $assoc['isOwningSide']) {
+                    foreach ($assoc['targetToSourceKeyColumns'] as $sourceCol) {
                         $columns[] = $sourceCol;
                     }
                 }

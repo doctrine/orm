@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * An LL(*) recursive-descent parser for the context-free grammar of the Doctrine Query Language.
@@ -581,9 +582,9 @@ class Parser
                 $fieldType = AST\PathExpression::TYPE_STATE_FIELD;
             } else {
                 $assoc = $class->associationMappings[$field];
-                $class = $this->_em->getClassMetadata($assoc->targetEntityName);
+                $class = $this->_em->getClassMetadata($assoc['targetEntity']);
 
-                if ($assoc->isOneToOne()) {
+                if ($assoc['type'] & ClassMetadata::TO_ONE) {
                     $fieldType = AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
                 } else {
                     $fieldType = AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION;
@@ -1478,7 +1479,7 @@ class Parser
             );
         }
 
-        $targetClassName = $parentClass->getAssociationMapping($assocField)->targetEntityName;
+        $targetClassName = $parentClass->associationMappings[$assocField]['targetEntity'];
 
         // Building queryComponent
         $joinQueryComponent = array(

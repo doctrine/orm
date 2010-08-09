@@ -105,6 +105,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testBasicOneToOne()
     {
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $user = new CmsUser;
         $user->name = 'Roman';
         $user->username = 'romanb';

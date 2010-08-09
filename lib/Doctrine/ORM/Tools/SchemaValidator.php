@@ -20,8 +20,7 @@
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\ManyToManyMapping;
-use Doctrine\ORM\Mapping\OneToOneMapping;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * Performs strict validation of the mapping schema
@@ -73,60 +72,60 @@ class SchemaValidator
             $ce = array();
             /* @var $class ClassMetadata */
             foreach ($class->associationMappings AS $fieldName => $assoc) {
-                if (!$cmf->hasMetadataFor($assoc->targetEntityName)) {
-                    $ce[] = "The target entity '" . $assoc->targetEntityName . "' specified on " . $class->name . '#' . $fieldName . ' is unknown.';
+                if (!$cmf->hasMetadataFor($assoc['targetEntity'])) {
+                    $ce[] = "The target entity '" . $assoc['targetEntity'] . "' specified on " . $class->name . '#' . $fieldName . ' is unknown.';
                 }
 
-                if ($assoc->mappedBy && $assoc->inversedBy) {
+                if ($assoc['mappedBy'] && $assoc['inversedBy']) {
                     $ce[] = "The association " . $class . "#" . $fieldName . " cannot be defined as both inverse and owning.";
                 }
 
-                $targetMetadata = $cmf->getMetadataFor($assoc->targetEntityName);
+                $targetMetadata = $cmf->getMetadataFor($assoc['targetEntity']);
 
                 /* @var $assoc AssociationMapping */
-                if ($assoc->mappedBy) {
-                    if ($targetMetadata->hasField($assoc->mappedBy)) {
+                if ($assoc['mappedBy']) {
+                    if ($targetMetadata->hasField($assoc['mappedBy'])) {
                         $ce[] = "The association " . $class->name . "#" . $fieldName . " refers to the owning side ".
-                                "field " . $assoc->targetEntityName . "#" . $assoc->mappedBy . " which is not defined as association.";
+                                "field " . $assoc['targetEntity'] . "#" . $assoc['mappedBy'] . " which is not defined as association.";
                     }
-                    if (!$targetMetadata->hasAssociation($assoc->mappedBy)) {
+                    if (!$targetMetadata->hasAssociation($assoc['mappedBy'])) {
                         $ce[] = "The association " . $class->name . "#" . $fieldName . " refers to the owning side ".
-                                "field " . $assoc->targetEntityName . "#" . $assoc->mappedBy . " which does not exist.";
-                    } else if ($targetMetadata->associationMappings[$assoc->mappedBy]->inversedBy == null) {
+                                "field " . $assoc['targetEntity'] . "#" . $assoc['mappedBy'] . " which does not exist.";
+                    } else if ($targetMetadata->associationMappings[$assoc['mappedBy']]['inversedBy'] == null) {
                         $ce[] = "The field " . $class->name . "#" . $fieldName . " is on the inverse side of a ".
                                 "bi-directional relationship, but the specified mappedBy association on the target-entity ".
-                                $assoc->targetEntityName . "#" . $assoc->mappedBy . " does not contain the required ".
+                                $assoc['targetEntity'] . "#" . $assoc['mappedBy'] . " does not contain the required ".
                                 "'inversedBy' attribute.";
-                    } else  if ($targetMetadata->associationMappings[$assoc->mappedBy]->inversedBy != $fieldName) {
+                    } else  if ($targetMetadata->associationMappings[$assoc['mappedBy']]['inversedBy'] != $fieldName) {
                         $ce[] = "The mappings " . $class->name . "#" . $fieldName . " and " .
-                                $assoc->targetEntityName . "#" . $assoc->mappedBy . " are ".
+                                $assoc['targetEntity'] . "#" . $assoc['mappedBy'] . " are ".
                                 "incosistent with each other.";
                     }
                 }
 
-                if ($assoc->inversedBy) {
-                    if ($targetMetadata->hasField($assoc->inversedBy)) {
+                if ($assoc['inversedBy']) {
+                    if ($targetMetadata->hasField($assoc['inversedBy'])) {
                         $ce[] = "The association " . $class->name . "#" . $fieldName . " refers to the inverse side ".
-                                "field " . $assoc->targetEntityName . "#" . $assoc->inversedBy . " which is not defined as association.";
+                                "field " . $assoc['targetEntity'] . "#" . $assoc['inversedBy'] . " which is not defined as association.";
                     }
-                    if (!$targetMetadata->hasAssociation($assoc->inversedBy)) {
+                    if (!$targetMetadata->hasAssociation($assoc['inversedBy'])) {
                         $ce[] = "The association " . $class->name . "#" . $fieldName . " refers to the inverse side ".
-                                "field " . $assoc->targetEntityName . "#" . $assoc->inversedBy . " which does not exist.";
-                    } else if ($targetMetadata->associationMappings[$assoc->inversedBy]->mappedBy == null) {
+                                "field " . $assoc['targetEntity'] . "#" . $assoc['inversedBy'] . " which does not exist.";
+                    } else if ($targetMetadata->associationMappings[$assoc['inversedBy']]['mappedBy'] == null) {
                         $ce[] = "The field " . $class->name . "#" . $fieldName . " is on the owning side of a ".
                                 "bi-directional relationship, but the specified mappedBy association on the target-entity ".
-                                $assoc->targetEntityName . "#" . $assoc->mappedBy . " does not contain the required ".
+                                $assoc['targetEntity'] . "#" . $assoc['mappedBy'] . " does not contain the required ".
                                 "'inversedBy' attribute.";
-                    } else  if ($targetMetadata->associationMappings[$assoc->inversedBy]->mappedBy != $fieldName) {
+                    } else  if ($targetMetadata->associationMappings[$assoc['inversedBy']]['mappedBy'] != $fieldName) {
                         $ce[] = "The mappings " . $class->name . "#" . $fieldName . " and " .
-                                $assoc->targetEntityName . "#" . $assoc->inversedBy . " are ".
+                                $assoc['targetEntity'] . "#" . $assoc['inversedBy'] . " are ".
                                 "incosistent with each other.";
                     }
                 }
 
-                if ($assoc->isOwningSide) {
-                    if ($assoc instanceof ManyToManyMapping) {
-                        foreach ($assoc->joinTable['joinColumns'] AS $joinColumn) {
+                if ($assoc['isOwningSide']) {
+                    if ($assoc['type'] == ClassMetadataInfo::MANY_TO_MANY) {
+                        foreach ($assoc['joinTable']['joinColumns'] AS $joinColumn) {
                             if (!isset($class->fieldNames[$joinColumn['referencedColumnName']])) {
                                 $ce[] = "The referenced column name '" . $joinColumn['referencedColumnName'] . "' does not " .
                                         "have a corresponding field with this column name on the class '" . $class->name . "'.";
@@ -139,8 +138,8 @@ class SchemaValidator
                                         "has to be a primary key column.";
                             }
                         }
-                        foreach ($assoc->joinTable['inverseJoinColumns'] AS $inverseJoinColumn) {
-                            $targetClass = $cmf->getMetadataFor($assoc->targetEntityName);
+                        foreach ($assoc['joinTable']['inverseJoinColumns'] AS $inverseJoinColumn) {
+                            $targetClass = $cmf->getMetadataFor($assoc['targetEntity']);
                             if (!isset($targetClass->fieldNames[$inverseJoinColumn['referencedColumnName']])) {
                                 $ce[] = "The inverse referenced column name '" . $inverseJoinColumn['referencedColumnName'] . "' does not " .
                                         "have a corresponding field with this column name on the class '" . $targetClass->name . "'.";
@@ -153,9 +152,9 @@ class SchemaValidator
                                         "has to be a primary key column.";
                             }
                         }
-                    } else if ($assoc instanceof OneToOneMapping) {
-                        foreach ($assoc->joinColumns AS $joinColumn) {
-                            $targetClass = $cmf->getMetadataFor($assoc->targetEntityName);
+                    } else if ($assoc['type'] & ClassMetadataInfo::TO_ONE) {
+                        foreach ($assoc['joinColumns'] AS $joinColumn) {
+                            $targetClass = $cmf->getMetadataFor($assoc['targetEntity']);
                             if (!isset($targetClass->fieldNames[$joinColumn['referencedColumnName']])) {
                                 $ce[] = "The referenced column name '" . $joinColumn['referencedColumnName'] . "' does not " .
                                         "have a corresponding field with this column name on the class '" . $targetClass->name . "'.";
@@ -171,9 +170,9 @@ class SchemaValidator
                     }
                 }
 
-                if (isset($assoc->orderBy) && $assoc->orderBy !== null) {
-                    $targetClass = $cmf->getMetadataFor($assoc->targetEntityName);
-                    foreach ($assoc->orderBy AS $orderField => $orientation) {
+                if (isset($assoc['orderBy']) && $assoc['orderBy'] !== null) {
+                    $targetClass = $cmf->getMetadataFor($assoc['targetEntity']);
+                    foreach ($assoc['orderBy'] AS $orderField => $orientation) {
                         if (!$targetClass->hasField($orderField)) {
                             $ce[] = "The association " . $class->name."#".$fieldName." is ordered by a foreign field " .
                                     $orderField . " that is not a field on the target entity " . $targetClass->name;

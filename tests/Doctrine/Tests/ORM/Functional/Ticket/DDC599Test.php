@@ -66,7 +66,7 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $class = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC599Subitem');
 
         $this->assertArrayHasKey('children', $class->associationMappings);
-        $this->assertTrue($class->associationMappings['children']->isCascadeRemove);
+        $this->assertTrue($class->associationMappings['children']['isCascadeRemove']);
     }
 }
 

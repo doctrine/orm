@@ -39,8 +39,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
     protected function _getDeleteRowSQL(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
-        $joinTable = $mapping->joinTable;
-        $columns = $mapping->joinTableColumns;
+        $joinTable = $mapping['joinTable'];
+        $columns = $mapping['joinTableColumns'];
         return 'DELETE FROM ' . $joinTable['name'] . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
     }
 
@@ -74,8 +74,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
     protected function _getInsertRowSQL(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
-        $joinTable = $mapping->joinTable;
-        $columns = $mapping->joinTableColumns;
+        $joinTable = $mapping['joinTable'];
+        $columns = $mapping['joinTableColumns'];
         return 'INSERT INTO ' . $joinTable['name'] . ' (' . implode(', ', $columns) . ')'
                 . ' VALUES (' . implode(', ', array_fill(0, count($columns), '?')) . ')';
     }
@@ -104,7 +104,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $params = array();
         $mapping = $coll->getMapping();
-        $isComposite = count($mapping->joinTableColumns) > 2;
+        $isComposite = count($mapping['joinTableColumns']) > 2;
 
         $identifier1 = $this->_uow->getEntityIdentifier($coll->getOwner());
         $identifier2 = $this->_uow->getEntityIdentifier($element);
@@ -114,16 +114,16 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $class2 = $coll->getTypeClass();
         }
 
-        foreach ($mapping->joinTableColumns as $joinTableColumn) {
-            if (isset($mapping->relationToSourceKeyColumns[$joinTableColumn])) {
+        foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
+            if (isset($mapping['relationToSourceKeyColumns'][$joinTableColumn])) {
                 if ($isComposite) {
-                    $params[] = $identifier1[$class1->fieldNames[$mapping->relationToSourceKeyColumns[$joinTableColumn]]];
+                    $params[] = $identifier1[$class1->fieldNames[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]];
                 } else {
                     $params[] = array_pop($identifier1);
                 }
             } else {
                 if ($isComposite) {
-                    $params[] = $identifier2[$class2->fieldNames[$mapping->relationToTargetKeyColumns[$joinTableColumn]]];
+                    $params[] = $identifier2[$class2->fieldNames[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]];
                 } else {
                     $params[] = array_pop($identifier2);
                 }
@@ -141,9 +141,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
     protected function _getDeleteSQL(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
-        $joinTable = $mapping->joinTable;
+        $joinTable = $mapping['joinTable'];
         $whereClause = '';
-        foreach ($mapping->relationToSourceKeyColumns as $relationColumn => $srcColumn) {
+        foreach ($mapping['relationToSourceKeyColumns'] as $relationColumn => $srcColumn) {
             if ($whereClause !== '') $whereClause .= ' AND ';
             $whereClause .= "$relationColumn = ?";
         }
@@ -162,9 +162,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $params = array();
         $mapping = $coll->getMapping();
         $identifier = $this->_uow->getEntityIdentifier($coll->getOwner());
-        if (count($mapping->relationToSourceKeyColumns) > 1) {
+        if (count($mapping['relationToSourceKeyColumns']) > 1) {
             $sourceClass = $this->_em->getClassMetadata(get_class($mapping->getOwner()));
-            foreach ($mapping->relationToSourceKeyColumns as $relColumn => $srcColumn) {
+            foreach ($mapping['relationToSourceKeyColumns'] as $relColumn => $srcColumn) {
                 $params[] = $identifier[$sourceClass->fieldNames[$srcColumn]];
             }
         } else {

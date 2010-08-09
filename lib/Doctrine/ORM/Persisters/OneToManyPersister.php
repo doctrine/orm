@@ -50,7 +50,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $targetClass = $this->_em->getClassMetadata($mapping->getTargetEntityName());
         $table = $targetClass->getTableName();
 
-        $ownerMapping = $targetClass->getAssociationMapping($mapping->mappedBy);
+        $ownerMapping = $targetClass->getAssociationMapping($mapping['mappedBy']);
 
         $setClause = '';
         foreach ($ownerMapping->sourceToTargetKeyColumns as $sourceCol => $targetCol) {
