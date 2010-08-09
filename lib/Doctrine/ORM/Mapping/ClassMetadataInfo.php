@@ -361,6 +361,26 @@ class ClassMetadataInfo
      * A map of field names (of the target entity) to sorting directions (ASC/DESC).
      * Example: array('priority' => 'desc')
      *
+     * - <b>fetch</b> (integer, optional)
+     * The fetching strategy to use for the association, usually defaults to FETCH_LAZY.
+     * Possible values are: ClassMetadata::FETCH_EAGER, ClassMetadata::FETCH_LAZY.
+     *
+     * - <b>joinTable</b> (array, optional, many-to-many only)
+     * Specification of the join table and its join columns (foreign keys).
+     * Only valid for many-to-many mappings. Note that one-to-many associations can be mapped
+     * through a join table by simply mapping the association as many-to-many with a unique
+     * constraint on the join table.
+     * 
+     * A join table definition has the following structure:
+     * <pre>
+     * array(
+     *     'name' => <join table name>,
+     *      'joinColumns' => array(<join column mapping from join table to source table>),
+     *      'inverseJoinColumns' => array(<join column mapping from join table to target table>)
+     * )
+     * </pre>
+     *
+     *
      * @var array
      */
     public $associationMappings = array();
