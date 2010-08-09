@@ -114,22 +114,36 @@ class ClassMetadataInfo
     const CHANGETRACKING_NOTIFY = 3;
     /**
      * Specifies that an association is to be fetched when it is first accessed.
-     * 
-     * @var integer
      */
     const FETCH_LAZY = 2;
     /**
      * Specifies that an association is to be fetched when the owner of the
      * association is fetched. 
-     *
-     * @var integer
      */
     const FETCH_EAGER = 3;
+    /**
+     * Identifies a one-to-one association.
+     */
     const ONE_TO_ONE = 1;
+    /**
+     * Identifies a many-to-one association.
+     */
     const MANY_TO_ONE = 2;
+    /**
+     * Combined bitmask for to-one (single-valued) associations.
+     */
     const TO_ONE = 3;
+    /**
+     * Identifies a one-to-many association.
+     */
     const ONE_TO_MANY = 4;
+    /**
+     * Identifies a many-to-many association.
+     */
     const MANY_TO_MANY = 8;
+    /**
+     * Combined bitmask for to-many (collection-valued) associations.
+     */
     const TO_MANY = 12;
 
     /**
@@ -320,6 +334,32 @@ class ClassMetadataInfo
 
     /**
      * READ-ONLY: The association mappings of this class.
+     *
+     * The mapping definition array supports the following keys:
+     *
+     * - <b>fieldName</b> (string)
+     * The name of the field in the entity the association is mapped to.
+     *
+     * - <b>targetEntity</b> (string)
+     * The class name of the target entity. If it is fully-qualified it is used as is.
+     * If it is a simple, unqualified class name the namespace is assumed to be the same
+     * as the namespace of the source entity.
+     *
+     * - <b>mappedBy</b> (string, required for bidirectional associations)
+     * The name of the field that completes the bidirectional association on the owning side.
+     * This key must be specified on the inverse side of a bidirectional association.
+     * 
+     * - <b>inversedBy</b> (string, required for bidirectional associations)
+     * The name of the field that completes the bidirectional association on the inverse side.
+     * This key must be specified on the owning side of a bidirectional association.
+     *
+     * - <b>cascade</b> (array, optional)
+     * The names of persistence operations to cascade on the association. The set of possible
+     * values are: "persist", "remove", "detach", "merge", "refresh", "all" (implies all others).
+     *
+     * - <b>orderBy</b> (array, one-to-many/many-to-many only)
+     * A map of field names (of the target entity) to sorting directions (ASC/DESC).
+     * Example: array('priority' => 'desc')
      *
      * @var array
      */
