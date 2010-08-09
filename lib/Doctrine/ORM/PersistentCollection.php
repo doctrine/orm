@@ -384,7 +384,7 @@ final class PersistentCollection implements Collection
             $this->changed();
             if ($this->association !== null && $this->association->isOneToMany() &&
                     $this->association->orphanRemoval) {
-                $this->em->getUnitOfWork()->scheduleOrphanRemoval($removed);
+                $this->em->getUnitOfWork()->scheduleOrphanRemoval($element);
             }
         }
         return $removed;
