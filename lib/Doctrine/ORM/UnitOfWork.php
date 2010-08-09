@@ -1940,7 +1940,7 @@ class UnitOfWork implements PropertyChangedListener
                         if ($assoc['fetch'] == ClassMetadata::FETCH_LAZY) {
                             $pColl->setInitialized(false);
                         } else {
-                            $this->loadCollection($assoc, $entity, $pColl);
+                            $this->loadCollection($pColl);
                         }
                         $this->originalEntityData[$oid][$field] = $pColl;
                     }
@@ -1960,23 +1960,22 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Initializes (loads) an associated collection of an entity.
+     * Initializes (loads) an uninitialized persistent collection of an entity.
      *
-     * @param array $assoc The association mapping.
-     * @param object $sourceEntity The entity that "owns" the collection.
-     * @param PeristentCollection $targetCollection The collection to initialize.
+     * @param PeristentCollection $collection The collection to initialize.
      * @todo Maybe later move to EntityManager#initialize($proxyOrCollection). See DDC-733.
      */
-    public function loadCollection(array $assoc, $sourceEntity, $targetCollection)
+    public function loadCollection(PersistentCollection $collection)
     {
+        $assoc = $collection->getMapping();
         switch ($assoc['type']) {
             case ClassMetadata::ONE_TO_MANY:
                 $this->getEntityPersister($assoc['targetEntity'])->loadOneToManyCollection(
-                        $assoc, $sourceEntity, $targetCollection);
+                        $assoc, $collection->getOwner(), $collection);
                 break;
             case ClassMetadata::MANY_TO_MANY:
                 $this->getEntityPersister($assoc['targetEntity'])->loadManyToManyCollection(
-                        $assoc, $sourceEntity, $targetCollection);
+                        $assoc, $collection->getOwner(), $collection);
                 break;
         }
     }

@@ -204,7 +204,7 @@ final class PersistentCollection implements Collection
                 $newObjects = $this->coll->toArray();
             }
             $this->coll->clear();
-            $this->em->getUnitOfWork()->loadCollection($this->association, $this->owner, $this);
+            $this->em->getUnitOfWork()->loadCollection($this);
             $this->takeSnapshot();
             // Reattach NEW objects added through add(), if any.
             if (isset($newObjects)) {

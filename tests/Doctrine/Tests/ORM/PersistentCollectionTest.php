@@ -32,24 +32,6 @@ class PersistentCollectionTest extends \Doctrine\Tests\OrmTestCase
         $class = $this->_emMock->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
         $collection = new PersistentCollection($this->_emMock, $class, new ArrayCollection);
         $collection->setInitialized(false);
-    }
-
-    public function testQueriesAssociationToLoadItself()
-    {
-        $this->markTestSkipped('Refactor!');
-        
-        $class = $this->_emMock->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
-        $collection = new PersistentCollection($this->_emMock, $class, new ArrayCollection);
-        $collection->setInitialized(false);
-
-        $association = $this->getMock('Doctrine\ORM\Mapping\OneToManyMapping', array('load'), array(), '', false, false, false);
-        $association->targetEntityName = 'Doctrine\Tests\Models\ECommerce\ECommerceFeature';
-        $product = new ECommerceProduct();
-        $association->expects($this->once())
-                    ->method('load')
-                    ->with($product, $this->isInstanceOf($collection), $this->isInstanceOf($this->_emMock));
-        $collection->setOwner($product, $association);
-
-        count($collection);
+        $this->assertFalse($collection->isInitialized());
     }
 }
