@@ -2421,13 +2421,13 @@ class Parser
     }
 
     /**
-     * InExpression ::= StateFieldPathExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
+     * InExpression ::= SingleValuedPathExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
      *
      * @return \Doctrine\ORM\Query\AST\InExpression
      */
     public function InExpression()
     {
-        $inExpression = new AST\InExpression($this->StateFieldPathExpression());
+        $inExpression = new AST\InExpression($this->SingleValuedPathExpression());
 
         if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);

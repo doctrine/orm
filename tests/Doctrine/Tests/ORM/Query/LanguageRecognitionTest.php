@@ -135,6 +135,16 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN (1)');
     }
 
+    public function testInExpressionWithSingleValuedAssociationPathExpression()
+    {
+        $this->assertValidDql("SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u WHERE u.avatar IN (?1, ?2)");
+    }
+
+    public function testInvalidInExpressionWithCollectionValuedAssociationPathExpression()
+    {
+        $this->assertInvalidDql("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.phonenumbers IN (?1, ?2)");
+    }
+
     public function testInstanceOfExpressionSupportedInWherePart()
     {
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF Doctrine\Tests\Models\Company\CompanyEmployee');
