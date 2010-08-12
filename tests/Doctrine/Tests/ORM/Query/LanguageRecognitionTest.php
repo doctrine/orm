@@ -53,6 +53,7 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         }
         
         $parser = new \Doctrine\ORM\Query\Parser($query);
+        
         // We do NOT test SQL output here. That only unnecessarily slows down the tests!
         $parser->setCustomOutputTreeWalker('Doctrine\Tests\Mocks\MockTreeWalker');
         
@@ -225,15 +226,25 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidDql("SELECT u.name, (SELECT COUNT(p.phonenumber) FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234) pcount FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = 'jon'");
     }
 
-    /*public function testSubselectInSelectPart2()
+    public function testArithmeticExpressionInSelectPart()
     {
         $this->assertValidDql("SELECT SUM(u.id) / COUNT(u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u");
-    }*/
+    }
 
-    /*public function testSubselectInSelectPart3()
+    public function testArithmeticExpressionInSubselectPart()
     {
         $this->assertValidDql("SELECT (SELECT SUM(u.id) / COUNT(u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u2) value FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = 'jon'");
-    }*/
+    }
+
+    public function testArithmeticExpressionWithParenthesisInSubselectPart()
+    {
+        $this->assertValidDql("SELECT (SELECT (SUM(u.id) / COUNT(u.id)) FROM Doctrine\Tests\Models\CMS\CmsUser u2) value FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = 'jon'");
+    }
+
+    public function testDuplicateAliasInSubselectPart()
+    {
+        $this->assertInvalidDql("SELECT (SELECT SUM(u.id) / COUNT(u.id) AS foo FROM Doctrine\Tests\Models\CMS\CmsUser u2) foo FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = 'jon'");
+    }
 
     public function testPositionalInputParameter()
     {
@@ -375,6 +386,11 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     public function testSomeExpressionWithCorrelatedSubquery()
     {
         $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id > SOME (SELECT u2.id FROM Doctrine\Tests\Models\CMS\CmsUser u2 WHERE u2.name = u.name)');
+    }
+
+    public function testArithmeticExpressionWithoutParenthesisInWhereClause()
+    {
+        $this->assertValidDql('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE SIZE(u.phonenumbers) + 1 > 10');
     }
 
     public function testMemberOfExpression()

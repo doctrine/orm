@@ -102,6 +102,33 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    public function testSelectCorrelatedSubqueryComplexMathematicalExpression()
+    {
+        $this->assertSqlGeneration(
+            'SELECT (SELECT (count(p.phonenumber)+5)*10 FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p JOIN p.user ui WHERE ui.id = u.id) AS c FROM Doctrine\Tests\Models\CMS\CmsUser u',
+            'SELECT (SELECT (count(c0_.phonenumber) + 5) * 10 AS sclr1 FROM cms_phonenumbers c0_ INNER JOIN cms_users c1_ ON c0_.user_id = c1_.id WHERE c1_.id = c2_.id) AS sclr0 FROM cms_users c2_'
+        );
+    }
+
+    public function testSelectComplexMathematicalExpression()
+    {
+        $this->assertSqlGeneration(
+            'SELECT (count(p.phonenumber)+5)*10 FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p JOIN p.user ui WHERE ui.id = ?1',
+            'SELECT (count(c0_.phonenumber) + 5) * 10 AS sclr0 FROM cms_phonenumbers c0_ INNER JOIN cms_users c1_ ON c0_.user_id = c1_.id WHERE c1_.id = ?'
+        );
+    }
+
+    /* NOT (YET?) SUPPORTED.
+       Can be supported if SimpleSelectExpresion supports SingleValuedPathExpression instead of StateFieldPathExpression.
+
+    public function testSingleAssociationPathExpressionInSubselect()
+    {
+        $this->assertSqlGeneration(
+            'SELECT (SELECT p.user FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.user = u) user_id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1',
+            'SELECT (SELECT c0_.user_id FROM cms_phonenumbers c0_ WHERE c0_.user_id = c1_.id) AS sclr0 FROM cms_users c1_ WHERE c1_.id = ?'
+        );
+    }*/
+
     public function testSupportsOrderByWithAscAsDefault()
     {
         $this->assertSqlGeneration(
