@@ -705,6 +705,10 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->assertEquals(1, $this->_em->getConnection()->fetchColumn("select count(*) from cms_addresses"));
 
+        // remove $address to free up unique key id
+        $this->_em->remove($address);
+        $this->_em->flush();
+
         $newAddress = new CmsAddress();
         $newAddress->city = "NewBonn";
         $newAddress->zip = "12354";

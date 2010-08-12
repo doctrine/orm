@@ -361,9 +361,13 @@ class SchemaTool
             $foreignClass = $this->_em->getClassMetadata($mapping['targetEntity']);
 
             if ($mapping['type'] & ClassMetadata::TO_ONE && $mapping['isOwningSide']) {
-                $primaryKeyColumns = $uniqueConstraints = array(); // unnecessary for this relation-type
+                $primaryKeyColumns = $uniqueConstraints = array(); // PK is unnecessary for this relation-type
 
                 $this->_gatherRelationJoinColumns($mapping['joinColumns'], $table, $foreignClass, $mapping, $primaryKeyColumns, $uniqueConstraints);
+
+                foreach($uniqueConstraints AS $indexName => $unique) {
+                    $table->addUniqueIndex($unique['columns'], is_numeric($indexName) ? null : $indexName);
+                }
             } else if ($mapping['type'] == ClassMetadata::ONE_TO_MANY && $mapping['isOwningSide']) {
                 //... create join table, one-many through join table supported later
                 throw ORMException::notSupported();
@@ -381,13 +385,11 @@ class SchemaTool
                 // Build second FK constraint (relation table => target table)
                 $this->_gatherRelationJoinColumns($joinTable['inverseJoinColumns'], $theJoinTable, $foreignClass, $mapping, $primaryKeyColumns, $uniqueConstraints);
 
-                foreach($uniqueConstraints AS $indexName => $unique) {
-                    $theJoinTable->addUniqueIndex(
-                        $unique['columns'], is_numeric($indexName) ? null : $indexName
-                    );
-                }
-
                 $theJoinTable->setPrimaryKey($primaryKeyColumns);
+
+                foreach($uniqueConstraints AS $indexName => $unique) {
+                    $theJoinTable->addUniqueIndex($unique['columns'], is_numeric($indexName) ? null : $indexName);
+                }
             }
         }
     }

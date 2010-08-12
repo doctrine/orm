@@ -774,7 +774,11 @@ class ClassMetadataInfo
                     'referencedColumnName' => 'id'
                 ));
             }
-            foreach ($mapping['joinColumns'] as $joinColumn) {
+            foreach ($mapping['joinColumns'] AS $key => $joinColumn) {
+                if ($mapping['type'] == self::ONE_TO_ONE) {
+                    $mapping['joinColumns'][$key]['unique'] = true;
+                }
+
                 $mapping['sourceToTargetKeyColumns'][$joinColumn['name']] = $joinColumn['referencedColumnName'];
                 $mapping['joinColumnFieldNames'][$joinColumn['name']] = isset($joinColumn['fieldName'])
                         ? $joinColumn['fieldName'] : $joinColumn['name'];
