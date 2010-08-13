@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use PDO, Doctrine\DBAL\Connection;
+use PDO, Doctrine\DBAL\Connection, Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * The ArrayHydrator produces a nested array "graph" that is often (not always)
@@ -109,7 +109,7 @@ class ArrayHydrator extends AbstractHydrator
                 $relation = $this->_getClassMetadata($this->_rsm->aliasMap[$parent])->associationMappings[$relationAlias];
 
                 // Check the type of the relation (many or single-valued)
-                if ( ! $relation->isOneToOne()) {
+                if ( ! ($relation['type'] & ClassMetadata::TO_ONE)) {
                     $oneToOne = false;
                     if (isset($nonemptyComponents[$dqlAlias])) {
                         if ( ! isset($baseElement[$relationAlias])) {

@@ -61,8 +61,8 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
             }
             // Foreign key columns
             foreach ($subClass->associationMappings as $assoc) {
-                if ($assoc->isOwningSide && $assoc->isOneToOne() && ! $assoc->inherited) {
-                    foreach ($assoc->targetToSourceKeyColumns as $srcColumn) {
+                if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE && ! isset($assoc['inherited'])) {
+                    foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
                         $columnAlias = $srcColumn . $this->_sqlAliasCounter++;
                         $columnList .= ', ' . $tableAlias . ".$srcColumn AS $columnAlias";
                         $resultColumnName = $this->_platform->getSQLResultCasing($columnAlias);

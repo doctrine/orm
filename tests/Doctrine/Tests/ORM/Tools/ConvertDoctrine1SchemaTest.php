@@ -91,8 +91,8 @@ class ConvertDoctrine1SchemaTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('test_alias', $userClass->fieldMappings['theAlias']['columnName']);
         $this->assertEquals('theAlias', $userClass->fieldMappings['theAlias']['fieldName']);
 
-        $this->assertEquals('Profile', $profileClass->associationMappings['User']->sourceEntityName);
-        $this->assertEquals('User', $profileClass->associationMappings['User']->targetEntityName);
+        $this->assertEquals('Profile', $profileClass->associationMappings['User']['sourceEntity']);
+        $this->assertEquals('User', $profileClass->associationMappings['User']['targetEntity']);
 
         $this->assertEquals('username', $userClass->table['uniqueConstraints']['username']['columns'][0]);
 

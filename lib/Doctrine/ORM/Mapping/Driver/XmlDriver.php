@@ -238,7 +238,7 @@ class XmlDriver extends AbstractFileDriver
                 );
 
                 if (isset($oneToOneElement['fetch'])) {
-                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . (string)$oneToOneElement['fetch']);
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string)$oneToOneElement['fetch']);
                 }
 
                 if (isset($oneToOneElement['mapped-by'])) {
@@ -282,7 +282,7 @@ class XmlDriver extends AbstractFileDriver
                 );
 
                 if (isset($oneToManyElement['fetch'])) {
-                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . (string)$oneToManyElement['fetch']);
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string)$oneToManyElement['fetch']);
                 }
 
                 if (isset($oneToManyElement->cascade)) {
@@ -314,7 +314,7 @@ class XmlDriver extends AbstractFileDriver
                 );
 
                 if (isset($manyToOneElement['fetch'])) {
-                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . (string)$manyToOneElement['fetch']);
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string)$manyToOneElement['fetch']);
                 }
 
                 if (isset($manyToOneElement['inversed-by'])) {
@@ -357,7 +357,7 @@ class XmlDriver extends AbstractFileDriver
                 );
 
                 if (isset($manyToManyElement['fetch'])) {
-                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . (string)$manyToManyElement['fetch']);
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string)$manyToManyElement['fetch']);
                 }
 
                 if (isset($manyToManyElement['mapped-by'])) {

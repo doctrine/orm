@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\ORM\Mapping\AssociationMapping,
+use Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\Common\Collections\Collection,
     Closure;
 
@@ -127,11 +127,11 @@ final class PersistentCollection implements Collection
      * @param object $entity
      * @param AssociationMapping $assoc
      */
-    public function setOwner($entity, AssociationMapping $assoc)
+    public function setOwner($entity, array $assoc)
     {
         $this->owner = $entity;
         $this->association = $assoc;
-        $this->backRefFieldName = $assoc->inversedBy ?: $assoc->mappedBy;
+        $this->backRefFieldName = $assoc['inversedBy'] ?: $assoc['mappedBy'];
     }
 
     /**
@@ -162,7 +162,7 @@ final class PersistentCollection implements Collection
         $this->coll->add($element);
         // If _backRefFieldName is set and its a one-to-many association,
         // we need to set the back reference.
-        if ($this->backRefFieldName && $this->association->isOneToMany()) {
+        if ($this->backRefFieldName && $this->association['type'] == ClassMetadata::ONE_TO_MANY) {
             // Set back reference to owner
             $this->typeClass->reflFields[$this->backRefFieldName]
                     ->setValue($element, $this->owner);
@@ -185,7 +185,7 @@ final class PersistentCollection implements Collection
         $this->coll->set($key, $element);
         // If _backRefFieldName is set, then the association is bidirectional
         // and we need to set the back reference.
-        if ($this->backRefFieldName && $this->association->isOneToMany()) {
+        if ($this->backRefFieldName && $this->association['type'] == ClassMetadata::ONE_TO_MANY) {
             // Set back reference to owner
             $this->typeClass->reflFields[$this->backRefFieldName]
                     ->setValue($element, $this->owner);
@@ -204,7 +204,7 @@ final class PersistentCollection implements Collection
                 $newObjects = $this->coll->toArray();
             }
             $this->coll->clear();
-            $this->association->load($this->owner, $this, $this->em);
+            $this->em->getUnitOfWork()->loadCollection($this);
             $this->takeSnapshot();
             // Reattach NEW objects added through add(), if any.
             if (isset($newObjects)) {
@@ -279,7 +279,7 @@ final class PersistentCollection implements Collection
     {
         if ( ! $this->isDirty) {
             $this->isDirty = true;
-            if ($this->association !== null && $this->association->isOwningSide && $this->association->isManyToMany() &&
+            if ($this->association !== null && $this->association['isOwningSide'] && $this->association['type'] == ClassMetadata::MANY_TO_MANY &&
                     $this->em->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()) {
                 $this->em->getUnitOfWork()->scheduleForDirtyCheck($this->owner);
             }
@@ -354,8 +354,8 @@ final class PersistentCollection implements Collection
         $removed = $this->coll->remove($key);
         if ($removed) {
             $this->changed();
-            if ($this->association !== null && $this->association->isOneToMany() &&
-                    $this->association->orphanRemoval) {
+            if ($this->association !== null && $this->association['type'] == ClassMetadata::ONE_TO_MANY &&
+                    $this->association['orphanRemoval']) {
                 $this->em->getUnitOfWork()->scheduleOrphanRemoval($removed);
             }
         }
@@ -379,9 +379,15 @@ final class PersistentCollection implements Collection
         }*/
         
         $this->initialize();
-        $result = $this->coll->removeElement($element);
-        $this->changed();
-        return $result;
+        $removed = $this->coll->removeElement($element);
+        if ($removed) {
+            $this->changed();
+            if ($this->association !== null && $this->association['type'] == ClassMetadata::ONE_TO_MANY &&
+                    $this->association['orphanRemoval']) {
+                $this->em->getUnitOfWork()->scheduleOrphanRemoval($element);
+            }
+        }
+        return $removed;
     }
 
     /**
@@ -564,13 +570,13 @@ final class PersistentCollection implements Collection
         if ($this->initialized && $this->isEmpty()) {
             return;
         }
-        if ($this->association->isOneToMany() && $this->association->orphanRemoval) {
+        if ($this->association['type'] == ClassMetadata::ONE_TO_MANY && $this->association['orphanRemoval']) {
             foreach ($this->coll as $element) {
                 $this->em->getUnitOfWork()->scheduleOrphanRemoval($element);
             }
         }
         $this->coll->clear();
-        if ($this->association->isOwningSide) {
+        if ($this->association['isOwningSide']) {
             $this->changed();
             $this->em->getUnitOfWork()->scheduleCollectionDeletion($this);
             $this->takeSnapshot();

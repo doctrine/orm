@@ -105,6 +105,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testBasicOneToOne()
     {
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $user = new CmsUser;
         $user->name = 'Roman';
         $user->username = 'romanb';
@@ -129,7 +130,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $this->_em->clear();
         
-        $user2 = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.id=?1')
+        $user2 = $this->_em->createQuery('select u from \Doctrine\Tests\Models\CMS\CmsUser u where u.id=?1')
                 ->setParameter(1, $userId)
                 ->getSingleResult();
         
@@ -440,7 +441,9 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $articleNew = $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $articleId);
+        // test find() with leading backslash at the same time
+        $articleNew = $this->_em->find('\Doctrine\Tests\Models\CMS\CmsArticle', $articleId);
+        $this->assertTrue($this->_em->contains($articleNew));
         $this->assertEquals("Lorem ipsum dolor sunt.", $articleNew->text);
         
         $this->assertNotSame($article, $articleNew);
@@ -701,6 +704,10 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->flush();
         $this->assertEquals(1, $this->_em->getConnection()->fetchColumn("select count(*) from cms_addresses"));
+
+        // remove $address to free up unique key id
+        $this->_em->remove($address);
+        $this->_em->flush();
 
         $newAddress = new CmsAddress();
         $newAddress->city = "NewBonn";

@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\ORM\Mapping\AssociationMapping;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -74,7 +75,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         $this->_createLoadingFixture();
 
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
-        $metadata->getAssociationMapping('related')->fetchMode = AssociationMapping::FETCH_LAZY;
+        $metadata->associationMappings['related']['fetch'] = ClassMetadata::FETCH_LAZY;
 
         $query = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $products = $query->getResult();

@@ -155,16 +155,15 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testOwningOneToOneAssocation($class)
     {
-        $this->assertTrue($class->associationMappings['address'] instanceof \Doctrine\ORM\Mapping\OneToOneMapping);
         $this->assertTrue(isset($class->associationMappings['address']));
-        $this->assertTrue($class->associationMappings['address']->isOwningSide);
-        $this->assertEquals('user', $class->associationMappings['address']->inversedBy);
+        $this->assertTrue($class->associationMappings['address']['isOwningSide']);
+        $this->assertEquals('user', $class->associationMappings['address']['inversedBy']);
         // Check cascading
-        $this->assertTrue($class->associationMappings['address']->isCascadeRemove);
-        $this->assertFalse($class->associationMappings['address']->isCascadePersist);
-        $this->assertFalse($class->associationMappings['address']->isCascadeRefresh);
-        $this->assertFalse($class->associationMappings['address']->isCascadeDetach);
-        $this->assertFalse($class->associationMappings['address']->isCascadeMerge);
+        $this->assertTrue($class->associationMappings['address']['isCascadeRemove']);
+        $this->assertFalse($class->associationMappings['address']['isCascadePersist']);
+        $this->assertFalse($class->associationMappings['address']['isCascadeRefresh']);
+        $this->assertFalse($class->associationMappings['address']['isCascadeDetach']);
+        $this->assertFalse($class->associationMappings['address']['isCascadeMerge']);
 
         return $class;
     }
@@ -175,17 +174,16 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testInverseOneToManyAssociation($class)
     {
-        $this->assertTrue($class->associationMappings['phonenumbers'] instanceof \Doctrine\ORM\Mapping\OneToManyMapping);
         $this->assertTrue(isset($class->associationMappings['phonenumbers']));
-        $this->assertFalse($class->associationMappings['phonenumbers']->isOwningSide);
-        $this->assertTrue($class->associationMappings['phonenumbers']->isCascadePersist);
-        $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeRemove);
-        $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeRefresh);
-        $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeDetach);
-        $this->assertFalse($class->associationMappings['phonenumbers']->isCascadeMerge);
+        $this->assertFalse($class->associationMappings['phonenumbers']['isOwningSide']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
+        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRemove']);
+        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
+        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
+        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeMerge']);
 
         // Test Order By
-        $this->assertEquals(array('number' => 'ASC'), $class->associationMappings['phonenumbers']->orderBy);
+        $this->assertEquals(array('number' => 'ASC'), $class->associationMappings['phonenumbers']['orderBy']);
 
         return $class;
     }
@@ -196,17 +194,16 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testManyToManyAssociationWithCascadeAll($class)
     {
-        $this->assertTrue($class->associationMappings['groups'] instanceof \Doctrine\ORM\Mapping\ManyToManyMapping);
         $this->assertTrue(isset($class->associationMappings['groups']));
-        $this->assertTrue($class->associationMappings['groups']->isOwningSide);
+        $this->assertTrue($class->associationMappings['groups']['isOwningSide']);
         // Make sure that cascade-all works as expected
-        $this->assertTrue($class->associationMappings['groups']->isCascadeRemove);
-        $this->assertTrue($class->associationMappings['groups']->isCascadePersist);
-        $this->assertTrue($class->associationMappings['groups']->isCascadeRefresh);
-        $this->assertTrue($class->associationMappings['groups']->isCascadeDetach);
-        $this->assertTrue($class->associationMappings['groups']->isCascadeMerge);
+        $this->assertTrue($class->associationMappings['groups']['isCascadeRemove']);
+        $this->assertTrue($class->associationMappings['groups']['isCascadePersist']);
+        $this->assertTrue($class->associationMappings['groups']['isCascadeRefresh']);
+        $this->assertTrue($class->associationMappings['groups']['isCascadeDetach']);
+        $this->assertTrue($class->associationMappings['groups']['isCascadeMerge']);
 
-        $this->assertNull($class->associationMappings['groups']->orderBy);
+        $this->assertFalse(isset($class->associationMappings['groups']['orderBy']));
 
         return $class;
     }
@@ -243,8 +240,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     public function testJoinColumnUniqueAndNullable($class)
     {
         // Non-Nullability of Join Column
-        $this->assertFalse($class->associationMappings['groups']->joinTable['joinColumns'][0]['nullable']);
-        $this->assertFalse($class->associationMappings['groups']->joinTable['joinColumns'][0]['unique']);
+        $this->assertFalse($class->associationMappings['groups']['joinTable']['joinColumns'][0]['nullable']);
+        $this->assertFalse($class->associationMappings['groups']['joinTable']['joinColumns'][0]['unique']);
 
         return $class;
     }
@@ -256,7 +253,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     public function testColumnDefinition($class)
     {
         $this->assertEquals("CHAR(32) NOT NULL", $class->fieldMappings['email']['columnDefinition']);
-        $this->assertEquals("INT NULL", $class->associationMappings['groups']->joinTable['inverseJoinColumns'][0]['columnDefinition']);
+        $this->assertEquals("INT NULL", $class->associationMappings['groups']['joinTable']['inverseJoinColumns'][0]['columnDefinition']);
 
         return $class;
     }
@@ -267,8 +264,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testJoinColumnOnDeleteAndOnUpdate($class)
     {
-        $this->assertEquals('CASCADE', $class->associationMappings['address']->joinColumns[0]['onDelete']);
-        $this->assertEquals('CASCADE', $class->associationMappings['address']->joinColumns[0]['onUpdate']);
+        $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
+        $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onUpdate']);
 
         return $class;
     }

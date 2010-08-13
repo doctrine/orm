@@ -84,7 +84,7 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $bazMetadata->associationMappings = \array_change_key_case($bazMetadata->associationMappings, \CASE_LOWER);
 
         $this->assertArrayHasKey('bar', $bazMetadata->associationMappings);
-        $this->assertType('Doctrine\ORM\Mapping\OneToOneMapping', $bazMetadata->associationMappings['bar']);
+        $this->assertEquals(ClassMetadataInfo::MANY_TO_ONE, $bazMetadata->associationMappings['bar']['type']);
     }
 
     public function testDetectManyToManyTables()

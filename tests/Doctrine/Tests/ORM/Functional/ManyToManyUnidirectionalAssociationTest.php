@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\ORM\Mapping\AssociationMapping;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -79,7 +80,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
     {
         $this->_createFixture();
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCart');
-        $metadata->getAssociationMapping('products')->fetchMode = AssociationMapping::FETCH_LAZY;
+        $metadata->associationMappings['products']['fetch'] = ClassMetadata::FETCH_LAZY;
 
         $query = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c');
         $result = $query->getResult();

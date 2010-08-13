@@ -64,7 +64,8 @@ abstract class AbstractCollectionPersister
      */
     public function delete(PersistentCollection $coll)
     {
-        if ( ! $coll->getMapping()->isOwningSide) {
+        $mapping = $coll->getMapping();
+        if ( ! $mapping['isOwningSide']) {
             return; // ignore inverse side
         }
         $sql = $this->_getDeleteSQL($coll);
@@ -94,7 +95,8 @@ abstract class AbstractCollectionPersister
      */
     public function update(PersistentCollection $coll)
     {
-        if ( ! $coll->getMapping()->isOwningSide) {
+        $mapping = $coll->getMapping();
+        if ( ! $mapping['isOwningSide']) {
             return; // ignore inverse side
         }
         $this->deleteRows($coll);
