@@ -1949,6 +1949,7 @@ class UnitOfWork implements PropertyChangedListener
                             $pColl->setInitialized(false);
                         } else {
                             $this->loadCollection($pColl);
+                            $pColl->takeSnapshot();
                         }
                         $this->originalEntityData[$oid][$field] = $pColl;
                     }

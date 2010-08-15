@@ -15,6 +15,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->_em = $this->_getTestEntityManager();
     }
 
+    /**
+     * Assert a valid SQL generation.
+     * 
+     * @param string $dqlToBeTested
+     * @param string $sqlToBeConfirmed
+     * @param array $queryHints
+     * @param array $queryParams 
+     */
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed, array $queryHints = array(), array $queryParams = array())
     {
         try {
@@ -37,6 +45,39 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             $this->fail($e->getMessage());
         }
     }
+
+    /**
+     * Asser an invalid SQL generation.
+     *
+     * @param string $dqlToBeTested
+     * @param string $expectedException
+     * @param array $queryHints
+     * @param array $queryParams
+     */
+    public function assertInvalidSqlGeneration($dqlToBeTested, $expectedException, array $queryHints = array(), array $queryParams = array())
+    {
+        $this->setExpectedException($expectedException);
+
+        $query = $this->_em->createQuery($dqlToBeTested);
+
+        foreach ($queryParams AS $name => $value) {
+            $query->setParameter($name, $value);
+        }
+
+        $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true)
+                ->useQueryCache(false);
+
+        foreach ($queryHints AS $name => $value) {
+            $query->setHint($name, $value);
+        }
+
+        $sql = $query->getSql();
+        $query->free();
+
+        // If we reached here, test failed
+        $this->fail($sql);
+    }
+
 
     public function testSupportsSelectForAllFields()
     {
@@ -101,6 +142,33 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT f0_.id AS id0, f0_.username AS username1, f1_.id AS id2 FROM forum_users f0_ INNER JOIN forum_avatars f1_ ON f0_.avatar_id = f1_.id'
         );
     }
+
+    public function testSelectCorrelatedSubqueryComplexMathematicalExpression()
+    {
+        $this->assertSqlGeneration(
+            'SELECT (SELECT (count(p.phonenumber)+5)*10 FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p JOIN p.user ui WHERE ui.id = u.id) AS c FROM Doctrine\Tests\Models\CMS\CmsUser u',
+            'SELECT (SELECT (count(c0_.phonenumber) + 5) * 10 AS sclr1 FROM cms_phonenumbers c0_ INNER JOIN cms_users c1_ ON c0_.user_id = c1_.id WHERE c1_.id = c2_.id) AS sclr0 FROM cms_users c2_'
+        );
+    }
+
+    public function testSelectComplexMathematicalExpression()
+    {
+        $this->assertSqlGeneration(
+            'SELECT (count(p.phonenumber)+5)*10 FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p JOIN p.user ui WHERE ui.id = ?1',
+            'SELECT (count(c0_.phonenumber) + 5) * 10 AS sclr0 FROM cms_phonenumbers c0_ INNER JOIN cms_users c1_ ON c0_.user_id = c1_.id WHERE c1_.id = ?'
+        );
+    }
+
+    /* NOT (YET?) SUPPORTED.
+       Can be supported if SimpleSelectExpresion supports SingleValuedPathExpression instead of StateFieldPathExpression.
+
+    public function testSingleAssociationPathExpressionInSubselect()
+    {
+        $this->assertSqlGeneration(
+            'SELECT (SELECT p.user FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.user = u) user_id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1',
+            'SELECT (SELECT c0_.user_id FROM cms_phonenumbers c0_ WHERE c0_.user_id = c1_.id) AS sclr0 FROM cms_users c1_ WHERE c1_.id = ?'
+        );
+    }*/
 
     public function testSupportsOrderByWithAscAsDefault()
     {
@@ -344,6 +412,23 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN (1)',
             'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id NOT IN (1)'
+        );
+    }
+
+    public function testInExpressionWithSingleValuedAssociationPathExpressionInWherePart()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u WHERE u.avatar IN (?1, ?2)',
+            'SELECT f0_.id AS id0, f0_.username AS username1 FROM forum_users f0_ WHERE f0_.avatar_id IN (?, ?)'
+        );
+    }
+
+    public function testInvalidInExpressionWithSingleValuedAssociationPathExpressionOnInverseSide()
+    {
+        // We do not support SingleValuedAssociationPathExpression on inverse side
+        $this->assertInvalidSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.address IN (?1, ?2)",
+            "Doctrine\ORM\Query\QueryException"
         );
     }
 

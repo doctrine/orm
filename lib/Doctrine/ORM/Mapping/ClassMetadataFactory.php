@@ -393,7 +393,7 @@ class ClassMetadataFactory
                 if ( ! $definition) {
                     $sequenceName = $class->getTableName() . '_' . $class->getSingleIdentifierColumnName() . '_seq';
                     $definition['sequenceName'] = $this->_targetPlatform->fixSchemaElementName($sequenceName);
-                    $definition['allocationSize'] = 10;
+                    $definition['allocationSize'] = 1;
                     $definition['initialValue'] = 1;
                     $class->setSequenceGeneratorDefinition($definition);
                 }
