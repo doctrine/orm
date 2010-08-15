@@ -74,10 +74,19 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = "SELECT r, s FROM ".__NAMESPACE__."\DDC117Reference r JOIN r.source s WHERE s.title = ?1";
         $dqlRef = $this->_em->createQuery($dql)->setParameter(1, 'Foo')->getSingleResult();
 
-        $this->assertType(__NAMESPACE__."\DDC117Reference", $mapRef);
-        $this->assertType(__NAMESPACE__."\DDC117Article", $mapRef->target());
-        $this->assertType(__NAMESPACE__."\DDC117Article", $mapRef->source());
+        $this->assertType(__NAMESPACE__."\DDC117Reference", $dqlRef);
+        $this->assertType(__NAMESPACE__."\DDC117Article", $dqlRef->target());
+        $this->assertType(__NAMESPACE__."\DDC117Article", $dqlRef->source());
         $this->assertSame($dqlRef, $this->_em->find(__NAMESPACE__."\DDC117Reference", $idCriteria));
+
+        $dqlRef->setDescription("New Description!!");
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $dql = "SELECT r, s FROM ".__NAMESPACE__."\DDC117Reference r JOIN r.source s WHERE s.title = ?1";
+        $dqlRef = $this->_em->createQuery($dql)->setParameter(1, 'Foo')->getSingleResult();
+
+        $this->assertEquals('New Description!!', $dqlRef->getDescription());
     }
 
     /**
@@ -187,6 +196,14 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->articleDetails = new DDC117ArticleDetails($this->article1, "Very long text");
         $this->_em->persist($this->articleDetails);
         $this->_em->flush();
+
+        $this->articleDetails->update("not so very long text!");
+        $this->_em->flush();
+        $this->_em->clear();
+
+        /* @var $article DDC117Article */
+        $article = $this->_em->find(get_class($this->article1), $this->article1->id());
+        $this->assertEquals('not so very long text!', $article->getText());
     }
 }
 
@@ -246,6 +263,11 @@ class DDC117Article
     {
         $this->translations[] = new DDC117Translation($this, $language, $title);
     }
+
+    public function getText()
+    {
+        return $this->details->getText();
+    }
 }
 
 /**
@@ -266,7 +288,17 @@ class DDC117ArticleDetails
         $this->article = $article;
         $article->setDetails($this);
 
+        $this->update($text);
+    }
+
+    public function update($text)
+    {
         $this->text = $text;
+    }
+
+    public function getText()
+    {
+        return $this->text;
     }
 }
 
@@ -314,6 +346,16 @@ class DDC117Reference
     public function target()
     {
         return $this->target;
+    }
+
+    public function setDescription($desc)
+    {
+        $this->description = $desc;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
     }
 }
 

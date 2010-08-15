@@ -303,9 +303,16 @@ class BasicEntityPersister
         $where = array();
         $id = $this->_em->getUnitOfWork()->getEntityIdentifier($entity);
         foreach ($this->_class->identifier as $idField) {
-            $where[] = $this->_class->getQuotedColumnName($idField, $this->_platform);
-            $params[] = $id[$idField];
-            $types[] = $this->_class->fieldMappings[$idField]['type'];
+            if (isset($this->_class->associationMappings[$idField])) {
+                $targetMapping = $this->_em->getClassMetadata($this->_class->associationMappings[$idField]['targetEntity']);
+                $where[] = $this->_class->associationMappings[$idField]['joinColumns'][0]['name'];
+                $params[] = $id[$idField];
+                $types[] = $targetMapping->fieldMappings[$targetMapping->identifier[0]]['type'];
+            } else {
+                $where[] = $this->_class->getQuotedColumnName($idField, $this->_platform);
+                $params[] = $id[$idField];
+                $types[] = $this->_class->fieldMappings[$idField]['type'];
+            }
         }
 
         if ($versioned) {
