@@ -79,14 +79,42 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertType(__NAMESPACE__."\DDC117Article", $dqlRef->source());
         $this->assertSame($dqlRef, $this->_em->find(__NAMESPACE__."\DDC117Reference", $idCriteria));
 
-        $dqlRef->setDescription("New Description!!");
-        $this->_em->flush();
-        $this->_em->clear();
-
         $dql = "SELECT r, s FROM ".__NAMESPACE__."\DDC117Reference r JOIN r.source s WHERE s.title = ?1";
         $dqlRef = $this->_em->createQuery($dql)->setParameter(1, 'Foo')->getSingleResult();
 
-        $this->assertEquals('New Description!!', $dqlRef->getDescription());
+        $this->_em->contains($dqlRef);
+    }
+
+    /**
+     * @group DDC-117
+     */
+    public function testUpdateAssocationEntity()
+    {
+        $idCriteria = array('source' => $this->article1->id(), 'target' => $this->article2->id());
+
+        $mapRef = $this->_em->find(__NAMESPACE__."\DDC117Reference", $idCriteria);
+        $mapRef->setDescription("New Description!!");
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $mapRef = $this->_em->find(__NAMESPACE__."\DDC117Reference", $idCriteria);
+
+        $this->assertEquals('New Description!!', $mapRef->getDescription());
+    }
+
+    /**
+     * @group DDC-117
+     */
+    public function testFetchDql()
+    {
+        $dql = "SELECT r, s FROM ".__NAMESPACE__."\DDC117Reference r JOIN r.source s WHERE s.title = ?1";
+        $refs = $this->_em->createQuery($dql)->setParameter(1, 'Foo')->getResult();
+
+        $this->assertTrue(count($refs) > 0, "Has to contain at least one Reference.");
+        foreach ($refs AS $ref) {
+            $this->assertType(__NAMESPACE__."\DDC117Reference", $ref, "Contains only Reference instances.");
+            $this->assertTrue($this->_em->contains($ref), "Contains Reference in the IdentityMap.");
+        }
     }
 
     /**
