@@ -93,6 +93,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $idCriteria = array('source' => $this->article1->id(), 'target' => $this->article2->id());
 
         $mapRef = $this->_em->find(__NAMESPACE__."\DDC117Reference", $idCriteria);
+        $this->assertNotNull($mapRef);
         $mapRef->setDescription("New Description!!");
         $this->_em->flush();
         $this->_em->clear();
@@ -240,7 +241,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC117Article
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @Id @Column(type="integer", name="article_id") @GeneratedValue */
     private $id;
     /** @Column */
     private $title;
@@ -303,7 +304,11 @@ class DDC117Article
  */
 class DDC117ArticleDetails
 {
-    /** @Id @OneToOne(targetEntity="DDC117Article", inversedBy="details") */
+    /**
+     * @Id
+     * @OneToOne(targetEntity="DDC117Article", inversedBy="details")
+     * @JoinColumn(name="article_id", referencedColumnName="article_id")
+     */
     private $article;
 
     /**
@@ -336,12 +341,16 @@ class DDC117ArticleDetails
 class DDC117Reference
 {
     /**
-     * @Id @ManyToOne(targetEntity="DDC117Article", inversedBy="references")
+     * @Id
+     * @ManyToOne(targetEntity="DDC117Article", inversedBy="references")
+     * @JoinColumn(name="source_id", referencedColumnName="article_id")
      */
     private $source;
 
     /**
-     * @Id @ManyToOne(targetEntity="DDC117Article", inversedBy="references")
+     * @Id
+     * @ManyToOne(targetEntity="DDC117Article", inversedBy="references")
+     * @JoinColumn(name="target_id", referencedColumnName="article_id")
      */
     private $target;
 
@@ -393,7 +402,9 @@ class DDC117Reference
 class DDC117Translation
 {
     /**
-     * @Id @ManyToOne(targetEntity="DDC117Article")
+     * @Id
+     * @ManyToOne(targetEntity="DDC117Article")
+     * @JoinColumn(name="article_id", referencedColumnName="article_id")
      */
     private $article;
 
