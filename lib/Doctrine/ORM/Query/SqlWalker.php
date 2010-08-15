@@ -1106,7 +1106,7 @@ class SqlWalker implements TreeWalker
         $expr = $simpleSelectExpression->expression;
 
         if ($expr instanceof AST\PathExpression) {
-            $sql .= ' ' . $this->walkPathExpression($expr);
+            $sql .= $this->walkPathExpression($expr);
         } else if ($expr instanceof AST\AggregateExpression) {
             if ( ! $simpleSelectExpression->fieldIdentificationVariable) {
                 $alias = $this->_scalarResultCounter++;
@@ -1114,17 +1114,55 @@ class SqlWalker implements TreeWalker
                 $alias = $simpleSelectExpression->fieldIdentificationVariable;
             }
 
-            $sql .= ' ' . $this->walkAggregateExpression($expr) . ' AS dctrn__' . $alias;
+            $sql .= $this->walkAggregateExpression($expr) . ' AS dctrn__' . $alias;
+        } else if ($expr instanceof AST\Subselect) {
+            if ( ! $simpleSelectExpression->fieldIdentificationVariable) {
+                $alias = $this->_scalarResultCounter++;
+            } else {
+                $alias = $simpleSelectExpression->fieldIdentificationVariable;
+            }
+
+            $columnAlias = 'sclr' . $this->_aliasCounter++;
+            $sql .= '(' . $this->walkSubselect($expr) . ') AS ' . $columnAlias;
+            $this->_scalarResultAliasMap[$alias] = $columnAlias;
+        } else if ($expr instanceof AST\Functions\FunctionNode) {
+            if ( ! $simpleSelectExpression->fieldIdentificationVariable) {
+                $alias = $this->_scalarResultCounter++;
+            } else {
+                $alias = $simpleSelectExpression->fieldIdentificationVariable;
+            }
+
+            $columnAlias = 'sclr' . $this->_aliasCounter++;
+            $sql .= $this->walkFunction($expr) . ' AS ' . $columnAlias;
+            $this->_scalarResultAliasMap[$alias] = $columnAlias;
+        } else if (
+            $expr instanceof AST\SimpleArithmeticExpression ||
+            $expr instanceof AST\ArithmeticTerm ||
+            $expr instanceof AST\ArithmeticFactor ||
+            $expr instanceof AST\ArithmeticPrimary
+        ) {
+            if ( ! $simpleSelectExpression->fieldIdentificationVariable) {
+                $alias = $this->_scalarResultCounter++;
+            } else {
+                $alias = $simpleSelectExpression->fieldIdentificationVariable;
+            }
+
+            $columnAlias = 'sclr' . $this->_aliasCounter++;
+            $sql .= $this->walkSimpleArithmeticExpression($expr) . ' AS ' . $columnAlias;
+            $this->_scalarResultAliasMap[$alias] = $columnAlias;
         } else {
             // IdentificationVariable
-            // FIXME: Composite key support, or select all columns? Does that make sense
-            //        in a subquery?
             $class = $this->_queryComponents[$expr]['metadata'];
-            $sql .= ' ' . $this->getSqlTableAlias($class->getTableName(), $expr) . '.'
-                  . $class->getQuotedColumnName($class->identifier[0], $this->_platform);
+            $tableAlias = $this->getSqlTableAlias($class->getTableName(), $expr);
+            $first = true;
+
+            foreach ($class->identifier as $identifier) {
+                if ($first) $first = false; else $sql .= ', ';
+                $sql .= $tableAlias . '.' . $class->getQuotedColumnName($identifier, $this->_platform);
+            }
         }
 
-        return $sql;
+        return ' ' . $sql;
     }
 
     /**

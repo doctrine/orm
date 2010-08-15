@@ -513,7 +513,7 @@ public function <methodName>()
                     $methods[] = $code;
                 }
             } else if ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_MANY) {
-                if ($associationMapping->isOwningSide) {
+                if ($associationMapping['isOwningSide']) {
                     if ($code = $this->_generateEntityStubMethod($metadata, 'set', $associationMapping['fieldName'], $associationMapping['targetEntity'])) {
                         $methods[] = $code;
                     }

@@ -398,6 +398,45 @@ class Parser
     }
 
     /**
+     * Peek beyond the matched closing parenthesis and return the first token after that one.
+     *
+     * @return array
+     */
+    private function _peekBeyondClosingParenthesis()
+    {
+        $token = $this->_lexer->peek();
+        $numUnmatched = 1;
+
+        while ($numUnmatched > 0 && $token !== null) {
+            if ($token['value'] == ')') {
+                --$numUnmatched;
+            } else if ($token['value'] == '(') {
+                ++$numUnmatched;
+            }
+
+            $token = $this->_lexer->peek();
+        }
+        
+        $this->_lexer->resetPeek();
+
+        return $token;
+    }
+
+    /**
+     * Checks if the given token indicates a mathematical operator.
+     *
+     * @return boolean TRUE is the token is a mathematical operator, FALSE otherwise.
+     */
+    private function _isMathOperator($token)
+    {
+        if (in_array($token['value'], array("+",  "-", "/", "*"))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Checks if the next-next (after lookahead) token starts a function.
      *
      * @return boolean TRUE if the next-next tokens start a function, FALSE otherwise.
@@ -451,7 +490,7 @@ class Parser
     }
 
     /**
-     * Validates that the given <tt>IdentificationVariable</tt> is a semantically correct.
+     * Validates that the given <tt>IdentificationVariable</tt> is semantically correct.
      * It must exist in query components list.
      *
      * @return void
@@ -486,6 +525,12 @@ class Parser
         }
     }
 
+    /**
+     * Validates that the given <tt>PartialObjectExpression</tt> is semantically correct.
+     * It must exist in query components list.
+     *
+     * @return void
+     */
     private function _processDeferredPartialObjectExpressions()
     {
         foreach ($this->_deferredPartialObjectExpressions as $deferredItem) {
@@ -511,7 +556,7 @@ class Parser
     }
 
     /**
-     * Validates that the given <tt>ResultVariable</tt> is a semantically correct.
+     * Validates that the given <tt>ResultVariable</tt> is semantically correct.
      * It must exist in query components list.
      *
      * @return void
@@ -547,7 +592,7 @@ class Parser
     }
 
     /**
-     * Validates that the given <tt>PathExpression</tt> is a semantically correct for grammar rules:
+     * Validates that the given <tt>PathExpression</tt> is semantically correct for grammar rules:
      *
      * AssociationPathExpression             ::= CollectionValuedPathExpression | SingleValuedAssociationPathExpression
      * SingleValuedPathExpression            ::= StateFieldPathExpression | SingleValuedAssociationPathExpression
@@ -1537,7 +1582,7 @@ class Parser
             $peek = $this->_lexer->peek(); // lookahead => token after the token after the '.'
             $this->_lexer->resetPeek();
 
-            if ($peek['value'] == '+' || $peek['value'] == '-' || $peek['value'] == '/' || $peek['value'] == '*') {
+            if ($this->_isMathOperator($peek)) {
                 return $this->SimpleArithmeticExpression();
             }
 
@@ -1545,6 +1590,14 @@ class Parser
         } else if ($lookahead == Lexer::T_INTEGER || $lookahead == Lexer::T_FLOAT) {
             return $this->SimpleArithmeticExpression();
         } else if ($this->_isFunction()) {
+            // We may be in an ArithmeticExpression (find the matching ")" and inspect for Math operator)
+            $this->_lexer->peek(); // "("
+            $peek = $this->_peekBeyondClosingParenthesis();
+
+            if ($this->_isMathOperator($peek)) {
+                return $this->SimpleArithmeticExpression();
+            }
+            
             return $this->FunctionDeclaration();
         } else if ($lookahead == Lexer::T_STRING) {
             return $this->StringPrimary();
@@ -1603,7 +1656,12 @@ class Parser
                 $expression = $this->SimpleArithmeticExpression();
             }
         } else if ($this->_isFunction()) {
-            if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
+            $this->_lexer->peek(); // "("
+            $beyond = $this->_peekBeyondClosingParenthesis();
+
+            if ($this->_isMathOperator($beyond)) {
+                $expression = $this->ScalarExpression();
+            } else if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
                 $expression = $this->AggregateExpression();
             } else {
                 // Shortcut: ScalarExpression => Function
@@ -1644,26 +1702,51 @@ class Parser
     }
 
     /**
-     * SimpleSelectExpression ::= StateFieldPathExpression | IdentificationVariable | (AggregateExpression [["AS"] AliasResultVariable])
+     * SimpleSelectExpression ::=
+     *      StateFieldPathExpression | IdentificationVariable |
+     *      ((AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable])
      *
      * @return \Doctrine\ORM\Query\AST\SimpleSelectExpression
      */
     public function SimpleSelectExpression()
     {
-        if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
-            // SingleValuedPathExpression | IdentificationVariable
-            $glimpse = $this->_lexer->glimpse();
+        $peek = $this->_lexer->glimpse();
 
-            if ($glimpse['type'] == Lexer::T_DOT) {
-                return new AST\SimpleSelectExpression($this->StateFieldPathExpression());
+        if ($peek['value'] != '(' && $this->_lexer->lookahead['type'] === Lexer::T_IDENTIFIER) {
+            // SingleValuedPathExpression | IdentificationVariable
+            if ($peek['value'] == '.') {
+                $expression = $this->StateFieldPathExpression();
+            } else {
+                $expression = $this->IdentificationVariable();
             }
 
-            $this->match(Lexer::T_IDENTIFIER);
+            return new AST\SimpleSelectExpression($expression);
+        } else if ($this->_lexer->lookahead['value'] == '(') {
+            if ($peek['type'] == Lexer::T_SELECT) {
+                // Subselect
+                $this->match(Lexer::T_OPEN_PARENTHESIS);
+                $expression = $this->Subselect();
+                $this->match(Lexer::T_CLOSE_PARENTHESIS);
+            } else {
+                // Shortcut: ScalarExpression => SimpleArithmeticExpression
+                $expression = $this->SimpleArithmeticExpression();
+            }
 
-            return new AST\SimpleSelectExpression($this->_lexer->token['value']);
+            return new AST\SimpleSelectExpression($expression);
         }
 
-        $expr = new AST\SimpleSelectExpression($this->AggregateExpression());
+        $this->_lexer->peek();
+        $beyond = $this->_peekBeyondClosingParenthesis();
+
+        if ($this->_isMathOperator($beyond)) {
+            $expression = $this->ScalarExpression();
+        } else if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
+            $expression = $this->AggregateExpression();
+        } else {
+            $expression = $this->FunctionDeclaration();
+        }
+
+        $expr = new AST\SimpleSelectExpression($expression);
 
         if ($this->_lexer->isNextToken(Lexer::T_AS)) {
             $this->match(Lexer::T_AS);
@@ -1867,23 +1950,6 @@ class Parser
             default:
                 return $this->ComparisonExpression();
         }
-    }
-
-    private function _peekBeyondClosingParenthesis()
-    {
-        $numUnmatched = 1;
-        $token = $this->_lexer->peek();
-        while ($numUnmatched > 0 && $token !== null) {
-            if ($token['value'] == ')') {
-                --$numUnmatched;
-            } else if ($token['value'] == '(') {
-                ++$numUnmatched;
-            }
-            $token = $this->_lexer->peek();
-        }
-        $this->_lexer->resetPeek();
-
-        return $token;
     }
 
     /**
@@ -2355,13 +2421,13 @@ class Parser
     }
 
     /**
-     * InExpression ::= StateFieldPathExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
+     * InExpression ::= SingleValuedPathExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
      *
      * @return \Doctrine\ORM\Query\AST\InExpression
      */
     public function InExpression()
     {
-        $inExpression = new AST\InExpression($this->StateFieldPathExpression());
+        $inExpression = new AST\InExpression($this->SingleValuedPathExpression());
 
         if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
