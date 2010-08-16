@@ -2,8 +2,8 @@ Doctrine 2 features a lightweight event system that is part of the Common packag
 
 ++ The Event System
 
-The event system is controlled by the `EventManager`. It is the central point 
-of Doctrine's event listener system. Listeners are registered on the manager 
+The event system is controlled by the `EventManager`. It is the central point
+of Doctrine's event listener system. Listeners are registered on the manager
 and events are dispatched through the manager.
 
     [php]
@@ -61,8 +61,6 @@ method which returns an array of events it should be subscribed to.
     [php]
     class TestEventSubscriber implements \Doctrine\Common\EventSubscriber
     {
-        const preFoo = 'preFoo';
-
         public $preFooInvoked = false;
 
         public function preFoo()
@@ -72,7 +70,7 @@ method which returns an array of events it should be subscribed to.
 
         public function getSubscribedEvents()
         {
-            return array(self::preFoo);
+            return array(TestEvent::preFoo);
         }
     }
 
@@ -90,6 +88,16 @@ Now you can test the `$eventSubscriber` instance to see if the `preFoo()` method
     if ($eventSubscriber->preFooInvoked) {
         echo 'pre foo invoked!';
     }
+
++++ Naming convention
+
+Events being used with the Doctrine 2 EventManager are best named with camelcase and the value of the corresponding constant should be the name of the constant itself, even with spelling. This has several reasons:
+
+* It is easy to read.
+* Simplicity.
+* Each method within an EventSubscriber is named after the corresponding constant. If constant name and constant value differ, you MUST use the new value and thus, your code might be subject to codechanges when the value changes. This contradicts the intention of a constant.
+
+An example for a correct notation can be found in the example `EventTest` above.
 
 ++ Lifecycle Events
 
@@ -128,12 +136,12 @@ These can be hooked into by two different types of event listeners:
 
 ++ Lifecycle Callbacks
 
-A lifecycle event is a regular event with the additional feature of providing 
+A lifecycle event is a regular event with the additional feature of providing
 a mechanism to register direct callbacks inside the corresponding entity classes
 that are executed when the lifecycle event occurs.
 
     [php]
-    
+
     /** @Entity @HasLifecycleCallbacks */
     class User
     {
@@ -430,7 +438,7 @@ to
 
 ++ Load ClassMetadata Event
 
-When the mapping information for an entity is read, it is populated in to a 
+When the mapping information for an entity is read, it is populated in to a
 `ClassMetadataInfo` instance. You can hook in to this process and manipulate
 the instance.
 
