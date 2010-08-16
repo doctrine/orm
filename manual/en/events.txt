@@ -82,7 +82,7 @@ method which returns an array of events it should be subscribed to.
 Now when you dispatch an event any event subscribers will be notified for that event.
 
     [php]
-    $evm->dispatchEvent(TestEventSubscriber::preFoo);
+    $evm->dispatchEvent(TestEvent::preFoo);
 
 Now you can test the `$eventSubscriber` instance to see if the `preFoo()` method was invoked.
 
