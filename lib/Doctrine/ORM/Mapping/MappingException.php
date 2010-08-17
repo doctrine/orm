@@ -123,7 +123,7 @@ class MappingException extends \Doctrine\ORM\ORMException
      */
     public static function reflectionFailure($entity, \ReflectionException $previousException)
     {
-        return new self('An error occurred in ' . $entity, 0, $previousException);
+        return new self('An error occurred in ' . $entity .' during reflection. Make sure all attributes exist within this class.', 0, $previousException);
     }
 
     public static function joinColumnMustPointToMappedField($className, $joinColumn)
