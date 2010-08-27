@@ -79,15 +79,11 @@ class YamlDriver extends AbstractFileDriver
                         'type' => $discrColumn['type'],
                         'length' => $discrColumn['length']
                     ));
-                } else {
-                    throw MappingException::missingDiscriminatorColumn($className);
                 }
 
                 // Evaluate discriminatorMap
                 if (isset($element['discriminatorMap'])) {
                     $metadata->setDiscriminatorMap($element['discriminatorMap']);
-                } else {
-                    throw MappingException::missingDiscriminatorMap($className);
                 }
             }
         }
