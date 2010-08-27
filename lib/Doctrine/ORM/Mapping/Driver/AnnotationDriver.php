@@ -179,16 +179,12 @@ class AnnotationDriver implements Driver
                         'type' => $discrColumnAnnot->type,
                         'length' => $discrColumnAnnot->length
                     ));
-                } else {
-                    throw MappingException::missingDiscriminatorColumn($className);
                 }
 
                 // Evaluate DiscriminatorMap annotation
                 if (isset($classAnnotations['Doctrine\ORM\Mapping\DiscriminatorMap'])) {
                     $discrMapAnnot = $classAnnotations['Doctrine\ORM\Mapping\DiscriminatorMap'];
                     $metadata->setDiscriminatorMap($discrMapAnnot->value);
-                } else {
-                    throw MappingException::missingDiscriminatorMap($className);
                 }
             }
         }
