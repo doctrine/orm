@@ -87,8 +87,6 @@ class XmlDriver extends AbstractFileDriver
                         'type' => (string)$discrColumn['type'],
                         'length' => (string)$discrColumn['length']
                     ));
-                } else {
-                    throw MappingException::missingDiscriminatorColumn($className);
                 }
 
                 // Evaluate <discriminator-map...>
@@ -98,8 +96,6 @@ class XmlDriver extends AbstractFileDriver
                         $map[(string)$discrMapElement['value']] = (string)$discrMapElement['class'];
                     }
                     $metadata->setDiscriminatorMap($map);
-                } else {
-                    throw MappingException::missingDiscriminatorMap($className);
                 }
             }
         }

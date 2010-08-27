@@ -198,6 +198,6 @@ class YamlExporter extends AbstractExporter
             $array['lifecycleCallbacks'] = $metadata->lifecycleCallbacks;
         }
 
-        return \Symfony\Components\Yaml\Yaml::dump(array($metadata->name => $array), 10);
+        return \Symfony\Component\Yaml\Yaml::dump(array($metadata->name => $array), 10);
     }
 }

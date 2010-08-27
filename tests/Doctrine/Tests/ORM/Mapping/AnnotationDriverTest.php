@@ -90,24 +90,6 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $this->assertNotContains($extraneousClassName, $classes);
     }
 
-    public function testInheritenceWithoutDiscriminatorMap()
-    {
-        $cm = new ClassMetadata('Doctrine\Tests\ORM\Mapping\ClassWithoutDiscriminatorMap');
-        $annotationDriver = $this->_loadDriver();
-
-        $this->setExpectedException("Doctrine\ORM\Mapping\MappingException");
-        $annotationDriver->loadMetadataForClass($cm->name, $cm);
-    }
-
-    public function testInheritenceWithoutDiscriminatorColumn()
-    {
-        $cm = new ClassMetadata('Doctrine\Tests\ORM\Mapping\ClassWithoutDiscriminatorColumn');
-        $annotationDriver = $this->_loadDriver();
-
-        $this->setExpectedException("Doctrine\ORM\Mapping\MappingException");
-        $annotationDriver->loadMetadataForClass($cm->name, $cm);
-    }
-
     protected function _loadDriverForCMSModels()
     {
         $annotationDriver = $this->_loadDriver();
@@ -133,28 +115,6 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
  * @Entity
  */
 class ColumnWithoutType
-{
-    /** @Id @Column */
-    public $id;
-}
-
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"a" = "ClassWithoutDiscriminatorColumn"})
- */
-class ClassWithoutDiscriminatorColumn
-{
-    /** @Id @Column */
-    public $id;
-}
-
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- */
-class ClassWithoutDiscriminatorMap
 {
     /** @Id @Column */
     public $id;

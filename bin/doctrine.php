@@ -21,16 +21,16 @@ if (file_exists($configFile)) {
     require $configFile;
     
     foreach ($GLOBALS as $helperSetCandidate) {
-        if ($helperSetCandidate instanceof \Symfony\Components\Console\Helper\HelperSet) {
+        if ($helperSetCandidate instanceof \Symfony\Component\Console\Helper\HelperSet) {
             $helperSet = $helperSetCandidate;
             break;
         }
     }
 }
 
-$helperSet = ($helperSet) ?: new \Symfony\Components\Console\Helper\HelperSet();
+$helperSet = ($helperSet) ?: new \Symfony\Component\Console\Helper\HelperSet();
 
-$cli = new \Symfony\Components\Console\Application('Doctrine Command Line Interface', Doctrine\ORM\Version::VERSION);
+$cli = new \Symfony\Component\Console\Application('Doctrine Command Line Interface', Doctrine\ORM\Version::VERSION);
 $cli->setCatchExceptions(true);
 $cli->setHelperSet($helperSet);
 $cli->addCommands(array(

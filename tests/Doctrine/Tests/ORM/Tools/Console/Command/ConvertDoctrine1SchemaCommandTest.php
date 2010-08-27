@@ -13,7 +13,7 @@ class ConvertDoctrine1SchemaCommandTest extends \Doctrine\Tests\OrmTestCase
         $command = new ConvertDoctrine1SchemaCommand();
         $command->setEntityGenerator($entityGenerator);
 
-        $output = $this->getMock('Symfony\Components\Console\Output\OutputInterface');
+        $output = $this->getMock('Symfony\Component\Console\Output\OutputInterface');
         $output->expects($this->once())
                ->method('write')
                ->with($this->equalTo('No Metadata Classes to process.' . PHP_EOL));

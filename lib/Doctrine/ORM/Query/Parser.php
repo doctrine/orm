@@ -425,15 +425,11 @@ class Parser
     /**
      * Checks if the given token indicates a mathematical operator.
      *
-     * @return boolean TRUE is the token is a mathematical operator, FALSE otherwise.
+     * @return boolean TRUE if the token is a mathematical operator, FALSE otherwise.
      */
     private function _isMathOperator($token)
     {
-        if (in_array($token['value'], array("+",  "-", "/", "*"))) {
-            return true;
-        }
-
-        return false;
+        return in_array($token['value'], array("+", "-", "/", "*"));
     }
 
     /**

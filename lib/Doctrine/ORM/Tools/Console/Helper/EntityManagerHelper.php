@@ -21,7 +21,7 @@
 
 namespace Doctrine\ORM\Tools\Console\Helper;
 
-use Symfony\Components\Console\Helper\Helper,
+use Symfony\Component\Console\Helper\Helper,
     Doctrine\ORM\EntityManager;
 
 /**

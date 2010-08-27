@@ -21,9 +21,9 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
-use Symfony\Components\Console\Input\InputArgument,
-    Symfony\Components\Console\Input\InputOption,
-    Symfony\Components\Console;
+use Symfony\Component\Console\Input\InputArgument,
+    Symfony\Component\Console\Input\InputOption,
+    Symfony\Component\Console;
 
 /**
  * Command to ensure that Doctrine is properly configured for a production environment.
