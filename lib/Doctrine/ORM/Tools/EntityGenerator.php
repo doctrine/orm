@@ -82,7 +82,7 @@ class EntityGenerator
     private static $_classTemplate =
 '<?php
 
-<namespace><use>
+<namespace>
 
 <entityAnnotation>
 <entityClassName>
@@ -189,7 +189,6 @@ public function <methodName>()
     {
         $placeHolders = array(
             '<namespace>',
-            '<use>',
             '<entityAnnotation>',
             '<entityClassName>',
             '<entityBody>'
@@ -197,7 +196,6 @@ public function <methodName>()
 
         $replacements = array(
             $this->_generateEntityNamespace($metadata),
-            $this->_generateEntityUse($metadata),
             $this->_generateEntityDocBlock($metadata),
             $this->_generateEntityClassName($metadata),
             $this->_generateEntityBody($metadata)
@@ -306,13 +304,6 @@ public function <methodName>()
     {
         if ($this->_hasNamespace($metadata)) {
             return 'namespace ' . $this->_getNamespace($metadata) .';';
-        }
-    }
-
-    private function _generateEntityUse(ClassMetadataInfo $metadata)
-    {
-        if ($this->_extendsClass()) {
-            return "\n\nuse " . $this->_getClassToExtendName() . ";\n";
         }
     }
 

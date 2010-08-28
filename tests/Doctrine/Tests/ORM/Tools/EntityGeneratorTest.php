@@ -20,6 +20,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->_generator->setGenerateStubMethods(true);
         $this->_generator->setRegenerateEntityIfExists(false);
         $this->_generator->setUpdateEntityIfExists(true);
+        $this->_generator->setClassToExtend('stdClass');
     }
 
     public function testWriteEntityClass()
@@ -99,6 +100,18 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(strstr($code, 'private $test;') !== false);
         $this->assertTrue(strstr($code, 'public function getTest(') !== false);
         $this->assertTrue(strstr($code, 'public function setTest(') !== false);
+
+        return $metadata;
+    }
+
+    /**
+     * @depends testEntityUpdatingWorks
+     * @param ClassMetadata $metadata
+     */
+    public function testEntityExtendsStdClass($metadata)
+    {
+        $book = new \EntityGeneratorBook();
+        $this->assertType('stdClass', $book);
 
         unlink(__DIR__ . '/EntityGeneratorBook.php');
     }
