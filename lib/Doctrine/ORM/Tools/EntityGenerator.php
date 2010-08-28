@@ -312,7 +312,7 @@ public function <methodName>()
     private function _generateEntityUse(ClassMetadataInfo $metadata)
     {
         if ($this->_extendsClass()) {
-            return "\n\nuse " . $this->_getClassToExtendNamespace() . ";\n";
+            return "\n\nuse " . $this->_getClassToExtendName() . ";\n";
         }
     }
 
@@ -380,13 +380,6 @@ public function <methodName>()
         $refl = new \ReflectionClass($this->_getClassToExtend());
 
         return $refl->getName();
-    }
-
-    private function _getClassToExtendNamespace()
-    {
-        $refl = new \ReflectionClass($this->_getClassToExtend());
-
-        return $refl->getNamespaceName() ? $refl->getNamespaceName():$refl->getShortName();        
     }
 
     private function _getClassName(ClassMetadataInfo $metadata)
