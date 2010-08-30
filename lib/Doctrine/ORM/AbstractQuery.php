@@ -583,6 +583,8 @@ abstract class AbstractQuery
      */
     public function __clone()
     {
-        $this->free();
+        $this->_params = array();
+        $this->_paramTypes = array();
+        $this->_hints = array();
     }
 }

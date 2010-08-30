@@ -44,4 +44,19 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(array(), $query->getParameters());
     }
+
+    public function testClone()
+    {
+        $dql = "select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1";
+
+        $query = $this->_em->createQuery($dql);
+        $query->setParameter(2, 84, \PDO::PARAM_INT);
+        $query->setHint('foo', 'bar');
+
+        $cloned = clone $query;
+
+        $this->assertEquals($dql, $cloned->getDql());
+        $this->assertEquals(array(), $cloned->getParameters());
+        $this->assertFalse($cloned->getHint('foo'));
+    }
 }
