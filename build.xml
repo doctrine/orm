@@ -51,7 +51,7 @@
       Fileset for source of the Symfony YAML and Console components.
     -->
     <fileset id="symfony-sources" dir="./lib/vendor">
-        <include name="Symfony/Components/**"/>
+        <include name="Symfony/Component/**"/>
     </fileset>
 
     <!--
@@ -84,22 +84,22 @@
         Builds ORM package, preparing it for distribution.
     -->
     <target name="build-orm" depends="test">
-        <copy todir="${build.dir}/orm">
+        <copy todir="${build.dir}/doctrine-orm">
             <fileset refid="shared-artifacts"/>
         </copy>
-        <copy todir="${build.dir}/orm">
+        <copy todir="${build.dir}/doctrine-orm">
             <fileset refid="common-sources"/>
             <fileset refid="dbal-sources"/>
             <fileset refid="orm-sources"/>
         </copy>
-        <copy todir="${build.dir}/orm/Doctrine">
+        <copy todir="${build.dir}/doctrine-orm/Doctrine">
             <fileset refid="symfony-sources"/>
         </copy>
-        <copy todir="${build.dir}/orm/bin">
+        <copy todir="${build.dir}/doctrine-orm/bin">
             <fileset refid="bin-scripts"/>
         </copy>
-        <exec command="sed 's/${version}-DEV/${version}/' ${build.dir}/orm/Doctrine/ORM/Version.php > ${build.dir}/orm/Doctrine/ORM/Version2.php" passthru="true" />
-        <exec command="mv ${build.dir}/orm/Doctrine/ORM/Version2.php ${build.dir}/orm/Doctrine/ORM/Version.php" passthru="true" />
+        <exec command="sed 's/${version}-DEV/${version}/' ${build.dir}/doctrine-orm/Doctrine/ORM/Version.php > ${build.dir}/doctrine-orm/Doctrine/ORM/Version2.php" passthru="true" />
+        <exec command="mv ${build.dir}/doctrine-orm/Doctrine/ORM/Version2.php ${build.dir}/doctrine-orm/Doctrine/ORM/Version.php" passthru="true" />
     </target>
 
     <target name="build" depends="test, build-orm"/>
@@ -142,7 +142,7 @@
         Builds distributable PEAR packages.
     -->
     <target name="build-packages" depends="build">
-        <d51pearpkg2 baseinstalldir="/" dir="${build.dir}/orm">
+        <d51pearpkg2 baseinstalldir="/" dir="${build.dir}/doctrine-orm">
            <name>DoctrineORM</name>
            <summary>Doctrine Object Relational Mapper</summary>
            <channel>pear.doctrine-project.org</channel>
@@ -150,6 +150,7 @@
            <lead user="jwage" name="Jonathan H. Wage" email="jonwage@gmail.com" />
            <lead user="guilhermeblanco" name="Guilherme Blanco" email="guilhermeblanco@gmail.com" />
            <lead user="romanb" name="Roman Borschel" email="roman@code-factory.org" />
+           <lead user="beberlei" name="Benjamin Eberlei" email="kontakt@beberlei.de" />
            <license>LGPL</license>
            <version release="${version}" api="${version}" />
            <stability release="${stability}" api="${stability}" />
@@ -157,17 +158,25 @@
            <dependencies>
                <php minimum_version="5.3.0" />
                <pear minimum_version="1.6.0" recommended_version="1.6.1" />
+               <package name="DoctrineCommon" channel="pear.doctrine-project.org" minimum_version="${dependencies.common}" />
+               <package name="DoctrineDBAL" channel="pear.doctrine-project.org" minimum_version="${dependencies.dbal}" />
            </dependencies>
            <dirroles key="bin">script</dirroles>
-           <replacement path="bin/doctrine" type="pear-config" from="@php_bin@" to="php_bin" />
-           <replacement path="bin/doctrine.php" type="pear-config" from="@php_bin@" to="php_bin" />
-           <replacement path="bin/doctrine.php" type="pear-config" from="@bin_dir@" to="bin_dir" />
+           <ignore>Doctrine/Common/</ignore>
+           <ignore>Doctrine/DBAL/</ignore>
            <release>
                 <install as="doctrine" name="bin/doctrine" />
                 <install as="doctrine.php" name="bin/doctrine.php" />
            </release>
         </d51pearpkg2>
-        <exec command="pear package" dir="${build.dir}/orm" passthru="true" />
-        <exec command="mv DoctrineORM-${version}.tgz ../../dist" dir="${build.dir}/orm" passthru="true" />
+        <exec command="pear package" dir="${build.dir}/doctrine-orm" passthru="true" />
+        <exec command="mv DoctrineORM-${version}.tgz ../../dist" dir="${build.dir}/doctrine-orm" passthru="true" />
+        <tar destfile="dist/DoctrineORM-${version}-full.tar.gz" compression="gzip" basedir="${build.dir}">
+            <fileset dir="${build.dir}">
+                <include name="**/**" />
+                <exclude name="logs/" />
+                <exclude name="doctrine-orm/package.xml" />
+            </fileset>
+        </tar>
     </target>
 </project>
