@@ -110,6 +110,17 @@ The following Commands are currently available:
 
 ++ Database Schema Generation
 
+> **Note**
+>
+> SchemaTool can do harm to your database. It will drop or alter tables, indexes, sequences and such. Please use
+> this tool with caution in development and not on a production server. It is meant for helping you develop your
+> Database Schema, but NOT with migrating schema from A to B in production. A safe approach would be generating
+> the SQL on development server and saving it into SQL Migration files that are executed manually on the production
+> server.
+>
+> SchemaTool assumes your Doctrine Project uses the given database on its own. Update and Drop commands will
+> mess with other tables if they are not related to the current project that is using Doctrine. Please be careful!
+
 To generate your database schema from your Doctrine mapping files you can use the
 `SchemaTool` class or the `schema-tool` Console Command.
 
