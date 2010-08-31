@@ -77,17 +77,24 @@ line installation utility.
 
 To install just the `Common` package you can run the following command:
 
-    $ sudo pear install pear.doctrine-project.org/DoctrineCommon-2.0.0
+    $ sudo pear install pear.doctrine-project.org/DoctrineCommon-<version>
 
 If you want to use the Doctrine Database Abstraction Layer you can install it
 with the following command.
 
-    $ sudo pear install pear.doctrine-project.org/DoctrineDBAL-2.0.0
+    $ sudo pear install pear.doctrine-project.org/DoctrineDBAL-<version>
 
 Or, if you want to get the works and go for the ORM you can install it with the 
 following command.
 
-    $ sudo pear install pear.doctrine-project.org/DoctrineORM-2.0.0
+    $ sudo pear install pear.doctrine-project.org/DoctrineORM-<version>
+
+> **NOTE**
+> The `<version>` tag above represents the version you want to install. For example the
+> current version at the time of writing this is `2.0.0BETA3` for the ORM, so you could
+> install it like the following:
+>
+>     $ sudo pear install pear.doctrine-project.org/DoctrineORM-2.0.0BETA3
 
 When you have a package installed via PEAR you can require and load the 
 `ClassLoader` with the following code.

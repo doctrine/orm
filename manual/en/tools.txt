@@ -1,13 +1,13 @@
 ++ The Doctrine Console
 
-The Doctrine Console is a Command Line Interface tool for simplifying many common commands during the development of a project that uses Doctrine.
+The Doctrine Console is a Command Line Interface tool for simplifying common tasks during the development of a project that uses Doctrine 2.
 
 +++ Installation
 
 If you installed Doctrine 2 through PEAR, the `doctrine` command line tool should already be available to you.
 
 If you use Doctrine through SVN or a release package you need to copy the `doctrine` and `doctrine.php` files from the `tools/sandbox` or `bin` folder, respectively, to a location of your choice, for example a `tools` folder of your project.
-In addition you may need to edit `doctrine.php` and adjust some paths to the new environment. You may want to add require_once() statement at the top of doctrine.php to set up the include_path for Doctrine classes.
+You probably need to edit `doctrine.php` to adjust some paths to the new environment, most importantly the first line that includes the `Doctrine\Common\ClassLoader`.
 
 +++ Getting Help
 
@@ -17,8 +17,9 @@ Type `doctrine` on the command line and you should see an overview of the availa
 
 +++ Configuration
 
-Whenever the `doctrine` command line tool is invoked, it is only able to access Commands that were defined by developer. Dependency Injection (DI) is the responsable to inject support into this utility, but it is up to the developer define it.
-The Doctrine CLI tool from the bin/ folder already defines all the DBAL and ORM commands shipped with Doctrine.
+Whenever the `doctrine` command line tool is invoked, it can access alls Commands that were registered by developer.
+There is no auto-detection mechanism at work. The `bin\doctrine.php` file already registers all the commands that
+currently ship with Doctrine DBAL and ORM. If you want to use additional commands you have to register them yourself.
 
 All the commands of the Doctrine Console require either the `db` or the `em` helpers to be defined in order to work correctly. Doctrine Console requires the definition of a HelperSet that is the DI tool to be injected in the Console.
 In case of a project that is dealing exclusively with DBAL, the ConnectionHelper is required:

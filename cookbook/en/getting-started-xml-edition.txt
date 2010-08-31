@@ -453,14 +453,25 @@ For the commandline tool to work a cli-config.php file has to be present in the 
 where you will execute the doctrine command. Its a fairly simple file:
 
     [php]
-    $cliConfig = new Doctrine\Common\Cli\Configuration();
-    $cliConfig->setAttribute('em', $entityManager);
+    $helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
+        'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($entityManager)
+    ));
+    $cli->setHelperSet($helperSet);
 
-You can then use your favorite console tool to call:
+You can then change into your project directory and call the Doctrine commandline tool:
 
     [console]
     doctrine@my-desktop> cd myproject/
     doctrine@my-desktop> doctrine orm:schema-tool:create
+
+> **NOTE**
+>
+> The `doctrine` command will only be present if you installed Doctrine from PEAR.
+> Otherwise you will have to dig into the `bin/doctrine.php` code of your Doctrine 2
+> directory to setup your doctrine commandline client.
+>
+> See the [Tools section of the manual](http://www.doctrine-project.org/projects/orm/2.0/docs/reference/tools/en)
+> on how to setup the Doctrine console correctly.
 
 During the development you probably need to re-create the database several times when changing the Entity
 metadata. You can then either re-create the database:

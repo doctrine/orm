@@ -82,9 +82,9 @@ method which returns an array of events it should be subscribed to.
 Now when you dispatch an event any event subscribers will be notified for that event.
 
     [php]
-    $evm->dispatchEvent(TestEventSubscriber::preFoo);
+    $evm->dispatchEvent(TestEvent::preFoo);
 
-Now the test the `$eventSubscriber` instance to see if the `preFoo()` method was invoked.
+Now you can test the `$eventSubscriber` instance to see if the `preFoo()` method was invoked.
 
     [php]
     if ($eventSubscriber->preFooInvoked) {
@@ -268,7 +268,7 @@ carefully since operations in the wrong event may produce lots of different erro
 lost updates/persists/removes.
 
 For the described events that are also lifecycle callback events the restrictions
-apply aswell, with the additional restriction that you do not have access to the EntityManager
+apply as well, with the additional restriction that you do not have access to the EntityManager
 or UnitOfWork APIs inside these events.
 
 +++ prePersist
@@ -290,7 +290,7 @@ The following restrictions apply to `prePersist`:
 * If you are using a PrePersist Identity Generator such as sequences the ID value
   will *NOT* be available within any PrePersist events.
 * Doctrine will not recognize changes made to relations in a pre persist event
-  called by "reachibility" through a cascade persist unless you use the internal
+  called by "reachability" through a cascade persist unless you use the internal
   `UnitOfWork` API. We do not recommend such operations in the persistence by
   reachability context, so do this at your own risk and possibly supported by unit-tests.
 
@@ -316,7 +316,7 @@ been computed. This means, the `onFlush` event has access to the sets of:
 * Collections scheduled for update
 * Collections scheduled for removal
 
-To make use of the onFlush event you have to be familiar with interal UnitOfWork API,
+To make use of the onFlush event you have to be familiar with the internal UnitOfWork API,
 which grants you access to the previously mentioned sets. See this example:
 
     [php]
