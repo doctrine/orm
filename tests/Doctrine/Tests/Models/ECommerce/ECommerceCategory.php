@@ -73,8 +73,8 @@ class ECommerceCategory
     public function removeProduct(ECommerceProduct $product)
     {
         $removed = $this->products->removeElement($product);
-        if ($removed !== null) {
-            $removed->removeCategory($this);
+        if ($removed) {
+            $product->removeCategory($this);
         }
     }
 
@@ -114,8 +114,8 @@ class ECommerceCategory
     public function removeChild(ECommerceCategory $child)
     {
         $removed = $this->children->removeElement($child);
-        if ($removed !== null) {
-            $removed->removeParent();
+        if ($removed) {
+            $child->removeParent();
         }
     }
 

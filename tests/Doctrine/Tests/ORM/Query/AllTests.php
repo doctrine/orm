@@ -26,6 +26,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Query\UpdateSqlGenerationTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Query\ExprTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Query\ParserResultTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Query\QueryTest');
 
         return $suite;
     }

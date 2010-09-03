@@ -102,27 +102,27 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
 /* Test subject class with overriden factory method for mocking purposes */
 class ClassMetadataFactoryTestSubject extends \Doctrine\ORM\Mapping\ClassMetadataFactory
 {
-    private $_mockMetadata = array();
-    private $_requestedClasses = array();
+    private $mockMetadata = array();
+    private $requestedClasses = array();
 
     /** @override */
-    protected function _newClassMetadataInstance($className)
+    protected function newClassMetadataInstance($className)
     {
-        $this->_requestedClasses[] = $className;
-        if ( ! isset($this->_mockMetadata[$className])) {
+        $this->requestedClasses[] = $className;
+        if ( ! isset($this->mockMetadata[$className])) {
             throw new InvalidArgumentException("No mock metadata found for class $className.");
         }
-        return $this->_mockMetadata[$className];
+        return $this->mockMetadata[$className];
     }
 
     public function setMetadataForClass($className, $metadata)
     {
-        $this->_mockMetadata[$className] = $metadata;
+        $this->mockMetadata[$className] = $metadata;
     }
 
     public function getRequestedClasses()
     {
-        return $this->_requestedClasses;
+        return $this->requestedClasses;
     }
 }
 

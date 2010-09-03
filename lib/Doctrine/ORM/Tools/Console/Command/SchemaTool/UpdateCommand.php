@@ -21,10 +21,10 @@
 
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
-use Symfony\Components\Console\Input\InputArgument,
-    Symfony\Components\Console\Input\InputOption,
-    Symfony\Components\Console\Input\InputInterface,
-    Symfony\Components\Console\Output\OutputInterface,
+use Symfony\Component\Console\Input\InputArgument,
+    Symfony\Component\Console\Input\InputOption,
+    Symfony\Component\Console\Input\InputInterface,
+    Symfony\Component\Console\Output\OutputInterface,
     Doctrine\ORM\Tools\SchemaTool;
 
 /**
@@ -59,7 +59,11 @@ class UpdateCommand extends AbstractCommand
             new InputOption(
                 'dump-sql', null, InputOption::PARAMETER_NONE,
                 'Instead of try to apply generated SQLs into EntityManager Storage Connection, output them.'
-            )
+            ),
+            new InputOption(
+                'force', null, InputOption::PARAMETER_NONE,
+                "Don't ask for the deletion of the database, but force the operation to run."
+            ),
         ))
         ->setHelp(<<<EOT
 Processes the schema and either update the database schema of EntityManager Storage Connection or generate the SQL output.
@@ -72,15 +76,24 @@ EOT
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
     {
         // Defining if update is complete or not (--complete not defined means $saveMode = true)
-        $saveMode = ($input->getOption('complete') === true);
+        $saveMode = ($input->getOption('complete') !== true);
 
         if ($input->getOption('dump-sql') === true) {
             $sqls = $schemaTool->getUpdateSchemaSql($metadatas, $saveMode);
             $output->write(implode(';' . PHP_EOL, $sqls) . PHP_EOL);
-        } else {
+        } else if ($input->getOption('force') === true) {
             $output->write('Updating database schema...' . PHP_EOL);
             $schemaTool->updateSchema($metadatas, $saveMode);
             $output->write('Database schema updated successfully!' . PHP_EOL);
+        } else {
+            $sqls = $schemaTool->getUpdateSchemaSql($metadatas, $saveMode);
+
+            if (count($sqls)) {
+                $output->write('Schema-Tool would execute ' . count($sqls) . ' queries to update the database.' . PHP_EOL);
+                $output->write('Please run the operation with --force to execute these queries or use --dump-sql to see them.' . PHP_EOL);
+            } else {
+                $output->write('Nothing to update. The database is in sync with the current entity metadata.' . PHP_EOL);
+            }
         }
     }
 }

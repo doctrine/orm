@@ -544,4 +544,15 @@ final class Query extends AbstractQuery
             '&hydrationMode='.$this->_hydrationMode.'DOCTRINE_QUERY_CACHE_SALT'
         );
     }
+
+    /**
+     * Cleanup Query resource when clone is called.
+     *
+     * @return void
+     */
+    public function __clone()
+    {
+        parent::__clone();
+        $this->_state = self::STATE_DIRTY;
+    }
 }

@@ -18,7 +18,7 @@ $classLoader->register();
 // Variable $helperSet is defined inside cli-config.php
 require __DIR__ . '/cli-config.php';
 
-$cli = new \Symfony\Components\Console\Application('Doctrine Command Line Interface', Doctrine\Common\Version::VERSION);
+$cli = new \Symfony\Component\Console\Application('Doctrine Command Line Interface', Doctrine\Common\Version::VERSION);
 $cli->setCatchExceptions(true);
 $helperSet = $cli->getHelperSet();
 foreach ($helpers as $name => $helper) {

@@ -680,9 +680,11 @@ class ClassMetadataInfo
     }
 
     /**
-     * Validates & completes the mapping. Mapping defaults are applied here.
+     * Validates & completes the basic mapping information that is common to all
+     * association mappings (one-to-one, many-ot-one, one-to-many, many-to-many).
      *
-     * @param array $mapping
+     * @param array $mapping The mapping.
+     * @return array The updated mapping.
      * @throws MappingException If something is wrong with the mapping.
      */
     protected function _validateAndCompleteAssociationMapping(array $mapping)
@@ -693,31 +695,28 @@ class ClassMetadataInfo
         if ( ! isset($mapping['inversedBy'])) {
             $mapping['inversedBy'] = null;
         }
-        $mapping['isOwningSide'] = true;
+        $mapping['isOwningSide'] = true; // assume owning side until we hit mappedBy
 
+        // If targetEntity is unqualified, assume it is in the same namespace as
+        // the sourceEntity.
         $mapping['sourceEntity'] = $this->name;
-        if (isset($mapping['targetEntity']) && strpos($mapping['targetEntity'], '\\') === false && strlen($this->namespace) > 0) {
+        if (isset($mapping['targetEntity']) && strpos($mapping['targetEntity'], '\\') === false
+                && strlen($this->namespace) > 0) {
             $mapping['targetEntity'] = $this->namespace . '\\' . $mapping['targetEntity'];
         }
 
-        // Mandatory attributes for both sides
+        // Mandatory: fieldName, targetEntity
         if ( ! isset($mapping['fieldName'])) {
             throw MappingException::missingFieldName();
         }
-        
-        if ( ! isset($mapping['sourceEntity'])) {
-            throw MappingException::missingSourceEntity($mapping['fieldName']);
-        }
-        
         if ( ! isset($mapping['targetEntity'])) {
             throw MappingException::missingTargetEntity($mapping['fieldName']);
         }
         
         // Mandatory and optional attributes for either side
-        if ( ! isset($mapping['mappedBy'])) {            
-            // Optional
+        if ( ! $mapping['mappedBy']) {
             if (isset($mapping['joinTable']) && $mapping['joinTable']) {
-                if ($mapping['joinTable']['name'][0] == '`') {
+                if (isset($mapping['joinTable']['name']) && $mapping['joinTable']['name'][0] == '`') {
                     $mapping['joinTable']['name'] = trim($mapping['joinTable']['name'], '`');
                     $mapping['joinTable']['quoted'] = true;
                 }
@@ -726,12 +725,13 @@ class ClassMetadataInfo
             $mapping['isOwningSide'] = false;
         }
         
-        // Optional attributes for both sides
+        // Fetch mode. Default fetch mode to LAZY, if not set.
         if ( ! isset($mapping['fetch'])) {
             $mapping['fetch'] = self::FETCH_LAZY;
         }
+
+        // Cascades
         $cascades = isset($mapping['cascade']) ? $mapping['cascade'] : array();
-        
         if (in_array('all', $cascades)) {
             $cascades = array(
                'remove',
@@ -752,10 +752,10 @@ class ClassMetadataInfo
     }
 
     /**
-     * {@inheritdoc}
+     * Validates & completes a one-to-one association mapping.
      *
      * @param array $mapping  The mapping to validate & complete.
-     * @return array  The validated & completed mapping.
+     * @return array The validated & completed mapping.
      * @override
      */
     protected function _validateAndCompleteOneToOneMapping(array $mapping)
@@ -774,11 +774,16 @@ class ClassMetadataInfo
                     'referencedColumnName' => 'id'
                 ));
             }
-            foreach ($mapping['joinColumns'] AS $key => $joinColumn) {
-                if ($mapping['type'] == self::ONE_TO_ONE) {
-                    $mapping['joinColumns'][$key]['unique'] = true;
+            foreach ($mapping['joinColumns'] as $key => &$joinColumn) {
+                if ($mapping['type'] === self::ONE_TO_ONE) {
+                    $joinColumn['unique'] = true;
                 }
-
+                if (empty($joinColumn['name'])) {
+                    $joinColumn['name'] = $mapping['fieldName'] . '_id';
+                }
+                if (empty($joinColumn['referencedColumnName'])) {
+                    $joinColumn['referencedColumnName'] = 'id';
+                }
                 $mapping['sourceToTargetKeyColumns'][$joinColumn['name']] = $joinColumn['referencedColumnName'];
                 $mapping['joinColumnFieldNames'][$joinColumn['name']] = isset($joinColumn['fieldName'])
                         ? $joinColumn['fieldName'] : $joinColumn['name'];
@@ -826,58 +831,49 @@ class ClassMetadataInfo
     {
         $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
         if ($mapping['isOwningSide']) {
+            $sourceShortName = strtolower(substr($mapping['sourceEntity'], strrpos($mapping['sourceEntity'], '\\') + 1));
+            $targetShortName = strtolower(substr($mapping['targetEntity'], strrpos($mapping['targetEntity'], '\\') + 1));
             // owning side MUST have a join table
-            if ( ! isset($mapping['joinTable']) || ! $mapping['joinTable']) {
-                // Apply default join table
-                $sourceShortName = substr($mapping['sourceEntity'], strrpos($mapping['sourceEntity'], '\\') + 1);
-                $targetShortName = substr($mapping['targetEntity'], strrpos($mapping['targetEntity'], '\\') + 1);
-                $mapping['joinTable'] = array(
-                    'name' => $sourceShortName .'_' . $targetShortName,
-                    'joinColumns' => array(
-                        array(
-                            'name' => $sourceShortName . '_id',
-                            'referencedColumnName' => 'id',
-                            'onDelete' => 'CASCADE'
-                        )
-                    ),
-                    'inverseJoinColumns' => array(
-                        array(
-                            'name' => $targetShortName . '_id',
-                            'referencedColumnName' => 'id',
-                            'onDelete' => 'CASCADE'
-                        )
-                    )
-                );
+            if ( ! isset($mapping['joinTable']['name'])) {
+                $mapping['joinTable']['name'] = $sourceShortName .'_' . $targetShortName;
             }
-            // owning side MUST specify joinColumns
-            else if ( ! isset($mapping['joinTable']['joinColumns'])) {
-                throw MappingException::missingRequiredOption(
-                    $mapping['fieldName'], 'joinColumns', 
-                    'Did you think of case sensitivity / plural s?'
-                );
+            if ( ! isset($mapping['joinTable']['joinColumns'])) {
+                $mapping['joinTable']['joinColumns'] = array(array(
+                        'name' => $sourceShortName . '_id',
+                        'referencedColumnName' => 'id',
+                        'onDelete' => 'CASCADE'));
             }
-            // owning side MUST specify inverseJoinColumns
-            else if ( ! isset($mapping['joinTable']['inverseJoinColumns'])) {
-                throw MappingException::missingRequiredOption(
-                    $mapping['fieldName'], 'inverseJoinColumns', 
-                    'Did you think of case sensitivity / plural s?'
-                );
+            if ( ! isset($mapping['joinTable']['inverseJoinColumns'])) {
+                $mapping['joinTable']['inverseJoinColumns'] = array(array(
+                        'name' => $targetShortName . '_id',
+                        'referencedColumnName' => 'id',
+                        'onDelete' => 'CASCADE'));
             }
-            
-            foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
+
+            foreach ($mapping['joinTable']['joinColumns'] as &$joinColumn) {
+                if (empty($joinColumn['name'])) {
+                    $joinColumn['name'] = $sourceShortName . '_id';
+                }
+                if (empty($joinColumn['referencedColumnName'])) {
+                    $joinColumn['referencedColumnName'] = 'id';
+                }
                 if (isset($joinColumn['onDelete']) && strtolower($joinColumn['onDelete']) == 'cascade') {
                     $mapping['isOnDeleteCascade'] = true;
                 }
-
                 $mapping['relationToSourceKeyColumns'][$joinColumn['name']] = $joinColumn['referencedColumnName'];
                 $mapping['joinTableColumns'][] = $joinColumn['name'];
             }
-            
-            foreach ($mapping['joinTable']['inverseJoinColumns'] as $inverseJoinColumn) {
+
+            foreach ($mapping['joinTable']['inverseJoinColumns'] as &$inverseJoinColumn) {
+                if (empty($inverseJoinColumn['name'])) {
+                    $inverseJoinColumn['name'] = $targetShortName . '_id';
+                }
+                if (empty($inverseJoinColumn['referencedColumnName'])) {
+                    $inverseJoinColumn['referencedColumnName'] = 'id';
+                }
                 if (isset($inverseJoinColumn['onDelete']) && strtolower($inverseJoinColumn['onDelete']) == 'cascade') {
                     $mapping['isOnDeleteCascade'] = true;
                 }
-
                 $mapping['relationToTargetKeyColumns'][$inverseJoinColumn['name']] = $inverseJoinColumn['referencedColumnName'];
                 $mapping['joinTableColumns'][] = $inverseJoinColumn['name'];
             }
@@ -888,7 +884,7 @@ class ClassMetadataInfo
                 throw new \InvalidArgumentException("'orderBy' is expected to be an array, not ".gettype($mapping['orderBy']));
             }
         }
-        
+
         return $mapping;
     }
 
@@ -1211,22 +1207,33 @@ class ClassMetadataInfo
      * indexes => array of indexes (optional)
      * uniqueConstraints => array of constraints (optional)
      *
-     * @param array $table
+     * If a key is omitted, the current value is kept.
+     *
+     * @param array $table The table description.
      */
     public function setPrimaryTable(array $table)
     {
-        if (isset($table['name']) && $table['name'][0] == '`') {
-            $table['name'] = trim($table['name'], '`');
-            $table['quoted'] = true;
+        if (isset($table['name'])) {
+            if ($table['name'][0] == '`') {
+                $this->table['name'] = trim($table['name'], '`');
+                $this->table['quoted'] = true;
+            } else {
+                $this->table['name'] = $table['name'];
+            }
         }
-        $this->table = $table;
+        if (isset($table['indexes'])) {
+            $this->table['indexes'] = $table['indexes'];
+        }
+        if (isset($table['uniqueConstraints'])) {
+            $this->table['uniqueConstraints'] = $table['uniqueConstraints'];
+        }
     }
 
     /**
      * Checks whether the given type identifies an inheritance type.
      *
-     * @param string $type
-     * @return boolean
+     * @param integer $type
+     * @return boolean TRUE if the given type identifies an inheritance type, FALSe otherwise.
      */
     private function _isInheritanceType($type)
     {

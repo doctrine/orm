@@ -21,11 +21,11 @@
 
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
-use Symfony\Components\Console\Input\InputArgument,
-    Symfony\Components\Console\Input\InputOption,
-    Symfony\Components\Console\Input\InputInterface,
-    Symfony\Components\Console\Output\OutputInterface,
-    Symfony\Components\Console\Command\Command,
+use Symfony\Component\Console\Input\InputArgument,
+    Symfony\Component\Console\Input\InputOption,
+    Symfony\Component\Console\Input\InputInterface,
+    Symfony\Component\Console\Output\OutputInterface,
+    Symfony\Component\Console\Command\Command,
     Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper,
     Doctrine\ORM\Tools\SchemaTool,
     Doctrine\ORM\Mapping\Driver\AbstractFileDriver;

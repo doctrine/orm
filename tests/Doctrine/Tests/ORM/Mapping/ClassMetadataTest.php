@@ -102,9 +102,9 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $assoc = $cm->associationMappings['groups'];
         //$this->assertTrue($assoc instanceof \Doctrine\ORM\Mapping\ManyToManyMapping);
         $this->assertEquals(array(
-            'name' => 'CmsUser_CmsGroup',
-            'joinColumns' => array(array('name' => 'CmsUser_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE')),
-            'inverseJoinColumns' => array(array('name' => 'CmsGroup_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE'))
+            'name' => 'cmsuser_cmsgroup',
+            'joinColumns' => array(array('name' => 'cmsuser_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE')),
+            'inverseJoinColumns' => array(array('name' => 'cmsgroup_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE'))
         ), $assoc['joinTable']);
         $this->assertTrue($assoc['isOnDeleteCascade']);
     }
@@ -230,5 +230,50 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
         $cm->mapField(array('fieldName' => 'name', 'columnName' => 'name'));
+    }
+
+    public function testDefaultTableName()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+
+        // When table's name is not given
+        $primaryTable = array();
+        $cm->setPrimaryTable($primaryTable);
+
+        $this->assertEquals('CmsUser', $cm->getTableName());
+        $this->assertEquals('CmsUser', $cm->table['name']);
+
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        // When joinTable's name is not given
+        $cm->mapManyToMany(array(
+            'fieldName' => 'user',
+            'targetEntity' => 'CmsUser',
+            'inversedBy' => 'users',
+            'joinTable' => array('joinColumns' => array(array('referencedColumnName' => 'id')),
+                                 'inverseJoinColumns' => array(array('referencedColumnName' => 'id')))));
+        $this->assertEquals('cmsaddress_cmsuser', $cm->associationMappings['user']['joinTable']['name']);
+    }
+
+    public function testDefaultJoinColumnName()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        // this is really dirty, but it's the simpliest way to test whether
+        // joinColumn's name will be automatically set to user_id
+        $cm->mapOneToOne(array(
+            'fieldName' => 'user',
+            'targetEntity' => 'CmsUser',
+            'joinColumns' => array(array('referencedColumnName' => 'id'))));
+        $this->assertEquals('user_id', $cm->associationMappings['user']['joinColumns'][0]['name']);
+
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $cm->mapManyToMany(array(
+            'fieldName' => 'user',
+            'targetEntity' => 'CmsUser',
+            'inversedBy' => 'users',
+            'joinTable' => array('name' => 'user_CmsUser',
+                                'joinColumns' => array(array('referencedColumnName' => 'id')),
+                                'inverseJoinColumns' => array(array('referencedColumnName' => 'id')))));
+        $this->assertEquals('cmsaddress_id', $cm->associationMappings['user']['joinTable']['joinColumns'][0]['name']);
+        $this->assertEquals('cmsuser_id', $cm->associationMappings['user']['joinTable']['inverseJoinColumns'][0]['name']);
     }
 }

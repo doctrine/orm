@@ -37,7 +37,7 @@ class YamlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
 {
     protected function _getType()
     {
-        if (!class_exists('Symfony\Components\Yaml\Yaml', true)) {
+        if (!class_exists('Symfony\Component\Yaml\Yaml', true)) {
             $this->markTestSkipped('Please install Symfony YAML Component into the include path of your PHP installation.');
         }
 

@@ -112,11 +112,10 @@ class ECommerceProduct
     public function removeFeature(ECommerceFeature $feature)
     {
         $removed = $this->features->removeElement($feature);
-        if ($removed !== null) {
-            $removed->removeProduct();
-            return true;
+        if ($removed) {
+            $feature->removeProduct();
         }
-        return false;
+        return $removed;
     }
 
     public function addCategory(ECommerceCategory $category)
@@ -130,8 +129,8 @@ class ECommerceProduct
     public function removeCategory(ECommerceCategory $category)
     {
         $removed = $this->categories->removeElement($category);
-        if ($removed !== null) {
-            $removed->removeProduct($this);
+        if ($removed) {
+            $category->removeProduct($this);
         }
     }
 
