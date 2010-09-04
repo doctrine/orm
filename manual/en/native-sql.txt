@@ -1,4 +1,8 @@
-A `NativeQuery` lets you execute native SQL, mapping the results according to your specifications. Such a specification that describes how an SQL result set is mapped to a Doctrine result is represented by a `ResultSetMapping`.
+A `NativeQuery` lets you execute native SQL, mapping the results according to your specifications.
+Such a specification that describes how an SQL result set is mapped to a Doctrine result is
+represented by a `ResultSetMapping`. It describes how each column of the database result should
+be mapped by Doctrine in terms of the object graph. This allows you to map arbitrary SQL code to objects, such as
+highly vendor-optimized SQL or stored-procedures.
 
 ++ The NativeQuery class
 
@@ -117,6 +121,23 @@ A meta result column (foreign key or discriminator column) always belongs to to 
 The second parameter is the column alias/name of the column in the SQL result set and the third parameter is the
 column name used in the mapping.
 
++++ Discriminator Column
+
+When joining an inheritance tree you have to give Doctrine a hint which meta-column is the discriminator column
+of this tree.
+
+    [php]
+    /**
+     * Sets a discriminator column for an entity result or joined entity result.
+     * The discriminator column will be used to determine the concrete class name to
+     * instantiate.
+     *
+     * @param string $alias The alias of the entity result or joined entity result the discriminator
+     *                      column should be used for.
+     * @param string $discrColumn The name of the discriminator column in the SQL result set.
+     * @todo Rename: addDiscriminatorColumn
+     */
+    public function setDiscriminatorColumn($alias, $discrColumn)
 
 +++ Examples
 
@@ -171,6 +192,30 @@ based on this key.
 Consequently, associations that are *fetch-joined* do not require the foreign keys to be present
 in the SQL result set, only associations that are lazy.
 
+    [php]
+    // Equivalent DQL query: "select u from User u join u.address a WHERE u.name = ?1"
+    // User owns association to an Address and the Address is loaded in the query.
+    $rsm = new ResultSetMapping;
+    $rsm->addEntityResult('User', 'u');
+    $rsm->addFieldResult('u', 'id', 'id');
+    $rsm->addFieldResult('u', 'name', 'name');
+    $rsm->addJoinedEntityResult('Address' , 'a', 'u', 'address');
+    $rsm->addFieldResult('a', 'address_id', 'id');
+    $rsm->addFieldResult('a', 'street', 'street');
+    $rsm->addFieldResult('a', 'city', 'city');
+
+    $sql = 'SELECT u.id, u.name, a.id AS address_id, a.street, a.city FROM users u ' .
+           'INNER JOIN address a ON u.address_id = a.id WHERE u.name = ?';
+    $query = $this->_em->createNativeQuery($sql, $rsm);
+    $query->setParameter(1, 'romanb');
+
+    $users = $query->getResult();
+
+In this case the nested entity `Address` is registered with the `ResultSetMapping#addJoinedEntityResult`
+method, which notifies Doctrine that this entity is not hydrated at the root level, but as a joined entity
+somewhere inside the object graph. In this case we specify the alias 'u' as third parameter and `address`
+as fourth parameter, which means the `Address` is hydrated into the `User::$address` property.
+
 If a fetched entity is part of a mapped hierarchy that requires a discriminator column, this
 column must be present in the result set as a meta column so that Doctrine can create the
 appropriate concrete type. This is shown in the following example where we assume that there
@@ -185,6 +230,7 @@ is used to map the hierarchy (both use a discriminator column).
     $rsm->addFieldResult('u', 'id', 'id');
     $rsm->addFieldResult('u', 'name', 'name');
     $rsm->addMetaResult('u', 'discr', 'discr'); // discriminator column
+    $rsm->setDiscriminatorColumn('u', 'discr');
     
     $query = $this->_em->createNativeQuery('SELECT id, name, discr FROM users WHERE name = ?', $rsm);
     $query->setParameter(1, 'romanb');
