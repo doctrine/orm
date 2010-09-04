@@ -40,7 +40,7 @@ In order to mark a class for object-relational persistence it needs to be design
     {
         //...
     }
-    
+
 By default, the entity will be persisted to a table with the same name as the class name. In order to change that, you can use the `@Table` annotation as follows:
 
     [php]
@@ -52,9 +52,9 @@ By default, the entity will be persisted to a table with the same name as the cl
     {
         //...
     }
-    
+
 Now instances of MyPersistentClass will be persisted into a table named `my_persistent_class`.
-    
+
 ++ Doctrine Mapping Types
 
 A Doctrine Mapping Type defines the mapping between a PHP type and an SQL type. All Doctrine Mapping Types that ship with Doctrine are fully portable between different RDBMS. You can even write your own custom mapping types that might or might not be portable, which is explained later in this chapter.
@@ -78,6 +78,10 @@ For example, the Doctrine Mapping Type `string` defines the mapping from a PHP s
 > Doctrine Mapping Types are NOT SQL types and NOT PHP types! They are mapping types
 > between 2 types.
 
+> **CAUTION**
+> Mapping types are *case-sensitive*. For example, using a DateTime column will NOT match the datetime type
+> that ships with Doctrine 2!
+
 ++ Property Mapping
 
 After a class has been marked as an entity it can specify mappings for its instance fields. Here we will only look at simple fields that hold scalar values like strings, numbers, etc. Associations to other objects are covered in the chapter "Association Mapping".
@@ -85,7 +89,7 @@ After a class has been marked as an entity it can specify mappings for its insta
 To mark a property for relational persistence the `@Column` docblock annotation is used. This annotation usually requires at least 1 attribute to be set, the `type`. The `type` attribute specifies the Doctrine Mapping Type to use for the field. If the type is not specified, 'string' is used as the default mapping type since it is the most flexible.
 
 Example:
-    
+
     [php]
     /** @Entity */
     class MyPersistentClass
@@ -110,7 +114,7 @@ The Column annotation has some more attributes. Here is a complete list:
 * `length`: (optional, default 255) The length of the column in the database. (Applies only if a string-valued column is used).
 * `unique`: (optional, default FALSE) Whether the column is a unique key.
 * `nullable`: (optional, default FALSE) Whether the database column is nullable.
-* `precision`: (optional, default 0) The precision for a decimal (exact numeric) column. (Applies only if a decimal column is used.)  
+* `precision`: (optional, default 0) The precision for a decimal (exact numeric) column. (Applies only if a decimal column is used.)
 * `scale`: (optional, default 0) The scale for a decimal (exact numeric) column. (Applies only if a decimal column is used.)
 
 ++ Custom Mapping Types
@@ -159,7 +163,7 @@ Restrictions to keep in mind:
 
 * If the value of the field is *NULL* the method `convertToDatabaseValue()` is not called.
 * The `UnitOfWork` never passes values to the database convert method that did not change in the request.
-    
+
 When you have implemented the type you still need to let Doctrine know about it. This can be achieved
 through the `Doctrine\DBAL\Configuration#setCustomTypes(array $types)` method.
 
@@ -173,14 +177,14 @@ Here is an example:
     // in bootstrapping code
 
     // ...
-    
+
     use Doctrine\DBAL\Types\Type;
-    
+
     // ...
 
     // Register my type
     Type::addType('mytype', 'My\Project\Types\MyType');
-    
+
 As can be seen above, when registering the custom types in the configuration you specify a unique name
 for the mapping type and map that to the corresponding fully qualified class name. Now you can use your new type in your mapping like this:
 
