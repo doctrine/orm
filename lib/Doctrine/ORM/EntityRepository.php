@@ -133,7 +133,6 @@ class EntityRepository
     /**
      * Finds all entities in the repository.
      *
-     * @param int $hydrationMode
      * @return array The entities.
      */
     public function findAll()
@@ -144,8 +143,7 @@ class EntityRepository
     /**
      * Finds entities by a set of criteria.
      *
-     * @param string $column
-     * @param string $value
+     * @param array $criteria
      * @return array
      */
     public function findBy(array $criteria)
@@ -156,8 +154,7 @@ class EntityRepository
     /**
      * Finds a single entity by a set of criteria.
      *
-     * @param string $column
-     * @param string $value
+     * @param array $criteria
      * @return object
      */
     public function findOneBy(array $criteria)
