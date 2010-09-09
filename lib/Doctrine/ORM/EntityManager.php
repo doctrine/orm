@@ -409,6 +409,7 @@ class EntityManager
     {
         if ($entityName === null) {
             $this->unitOfWork->clear();
+            $this->repositories = array();
         } else {
             //TODO
             throw new ORMException("EntityManager#clear(\$entityName) not yet implemented.");
@@ -561,9 +562,22 @@ class EntityManager
             $repository = new EntityRepository($this, $metadata);
         }
 
-        $this->repositories[$entityName] = $repository;
+        $this->setRepository($entityName, $repository);
 
         return $repository;
+    }
+
+    /**
+     * Set the repository for an entity class.
+     *
+     * @param  string           $entityName The name of the entity.
+     * @param  EntityRepository $repository
+     * @return void
+     */
+    public function setRepository($entityName, \Doctrine\ORM\EntityRepository $repository)
+    {
+        $entityName = ltrim($entityName, '\\');
+        $this->repositories[$entityName] = $repository;
     }
 
     /**
