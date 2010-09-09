@@ -183,8 +183,8 @@ In the case of bi-directional associations you have to update the fields on both
     $user->getAuthoredComments()->add($newComment);
     $newComment->setAuthor($user);
 
-    $em->persist();
-    $m->flush();
+    $em->persist($newComment);
+    $em->flush();
 
 
 Notice how always both sides of the bidirectional association are updated. The previous unidirectional associations were simpler to handle.
