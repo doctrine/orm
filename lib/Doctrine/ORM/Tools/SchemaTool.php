@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -441,6 +439,12 @@ class SchemaTool
                 $columnOptions = array('notnull' => false, 'columnDefinition' => $columnDef);
                 if (isset($joinColumn['nullable'])) {
                     $columnOptions['notnull'] = !$joinColumn['nullable'];
+                }
+                if ($fieldMapping['type'] == "string") {
+                    $columnOptions['length'] = $fieldMapping['length'];
+                } else if ($fieldMapping['type'] == "decimal") {
+                    $columnOptions['scale'] = $fieldMapping['scale'];
+                    $columnOptions['precision'] = $fieldMapping['precision'];
                 }
 
                 $theJoinTable->addColumn(

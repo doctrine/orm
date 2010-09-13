@@ -653,7 +653,7 @@ class BasicEntityPersister
                         if ($found = $this->_em->getUnitOfWork()->tryGetById($joinColumnValues, $targetClass->rootEntityName)) {
                             $this->_class->reflFields[$field]->setValue($entity, $found);
                             // Complete inverse side, if necessary.
-                            if ($assoc['inversedBy']) {
+                            if ($assoc['inversedBy'] && $assoc['type'] & ClassMetadata::ONE_TO_ONE) {
                                 $inverseAssoc = $targetClass->associationMappings[$assoc['inversedBy']];
                                 $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($found, $entity);
                             }
