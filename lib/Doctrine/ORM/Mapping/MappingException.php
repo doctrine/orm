@@ -170,9 +170,16 @@ class MappingException extends \Doctrine\ORM\ORMException
         );
     }
 
-    public static function fileMappingDriversRequireConfiguredDirectoryPath()
+    public static function fileMappingDriversRequireConfiguredDirectoryPath($path = null)
     {
-        return new self('File mapping drivers must have a valid directory path, however the given path seems to be incorrect!');
+        if ( ! empty($path)) {
+            $path = '[' . $path . ']';
+        }
+        
+        return new self(
+            'File mapping drivers must have a valid directory path, ' .
+            'however the given path ' . $path . ' seems to be incorrect!'
+        );
     }
 
     /**
