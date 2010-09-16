@@ -1,0 +1,7 @@
+Doctrine\Tests\ORM\Mapping\Page:
+  type: entity
+  table: core_content_pages
+  fields:
+    extension:
+      type: string
+      length: 10
