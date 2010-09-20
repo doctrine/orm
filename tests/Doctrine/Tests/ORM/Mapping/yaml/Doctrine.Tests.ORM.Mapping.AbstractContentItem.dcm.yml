@@ -1,6 +1,5 @@
 Doctrine\Tests\ORM\Mapping\AbstractContentItem:
   type: mappedSuperclass
-  table: abstract_item
   id:
     id: 
       type: integer

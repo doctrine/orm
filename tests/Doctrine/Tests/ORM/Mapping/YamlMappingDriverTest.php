@@ -23,23 +23,21 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
     {
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl(new \Doctrine\ORM\Mapping\Driver\YamlDriver(__DIR__ . '/yaml/'));
-        $qb = $em->createQueryBuilder();
 
-        $qb->select('f')
-                ->from('Doctrine\Tests\ORM\Mapping\Page', 'f')
-                ->join('f.parentDirectory', 'd')
-                ->where(
-                        $qb->expr()->andx(
-                                $qb->expr()->eq('d.url', ':url'),
-                                $qb->expr()->eq('f.extension', ':extension')
-                        )
-                )
-                ->setParameter('url', "test")
-                ->setParameter('filename', "filename")
-                ->setParameter('extension', "extension");
+        var_dump($em->getClassMetadata('Doctrine\Tests\ORM\Mapping\Page'));
+        var_dump($em->getClassMetadata('Doctrine\Tests\ORM\Mapping\Directory'));
+
+        $dql = "SELECT f FROM Doctrine\Tests\ORM\Mapping\Page f JOIN f.parentDirectory d " .
+               "WHERE (d.url = :url) AND (f.extension = :extension)";
+
+        $query = $em->createQuery($dql)
+                    ->setParameter('url', "test")
+                    ->setParameter('extension', "extension");
+
+        var_dump($query->getSql());
 
         // Is there a way to generalize this more? (Instead of a2_., check if the table prefix in the ON clause is set within a FROM or JOIN clause..)
-        $this->assertTrue(strpos($qb->getQuery()->getSql(), 'a2_.') === false);
+        $this->assertTrue(strpos($query->getSql(), 'a2_.') === false);
     }
 
 }
