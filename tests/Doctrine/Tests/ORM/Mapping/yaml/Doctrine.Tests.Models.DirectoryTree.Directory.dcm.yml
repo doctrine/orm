@@ -1,17 +1,16 @@
-Doctrine\Tests\ORM\Mapping\Directory:
+Doctrine\Tests\Models\DirectoryTree\Directory:
   type: entity 
-  table: core_content_directories
   fields:
-    url:
+    path:
       type: string
       length: 255
   oneToMany:
     subDirectories:
-      targetEntity: Doctrine\Tests\ORM\Mapping\Directory
+      targetEntity: Doctrine\Tests\Models\DirectoryTree\Directory
       mappedBy: parentDirectory
       cascade:
         [ all ]
     containedFiles:
-      targetEntity: Doctrine\Tests\ORM\Mapping\Page
+      targetEntity: Doctrine\Tests\Models\DirectoryTree\File
       mappedBy: parentDirectory
       cascade: [ remove ]

@@ -117,25 +117,20 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      */
     public function testJoinTablesWithMappedSuperclassForAnnotationDriver()
     {
+        $annotationDriver = $this->_loadDriver();
+        $annotationDriver->addPaths(array(__DIR__ . '/../../Models/DirectoryTree/'));
+
         $em = $this->_getTestEntityManager();
-        $em->getConfiguration()->setMetadataDriverImpl($this->_loadDriver());
+        $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
+        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory($em);
 
-        $classPage = $em->getClassMetadata('Doctrine\Tests\ORM\Mapping\Page');
-        $this->assertEquals('Doctrine\Tests\ORM\Mapping\Page', $classPage->associationMappings['parentDirectory']['sourceEntity']);
-        $classDirectory = $em->getClassMetadata('Doctrine\Tests\ORM\Mapping\Directory');
-        $this->assertEquals('Doctrine\Tests\ORM\Mapping\Directory', $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
+        $classPage = new ClassMetadata('Doctrine\Tests\Models\DirectoryTree\File');
+        $classPage = $factory->getMetadataFor('Doctrine\Tests\Models\DirectoryTree\File');
+        $this->assertEquals('Doctrine\Tests\Models\DirectoryTree\File', $classPage->associationMappings['parentDirectory']['sourceEntity']);
 
-        $dql = "SELECT f FROM Doctrine\Tests\ORM\Mapping\Page f JOIN f.parentDirectory d " .
-               "WHERE (d.url = :url) AND (f.extension = :extension)";
-
-        $query = $em->createQuery($dql)
-                    ->setParameter('url', "test")
-                    ->setParameter('extension', "extension");
-
-        $this->assertEquals(
-            'SELECT c0_.id AS id0, c0_.extension AS extension1, c0_.parent_directory_id AS parent_directory_id2 FROM core_content_pages c0_ INNER JOIN core_content_directories c1_ ON c0_.parent_directory_id = c1_.id WHERE (c1_.url = ?) AND (c0_.extension = ?)',
-            $query->getSql()
-        );
+        $classDirectory = new ClassMetadata('Doctrine\Tests\Models\DirectoryTree\Directory');
+        $classDirectory = $factory->getMetadataFor('Doctrine\Tests\Models\DirectoryTree\Directory');
+        $this->assertEquals('Doctrine\Tests\Models\DirectoryTree\Directory', $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
     }
 }
 

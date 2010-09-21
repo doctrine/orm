@@ -1,6 +1,5 @@
-Doctrine\Tests\ORM\Mapping\Page:
+Doctrine\Tests\Models\DirectoryTree\File:
   type: entity
-  table: core_content_pages
   fields:
     extension:
       type: string
