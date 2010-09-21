@@ -19,13 +19,20 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
         return new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
     }
 
+    /**
+     * @group DDC-671
+     *
+     * Entities for this test are in AbstractMappingDriverTest
+     */
     public function testJoinTablesWithMappedSuperclassForYamlDriver()
     {
         $em = $this->_getTestEntityManager();
-        $em->getConfiguration()->setMetadataDriverImpl(new \Doctrine\ORM\Mapping\Driver\YamlDriver(__DIR__ . '/yaml/'));
+        $em->getConfiguration()->setMetadataDriverImpl($this->_loadDriver());
 
-        var_dump($em->getClassMetadata('Doctrine\Tests\ORM\Mapping\Page'));
-        var_dump($em->getClassMetadata('Doctrine\Tests\ORM\Mapping\Directory'));
+        $classPage = $em->getClassMetadata('Doctrine\Tests\ORM\Mapping\Page');
+        $this->assertEquals('Doctrine\Tests\ORM\Mapping\Page', $classPage->associationMappings['parentDirectory']['sourceEntity']);
+        $classDirectory = $em->getClassMetadata('Doctrine\Tests\ORM\Mapping\Directory');
+        $this->assertEquals('Doctrine\Tests\ORM\Mapping\Directory', $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
 
         $dql = "SELECT f FROM Doctrine\Tests\ORM\Mapping\Page f JOIN f.parentDirectory d " .
                "WHERE (d.url = :url) AND (f.extension = :extension)";
@@ -34,55 +41,10 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
                     ->setParameter('url', "test")
                     ->setParameter('extension', "extension");
 
-        var_dump($query->getSql());
-
-        // Is there a way to generalize this more? (Instead of a2_., check if the table prefix in the ON clause is set within a FROM or JOIN clause..)
-        $this->assertTrue(strpos($query->getSql(), 'a2_.') === false);
+        $this->assertEquals(
+            'SELECT c0_.id AS id0, c0_.extension AS extension1, c0_.parent_directory_id AS parent_directory_id2 FROM core_content_pages c0_ INNER JOIN core_content_directories c1_ ON c0_.parent_directory_id = c1_.id WHERE (c1_.url = ?) AND (c0_.extension = ?)',
+            $query->getSql()
+        );
     }
 
-}
-
-class Directory extends AbstractContentItem
-{
-
-    protected $subDirectories;
-    /**
-     * This is a collection of files that are contained in this Directory. Files, for example, could be Pages, but even other files
-     * like media files (css, images etc) are possible.
-     * 
-     * @var \Doctrine\Common\Collections\Collection
-     * @access protected
-     */
-    protected $containedFiles;
-    /**
-     * @var string
-     */
-    protected $url;
-}
-
-class Page extends AbstractContentItem
-{
-
-    protected $extension = "html";
-
-}
-
-abstract class AbstractContentItem
-{
-
-    /**
-     * Doctrine2 entity id
-     * @var integer
-     */
-    private $id;
-    /**
-     * The parent directory
-     * @var Directory
-     */
-    protected $parentDirectory;
-    /**
-     * Filename (without extension) or directory name
-     * @var string
-     */
-    protected $name;
 }

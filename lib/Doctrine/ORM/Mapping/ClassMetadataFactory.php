@@ -379,6 +379,10 @@ class ClassMetadataFactory
     private function addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->associationMappings as $field => $mapping) {
+            if ($parentClass->isMappedSuperclass) {
+                $mapping['sourceEntity'] = $subClass->name;
+            }
+
             //$subclassMapping = $mapping;
             if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
