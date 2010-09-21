@@ -86,6 +86,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Navigation\NavTour',
             'Doctrine\Tests\Models\Navigation\NavPointOfInterest',
         ),
+        'directorytree' => array(
+            'Doctrine\Tests\Models\DirectoryTree\AbstractContentItem',
+            'Doctrine\Tests\Models\DirectoryTree\File',
+            'Doctrine\Tests\Models\DirectoryTree\Directory',
+        ),
     );
 
     protected function useModelSet($setName)
@@ -161,6 +166,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM navigation_pois');
             $conn->executeUpdate('DELETE FROM navigation_tours');
             $conn->executeUpdate('DELETE FROM navigation_countries');
+        }
+        if (isset($this->_usedModelSets['directorytree'])) {
+            $conn->executeUpdate('DELETE FROM File');
+            $conn->executeUpdate('DELETE FROM Directory');
         }
 
         $this->_em->clear();

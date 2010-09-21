@@ -109,6 +109,29 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     {
         new $entityClassName;
     }
+
+    /**
+     * @group DDC-671
+     *
+     * Entities for this test are in AbstractMappingDriverTest
+     */
+    public function testJoinTablesWithMappedSuperclassForAnnotationDriver()
+    {
+        $annotationDriver = $this->_loadDriver();
+        $annotationDriver->addPaths(array(__DIR__ . '/../../Models/DirectoryTree/'));
+
+        $em = $this->_getTestEntityManager();
+        $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
+        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory($em);
+
+        $classPage = new ClassMetadata('Doctrine\Tests\Models\DirectoryTree\File');
+        $classPage = $factory->getMetadataFor('Doctrine\Tests\Models\DirectoryTree\File');
+        $this->assertEquals('Doctrine\Tests\Models\DirectoryTree\File', $classPage->associationMappings['parentDirectory']['sourceEntity']);
+
+        $classDirectory = new ClassMetadata('Doctrine\Tests\Models\DirectoryTree\Directory');
+        $classDirectory = $factory->getMetadataFor('Doctrine\Tests\Models\DirectoryTree\Directory');
+        $this->assertEquals('Doctrine\Tests\Models\DirectoryTree\Directory', $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
+    }
 }
 
 /**

@@ -1,0 +1,14 @@
+Doctrine\Tests\Models\DirectoryTree\AbstractContentItem:
+  type: mappedSuperclass
+  id:
+    id: 
+      type: integer
+      unsigned: true
+      generator:
+        strategy: AUTO
+  fields:
+    name:
+      type: string
+  manyToOne:
+    parentDirectory:
+      targetEntity: Doctrine\Tests\Models\DirectoryTree\Directory
