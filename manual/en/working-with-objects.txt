@@ -18,6 +18,137 @@ are lost.
 >
 > Not calling `EntityManager#flush()` will lead to all changes during that request being lost.
 
+++ Entities and the Identity Map
+
+Entities are objects with identity. Their identity has a conceptual meaning inside your domain.
+In a CMS application each article has a unique id. You can uniquely identify each article
+by that id.
+
+Take the following example, where you find an article with the headline "Hello World"
+with the ID 1234:
+
+    [php]
+    $article = $entityManager->find('CMS\Article', 1234);
+    $article->setHeadline('Hello World dude!');
+
+    $article2 = $entityManager->find('CMS\Article', 1234);
+    echo $article2->getHeadline();
+
+In this case the Article is accessed from the entity manager twice, but modified in between.
+Doctrine 2 realizes this and will only ever give you access to one instance of the Article
+with ID 1234, no matter how often do you retrieve it from the EntityManager and even no
+matter what kind of Query method you are using (find, Repository Finder or DQL).
+This is called "Identity Map" pattern, which means Doctrine keeps a map of each entity
+and ids that have been retrieved per PHP request and keeps returning you the same instances.
+
+In the previous example the echo prints "Hello World dude!" to the screen. You can
+even verify that `$article` and `$article2` are indeed pointing to the same instance
+by running the following code:
+
+    [php]
+    if ($article === $article2) {
+        echo "Yes we are the same!";
+    }
+
+Sometimes you want to clear the identity map of an EntityManager to start over. We use
+this regularly in our unit-tests to enforce loading objects from the database again
+instead of serving them from the identity map. You can call `EntityManager#clear()`
+to achieve this result.
+
+++ Entity Object Graph Traversal
+
+Although Doctrine allows for a complete separation of your domain model (Entity classes)
+there will never be a situation where objects are "missing" when traversing associations.
+You can walk all the associations inside your entity models as deep as you want.
+
+Take the following example of a single `Article` entity fetched from newly opened EntityManager.
+
+    [php]
+    /** @Entity */
+    class Article
+    {
+        /** @Id @Column(type="integer") @GeneratedValue */
+        private $id;
+
+        /** @Column(type="string") */
+        private $headline;
+
+        /** @ManyToOne(targetEntity="User") */
+        private $author;
+
+        /** @OneToMany(targetEntity="Comment", mappedBy="article") */
+        private $comments;
+
+        public function __construct {
+            $this->comments = new ArrayCollection();
+        }
+
+        public function getAuthor() { return $this->author; }
+        public function getComments() { return $this->comments; }
+    }
+
+    $article = $em->find('Article', 1);
+
+This code only retrieves the `User` instance with id 1 executing a single SELECT statement
+against the user table in the database. You can still access the associated properties author
+and comments and the associated objects they contain.
+
+This works by utilizing the lazy loading pattern. Instead of passing you back a real
+Author instance and a collection of comments Doctrine will create proxy instances for you.
+Only if you access these proxies for the first time they will go through the EntityManager
+and load their state from the database.
+
+This lazy-loading process happens behind the scenes, hidden from your code. See the following code:
+
+    [php]
+    $article = $em->find('Article', 1);
+
+    // accessing a method of the user instance triggers the lazy-load
+    echo "Author: " . $article->getAuthor()->getName() . "\n";
+
+    // Lazy Loading Proxies pass instanceof tests:
+    if ($article->getAuthor() instanceof User) {
+        // a User Proxy is a generated "UserProxy" class
+    }
+
+    // accessing the comments as an iterator triggers the lazy-load
+    // retrieving ALL the comments of this article from the database
+    // using a single SELECT statement
+    foreach ($article->getComments() AS $comment) {
+        echo $comment->getText() . "\n\n";
+    }
+
+    // Article::$comments passes instanceof tests for the Collection interface
+    // But it will NOT pass for the ArrayCollection interface
+    if ($article->getComments() instanceof \Doctrine\Common\Collections\Collection) {
+        echo "This will always be true!";
+    }
+
+A slice of the generated proxy classes code looks like the following piece of code. A real proxy
+class override ALL public methods along the lines of the `getName()` method shown below:
+
+    [php]
+    class UserProxy extends User implements Proxy
+    {
+        private function _load()
+        {
+            // lazy loading code
+        }
+
+        public function getName()
+        {
+            $this->_load();
+            return parent::getName();
+        }
+        // .. other public methods of User
+    }
+
+> **Warning**
+>
+> Traversing the object graph for parts that are lazy-loaded will easily trigger lots
+> of SQL queries and will perform badly if used to heavily. Make sure to use DQL
+> to fetch-join all the parts of the object-graph that you need as efficiently as possible.
+
 ++ Persisting entities
 
 An entity can be made persistent by passing it to the `EntityManager#persist($entity)` 

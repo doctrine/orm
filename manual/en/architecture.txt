@@ -7,6 +7,7 @@ An entity is a lightweight, persistent domain object. An entity can be any regul
 PHP class observing the following restrictions:
 
 * An entity class must not be final or contain final methods.
+* All persistent properties/field of any entity class should always be private or protected, otherwise lazy-loading might not work as expected.
 * An entity class must not implement `__clone` or [do so safely](http://www.doctrine-project.org/documentation/cookbook/2_0/en/implementing-wakeup-or-clone).
 * An entity class must not implement `__wakeup` or [do so safely](http://www.doctrine-project.org/documentation/cookbook/2_0/en/implementing-wakeup-or-clone).
   Also consider implementing [Serializable](http://de3.php.net/manual/en/class.serializable.php]) instead.
