@@ -37,13 +37,28 @@ abstract class AbstractContentItem
     /** @column(type="string") */
     protected $name;
 
-    public function __get($name)
+    public function __construct(Directory $parentDir = null)
     {
-        return $this->$name;
+        $this->parentDirectory = $parentDir;
     }
 
-    public function __set($name, $value)
+    public function getId()
     {
-        $this->$name = $value;
+        return $this->id;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function getParent()
+    {
+        return $this->parentDirectory;
     }
 }

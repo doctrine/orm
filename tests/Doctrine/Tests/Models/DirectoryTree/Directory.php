@@ -25,15 +25,17 @@ namespace Doctrine\Tests\Models\DirectoryTree;
 class Directory extends AbstractContentItem
 {
     /**
-     * @OneToMany(targetEntity="Directory", mappedBy="parent")
-     */
-    protected $subDirectories;
-    /**
-     * @OneToMany(targetEntity="File", mappedBy="parent")
-     */
-    protected $containedFiles;
-    /**
      * @Column(type="string")
      */
     protected $path;
+
+    public function setPath($path)
+    {
+        $this->path = $path;
+    }
+
+    public function getPath()
+    {
+        return $this->path;
+    }
 }

@@ -4,13 +4,3 @@ Doctrine\Tests\Models\DirectoryTree\Directory:
     path:
       type: string
       length: 255
-  oneToMany:
-    subDirectories:
-      targetEntity: Doctrine\Tests\Models\DirectoryTree\Directory
-      mappedBy: parentDirectory
-      cascade:
-        [ all ]
-    containedFiles:
-      targetEntity: Doctrine\Tests\Models\DirectoryTree\File
-      mappedBy: parentDirectory
-      cascade: [ remove ]
