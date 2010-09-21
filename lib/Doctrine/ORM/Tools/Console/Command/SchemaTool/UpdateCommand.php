@@ -62,7 +62,7 @@ class UpdateCommand extends AbstractCommand
             ),
             new InputOption(
                 'force', null, InputOption::PARAMETER_NONE,
-                "Don't ask for the deletion of the database, but force the operation to run."
+                "Don't ask for the incremental update of the database, but force the operation to run."
             ),
         ))
         ->setHelp(<<<EOT
@@ -75,6 +75,10 @@ EOT
 
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
     {
+        $output->write('ATTENTION: This operation should not be executed in an production enviroment.' . PHP_EOL);
+        $output->write('Use the incremental update to detect changes during development and use' . PHP_EOL);
+        $output->write('this SQL DDL to manually update your database in production.' . PHP_EOL . PHP_EOL);
+
         // Defining if update is complete or not (--complete not defined means $saveMode = true)
         $saveMode = ($input->getOption('complete') !== true);
 
