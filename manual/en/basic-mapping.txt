@@ -315,3 +315,6 @@ Doctrine will then quote this column name in all SQL statements according to the
 > **CAUTION**
 > Identifier Quoting is a feature that is mainly intended to support legacy database
 > schemas. The use of reserved words and identifier quoting is generally discouraged.
+> Identifier quoting should not be used to enable the use non-standard-characters such
+> as a dash in a hypothetical column `test-name`. Also Schema-Tool will likely have
+> troubles when quoting is used for case-sensitivity reasons (in Oracle for example).
