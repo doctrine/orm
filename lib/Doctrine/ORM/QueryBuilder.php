@@ -889,6 +889,40 @@ class QueryBuilder
     }
 
     /**
+     * Reset DQL parts
+     *
+     * @param array $parts
+     * @return QueryBuilder
+     */
+    public function resetDQLParts($parts = null)
+    {
+        if (is_null($parts)) {
+            $parts = array_keys($this->_dqlParts);
+        }
+        foreach ($parts as $part) {
+            $this->resetDQLPart($part);
+        }
+        return $this;
+    }
+
+    /**
+     * Reset single DQL part
+     *
+     * @param string $part
+     * @return QueryBuilder;
+     */
+    public function resetDQLPart($part)
+    {
+        if (is_array($this->_dqlParts[$part])) {
+            $this->_dqlParts[$part] = array();
+        } else {
+            $this->_dqlParts[$part] = null;
+        }
+        $this->_state = self::STATE_DIRTY;
+        return $this;
+    }
+
+    /**
      * Gets a string representation of this QueryBuilder which corresponds to
      * the final DQL query being constructed.
      *
