@@ -186,4 +186,18 @@ are already two extensions out there that offer support for Nested Set with Doct
 The Known Issues section describes critical/blocker bugs and other issues that are either complicated to fix,
 not fixable due to backwards compatibility issues or where no simple fix exists (yet). We don't
 plan to add every bug in the tracker there, just those issues that can potentially cause nightmares
-or pain of any sort. *Luckily this section is empty right now!*
+or pain of any sort.
+
++++ Identifier Quoting and Legacy Databases
+
+For compatibility reasons between all the supported vendors and edge case problems
+Doctrine 2 does *NOT* do automatic identifier quoting. This can lead to problems when trying to get
+legacy-databases to work with Doctrine 2.
+
+* You can quote column-names as described in the [Basic-Mapping](basic-mapping) section.
+* You cannot quote join column names.
+* You cannot use non [a-zA-Z0-9_]+ characters, they will break several SQL statements.
+
+Having problems with these kind of column names? Many databases support all CRUD operations on views that
+semantically map to certain tables. You can create views for all your problematic tables and column names
+to avoid the legacy quoting nightmare.
