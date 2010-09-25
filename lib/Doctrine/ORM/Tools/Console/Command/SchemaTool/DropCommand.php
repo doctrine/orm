@@ -70,8 +70,6 @@ EOT
 
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
     {
-        $output->write('ATTENTION: This operation should not be executed in an production enviroment.' . PHP_EOL . PHP_EOL);
-
         if ($input->getOption('dump-sql') === true) {
             $sqls = $schemaTool->getDropSchemaSql($metadatas);
             $output->write(implode(';' . PHP_EOL, $sqls) . PHP_EOL);
@@ -80,6 +78,8 @@ EOT
             $schemaTool->dropSchema($metadatas);
             $output->write('Database schema dropped successfully!' . PHP_EOL);
         } else {
+            $output->write('ATTENTION: This operation should not be executed in an production enviroment.' . PHP_EOL . PHP_EOL);
+
             $sqls = $schemaTool->getDropSchemaSql($metadatas);
 
             if (count($sqls)) {

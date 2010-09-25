@@ -75,10 +75,6 @@ EOT
 
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
     {
-        $output->write('ATTENTION: This operation should not be executed in an production enviroment.' . PHP_EOL);
-        $output->write('Use the incremental update to detect changes during development and use' . PHP_EOL);
-        $output->write('this SQL DDL to manually update your database in production.' . PHP_EOL . PHP_EOL);
-
         // Defining if update is complete or not (--complete not defined means $saveMode = true)
         $saveMode = ($input->getOption('complete') !== true);
 
@@ -90,6 +86,10 @@ EOT
             $schemaTool->updateSchema($metadatas, $saveMode);
             $output->write('Database schema updated successfully!' . PHP_EOL);
         } else {
+            $output->write('ATTENTION: This operation should not be executed in an production enviroment.' . PHP_EOL);
+            $output->write('Use the incremental update to detect changes during development and use' . PHP_EOL);
+            $output->write('this SQL DDL to manually update your database in production.' . PHP_EOL . PHP_EOL);
+
             $sqls = $schemaTool->getUpdateSchemaSql($metadatas, $saveMode);
 
             if (count($sqls)) {
