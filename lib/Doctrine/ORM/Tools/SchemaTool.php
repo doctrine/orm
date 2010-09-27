@@ -299,6 +299,9 @@ class SchemaTool
         $options = array();
         $options['length'] = isset($mapping['length']) ? $mapping['length'] : null;
         $options['notnull'] = isset($mapping['nullable']) ? ! $mapping['nullable'] : true;
+        if ($class->isInheritanceTypeSingleTable() && count($class->parentClasses) > 0) {
+            $options['notnull'] = false;
+        }
 
         $options['platformOptions'] = array();
         $options['platformOptions']['version'] = $class->isVersioned && $class->versionField == $mapping['fieldName'] ? true : false;
