@@ -308,4 +308,28 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertNull($this->_em->find(get_class($this->fix), $this->fix->getId()), "Contract should not be present in the database anymore.");
     }
+
+    /**
+     * @group DDC-817
+     */
+    public function testFindByAssociation()
+    {
+        $this->loadFullFixture();
+
+        $repos = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyContract");
+        $contracts = $repos->findBy(array('salesPerson' => $this->salesPerson->getId()));
+        $this->assertEquals(3, count($contracts), "There should be 3 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyContract'");
+
+        $repos = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyFixContract");
+        $contracts = $repos->findBy(array('salesPerson' => $this->salesPerson->getId()));
+        $this->assertEquals(1, count($contracts), "There should be 1 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFixContract'");
+
+        $repos = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyFlexContract");
+        $contracts = $repos->findBy(array('salesPerson' => $this->salesPerson->getId()));
+        $this->assertEquals(2, count($contracts), "There should be 2 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFlexContract'");
+
+        $repos = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyFlexUltraContract");
+        $contracts = $repos->findBy(array('salesPerson' => $this->salesPerson->getId()));
+        $this->assertEquals(1, count($contracts), "There should be 1 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFlexUltraContract'");
+    }
 }

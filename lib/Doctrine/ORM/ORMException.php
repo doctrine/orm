@@ -78,6 +78,14 @@ class ORMException extends Exception
         );
     }
 
+    public static function invalidFindByInverseAssociation($entityName, $associationFieldName)
+    {
+        return new self(
+            "You cannot search for the association field '".$entityName."#".$associationFieldName."', ".
+            "because it is the inverse side of an association. Find methods only work on owning side associations."
+        );
+    }
+
     public static function invalidResultCacheDriver() {
         return new self("Invalid result cache driver; it must implement \Doctrine\Common\Cache\Cache.");
     }
