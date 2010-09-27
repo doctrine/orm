@@ -185,7 +185,7 @@ class EntityRepository
             );
         }
 
-        if ( ! isset($arguments[0])) {
+        if ( ! array_key_exists(0, $arguments)) {
             throw ORMException::findByRequiresParameter($method.$by);
         }
 
