@@ -106,7 +106,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $conn = $this->sharedFixture['conn'];
 
         $this->_sqlLoggerStack->enabled = false;
-        
+
         if (isset($this->_usedModelSets['cms'])) {
             $conn->executeUpdate('DELETE FROM cms_users_groups');
             $conn->executeUpdate('DELETE FROM cms_groups');
@@ -116,7 +116,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM cms_articles');
             $conn->executeUpdate('DELETE FROM cms_users');
         }
-        
+
         if (isset($this->_usedModelSets['ecommerce'])) {
             $conn->executeUpdate('DELETE FROM ecommerce_carts_products');
             $conn->executeUpdate('DELETE FROM ecommerce_products_categories');
@@ -129,7 +129,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('UPDATE ecommerce_categories SET parent_id = NULL');
             $conn->executeUpdate('DELETE FROM ecommerce_categories');
         }
-        
+
         if (isset($this->_usedModelSets['company'])) {
             $conn->executeUpdate('DELETE FROM company_contract_employees');
             $conn->executeUpdate('DELETE FROM company_contracts');
@@ -144,7 +144,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM company_events');
             $conn->executeUpdate('DELETE FROM company_organizations');
         }
-        
+
         if (isset($this->_usedModelSets['generic'])) {
             $conn->executeUpdate('DELETE FROM boolean_model');
             $conn->executeUpdate('DELETE FROM date_time_model');
@@ -169,6 +169,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
         if (isset($this->_usedModelSets['directorytree'])) {
             $conn->executeUpdate('DELETE FROM File');
+            // MySQL doesnt know deferred deletions therefore only executing the second query gives errors.
+            $conn->executeUpdate('DELETE FROM Directory WHERE parentDirectory_id IS NOT NULL');
             $conn->executeUpdate('DELETE FROM Directory');
         }
 
