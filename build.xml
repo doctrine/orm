@@ -167,6 +167,7 @@
            <release>
                 <install as="doctrine" name="bin/doctrine" />
                 <install as="doctrine.php" name="bin/doctrine.php" />
+                <install as="doctrine.bat" name="bin/doctrine.bat" />
            </release>
         </d51pearpkg2>
         <exec command="pear package" dir="${build.dir}/doctrine-orm" passthru="true" />
