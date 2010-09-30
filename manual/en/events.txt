@@ -436,6 +436,10 @@ The three post events are called inside `EntityManager#flush()`. Changes in here
 are not relevant to the persistence in the database, but you can use this events
 to
 
++++ postLoad
+
+This event is called after an entity is constructed by the EntityManager.
+
 ++ Load ClassMetadata Event
 
 When the mapping information for an entity is read, it is populated in to a

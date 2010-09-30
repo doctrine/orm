@@ -251,7 +251,7 @@ CONCAT() DQL Function:
 EXISTS in WHERE clause with correlated Subquery
 
     [php]
-    $query = $em->createQuery('SELECT u.id FROM CmsUser u WHERE EXISTS (SELECT p.phonenumber FROM CmsPhonenumber p WHERE p.phonenumber = u.id)');
+    $query = $em->createQuery('SELECT u.id FROM CmsUser u WHERE EXISTS (SELECT p.phonenumber FROM CmsPhonenumber p WHERE p.user = u.id)');
     $ids = $query->getResult();
 
 Get all users who are members of $group.
