@@ -257,7 +257,8 @@ EXISTS in WHERE clause with correlated Subquery
 Get all users who are members of $group.
 
     [php]
-    $query = $em->createQuery('SELECT u.id FROM CmsUser u WHERE :param MEMBER OF u.groups');
+    $query = $em->createQuery('SELECT u.id FROM CmsUser u WHERE :groupId MEMBER OF u.groups');
+    $query->setParameter(':groupId', $group);
     $ids = $query->getResult();
 
 Get all users that have more than 1 phonenumber
