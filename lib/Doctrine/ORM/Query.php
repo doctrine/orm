@@ -246,7 +246,7 @@ final class Query extends AbstractQuery
                     $idValues = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
                 } else {
                     $class = $this->_em->getClassMetadata(get_class($value));
-                    $idValuess = $class->getIdentifierValues($value);
+                    $idValues = $class->getIdentifierValues($value);
                 }
                 $sqlPositions = $paramMappings[$key];
                 $sqlParams += array_combine((array)$sqlPositions, $idValues);
