@@ -237,7 +237,7 @@ This tells Doctrine to automatically generate a value for the identifier. How th
 +++ Identifier Generation Strategies
 
 The previous example showed how to use the default identifier generation strategy without knowing the underlying database with the AUTO-detection strategy.
-It is also possible to specifiy the identifier generation strategy more explicitly, which allows to make use of some additional features.
+It is also possible to specify the identifier generation strategy more explicitly, which allows to make use of some additional features.
 
 Here is the list of possible generation strategies:
 
@@ -256,7 +256,7 @@ Here is the list of possible generation strategies:
 ++++ Sequence Generator
 
 The Sequence Generator can currently be used in conjunction with Oracle or Postgres and allows some additional configuration options besides
-specifiying the sequence's name:
+specifying the sequence's name:
 
     [php]
     class User {
@@ -292,7 +292,7 @@ Doctrine can generate identifier values for the allocationSizes amount of entiti
 
 +++ Composite Keys
 
-Doctrine 2 allows to use composite primary keys. There are however some restrictions oposed to using a single identifier.
+Doctrine 2 allows to use composite primary keys. There are however some restrictions opposed to using a single identifier.
 The use of the `@GeneratedValue` annotation is only supported for simple (not composite) primary keys, which means
 you can only use composite keys if you generate the primary key values yourself before calling `EntityManager#persist()`
 on the entity.

@@ -273,7 +273,7 @@ Get all users that have no phonenumber
     $query = $em->createQuery('SELECT u FROM CmsUser u WHERE u.phonenumbers IS EMPTY');
     $users = $query->getResult();
 
-Get all instances of a specific type, for use with inheritance hierachies:
+Get all instances of a specific type, for use with inheritance hierarchies:
 
     [php]
     $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF Doctrine\Tests\Models\Company\CompanyEmployee');
@@ -304,7 +304,7 @@ You use the partial syntax when joining as well:
 The INDEX BY construct is nothing that directly translates into SQL but that affects
 object and array hydration. After each FROM and JOIN clause you specify by which field
 this class should be indexed in the result. By default a result is incremented
-by numerical keys starting with 0. However with INDEX BY you can specifiy any
+by numerical keys starting with 0. However with INDEX BY you can specify any
 other column to be the key of your result, it really only makes sense with primary
 or unique fields though:
 
@@ -340,7 +340,7 @@ example shows:
 
     UPDATE MyProject\Model\User u SET u.password = 'new' WHERE u.id IN (1, 2, 3)
 
-References to related entities are only possible in the WHERE clause and using subselects.
+References to related entities are only possible in the WHERE clause and using sub-selects.
 
 > **CAUTION**
 > DQL UPDATE statements are ported directly into a Database UPDATE statement and therefore bypass
@@ -375,11 +375,11 @@ The following functions are supported in SELECT, WHERE and HAVING clauses:
 * CURRENT_TIME() - Returns the current time
 * CURRENT_TIMESTAMP() - Returns a timestamp of the current date and time.
 * LENGTH(str) - Returns the length of the given string
-* LOCATE(needle, haystack [, offset]) - Locate the first occurance of the substring in the string.
+* LOCATE(needle, haystack [, offset]) - Locate the first occurrence of the substring in the string.
 * LOWER(str) - returns the string lowercased.
 * MOD(a, b) - Return a MOD b.
 * SIZE(collection) - Return the number of elements in the specified collection
-* SQRT(q) - Return the squareroot of q.
+* SQRT(q) - Return the square-root of q.
 * SUBSTRING(str, start [, length]) - Return substring of given string.
 * TRIM([LEADING | TRAILING | BOTH] ['trchar' FROM] str) - Trim the string by the given trim char, defaults to whitespaces.
 * UPPER(str) - Return the upper-case of the given string.
@@ -399,12 +399,12 @@ The following aggregate functions are allowed in SELECT and GROUP BY clauses: AV
 DQL offers a wide-range of additional expressions that are known from SQL, here is a list of
 all the supported constructs:
 
-* `ALL/ANY/SOME` - Used in a WHERE clause followed by a subselect this works like the equivalent constructs in SQL.
+* `ALL/ANY/SOME` - Used in a WHERE clause followed by a sub-select this works like the equivalent constructs in SQL.
 * `BETWEEN a AND b` and `NOT BETWEEN a AND b` can be used to match ranges of arithmetic values.
 * `IN (x1, x2, ...)` and `NOT IN (x1, x2, ..)` can be used to match a set of given values.
 * `LIKE ..` and `NOT LIKE ..` match parts of a string or text using % as a wildcard.
 * `IS NULL` and `IS NOT NULL` to check for null values
-* `EXISTS` and `NOT EXISTS` in combination with a subselect
+* `EXISTS` and `NOT EXISTS` in combination with a sub-select
 
 +++ Adding your own functions to the DQL language
 
@@ -586,7 +586,7 @@ An instance of the `Doctrine\ORM\Query` class represents a DQL query. You create
     // example1: passing a DQL string
     $q = $em->createQuery('select u from MyProject\Model\User u');
 
-    // example2: usin setDql
+    // example2: using setDql
     $q = $em->createQuery();
     $q->setDql('select u from MyProject\Model\User u');
 
@@ -612,7 +612,7 @@ The use of the methods mentioned earlier is generally preferred as it leads to m
 
 +++ Pure and Mixed Results
 
-The nature of a result returned by a DQL SELECT query retrieved through `Query#getResult()` or `Query#getArrayResult()` can be of 2 forms: **pure** and **mixed**. In the previous simple examples, you already saw a "pure" query result, with only objects. By default, the result type is **pure** but **as soon as scalar values, such as aggregate values or other scalar values that do not belong to an entity, appear in the SELECT part of the DQL query, the result becomes mixed**. A mixed result has a different structure than a pure result in order to accomodate for the scalar values.
+The nature of a result returned by a DQL SELECT query retrieved through `Query#getResult()` or `Query#getArrayResult()` can be of 2 forms: **pure** and **mixed**. In the previous simple examples, you already saw a "pure" query result, with only objects. By default, the result type is **pure** but **as soon as scalar values, such as aggregate values or other scalar values that do not belong to an entity, appear in the SELECT part of the DQL query, the result becomes mixed**. A mixed result has a different structure than a pure result in order to accommodate for the scalar values.
 
 A pure result usually looks like this:
 
@@ -755,10 +755,10 @@ Now the hydrator is ready to be used in your queries:
     $query = $em->createQuery('SELECT u FROM CmsUser u');
     $results = $query->getResult('CustomHydrator');
 
-+++ Iterating Large Resultsets
++++ Iterating Large Result Sets
 
 There are situations when a query you want to execute returns a very large result-set that needs
-to be processed. All the previously described hydration modes completly load a result-set into
+to be processed. All the previously described hydration modes completely load a result-set into
 memory which might not be feasible with large result sets. See the [Batch Processing](batch-processing)
 section on details how to iterate large result sets.
 
@@ -818,10 +818,10 @@ are to be used in userland:
 hint can be used to handle memory consumption problems with large result-sets that contain char or binary data.
 Doctrine has no way of implicitly reloading this data. Partially loaded objects have to be passed to
 `EntityManager::refresh()` if they are to be reloaded fully from the database.
-* Query::HINT_REFRESH - This query is used internally by `EntityManager::refresh()` and can be used in userland aswell.
+* Query::HINT_REFRESH - This query is used internally by `EntityManager::refresh()` and can be used in userland as well.
 If you specify this hint and a query returns the data for an entity that is already managed by the UnitOfWork, the
 fields of the existing entity will be refreshed. In normal operation a result-set that loads data of an already existing
-entity is discarded in favour of the already existing entity.
+entity is discarded in favor of the already existing entity.
 * Query::HINT_CUSTOM_TREE_WALKERS - An array of additional `Doctrine\ORM\Query\TreeWalker` instances that are attached
 to the DQL query parsing process.
 
@@ -845,7 +845,7 @@ of the Query Cache, however if you do there are several methods to interact with
 
 ++++ First and Max Result Items (DQL Query Only)
 
-You can limit the number of results returned from a DQL query aswell as specify the starting offset, Doctrine
+You can limit the number of results returned from a DQL query as well as specify the starting offset, Doctrine
 then uses a strategy of manipulating the select query to return only the requested number of results:
 
 * `Query::setMaxResults($maxResults)`
@@ -854,7 +854,7 @@ then uses a strategy of manipulating the select query to return only the request
 > **NOTE**
 > If your query contains a fetch-joined collection specifying the result limit methods are not working
 > as you would expect. Set Max Results restricts the number of database result rows, however in the
-> case of fetch-joined collections one root entity might appear in many rows, effectivly hydrating
+> case of fetch-joined collections one root entity might appear in many rows, effectively hydrating
 > less than the specified number of results.
 
 ++ EBNF
@@ -866,8 +866,8 @@ The following context-free grammar, written in an EBNF variant, describes the Do
 * non-terminals begin with an upper case character
 * terminals begin with a lower case character
 * parentheses (...) are used for grouping
-* square brackets [...] are used for defining an optional part, eg. zero or one time
-* curly brackets {...} are used for repetion, eg. zero or more times
+* square brackets [...] are used for defining an optional part, e.g. zero or one time
+* curly brackets {...} are used for repetition, e.g. zero or more times
 * double quotation marks "..." define a terminal string a vertical bar | represents an alternative
 
 +++ Terminals
@@ -901,7 +901,7 @@ The following context-free grammar, written in an EBNF variant, describes the Do
     AbstractSchemaName ::= identifier
 
     /* identifier that must be a field (the "name" of "u.name") */
-    /* This is responsable to know if the field exists in Object, no matter if it's a relation or a simple field */
+    /* This is responsible to know if the field exists in Object, no matter if it's a relation or a simple field */
     FieldIdentificationVariable ::= identifier
 
     /* identifier that must be a collection-valued association field (to-many) (the "Phonenumbers" of "u.Phonenumbers") */

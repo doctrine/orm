@@ -111,7 +111,7 @@ The EntityManager and UnitOfWork trigger a bunch of events during the life-time 
 * postUpdate - The postUpdate event occurs after the database update operations to entity data.
 * postLoad - The postLoad event occurs for an entity after the entity has been loaded into the current EntityManager from the database or after the refresh operation has been applied to it.
 * loadClassMetadata - The loadClassMetadata event occurs after the mapping metadata for a class has been loaded from a mapping source (annotations/xml/yaml).
-* onFlush - The onFlush event occours after the change-sets of all managed entities are computed. This event is not a lifecycle callback.
+* onFlush - The onFlush event occurs after the change-sets of all managed entities are computed. This event is not a lifecycle callback.
 
 > **CAUTION**
 > Note that the postLoad event occurs for an entity before any associations have been
@@ -126,8 +126,8 @@ You can access the Event constants from the `Events` class in the ORM package.
 
 These can be hooked into by two different types of event listeners:
 
-* Lifecycle Callbacks are methods on the entity classes that are called when the event is triggered. They recieve absolutely no arguments and are specifically designed to allow changes inside the entity classes state.
-* Lifecycle Event Listeners are classes with specific callback methods that recieves some kind of `EventArgs` instance which give access to the entity, EntityManager or other relevant data.
+* Lifecycle Callbacks are methods on the entity classes that are called when the event is triggered. They receive absolutely no arguments and are specifically designed to allow changes inside the entity classes state.
+* Lifecycle Event Listeners are classes with specific callback methods that receives some kind of `EventArgs` instance which give access to the entity, EntityManager or other relevant data.
 
 > **NOTE**
 > All Lifecycle events that happen during the `flush()` of an EntityManager have very specific constraints on the allowed
@@ -249,7 +249,7 @@ the event type. The allowed event types are the ones listed in the previous Life
 ++ Listening to Lifecycle Events
 
 Lifecycle event listeners are much more powerful than the simple lifecycle callbacks that are defined on the entity
-classes. They allow to implement re-usable behaviours between different entity classes, yet require much more detailed
+classes. They allow to implement re-usable behaviors between different entity classes, yet require much more detailed
 knowledge about the inner workings of the EntityManager and UnitOfWork. Please read the *Implementing Event Listeners*
 section carefully if you are trying to write your own listener.
 
@@ -420,7 +420,7 @@ to call:
 
         private function validateCreditCard($no)
         {
-            // throw an exception to interupt flush event. Transaction will be rolled back.
+            // throw an exception to interrupt flush event. Transaction will be rolled back.
         }
     }
 

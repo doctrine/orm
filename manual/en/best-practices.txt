@@ -72,6 +72,6 @@ Foreign keys have no meaning whatsoever in an object model. Foreign keys are how
 
 While Doctrine will automatically wrap all DML operations in a transaction on flush(), it is considered best practice to explicitly set the transaction boundaries yourself.
 Otherwise every single query is wrapped in a small transaction (Yes, SELECT queries, too) since you can not talk to your database outside of a transaction.
-While such short transactions for read-only (SELECT) queries generally dont have any noticable performance impact, it is still preferrable to use fewer, well-defined transactions
+While such short transactions for read-only (SELECT) queries generally don't have any noticeable performance impact, it is still preferable to use fewer, well-defined transactions
 that are established through explicit transaction boundaries.
 
