@@ -248,11 +248,11 @@ code in `Account::getBalance()` and `Account:addEntry()`:
     }
 
 This is a very simple change, but all the tests still pass. Our account entities return
-the correct balance. Now calling the `Account::getBalance()` method will not occour the
+the correct balance. Now calling the `Account::getBalance()` method will not occur the
 overhead of loading all entries anymore. Adding a new Entry to the `Account::$entities`
 will also not initialize the collection internally.
 
-Adding a new entry is therefore very performant and explictly hooked into the domain model.
+Adding a new entry is therefore very performant and explicitly hooked into the domain model.
 It will only update the account with the current balance and insert the new entry into the database.
 
 ## Tackling Race Conditions with Aggregate Fields
@@ -293,7 +293,7 @@ Optimistic locking is as easy as adding a version column:
 The previous example would then throw an exception in the face of whatever request
 saves the entity last (and would create the inconsistent state).
 
-Pessimmistic locking requires an additional flag set on the `EntityManager::find()`
+Pessimistic locking requires an additional flag set on the `EntityManager::find()`
 call, enabling write locking directly in the database using a FOR UPDATE.
 
     [php]

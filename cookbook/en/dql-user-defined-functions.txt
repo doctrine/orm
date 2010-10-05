@@ -48,7 +48,7 @@ takes two dates as argument and calculates the difference in days with `date1-da
 
 The DQL parser is a top-down recursive descent parser to generate the
 Abstract-Syntax Tree (AST) and uses a TreeWalker approach to generate the appropriate
-SQL from the AST. This makes reading the Parser/TreeWalker code managable
+SQL from the AST. This makes reading the Parser/TreeWalker code manageable
 in a finite amount of time.
 
 The `FunctionNode` class I referred to earlier requires you to implement
@@ -98,13 +98,13 @@ to the generation of a DateDiff FunctionNode somewhere in the AST of the
 dql statement.
 
 The `ArithmeticPrimary` method call is the most common denominator of valid
-EBNF tokens taken from the [DQL EBNF grammer](http://www.doctrine-project.org/documentation/manual/2_0/en/dql-doctrine-query-language#ebnf)
+EBNF tokens taken from the [DQL EBNF grammar](http://www.doctrine-project.org/documentation/manual/2_0/en/dql-doctrine-query-language#ebnf)
 that matches our requirements for valid input into the DateDiff Dql function.
 Picking the right tokens for your methods is a tricky business, but the EBNF
-grammer is pretty helpful finding it, as is looking at the Parser source code.
+grammar is pretty helpful finding it, as is looking at the Parser source code.
 
 Now in the TreeWalker process we have to pick up this node and generate SQL
-from it, which apprently is quite easy looking at the code in (7). Since
+from it, which apparently is quite easy looking at the code in (7). Since
 we don't know which type of AST Node the first and second Date expression
 are we are just dispatching them back to the SQL Walker to generate SQL from
 and then wrap our DATEDIFF function call around this output.
@@ -125,7 +125,7 @@ We can do fancy stuff like:
 Often useful it the ability to do some simple date calculations in your DQL query
 using [MySql's DATE_ADD function](http://dev.mysql.com/doc/refman/5.1/en/date-and-time-functions.html#function_date-add).
 
-I'll skip the bla and show the code for this function:
+I'll skip the blah and show the code for this function:
 
     [php]
     /**
@@ -176,7 +176,7 @@ the value of the `T_IDENTIFIER` token for the Date Interval unit, for example th
 
 The above method now only supports the specification using `INTERVAL`, to also
 allow a real date in DATE_ADD we need to add some decision logic to the parsing
-process (makes up for a nice excercise).
+process (makes up for a nice exercise).
 
 Now as you see, the Parsing process doesn't catch all the possible SQL errors,
 here we don't match for all the valid inputs for the interval unit.

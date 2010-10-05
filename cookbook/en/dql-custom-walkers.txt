@@ -1,13 +1,13 @@
 # Extending DQL in Doctrine 2: Custom AST Walkers
 
-The Doctrine Query Language (DQL) is a propriotary sql-dialect that substitutes
+The Doctrine Query Language (DQL) is a proprietary sql-dialect that substitutes
 tables and columns for Entity names and their fields. Using DQL you write a query
 against the database using your entities. With the help of the metadata you
 can write very concise, compact and powerful queries that are then translated
 into SQL by the Doctrine ORM.
 
 In Doctrine 1 the DQL language was not implemented using a real parser. This
-made modifications of the DQL by the user impossible. Doctrine 2 in constrast
+made modifications of the DQL by the user impossible. Doctrine 2 in contrast
 has a real parser for the DQL language, which transforms the DQL statement
 into an [Abstract Syntax Tree](http://en.wikipedia.org/wiki/Abstract_syntax_tree)
 and generates the appropriate SQL statement for it. Since this process is
@@ -130,7 +130,7 @@ execution plans. You can write your own output walker to introduce certain
 keywords using the Query Hint API. A query hint can be set via `Query::setHint($name, $value)`
 as shown in the previous example with the `HINT_CUSTOM_TREE_WALKERS` query hint.
 
-We will implement a custom Output Walker that allows to specifiy the SQL_NO_CACHE
+We will implement a custom Output Walker that allows to specify the SQL_NO_CACHE
 query hint.
 
     [php]
