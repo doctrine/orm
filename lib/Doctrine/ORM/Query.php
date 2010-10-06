@@ -242,10 +242,14 @@ final class Query extends AbstractQuery
             }
 
             if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(get_class($value))) {
-                //TODO: Check that $value is MANAGED?
-                $values = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
+                if ($this->_em->getUnitOfWork()->getEntityState($value) == UnitOfWork::STATE_MANAGED) {
+                    $idValues = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
+                } else {
+                    $class = $this->_em->getClassMetadata(get_class($value));
+                    $idValues = $class->getIdentifierValues($value);
+                }
                 $sqlPositions = $paramMappings[$key];
-                $sqlParams += array_combine((array)$sqlPositions, $values);
+                $sqlParams += array_combine((array)$sqlPositions, $idValues);
             } else {
                 foreach ($paramMappings[$key] as $position) {
                     $sqlParams[$position] = $value;

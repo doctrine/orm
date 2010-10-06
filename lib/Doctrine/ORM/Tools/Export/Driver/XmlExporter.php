@@ -109,7 +109,7 @@ class XmlExporter extends AbstractExporter
             
             foreach ($metadata->table['uniqueConstraints'] as $unique) {
                 $uniqueConstraintXml = $uniqueConstraintsXml->addChild('unique-constraint');
-                $uniqueConstraintXml->addAttribute('name', $name);
+                $uniqueConstraintXml->addAttribute('name', $unique['name']);
                 $uniqueConstraintXml->addAttribute('columns', implode(',', $unique['columns']));
             }
         }

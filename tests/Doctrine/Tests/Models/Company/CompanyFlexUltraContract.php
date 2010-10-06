@@ -8,7 +8,7 @@ namespace Doctrine\Tests\Models\Company;
 class CompanyFlexUltraContract extends CompanyFlexContract
 {
     /**
-     * @column(type="integer", nullable=true)
+     * @column(type="integer")
      * @var int
      */
     private $maxPrice = 0;

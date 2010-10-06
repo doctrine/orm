@@ -179,6 +179,8 @@ class AnnotationDriver implements Driver
                         'type' => $discrColumnAnnot->type,
                         'length' => $discrColumnAnnot->length
                     ));
+                } else {
+                    $metadata->setDiscriminatorColumn(array('name' => 'dtype', 'type' => 'string', 'length' => 255));
                 }
 
                 // Evaluate DiscriminatorMap annotation
@@ -435,7 +437,7 @@ class AnnotationDriver implements Driver
 
         foreach ($this->_paths as $path) {
             if ( ! is_dir($path)) {
-                throw MappingException::fileMappingDriversRequireConfiguredDirectoryPath();
+                throw MappingException::fileMappingDriversRequireConfiguredDirectoryPath($path);
             }
 
             $iterator = new \RecursiveIteratorIterator(

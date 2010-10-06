@@ -17,34 +17,48 @@
  * <http://www.doctrine-project.org>.
  */
 
-require_once 'Doctrine/Common/ClassLoader.php';
+namespace Doctrine\Tests\Models\DirectoryTree;
 
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
-$classLoader->register();
+/**
+ * @MappedSuperclass
+ */
+abstract class AbstractContentItem
+{
+    /**
+     * @Id @Column(type="integer") @GeneratedValue
+     */
+    private $id;
+    
+    /**
+     * @ManyToOne(targetEntity="Directory")
+     */
+    protected $parentDirectory;
 
-$classLoader = new \Doctrine\Common\ClassLoader('Symfony', 'Doctrine');
-$classLoader->register();
+    /** @column(type="string") */
+    protected $name;
 
-$configFile = getcwd() . DIRECTORY_SEPARATOR . 'cli-config.php';
-
-$helperSet = null;
-if (file_exists($configFile)) {
-    if ( ! is_readable($configFile)) {
-        trigger_error(
-            'Configuration file [' . $configFile . '] does not have read permission.', E_ERROR
-        );
+    public function __construct(Directory $parentDir = null)
+    {
+        $this->parentDirectory = $parentDir;
     }
 
-    require $configFile;
+    public function getId()
+    {
+        return $this->id;
+    }
 
-    foreach ($GLOBALS as $helperSetCandidate) {
-        if ($helperSetCandidate instanceof \Symfony\Component\Console\Helper\HelperSet) {
-            $helperSet = $helperSetCandidate;
-            break;
-        }
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function getParent()
+    {
+        return $this->parentDirectory;
     }
 }
-
-$helperSet = ($helperSet) ?: new \Symfony\Component\Console\Helper\HelperSet();
-
-\Doctrine\ORM\Tools\Console\ConsoleRunner::run($helperSet);

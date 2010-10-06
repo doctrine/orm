@@ -8,7 +8,7 @@ namespace Doctrine\Tests\Models\Company;
 class CompanyFixContract extends CompanyContract
 {
     /**
-     * @column(type="integer", nullable=true)
+     * @column(type="integer")
      * @var int
      */
     private $fixPrice = 0;

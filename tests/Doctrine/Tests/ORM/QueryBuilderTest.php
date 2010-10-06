@@ -525,4 +525,48 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertValidQueryBuilder($qb, 'SELECT COUNT(e.id)');
     }
+
+    public function testResetDQLPart()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where('u.username = ?1')->orderBy('u.username');
+
+        $this->assertEquals('u.username = ?1', (string)$qb->getDQLPart('where'));
+        $this->assertEquals(1, count($qb->getDQLPart('orderBy')));
+
+        $qb->resetDqlPart('where')->resetDqlPart('orderBy');
+
+        $this->assertNull($qb->getDQLPart('where'));
+        $this->assertEquals(0, count($qb->getDQLPart('orderBy')));
+    }
+
+    public function testResetDQLParts()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where('u.username = ?1')->orderBy('u.username');
+
+        $qb->resetDQLParts(array('where', 'orderBy'));
+
+        $this->assertEquals(1, count($qb->getDQLPart('select')));
+        $this->assertNull($qb->getDQLPart('where'));
+        $this->assertEquals(0, count($qb->getDQLPart('orderBy')));
+    }
+
+    public function testResetAllDQLParts()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where('u.username = ?1')->orderBy('u.username');
+
+        $qb->resetDQLParts();
+
+        $this->assertEquals(0, count($qb->getDQLPart('select')));
+        $this->assertNull($qb->getDQLPart('where'));
+        $this->assertEquals(0, count($qb->getDQLPart('orderBy')));
+    }
 }

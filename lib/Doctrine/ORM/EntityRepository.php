@@ -185,13 +185,14 @@ class EntityRepository
             );
         }
 
-        if ( ! isset($arguments[0])) {
+        if ( !isset($arguments[0])) {
+            // we dont even want to allow null at this point, because we cannot (yet) transform it into IS NULL.
             throw ORMException::findByRequiresParameter($method.$by);
         }
 
         $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
 
-        if ($this->_class->hasField($fieldName)) {
+        if ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName)) {
             return $this->$method(array($fieldName => $arguments[0]));
         } else {
             throw ORMException::invalidFindByCall($this->_entityName, $fieldName, $method.$by);

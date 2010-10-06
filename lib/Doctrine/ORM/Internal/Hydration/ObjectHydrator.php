@@ -269,6 +269,9 @@ class ObjectHydrator extends AbstractHydrator
                 // It's a joined result
 
                 $parentAlias = $this->_rsm->parentAliasMap[$dqlAlias];
+                // we need the $path to save into the identifier map which entities were already
+                // seen for this parent-child relationship
+                $path = $parentAlias . '.' . $dqlAlias;
 
                 // Get a reference to the parent object to which the joined element belongs.
                 if ($this->_rsm->isMixed && isset($this->_rootAliases[$parentAlias])) {
@@ -298,8 +301,8 @@ class ObjectHydrator extends AbstractHydrator
                             $reflFieldValue = $this->_initRelatedCollection($parentObject, $parentClass, $relationField);
                         }
                         
-                        $indexExists = isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]]);
-                        $index = $indexExists ? $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] : false;
+                        $indexExists = isset($this->_identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]]);
+                        $index = $indexExists ? $this->_identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] : false;
                         $indexIsValid = $index !== false ? isset($reflFieldValue[$index]) : false;
                         
                         if ( ! $indexExists || ! $indexIsValid) {
@@ -317,11 +320,11 @@ class ObjectHydrator extends AbstractHydrator
                                     $field = $this->_rsm->indexByMap[$dqlAlias];
                                     $indexValue = $this->_ce[$entityName]->reflFields[$field]->getValue($element);
                                     $reflFieldValue->hydrateSet($indexValue, $element);
-                                    $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $indexValue;
+                                    $this->_identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $indexValue;
                                 } else {
                                     $reflFieldValue->hydrateAdd($element);
                                     $reflFieldValue->last();
-                                    $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $reflFieldValue->key();
+                                    $this->_identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $reflFieldValue->key();
                                 }
                                 // Update result pointer
                                 $this->_resultPointers[$dqlAlias] = $element;

@@ -1,0 +1,6 @@
+Doctrine\Tests\ORM\Mapping\Animal:
+  type: entity
+  inheritanceType: SINGLE_TABLE
+  discriminatorMap:
+    cat: Cat
+    dog: Dog

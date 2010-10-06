@@ -78,6 +78,8 @@ EOT
             $schemaTool->dropSchema($metadatas);
             $output->write('Database schema dropped successfully!' . PHP_EOL);
         } else {
+            $output->write('ATTENTION: This operation should not be executed in an production enviroment.' . PHP_EOL . PHP_EOL);
+
             $sqls = $schemaTool->getDropSchemaSql($metadatas);
 
             if (count($sqls)) {

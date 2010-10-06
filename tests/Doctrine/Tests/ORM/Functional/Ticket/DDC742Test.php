@@ -11,6 +11,13 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
+
+        if (\extension_loaded('memcache')) {
+            $this->_em->getMetadataFactory()->setCacheDriver(new \Doctrine\Common\Cache\MemcacheCache());
+        } else if (\extension_loaded('apc')) {
+            $this->_em->getMetadataFactory()->setCacheDriver(new \Doctrine\Common\Cache\ApcCache());
+        }
+
         try {
             $this->_schemaTool->createSchema(array(
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC742User'),
@@ -19,6 +26,10 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
         } catch(\Exception $e) {
 
         }
+
+        // make sure classes will be deserialized from caches
+        $this->_em->getMetadataFactory()->setMetadataFor(__NAMESPACE__ . '\DDC742User', null);
+        $this->_em->getMetadataFactory()->setMetadataFor(__NAMESPACE__ . '\DDC742Comment', null);
     }
 
     public function testIssue()

@@ -17,34 +17,29 @@
  * <http://www.doctrine-project.org>.
  */
 
-require_once 'Doctrine/Common/ClassLoader.php';
 
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
-$classLoader->register();
+namespace Doctrine\Tests\Models\DirectoryTree;
 
-$classLoader = new \Doctrine\Common\ClassLoader('Symfony', 'Doctrine');
-$classLoader->register();
+/**
+ * @Entity
+ */
+class File extends AbstractContentItem
+{
+    /** @Column(type="string") */
+    protected $extension = "html";
 
-$configFile = getcwd() . DIRECTORY_SEPARATOR . 'cli-config.php';
-
-$helperSet = null;
-if (file_exists($configFile)) {
-    if ( ! is_readable($configFile)) {
-        trigger_error(
-            'Configuration file [' . $configFile . '] does not have read permission.', E_ERROR
-        );
+    public function __construct(Directory $parent = null)
+    {
+        parent::__construct($parent);
     }
 
-    require $configFile;
+    public function getExtension()
+    {
+        return $this->extension;
+    }
 
-    foreach ($GLOBALS as $helperSetCandidate) {
-        if ($helperSetCandidate instanceof \Symfony\Component\Console\Helper\HelperSet) {
-            $helperSet = $helperSetCandidate;
-            break;
-        }
+    public function setExtension($ext)
+    {
+        $this->extension = $ext;
     }
 }
-
-$helperSet = ($helperSet) ?: new \Symfony\Component\Console\Helper\HelperSet();
-
-\Doctrine\ORM\Tools\Console\ConsoleRunner::run($helperSet);

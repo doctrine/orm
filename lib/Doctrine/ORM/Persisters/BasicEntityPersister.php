@@ -1120,6 +1120,19 @@ class BasicEntityPersister
                     $conditionSql .= $this->_getSQLTableAlias($this->_class->name) . '.';
                 }
                 $conditionSql .= $this->_class->getQuotedColumnName($field, $this->_platform);
+            } else if (isset($this->_class->associationMappings[$field])) {
+                if (!$this->_class->associationMappings[$field]['isOwningSide']) {
+                    throw ORMException::invalidFindByInverseAssociation($this->_class->name, $field);
+                }
+
+                if (isset($this->_class->associationMappings[$field]['inherited'])) {
+                    $conditionSql .= $this->_getSQLTableAlias($this->_class->associationMappings[$field]['inherited']) . '.';
+                } else {
+                    $conditionSql .= $this->_getSQLTableAlias($this->_class->name) . '.';
+                }
+                
+
+                $conditionSql .= $this->_class->associationMappings[$field]['joinColumns'][0]['name'];
             } else if ($assoc !== null) {
                 if ($assoc['type'] == ClassMetadata::MANY_TO_MANY) {
                     $owningAssoc = $assoc['isOwningSide'] ? $assoc : $this->_em->getClassMetadata($assoc['targetEntity'])

@@ -155,7 +155,7 @@ abstract class AbstractFileDriver implements Driver
         if ($this->_paths) {
             foreach ((array) $this->_paths as $path) {
                 if ( ! is_dir($path)) {
-                    throw MappingException::fileMappingDriversRequireConfiguredDirectoryPath();
+                    throw MappingException::fileMappingDriversRequireConfiguredDirectoryPath($path);
                 }
             
                 $iterator = new \RecursiveIteratorIterator(

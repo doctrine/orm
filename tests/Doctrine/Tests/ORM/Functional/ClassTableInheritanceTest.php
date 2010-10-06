@@ -353,4 +353,36 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($manager->getId(), $dqlManager->getId());
         $this->assertEquals($person->getId(), $dqlManager->getSpouse()->getId());
     }
+
+    /**
+     * @group DDC-817
+     */
+    public function testFindByAssociation()
+    {
+        $manager = new CompanyManager();
+        $manager->setName('gblanco');
+        $manager->setSalary(1234);
+        $manager->setTitle('Awesome!');
+        $manager->setDepartment('IT');
+
+        $person = new CompanyPerson();
+        $person->setName('spouse');
+
+        $manager->setSpouse($person);
+
+        $this->_em->persist($manager);
+        $this->_em->persist($person);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyManager');
+        $pmanager = $repos->findOneBy(array('spouse' => $person->getId()));
+
+        $this->assertEquals($manager->getId(), $pmanager->getId());
+
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyPerson');
+        $pmanager = $repos->findOneBy(array('spouse' => $person->getId()));
+
+        $this->assertEquals($manager->getId(), $pmanager->getId());
+    }
 }

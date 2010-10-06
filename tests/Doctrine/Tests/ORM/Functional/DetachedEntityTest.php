@@ -105,8 +105,8 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         } catch (\Exception $expected) {}
     }
 
-    public function testUninitializedLazyAssociationsAreIgnoredOnMerge() {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+    public function testUninitializedLazyAssociationsAreIgnoredOnMerge()
+    {
         $user = new CmsUser;
         $user->name = 'Guilherme';
         $user->username = 'gblanco';
@@ -135,6 +135,31 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($managedAddress2->user instanceof \Doctrine\ORM\Proxy\Proxy);
         $this->assertFalse($managedAddress2->user === $detachedAddress2->user);
         $this->assertFalse($managedAddress2->user->__isInitialized__);
+    }
+
+    /**
+     * @group DDC-822
+     */
+    public function testUseDetachedEntityAsQueryParameter()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        $this->_em->persist($user);
+
+        $this->_em->flush();
+        $this->_em->detach($user);
+
+        $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1";
+        $query = $this->_em->createQuery($dql);
+        $query->setParameter(1, $user);
+
+        $newUser = $query->getSingleResult();
+
+        $this->assertType('Doctrine\Tests\Models\CMS\CmsUser', $newUser);
+        $this->assertEquals('gblanco', $newUser->username);
     }
 }
 

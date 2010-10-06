@@ -13,15 +13,20 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
 {
     abstract protected function _loadDriver();
 
-    public function testLoadMapping()
+    public function createClassMetadata($entityClassName)
     {
-        $className = 'Doctrine\Tests\ORM\Mapping\User';
         $mappingDriver = $this->_loadDriver();
 
-        $class = new ClassMetadata($className);
-        $mappingDriver->loadMetadataForClass($className, $class);
+        $class = new ClassMetadata($entityClassName);
+        $mappingDriver->loadMetadataForClass($entityClassName, $class);
 
         return $class;
+    }
+
+    public function testLoadMapping()
+    {
+        $entityClassName = 'Doctrine\Tests\ORM\Mapping\User';
+        return $this->createClassMetadata($entityClassName);
     }
 
     /**
@@ -269,6 +274,23 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
 
         return $class;
     }
+
+    /**
+     * @group DDC-514
+     */
+    public function testDiscriminatorColumnDefaults()
+    {
+        if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
+            $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
+        }
+
+        $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\Animal');
+
+        $this->assertEquals(
+            array('name' => 'dtype', 'type' => 'string', 'length' => 255, 'fieldName' => 'dtype'),
+            $class->discriminatorColumn
+        );
+    }
 }
 
 /**
@@ -457,5 +479,41 @@ class User
                 'allocationSize' => 100,
                 'initialValue' => 1,
             ));
+    }
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorMap({"cat" = "Cat", "dog" = "Dog"})
+ */
+abstract class Animal
+{
+    /**
+     * @Id @Column(type="string") @GeneratedValue
+     */
+    public $id;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata)
+    {
+        
+    }
+}
+
+/** @Entity */
+class Cat extends Animal
+{
+    public static function loadMetadata(ClassMetadataInfo $metadata)
+    {
+        
+    }
+}
+
+/** @Entity */
+class Dog extends Animal
+{
+    public static function loadMetadata(ClassMetadataInfo $metadata)
+    {
+        
     }
 }

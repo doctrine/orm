@@ -79,6 +79,8 @@ class YamlDriver extends AbstractFileDriver
                         'type' => $discrColumn['type'],
                         'length' => $discrColumn['length']
                     ));
+                } else {
+                    $metadata->setDiscriminatorColumn(array('name' => 'dtype', 'type' => 'string', 'length' => 255));
                 }
 
                 // Evaluate discriminatorMap

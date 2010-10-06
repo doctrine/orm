@@ -17,34 +17,25 @@
  * <http://www.doctrine-project.org>.
  */
 
-require_once 'Doctrine/Common/ClassLoader.php';
+namespace Doctrine\Tests\Models\DirectoryTree;
 
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
-$classLoader->register();
+/**
+ * @Entity
+ */
+class Directory extends AbstractContentItem
+{
+    /**
+     * @Column(type="string")
+     */
+    protected $path;
 
-$classLoader = new \Doctrine\Common\ClassLoader('Symfony', 'Doctrine');
-$classLoader->register();
-
-$configFile = getcwd() . DIRECTORY_SEPARATOR . 'cli-config.php';
-
-$helperSet = null;
-if (file_exists($configFile)) {
-    if ( ! is_readable($configFile)) {
-        trigger_error(
-            'Configuration file [' . $configFile . '] does not have read permission.', E_ERROR
-        );
+    public function setPath($path)
+    {
+        $this->path = $path;
     }
 
-    require $configFile;
-
-    foreach ($GLOBALS as $helperSetCandidate) {
-        if ($helperSetCandidate instanceof \Symfony\Component\Console\Helper\HelperSet) {
-            $helperSet = $helperSetCandidate;
-            break;
-        }
+    public function getPath()
+    {
+        return $this->path;
     }
 }
-
-$helperSet = ($helperSet) ?: new \Symfony\Component\Console\Helper\HelperSet();
-
-\Doctrine\ORM\Tools\Console\ConsoleRunner::run($helperSet);
