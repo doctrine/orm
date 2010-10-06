@@ -573,7 +573,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->computeChangeSet($targetClass, $entry);
             } else if ($state == self::STATE_REMOVED) {
                 return new InvalidArgumentException("Removed entity detected during flush: "
-                        . self::objToStr($removedEntity).". Remove deleted entities from associations.");
+                        . self::objToStr($entry).". Remove deleted entities from associations.");
             } else if ($state == self::STATE_DETACHED) {
                 // Can actually not happen right now as we assume STATE_NEW,
                 // so the exception will be raised from the DBAL layer (constraint violation).
