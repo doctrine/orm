@@ -138,7 +138,7 @@ as this is a pretty important feature we plan to add support for it in the futur
 
 +++ Custom Persisters
 
-A Perister in Doctrine is an object that is responsible for the hydration and write operations of an entity against the database.
+A Persister in Doctrine is an object that is responsible for the hydration and write operations of an entity against the database.
 Currently there is no way to overwrite the persister implementation for a given entity, however there are several use-cases that
 can benefit from custom persister implementations:
 

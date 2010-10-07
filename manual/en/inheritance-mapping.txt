@@ -9,7 +9,7 @@ mapped inheritance hierarchy (through Single Table Inheritance or Class Table In
 
 > **NOTE**
 >
-> A mapped superclass cannot be an entity, it is not queryable and persistent relationships defined by a mapped
+> A mapped superclass cannot be an entity, it is not query-able and persistent relationships defined by a mapped
 > superclass must be unidirectional. For further support of inheritance, the single or joined table inheritance
 > features have to be used.
 

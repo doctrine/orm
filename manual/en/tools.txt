@@ -38,7 +38,7 @@ When dealing with the ORM package, the EntityManagerHelper is required:
     ));
     $cli->setHelperSet($helperSet);
 
-The HelperSet instance has to be generated in a separate file (ie. `cli-config.php`) that contains typical Doctrine
+The HelperSet instance has to be generated in a separate file (i.e. `cli-config.php`) that contains typical Doctrine
 bootstrap code and predefines the needed HelperSet attributes mentioned above. A typical `cli-config.php` file looks as follows:
 
     [php]
@@ -140,7 +140,7 @@ To drop the schema you can use the `dropSchema()` method.
     $tool->dropSchema($classes);
 
 This drops all the tables that are currently used by your metadata model.
-When you are changing your metadata alot during development you might want
+When you are changing your metadata a lot during development you might want
 to drop the complete database instead of only the tables of the current model
 to clean up with orphaned tables.
 
@@ -185,7 +185,7 @@ Before using the orm:schema-tool commands, remember to configure your cli-config
 >
 > When using the Annotation Mapping Driver you have to either setup your autoloader in the cli-config.php
 > correctly to find all the entities, or you can use the second argument of the `EntityManagerHelper` to
-> specifiy all the paths of your entities (or mapping files), i.e.
+> specify all the paths of your entities (or mapping files), i.e.
 > `new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em, $mappingPaths);`
 
 ++ Convert Mapping Information

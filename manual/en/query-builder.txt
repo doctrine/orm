@@ -3,7 +3,7 @@
 
 A `QueryBuilder` provides an API that is designed for conditionally constructing a DQL query in several steps.
 
-It provides a set of classes and methods that is able to programatically build you queries, and also provides a fluent API.
+It provides a set of classes and methods that is able to programmatically build queries, and also provides a fluent API.
 This means that you can change between one methodology to the other as you want, and also pick one if you prefer.
 
 +++ Constructing a new QueryBuilder object
@@ -17,7 +17,7 @@ Here is an example how to build a `QueryBuilder` object:
     // example1: creating a QueryBuilder instance
     $qb = $em->createQueryBuilder();
     
-Once you created an instance of QueryBuilder, it provides a set of useful informative functions that you can use.
+Once you have created an instance of QueryBuilder, it provides a set of useful informative functions that you can use.
 One good example is to inspect what type of object the `QueryBuilder` is.
 
     [php]
@@ -46,16 +46,16 @@ It is possible to retrieve the associated `EntityManager` of the current `QueryB
     // example5: retrieve the associated Query object with the processed DQL
     $q = $qb->getQuery();
     
-Internally, `QueryBuilder` works with a DQL cache, which prevents multiple processment if called multiple times. Any changes that may affect the generated DQL actually modifies the state of `QueryBuilder` to a stage we call as STATE_DIRTY.
-One `QueryBuilder`can be in two different state:
+Internally, `QueryBuilder` works with a DQL cache to increase performance. Any changes that may affect the generated DQL actually modifies the state of `QueryBuilder` to a stage we call STATE_DIRTY.
+One `QueryBuilder` can be in two different states:
 
 * `QueryBuilder::STATE_CLEAN`, which means DQL haven't been altered since last retrieval or nothing were added since its instantiation
 * `QueryBuilder::STATE_DIRTY`, means DQL query must (and will) be processed on next retrieval
     
 +++ Working with QueryBuilder
 
-All helper methods in `QueryBuilder` relies actually on a single one: `add()`.
-This method is the responsable to build every piece of DQL. It takes 3 parameters: `$dqlPartName`, `$dqlPart` and `$append` (default=false)
+All helper methods in `QueryBuilder` actually rely on a single one: `add()`.
+This method is responsible of building every piece of DQL. It takes 3 parameters: `$dqlPartName`, `$dqlPart` and `$append` (default=false)
 
 * `$dqlPartName`: Where the `$dqlPart` should be placed. Possible values: select, from, where, groupBy, having, orderBy
 * `$dqlPart`: What should be placed in `$dqlPartName`. Accepts a string or any instance of `Doctrine\ORM\Query\Expr\*`
@@ -110,7 +110,7 @@ If you've got several parameters to bind to your query, you can also use setPara
     $qb->setParameters(array(1 => 'value for ?1', 2 => 'value for ?2'));
 
 
-Getting already bound parameters is easy - simply use the abovementioned syntax with "getParameter()" or "getParameters()":
+Getting already bound parameters is easy - simply use the above mentioned syntax with "getParameter()" or "getParameters()":
 
     [php]
     // $qb instanceof QueryBuilder
@@ -155,7 +155,7 @@ This class is called `Expr`, which provides a set of useful static methods to he
        ))
        ->add('orderBy', $qb->expr()->orderBy('u.surname', 'ASC'));
        
-Although it still sounds complex, the ability to programatically create conditions are the main feature of `Expr`.
+Although it still sounds complex, the ability to programmatically create conditions are the main feature of `Expr`.
 Here it is a complete list of supported helper methods available:
 
     [php]
@@ -305,9 +305,9 @@ Here it is a complete list of supported helper methods available:
 
 ++++ Helper methods
 
-Until now it was described the hardcore level of creating queries. It may be useful to work that way for optimization purposes, but most of the time it is preferred to work higher level.
-To simplify even more the way you build a query in Doctrine, we can take advantage of what we call as helper methods. For all base code, it has a set of useful methods to simplify programmer's life.
-Illustrating how to work with it, here is the same example 6 written now using `QueryBuilder` helper methods:
+Until now we have described the lowest level (thought of as the hardcore method) of creating queries. It may be useful to work at this level for optimization purposes, but most of the time it is preferred to work at a higher level of abstraction.
+To simplify even more the way you build a query in Doctrine, we can take advantage of what we call Helper methods. For all base code, there is a set of useful methods to simplify a programmer's life.
+To illustrate how to work with them, here is the same example 6 re-written using `QueryBuilder` helper methods:
 
     [php]
     // $qb instanceof QueryBuilder
@@ -333,7 +333,7 @@ Here is a converted example 8 to suggested standard way to build queries:
        ))
        ->orderBy('u.surname', 'ASC'));
 
-Here is a complete list of helper methods in `QueryBuilder`:
+Here is a complete list of helper methods available in `QueryBuilder`:
 
     [php]
     class QueryBuilder
@@ -378,7 +378,7 @@ Here is a complete list of helper methods in `QueryBuilder`:
         // Example - $qb->orWhere($qb->expr()->between('u.id', 1, 10));
         public function orWhere($where);
 
-        // NOTE: -> groupBy() overrides all previously set grouping items
+        // NOTE: -> groupBy() overrides all previously set grouping conditions
         //
         // Example - $qb->groupBy('u.id')   
         public function groupBy($groupBy);
@@ -398,7 +398,7 @@ Here is a complete list of helper methods in `QueryBuilder`:
         // Example - $qb->orHaving($qb->expr()->lte('g.managerLevel', '100'))    
         public function orHaving($having);
     
-        // NOTE: -> orderBy() overrides all previously set ordering items
+        // NOTE: -> orderBy() overrides all previously set ordering conditions
         //
         // Example - $qb->orderBy('u.surname', 'DESC')
         public function orderBy($sort, $order = null);

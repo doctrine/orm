@@ -18,7 +18,7 @@ A Doctrine result can contain the following components:
  * Entity results. These represent root result elements.
  * Joined entity results. These represent joined entities in associations of root entity results.
  * Field results. These represent a column in the result set that maps to a field of an entity. A field result always belongs to an entity result or joined entity result.
- * Scalar results. These represent scalar values in the result set that will appear in each result row. Adding scalar results to a ResultSetMapping can also cause the overall result to becomed **mixed** (see DQL - Doctrine Query Language) if the same ResultSetMapping also contains entity results.
+ * Scalar results. These represent scalar values in the result set that will appear in each result row. Adding scalar results to a ResultSetMapping can also cause the overall result to become **mixed** (see DQL - Doctrine Query Language) if the same ResultSetMapping also contains entity results.
  * Meta results. These represent columns that contain meta-information, such as foreign keys and discriminator columns. 
    When querying for objects (`getResult()`), all meta columns of root entities or joined entities must be present in the SQL query
    and mapped accordingly using `ResultSetMapping#addMetaResult`.

@@ -4,14 +4,14 @@
 It is highly recommended to make use of a bytecode cache like APC. A bytecode cache removes the need for parsing PHP code on every request and can greatly improve performance.
 
 > **NOTE**
-> "If you care about performance and don’t use a bytecode cache then you don’t really care
+> "If you care about performance and don't use a bytecode cache then you don't really care
 > about performance. Please get one and start using it." (Stas Malyshev, Core Contributor
 > to PHP and Zend Employee).
 
 
 ++ Metadata and Query caches
 
-As already mentioned earlier in the chapter about configuring Doctrine, it is strongly discouraged to use Doctrine without a Metadata and Query cache (preferrably with APC or Memcache as the cache driver). Operating Doctrine without these caches means Doctrine will need to load your mapping information on every single request and has to parse each DQL query on every single request. This is a waste of resources.
+As already mentioned earlier in the chapter about configuring Doctrine, it is strongly discouraged to use Doctrine without a Metadata and Query cache (preferably with APC or Memcache as the cache driver). Operating Doctrine without these caches means Doctrine will need to load your mapping information on every single request and has to parse each DQL query on every single request. This is a waste of resources.
 
 ++ Alternative Query Result Formats
 

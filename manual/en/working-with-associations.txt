@@ -325,7 +325,7 @@ Using the User-Comment entities from above, a very simple example can show the p
     // not calling $favoriteComment->getUserFavorites()->add($user);
 
     $user->getFavorites()->contains($favoriteComment); // TRUE
-    $favoriteComment->getUerFavorites()->contains($user); // FALSE
+    $favoriteComment->getUserFavorites()->contains($user); // FALSE
 
 There are to approaches to handle this problem in your code:
 
