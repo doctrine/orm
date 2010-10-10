@@ -598,9 +598,10 @@ class ClassMetadataInfo
     /**
      * Gets the mapping of an association.
      *
+     * @see ClassMetadataInfo::$associationMappings
      * @param string $fieldName  The field name that represents the association in
      *                           the object model.
-     * @return Doctrine\ORM\Mapping\AssociationMapping  The mapping.
+     * @return array The mapping.
      */
     public function getAssociationMapping($fieldName)
     {
