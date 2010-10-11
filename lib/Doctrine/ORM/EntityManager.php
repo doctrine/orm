@@ -352,11 +352,15 @@ class EntityManager
         if ($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) {
             return $entity;
         }
-        if ( ! is_array($identifier)) {
-            $identifier = array($class->identifier[0] => $identifier);
+        if ($class->subClasses) {
+            $entity = $this->find($entityName, $identifier);
+        } else {
+            if ( ! is_array($identifier)) {
+                $identifier = array($class->identifier[0] => $identifier);
+            }
+            $entity = $this->proxyFactory->getProxy($class->name, $identifier);
+            $this->unitOfWork->registerManaged($entity, $identifier, array());
         }
-        $entity = $this->proxyFactory->getProxy($class->name, $identifier);
-        $this->unitOfWork->registerManaged($entity, $identifier, array());
 
         return $entity;
     }

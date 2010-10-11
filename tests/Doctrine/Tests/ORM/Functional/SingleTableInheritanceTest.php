@@ -332,4 +332,21 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $contracts = $repos->findBy(array('salesPerson' => $this->salesPerson->getId()));
         $this->assertEquals(1, count($contracts), "There should be 1 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFlexUltraContract'");
     }
+
+    /**
+     * @group DDC-834
+     */
+    public function testGetReferenceEntityWithSubclasses()
+    {
+        $this->loadFullFixture();
+
+        $ref = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyContract', $this->fix->getId());
+        $this->assertNotType('Doctrine\ORM\Proxy\Proxy', $ref, "Cannot Request a proxy from a class that has subclasses.");
+        $this->assertType('Doctrine\Tests\Models\Company\CompanyContract', $ref);
+        $this->assertType('Doctrine\Tests\Models\Company\CompanyFixContract', $ref, "Direct fetch of the reference has to load the child class Emplyoee directly.");
+        $this->_em->clear();
+
+        $ref = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyFixContract', $this->fix->getId());
+        $this->assertType('Doctrine\ORM\Proxy\Proxy', $ref, "A proxy can be generated only if no subclasses exists for the requested reference.");
+    }
 }
