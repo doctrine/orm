@@ -51,6 +51,7 @@ The DDL for the corresponding database schema would look something like this (th
 As you can see from this DDL snippet, there is only a single table for the entity subclass. All the mappings from the mapped superclass were inherited to the subclass as if they had been defined on that class directly.
 
 
+
 ++ Single Table Inheritance
 
 [Single Table Inheritance](http://martinfowler.com/eaaCatalog/singleTableInheritance.html) is an inheritance mapping strategy where all classes of a hierarchy are mapped to a single database table. In order to distinguish which row represents which type in the hierarchy a so-called discriminator column is used.
@@ -93,6 +94,7 @@ This mapping approach works well when the type hierarchy is fairly simple and st
 
 This strategy is very efficient for querying across all types in the hierarchy or for specific types. No table joins are required, only a WHERE clause listing the type identifiers. In particular, relationships involving types that employ this mapping strategy are very performant.
 
+There is a general performance consideration with Single Table Inheritance: If you use a STI entity as a many-to-one or one-to-one entity you should never use one of the classes at the upper levels of the inheritance hierachy as "targetEntity", only those that have no subclasses. Otherwise Doctrine *CANNOT* create proxy instances of this entity and will *ALWAYS* load the entity eagerly.
 
 ++ Class Table Inheritance
 
@@ -139,3 +141,5 @@ Introducing a new type to the hierarchy, at any level, simply involves interject
 +++ Performance impact
 
 This strategy inherently requires multiple JOIN operations to perform just about any query which can have a negative impact on performance, especially with large tables and/or large hierarchies. When partial objects are allowed, either globally or on the specific query, then querying for any type will not cause the tables of subtypes to be OUTER JOINed which can increase performance but the resulting partial objects will not fully load themselves on access of any subtype fields, so accessing fields of subtypes after such a query is not safe.
+
+There is a general performance consideration with Class Table Inheritance: If you use a CTI entity as a many-to-one or one-to-one entity you should never use one of the classes at the upper levels of the inheritance hierachy as "targetEntity", only those that have no subclasses. Otherwise Doctrine *CANNOT* create proxy instances of this entity and will *ALWAYS* load the entity eagerly.
