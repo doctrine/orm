@@ -1929,14 +1929,12 @@ class UnitOfWork implements PropertyChangedListener
                         }
                     } else {
                         // Inject collection
-                        $reflField = $class->reflFields[$field];
-                        $pColl = new PersistentCollection(
-                            $this->em, $targetClass,
-                            //TODO: getValue might be superfluous once DDC-79 is implemented. 
-                            $reflField->getValue($entity) ?: new ArrayCollection
-                        );
+                        $pColl = new PersistentCollection($this->em, $targetClass, new ArrayCollection);
                         $pColl->setOwner($entity, $assoc);
+                        
+                        $reflField = $class->reflFields[$field];
                         $reflField->setValue($entity, $pColl);
+                        
                         if ($assoc['fetch'] == ClassMetadata::FETCH_LAZY) {
                             $pColl->setInitialized(false);
                         } else {

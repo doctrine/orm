@@ -674,6 +674,9 @@ class BasicEntityPersister
                 }
             } else if ($value instanceof PersistentCollection && $value->isInitialized()) {
                 $value->setInitialized(false);
+                // no matter if dirty or non-dirty entities are already loaded, smoke them out!
+                // the beauty of it being, they are still in the identity map
+                $value->unwrap()->clear(); 
                 $newData[$field] = $value;
             }
         }

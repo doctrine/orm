@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
@@ -263,7 +264,111 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->refresh($user);
         $this->assertEquals('developer', $user->status);
     }
-    
+
+    /**
+     * @group DDC-833
+     */
+    public function testRefreshResetsCollection()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        // Add a phonenumber
+        $ph1 = new CmsPhonenumber;
+        $ph1->phonenumber = "12345";
+        $user->addPhonenumber($ph1);
+
+        // Add a phonenumber
+        $ph2 = new CmsPhonenumber;
+        $ph2->phonenumber = "54321";
+
+        $this->_em->persist($user);
+        $this->_em->persist($ph1);
+        $this->_em->persist($ph2);
+        $this->_em->flush();
+
+        $user->addPhonenumber($ph2);
+
+        $this->assertEquals(2, count($user->phonenumbers));
+        $this->_em->refresh($user);
+
+        $this->assertEquals(1, count($user->phonenumbers));
+    }
+
+    /**
+     * @group DDC-833
+     */
+    public function testDqlRefreshResetsCollection()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        // Add a phonenumber
+        $ph1 = new CmsPhonenumber;
+        $ph1->phonenumber = "12345";
+        $user->addPhonenumber($ph1);
+
+        // Add a phonenumber
+        $ph2 = new CmsPhonenumber;
+        $ph2->phonenumber = "54321";
+
+        $this->_em->persist($user);
+        $this->_em->persist($ph1);
+        $this->_em->persist($ph2);
+        $this->_em->flush();
+
+        $user->addPhonenumber($ph2);
+
+        $this->assertEquals(2, count($user->phonenumbers));
+        $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1";
+        $user = $this->_em->createQuery($dql)
+                          ->setParameter(1, $user->id)
+                          ->setHint(Query::HINT_REFRESH, true)
+                          ->getSingleResult();
+
+        $this->assertEquals(1, count($user->phonenumbers));
+    }
+
+    /**
+     * @group DDC-833
+     */
+    public function testCreateEntityOfProxy()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        // Add a phonenumber
+        $ph1 = new CmsPhonenumber;
+        $ph1->phonenumber = "12345";
+        $user->addPhonenumber($ph1);
+
+        // Add a phonenumber
+        $ph2 = new CmsPhonenumber;
+        $ph2->phonenumber = "54321";
+
+        $this->_em->persist($user);
+        $this->_em->persist($ph1);
+        $this->_em->persist($ph2);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $userId = $user->id;
+        $user = $this->_em->getReference('Doctrine\Tests\Models\CMS\CmsUser', $user->id);
+        
+        $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1";
+        $user = $this->_em->createQuery($dql)
+                          ->setParameter(1, $userId)
+                          ->getSingleResult();
+
+        $this->assertEquals(1, count($user->phonenumbers));
+    }
+
     public function testAddToCollectionDoesNotInitialize()
     {
         $user = new CmsUser;
