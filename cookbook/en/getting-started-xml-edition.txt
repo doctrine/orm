@@ -1,13 +1,13 @@
 Doctrine 2 is a project that aims to handle the persistence of the domain model in a non-interfering way.
 The Data Mapper pattern is at the heart of this project, aiming for a complete separation of the domain/business logic
 from the persistence in a relational database management system. The benefit of Doctrine for the programmer is the
-possibility can focus soley on the business and worry about persistence only as a secondary task. This doesn't mean
+possibility can focus solely on the business and worry about persistence only as a secondary task. This doesn't mean
 persistence is not important to Doctrine 2, however it is our belief that there are considerable benefits for object-oriented
-programming, if persistence and entities are kept perfectly seperated.
+programming, if persistence and entities are kept perfectly separated.
 
 ## What are Entities?
 
-Entities are leightweight PHP Objects that don't need to extend any abstract base class or interface.
+Entities are lightweight PHP Objects that don't need to extend any abstract base class or interface.
 An entity class must not be final or contain final methods. Additionally it must not implement __clone
 nor __wakeup or [do so safely](http://www.doctrine-project.org/documentation/cookbook/2_0/en/implementing-wakeup-or-clone).
 
@@ -20,7 +20,7 @@ For this Getting Started Guide for Doctrine we will implement the Bug Tracker do
 documentation. Reading their documentation we can extract the requirements to be:
 
 * A Bugs has a description, creation date, status, reporter and engineer
-* A bug can occour on different products (platforms)
+* A bug can occur on different products (platforms)
 * Products have a name.
 * Bug Reporter and Engineers are both Users of the System.
 * A user can create new bugs.
@@ -69,7 +69,7 @@ A first simplified design for this domain model might look like the following se
 > public properties can make up for pretty nasty bugs.
 
 Because we will focus on the mapping aspect, no effort is being made to encapsulate the business logic in this example.
-All peristable properties are public in visibility. We will soon see that this is not the best solution in combination
+All persistable properties are public in visibility. We will soon see that this is not the best solution in combination
 with Doctrine 2, one restriction that actually forces you to encapsulate your properties. For persistence Doctrine 2
 actually uses Reflection to access the values in all your entities properties.
 
@@ -121,24 +121,24 @@ Now that we know this, we have to clear up our domain model to cope with the ass
 Whenever an entity is recreated from the database, an Collection implementation of the type
 Doctrine\ORM\PersistantCollection is injected into your entity instead of an array. Compared
 to the ArrayCollection this implementation helps the Doctrine ORM understand the changes that
-have happend to the collection which are noteworthy for persistence.
+have happened to the collection which are noteworthy for persistence.
 
 > **Warning**
 > Lazy load proxies always contain an instance of Doctrine's EntityManager and all its dependencies. Therefore a var_dump()
 > will possibly dump a very large recursive structure which is impossible to render and read. You have to use
 > `Doctrine\Common\Util\Debug::dump()` to restrict the dumping to a human readable level. Additionally you should be aware
 > that dumping the EntityManager to a Browser may take several minutes, and the Debug::dump() method just ignores any
-> occurences of it in Proxy instances.
+> occurrences of it in Proxy instances.
 
 Because we only work with collections for the references we must be careful to implement a bidirectional reference in
 the domain model. The concept of owning or inverse side of a relation is central to this notion and should always
 be kept in mind. The following assumptions are made about relations and have to be followed to be able to work with Doctrine 2.
 These assumptions are not unique to Doctrine 2 but are best practices in handling database relations and Object-Relational Mapping.
 
-* Changes to Collections are saved or updated, when the entity on the *ownin*g side of the collection is saved or updated.
+* Changes to Collections are saved or updated, when the entity on the *owning* side of the collection is saved or updated.
 * Saving an Entity at the inverse side of a relation never triggers a persist operation to changes to the collection.
 * In a one-to-one relation the entity holding the foreign key of the related entity on its own database table is *always* the owning side of the relation.
-* In a many-to-many relation, both sides can be the owning side of the relation. However in a bi-directional many-tomany relation only one is allowed to be.
+* In a many-to-many relation, both sides can be the owning side of the relation. However in a bi-directional many-to-many relation only one is allowed to be.
 * In a many-to-one relation the Many-side is the owning side by default, because it holds the foreign key.
 * The OneToMany side of a relation is inverse by default, since the foreign key is saved on the Many side. A OneToMany relation can only be the owning side, if its implemented using a ManyToMany relation with join table and restricting the one side to allow only UNIQUE values per database constraint.
 
@@ -236,13 +236,13 @@ object-oriented best-practices.
 
 ## Metadata Mappings for our Entities
 
-Up to now we have only implemented our Entites as Data-Structures without actually telling Doctrine how to persist
+Up to now we have only implemented our Entities as Data-Structures without actually telling Doctrine how to persist
 them in the database. If perfect in-memory databases would exist, we could now finish the application  using these entities
-by implementing code to fullfil all the requirements. However the world isn't perfect and we have to persist our
+by implementing code to fulfil all the requirements. However the world isn't perfect and we have to persist our
 entities in some storage to make sure we don't loose their state. Doctrine currently serves Relational Database Management Systems.
 In the future we are thinking to support NoSQL vendors like CouchDb or MongoDb, however this is still far in the future.
 
-The next step for persistance with Doctrine is to describe the structure of our domain model entities to Doctrine
+The next step for persistence with Doctrine is to describe the structure of our domain model entities to Doctrine
 using a metadata language. The metadata language describes how entities, their properties and references should be
 persisted and what constraints should be applied to them.
 
@@ -272,7 +272,7 @@ The first discussed definition will be for the Product, since it is the most sim
 
     </doctrine-mapping>
 
-The toplevel `entity` definition tag specifies information about the class and table-name. The
+The top-level `entity` definition tag specifies information about the class and table-name. The
 primitive type `Product::$name` is defined as `field` attributes. The Id property is defined with the `id` tag.
 The id has a `generator` tag nested inside which defines that the primary key generation mechanism
 automatically uses the database platforms native id generation strategy, for example AUTO INCREMENT
@@ -325,14 +325,14 @@ which translates the YYYY-mm-dd HH:mm:ss Database format into a PHP DateTime ins
 After the field definitions the two qualified references to the user entity are defined. They are created by
 the `many-to-one` tag. The class name of the related entity has to be specified with the `target-entity`
 attribute, which is enough information for the database mapper to access the foreign-table. The
-`join-column` tags are used to specifiy how the foreign and referend columns are named, an information
+`join-column` tags are used to specify how the foreign and referenced columns are named, an information
 Doctrine needs to construct joins between those two entities correctly. Since `reporter` and `engineer`
-are on the owning side of a bi-direcitonal relation we also have to specify the `inversed-by` attribute.
+are on the owning side of a bi-directional relation we also have to specify the `inversed-by` attribute.
 They have to point to the field names on the inverse side of the relationship.
 
 The last missing property is the `Bug::$products` collection. It holds all products where the specific
-bug is occouring in. Again you have to define the `target-entity` and `field` attributes on the `many-to-many`
-tag. Furthermore you have to specifiy the details of the many-to-many join-table and its foreign key columns.
+bug is occurring in. Again you have to define the `target-entity` and `field` attributes on the `many-to-many`
+tag. Furthermore you have to specify the details of the many-to-many join-table and its foreign key columns.
 The definition is rather complex, however relying on the XML auto-completion I got it working easily, although
 I forget the schema details all the time.
 
@@ -390,8 +390,8 @@ steps and then discuss them step by step:
     $config->setMetadataDriverImpl($driverImpl);
 
     // Caching Configuration (5)
-    if (APPLICATION_ENV == "develoment") {
-        $cache = new \Doctrine\Common\Cache\ArayCache();
+    if (APPLICATION_ENV == "development") {
+        $cache = new \Doctrine\Common\Cache\ArrayCache();
     } else {
         $cache = new \Doctrine\Common\Cache\ApcCache();
     }
@@ -409,7 +409,7 @@ steps and then discuss them step by step:
     $entityManager = \Doctrine\ORM\EntityManager::create($conn, $config, $evm);
 
 The first block sets up the autoloading capabilities of Doctrine. I am registering the Doctrine
-namespace to the given path. To add your own namespace you can instantiate another `CloassLoader`
+namespace to the given path. To add your own namespace you can instantiate another `ClassLoader`
 with different namespace and path arguments. There is no requirement to use the Doctrine `ClassLoader`
 for your autoloading needs, you can use whatever suits you best.
 
@@ -417,10 +417,10 @@ The second block contains of the instantiation of the ORM Configuration object. 
 configuration shown in the next blocks there are several others with are all explained
 in the [Configuration section of the manual](http://www.doctrine-project.org/documentation/manual/2_0/en/configuration#configuration-options).
 
-The Proxy Configuration is a required block for your application, you have to specifiy where
+The Proxy Configuration is a required block for your application, you have to specify where
 Doctrine writes the PHP code for Proxy Generation. Proxies are children of your entities generated
 by Doctrine to allow for type-safe lazy loading. We will see in a later chapter how exactly this works.
-Besides the path to the proxies we also specifiy which namespace they will reside under aswell as
+Besides the path to the proxies we also specify which namespace they will reside under as well as
 a flag `autoGenerateProxyClasses` indicating that proxies should be re-generated on each request,
 which is recommended for development. In production this should be prevented at all costs,
 the proxy class generation can be quite costly.
@@ -449,7 +449,7 @@ we want to generate the relational database schema from it.
 Doctrine has a Command-Line-Interface that allows you to access the SchemaTool, a component that generates
 the required tables to work with the metadata.
 
-For the commandline tool to work a cli-config.php file has to be present in the project root directry,
+For the command-line tool to work a cli-config.php file has to be present in the project root directory,
 where you will execute the doctrine command. Its a fairly simple file:
 
     [php]
@@ -458,7 +458,7 @@ where you will execute the doctrine command. Its a fairly simple file:
     ));
     $cli->setHelperSet($helperSet);
 
-You can then change into your project directory and call the Doctrine commandline tool:
+You can then change into your project directory and call the Doctrine command-line tool:
 
     [console]
     doctrine@my-desktop> cd myproject/
@@ -468,7 +468,7 @@ You can then change into your project directory and call the Doctrine commandlin
 >
 > The `doctrine` command will only be present if you installed Doctrine from PEAR.
 > Otherwise you will have to dig into the `bin/doctrine.php` code of your Doctrine 2
-> directory to setup your doctrine commandline client.
+> directory to setup your doctrine command-line client.
 >
 > See the [Tools section of the manual](http://www.doctrine-project.org/projects/orm/2.0/docs/reference/tools/en)
 > on how to setup the Doctrine console correctly.
@@ -478,7 +478,7 @@ metadata. You can then either re-create the database:
 
     [console]
     doctrine@my-desktop> doctrine orm:schema-tool:drop
-    doctrine@my-dekstop> doctrine orm:schema-tool:create
+    doctrine@my-desktop> doctrine orm:schema-tool:create
 
 Or use the update functionality:
 
@@ -609,7 +609,7 @@ in one single SQL statement. The console output of this script is then:
 > and powerful queries.
 >
 > An important reason why DQL is favourable to the Query API of most ORMs is its similarity to SQL. The DQL language
-> allows query constructs that most ORMs don't, GROUP BY even with HAVING, Subselects, Fetch-Joins of nested
+> allows query constructs that most ORMs don't, GROUP BY even with HAVING, Sub-selects, Fetch-Joins of nested
 > classes, mixed results with entities and scalar data such as COUNT() results and much more. Using
 > DQL you should seldom come to the point where you want to throw your ORM into the dumpster, because it
 > doesn't support some the more powerful SQL concepts.
@@ -625,9 +625,9 @@ in one single SQL statement. The console output of this script is then:
 ### Array Hydration of the Bug List
 
 In the previous use-case we retrieved the result as their respective object instances.
-We are not limitied to retrieving objects only from Doctrine however. For a simple list view
+We are not limited to retrieving objects only from Doctrine however. For a simple list view
 like the previous one we only need read access to our entities and can switch the hydration
-from objects to simple PHP arrays instead. This can obviously yiel considerable performance benefits for read-only requests.
+from objects to simple PHP arrays instead. This can obviously yield considerable performance benefits for read-only requests.
 
 Implementing the same list view as before using array hydration we can rewrite our code:
 
@@ -667,7 +667,7 @@ However we will soon see another problem with our entities using this approach. 
     echo "Bug: ".$bug->description."\n";
     echo "Engineer: ".$bug->getEngineer()->name."\n";
 
-It will be null! What is happening? It worked in the previous example, so it can't be a problem with the persistance
+It will be null! What is happening? It worked in the previous example, so it can't be a problem with the persistence
 code of Doctrine. What is it then? You walked in the public property trap.
 
 Since we only retrieved the bug by primary key both the engineer and reporter are not immediately loaded

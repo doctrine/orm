@@ -1,7 +1,7 @@
 
 In this chapter we will help you understand the `EntityManager` and the `UnitOfWork`. 
 A Unit of Work is similar to an object-level transaction. A new Unit of Work is 
-implicity started when an EntityManager is initially created or after 
+implicitly started when an EntityManager is initially created or after 
 `EntityManager#flush()` has been invoked. A Unit of Work is committed 
 (and a new one started) by invoking `EntityManager#flush()`.
 
@@ -213,7 +213,7 @@ The semantics of the remove operation, applied to an entity X are as follows:
 
 After an entity has been removed its in-memory state is the same as before the removal, except for generated identifiers.
 
-Removing an entity will also automatically delete any exisiting records in many-to-many
+Removing an entity will also automatically delete any existing records in many-to-many
 join tables that link this entity. The action taken depends on the value of the `@joinColumn`
 mapping attribute "onDelete". Either Doctrine issues a dedicated `DELETE` statement
 for records of each join table or it depends on the foreign key semantics of
@@ -234,7 +234,7 @@ ways with very different performance impacts.
 3. Using foreign key semantics `onDelete="CASCADE"` can force the database
    to remove all associated objects internally. This strategy is a bit
    tricky to get right but can be very powerful and fast. You should be aware
-   however that using strategy 1 (`CASCADE=REMOVE`) completly by-passes
+   however that using strategy 1 (`CASCADE=REMOVE`) completely by-passes
    any foreign key `onDelete=CASCADE` option, because Doctrine will fetch and remove
    all associated entities explicitly nevertheless.
 
@@ -300,7 +300,7 @@ MERGE or ALL, Y is merged recursively as Y'.  For all such Y referenced by X, X'
     
 The `merge` operation will throw an `OptimisticLockException` if the entity 
 being merged uses optimistic locking through a version field and the versions 
-of the entity being merged and the managed copy dont match. This usually means 
+of the entity being merged and the managed copy don't match. This usually means 
 that the entity has been modified while being detached.
 
 The `merge` operation is usually not as frequently needed and used as `persist` 
@@ -448,7 +448,7 @@ Essentially, `EntityManager#find()` is just a shortcut for the following:
     // $em instanceof EntityManager
     $user = $em->getRepository('MyProject\Domain\User')->find($id);
 
-`EntityManager#getRepository($entityName)` returns a repository object which provides many ways to retreive entities of the specified type. By default, the repository instance is of type `Doctrine\ORM\EntityRepository`. You can also use custom repository classes as shown later.
+`EntityManager#getRepository($entityName)` returns a repository object which provides many ways to retrieve entities of the specified type. By default, the repository instance is of type `Doctrine\ORM\EntityRepository`. You can also use custom repository classes as shown later.
 
 +++ By Simple Conditions
 
@@ -489,7 +489,7 @@ Whenever you have a managed entity instance at hand, you can traverse and use an
 +++ By DQL
 
 The most powerful and flexible method to query for persistent objects is the Doctrine Query Language, an object query language. DQL enables you to query for persistent objects in the language of objects. DQL understands classes, fields, inheritance and associations.
-DQL is syntactically very similar to the familar SQL but *it is not SQL*.
+DQL is syntactically very similar to the familiar SQL but *it is not SQL*.
 
 A DQL query is represented by an instance of the `Doctrine\ORM\Query` class. You create a query using `EntityManager#createQuery($dql)`. Here is a simple example:
 

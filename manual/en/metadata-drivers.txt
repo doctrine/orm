@@ -14,7 +14,7 @@ Doctrine provides a few different ways for you to specify your metadata:
 Something important to note about the above drivers is they are all an intermediate
 step to the same end result. The mapping information is populated to 
 `Doctrine\ORM\Mapping\ClassMetadata` instances. So in the end, Doctrine
-only ever has to work with the api of the `ClassMetadata` class to get mapping
+only ever has to work with the API of the `ClassMetadata` class to get mapping
 information for an entity.
 
 > **TIP**

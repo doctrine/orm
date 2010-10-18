@@ -13,15 +13,15 @@ Given a Content-Management-System, we probably want to add / edit some so-called
 So, in this scenario, when building your CMS, you will surely add lots of blocks and panels to your pages and you will find yourself highly uncomfortable because of the following:
 
 * Every existing page needs to know about the panels it contains - therefore, you'll have an association to your panels. But if you've got several types of panels - what do you do? Add an association to
-every paneltype? This wouldn't be flexible. You might be tempted to add an AbstractPanelEntity and an AbstractBlockEntity that use class inheritance. Your page could then only confer to the AbstractPanelType and Doctrine 2 would do the rest for you, i.e. load the right entites. But - you'll for sure have lots of panels and blocks, and even worse, you'd have to edit the discriminator map *manually* every time you or another developer implements a new block / entity. This would tear down any effort of modular programming.
+every panel-type? This wouldn't be flexible. You might be tempted to add an AbstractPanelEntity and an AbstractBlockEntity that use class inheritance. Your page could then only confer to the AbstractPanelType and Doctrine 2 would do the rest for you, i.e. load the right entities. But - you'll for sure have lots of panels and blocks, and even worse, you'd have to edit the discriminator map *manually* every time you or another developer implements a new block / entity. This would tear down any effort of modular programming.
 
 Therefore, we need something thats far more flexible.
 
 ++ Solution
 
-The solution itself is pretty easy. We will have one base class that will be loaded via the page and that has specific behaviour - a Block class might render the frontend and even the backend, for example. Now, every block that you'll write might look different or need different data - therefore, we'll offer an API to these methods but internally, we use a strategy that exactly knows what to do.
+The solution itself is pretty easy. We will have one base class that will be loaded via the page and that has specific behaviour - a Block class might render the front-end and even the backend, for example. Now, every block that you'll write might look different or need different data - therefore, we'll offer an API to these methods but internally, we use a strategy that exactly knows what to do.
 
-First of all, we need to make sure that we have an interface that contains every needed action. Such actions would be rendering the frontend or the backend, solving dependencies (blocks that are supposed to be placed in the sidebar could refuse to be placed in the middle of your page, for example).
+First of all, we need to make sure that we have an interface that contains every needed action. Such actions would be rendering the front-end or the backend, solving dependencies (blocks that are supposed to be placed in the sidebar could refuse to be placed in the middle of your page, for example).
 
 Such an interface could look like this:
 

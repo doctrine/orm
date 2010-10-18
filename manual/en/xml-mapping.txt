@@ -230,7 +230,7 @@ Optional attributes for `<sequence-generator />`:
 > **NOTE**
 >
 > If you want to implement a cross-vendor compatible application you have to specify <generator strategy="AUTO" /> and
-> additionaly define the <sequence-generator /> element, if Doctrine chooses the sequence strategy for a platform.
+> additionally define the <sequence-generator /> element, if Doctrine chooses the sequence strategy for a platform.
 
 +++ Defining a Mapped Superclass
 
@@ -256,7 +256,7 @@ a mapped superclass.
 +++ Defining Inheritance Mappings
 
 There are currently two inheritance persistence strategies that you can choose from when defining entities that
-inherit from each other. Single Table inheritance saves the fields of the complete inheritance hierachy in a single table,
+inherit from each other. Single Table inheritance saves the fields of the complete inheritance hierarchy in a single table,
 joined table inheritance creates a table for each entity combining the fields using join conditions.
 
 You can specify the inheritance type in the `<entity />` element and then use the `<discriminator-column />` and
@@ -276,7 +276,7 @@ The allowed values for inheritance-type attribute are `JOINED` or `SINGLE_TABLE`
 
 > **NOTE**
 >
-> All inheritance related definitions have to be defined on the root entity of the hierachy.
+> All inheritance related definitions have to be defined on the root entity of the hierarchy.
 
 +++ Defining Lifecycle Callbacks
 
@@ -292,7 +292,7 @@ You can define the lifecycle callback methods on your entities using the `<lifec
 
 +++ Defining One-To-One Relations
 
-You can define One-To-One Relations/Assocations using the `<one-to-one />` element. The required
+You can define One-To-One Relations/Associations using the `<one-to-one />` element. The required
 and optional attributes depend on the associations being on the inverse or owning side.
 
 For the inverse side the mapping is as simple as:
@@ -304,7 +304,7 @@ For the inverse side the mapping is as simple as:
 
 Required attributes for inverse One-To-One:
 
-* field - Name of the property/field on the entitys PHP class.
+* field - Name of the property/field on the entity's PHP class.
 * target-entity - Name of the entity associated entity class. If this is not qualified the namespace of the current class is prepended.
 * mapped-by - Name of the field on the owning side (here Address entity) that contains the owning side association.
 
@@ -317,7 +317,7 @@ For the owning side this mapping would look like:
 
 Required attributes for owning One-to-One:
 
-* field - Name of the property/field on the entitys PHP class.
+* field - Name of the property/field on the entity's PHP class.
 * target-entity - Name of the entity associated entity class. If this is not qualified the namespace of the current class is prepended.
 
 Optional attributes for owning One-to-One:
@@ -331,7 +331,7 @@ Without the nested `<join-column />` element Doctrine assumes to foreign key to 
 Entities table. This is because the `MyProject\Address` entity is the owning side of this association, which means
 it contains the foreign key.
 
-The completed explictly defined mapping is:
+The completed explicitly defined mapping is:
 
     [xml]
     <entity class="MyProject\Address">
@@ -352,7 +352,7 @@ compared to the one-to-one case. The minimal mapping for this association looks 
 
 Required attributes:
 
-* field - Name of the property/field on the entitys PHP class.
+* field - Name of the property/field on the entity's PHP class.
 * target-entity - Name of the entity associated entity class. If this is not qualified the namespace of the current class is prepended.
 
 Optional attributes:
@@ -362,7 +362,7 @@ Optional attributes:
 * fetch - Either LAZY or FETCH, defaults to LAZY.
 
 This definition relies on a bunch of mapping defaults with regards to the naming of the join-column/foreign key. The
-explictly defined mapping includes a `<join-column />` tag nested inside the many-to-one association tag:
+explicitly defined mapping includes a `<join-column />` tag nested inside the many-to-one association tag:
 
     [xml]
     <entity class="MyProject\Article">
@@ -387,7 +387,7 @@ uni-directional one-to-many association, which means this association only ever 
 
 Required attributes:
 
-* field - Name of the property/field on the entitys PHP class.
+* field - Name of the property/field on the entity's PHP class.
 * target-entity - Name of the entity associated entity class. If this is not qualified the namespace of the current class is prepended.
 * mapped-by - Name of the field on the owning side (here Phonenumber entity) that contains the owning side association.
 
@@ -407,7 +407,7 @@ you can omit many definitions and rely on their implicit values.
 
 Required attributes:
 
-* field - Name of the property/field on the entitys PHP class.
+* field - Name of the property/field on the entity's PHP class.
 * target-entity - Name of the entity associated entity class. If this is not qualified the namespace of the current class is prepended.
 
 Optional attributes:
@@ -439,7 +439,7 @@ the table name of the many-to-many join-table.
 
 +++ Cascade Element
 
-Doctrine allows cascading of several UnitOfWork operations to related entities. You can specifiy the cascade
+Doctrine allows cascading of several UnitOfWork operations to related entities. You can specify the cascade
 operations in the `<cascade />` element inside any of the association mapping tags.
 
     [xml]
@@ -451,7 +451,7 @@ operations in the `<cascade />` element inside any of the association mapping ta
         </many-to-many>
     </entity>
 
-Besides `<cascade-all />` the following operations can be specifed by their respective tags:
+Besides `<cascade-all />` the following operations can be specified by their respective tags:
 
 * `<cascade-persist />`
 * `<cascade-merge />`

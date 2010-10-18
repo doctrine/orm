@@ -11,9 +11,9 @@ When mapping bidirectional associations it is important to understand the concep
 
 The following rules apply to *bidirectional* associations:
 
-* The inverse side of a bidirectional relationship must refer to its owning side by use of the mappedBy attribute of the OneToOne, OneToMany, or ManyToMany mapping declaration. The mappedBy attribute designates the ﬁeld in the entity that is the owner of the relationship.
-* The owning side of a bidirectional relationship must refer to its inverse side by use of the inversedBy attribute of the OneToOne, ManyToOne, or ManyToMany mapping declaration. The inversedBy attribute designates the ﬁeld in the entity that is the inverse side of the relationship.
-* The many side of OneToMany/ManyToOne bidirectional relationships *must* be the owning side, hence the mappedBy element can not be speciﬁed on the ManyToOne side.
+* The inverse side of a bidirectional relationship must refer to its owning side by use of the mappedBy attribute of the OneToOne, OneToMany, or ManyToMany mapping declaration. The mappedBy attribute designates the field in the entity that is the owner of the relationship.
+* The owning side of a bidirectional relationship must refer to its inverse side by use of the inversedBy attribute of the OneToOne, ManyToOne, or ManyToMany mapping declaration. The inversedBy attribute designates the field in the entity that is the inverse side of the relationship.
+* The many side of OneToMany/ManyToOne bidirectional relationships *must* be the owning side, hence the mappedBy element can not be specified on the ManyToOne side.
 * For OneToOne bidirectional relationships, the owning side corresponds to the side that contains the corresponding foreign key (@JoinColumn(s)).
 * For ManyToMany bidirectional relationships either side may be the owning side (the side that defines the @JoinTable and/or does not make use of the mappedBy attribute, thus using a default join table).
 
@@ -43,7 +43,7 @@ in the database.
 
 ++ Collections
 
-In all the examples of many-valued associations in this manual we will make use of a `Collection` interface and a corresponding default implementation `ArrayCollection` that are defined in the `Doctrine\Common\Collections` namespace. Why do we need that? Doesn't that couple my domain model to Doctrine? Unfortunately, PHP arrays, while being great for many things, do not make up for good collections of business objects, especially not in the context of an ORM. The reason is that plain PHP arrays can not be transparently extended / instrumented in PHP code, which is necessary for a lot of advanced ORM features. The classes / interfaces that come closest to an OO collection are ArrayAccess and ArrayObject but until instances of these types can be used in all places where a plain array can be used (something that may happen in PHP6) their useability is fairly limited. You "can" type-hint on `ArrayAccess` instead of `Collection`, since the Collection interface extends `ArrayAccess`, but this will severely limit you in the way you can work with the collection, because the `ArrayAccess` API is (intentionally) very primitive and more importantly because you can not pass this collection to all the useful PHP array functions, which makes it very hard to work with.
+In all the examples of many-valued associations in this manual we will make use of a `Collection` interface and a corresponding default implementation `ArrayCollection` that are defined in the `Doctrine\Common\Collections` namespace. Why do we need that? Doesn't that couple my domain model to Doctrine? Unfortunately, PHP arrays, while being great for many things, do not make up for good collections of business objects, especially not in the context of an ORM. The reason is that plain PHP arrays can not be transparently extended / instrumented in PHP code, which is necessary for a lot of advanced ORM features. The classes / interfaces that come closest to an OO collection are ArrayAccess and ArrayObject but until instances of these types can be used in all places where a plain array can be used (something that may happen in PHP6) their usability is fairly limited. You "can" type-hint on `ArrayAccess` instead of `Collection`, since the Collection interface extends `ArrayAccess`, but this will severely limit you in the way you can work with the collection, because the `ArrayAccess` API is (intentionally) very primitive and more importantly because you can not pass this collection to all the useful PHP array functions, which makes it very hard to work with.
 
 > **CAUTION**
 > The Collection interface and ArrayCollection class, like everything else in the
@@ -57,7 +57,7 @@ In all the examples of many-valued associations in this manual we will make use 
 
 ++ Mapping Defaults
 
-Before we introduce all the association mappings in detailyou should note that the @JoinColumn and @JoinTable
+Before we introduce all the association mappings in detail, you should note that the @JoinColumn and @JoinTable
 definitions are usually optional and have sensible default values.
 The defaults for a join column in a one-to-one/many-to-one association is as follows:
 

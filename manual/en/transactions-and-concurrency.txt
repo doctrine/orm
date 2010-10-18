@@ -10,7 +10,7 @@ For the most part, Doctrine 2 already takes care of proper transaction demarcati
 operations (INSERT/UPDATE/DELETE) are queued until `EntityManager#flush()` is invoked which wraps all
 of these changes in a single transaction.
 
-However, Doctrine 2 also allows (and ecourages) you to take over and control transaction demarcation yourself.
+However, Doctrine 2 also allows (and encourages) you to take over and control transaction demarcation yourself.
 
 These are two ways to deal with transactions when using the Doctrine ORM and are now described in more detail.
 
@@ -85,10 +85,10 @@ is automatically rolled back and the `EntityManager` closed.
 When using explicit transaction demarcation and an exception occurs, the transaction should be rolled back immediately
 and the `EntityManager` closed by invoking `EntityManager#close()` and subsequently discarded, as demonstrated in
 the example above. This can be handled elegantly by the control abstractions shown earlier.
-Note that when catching `Exception` you should generally rethrow the exception. If you intend to
+Note that when catching `Exception` you should generally re-throw the exception. If you intend to
 recover from some exceptions, catch them explicitly in earlier catch blocks (but do not forget to rollback the
 transaction and close the `EntityManager` there as well). All other best practices of exception handling apply
-similarly (i.e. either log or rethrow, not both, etc.).
+similarly (i.e. either log or re-throw, not both, etc.).
 
 As a result of this procedure, all previously managed or removed instances of the `EntityManager` become detached.
 The state of the detached objects will be the state at the point at which the transaction was rolled back.
@@ -96,7 +96,7 @@ The state of the objects is in no way rolled back and thus the objects are now o
 The application can continue to use the detached objects, knowing that their state is potentially no longer
 accurate.
 
-If you intend to start another unit of work after an exception has occured you should do that with a new `EntityManager`.
+If you intend to start another unit of work after an exception has occurred you should do that with a new `EntityManager`.
 
 ++ Locking Support
 
@@ -115,7 +115,7 @@ Doctrine has integrated support for automatic optimistic locking via a version f
 that should be protected against concurrent modifications during long-running business transactions gets a version
 field that is either a simple number (mapping type: integer) or a timestamp (mapping type: datetime). When changes
 to such an entity are persisted at the end of a long-running conversation the version of the entity is compared to
-the version in the database and if they dont match, an `OptimisticLockException` is thrown, indicating that the
+the version in the database and if they don't match, an `OptimisticLockException` is thrown, indicating that the
 entity has been modified by someone else already.
 
 You designate a version field in an entity as follows. In this example we'll use an integer.
@@ -229,12 +229,12 @@ And the change headline action (POST Request):
 +++ Pessimistic Locking
 
 Doctrine 2 supports Pessimistic Locking at the database level. No attempt is being made to implement pessimistic locking
-inside Doctrine, rather vendor-specific and ANSI-SQL commands are used to aquire row-level locks. Every Entity can
+inside Doctrine, rather vendor-specific and ANSI-SQL commands are used to acquire row-level locks. Every Entity can
 be part of a pessimistic lock, there is no special metadata required to use this feature.
 
 However for Pessimistic Locking to work you have to disable the Auto-Commit Mode of your Database and start a
 transaction around your pessimistic lock use-case using the "Approach 2: Explicit Transaction Demarcation" described
-above. Doctrine 2 will throw an Exception if you attempt to aquire an pessimistic lock and no transaction is running.
+above. Doctrine 2 will throw an Exception if you attempt to acquire an pessimistic lock and no transaction is running.
 
 Doctrine 2 currently supports two pessimistic lock modes:
 

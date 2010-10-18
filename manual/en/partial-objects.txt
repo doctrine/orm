@@ -21,7 +21,7 @@ right? These blind assumptions can quickly lead to null reference errors when
 working with such partial objects.
 
 It gets worse with the scenario of an optional association (0..1 to 1). When
-the associated field is NULL, you dont know whether this object does not have
+the associated field is NULL, you don't know whether this object does not have
 an associated object or whether it was simply not loaded when the owning object
 was loaded from the database.
 
