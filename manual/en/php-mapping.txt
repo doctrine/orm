@@ -45,7 +45,10 @@ Now we can easily retrieve the populated `ClassMetadata` instance where the `PHP
 includes the file and the `ClassMetadataFactory` caches it for later retrieval:
 
     [php]
-    $class = $em->getMetadataFor('Entities\User');
+    $class = $em->getClassMetadata('Entities\User');
+    // or
+    $class = $em->getMetadataFactory()->getMetadataFor('Entities\User');
+
 
 ++ Static Function
 
