@@ -103,7 +103,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      */
     protected function tearDown()
     {
-        $conn = $this->sharedFixture['conn'];
+        $conn = static::$_sharedConn;
 
         $this->_sqlLoggerStack->enabled = false;
 
@@ -185,23 +185,19 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     {
         $forceCreateTables = false;
         
-        if ( ! isset($this->sharedFixture['conn'])) {
-            if ( ! isset(static::$_sharedConn)) {
-                static::$_sharedConn = TestUtil::getConnection();
-            }
+        if ( ! isset(static::$_sharedConn)) {
+            static::$_sharedConn = TestUtil::getConnection();
             
-            $this->sharedFixture['conn'] = static::$_sharedConn;
-            
-            if ($this->sharedFixture['conn']->getDriver() instanceof \Doctrine\DBAL\Driver\PDOSqlite\Driver) {
+            if (static::$_sharedConn->getDriver() instanceof \Doctrine\DBAL\Driver\PDOSqlite\Driver) {
                 $forceCreateTables = true;
             }
         }
 
         if (isset($GLOBALS['DOCTRINE_MARK_SQL_LOGS'])) {
-            if (in_array($this->sharedFixture['conn']->getDatabasePlatform()->getName(), array("mysql", "postgresql"))) {
-                $this->sharedFixture['conn']->executeQuery('SELECT 1 /*' . get_class($this) . '*/');
-            } else if ($this->sharedFixture['conn']->getDatabasePlatform()->getName() == "oracle") {
-                $this->sharedFixture['conn']->executeQuery('SELECT 1 /*' . get_class($this) . '*/ FROM dual');
+            if (in_array(static::$_sharedConn->getDatabasePlatform()->getName(), array("mysql", "postgresql"))) {
+                static::$_sharedConn->executeQuery('SELECT 1 /*' . get_class($this) . '*/');
+            } else if (static::$_sharedConn->getDatabasePlatform()->getName() == "oracle") {
+                static::$_sharedConn->executeQuery('SELECT 1 /*' . get_class($this) . '*/ FROM dual');
             }
         }
         
@@ -261,7 +257,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver());
         
-        $conn = $this->sharedFixture['conn'];
+        $conn = static::$_sharedConn;
         $conn->getConfiguration()->setSQLLogger($this->_sqlLoggerStack);
         
         return \Doctrine\ORM\EntityManager::create($conn, $config);
