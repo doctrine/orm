@@ -339,7 +339,7 @@ Defines that the annotated instance variable holds a reference that describes a 
 
 Required attributes:
 
-* targetEntity - FQCN of the referenced target entity. Can be the unqualified class name if both classes are in the same namespace.
+* targetEntity - FQCN of the referenced target entity. Can be the unqualified class name if both classes are in the same namespace. *IMPORTANT:* No leading backslash!
 
 Optional attributes:
 
@@ -364,7 +364,7 @@ and names of the two related entities.
 
 Required attributes:
 
-* targetEntity - FQCN of the referenced target entity. Can be the unqualified class name if both classes are in the same namespace.
+* targetEntity - FQCN of the referenced target entity. Can be the unqualified class name if both classes are in the same namespace. *IMPORTANT:* No leading backslash!
 
 Optional attributes:
 
@@ -418,7 +418,7 @@ apply here too.
 
 Required attributes:
 
-* targetEntity - FQCN of the referenced target entity. Can be the unqualified class name if both classes are in the same namespace.
+* targetEntity - FQCN of the referenced target entity. Can be the unqualified class name if both classes are in the same namespace. *IMPORTANT:* No leading backslash!
 
 Optional attributes:
 
@@ -442,7 +442,7 @@ Example:
 
 Required attributes:
 
-* targetEntity - FQCN of the referenced target entity. Can be the unqualified class name if both classes are in the same namespace.
+* targetEntity - FQCN of the referenced target entity. Can be the unqualified class name if both classes are in the same namespace. *IMPORTANT:* No leading backslash!
 
 Optional attributes:
 

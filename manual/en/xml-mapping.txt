@@ -305,7 +305,7 @@ For the inverse side the mapping is as simple as:
 Required attributes for inverse One-To-One:
 
 * field - Name of the property/field on the entity's PHP class.
-* target-entity - Name of the entity associated entity class. If this is not qualified the namespace of the current class is prepended.
+* target-entity - Name of the entity associated entity class. If this is not qualified the namespace of the current class is prepended. *IMPORTANT:* No leading backslash!
 * mapped-by - Name of the field on the owning side (here Address entity) that contains the owning side association.
 
 For the owning side this mapping would look like:
@@ -318,7 +318,7 @@ For the owning side this mapping would look like:
 Required attributes for owning One-to-One:
 
 * field - Name of the property/field on the entity's PHP class.
-* target-entity - Name of the entity associated entity class. If this is not qualified the namespace of the current class is prepended.
+* target-entity - Name of the entity associated entity class. If this is not qualified the namespace of the current class is prepended. *IMPORTANT:* No leading backslash!
 
 Optional attributes for owning One-to-One:
 
@@ -353,7 +353,7 @@ compared to the one-to-one case. The minimal mapping for this association looks 
 Required attributes:
 
 * field - Name of the property/field on the entity's PHP class.
-* target-entity - Name of the entity associated entity class. If this is not qualified the namespace of the current class is prepended.
+* target-entity - Name of the entity associated entity class. If this is not qualified the namespace of the current class is prepended. *IMPORTANT:* No leading backslash!
 
 Optional attributes:
 
@@ -388,7 +388,7 @@ uni-directional one-to-many association, which means this association only ever 
 Required attributes:
 
 * field - Name of the property/field on the entity's PHP class.
-* target-entity - Name of the entity associated entity class. If this is not qualified the namespace of the current class is prepended.
+* target-entity - Name of the entity associated entity class. If this is not qualified the namespace of the current class is prepended. *IMPORTANT:* No leading backslash!
 * mapped-by - Name of the field on the owning side (here Phonenumber entity) that contains the owning side association.
 
 Optional attributes:
@@ -408,7 +408,7 @@ you can omit many definitions and rely on their implicit values.
 Required attributes:
 
 * field - Name of the property/field on the entity's PHP class.
-* target-entity - Name of the entity associated entity class. If this is not qualified the namespace of the current class is prepended.
+* target-entity - Name of the entity associated entity class. If this is not qualified the namespace of the current class is prepended. *IMPORTANT:* No leading backslash!
 
 Optional attributes:
 

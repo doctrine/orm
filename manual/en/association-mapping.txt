@@ -161,7 +161,7 @@ Now the following code will be working even if the Entity hasn't been associated
     $user = new User();
     $user->getGroups()->add($group);
 
-++ Association Runtime vs Development Validation
+++ Runtime vs Development Mapping Validation
 
 For performance reasons Doctrine 2 has to skip some of the necessary validation of association mappings.
 You have to execute this validation in your development workflow to verify the associations are correctly
@@ -184,6 +184,12 @@ Or you can trigger the validation manually:
     }
 
 If the mapping is invalid the errors array contains a positive number of elements with error messages.
+
+> **NOTE**
+>
+> One common error is to use a backlash in front of the fully-qualified class-name. Whenever a FQCN is represented
+> inside a string (such as in your mapping definitions) you have to drop the prefix backslash. PHP does this with
+> `get_class()` or Reflection methods for backwards compatibility reasons.
 
 ++ One-To-One, Unidirectional
 
