@@ -224,15 +224,13 @@ that has O(n) complexity using `array_search`, where n is the size of the map.
 > for write operations that an inverse collection of a bidirectional one-to-many or many-to-many association is updated.
 > This knowledge can often be used to improve performance by avoiding the loading of the inverse collection.
 
-> **NOTE**
->
-> You can also clear the contents of a whole collection using the `Collections::clear()` method. You
-> should be aware that using this method can lead to a straight and optimized database delete or update call
-> during the flush operation that is not aware of entities that have been re-added to the collection.
->
-> Say you clear a collection of tags by calling `$post->getTags()->clear();` and then call
-> `$post->getTags()->add($tag)`. This will not recognize tag being already added before and issue
-> two database calls.
+You can also clear the contents of a whole collection using the `Collections::clear()` method. You
+should be aware that using this method can lead to a straight and optimized database delete or update call
+during the flush operation that is not aware of entities that have been re-added to the collection.
+
+Say you clear a collection of tags by calling `$post->getTags()->clear();` and then call
+`$post->getTags()->add($tag)`. This will not recognize tag being already added before and issue
+two database calls.
 
 ++ Association Management Methods
 
