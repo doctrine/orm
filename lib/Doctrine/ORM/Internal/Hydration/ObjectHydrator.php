@@ -335,6 +335,7 @@ class ObjectHydrator extends AbstractHydrator
                         }
                     } else if ( ! $reflField->getValue($parentObject)) {
                         $coll = new PersistentCollection($this->_em, $this->_ce[$entityName], new ArrayCollection);
+                        $coll->setOwner($parentObject, $relation);
                         $reflField->setValue($parentObject, $coll);
                         $this->_uow->setOriginalEntityProperty($oid, $relationField, $coll);
                     }
