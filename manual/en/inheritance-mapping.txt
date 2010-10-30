@@ -96,6 +96,13 @@ This strategy is very efficient for querying across all types in the hierarchy o
 
 There is a general performance consideration with Single Table Inheritance: If you use a STI entity as a many-to-one or one-to-one entity you should never use one of the classes at the upper levels of the inheritance hierachy as "targetEntity", only those that have no subclasses. Otherwise Doctrine *CANNOT* create proxy instances of this entity and will *ALWAYS* load the entity eagerly.
 
++++ SQL Schema considerations
+
+For Single-Table-Inheritance to work in scenarios where you are using either a legacy database schema or a
+self-written database schema you have to make sure that all columns that are not in the root entity but in any
+of the different sub-entities has to allows null values. Columns that have NOT NULL constraints have to be on the
+root entity of the single-table inheritance hierarchy.
+
 ++ Class Table Inheritance
 
 [Class Table Inheritance](http://martinfowler.com/eaaCatalog/classTableInheritance.html) is an inheritance mapping strategy where each class in a hierarchy is mapped to several tables: its own table and the tables of all parent classes. The table of a child class is linked to the table of a parent class through a foreign key constraint.
@@ -143,3 +150,10 @@ Introducing a new type to the hierarchy, at any level, simply involves interject
 This strategy inherently requires multiple JOIN operations to perform just about any query which can have a negative impact on performance, especially with large tables and/or large hierarchies. When partial objects are allowed, either globally or on the specific query, then querying for any type will not cause the tables of subtypes to be OUTER JOINed which can increase performance but the resulting partial objects will not fully load themselves on access of any subtype fields, so accessing fields of subtypes after such a query is not safe.
 
 There is a general performance consideration with Class Table Inheritance: If you use a CTI entity as a many-to-one or one-to-one entity you should never use one of the classes at the upper levels of the inheritance hierachy as "targetEntity", only those that have no subclasses. Otherwise Doctrine *CANNOT* create proxy instances of this entity and will *ALWAYS* load the entity eagerly.
+
++++ SQL Schema considerations
+
+For each entity in the Class-Table Inheritance hierarchy all the mapped fields have to be columns on the
+table of this entity. Additionally each child table has to have an id column that matches the id column
+definition on the root table (except for any sequence or auto-increment details). Furthermore each child table has
+to have a foreign key pointing from the id column to the root table id column and cascading on delete.
