@@ -1,5 +1,9 @@
 This is recipe for using Doctrine 2 in your [CodeIgniter](http://www.codeigniter.com) framework.
 
+> **NOTE**
+>
+> This might not work for all CodeIgniter versions and may require slight adjustments.
+
 Here is how to set it up:
 
 Make a CodeIgniter library that is both a wrapper and a bootstrap for Doctrine 2.
