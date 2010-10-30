@@ -273,7 +273,10 @@ class BasicEntityPersister
         $updateData = $this->_prepareUpdateData($entity);
         $tableName = $this->_class->table['name'];
         if (isset($updateData[$tableName]) && $updateData[$tableName]) {
-            $this->_updateTable($entity, $tableName, $updateData[$tableName], $this->_class->isVersioned);
+            $this->_updateTable(
+                $entity, $this->_class->getQuotedTableName($this->_platform),
+                $updateData[$tableName], $this->_class->isVersioned
+            );
         }
     }
 
@@ -282,11 +285,11 @@ class BasicEntityPersister
      * The UPDATE can optionally be versioned, which requires the entity to have a version field.
      *
      * @param object $entity The entity object being updated.
-     * @param string $tableName The name of the table to apply the UPDATE on.
+     * @param string $quotedTableName The quoted name of the table to apply the UPDATE on.
      * @param array $updateData The map of columns to update (column => value).
      * @param boolean $versioned Whether the UPDATE should be versioned.
      */
-    protected final function _updateTable($entity, $tableName, array $updateData, $versioned = false)
+    protected final function _updateTable($entity, $quotedTableName, array $updateData, $versioned = false)
     {
         $set = $params = $types = array();
 
@@ -322,7 +325,7 @@ class BasicEntityPersister
             $types[] = $this->_class->fieldMappings[$versionField]['type'];
         }
 
-        $sql = "UPDATE $tableName SET " . implode(', ', $set)
+        $sql = "UPDATE $quotedTableName SET " . implode(', ', $set)
             . ' WHERE ' . implode(' = ? AND ', $where) . ' = ?';
 
         $result = $this->_conn->executeUpdate($sql, $params, $types);
@@ -386,7 +389,7 @@ class BasicEntityPersister
         $this->deleteJoinTableRecords($identifier);
 
         $id = array_combine($this->_class->getIdentifierColumnNames(), $identifier);
-        $this->_conn->delete($this->_class->table['name'], $id);
+        $this->_conn->delete($this->_class->getQuotedTableName($this->_platform), $id);
     }
 
     /**
