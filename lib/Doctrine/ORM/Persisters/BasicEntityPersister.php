@@ -393,16 +393,6 @@ class BasicEntityPersister
     }
 
     /**
-     * Gets the ClassMetadata instance of the entity class this persister is used for.
-     *
-     * @return Doctrine\ORM\Mapping\ClassMetadata
-     */
-    public function getClassMetadata()
-    {
-        return $this->_class;
-    }
-
-    /**
      * Prepares the changeset of an entity for database insertion (UPDATE).
      *
      * The changeset is obtained from the currently running UnitOfWork.

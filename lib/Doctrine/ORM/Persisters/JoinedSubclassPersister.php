@@ -193,7 +193,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $updateData = $this->_prepareUpdateData($entity);
 
         if ($isVersioned = $this->_class->isVersioned) {
-            $versionedTable = $this->_getVersionedClassMetadata()->table['name'];
+            $versionedClass = $this->_getVersionedClassMetadata();
+            $versionedTable = $versionedClass->table['name'];
         }
 
         if ($updateData) {
@@ -203,7 +204,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             // Make sure the table with the version column is updated even if no columns on that
             // table were affected.
             if ($isVersioned && ! isset($updateData[$versionedTable])) {
-                $this->_updateTable($entity, $this->_quotedTableMap[$versionedTable], array(), true);
+                $this->_updateTable($entity, $versionedClass->getQuotedTableName($this->_platform), array(), true);
             }
         }
     }
