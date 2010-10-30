@@ -3,7 +3,7 @@
 namespace Symfony\Component\Console\Output;
 
 /*
- * This file is part of the symfony framework.
+ * This file is part of the Symfony framework.
  *
  * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
  *
@@ -22,20 +22,18 @@ namespace Symfony\Component\Console\Output;
  *
  *     $output = new StreamOutput(fopen('php://stdout', 'w'));
  *
- * @package    symfony
- * @subpackage console
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 class ConsoleOutput extends StreamOutput
 {
-  /**
-   * Constructor.
-   *
-   * @param integer $verbosity The verbosity level (self::VERBOSITY_QUIET, self::VERBOSITY_NORMAL, self::VERBOSITY_VERBOSE)
-   * @param Boolean $decorated Whether to decorate messages or not (null for auto-guessing)
-   */
-  public function __construct($verbosity = self::VERBOSITY_NORMAL, $decorated = null)
-  {
-    parent::__construct(fopen('php://stdout', 'w'), $verbosity, $decorated);
-  }
+    /**
+     * Constructor.
+     *
+     * @param integer $verbosity The verbosity level (self::VERBOSITY_QUIET, self::VERBOSITY_NORMAL, self::VERBOSITY_VERBOSE)
+     * @param Boolean $decorated Whether to decorate messages or not (null for auto-guessing)
+     */
+    public function __construct($verbosity = self::VERBOSITY_NORMAL, $decorated = null)
+    {
+        parent::__construct(fopen('php://stdout', 'w'), $verbosity, $decorated);
+    }
 }

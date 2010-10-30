@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Command\Command;
 
 /*
- * This file is part of the symfony framework.
+ * This file is part of the Symfony framework.
  *
  * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
  *
@@ -21,63 +21,57 @@ use Symfony\Component\Console\Command\Command;
 /**
  * HelpCommand displays the help for a given command.
  *
- * @package    symfony
- * @subpackage console
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
+ * @author Fabien Potencier <fabien.potencier@symfony-project.com>
  */
 class HelpCommand extends Command
 {
-  protected $command;
+    protected $command;
 
-  /**
-   * @see Command
-   */
-  protected function configure()
-  {
-    $this->ignoreValidationErrors = true;
+    /**
+     * @see Command
+     */
+    protected function configure()
+    {
+        $this->ignoreValidationErrors = true;
 
-    $this
-      ->setDefinition(array(
-        new InputArgument('command_name', InputArgument::OPTIONAL, 'The command name', 'help'),
-        new InputOption('xml', null, InputOption::PARAMETER_NONE, 'To output help as XML'),
-      ))
-      ->setName('help')
-      ->setAliases(array('?'))
-      ->setDescription('Displays help for a command')
-      ->setHelp(<<<EOF
+        $this
+            ->setDefinition(array(
+                new InputArgument('command_name', InputArgument::OPTIONAL, 'The command name', 'help'),
+                new InputOption('xml', null, InputOption::PARAMETER_NONE, 'To output help as XML'),
+            ))
+            ->setName('help')
+            ->setAliases(array('?'))
+            ->setDescription('Displays help for a command')
+            ->setHelp(<<<EOF
 The <info>help</info> command displays help for a given command:
 
-  <info>./symfony help test:all</info>
+  <info>./symfony help list</info>
 
 You can also output the help as XML by using the <comment>--xml</comment> option:
 
-  <info>./symfony help --xml test:all</info>
+  <info>./symfony help --xml list</info>
 EOF
-      );
-  }
-
-  public function setCommand(Command $command)
-  {
-    $this->command = $command;
-  }
-
-  /**
-   * @see Command
-   */
-  protected function execute(InputInterface $input, OutputInterface $output)
-  {
-    if (null === $this->command)
-    {
-      $this->command = $this->application->getCommand($input->getArgument('command_name'));
+            );
     }
 
-    if ($input->getOption('xml'))
+    public function setCommand(Command $command)
     {
-      $output->writeln($this->command->asXml(), Output::OUTPUT_RAW);
+        $this->command = $command;
     }
-    else
+
+    /**
+     * @see Command
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
-      $output->writeln($this->command->asText());
+        if (null === $this->command) {
+            $this->command = $this->application->getCommand($input->getArgument('command_name'));
+        }
+
+        if ($input->getOption('xml')) {
+            $output->writeln($this->command->asXml(), Output::OUTPUT_RAW);
+        } else {
+            $output->writeln($this->command->asText());
+        }
     }
-  }
 }
