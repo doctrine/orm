@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -370,7 +368,7 @@ public function <methodName>()
     {
         $refl = new \ReflectionClass($this->_getClassToExtend());
 
-        return $refl->getName();
+        return '\\' . $refl->getName();
     }
 
     private function _getClassName(ClassMetadataInfo $metadata)
