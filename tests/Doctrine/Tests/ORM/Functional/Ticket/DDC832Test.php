@@ -15,9 +15,9 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC832Like'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC832JoinedIndex'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC832JoinedTreeIndex'),
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC832Like'),
             ));
         } catch(\Exception $e) {
             
@@ -55,7 +55,12 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testQuotedTableJoinedUpdate()
     {
-        $this->markTestIncomplete('Not written yet.');
+        $index = new DDC832JoinedIndex("test");
+        $this->_em->persist($index);
+        $this->_em->flush();
+
+        $index->name = "asdf";
+        $this->_em->flush();
     }
 
     /**
@@ -63,7 +68,38 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testQuotedTableJoinedRemove()
     {
-        $this->markTestIncomplete('Not written yet.');
+        $index = new DDC832JoinedIndex("test");
+        $this->_em->persist($index);
+        $this->_em->flush();
+
+        $this->_em->remove($index);
+        $this->_em->flush();
+    }
+
+    /**
+     * @group DDC-832
+     */
+    public function testQuotedTableJoinedChildUpdate()
+    {
+        $index = new DDC832JoinedTreeIndex("test", 1, 2);
+        $this->_em->persist($index);
+        $this->_em->flush();
+
+        $index->name = "asdf";
+        $this->_em->flush();
+    }
+
+    /**
+     * @group DDC-832
+     */
+    public function testQuotedTableJoinedChildRemove()
+    {
+        $index = new DDC832JoinedTreeIndex("test", 1, 2);
+        $this->_em->persist($index);
+        $this->_em->flush();
+
+        $this->_em->remove($index);
+        $this->_em->flush();
     }
 }
 
@@ -74,7 +110,7 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC832Like
 {
     /**
-     * @Id @Column(type="string") @GeneratedValue
+     * @Id @Column(type="integer") @GeneratedValue
      */
     public $id;
 
@@ -103,7 +139,7 @@ class DDC832Like
 class DDC832JoinedIndex
 {
     /**
-     * @Id @Column(type="string") @GeneratedValue
+     * @Id @Column(type="integer") @GeneratedValue
      */
     public $id;
 

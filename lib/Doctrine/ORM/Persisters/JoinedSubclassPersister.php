@@ -35,8 +35,17 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * Map that maps column names to the table names that own them.
      * This is mainly a temporary cache, used during a single request.
+     *
+     * @var array
      */
     private $_owningTableMap = array();
+
+    /**
+     * Map of table to quoted table names.
+     * 
+     * @var array
+     */
+    private $_quotedTableMap = array();
 
     /**
      * {@inheritdoc}
@@ -74,18 +83,16 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      */
     public function getOwningTable($fieldName)
     {
-        if ( ! isset($this->_owningTableMap[$fieldName])) {
+        if (!isset($this->_owningTableMap[$fieldName])) {
             if (isset($this->_class->associationMappings[$fieldName]['inherited'])) {
-                $this->_owningTableMap[$fieldName] = $this->_em->getClassMetadata(
-                    $this->_class->associationMappings[$fieldName]['inherited']
-                    )->table['name'];
+                $cm = $this->_em->getClassMetadata($this->_class->associationMappings[$fieldName]['inherited']);
             } else if (isset($this->_class->fieldMappings[$fieldName]['inherited'])) {
-                $this->_owningTableMap[$fieldName] = $this->_em->getClassMetadata(
-                    $this->_class->fieldMappings[$fieldName]['inherited']
-                    )->table['name'];
+                $cm = $this->_em->getClassMetadata($this->_class->fieldMappings[$fieldName]['inherited']);
             } else {
-                $this->_owningTableMap[$fieldName] = $this->_class->table['name'];
+                $cm = $this->_class;
             }
+            $this->_owningTableMap[$fieldName] = $cm->table['name'];
+            $this->_quotedTableMap[$cm->table['name']] = $cm->getQuotedTableName($this->_platform);
         }
 
         return $this->_owningTableMap[$fieldName];
@@ -191,12 +198,12 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         if ($updateData) {
             foreach ($updateData as $tableName => $data) {
-                $this->_updateTable($entity, $tableName, $data, $isVersioned && $versionedTable == $tableName);
+                $this->_updateTable($entity, $this->_quotedTableMap[$tableName], $data, $isVersioned && $versionedTable == $tableName);
             }
             // Make sure the table with the version column is updated even if no columns on that
             // table were affected.
             if ($isVersioned && ! isset($updateData[$versionedTable])) {
-                $this->_updateTable($entity, $versionedTable, array(), true);
+                $this->_updateTable($entity, $this->_quotedTableMap[$versionedTable], array(), true);
             }
         }
     }
