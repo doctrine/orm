@@ -1439,12 +1439,11 @@ class UnitOfWork implements PropertyChangedListener
                         }
                         if ($assoc2['isCascadeMerge']) {
                             $managedCol->initialize();
-                            $managedCol->takeSnapshot();
                             if (!$managedCol->isEmpty()) {
                                 $managedCol->unwrap()->clear();
                                 $managedCol->setDirty(true);
                                 if ($assoc2['isOwningSide'] && $assoc2['type'] == ClassMetadata::MANY_TO_MANY && $class->isChangeTrackingNotify()) {
-                                    $this->scheduleForDirtyCheck($managedCol);
+                                    $this->scheduleForDirtyCheck($managedCopy);
                                 }
                             }
                         }
