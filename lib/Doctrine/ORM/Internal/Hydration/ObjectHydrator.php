@@ -145,12 +145,12 @@ class ObjectHydrator extends AbstractHydrator
     {
         $oid = spl_object_hash($entity);
         $relation = $class->associationMappings[$fieldName];
-        
+
         $value = $class->reflFields[$fieldName]->getValue($entity);
         if ($value === null) {
             $value = new ArrayCollection;
         }
-        
+
         if ( ! $value instanceof PersistentCollection) {
             $value = new PersistentCollection(
                 $this->_em,
@@ -161,17 +161,19 @@ class ObjectHydrator extends AbstractHydrator
             $class->reflFields[$fieldName]->setValue($entity, $value);
             $this->_uow->setOriginalEntityProperty($oid, $fieldName, $value);
             $this->_initializedCollections[$oid . $fieldName] = $value;
-        } else if (isset($this->_hints[Query::HINT_REFRESH])) {
-            // Is already PersistentCollection, but REFRESH
+        } else if (isset($this->_hints[Query::HINT_REFRESH]) ||
+                isset($this->_hints['fetched'][$class->name][$fieldName]) &&
+                ! $value->isInitialized()) {
+            // Is already PersistentCollection, but either REFRESH or FETCH-JOIN and UNINITIALIZED!
             $value->setDirty(false);
             $value->setInitialized(true);
             $value->unwrap()->clear();
             $this->_initializedCollections[$oid . $fieldName] = $value;
         } else {
-            // Is already PersistentCollection, and DONT REFRESH
+            // Is already PersistentCollection, and DON'T REFRESH or FETCH-JOIN!
             $this->_existingCollections[$oid . $fieldName] = $value;
         }
-        
+
         return $value;
     }
     
