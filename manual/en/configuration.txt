@@ -170,7 +170,9 @@ The annotation driver can be configured with a factory method on the `Doctrine\O
     $config->setMetadataDriverImpl($driverImpl);
 
 The path information to the entities is required for the annotation driver, because otherwise
-mass-operations on all entities through the console could not work correctly.
+mass-operations on all entities through the console could not work correctly. All of metadata
+drivers accept either a single directory as a string or an array of directories. With this feature a
+single driver can support multiple directories of Entities.
 
 +++ Metadata Cache (***RECOMMENDED***)
 
