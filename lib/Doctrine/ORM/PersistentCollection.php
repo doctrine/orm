@@ -196,7 +196,7 @@ final class PersistentCollection implements Collection
      * Initializes the collection by loading its contents from the database
      * if the collection is not yet initialized.
      */
-    private function initialize()
+    public function initialize()
     {
         if ( ! $this->initialized && $this->association) {
             if ($this->isDirty) {
