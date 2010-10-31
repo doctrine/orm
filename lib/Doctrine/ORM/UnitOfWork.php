@@ -1437,7 +1437,17 @@ class UnitOfWork implements PropertyChangedListener
                             $prop->setValue($managedCopy, $managedCol);
                             $this->originalEntityData[$oid][$name] = $managedCol;
                         }
-                        $managedCol->setInitialized($assoc2['isCascadeMerge']);
+                        if ($assoc2['isCascadeMerge']) {
+                            $managedCol->initialize();
+                            $managedCol->takeSnapshot();
+                            if (!$managedCol->isEmpty()) {
+                                $managedCol->unwrap()->clear();
+                                $managedCol->setDirty(true);
+                                if ($assoc2['isOwningSide'] && $assoc2['type'] == ClassMetadata::MANY_TO_MANY && $class->isChangeTrackingNotify()) {
+                                    $this->scheduleForDirtyCheck($managedCol);
+                                }
+                            }
+                        }
                     }
                 }
                 if ($class->isChangeTrackingNotify()) {
@@ -1456,7 +1466,7 @@ class UnitOfWork implements PropertyChangedListener
             if ($assoc['type'] & ClassMetadata::TO_ONE) {
                 $prevClass->reflFields[$assocField]->setValue($prevManagedCopy, $managedCopy);
             } else {
-                $prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->unwrap()->add($managedCopy);
+                $prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->add($managedCopy);
                 if ($assoc['type'] == ClassMetadata::ONE_TO_MANY) {
                     $class->reflFields[$assoc['mappedBy']]->setValue($managedCopy, $prevManagedCopy);
                 }
