@@ -8,7 +8,7 @@ The following section will describe why partial objects are problematic and what
 > `Query#getArrayResult()`, `Query#getScalarResult()`, `Query#getSingleScalarResult()`,
 > etc.
 
-++ What is the problem?
+## What is the problem?
 
 In short, partial objects are problematic because they are usually objects with
 broken invariants. As such, code that uses these partial objects tends to be
@@ -40,10 +40,10 @@ only selects partial object data and wants to retrieve the result as objects
 partial objects are dangerous. If you want to force a query to return you partial
 objects, possibly as a performance tweak, you can use the `partial` keyword as follows:
 
-    [php]
+    <?php
     $q = $em->createQuery("select partial u.{id,name} from MyApp\Domain\User u");
 
-++ When should I force partial objects?
+## When should I force partial objects?
 
 Mainly for optimization purposes, but be careful of premature optimization as partial objects
 lead to potentially more fragile code.

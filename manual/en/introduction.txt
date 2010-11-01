@@ -1,4 +1,4 @@
-++ Welcome
+## Welcome
 
 Doctrine 2 is an object-relational mapper (ORM) for PHP 5.3.0+ that provides 
 transparent persistence for PHP objects. It sits on top of a powerful database 
@@ -12,25 +12,25 @@ differences to SQL it abstracts the mapping between database rows and
 objects considerably, allowing developers to write powerful queries
 in a simple and flexible fashion.
 
-++ Disclaimer
+## Disclaimer
 
 This is the Doctrine 2 reference documentation. Introductory guides and tutorials
 that you can follow along from start to finish, like the "Guide to Doctrine" book
 known from the Doctrine 1.x series, will be available at a later date.
 
-++ Using an Object-Relational Mapper
+## Using an Object-Relational Mapper
 
 As the term ORM already hints at, Doctrine 2 aims to simplify the translation
 between database rows and the PHP object model. The primary use case for Doctrine
 are therefore applications that utilize the Object-Oriented Programming Paradigm.
 For applications that not primarily work with objects Doctrine 2 is not suited very well.
 
-++ Requirements
+## Requirements
 
 Doctrine 2 requires a minimum of PHP 5.3.0. For greatly improved performance it 
 is also recommended that you use APC with PHP.
 
-++ Doctrine 2 Packages
+## Doctrine 2 Packages
 
 Doctrine 2 is divided into three main packages.
 
@@ -46,31 +46,31 @@ packages for a few reasons and they are to...
 * ...allow you to use the code in Doctrine Common without the ORM or DBAL
 * ...allow you to use the DBAL without the ORM
 
-+++ The Common Package
+### The Common Package
 
 The Common package contains highly reusable components that have no dependencies
 beyond the package itself (and PHP, of course). The root namespace of the 
 Common package is `Doctrine\Common`.
 
-+++ The DBAL Package
+### The DBAL Package
 
 The DBAL package contains an enhanced database abstraction layer on top of 
 PDO but is not strongly bound to PDO. The purpose of this layer is to provide a
 single API that bridges most of the differences between the different RDBMS vendors.
 The root namespace of the DBAL package is `Doctrine\DBAL`.
 
-+++ The ORM Package
+### The ORM Package
 
 The ORM package contains the object-relational mapping toolkit that provides 
 transparent relational persistence for plain PHP objects. The root namespace of 
 the ORM package is `Doctrine\ORM`.
 
-++ Installing
+## Installing
 
 Doctrine can be installed many different ways. We will describe all the different
 ways and you can choose which one suits you best.
 
-+++ PEAR
+### PEAR
 
 You can easily install any of the three Doctrine packages from the PEAR command 
 line installation utility.
@@ -99,7 +99,7 @@ following command.
 When you have a package installed via PEAR you can require and load the 
 `ClassLoader` with the following code.
 
-    [php]
+    <?php
     require 'Doctrine/Common/ClassLoader.php';
     $classLoader = new \Doctrine\Common\ClassLoader();
 
@@ -146,7 +146,7 @@ see what you can do with it.
       :drop                        Processes the schema and either drop the database schema of EntityManager Storage Connection or generate the SQL output.
       :update                      Processes the schema and either update the database schema of EntityManager Storage Connection or generate the SQL output.
 
-+++ Package Download
+### Package Download
 
 You can also use Doctrine 2 by downloading the latest release package 
 from [the download page](http://www.doctrine-project.org/download).
@@ -154,7 +154,7 @@ from [the download page](http://www.doctrine-project.org/download).
 See the configuration section on how to configure and bootstrap a downloaded
 version of Doctrine.
 
-+++ GitHub
+### GitHub
 
 Alternatively you can clone the latest version of Doctrine 2 via GitHub.com:
 
@@ -178,7 +178,7 @@ with regards to autoloading.
 > with each other in combination. The ORM may not work with the current Common or DBAL master versions.
 > Instead the ORM ships with the Git Submodules that are required.
 
-+++ Subversion
+### Subversion
 
 > **NOTE**
 >
@@ -195,7 +195,7 @@ the Common and DBAL dependencies. You have to grab them yourself, but might run
 into version incompatibilities between the different master branches of Common, DBAL
 and ORM.
 
-++ Sandbox Quickstart
+## Sandbox Quickstart
 
 > **NOTE**
 > The sandbox is only available via the Doctrine2 Github Repository or soon as a separate download on the downloads
@@ -204,7 +204,7 @@ and ORM.
 The sandbox is a pre-configured environment for evaluating and playing
 with Doctrine 2.
 
-+++ Overview
+### Overview
 
 After navigating to the sandbox directory, you should see the following structure:
 
@@ -232,7 +232,7 @@ Here is a short overview of the purpose of these folders and files:
  * `doctrine`/`doctrine.php` is a command-line tool.
  * `index.php` is a basic classical bootstrap file of a php application that uses Doctrine 2.
 
-+++ Mini-tutorial
+### Mini-tutorial
 
 1) From within the tools/sandbox folder, run the following command and you should
 see the same output.
@@ -246,7 +246,7 @@ have been created with the name `database.sqlite`.
 
 3) Open `index.php` and at the bottom edit it so it looks like the following:
 
-    [php]
+    <?php
     //... bootstrap stuff
     
     ## PUT YOUR TEST CODE BELOW
@@ -282,7 +282,7 @@ You just saved your first entity with a generated ID in an SQLite database.
 
 5) Replace the contents of index.php with the following:
 
-    [php]
+    <?php
     //... bootstrap stuff
     
     ## PUT YOUR TEST CODE BELOW

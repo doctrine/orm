@@ -1,0 +1,521 @@
+Associations between entities are represented just like in regular
+object-oriented PHP, with references to other objects or
+collections of objects. When it comes to persistence, it is
+important to understand three main things:
+
+
+-  The concept of owning and inverse sides in bidirectional
+   associations as described
+   `here <http://www.doctrine-project.org/documentation/manual/2_0/en/association-mapping#owning-side-and-inverse-side>`_.
+-  If an entity is removed from a collection, the association is
+   removed, not the entity itself. A collection of entities always
+   only represents the association to the containing entities, not the
+   entity itself.
+-  Collection-valued persistent fields have to be instances of the
+   ``Doctrine\Common\Collections\Collection`` interface.
+   `See here <http://www.doctrine-project.org/documentation/manual/2_0/en/architecture#entities:persistent-fields>`_
+   for more details.
+
+Changes to associations in your code are not synchronized to the
+database directly, but upon calling ``EntityManager#flush()``.
+
+To describe all the concepts of working with associations we
+introduce a specific set of example entities that show all the
+different flavors of association management in Doctrine.
+
+Association Example Entities
+----------------------------
+
+We will use a simple comment system with Users and Comments as
+entities to show examples of association management. See the PHP
+docblocks of each association in the following example for
+information about its type and if its the owning or inverse side.
+
+::
+
+    <?php
+    /** @Entity */
+    class User
+    {
+        /** @Id @GeneratedValue @Column(type="string") */
+        private $id;
+    
+        /**
+         * Bidirectional - Many users have Many favorite comments (OWNING SIDE)
+         *
+         * @ManyToMany(targetEntity="Comment", inversedBy="userFavorites")
+         * @JoinTable(name="user_favorite_comments",
+         *   joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+         *   inverseJoinColumns={@JoinColumn(name="favorite_comment_id", referencedColumnName="id")}
+         * )
+         */
+        private $favorites;
+    
+        /**
+         * Unidirectional - Many users have marked many comments as read
+         *
+         * @ManyToMany(targetEntity="Comment")
+         * @JoinTable(name="user_read_comments",
+         *   joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+         *   inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id")}
+         * )
+         */
+        private $commentsRead;
+    
+        /**
+         * Bidirectional - One-To-Many (INVERSE SIDE)
+         *
+         * @OneToMany(targetEntity="Comment", mappedBy="author")
+         */
+        private $commentsAuthored;
+    
+        /**
+         * Unidirectional - Many-To-One
+         *
+         * @ManyToOne(targetEntity="Comment")
+         */
+        private $firstComment;
+    }
+    
+    /** @Entity */
+    class Comment
+    {
+        /** @Id @GeneratedValue @Column(type="string") */
+        private $id;
+    
+        /**
+         * Bidirectional - Many comments are favorited by many users (INVERSE SIDE)
+         *
+         * @ManyToMany(targetEntity="User", mappedBy="favorites")
+         */
+        private $userFavorites;
+    
+        /**
+         * Bidirectional - Many Comments are authored by one user (OWNING SIDE)
+         *
+         * @ManyToOne(targetEntity="User", inversedBy="authoredComments")
+         */
+         private $author;
+    }
+
+This two entities generate the following MySQL Schema (Foreign Key
+definitions omitted):
+
+::
+
+    [sql]
+    CREATE TABLE User (
+        id VARCHAR(255) NOT NULL,
+        firstComment_id VARCHAR(255) DEFAULT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+    
+    CREATE TABLE Comment (
+        id VARCHAR(255) NOT NULL,
+        author_id VARCHAR(255) DEFAULT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+    
+    CREATE TABLE user_favorite_comments (
+        user_id VARCHAR(255) NOT NULL,
+        favorite_comment_id VARCHAR(255) NOT NULL,
+        PRIMARY KEY(user_id, favorite_comment_id)
+    ) ENGINE = InnoDB;
+    
+    CREATE TABLE user_read_comments (
+        user_id VARCHAR(255) NOT NULL,
+        comment_id VARCHAR(255) NOT NULL,
+        PRIMARY KEY(user_id, comment_id)
+    ) ENGINE = InnoDB;
+
+Establishing Associations
+-------------------------
+
+Establishing an association between two entities is
+straight-forward. Here are some examples for the unidirectional
+relations of the ``User``:
+
+::
+
+    <?php
+    class User
+    {
+        // ...
+        public function getReadComments() {
+             return $this->commentsRead;
+        }
+    
+        public function setFirstComment(Comment $c) {
+            $this->firstComment = $c;
+        }
+    }
+
+The interaction code would then look like in the following snippet
+(``$em`` here is an instance of the EntityManager):
+
+::
+
+    <?php
+    $user = $em->find('User', $userId);
+    
+    // unidirectional many to many
+    $comment = $em->find('Comment', $readCommentId);
+    $user->getReadComments()->add($comment);
+    
+    $em->flush();
+    
+    // unidirectional many to one
+    $myFirstComment = new Comment();
+    $user->setFirstComment($myFirstComment);
+    
+    $em->persist($myFirstComment);
+    $em->flush();
+
+In the case of bi-directional associations you have to update the
+fields on both sides:
+
+::
+
+    <?php
+    class User
+    {
+        // ..
+    
+        public function getAuthoredComments() {
+            return $this->commentsAuthored;
+        }
+    
+        public function getFavoriteComments() {
+            return $this->favorites;
+        }
+    }
+    
+    class Comment
+    {
+        // ...
+    
+        public function getUserFavorites() {
+            return $this->userFavorites;
+        }
+    
+        public function setAuthor(User $author = null) {
+            $this->author = $author;
+        }
+    }
+    
+    // Many-to-Many
+    $user->getFavorites()->add($favoriteComment);
+    $favoriteComment->getUserFavorites()->add($user);
+    
+    $em->flush();
+    
+    // Many-To-One / One-To-Many Bidirectional
+    $newComment = new Comment();
+    $user->getAuthoredComments()->add($newComment);
+    $newComment->setAuthor($user);
+    
+    $em->persist($newComment);
+    $em->flush();
+
+Notice how always both sides of the bidirectional association are
+updated. The previous unidirectional associations were simpler to
+handle.
+
+Removing Associations
+---------------------
+
+Removing an association between two entities is similarly
+straight-forward. There are two strategies to do so, by key and by
+element. Here are some examples:
+
+::
+
+    <?php
+    // Remove by Elements
+    $user->getComments()->removeElement($comment);
+    $comment->setAuthor(null);
+    
+    $user->getFavorites()->removeElement($comment);
+    $comment->getUserFavorites()->removeElement($user);
+    
+    // Remove by Key
+    $user->getComments()->removeElement($ithComment);
+    $comment->setAuthor(null);
+
+You need to call ``$em->flush()`` to make persist these changes in
+the database permanently.
+
+Notice how both sides of the bidirectional association are always
+updated. Unidirectional associations are consequently simpler to
+handle. Also note that if you type-hint your methods, i.e.
+``setAddress(Address $address)``, then PHP does only allows null
+values if ``null`` is set as default value. Otherwise
+setAddress(null) will fail for removing the association. If you
+insist on type-hinting a typical way to deal with this is to
+provide a special method, like ``removeAddress()``. This can also
+provide better encapsulation as it hides the internal meaning of
+not having an address.
+
+When working with collections, keep in mind that a Collection is
+essentially an ordered map (just like a PHP array). That is why the
+``remove`` operation accepts an index/key. ``removeElement`` is a
+separate method that has O(n) complexity using ``array_search``,
+where n is the size of the map.
+
+    **NOTE**
+
+    Since Doctrine always only looks at the owning side of a
+    bidirectional association for updates, it is not necessary for
+    write operations that an inverse collection of a bidirectional
+    one-to-many or many-to-many association is updated. This knowledge
+    can often be used to improve performance by avoiding the loading of
+    the inverse collection.
+
+
+You can also clear the contents of a whole collection using the
+``Collections::clear()`` method. You should be aware that using
+this method can lead to a straight and optimized database delete or
+update call during the flush operation that is not aware of
+entities that have been re-added to the collection.
+
+Say you clear a collection of tags by calling
+``$post->getTags()->clear();`` and then call
+``$post->getTags()->add($tag)``. This will not recognize tag being
+already added before and issue two database calls.
+
+Association Management Methods
+------------------------------
+
+It is generally a good idea to encapsulate proper association
+management inside the entity classes. This makes it easier to use
+the class correctly and can encapsulate details about how the
+association is maintained.
+
+The following code shows updates to the previous User and Comment
+example that encapsulate much of the association management code:
+
+::
+
+    <?php
+    class User
+    {
+        //...
+        public function markCommentRead(Comment $comment) {
+            // Collections implement ArrayAccess
+            $this->commentsRead[] = $comment;
+        }
+    
+        public function addComment(Comment $comment) {
+            if (count($this->commentsAuthored) == 0) {
+                $this->setFirstComment($comment);
+            }
+            $this->comments[] = $comment;
+            $comment->setAuthor($this);
+        }
+    
+        private function setFirstComment(Comment $c) {
+            $this->firstComment = $c;
+        }
+    
+        public function addFavorite(Comment $comment) {
+            $this->favorites->add($comment);
+            $comment->addUserFavorite($this);
+        }
+    
+        public function removeFavorite(Comment $comment) {
+            $this->favorites->removeElement($comment);
+            $comment->removeUserFavorite($this);
+        }
+    }
+    
+    class Comment
+    {
+        // ..
+    
+        public function addUserFavorite(User $user) {
+            $this->userFavorites[] = $user;
+        }
+    
+        public function removeUserFavorite(User $user) {
+            $this->userFavorites->removeElement($user);
+        }
+    }
+
+You will notice that ``addUserFavorite`` and ``removeUserFavorite``
+do not call ``addFavorite`` and ``removeFavorite``, thus the
+bidirectional association is strictly-speaking still incomplete.
+However if you would naively add the ``addFavorite`` in
+``addUserFavorite``, you end up with an infinite loop, so more work
+is needed. As you can see, proper bidirectional association
+management in plain OOP is a non-trivial task and encapsulating all
+the details inside the classes can be challenging.
+
+    **NOTE**
+
+    If you want to make sure that your collections are perfectly
+    encapsulated you should not return them from a
+    ``getCollectionName()`` method directly, but call
+    ``$collection->toArray()``. This way a client programmer for the
+    entity cannot circumvent the logic you implement on your entity for
+    association management. For example:
+
+
+::
+
+    <?php
+    class User {
+        public function getReadComments() {
+            return $this->commentsRead->toArray();
+        }
+    }
+
+This will however always initialize the collection, with all the
+performance penalties given the size. In some scenarios of large
+collections it might even be a good idea to completely hide the
+read access behind methods on the EntityRepository.
+
+There is no single, best way for association management. It greatly
+depends on the requirements of your concrete domain model as well
+as your preferences.
+
+Synchronizing Bidirectional Collections
+---------------------------------------
+
+In the case of Many-To-Many associations you as the developer are
+responsible to keep the collections on the owning and inverse side
+up in sync, when you apply changes to them. Doctrine can only
+guarantee a consistent state for the hydration, not for your client
+code.
+
+Using the User-Comment entities from above, a very simple example
+can show the possible caveats you can encounter:
+
+::
+
+    <?php
+    $user->getFavorites()->add($favoriteComment);
+    // not calling $favoriteComment->getUserFavorites()->add($user);
+    
+    $user->getFavorites()->contains($favoriteComment); // TRUE
+    $favoriteComment->getUserFavorites()->contains($user); // FALSE
+
+There are to approaches to handle this problem in your code:
+
+
+1. Ignore updating the inverse side of bidirectional collections,
+   BUT never read from them in requests that changed their state. In
+   the next Request Doctrine hydrates the consistent collection state
+   again.
+2. Always keep the bidirectional collections in sync through
+   association management methods. Reads of the Collections directly
+   after changes are consistent then.
+
+Transitive persistence / Cascade Operations
+-------------------------------------------
+
+Persisting, removing, detaching and merging individual entities can
+become pretty cumbersome, especially when a larger object graph
+with collections is involved. Therefore Doctrine 2 provides a
+mechanism for transitive persistence through cascading of these
+operations. Each association to another entity or a collection of
+entities can be configured to automatically cascade certain
+operations. By default, no operations are cascaded.
+
+The following cascade options exist:
+
+
+-  persist : Cascades persist operations to the associated
+   entities.
+-  remove : Cascades remove operations to the associated entities.
+-  merge : Cascades merge operations to the associated entities.
+-  detach : Cascades detach operations to the associated entities.
+-  all : Cascades persist, remove, merge and detach operations to
+   associated entities.
+
+The following example is an extension to the User-Comment example
+of this chapter. Suppose in our application a user is created
+whenever he writes his first comment. In this case we would use the
+following code:
+
+::
+
+    <?php
+    $user = new User();
+    $myFirstComment = new Comment();
+    $user->addComment($myFirstComment);
+    
+    $em->persist($user);
+    $em->persist($myFirstComment);
+    $em->flush();
+
+Even if you *persist* a new User that contains our new Comment this
+code would fail if you removed the call to
+``EntityManager#persist($myFirstComment)``. Doctrine 2 does not
+cascade the persist operation to all nested entities that are new
+as well.
+
+More complicated is the deletion of all a users comments when he is
+removed from the system:
+
+::
+
+    $user = $em->find('User', $deleteUserId);
+    
+    foreach ($user->getAuthoredComments() AS $comment) {
+        $em->remove($comment);
+    }
+    $em->remove($user);
+    $em->flush();
+
+Without the loop over all the authored comments Doctrine would use
+an UPDATE statement only to set the foreign key to NULL and only
+the User would be deleted from the database during the
+flush()-Operation.
+
+To have Doctrine handle both cases automatically we can change the
+``User#commentsAuthored`` property to cascade both the "persist"
+and the "remove" operation.
+
+::
+
+    <?php
+    class User
+    {
+        //...
+        /**
+         * Bidirectional - One-To-Many (INVERSE SIDE)
+         *
+         * @OneToMany(targetEntity="Comment", mappedBy="author", cascade={"persist", "remove"})
+         */
+        private $commentsAuthored;
+        //...
+    }
+
+Even though automatic cascading is convenient it should be used
+with care. Do not blindly apply cascade=all to all associations as
+it will unnecessarily degrade the performance of your application.
+For each cascade operation that gets activated Doctrine also
+applies that operation to the association, be it single or
+collection valued.
+
+Persistence by Reachability: Cascade Persist
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are additional semantics that apply to the Cascade Persist
+operation. During each flush() operation Doctrine detects if there
+are new entities in any collection and three possible cases can
+happen:
+
+
+1. New entities in a collection marked as cascade persist will be
+   directly persisted by Doctrine.
+2. New entities in a collection not marked as cascade persist will
+   produce an Exception and rollback the flush() operation.
+3. Collections without new entities are skipped.
+
+This concept is called Persistence by Reachability: New entities
+that are found on already managed entities are automatically
+persisted as long as the association is defined as cascade
+persist.
+
+

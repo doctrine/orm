@@ -1,21 +1,21 @@
-++ The Doctrine Console
+## The Doctrine Console
 
 The Doctrine Console is a Command Line Interface tool for simplifying common tasks during the development of a project that uses Doctrine 2.
 
-+++ Installation
+### Installation
 
 If you installed Doctrine 2 through PEAR, the `doctrine` command line tool should already be available to you.
 
 If you use Doctrine through SVN or a release package you need to copy the `doctrine` and `doctrine.php` files from the `tools/sandbox` or `bin` folder, respectively, to a location of your choice, for example a `tools` folder of your project.
 You probably need to edit `doctrine.php` to adjust some paths to the new environment, most importantly the first line that includes the `Doctrine\Common\ClassLoader`.
 
-+++ Getting Help
+### Getting Help
 
 Type `doctrine` on the command line and you should see an overview of the available commands or use the --help flag to get information on the available commands. If you want to know more about the use of generate entities for example, you can call:
 
     doctrine orm:generate-entities --help
 
-+++ Configuration
+### Configuration
 
 Whenever the `doctrine` command line tool is invoked, it can access alls Commands that were registered by developer.
 There is no auto-detection mechanism at work. The `bin\doctrine.php` file already registers all the commands that
@@ -24,7 +24,7 @@ currently ship with Doctrine DBAL and ORM. If you want to use additional command
 All the commands of the Doctrine Console require either the `db` or the `em` helpers to be defined in order to work correctly. Doctrine Console requires the definition of a HelperSet that is the DI tool to be injected in the Console.
 In case of a project that is dealing exclusively with DBAL, the ConnectionHelper is required:
 
-    [php]
+    <?php
     $helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
         'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($conn)
     ));
@@ -32,7 +32,7 @@ In case of a project that is dealing exclusively with DBAL, the ConnectionHelper
 
 When dealing with the ORM package, the EntityManagerHelper is required:
 
-    [php]
+    <?php
     $helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
         'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
     ));
@@ -41,7 +41,7 @@ When dealing with the ORM package, the EntityManagerHelper is required:
 The HelperSet instance has to be generated in a separate file (i.e. `cli-config.php`) that contains typical Doctrine
 bootstrap code and predefines the needed HelperSet attributes mentioned above. A typical `cli-config.php` file looks as follows:
 
-    [php]
+    <?php
     require_once __DIR__ . '/../../lib/Doctrine/Common/ClassLoader.php';
 
     $classLoader = new \Doctrine\Common\ClassLoader('Entities', __DIR__);
@@ -73,12 +73,12 @@ will automatically find the first instance of HelperSet in the global variable n
 You can also add your own commands on-top of the Doctrine supported tools.
 To include a new command on Doctrine Console, you need to do:
 
-    [php]
+    <?php
     $cli->addCommand(new \MyProject\Tools\Console\Commands\MyCustomCommand());
 
 Additionally, include multiple commands (and overriding previously defined ones) is possible through the command:
 
-    [php]
+    <?php
     $cli->addCommands(array(
         new \MyProject\Tools\Console\Commands\MyCustomCommand(),
         new \MyProject\Tools\Console\Commands\SomethingCommand(),
@@ -86,7 +86,7 @@ Additionally, include multiple commands (and overriding previously defined ones)
         new \MyProject\Tools\Console\Commands\OneMoreCommand(),
     ));
 
-+++ Command Overview
+### Command Overview
 
 The following Commands are currently available:
 
@@ -108,7 +108,7 @@ The following Commands are currently available:
  * `orm:schema-tool:drop`            Processes the schema and either drop the database schema of EntityManager Storage Connection or generate the SQL output.
  * `orm:schema-tool:update`          Processes the schema and either update the database schema of EntityManager Storage Connection or generate the SQL output.
 
-++ Database Schema Generation
+## Database Schema Generation
 
 > **Note**
 >
@@ -126,7 +126,7 @@ To generate your database schema from your Doctrine mapping files you can use th
 
 When using the SchemaTool class directly, create your schema using the `createSchema()` method. First create an instance of the `SchemaTool` and pass it an instance of the `EntityManager` that you want to use to create the schema. This method receives an array of `ClassMetadataInfo` instances.
 
-    [php]
+    <?php
     $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
     $classes = array(
       $em->getClassMetadata('Entities\User'),
@@ -136,7 +136,7 @@ When using the SchemaTool class directly, create your schema using the `createSc
 
 To drop the schema you can use the `dropSchema()` method.
 
-    [php]
+    <?php
     $tool->dropSchema($classes);
 
 This drops all the tables that are currently used by your metadata model.
@@ -144,14 +144,14 @@ When you are changing your metadata a lot during development you might want
 to drop the complete database instead of only the tables of the current model
 to clean up with orphaned tables.
 
-    [php]
+    <?php
     $tool->dropSchema($classes, \Doctrine\ORM\Tools\SchemaTool::DROP_DATABASE);
 
 You can also use database introspection to update your schema easily with the 
 `updateSchema()` method. It will compare your existing database schema to the 
 passed array of `ClassMetdataInfo` instances.
 
-    [php]
+    <?php
     $tool->updateSchema($classes);
 
 If you want to use this functionality from the command line you can use the
@@ -188,23 +188,23 @@ Before using the orm:schema-tool commands, remember to configure your cli-config
 > specify all the paths of your entities (or mapping files), i.e.
 > `new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em, $mappingPaths);`
 
-++ Convert Mapping Information
+## Convert Mapping Information
 
 To convert some mapping information between the various supported formats you can
 use the `ClassMetadataExporter` to get exporter instances for the different formats:
 
-    [php]
+    <?php
     $cme = new \Doctrine\ORM\Tools\Export\ClassMetadataExporter();
 
 Once you have a instance you can use it to get an exporter. For example, the yml
 exporter:
 
-    [php]
+    <?php
     $exporter = $cme->getExporter('yml', '/path/to/export/yml');
 
 Now you can export some `ClassMetadata` instances:
 
-    [php]
+    <?php
     $classes = array(
       $em->getClassMetadata('Entities\User'),
       $em->getClassMetadata('Entities\Profile')
@@ -218,14 +218,14 @@ accepts two arguments, the type to convert to and the path to generate it:
 
     $ php doctrine orm:convert-mapping xml /path/to/mapping-path-converted-to-xml
 
-++ Reverse Engineering
+## Reverse Engineering
 
 You can use the `DatabaseDriver` to reverse engineer a database to an array of
 `ClassMetadataInfo` instances and generate YAML, XML, etc. from them.
 
 First you need to retrieve the metadata instances with the `DatabaseDriver`:
 
-    [php]
+    <?php
     $em->getConfiguration()->setMetadataDriverImpl(
         new \Doctrine\ORM\Mapping\Driver\DatabaseDriver(
             $em->getConnection()->getSchemaManager()
@@ -237,7 +237,7 @@ First you need to retrieve the metadata instances with the `DatabaseDriver`:
 
 Now you can get an exporter instance and export the loaded metadata to yml:
 
-    [php]
+    <?php
     $exporter = $cme->getExporter('yml', '/path/to/export/yml');
     $exporter->setMetadata($metadata);
     $exporter->export();

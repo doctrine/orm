@@ -8,18 +8,18 @@ The YAML mapping document of a class is loaded on-demand the first time it is re
 
 -
 
-    [php]
+    <?php
     $driver->setFileExtension('.yml');
 
 It is recommended to put all YAML mapping documents in a single folder but you can spread the documents over several folders if you want to. In order to tell the YamlDriver where to look for your mapping documents, supply an array of paths as the first argument of the constructor, like this:
 
-    [php]
+    <?php
     // $config instanceof Doctrine\ORM\Configuration
     $driver = new YamlDriver(array('/path/to/files'));
     $config->setMetadataDriverImpl($driver);
 
 
-++ Example
+## Example
 
 As a quick start, here is a small example document that makes use of several common elements:
 

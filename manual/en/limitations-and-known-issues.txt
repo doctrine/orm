@@ -4,12 +4,12 @@ Much like every other piece of software Doctrine2 is not perfect and far from fe
 This section should give you an overview of current limitations of Doctrine 2 as well as critical known issues that
 you should know about.
 
-++ Current Limitations
+## Current Limitations
 
 There is a set of limitations that exist currently which might be solved in the future. Any of this
 limitations now stated has at least one ticket in the Tracker and is discussed for future releases.
 
-+++ Foreign Keys as Identifiers
+### Foreign Keys as Identifiers
 
 There are many use-cases where you would want to use an Entity-Attribute-Value approach to modelling and
 define a table-schema like the following:
@@ -45,7 +45,7 @@ Although we state that we support composite primary keys that does not currently
 columns. To see the fundamental difference between the two different `product_attributes` tables you should see
 how they translate into a Doctrine Mapping (Using Annotations):
 
-    [php]
+    <?php
     /**
      * Scenario 1: THIS IS NOT POSSIBLE CURRENTLY
      * @Entity @Table(name="product_attributes")
@@ -85,7 +85,7 @@ how they translate into a Doctrine Mapping (Using Annotations):
 The following Jira Issue [contains the feature request to allow @ManyToOne and @OneToOne annotations
 along the @Id annotation](http://www.doctrine-project.org/jira/browse/DDC-117).
 
-+++ Mapping Arrays to a Join Table
+### Mapping Arrays to a Join Table
 
 Related to the previous limitation with "Foreign Keys as Identifier" you might be interested in mapping the same
 table structure as given above to an array. However this is not yet possible either. See the following example:
@@ -118,14 +118,14 @@ of each array element in `$attributes`.
 
 The feature request for persistence of primitive value arrays [is described in the DDC-298 ticket](http://www.doctrine-project.org/jira/browse/DDC-298).
 
-+++ Value Objects
+### Value Objects
 
 There is currently no native support value objects in Doctrine other than for `DateTime` instances or if you
 serialize the objects using `serialize()/deserialize()` which the DBAL Type "object" supports.
 
 The feature request for full value-object support [is described in the DDC-93 ticket](http://www.doctrine-project.org/jira/browse/DDC-93).
 
-+++ Applying Filter Rules to any Query
+### Applying Filter Rules to any Query
 
 There are scenarios in many applications where you want to apply additional filter rules to each query implicitly. Examples include:
 
@@ -136,7 +136,7 @@ There are scenarios in many applications where you want to apply additional filt
 There is currently no way to achieve this consistently across both DQL and Repository/Persister generated queries, but
 as this is a pretty important feature we plan to add support for it in the future.
 
-+++ Custom Persisters
+### Custom Persisters
 
 A Persister in Doctrine is an object that is responsible for the hydration and write operations of an entity against the database.
 Currently there is no way to overwrite the persister implementation for a given entity, however there are several use-cases that
@@ -146,20 +146,20 @@ can benefit from custom persister implementations:
 * [Evaluate possible ways in which stored-procedures can be used](http://www.doctrine-project.org/jira/browse/DDC-445)
 * The previous Filter Rules Feature Request
 
-+++ Persist Keys of Collections
+### Persist Keys of Collections
 
 PHP Arrays are ordered hash-maps and so should be the `Doctrine\Common\Collections\Collection` interface. We plan
 to evaluate a feature that optionally persists and hydrates the keys of a Collection instance.
 
 [Ticket DDC-213](http://www.doctrine-project.org/jira/browse/DDC-213)
 
-+++ Mapping many tables to one entity
+### Mapping many tables to one entity
 
 It is not possible to map several equally looking tables onto one entity. For example if you have
 a production and an archive table of a certain business concept then you cannot have both tables
 map to the same entity.
 
-+++ Behaviors
+### Behaviors
 
 Doctrine 2 *will never* include a behavior system like Doctrine 1 in the core library. We don't think behaviors
 add more value than they cost pain and debugging hell. Please see the many different blog posts we have written on this
@@ -173,7 +173,7 @@ Doctrine 2 has enough hooks and extension points so that *you* can add whatever 
 None of this will ever become core functionality of Doctrine2 however, you will have to rely on third party extensions
 for magical behaviors.
 
-+++ Nested Set
+### Nested Set
 
 NestedSet was offered as a behavior in Doctrine 1 and will not be included in the core of Doctrine 2. However there
 are already two extensions out there that offer support for Nested Set with Doctrine 2:
@@ -181,14 +181,14 @@ are already two extensions out there that offer support for Nested Set with Doct
 * [Doctrine2 Hierachical-Structural Behavior](http://github.com/guilhermeblanco/Doctrine2-Hierarchical-Structural-Behavior)
 * [Doctrine2 NestedSet](http://github.com/blt04/doctrine2-nestedset)
 
-++ Known Issues
+## Known Issues
 
 The Known Issues section describes critical/blocker bugs and other issues that are either complicated to fix,
 not fixable due to backwards compatibility issues or where no simple fix exists (yet). We don't
 plan to add every bug in the tracker there, just those issues that can potentially cause nightmares
 or pain of any sort.
 
-+++ Identifier Quoting and Legacy Databases
+### Identifier Quoting and Legacy Databases
 
 For compatibility reasons between all the supported vendors and edge case problems
 Doctrine 2 does *NOT* do automatic identifier quoting. This can lead to problems when trying to get

@@ -1,4 +1,4 @@
-++ DQL Explained
+## DQL Explained
 
 DQL stands for **D**octrine **Q**uery **L**anguage and is an Object Query Language derivate that is very similar to the **H**ibernate **Q**uery **L**anguage (HQL) or the **J**ava **P**ersistence **Q**uery **L**anguage (JPQL).
 
@@ -12,7 +12,7 @@ In essence, DQL provides powerful querying capabilities over your object model. 
 
 DQL is case in-sensitive, except for namespace, class and field names, which are case sensitive.
 
-++ Types of DQL queries
+## Types of DQL queries
 
 DQL as a query language has SELECT, UPDATE and DELETE constructs that map to their corresponding
 SQL statement types. INSERT statements are not allowed in DQL, because entities and their relations
@@ -28,15 +28,15 @@ DQL UPDATE and DELETE statements offer a way to execute bulk changes on the enti
 domain model. This is often necessary when you cannot load all the affected entities of a bulk
 update into memory.
 
-++ SELECT queries
+## SELECT queries
 
-+++ DQL SELECT clause
+### DQL SELECT clause
 
 The select clause of a DQL query specifies what appears in the query result. The composition of all the expressions in the select clause also influences the nature of the query result.
 
 Here is an example that selects all users with an age > 20:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u FROM MyProject\Model\User u WHERE u.age > 20');
     $users = $query->getResult();
 
@@ -55,7 +55,7 @@ identification values into aggregation and DQL functions. Numerical fields can
 be part of computations using mathematical operations. See the sub-section on [DQL Functions, Aggregates and Operations](#dqlfn)
 on more information.
 
-+++ Joins
+### Joins
 
 A SELECT query can contain joins. There are 2 types of JOINs: "Regular" Joins and "Fetch" Joins.
 
@@ -69,13 +69,13 @@ Example:
 
 Regular join of the address:
 
-    [php]
+    <?php
     $query = $em->createQuery("SELECT u FROM User u JOIN u.address a WHERE a.city = 'Berlin'");
     $users = $query->getResult();
 
 Fetch join of the address:
 
-    [php]
+    <?php
     $query = $em->createQuery("SELECT u, a FROM User u JOIN u.address a WHERE a.city = 'Berlin'");
     $users = $query->getResult();
 
@@ -93,143 +93,143 @@ the address Doctrine does not need to lazy load the association with another que
 > **Fetch Joins** are the solution to hydrate most or all of the entities that you
 > need in a single SELECT query.
 
-+++ Named and Positional Parameters
+### Named and Positional Parameters
 
 DQL supports both named and positional parameters, however in contrast to many SQL dialects
 positional parameters are specified with numbers, for example "?1", "?2" and so on.
 Named parameters are specified with ":name1", ":name2" and so on.
 
-+++ DQL SELECT Examples
+### DQL SELECT Examples
 
 This section contains a large set of DQL queries and some explanations of what is happening.
 The actual result also depends on the hydration mode.
 
 Hydrate all User entities:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u FROM MyProject\Model\User u');
     $users = $query->getResult(); // array of User objects
 
 Retrieve the IDs of all CmsUsers:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u.id FROM CmsUser u');
     $ids = $query->getResult(); // array of CmsUser ids
 
 Retrieve the IDs of all users that have written an article:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT DISTINCT u.id FROM CmsArticle a JOIN a.user u');
     $ids = $query->getResult(); // array of CmsUser ids
 
 Retrieve all articles and sort them by the name of the articles users instance:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT a FROM CmsArticle a JOIN a.user u ORDER BY u.name ASC');
     $articles = $query->getResult(); // array of CmsArticle objects
 
 Retrieve the Username and Name of a CmsUser:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u.username, u.name FROM CmsUser u');
     $users = $query->getResults(); // array of CmsUser username and id values
     echo $users[0]['username'];
 
 Retrieve a ForumUser and his single associated entity:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u, a FROM ForumUser u JOIN u.avatar a');
     $users = $query->getResult(); // array of ForumUser objects with the avatar association loaded
     echo get_class($users[0]->getAvatar());
 
 Retrieve a CmsUser and fetch join all the phonenumbers he has:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u, p FROM CmsUser u JOIN u.phonenumbers p');
     $users = $query->getResult(); // array of CmsUser objects with the phonenumbers association loaded
     $phonenumbers = $users[0]->getPhonenumbers();
 
 Hydrate a result in Ascending:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u FROM ForumUser u ORDER BY u.id ASC');
     $users = $query->getResult(); // array of ForumUser objects
 
 Or in Descending Order:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u FROM ForumUser u ORDER BY u.id DESC');
     $users = $query->getResult(); // array of ForumUser objects
 
 Using Aggregate Functions:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT COUNT(u.id) FROM Entities\User u');
     $count = $query->getSingleScalarResult();
 
 With WHERE Clause and Positional Parameter:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u FROM ForumUser u WHERE u.id = ?1');
     $users = $query->getResult(); // array of ForumUser objects
 
 With WHERE Clause and Named Parameter:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u FROM ForumUser u WHERE u.username = :name');
     $users = $query->getResult(); // array of ForumUser objects
 
 With Nested Conditions in WHERE Clause:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u from ForumUser u WHERE (u.username = :name OR u.username = :name2) AND u.id = :id');
     $users = $query->getResult(); // array of ForumUser objects
 
 With COUNT DISTINCT:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT COUNT(DISTINCT u.name) FROM CmsUser');
     $users = $query->getResult(); // array of ForumUser objects
 
 With Arithmetic Expression in WHERE clause:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u FROM CmsUser u WHERE ((u.id + 5000) * u.id + 3) < 10000000');
     $users = $query->getResult(); // array of ForumUser objects
 
 Using a LEFT JOIN to hydrate all user-ids and optionally associated article-ids:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u.id, a.id as article_id FROM CmsUser u LEFT JOIN u.articles a');
     $results = $query->getResult(); // array of user ids and every article_id for each user
 
 Restricting a JOIN clause by additional conditions:
 
-    [php]
+    <?php
     $query = $em->createQuery("SELECT u FROM CmsUser u LEFT JOIN u.articles a WITH a.topic LIKE '%foo%'");
     $users = $query->getResult();
 
 Using several Fetch JOINs:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u, a, p, c FROM CmsUser u JOIN u.articles a JOIN u.phonenumbers p JOIN a.comments c');
     $users = $query->getResult();
 
 BETWEEN in WHERE clause:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u.name FROM CmsUser u WHERE u.id BETWEEN ?1 AND ?2');
     $usernames = $query->getResult();
 
 DQL Functions in WHERE clause:
 
-    [php]
+    <?php
     $query = $em->createQuery("SELECT u.name FROM CmsUser u WHERE TRIM(u.name) = 'someone'");
     $usernames = $query->getResult();
 
 IN() Expression:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u.name FROM CmsUser u WHERE u.id IN(46)');
     $usernames = $query->getResult();
 
@@ -241,7 +241,7 @@ IN() Expression:
 
 CONCAT() DQL Function:
 
-    [php]
+    <?php
     $query = $em->createQuery("SELECT u.id FROM CmsUser u WHERE CONCAT(u.name, 's') = ?1");
     $ids = $query->getResult();
 
@@ -250,37 +250,37 @@ CONCAT() DQL Function:
 
 EXISTS in WHERE clause with correlated Subquery
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u.id FROM CmsUser u WHERE EXISTS (SELECT p.phonenumber FROM CmsPhonenumber p WHERE p.user = u.id)');
     $ids = $query->getResult();
 
 Get all users who are members of $group.
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u.id FROM CmsUser u WHERE :groupId MEMBER OF u.groups');
     $query->setParameter(':groupId', $group);
     $ids = $query->getResult();
 
 Get all users that have more than 1 phonenumber
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u FROM CmsUser u WHERE SIZE(u.phonenumbers) > 1');
     $users = $query->getResult();
 
 Get all users that have no phonenumber
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u FROM CmsUser u WHERE u.phonenumbers IS EMPTY');
     $users = $query->getResult();
 
 Get all instances of a specific type, for use with inheritance hierarchies:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF Doctrine\Tests\Models\Company\CompanyEmployee');
     $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF ?1');
     $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u NOT INSTANCE OF ?1');
 
-++++ Partial Object Syntax
+#### Partial Object Syntax
 
 By default when you run a DQL query in Doctrine and select only a subset of the
 fields for a given entity, you do not receive objects back. Instead, you receive
@@ -289,17 +289,17 @@ were just using SQL directly and joining some data.
 
 If you want to select partial objects you can use the `partial` DQL keyword:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT partial u.{id, username} FROM CmsUser u');
     $users = $query->getResult(); // array of partially loaded CmsUser objects
 
 You use the partial syntax when joining as well:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT partial u.{id, username}, partial a.{id, name} FROM CmsUser u JOIN u.articles a');
     $users = $query->getResult(); // array of partially loaded CmsUser objects
 
-+++ Using INDEX BY
+### Using INDEX BY
 
 The INDEX BY construct is nothing that directly translates into SQL but that affects
 object and array hydration. After each FROM and JOIN clause you specify by which field
@@ -332,7 +332,7 @@ Returns an array of the following kind, indexed by both user-id then phonenumber
               ...
           'nameUpper' => string 'JWAGE' (length=5)
 
-++ UPDATE queries
+## UPDATE queries
 
 DQL not only allows to select your Entities using field names, you can also execute bulk updates on a set
 of entities using an DQL-UPDATE query. The Syntax of an UPDATE query works as expected, as the following
@@ -348,7 +348,7 @@ References to related entities are only possible in the WHERE clause and using s
 > loaded into the persistence context will *NOT* be synced with the updated database state. It
 > is recommended to call `EntityManager#clear()` and retrieve new instances of any affected entity.
 
-++ DELETE queries
+## DELETE queries
 
 DELETE queries can also be specified using DQL and their syntax is as simple as the UPDATE syntax:
 
@@ -362,10 +362,10 @@ The same restrictions apply for the reference of related entities.
 > clause of the query. Additionally Deletes of specifies entities are *NOT* cascaded
 > to related entities even if specified in the metadata.
 
-++ Functions, Operators, Aggregates
+## Functions, Operators, Aggregates
 <a name="dqlfn"></a>
 
-+++ DQL Functions
+### DQL Functions
 
 The following functions are supported in SELECT, WHERE and HAVING clauses:
 
@@ -384,17 +384,17 @@ The following functions are supported in SELECT, WHERE and HAVING clauses:
 * TRIM([LEADING | TRAILING | BOTH] ['trchar' FROM] str) - Trim the string by the given trim char, defaults to whitespaces.
 * UPPER(str) - Return the upper-case of the given string.
 
-+++ Arithmetic operators
+### Arithmetic operators
 
 You can do math in DQL using numeric values, for example:
 
     SELECT person.salary * 1.5 FROM CompanyPerson person WHERE person.salary < 100000
 
-+++ Aggregate Functions
+### Aggregate Functions
 
 The following aggregate functions are allowed in SELECT and GROUP BY clauses: AVG, COUNT, MIN, MAX, SUM
 
-+++ Other Expressions
+### Other Expressions
 
 DQL offers a wide-range of additional expressions that are known from SQL, here is a list of
 all the supported constructs:
@@ -406,7 +406,7 @@ all the supported constructs:
 * `IS NULL` and `IS NOT NULL` to check for null values
 * `EXISTS` and `NOT EXISTS` in combination with a sub-select
 
-+++ Adding your own functions to the DQL language
+### Adding your own functions to the DQL language
 
 By default DQL comes with functions that are part of a large basis of underlying databases. However you will most likely
 choose a database platform at the beginning of your project and most likely never change it. For this cases you can
@@ -414,7 +414,7 @@ easily extend the DQL parser with own specialized platform functions.
 
 You can register custom DQL functions in your ORM Configuration:
 
-    [php]
+    <?php
     $config = new \Doctrine\ORM\Configuration();
     $config->addCustomStringFunction($name, $class);
     $config->addCustomNumericFunction($name, $class);
@@ -426,7 +426,7 @@ The functions have to return either a string, numeric or datetime value dependin
 we will add a MySQL specific FLOOR() functionality. All the given classes have to implement the base class
 \Doctrine\ORM\Query\AST\Functions\FunctionNode:
 
-    [php]
+    <?php
     namespace MyProject\Query\AST;
 
     use \Doctrine\ORM\Query\AST\Functions\FunctionsNode;
@@ -457,23 +457,23 @@ we will add a MySQL specific FLOOR() functionality. All the given classes have t
 
 We will register the function by calling and can then use it:
 
-    [php]
+    <?php
     \Doctrine\ORM\Query\Parser::registerNumericFunction('FLOOR', 'MyProject\Query\MysqlFloor');
     $dql = "SELECT FLOOR(person.salary * 1.75) FROM CompanyPerson person";
 
-++ Querying Inherited Classes
+## Querying Inherited Classes
 
 This section demonstrates how you can query inherited classes and what type of results
 to expect.
 
-+++ Single Table
+### Single Table
 
 [Single Table Inheritance](http://martinfowler.com/eaaCatalog/singleTableInheritance.html) is an inheritance mapping strategy where all classes of a hierarchy are mapped to a single database table. In order to distinguish which row represents which type in the hierarchy a so-called discriminator column is used.
 
 First we need to setup an example set of entities to use. In this scenario it is a generic
 Person and Employee example:
 
-    [php]
+    <?php
     namespace Entities;
 
     /**
@@ -520,7 +520,7 @@ the following:
 Now when persist a new `Employee` instance it will set the discriminator value for us
 automatically:
 
-    [php]
+    <?php
     $employee = new \Entities\Employee();
     $employee->setName('test');
     $employee->setDepartment('testing');
@@ -538,7 +538,7 @@ ensure that we will only get back `Employee` entities:
     [sql]
     SELECT p0_.id AS id0, p0_.name AS name1, p0_.department AS department2, p0_.discr AS discr3 FROM Person p0_ WHERE (p0_.name = ?) AND p0_.discr IN ('employee')
 
-+++ Class Table Inheritance
+### Class Table Inheritance
 
 [Class Table Inheritance](http://martinfowler.com/eaaCatalog/classTableInheritance.html) is an inheritance mapping strategy where each class in a hierarchy is mapped to several tables: its own table and the tables of all parent classes. The table of a child class is linked to the table of a parent class through a foreign key constraint.
 Doctrine 2 implements this strategy through the use of a discriminator column in the topmost table of the hierarchy because this is the easiest way to achieve polymorphic queries with Class Table Inheritance.
@@ -546,7 +546,7 @@ Doctrine 2 implements this strategy through the use of a discriminator column in
 The example for class table inheritance is the same as single table, you just need to
 change the inheritance type from `SINGLE_TABLE` to `JOINED`:
 
-    [php]
+    <?php
     /**
      * @Entity
      * @InheritanceType("JOINED")
@@ -576,11 +576,11 @@ automatically for you:
     [sql]
     SELECT p0_.id AS id0, p0_.name AS name1, e1_.department AS department2, p0_.discr AS discr3 FROM Employee e1_ INNER JOIN Person p0_ ON e1_.id = p0_.id WHERE p0_.name = ?
 
-++ The Query class
+## The Query class
 
 An instance of the `Doctrine\ORM\Query` class represents a DQL query. You create a Query instance be calling `EntityManager#createQuery($dql)`, passing the DQL query string. Alternatively you can create an empty `Query` instance and invoke `Query#setDql($dql)` afterwards. Here are some examples:
 
-    [php]
+    <?php
     // $em instanceof EntityManager
 
     // example1: passing a DQL string
@@ -590,7 +590,7 @@ An instance of the `Doctrine\ORM\Query` class represents a DQL query. You create
     $q = $em->createQuery();
     $q->setDql('select u from MyProject\Model\User u');
 
-+++ Query Result Formats
+### Query Result Formats
 
 The format in which the result of a DQL SELECT query is returned can be influenced by a so-called `hydration mode`. A hydration mode specifies a particular way in which an SQL result set is transformed. Each hydration mode has its own dedicated method on the Query class. Here they are:
 
@@ -610,7 +610,7 @@ Instead of using these methods, you can alternatively use the general-purpose me
 
 The use of the methods mentioned earlier is generally preferred as it leads to more concise code.
 
-+++ Pure and Mixed Results
+### Pure and Mixed Results
 
 The nature of a result returned by a DQL SELECT query retrieved through `Query#getResult()` or `Query#getArrayResult()` can be of 2 forms: **pure** and **mixed**. In the previous simple examples, you already saw a "pure" query result, with only objects. By default, the result type is **pure** but **as soon as scalar values, such as aggregate values or other scalar values that do not belong to an entity, appear in the SELECT part of the DQL query, the result becomes mixed**. A mixed result has a different structure than a pure result in order to accommodate for the scalar values.
 
@@ -656,7 +656,7 @@ Here is how the result could look like:
 
 And here is how you would access it in PHP code:
 
-    [php]
+    <?php
     foreach ($results as $row) {
         echo "Name: " . $row[0]->getName();
         echo "Name UPPER: " . $row['nameUpper'];
@@ -664,7 +664,7 @@ And here is how you would access it in PHP code:
 
 You may have observed that in a mixed result, the object always ends up on index 0 of a result row.
 
-+++ Hydration Modes
+### Hydration Modes
 
 Each of the Hydration Modes makes assumptions about how the result is returned to user land. You should
 know about all the details to make best use of the different result formats:
@@ -676,34 +676,34 @@ The constants for the different hydration modes are:
 * Query::HYDRATE_SCALAR
 * Query::HYDRATE_SINGLE_SCALAR
 
-++++ Object Hydration
+#### Object Hydration
 
 Object hydration hydrates the result set into the object graph:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u FROM CmsUser u');
     $users = $query->getResult(Query::HYDRATE_OBJECT);
 
-++++ Array Hydration
+#### Array Hydration
 
 You can run the same query with array hydration and the result set is hydrated into
 an array that represents the object graph:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u FROM CmsUser u');
     $users = $query->getResult(Query::HYDRATE_ARRAY);
 
 You can use the `getArrayResult()` shortcut as well:
 
-    [php]
+    <?php
     $users = $query->getArrayResult();
 
-++++ Scalar Hydration
+#### Scalar Hydration
 
 If you want to return a flat rectangular result set instead of an object graph
 you can use scalar hydration:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u FROM CmsUser u');
     $users = $query->getResult(Query::HYDRATE_SCALAR);
     echo $users[0]['u_id'];
@@ -712,26 +712,26 @@ The following assumptions are made about selected fields using Scalar Hydration:
 
 1. Fields from classes are prefixed by the DQL alias in the result. A query of the kind 'SELECT u.name ..' returns a key 'u_name' in the result rows.
 
-++++ Single Scalar Hydration
+#### Single Scalar Hydration
 
 If you a query which returns just a single scalar value you can use single scalar
 hydration:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT COUNT(a.id) FROM CmsUser u LEFT JOIN u.articles a WHERE u.username = ?1 GROUP BY u.id');
     $query->setParameter(1, 'jwage');
     $numArticles = $query->getResult(Query::HYDRATE_SINGLE_SCALAR);
 
 You can use the `getSingleScalarResult()` shortcut as well:
 
-    [php]
+    <?php
     $numArticles = $query->getSingleScalarResult();
 
-++++ Custom Hydration Modes
+#### Custom Hydration Modes
 
 You can easily add your own custom hydration modes by first creating a class which extends `AbstractHydrator`:
 
-    [php]
+    <?php
     namespace MyProject\Hydrators;
 
     use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -746,27 +746,27 @@ You can easily add your own custom hydration modes by first creating a class whi
 
 Next you just need to add the class to the ORM configuration:
 
-    [php]
+    <?php
     $em->getConfiguration()->addCustomHydrationMode('CustomHydrator', 'MyProject\Hydrators\CustomHydrator');
 
 Now the hydrator is ready to be used in your queries:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u FROM CmsUser u');
     $results = $query->getResult('CustomHydrator');
 
-+++ Iterating Large Result Sets
+### Iterating Large Result Sets
 
 There are situations when a query you want to execute returns a very large result-set that needs
 to be processed. All the previously described hydration modes completely load a result-set into
 memory which might not be feasible with large result sets. See the [Batch Processing](batch-processing)
 section on details how to iterate large result sets.
 
-+++ Functions
+### Functions
 
 The following methods exist on the `AbstractQuery` which both `Query` and `NativeQuery` extend from.
 
-++++ Parameters
+#### Parameters
 
 Prepared Statements that use numerical or named wildcards require additional parameters to be executable
 against the database. To pass parameters to the query the following methods can be used:
@@ -776,14 +776,14 @@ against the database. To pass parameters to the query the following methods can 
 * `AbstractQuery::getParameter($param)`
 * `AbstractQuery::getParameters()`
 
-++++ Cache related API
+#### Cache related API
 
 You can cache query results based either on all variables that define the result (SQL, Hydration Mode, Parameters and Hints)
 or on user-defined cache keys. However by default query results are not cached at all. You have to enable
 the result cache on a per query basis. The following example shows a complete workflow using the Result Cache
 API:
 
-    [php]
+    <?php
     $query = $em->createQuery('SELECT u FROM MyProject\Model\User u WHERE u.id = ?1');
     $query->setParameter(1, 12);
 
@@ -808,7 +808,7 @@ API:
 > You can set the Result Cache Driver globally on the `Doctrine\ORM\Configuration` instance
 > so that it is passed to every `Query` and `NativeQuery` instance.
 
-++++ Query Hints
+#### Query Hints
 
 You can pass hints to the query parser and hydrators by using the `AbstractQuery::setHint($name, $value)` method.
 Currently there exist mostly internal query hints that are not be consumed in userland. However the following few hints
@@ -825,7 +825,7 @@ entity is discarded in favor of the already existing entity.
 * Query::HINT_CUSTOM_TREE_WALKERS - An array of additional `Doctrine\ORM\Query\TreeWalker` instances that are attached
 to the DQL query parsing process.
 
-++++ Query Cache (DQL Query Only)
+#### Query Cache (DQL Query Only)
 
 Parsing a DQL query and converting it into an SQL query against the underlying database platform obviously has some overhead
 in contrast to directly executing Native SQL queries. That is why there is a dedicated Query Cache for caching the
@@ -843,7 +843,7 @@ of the Query Cache, however if you do there are several methods to interact with
 * `Query::getQueryCacheDriver()`
 * `Query::getQueryCacheLifeTime()`
 
-++++ First and Max Result Items (DQL Query Only)
+#### First and Max Result Items (DQL Query Only)
 
 You can limit the number of results returned from a DQL query as well as specify the starting offset, Doctrine
 then uses a strategy of manipulating the select query to return only the requested number of results:
@@ -857,11 +857,11 @@ then uses a strategy of manipulating the select query to return only the request
 > case of fetch-joined collections one root entity might appear in many rows, effectively hydrating
 > less than the specified number of results.
 
-++ EBNF
+## EBNF
 
 The following context-free grammar, written in an EBNF variant, describes the Doctrine Query Language. You can consult this grammar whenever you are unsure about what is possible with DQL or what the correct syntax for a particular query should be.
 
-+++ Document syntax:
+### Document syntax:
 
 * non-terminals begin with an upper case character
 * terminals begin with a lower case character
@@ -870,7 +870,7 @@ The following context-free grammar, written in an EBNF variant, describes the Do
 * curly brackets {...} are used for repetition, e.g. zero or more times
 * double quotation marks "..." define a terminal string a vertical bar | represents an alternative
 
-+++ Terminals
+### Terminals
 
 * identifier (name, email, ...)
 * string ('foo', 'bar''s house', '%ninja%', ...)
@@ -879,17 +879,17 @@ The following context-free grammar, written in an EBNF variant, describes the Do
 * float (-0.23, 0.007, 1.245342E+8, ...)
 * boolean (false, true)
 
-+++ Query Language
+### Query Language
 
     QueryLanguage ::= SelectStatement | UpdateStatement | DeleteStatement
 
-+++ Statements
+### Statements
 
     SelectStatement ::= SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
     UpdateStatement ::= UpdateClause [WhereClause]
     DeleteStatement ::= DeleteClause [WhereClause]
 
-+++ Identifiers
+### Identifiers
 
     /* Alias Identification usage (the "u" of "u.name") */
     IdentificationVariable ::= identifier
@@ -923,7 +923,7 @@ The following context-free grammar, written in an EBNF variant, describes the Do
     /* ResultVariable identifier usage of mapped field aliases (the "total" of "COUNT(*) AS total") */
     ResultVariable = identifier
 
-+++ Path Expressions
+### Path Expressions
 
     /* "u.Group" or "u.Phonenumbers" declarations */
     JoinAssociationPathExpression             ::= IdentificationVariable "." (CollectionValuedAssociationField | SingleValuedAssociationField)
@@ -950,7 +950,7 @@ The following context-free grammar, written in an EBNF variant, describes the Do
     SimpleStateFieldPathExpression            ::= IdentificationVariable "." StateField
 
 
-+++ Clauses
+### Clauses
 
     SelectClause        ::= "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}*
     SimpleSelectClause  ::= "SELECT" ["DISTINCT"] SimpleSelectExpression
@@ -965,7 +965,7 @@ The following context-free grammar, written in an EBNF variant, describes the Do
     Subselect           ::= SimpleSelectClause SubselectFromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
 
 
-+++ Items
+### Items
 
     UpdateItem  ::= IdentificationVariable "." (StateField | SingleValuedAssociationField) "=" NewValue
     OrderByItem ::= (ResultVariable | StateFieldPathExpression) ["ASC" | "DESC"]
@@ -973,7 +973,7 @@ The following context-free grammar, written in an EBNF variant, describes the Do
     NewValue    ::= ScalarExpression | SimpleEntityExpression | "NULL"
 
 
-+++ From, Join and Index by
+### From, Join and Index by
 
     IdentificationVariableDeclaration          ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}*
     SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | (AssociationPathExpression ["AS"] AliasIdentificationVariable)
@@ -984,7 +984,7 @@ The following context-free grammar, written in an EBNF variant, describes the Do
     IndexBy                                    ::= "INDEX" "BY" SimpleStateFieldPathExpression
 
 
-+++ Select Expressions
+### Select Expressions
 
     SelectExpression       ::= IdentificationVariable | PartialObjectExpression | (AggregateExpression | "(" Subselect ")"  | FunctionDeclaration | ScalarExpression) [["AS"] AliasResultVariable]
     SimpleSelectExpression ::= ScalarExpression | IdentificationVariable |
@@ -993,7 +993,7 @@ The following context-free grammar, written in an EBNF variant, describes the Do
     PartialFieldSet ::= "{" SimpleStateField {"," SimpleStateField}* "}"
 
 
-+++ Conditional Expressions
+### Conditional Expressions
 
     ConditionalExpression       ::= ConditionalTerm {"OR" ConditionalTerm}*
     ConditionalTerm             ::= ConditionalFactor {"AND" ConditionalFactor}*
@@ -1004,24 +1004,24 @@ The following context-free grammar, written in an EBNF variant, describes the Do
                                     EmptyCollectionComparisonExpression | CollectionMemberExpression
 
 
-+++ Collection Expressions
+### Collection Expressions
 
     EmptyCollectionComparisonExpression ::= CollectionValuedPathExpression "IS" ["NOT"] "EMPTY"
     CollectionMemberExpression          ::= EntityExpression ["NOT"] "MEMBER" ["OF"] CollectionValuedPathExpression
 
-+++ Literal Values
+### Literal Values
 
     Literal     ::= string | char | integer | float | boolean
     InParameter ::= Literal | InputParameter
 
-+++ Input Parameter
+### Input Parameter
 
     InputParameter      ::= PositionalParameter | NamedParameter
     PositionalParameter ::= "?" integer
     NamedParameter      ::= ":" string
 
 
-+++ Arithmetic Expressions
+### Arithmetic Expressions
 
     ArithmeticExpression       ::= SimpleArithmeticExpression | "(" Subselect ")"
     SimpleArithmeticExpression ::= ArithmeticTerm {("+" | "-") ArithmeticTerm}*
@@ -1032,7 +1032,7 @@ The following context-free grammar, written in an EBNF variant, describes the Do
                                    | FunctionsReturningDatetime | IdentificationVariable | InputParameter
 
 
-+++ Scalar and Type Expressions
+### Scalar and Type Expressions
 
     ScalarExpression       ::= SimpleArithmeticExpression | StringPrimary | DateTimePrimary | StateFieldPathExpression
                                BooleanPrimary | CaseExpression | EntityTypeExpression
@@ -1057,12 +1057,12 @@ The following context-free grammar, written in an EBNF variant, describes the Do
     DatetimePrimary        ::= StateFieldPathExpression | InputParameter | FunctionsReturningDatetime | AggregateExpression
 
 
-+++ Aggregate Expressions
+### Aggregate Expressions
 
     AggregateExpression ::= ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] StateFieldPathExpression ")" |
                             "COUNT" "(" ["DISTINCT"] (IdentificationVariable | SingleValuedPathExpression) ")"
 
-+++ Other Expressions
+### Other Expressions
 
 QUANTIFIED/BETWEEN/COMPARISON/LIKE/NULL/EXISTS
 
@@ -1075,7 +1075,7 @@ QUANTIFIED/BETWEEN/COMPARISON/LIKE/NULL/EXISTS
     ExistsExpression         ::= ["NOT"] "EXISTS" "(" Subselect ")"
     ComparisonOperator       ::= "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="
 
-+++ Functions
+### Functions
 
     FunctionDeclaration ::= FunctionsReturningStrings | FunctionsReturningNumerics | FunctionsReturningDateTime
 

@@ -1,6 +1,6 @@
 In this chapter a reference of every Doctrine 2 Annotation is given with short explanations on their context and usage.
 
-++ Index
+## Index
 
 * [@Column](#ann_column)
 * [@ChangeTrackingPolicy](#ann_changetrackingpolicy)
@@ -32,10 +32,10 @@ In this chapter a reference of every Doctrine 2 Annotation is given with short e
 * [@UniqueConstraint](#ann_uniqueconstraint)
 * [@Version](#ann_version)
 
-++ Reference
+## Reference
 
 <a name="ann_column"></a>
-+++ @Column
+### @Column
 
 Marks an annotated instance variable as "persistent". It has to be inside the instance variables PHP DocBlock comment.
 Any value hold inside this variable will be saved to and loaded from the database as part of the lifecycle of the instance variables entity-class.
@@ -56,7 +56,7 @@ Optional attributes:
 
 Examples:
 
-    [php]
+    <?php
     /**
      * @Column(type="string", length=32, unique=true, nullable=false)
      */
@@ -73,7 +73,7 @@ Examples:
     protected $height;
 
 <a name="ann_changetrackingpolicy"></a>
-+++ @ChangeTrackingPolicy
+### @ChangeTrackingPolicy
 
 The Change Tracking Policy annotation allows to specify how the Doctrine 2 UnitOfWork should detect changes
 in properties of entities during flush. By default each entity is checked according to a deferred implicit
@@ -86,7 +86,7 @@ can be found in the configuration section.
 
 Example:
 
-    [php]
+    <?php
     /**
      * @Entity
      * @ChangeTrackingPolicy("DEFERRED_IMPLICIT")
@@ -96,7 +96,7 @@ Example:
     class User {}
 
 <a name="ann_discriminatorcolumn"></a>
-+++ @DiscrimnatorColumn
+### @DiscrimnatorColumn
 
 This annotation is a required annotation for the topmost/super class of an inheritance hierarchy. It specifies
 the details of the column which saves the name of the class, which the entity is actually instantiated as.
@@ -111,14 +111,14 @@ Optional attributes:
 * length - By default this is 255.
 
 <a name="ann_discriminatormap"></a>
-+++ @DiscriminatorMap
+### @DiscriminatorMap
 
 The discriminator map is a required annotation on the top-most/super class in an inheritance hierarchy. It takes
 an array as only argument which defines which class should be saved under which name in the database. Keys
 are the database value and values are the classes, either as fully- or as unqualified class names depending
 if the classes are in the namespace or not.
 
-    [php]
+    <?php
     /**
      * @Entity
      * @InheritanceType("JOINED")
@@ -132,7 +132,7 @@ if the classes are in the namespace or not.
 
 
 <a name="ann_entity"></a>
-+++ @Entity
+### @Entity
 
 Required annotation to mark a PHP class as Entity. Doctrine manages the persistence of all classes marked as entity.
 
@@ -142,7 +142,7 @@ Optional attributes:
 
 Example:
 
-    [php]
+    <?php
     /**
      * @Entity(repositoryClass="MyProject\UserRepository")
      */
@@ -152,7 +152,7 @@ Example:
     }
 
 <a name="ann_generatedvalue"></a>
-+++ @GeneratedValue
+### @GeneratedValue
 
 Specifies which strategy is used for identifier generation for an instance variable which is annotated by [@Id](#ann_id).
 This annotation is optional and only has meaning when used in conjunction with @Id.
@@ -165,7 +165,7 @@ Required attributes:
 
 Example:
 
-    [php]
+    <?php
     /**
      * @Id
      * @Column(type="integer")
@@ -174,7 +174,7 @@ Example:
     protected $id = null;
 
 <a name="ann_haslifecyclecallbacks"></a>
-+++ @HasLifecycleCallbacks
+### @HasLifecycleCallbacks
 
 Annotation which has to be set on the entity-class PHP DocBlock to notify Doctrine that this entity has entity life-cycle
 callback annotations set on at least one of its methods. Using @PostLoad, @PrePersist, @PostPersist, @PreRemove, @PostRemove,
@@ -182,7 +182,7 @@ callback annotations set on at least one of its methods. Using @PostLoad, @PrePe
 
 Example:
 
-    [php]
+    <?php
     /**
      * @Entity
      * @HasLifecycleCallbacks
@@ -196,7 +196,7 @@ Example:
     }
 
 <a name="ann_indexes"></a>
-+++ @Index
+### @Index
 
 Annotation is used inside the [@Table](#ann_table) annotation on the entity-class level. It allows to hint the
 SchemaTool to generate a database index on the specified table columns. It only has meaning in the SchemaTool
@@ -209,7 +209,7 @@ Required attributes:
 
 Example:
 
-    [php]
+    <?php
     /**
      * @Entity
      * @Table(name="ecommerce_products",indexes={@index(name="search_idx", columns={"name", "email"})})
@@ -219,7 +219,7 @@ Example:
     }
 
 <a name="ann_id"></a>
-+++ @Id
+### @Id
 
 The annotated instance variable will be marked as entity identifier, the primary key in the database.
 This annotation is a marker only and has no required or optional attributes. For entities that have multiple
@@ -227,7 +227,7 @@ identifier columns each column has to be marked with @Id.
 
 Example:
 
-    [php]
+    <?php
     /**
      * @Id
      * @Column(type="integer")
@@ -235,7 +235,7 @@ Example:
     protected $id = null;
 
 <a name="ann_inheritancetype"></a>
-+++ @InheritanceType
+### @InheritanceType
 
 In an inheritance hierarchy you have to use this annotation on the topmost/super class to define which
 strategy should be used for inheritance. Currently Single Table and Class Table Inheritance are supported.
@@ -245,7 +245,7 @@ This annotation has always been used in conjunction with the [@DiscriminatorMap]
 
 Examples:
 
-    [php]
+    <?php
     /**
      * @Entity
      * @InheritanceType("SINGLE_TABLE")
@@ -269,7 +269,7 @@ Examples:
     }
 
 <a name="ann_joincolumn"></a>
-+++ @JoinColumn
+### @JoinColumn
 
 This annotation is used in the context of relations in [@ManyToOne](#ann_manytoone), [@OneToOne](#ann_onetoone) fields
 and in the Context of [@JoinTable](#ann_jointable) nested inside a @ManyToMany. This annotation is not required.
@@ -290,7 +290,7 @@ Optional attributes:
 
 Example:
 
-    [php]
+    <?php
     /**
      * @OneToOne(targetEntity="Customer")
      * @JoinColumn(name="customer_id", referencedColumnName="id")
@@ -298,13 +298,13 @@ Example:
     private $customer;
 
 <a name="ann_joincolumns"></a>
-+++ @JoinColumns
+### @JoinColumns
 
 An array of @JoinColumn annotations for a [@ManyToOne](#ann_manytoone) or [@OneToOne](#ann_onetoone) relation
 with an entity that has multiple identifiers.
 
 <a name="ann_jointable"></a>
-+++ @JoinTable
+### @JoinTable
 
 Using [@OneToMany](#ann_onetomany) or [@ManyToMany](#ann_manytomany) on the owning side of the relation requires to specify
 the @JoinTable annotation which describes the details of the database join table. If you do not specify @JoinTable on
@@ -322,7 +322,7 @@ Optional attributes:
 
 Example:
 
-    [php]
+    <?php
     /**
      * @ManyToMany(targetEntity="Phonenumber")
      * @JoinTable(name="users_phonenumbers",
@@ -333,7 +333,7 @@ Example:
     public $phonenumbers;
 
 <a name="ann_manytoone"></a>
-+++ @ManyToOne
+### @ManyToOne
 
 Defines that the annotated instance variable holds a reference that describes a many-to-one relationship between two entities.
 
@@ -349,14 +349,14 @@ Optional attributes:
 
 Example:
 
-    [php]
+    <?php
     /**
      * @ManyToOne(targetEntity="Cart", cascade="ALL", fetch="EAGER")
      */
     private $cart;
 
 <a name="ann_manytomany"></a>
-+++ @ManyToMany
+### @ManyToMany
 
 Defines an instance variable holds a many-to-many relationship between two entities. [@JoinTable](#ann_jointable)
 is an additional, optional annotation that has reasonable default configuration values using the table
@@ -380,7 +380,7 @@ Optional attributes:
 
 Example:
 
-    [php]
+    <?php
     /**
      * Owning Side
      *
@@ -400,7 +400,7 @@ Example:
     private $features;
 
 <a name="ann_mappedsuperclass"></a>
-+++ @MappedSuperclass
+### @MappedSuperclass
 
 An mapped superclass is an abstract or concrete class that provides persistent entity state and mapping information
 for its subclasses, but which is not itself an entity. This annotation is specified on the Class docblock
@@ -410,7 +410,7 @@ The @MappedSuperclass annotation cannot be used in conjunction with @Entity. See
 section for [more details on the restrictions of mapped superclasses](/../inheritance-mapping#mapped-superclasses).
 
 <a name="ann_onetoone"></a>
-+++ @OneToOne
+### @OneToOne
 
 The @OneToOne annotation works almost exactly as the [@ManyToOne](#ann_manytoone) with one additional option
 that can be specified. The configuration defaults for [@JoinColumn](#ann_joincolumn) using the target entity table and primary key column names
@@ -430,7 +430,7 @@ owning instance, should be removed by Doctrine. Defaults to false.
 
 Example:
 
-    [php]
+    <?php
     /**
      * @OneToOne(targetEntity="Customer")
      * @JoinColumn(name="customer_id", referencedColumnName="id")
@@ -438,7 +438,7 @@ Example:
     private $customer;
 
 <a name="ann_onetomany"></a>
-+++ @OneToMany
+### @OneToMany
 
 Required attributes:
 
@@ -453,14 +453,14 @@ owning instance, should be removed by Doctrine. Defaults to false.
 
 Example:
 
-    [php]
+    <?php
     /**
      * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
      */
     public $phonenumbers;
 
 <a name="ann_orderby"></a>
-+++ @OrderBy
+### @OrderBy
 
 Optional annotation that can be specified with a [@ManyToMany](#ann_manytomany) or [@OneToMany](#ann_onetomany)
 annotation to specify by which criteria the collection should be retrieved from the database by using an ORDER BY
@@ -470,7 +470,7 @@ This annotation requires a single non-attributed value with an DQL snippet:
 
 Example:
 
-    [php]
+    <?php
     /**
      * @ManyToMany(targetEntity="Group")
      * @OrderBy({"name" = "ASC"})
@@ -484,42 +484,42 @@ names have to exist on the `targetEntity` class of the `@ManyToMany` or
 `@OneToMany` annotation.
 
 <a name="ann_postload"></a>
-+++ @PostLoad
+### @PostLoad
 
 Marks a method on the entity to be called as a @PostLoad event. Only works with @HasLifecycleCallbacks in the entity class PHP DocBlock.
 
 <a name="ann_postpersist"></a>
-+++ @PostPersist
+### @PostPersist
 
 Marks a method on the entity to be called as a @PostPersist event. Only works with @HasLifecycleCallbacks in the entity class PHP DocBlock.
 
 <a name="ann_postremove"></a>
-+++ @PostRemove
+### @PostRemove
 
 Marks a method on the entity to be called as a @PostRemove event. Only works with @HasLifecycleCallbacks in the entity class PHP DocBlock.
 
 <a name="ann_postupdate"></a>
-+++ @PostUpdate
+### @PostUpdate
 
 Marks a method on the entity to be called as a @PostUpdate event. Only works with @HasLifecycleCallbacks in the entity class PHP DocBlock.
 
 <a name="ann_prepersist"></a>
-+++ @PrePersist
+### @PrePersist
 
 Marks a method on the entity to be called as a @PrePersist event. Only works with @HasLifecycleCallbacks in the entity class PHP DocBlock.
 
 <a name="ann_preremove"></a>
-+++ @PreRemove
+### @PreRemove
 
 Marks a method on the entity to be called as a @PreRemove event. Only works with @HasLifecycleCallbacks in the entity class PHP DocBlock.
 
 <a name="ann_preupdate"></a>
-+++ @PreUpdate
+### @PreUpdate
 
 Marks a method on the entity to be called as a @PreUpdate event. Only works with @HasLifecycleCallbacks in the entity class PHP DocBlock.
 
 <a name="ann_sequencegenerator"></a>
-+++ @SequenceGenerator
+### @SequenceGenerator
 
 For the use with @generatedValue(strategy="SEQUENCE") this annotation allows to specify details about the sequence,
 such as the increment size and initial values of the sequence.
@@ -535,7 +535,7 @@ Optional attributes:
 
 Example:
 
-    [php]
+    <?php
     /**
      * @Id
      * @GeneratedValue(strategy="SEQUENCE")
@@ -545,7 +545,7 @@ Example:
     protected $id = null;
 
 <a name="ann_table"></a>
-+++ @Table
+### @Table
 
 Annotation describes the table an entity is persisted in. It is placed on the entity-class PHP DocBlock and is optional.
 If it is not specified the table name will default to the entities unqualified classname.
@@ -562,7 +562,7 @@ Optional attributes:
 
 Example:
 
-    [php]
+    <?php
     /**
      * @Entity
      * @Table(name="user",
@@ -573,7 +573,7 @@ Example:
     class User { }
 
 <a name="ann_uniqueconstraint"></a>
-+++ @UniqueConstraint
+### @UniqueConstraint
 
 Annotation is used inside the [@Table](#ann_table) annotation on the entity-class level. It allows to hint the
 SchemaTool to generate a database unique constraint on the specified table columns. It only has meaning in the SchemaTool
@@ -586,7 +586,7 @@ Required attributes:
 
 Example:
 
-    [php]
+    <?php
     /**
      * @Entity
      * @Table(name="ecommerce_products",uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "email"})})
@@ -596,14 +596,14 @@ Example:
     }
 
 <a name="ann_version"></a>
-+++ @Version
+### @Version
 
 Marker annotation that defines a specified column as version attribute used in an optimistic locking scenario.
 It only works on [@Column](#ann_column) annotations that have the type integer or datetime.
 
 Example:
 
-    [php]
+    <?php
     /**
      * @column(type="integer")
      * @version

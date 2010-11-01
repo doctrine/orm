@@ -1,4 +1,4 @@
-++ Change Tracking Policies
+## Change Tracking Policies
 
 Change tracking is the process of determining what has changed in managed
 entities since the last time they were synchronized with the database.
@@ -7,7 +7,7 @@ Doctrine provides 3 different change tracking policies, each having its
 particular advantages and disadvantages. The change tracking policy can
 be defined on a per-class basis (or more precisely, per-hierarchy).
 
-+++ Deferred Implicit
+### Deferred Implicit
 
 The deferred implicit policy is the default change tracking policy and the most
 convenient one. With this policy, Doctrine detects the changes by a
@@ -19,7 +19,7 @@ work (see "Understanding the Unit of Work"). Since Doctrine can't know what
 has changed, it needs to check all managed entities for changes every time you
 invoke EntityManager#flush(), making this operation rather costly.
 
-+++ Deferred Explicit
+### Deferred Explicit
 
 The deferred explicit policy is similar to the deferred implicit policy in that
 it detects changes through a property-by-property comparison at commit time. The
@@ -37,7 +37,7 @@ on the way so you can pass them to EntityManager#persist().
 
 This policy can be configured as follows:
 
-    [php]
+    <?php
     /**
      * @Entity
      * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
@@ -47,7 +47,7 @@ This policy can be configured as follows:
         // ...
     }
 
-+++ Notify
+### Notify
 
 This policy is based on the assumption that the entities notify interested
 listeners of changes to their properties. For that purpose, a class that
@@ -55,7 +55,7 @@ wants to use this policy needs to implement the `NotifyPropertyChanged`
 interface from the Doctrine\Common namespace. As a guideline, such an
 implementation can look as follows:
 
-    [php]
+    <?php
     use Doctrine\Common\NotifyPropertyChanged,
         Doctrine\Common\PropertyChangedListener;
 
@@ -79,7 +79,7 @@ Then, in each property setter of this class or derived classes, you need to
 notify all the `PropertyChangedListener` instances. As an example we
 add a convenience method on `MyEntity` that shows this behaviour:
 
-    [php]
+    <?php
     // ...
 
     class MyEntity implements NotifyPropertyChanged

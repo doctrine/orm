@@ -1,4 +1,4 @@
-++ Bootstrapping
+## Bootstrapping
 
 Bootstrapping Doctrine is a relatively simple procedure that roughly exists of 
 just 2 steps:
@@ -6,7 +6,7 @@ just 2 steps:
 * Making sure Doctrine class files can be loaded on demand.
 * Obtaining an EntityManager instance.
 
-+++ Class loading
+### Class loading
 
 Lets start with the class loading setup. We need to set up some class loaders 
 (often called "autoloader") so that Doctrine class files are loaded on demand. 
@@ -30,20 +30,20 @@ of Doctrine Installations:
 > This assumes you've created some kind of script to test the following code in.
 > Something like a `test.php` file.
 
-++++ PEAR or Tarball Download
+#### PEAR or Tarball Download
 
-    [php]
+    <?php
     // test.php
 
     require '/path/to/libraries/Doctrine/Common/ClassLoader.php';
     $classLoader = new \Doctrine\Common\ClassLoader('Doctrine', '/path/to/libraries');
     $classLoader->register(); // register on SPL autoload stack
 
-++++ Git
+#### Git
 
 The Git bootstrap assumes that you have fetched the related packages through `git submodule update --init`
 
-    [php]
+    <?php
     // test.php
 
     $lib = '/path/to/doctrine2-orm/lib/';
@@ -58,12 +58,12 @@ The Git bootstrap assumes that you have fetched the related packages through `gi
     $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\ORM', $lib);
     $classLoader->register();
 
-++++ Additional Symfony Components
+#### Additional Symfony Components
 
 If you don't use Doctrine2 in combination with Symfony2 you have to register an additional namespace to be able to use
 the Doctrine-CLI Tool or the YAML Mapping driver:
 
-    [php]
+    <?php
     // PEAR or Tarball setup
     $classloader = new \Doctrine\Common\ClassLoader('Symfony', '/path/to/libraries/Doctrine');
     $classloader->register();
@@ -74,7 +74,7 @@ the Doctrine-CLI Tool or the YAML Mapping driver:
 
 For best class loading performance it is recommended that you keep your include_path short, ideally it should only contain the path to the PEAR libraries, and any other class libraries should be registered with their full base path.
 
-+++ Obtaining an EntityManager
+### Obtaining an EntityManager
 
 Once you have prepared the class loading, you acquire an *EntityManager* instance.
 The EntityManager class is the primary access point to ORM functionality provided by Doctrine.
@@ -82,7 +82,7 @@ The EntityManager class is the primary access point to ORM functionality provide
 A simple configuration of the EntityManager requires a `Doctrine\ORM\Configuration`
 instance as well as some database connection parameters:
 
-    [php]
+    <?php
     use Doctrine\ORM\EntityManager,
         Doctrine\ORM\Configuration;
     
@@ -126,29 +126,29 @@ instance as well as some database connection parameters:
 > a very fast in-memory cache storage that you can use for the metadata and query
 > caches as seen in the previous code snippet.
 
-++ Configuration Options
+## Configuration Options
 
 The following sections describe all the configuration options available on a `Doctrine\ORM\Configuration` instance.
 
-+++ Proxy Directory (***REQUIRED***)
+### Proxy Directory (***REQUIRED***)
 
-    [php]
+    <?php
     $config->setProxyDir($dir);
     $config->getProxyDir();
 
 Gets or sets the directory where Doctrine generates any proxy classes. For a detailed explanation on proxy classes and how they are used in Doctrine, refer to the "Proxy Objects" section further down.
 
-+++ Proxy Namespace (***REQUIRED***)
+### Proxy Namespace (***REQUIRED***)
 
-    [php]
+    <?php
     $config->setProxyNamespace($namespace);
     $config->getProxyNamespace();
 
 Gets or sets the namespace to use for generated proxy classes. For a detailed explanation on proxy classes and how they are used in Doctrine, refer to the "Proxy Objects" section further down.
 
-+++ Metadata Driver (***REQUIRED***)
+### Metadata Driver (***REQUIRED***)
 
-    [php]
+    <?php
     $config->setMetadataDriverImpl($driver);
     $config->getMetadataDriverImpl();
 
@@ -165,7 +165,7 @@ Throughout the most part of this manual the AnnotationDriver is used in the exam
 
 The annotation driver can be configured with a factory method on the `Doctrine\ORM\Configuration`:
 
-    [php]
+    <?php
     $driverImpl = $config->newDefaultAnnotationDriver('/path/to/lib/MyProject/Entities');
     $config->setMetadataDriverImpl($driverImpl);
 
@@ -174,9 +174,9 @@ mass-operations on all entities through the console could not work correctly. Al
 drivers accept either a single directory as a string or an array of directories. With this feature a
 single driver can support multiple directories of Entities.
 
-+++ Metadata Cache (***RECOMMENDED***)
+### Metadata Cache (***RECOMMENDED***)
 
-    [php]
+    <?php
     $config->setMetadataCacheImpl($cache);
     $config->getMetadataCacheImpl();
     
@@ -193,9 +193,9 @@ The recommended implementations for production are:
 
 For development you should use the `Doctrine\Common\Cache\ArrayCache` which only caches data on a per-request basis.
 
-+++ Query Cache (***RECOMMENDED***)
+### Query Cache (***RECOMMENDED***)
 
-    [php]
+    <?php
     $config->setQueryCacheImpl($cache);
     $config->getQueryCacheImpl();
     
@@ -211,23 +211,23 @@ The recommended implementations for production are:
 
 For development you should use the `Doctrine\Common\Cache\ArrayCache` which only caches data on a per-request basis.
 
-+++ SQL Logger (***Optional***)
+### SQL Logger (***Optional***)
 
-    [php]
+    <?php
     $config->setSQLLogger($logger);
     $config->getSQLLogger();
 
 Gets or sets the logger to use for logging all SQL statements executed by Doctrine. The logger class must implement the `Doctrine\DBAL\Logging\SqlLogger` interface. A simple default implementation that logs to the standard output using `echo` and `var_dump` can be found at `Doctrine\DBAL\Logging\EchoSqlLogger`.
 
-+++ Auto-generating Proxy Classes (***OPTIONAL***)
+### Auto-generating Proxy Classes (***OPTIONAL***)
 
-    [php]
+    <?php
     $config->setAutoGenerateProxyClasses($bool);
     $config->getAutoGenerateProxyClasses();
 
 Gets or sets whether proxy classes should be generated automatically at runtime by Doctrine. If set to `FALSE`, proxy classes must be generated manually through the doctrine command line task `generate-proxies`. The strongly recommended value for a production environment is `FALSE`.
 
-++ Development vs Production Configuration
+## Development vs Production Configuration
 
 You should code your Doctrine2 bootstrapping with two different runtime models in mind. There are some serious
 benefits of using APC or Memcache in production. In development however this will frequently give you fatal
@@ -240,14 +240,14 @@ classes are re-generated during script execution. Filesystem calls of that magni
 the database queries Doctrine issues. Additionally writing a proxy sets an exclusive file lock which can cause
 serious performance bottlenecks in systems with regular concurrent requests.
 
-++ Connection Options
+## Connection Options
 
 The `$connectionOptions` passed as the first argument to `EntityManager::create()` has to be either an array
 or an instance of `Doctrine\DBAL\Connection`. If an array is passed it is directly passed along to the
 DBAL Factory `Doctrine\DBAL\DriverManager::getConnection()`. The DBAL configuration is explained
 in the [DBAL section](./../../../../../dbal/2.0/docs/reference/configuration/en).
 
-++ Proxy Objects
+## Proxy Objects
 
 A proxy object is an object that is put in place or used instead of the "real" object. A proxy object can add behavior to the object being proxied without that object being aware of it. In Doctrine 2, proxy objects are used to realize several features but mainly for transparent lazy-loading.
 
@@ -259,7 +259,7 @@ Doctrine 2 implements a variant of the proxy pattern where it generates classes 
 
 The method `EntityManager#getReference($entityName, $identifier)` lets you obtain a reference to an entity for which the identifier is known, without loading that entity from the database. This is useful, for example, as a performance enhancement, when you want to establish an association to an entity for which you have the identifier. You could simply do this:
 
-    [php]
+    <?php
     // $em instanceof EntityManager, $cart instanceof MyProject\Model\Cart
     // $itemId comes from somewhere, probably a request parameter
     $item = $em->getReference('MyProject\Model\Item', $itemId);
@@ -277,11 +277,11 @@ Just like other proxies it will transparently initialize itself on first access.
 > association in that query. This will override the 'fetch' option specified in
 > the mapping for that association, but only for that query.
 
-+++ Generating Proxy classes
+### Generating Proxy classes
 
 Proxy classes can either be generated manually through the Doctrine Console or automatically by Doctrine. The configuration option that controls this behavior is:
 
-    [php]
+    <?php
     $config->setAutoGenerateProxyClasses($bool);
     $config->getAutoGenerateProxyClasses();
     
@@ -290,13 +290,13 @@ To eliminate the overhead of proxy class generation during runtime, set this con
 
     $ ./doctrine orm:generate-proxies
 
-++ Multiple Metadata Sources
+## Multiple Metadata Sources
 
 When using different components using Doctrine 2 you may end up with them using two different metadata drivers,
 for example XML and YAML. You can use the DriverChain Metadata implementations to aggregate these drivers
 based on namespaces:
 
-    [php]
+    <?php
     $chain = new DriverChain();
     $chain->addDriver($xmlDriver, 'Doctrine\Tests\Models\Company');
     $chain->addDriver($yamlDriver, 'Doctrine\Tests\ORM\Mapping');

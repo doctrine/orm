@@ -10,12 +10,12 @@ Changes to associations in your code are not synchronized to the database direct
 To describe all the concepts of working with associations we introduce a specific set of example entities that show
 all the different flavors of association management in Doctrine.
 
-++ Association Example Entities
+## Association Example Entities
 
 We will use a simple comment system with Users and Comments as entities to show examples of association management.
 See the PHP docblocks of each association in the following example for information about its type and if its the owning or inverse side.
 
-    [php]
+    <?php
     /** @Entity */
     class User
     {
@@ -107,12 +107,12 @@ This two entities generate the following MySQL Schema (Foreign Key definitions o
         PRIMARY KEY(user_id, comment_id)
     ) ENGINE = InnoDB;
 
-++ Establishing Associations
+## Establishing Associations
 
 Establishing an association between two entities is straight-forward. Here are some examples for the unidirectional
 relations of the `User`:
 
-    [php]
+    <?php
     class User
     {
         // ...
@@ -127,7 +127,7 @@ relations of the `User`:
 
 The interaction code would then look like in the following snippet (`$em` here is an instance of the EntityManager):
 
-    [php]
+    <?php
     $user = $em->find('User', $userId);
 
     // unidirectional many to many
@@ -145,7 +145,7 @@ The interaction code would then look like in the following snippet (`$em` here i
 
 In the case of bi-directional associations you have to update the fields on both sides:
 
-    [php]
+    <?php
     class User
     {
         // ..
@@ -189,12 +189,12 @@ In the case of bi-directional associations you have to update the fields on both
 
 Notice how always both sides of the bidirectional association are updated. The previous unidirectional associations were simpler to handle.
 
-++ Removing Associations
+## Removing Associations
 
 Removing an association between two entities is similarly straight-forward. There are two strategies
 to do so, by key and by element. Here are some examples:
 
-    [php]
+    <?php
     // Remove by Elements
     $user->getComments()->removeElement($comment);
     $comment->setAuthor(null);
@@ -232,14 +232,14 @@ Say you clear a collection of tags by calling `$post->getTags()->clear();` and t
 `$post->getTags()->add($tag)`. This will not recognize tag being already added before and issue
 two database calls.
 
-++ Association Management Methods
+## Association Management Methods
 
 It is generally a good idea to encapsulate proper association management inside the entity classes. This makes it easier to use the class correctly and can encapsulate details about how the association is maintained.
 
 The following code shows updates to the previous User and Comment example that encapsulate much of
 the association management code:
 
-    [php]
+    <?php
     class User
     {
         //...
@@ -296,7 +296,7 @@ and encapsulating all the details inside the classes can be challenging.
 > them from a `getCollectionName()` method directly, but call `$collection->toArray()`. This way a client programmer
 > for the entity cannot circumvent the logic you implement on your entity for association management. For example:
 
-    [php]
+    <?php
     class User {
         public function getReadComments() {
             return $this->commentsRead->toArray();
@@ -310,7 +310,7 @@ methods on the EntityRepository.
 There is no single, best way for association management. It greatly depends on the requirements of your concrete
 domain model as well as your preferences.
 
-++ Synchronizing Bidirectional Collections
+## Synchronizing Bidirectional Collections
 
 In the case of Many-To-Many associations you as the developer are responsible to keep the collections on the
 owning and inverse side up in sync, when you apply changes to them. Doctrine can only guarantee a consistent
@@ -318,7 +318,7 @@ state for the hydration, not for your client code.
 
 Using the User-Comment entities from above, a very simple example can show the possible caveats you can encounter:
 
-    [php]
+    <?php
     $user->getFavorites()->add($favoriteComment);
     // not calling $favoriteComment->getUserFavorites()->add($user);
 
@@ -332,7 +332,7 @@ There are to approaches to handle this problem in your code:
 2. Always keep the bidirectional collections in sync through association management methods. Reads of
    the Collections directly after changes are consistent then.
 
-++ Transitive persistence / Cascade Operations
+## Transitive persistence / Cascade Operations
 
 Persisting, removing, detaching and merging individual entities can become pretty
 cumbersome, especially when a larger object graph with collections is involved.
@@ -353,7 +353,7 @@ The following example is an extension to the User-Comment example of this chapte
 Suppose in our application a user is created whenever he writes his first comment.
 In this case we would use the following code:
 
-    [php]
+    <?php
     $user = new User();
     $myFirstComment = new Comment();
     $user->addComment($myFirstComment);
@@ -383,7 +383,7 @@ during the flush()-Operation.
 To have Doctrine handle both cases automatically we can change the `User#commentsAuthored`
 property to cascade both the "persist" and the "remove" operation.
 
-    [php]
+    <?php
     class User
     {
         //...
@@ -402,7 +402,7 @@ degrade the performance of your application. For each cascade operation that get
 activated Doctrine also applies that operation to the association, be it
 single or collection valued.
 
-+++ Persistence by Reachability: Cascade Persist
+### Persistence by Reachability: Cascade Persist
 
 There are additional semantics that apply to the Cascade Persist operation.
 During each flush() operation Doctrine detects if there are new entities in any

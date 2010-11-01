@@ -1,6 +1,6 @@
 This chapter explains the basic mapping of objects and properties. Mapping of associations will be covered in the next chapter "Association Mapping".
 
-++ Mapping Drivers
+## Mapping Drivers
 
 Doctrine provides several different ways for specifying object-relational mapping metadata:
 
@@ -19,7 +19,7 @@ This manual usually uses docblock annotations in all the examples that are sprea
 > recommended!) then the XML driver might have a slight edge in performance due to the
 > powerful native XML support in PHP.
 
-++ Introduction to Docblock Annotations
+## Introduction to Docblock Annotations
 
 You've probably used docblock annotations in some form already, most likely to provide documentation metadata for a tool like `PHPDocumentor` (@author, @link, ...). Docblock annotations are a tool to embed metadata inside the documentation section which can then be processed by some tool. Doctrine 2 generalizes the concept of docblock annotations so that they can be used for any kind of metadata and so that it is easy to define new docblock annotations. In order to allow more involved annotation values and to reduce the chances of clashes with other docblock annotations, the Doctrine 2 docblock annotations feature an alternative syntax that is heavily inspired by the Annotation syntax introduced in Java 5.
 
@@ -30,11 +30,11 @@ The implementation of these enhanced docblock annotations is located in the `Doc
 > mentioned earlier Doctrine 2 provides XML and YAML alternatives and you could easily
 > implement your own favourite mechanism for defining ORM metadata.
 
-++ Persistent classes
+## Persistent classes
 
 In order to mark a class for object-relational persistence it needs to be designated as an entity. This can be done through the `@Entity` marker annotation.
 
-    [php]
+    <?php
     /** @Entity */
     class MyPersistentClass
     {
@@ -43,7 +43,7 @@ In order to mark a class for object-relational persistence it needs to be design
 
 By default, the entity will be persisted to a table with the same name as the class name. In order to change that, you can use the `@Table` annotation as follows:
 
-    [php]
+    <?php
     /**
      * @Entity
      * @Table(name="my_persistent_class")
@@ -55,7 +55,7 @@ By default, the entity will be persisted to a table with the same name as the cl
 
 Now instances of MyPersistentClass will be persisted into a table named `my_persistent_class`.
 
-++ Doctrine Mapping Types
+## Doctrine Mapping Types
 
 A Doctrine Mapping Type defines the mapping between a PHP type and an SQL type. All Doctrine Mapping Types that ship with Doctrine are fully portable between different RDBMS. You can even write your own custom mapping types that might or might not be portable, which is explained later in this chapter.
 
@@ -83,7 +83,7 @@ For example, the Doctrine Mapping Type `string` defines the mapping from a PHP s
 > Mapping types are *case-sensitive*. For example, using a DateTime column will NOT match the datetime type
 > that ships with Doctrine 2!
 
-++ Property Mapping
+## Property Mapping
 
 After a class has been marked as an entity it can specify mappings for its instance fields. Here we will only look at simple fields that hold scalar values like strings, numbers, etc. Associations to other objects are covered in the chapter "Association Mapping".
 
@@ -91,7 +91,7 @@ To mark a property for relational persistence the `@Column` docblock annotation 
 
 Example:
 
-    [php]
+    <?php
     /** @Entity */
     class MyPersistentClass
     {
@@ -104,7 +104,7 @@ Example:
 
 In that example we mapped the field `id` to the column `id` using the mapping type `integer` and the field `name` is mapped to the column `name` with the default mapping type `string`. As you can see, by default the column names are assumed to be the same as the field names. To specify a different name for the column, you can use the `name` attribute of the Column annotation as follows:
 
-    [php]
+    <?php
     /** @Column(name="db_name") */
     private $name;
 
@@ -118,7 +118,7 @@ The Column annotation has some more attributes. Here is a complete list:
 * `precision`: (optional, default 0) The precision for a decimal (exact numeric) column. (Applies only if a decimal column is used.)
 * `scale`: (optional, default 0) The scale for a decimal (exact numeric) column. (Applies only if a decimal column is used.)
 
-++ Custom Mapping Types
+## Custom Mapping Types
 
 Doctrine allows you to create new mapping types. This can come in handy when you're missing a specific mapping type
 or when you want to replace the existing implementation of a mapping type.
@@ -126,7 +126,7 @@ or when you want to replace the existing implementation of a mapping type.
 In order to create a new mapping type you need to subclass `Doctrine\DBAL\Types\Type` and implement/override
 the methods as you wish. Here is an example skeleton of such a custom type class:
 
-    [php]
+    <?php
     namespace My\Project\Types;
 
     use Doctrine\DBAL\Types\Type;
@@ -174,7 +174,7 @@ through the `Doctrine\DBAL\Configuration#setCustomTypes(array $types)` method.
 
 Here is an example:
 
-    [php]
+    <?php
     // in bootstrapping code
 
     // ...
@@ -189,7 +189,7 @@ Here is an example:
 As can be seen above, when registering the custom types in the configuration you specify a unique name
 for the mapping type and map that to the corresponding fully qualified class name. Now you can use your new type in your mapping like this:
 
-    [php]
+    <?php
     class MyPersistentClass
     {
         /** @Column(type="mytype") */
@@ -199,7 +199,7 @@ for the mapping type and map that to the corresponding fully qualified class nam
 To have Schema-Tool convert the underlying database type of your new "mytype" directly into an instance of `MyType`
 you have to additionally register this mapping with your database platform:
 
-    [php]
+    <?php
     $conn = $em->getConnection();
     $conn->getDatabasePlatform()->registerDoctrineTypeMapping('db_mytype', 'mytype');
 
@@ -207,11 +207,11 @@ Now using Schema-Tool, whenever it detects a column having the `db_mytype` it wi
 Doctrine Type instance for Schema representation. Keep in mind that you can easily produce clashes this way,
 each database type can only map to exactly one Doctrine mapping type.
 
-++ Identifiers / Primary Keys
+## Identifiers / Primary Keys
 
 Every entity class needs an identifier/primary key. You designate the field that serves as the identifier with the `@Id` marker annotation. Here is an example:
 
-    [php]
+    <?php
     class MyPersistentClass
     {
         /** @Id @Column(type="integer") */
@@ -223,7 +223,7 @@ Without doing anything else, the identifier is assumed to be manually assigned. 
 
 A common alternative strategy is to use a generated value as the identifier. To do this, you use the `@GeneratedValue` annotation like this:
 
-    [php]
+    <?php
     class MyPersistentClass
     {
         /**
@@ -235,7 +235,7 @@ A common alternative strategy is to use a generated value as the identifier. To 
 
 This tells Doctrine to automatically generate a value for the identifier. How this value is generated is specified by the `strategy` attribute, which is optional and defaults to 'AUTO'. A value of `AUTO` tells Doctrine to use the generation strategy that is preferred by the currently used database platform. See below for details.
 
-+++ Identifier Generation Strategies
+### Identifier Generation Strategies
 
 The previous example showed how to use the default identifier generation strategy without knowing the underlying database with the AUTO-detection strategy.
 It is also possible to specify the identifier generation strategy more explicitly, which allows to make use of some additional features.
@@ -254,12 +254,12 @@ Here is the list of possible generation strategies:
           NONE is the same as leaving off the @GeneratedValue entirely.
 
 
-++++ Sequence Generator
+#### Sequence Generator
 
 The Sequence Generator can currently be used in conjunction with Oracle or Postgres and allows some additional configuration options besides
 specifying the sequence's name:
 
-    [php]
+    <?php
     class User {
         /**
          * @Id
@@ -291,7 +291,7 @@ Doctrine can generate identifier values for the allocationSizes amount of entiti
 > strategy of the underlying platform is SEQUENCE, such as for Oracle and PostgreSQL.
 
 
-+++ Composite Keys
+### Composite Keys
 
 Doctrine 2 allows to use composite primary keys. There are however some restrictions opposed to using a single identifier.
 The use of the `@GeneratedValue` annotation is only supported for simple (not composite) primary keys, which means
@@ -300,11 +300,11 @@ on the entity.
 
 To designate a composite primary key / identifier, simply put the @Id marker annotation on all fields that make up the primary key.
 
-++ Quoting Reserved Words
+## Quoting Reserved Words
 
 It may sometimes be necessary to quote a column or table name because it conflicts with a reserved word of the particular RDBMS in use. This is often referred to as "Identifier Quoting". To let Doctrine know that you would like a table or column name to be quoted in all SQL statements, enclose the table or column name in backticks. Here is an example:
 
-    [php]
+    <?php
     /** @Column(name="`number`", type="integer") */
     private $number;
 

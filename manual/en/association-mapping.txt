@@ -1,6 +1,6 @@
 This chapter explains how associations between entities are mapped with Doctrine. We start out with an explanation of the concept of owning and inverse sides which is important to understand when working with bidirectional associations. Please read these explanations carefully.
 
-++ Owning Side and Inverse Side
+## Owning Side and Inverse Side
 
 When mapping bidirectional associations it is important to understand the concept of the owning and inverse sides. The following general rules apply:
 
@@ -41,7 +41,7 @@ in the database.
 > of your domain model. What you consider as the owning side in your domain model can be different
 > from what the owning side is for Doctrine. These are unrelated.
 
-++ Collections
+## Collections
 
 In all the examples of many-valued associations in this manual we will make use of a `Collection` interface and a corresponding default implementation `ArrayCollection` that are defined in the `Doctrine\Common\Collections` namespace. Why do we need that? Doesn't that couple my domain model to Doctrine? Unfortunately, PHP arrays, while being great for many things, do not make up for good collections of business objects, especially not in the context of an ORM. The reason is that plain PHP arrays can not be transparently extended / instrumented in PHP code, which is necessary for a lot of advanced ORM features. The classes / interfaces that come closest to an OO collection are ArrayAccess and ArrayObject but until instances of these types can be used in all places where a plain array can be used (something that may happen in PHP6) their usability is fairly limited. You "can" type-hint on `ArrayAccess` instead of `Collection`, since the Collection interface extends `ArrayAccess`, but this will severely limit you in the way you can work with the collection, because the `ArrayAccess` API is (intentionally) very primitive and more importantly because you can not pass this collection to all the useful PHP array functions, which makes it very hard to work with.
 
@@ -55,7 +55,7 @@ In all the examples of many-valued associations in this manual we will make use 
 > over to your project if you want to remove Doctrine from your project and all your
 > domain classes will work the same as before.
 
-++ Mapping Defaults
+## Mapping Defaults
 
 Before we introduce all the association mappings in detail, you should note that the @JoinColumn and @JoinTable
 definitions are usually optional and have sensible default values.
@@ -66,13 +66,13 @@ The defaults for a join column in a one-to-one/many-to-one association is as fol
 
 As an example, consider this mapping:
     
-    [php]
+    <?php
     /** @OneToOne(targetEntity="Shipping") */
     private $shipping;
     
 This is essentially the same as the following, more verbose, mapping:
 
-    [php]
+    <?php
     /**
      * @OneToOne(targetEntity="Shipping")
      * @JoinColumn(name="shipping_id", referencedColumnName="id")
@@ -82,7 +82,7 @@ This is essentially the same as the following, more verbose, mapping:
 
 The @JoinTable definition used for many-to-many mappings has similar defaults. As an example, consider this mapping:
 
-    [php]
+    <?php
     class User
     {
         //...
@@ -93,7 +93,7 @@ The @JoinTable definition used for many-to-many mappings has similar defaults. A
 
 This is essentially the same as the following, more verbose, mapping:
 
-    [php]
+    <?php
     class User
     {
         //...
@@ -112,11 +112,11 @@ In that case, the name of the join table defaults to a combination of the simple
 
 If you accept these defaults, you can reduce the mapping code to a minimum.
 
-++ Initializing Collections
+## Initializing Collections
 
 You have to be careful when using entity fields that contain a collection of related entities. Say we have a User entity that contains a collection of groups:
 
-    [php]
+    <?php
     /** @Entity */
     class User
     {
@@ -134,7 +134,7 @@ Doctrine, however not after you instantiated a fresh instance of the User. When 
 
 This is why we recommend to initialize all collection fields to an empty `ArrayCollection` in your entities constructor:
 
-    [php]
+    <?php
     use Doctrine\Common\Collections\ArrayCollection;
 
     /** @Entity */
@@ -156,12 +156,12 @@ This is why we recommend to initialize all collection fields to an empty `ArrayC
 
 Now the following code will be working even if the Entity hasn't been associated with an EntityManager yet:
 
-    [php]
+    <?php
     $group = $entityManager->find('Group', $groupId);
     $user = new User();
     $user->getGroups()->add($group);
 
-++ Runtime vs Development Mapping Validation
+## Runtime vs Development Mapping Validation
 
 For performance reasons Doctrine 2 has to skip some of the necessary validation of association mappings.
 You have to execute this validation in your development workflow to verify the associations are correctly
@@ -191,11 +191,11 @@ If the mapping is invalid the errors array contains a positive number of element
 > inside a string (such as in your mapping definitions) you have to drop the prefix backslash. PHP does this with
 > `get_class()` or Reflection methods for backwards compatibility reasons.
 
-++ One-To-One, Unidirectional
+## One-To-One, Unidirectional
 
 A unidirectional one-to-one association is very common. Here is an example of a `Product` that has one `Shipping` object associated to it. The `Shipping` side does not reference back to the `Product` so it is unidirectional.
 
-    [php]
+    <?php
     /** @Entity */
     class Product
     {
@@ -232,12 +232,12 @@ Generated MySQL Schema:
     ) ENGINE = InnoDB;
     ALTER TABLE Product ADD FOREIGN KEY (shipping_id) REFERENCES Shipping(id);
 
-++ One-To-One, Bidirectional
+## One-To-One, Bidirectional
 
 Here is a one-to-one relationship between a `Customer` and a `Cart`. The `Cart`
 has a reference back to the `Customer` so it is bidirectional.
 
-    [php]
+    <?php
     /** @Entity */
     class Customer
     {
@@ -283,11 +283,11 @@ Generated MySQL Schema:
 
 See how the foreign key is defined on the owning side of the relation, the table `Cart`.
 
-++ One-To-One, Self-referencing
+## One-To-One, Self-referencing
 
 You can easily have self referencing one-to-one relationships like below.
 
-    [php]
+    <?php
     /** @Entity */
     class Student
     {
@@ -314,12 +314,12 @@ With the generated MySQL Schema:
     ) ENGINE = InnoDB;
     ALTER TABLE Student ADD FOREIGN KEY (mentor_id) REFERENCES Student(id);
 
-++ One-To-Many, Unidirectional with Join Table
+## One-To-Many, Unidirectional with Join Table
 
 A unidirectional one-to-many association can be mapped through a join table. From Doctrine's point of view, it is simply mapped as a unidirectional many-to-many whereby a unique constraint on one of the join columns enforces the one-to-many cardinality.
 The following example sets up such a unidirectional one-to-many association:
 
-    [php]
+    <?php
     /** @Entity */
     class User
     {
@@ -373,11 +373,11 @@ Generates the following MySQL Schema:
     ALTER TABLE users_phonenumbers ADD FOREIGN KEY (user_id) REFERENCES User(id);
     ALTER TABLE users_phonenumbers ADD FOREIGN KEY (phonenumber_id) REFERENCES Phonenumber(id);
 
-++ Many-To-One, Unidirectional
+## Many-To-One, Unidirectional
 
 You can easily implement a many-to-one unidirectional association with the following:
 
-    [php]
+    <?php
     /** @Entity */
     class User
     {
@@ -416,11 +416,11 @@ Generated MySQL Schema:
 
     ALTER TABLE User ADD FOREIGN KEY (address_id) REFERENCES Address(id);
 
-++ One-To-Many, Bidirectional
+## One-To-Many, Bidirectional
 
 Bidirectional one-to-many associations are very common. The following code shows an example with a Product and a Feature class:
 
-    [php]
+    <?php
     /** @Entity */
     class Product
     {
@@ -464,13 +464,13 @@ Generated MySQL Schema:
     ) ENGINE = InnoDB;
     ALTER TABLE Feature ADD FOREIGN KEY (product_id) REFERENCES Product(id);
 
-++ One-To-Many, Self-referencing
+## One-To-Many, Self-referencing
 
 You can also setup a one-to-many association that is self-referencing. In this example we 
 setup a hierarchy of `Category` objects by creating a self referencing relationship.
 This effectively models a hierarchy of categories and from the database perspective is known as an adjacency list approach.
 
-    [php]
+    <?php
     /** @Entity */
     class Category
     {
@@ -504,11 +504,11 @@ Generated MySQL Schema:
     ) ENGINE = InnoDB;
     ALTER TABLE Category ADD FOREIGN KEY (parent_id) REFERENCES Category(id);
 
-++ Many-To-Many, Unidirectional
+## Many-To-Many, Unidirectional
 
 Real many-to-many associations are less common. The following example shows a unidirectional association between User and Group entities:
 
-    [php]
+    <?php
     /** @Entity */
     class User
     {
@@ -561,11 +561,11 @@ Generated MySQL Schema:
     ALTER TABLE users_groups ADD FOREIGN KEY (user_id) REFERENCES User(id);
     ALTER TABLE users_groups ADD FOREIGN KEY (group_id) REFERENCES Group(id);
 
-++ Many-To-Many, Bidirectional
+## Many-To-Many, Bidirectional
 
 Here is a similar many-to-many relationship as above except this one is bidirectional.
 
-    [php]
+    <?php
     /** @Entity */
     class User
     {
@@ -605,7 +605,7 @@ Here is a similar many-to-many relationship as above except this one is bidirect
 
 The MySQL schema is exactly the same as for the Many-To-Many uni-directional case above.
 
-+++ Picking Owning and Inverse Side
+### Picking Owning and Inverse Side
 
 For Many-To-Many associations you can chose which entity is the owning and which the inverse side. There is
 a very simple semantic rule to decide which side is more suitable to be the owning side from a developers perspective.
@@ -616,7 +616,7 @@ the Article that is responsible for this relation. Whenever you add a new articl
 Your create Article form will probably support this notion and allow to specify the tags directly. This is why you should
 pick the Article as owning side, as it makes the code more understandable:
 
-    [php]
+    <?php
     class Article
     {
         private $tags;
@@ -640,16 +640,16 @@ pick the Article as owning side, as it makes the code more understandable:
 
 This allows to group the tag adding on the `Article` side of the association:
 
-    [php]
+    <?php
     $article = new Article();
     $article->addTag($tagA);
     $article->addTag($tagB);
 
-++ Many-To-Many, Self-referencing
+## Many-To-Many, Self-referencing
 
 You can even have a self-referencing many-to-many association. A common scenario is where a `User` has friends and the target entity of that relationship is a `User` so it is self referencing. In this example it is bidirectional so `User` has a field named `$friendsWithMe` and `$myFriends`.
 
-    [php]
+    <?php
     /** @Entity */
     class User
     {
@@ -692,7 +692,7 @@ Generated MySQL Schema:
     ALTER TABLE friends ADD FOREIGN KEY (user_id) REFERENCES User(id);
     ALTER TABLE friends ADD FOREIGN KEY (friend_user_id) REFERENCES User(id);
 
-++ Ordering To-Many Collections
+## Ordering To-Many Collections
 
 In many use-cases you will want to sort collections when they are retrieved from the database.
 In userland you do this as long as you haven't initially saved an entity with its associations
@@ -703,7 +703,7 @@ to all queries with this collection.
 Additional to any `@OneToMany` or `@ManyToMany` annotation you can specify the `@OrderBy`
 in the following way:
 
-    [php]
+    <?php
     /** @Entity */
     class User
     {

@@ -18,7 +18,7 @@ are lost.
 >
 > Not calling `EntityManager#flush()` will lead to all changes during that request being lost.
 
-++ Entities and the Identity Map
+## Entities and the Identity Map
 
 Entities are objects with identity. Their identity has a conceptual meaning inside your domain.
 In a CMS application each article has a unique id. You can uniquely identify each article
@@ -27,7 +27,7 @@ by that id.
 Take the following example, where you find an article with the headline "Hello World"
 with the ID 1234:
 
-    [php]
+    <?php
     $article = $entityManager->find('CMS\Article', 1234);
     $article->setHeadline('Hello World dude!');
 
@@ -45,7 +45,7 @@ In the previous example the echo prints "Hello World dude!" to the screen. You c
 even verify that `$article` and `$article2` are indeed pointing to the same instance
 by running the following code:
 
-    [php]
+    <?php
     if ($article === $article2) {
         echo "Yes we are the same!";
     }
@@ -55,7 +55,7 @@ this regularly in our unit-tests to enforce loading objects from the database ag
 instead of serving them from the identity map. You can call `EntityManager#clear()`
 to achieve this result.
 
-++ Entity Object Graph Traversal
+## Entity Object Graph Traversal
 
 Although Doctrine allows for a complete separation of your domain model (Entity classes)
 there will never be a situation where objects are "missing" when traversing associations.
@@ -63,7 +63,7 @@ You can walk all the associations inside your entity models as deep as you want.
 
 Take the following example of a single `Article` entity fetched from newly opened EntityManager.
 
-    [php]
+    <?php
     /** @Entity */
     class Article
     {
@@ -100,7 +100,7 @@ and load their state from the database.
 
 This lazy-loading process happens behind the scenes, hidden from your code. See the following code:
 
-    [php]
+    <?php
     $article = $em->find('Article', 1);
 
     // accessing a method of the user instance triggers the lazy-load
@@ -127,7 +127,7 @@ This lazy-loading process happens behind the scenes, hidden from your code. See 
 A slice of the generated proxy classes code looks like the following piece of code. A real proxy
 class override ALL public methods along the lines of the `getName()` method shown below:
 
-    [php]
+    <?php
     class UserProxy extends User implements Proxy
     {
         private function _load()
@@ -149,7 +149,7 @@ class override ALL public methods along the lines of the `getName()` method show
 > of SQL queries and will perform badly if used to heavily. Make sure to use DQL
 > to fetch-join all the parts of the object-graph that you need as efficiently as possible.
 
-++ Persisting entities
+## Persisting entities
 
 An entity can be made persistent by passing it to the `EntityManager#persist($entity)` 
 method. By applying the persist operation on some entity, that entity becomes MANAGED, 
@@ -167,7 +167,7 @@ synchronized with the database when `EntityManager#flush()` is invoked.
 
 Example:
 
-    [php]
+    <?php
     $user = new User;
     $user->setName('Mr.Right');
     $em->persist($user);
@@ -188,7 +188,7 @@ The semantics of the persist operation, applied on an entity X, are as follows:
 * If X is a detached entity, an exception will be thrown on flush.
 
 
-++ Removing entities
+## Removing entities
 
 An entity can be removed from persistent storage by passing it to the `EntityManager#remove($entity)` method. By applying the `remove` operation on some entity, that entity becomes REMOVED, which means that its persistent state will be deleted once `EntityManager#flush()` is invoked.
 
@@ -199,7 +199,7 @@ An entity can be removed from persistent storage by passing it to the `EntityMan
 
 Example:
 
-    [php]
+    <?php
     $em->remove($user);
     $em->flush();
     
@@ -238,7 +238,7 @@ ways with very different performance impacts.
    any foreign key `onDelete=CASCADE` option, because Doctrine will fetch and remove
    all associated entities explicitly nevertheless.
 
-++ Detaching entities
+## Detaching entities
 
 An entity is detached from an EntityManager and thus no longer managed by 
 invoking the `EntityManager#detach($entity)` method on it or by cascading 
@@ -250,7 +250,7 @@ Doctrine will not hold on to any references to a detached entity.
 
 Example:
 
-    [php]
+    <?php
     $em->detach($entity);
     
 The semantics of the detach operation, applied to an entity X are as follows:
@@ -267,7 +267,7 @@ There are several situations in which an entity is detached automatically withou
 The `detach` operation is usually not as frequently needed and used as `persist` and `remove`.
 
 
-++ Merging entities
+## Merging entities
 
 Merging entities refers to the merging of (usually detached) entities into the 
 context of an EntityManager so that they become managed again. To merge the 
@@ -277,7 +277,7 @@ this entity and this copy will subsequently be returned.
 
 Example:
 
-    [php]
+    <?php
     $detachedEntity = unserialize($serializedEntity); // some detached entity
     $entity = $em->merge($detachedEntity);
     // $entity now refers to the fully managed copy returned by the merge operation.
@@ -314,7 +314,7 @@ and you want to modify and persist such an entity.
 > there is no need to use `merge`. I.e. you can simply pass detached objects from a cache
 > directly to the view.
 
-++ Synchronization with the Database
+## Synchronization with the Database
 
 The state of persistent entities is synchronized with the database on flush of an `EntityManager`
 which commits the underlying `UnitOfWork`. The synchronization involves writing any updates to
@@ -325,7 +325,7 @@ in the Association Mapping chapter.
 When `EntityManager#flush()` is called, Doctrine inspects all managed, new and removed entities
 and will perform the following operations.
 
-+++ Synchronizing New and Managed Entities
+### Synchronizing New and Managed Entities
 
 The flush operation applies to a managed entity with the following semantics:
 
@@ -348,18 +348,18 @@ associated entity X:
 * If X is detached and persist operations are configured to cascade on the relationship,
   an exception will be thrown (This is semantically the same as passing X to persist()).
 
-+++ Synchronizing Removed Entities
+### Synchronizing Removed Entities
 
 The flush operation applies to a removed entity by deleting its persistent state from the database.
 No cascade options are relevant for removed entities on flush, the cascade remove option is already
 executed during `EntityManager#remove($entity)`.
 
-+++ The size of a Unit of Work
+### The size of a Unit of Work
 
 The size of a Unit of Work mainly refers to the number of managed entities at 
 a particular point in time.
 
-+++ The cost of flushing
+### The cost of flushing
 
 How costly a flush operation is, mainly depends on two factors:
 
@@ -368,7 +368,7 @@ How costly a flush operation is, mainly depends on two factors:
 
 You can get the size of a UnitOfWork as follows:
 
-    [php]
+    <?php
     $uowSize = $em->getUnitOfWork()->size();
 
 The size represents the number of managed entities in the Unit of Work. This 
@@ -383,12 +383,12 @@ may want to check it from time to time during development.
 > and call `flush` when you are done. While serving a single HTTP request there should
 > be usually no need for invoking `flush` more than 0-2 times.
 
-+++ Direct access to a Unit of Work
+### Direct access to a Unit of Work
 
 You can get direct access to the Unit of Work by calling `EntityManager#getUnitOfWork()`. 
 This will return the UnitOfWork instance the EntityManager is currently using.
 
-    [php]
+    <?php
     $uow = $em->getUnitOfWork();
 
 > **NOTE**
@@ -396,14 +396,14 @@ This will return the UnitOfWork instance the EntityManager is currently using.
 > UnitOfWork API, respect methods marked as INTERNAL by not using them and carefully read
 > the API documentation.
 
-+++ Entity State
+### Entity State
 
 As outlined in the architecture overview an entity can be in one of four possible states:
 NEW, MANAGED, REMOVED, DETACHED. If you explicitly need to find out what the current state
 of an entity is in the context of a certain `EntityManager` you can ask the underlying
 `UnitOfWork`:
 
-    [php]
+    <?php
     switch ($em->getUnitOfWork()->getEntityState($entity)) {
         case UnitOfWork::MANAGED:
             ...
@@ -428,15 +428,15 @@ An entity is in NEW state if has no persistent state and identity and is not ass
 `EntityManager` (for example those just created via the "new" operator).
 
 
-++ Querying
+## Querying
 
 Doctrine 2 provides the following ways, in increasing level of power and flexibility, to query for persistent objects. You should always start with the simplest one that suits your needs.
 
-+++ By Primary Key
+### By Primary Key
 
 The most basic way to query for a persistent object is by its identifier / primary key using the `EntityManager#find($entityName, $id)` method. Here is an example:
 
-    [php]
+    <?php
     // $em instanceof EntityManager
     $user = $em->find('MyProject\Domain\User', $id);
 
@@ -444,17 +444,17 @@ The return value is either the found entity instance or null if no instance coul
 
 Essentially, `EntityManager#find()` is just a shortcut for the following:
 
-    [php]
+    <?php
     // $em instanceof EntityManager
     $user = $em->getRepository('MyProject\Domain\User')->find($id);
 
 `EntityManager#getRepository($entityName)` returns a repository object which provides many ways to retrieve entities of the specified type. By default, the repository instance is of type `Doctrine\ORM\EntityRepository`. You can also use custom repository classes as shown later.
 
-+++ By Simple Conditions
+### By Simple Conditions
 
 To query for one or more entities based on several conditions that form a logical conjunction, use the `findBy` and `findOneBy` methods on a repository as follows:
 
-    [php]
+    <?php
     // $em instanceof EntityManager
     
     // All users that are 20 years old
@@ -468,7 +468,7 @@ To query for one or more entities based on several conditions that form a logica
 
 An EntityRepository also provides a mechanism for more concise calls through its use of `__call`. Thus, the following two examples are equivalent:
 
-    [php]
+    <?php
     // A single user by its nickname
     $user = $em->getRepository('MyProject\Domain\User')->findOneBy(array('nickname' => 'romanb'));
     
@@ -476,24 +476,24 @@ An EntityRepository also provides a mechanism for more concise calls through its
     $user = $em->getRepository('MyProject\Domain\User')->findOneByNickname('romanb');
 
 
-+++ By Eager Loading
+### By Eager Loading
 
 Whenever you query for an entity that has persistent associations and these associations are mapped as EAGER, they will automatically be loaded together with the entity being queried and is thus immediately available to your application.
 
 
-+++ By Lazy Loading
+### By Lazy Loading
 
 Whenever you have a managed entity instance at hand, you can traverse and use any associations of that entity that are configured LAZY as if they were in-memory already. Doctrine will automatically load the associated objects on demand through the concept of lazy-loading.
 
 
-+++ By DQL
+### By DQL
 
 The most powerful and flexible method to query for persistent objects is the Doctrine Query Language, an object query language. DQL enables you to query for persistent objects in the language of objects. DQL understands classes, fields, inheritance and associations.
 DQL is syntactically very similar to the familiar SQL but *it is not SQL*.
 
 A DQL query is represented by an instance of the `Doctrine\ORM\Query` class. You create a query using `EntityManager#createQuery($dql)`. Here is a simple example:
 
-    [php]
+    <?php
     // $em instanceof EntityManager
     
     // All users with an age between 20 and 30 (inclusive).
@@ -503,14 +503,14 @@ A DQL query is represented by an instance of the `Doctrine\ORM\Query` class. You
 Note that this query contains no knowledge about the relational schema, only about the object model. DQL supports positional as well as named parameters, many functions, (fetch) joins, aggregates, subqueries and much more. Detailed information about DQL and its syntax as well as the Doctrine\ORM\Query class can be found in [the dedicated chapter](http://www.doctrine-project.org/documentation/manual/2_0/en/dql-doctrine-query-language). For programmatically building up queries based on conditions that are only known at runtime, Doctrine provides the special `Doctrine\ORM\QueryBuilder` class. More information on constructing queries with a QueryBuilder can be found [in the dedicated chapter](http://www.doctrine-project.org/documentation/manual/2_0/en/query-builder).
 
 
-+++ By Native Queries
+### By Native Queries
 
 As an alternative to DQL or as a fallback for special SQL statements native queries can be used.
 Native queries are built by using a hand-crafted SQL query and a ResultSetMapping that describes
 how the SQL result set should be transformed by Doctrine. More information about native queries
 can be found in [the dedicated chapter](http://www.doctrine-project.org/documentation/manual/2_0/en/native-sql).
 
-+++ Custom Repositories
+### Custom Repositories
 
 By default the EntityManager returns a default implementation of `Doctrine\ORM\EntityRepository` when
 you call `EntityManager#getRepository($entityClass)`. You can overwrite this behaviour by specifying
@@ -518,7 +518,7 @@ the class name of your own Entity Repository in the Annotation, XML or YAML meta
 In large applications that require lots of specialized DQL queries using a custom repository is
 one recommended way of grouping these queries in a central location.
 
-    [php]
+    <?php
     namespace MyDomain\Model;
     
     use Doctrine\ORM\EntityRepository;
@@ -542,7 +542,7 @@ one recommended way of grouping these queries in a central location.
 
 You can access your repository now by calling:
 
-    [php]
+    <?php
     // $em instanceof EntityManager
 
     $admins = $em->getRepository('MyDomain\Model\User')->getAllAdminUsers();

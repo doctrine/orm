@@ -23,18 +23,18 @@ The XML mapping document of a class is loaded on-demand the first time it is req
  
 -
 
-    [php]
+    <?php
     $driver->setFileExtension('.xml');
 
 It is recommended to put all XML mapping documents in a single folder but you can spread the documents over several folders if you want to. In order to tell the XmlDriver where to look for your mapping documents, supply an array of paths as the first argument of the constructor, like this:
 
-    [php]
+    <?php
     $config = new \Doctrine\ORM\Configuration();
     $driver = new \Doctrine\ORM\Mapping\Driver\XmlDriver(array('/path/to/files1', '/path/to/files2'));
     $config->setMetadataDriverImpl($driver);
 
 
-++ Example
+## Example
 
 As a quick start, here is a small example document that makes use of several common elements:
 
@@ -105,13 +105,13 @@ As a quick start, here is a small example document that makes use of several com
 
  Be aware that class-names specified in the XML files should be fully qualified.
 
-++ XML-Element Reference
+## XML-Element Reference
 
 The XML-Element reference explains all the tags and attributes that the Doctrine Mapping XSD Schema defines.
 You should read the Basic-, Association- and Inheritance Mapping chapters to understand what each of this
 definitions means in detail.
 
-+++ Defining an Entity
+### Defining an Entity
 
 Each XML Mapping File contains the definition of one entity, specified as the `<entity />` element
 as a direct child of the `<doctrine-mapping />` element:
@@ -133,7 +133,7 @@ Optional attributes:
 * repository-class - The fully qualified class-name of an alternative `Doctrine\ORM\EntityRepository` implementation to be used with this entity.
 * inheritance-type - The type of inheritance, defaults to none. A more detailed description follows in the *Defining Inheritance Mappings* section.
 
-+++ Defining Fields
+### Defining Fields
 
 Each entity class can contain zero to infinite fields that are managed by Doctrine. You can define
 them using the `<field />` element as a children to the `<entity />` element. The field element is only
@@ -167,7 +167,7 @@ Optional attributes:
   field-name and has to specify the complete column definition. Using this feature will turn this field dirty
   for Schema-Tool update commands at all times.
 
-+++ Defining Identity and Generator Strategies
+### Defining Identity and Generator Strategies
 
 An entity has to have at least one `<id />` element. For composite keys you can specify more than one id-element,
 however surrogate keys are recommended for use with Doctrine 2. The Id field allows to define properties of
@@ -232,7 +232,7 @@ Optional attributes for `<sequence-generator />`:
 > If you want to implement a cross-vendor compatible application you have to specify <generator strategy="AUTO" /> and
 > additionally define the <sequence-generator /> element, if Doctrine chooses the sequence strategy for a platform.
 
-+++ Defining a Mapped Superclass
+### Defining a Mapped Superclass
 
 Sometimes you want to define a class that multiple entities inherit from, which itself is not an entity however.
 The chapter on *Inheritance Mapping* describes a Mapped Superclass in detail. You can define it in XML using
@@ -253,7 +253,7 @@ Required attributes:
 You can nest any number of `<field />` and unidirectional `<many-to-one />` or `<one-to-one />` associations inside
 a mapped superclass.
 
-+++ Defining Inheritance Mappings
+### Defining Inheritance Mappings
 
 There are currently two inheritance persistence strategies that you can choose from when defining entities that
 inherit from each other. Single Table inheritance saves the fields of the complete inheritance hierarchy in a single table,
@@ -278,7 +278,7 @@ The allowed values for inheritance-type attribute are `JOINED` or `SINGLE_TABLE`
 >
 > All inheritance related definitions have to be defined on the root entity of the hierarchy.
 
-+++ Defining Lifecycle Callbacks
+### Defining Lifecycle Callbacks
 
 You can define the lifecycle callback methods on your entities using the `<lifecycle-callbacks />` element:
 
@@ -290,7 +290,7 @@ You can define the lifecycle callback methods on your entities using the `<lifec
         </lifecycle-callbacks>
     </entity>
 
-+++ Defining One-To-One Relations
+### Defining One-To-One Relations
 
 You can define One-To-One Relations/Associations using the `<one-to-one />` element. The required
 and optional attributes depend on the associations being on the inverse or owning side.
@@ -340,7 +340,7 @@ The completed explicitly defined mapping is:
         </one-to-one>
     </entity>
 
-+++ Defining Many-To-One Associations
+### Defining Many-To-One Associations
 
 The many-to-one association is *ALWAYS* the owning side of any bidirectional association. This simplifies the mapping
 compared to the one-to-one case. The minimal mapping for this association looks like:
@@ -375,7 +375,7 @@ The join-column attribute `name` specifies the column name of the foreign key an
 the `referenced-column-name` attribute specifies the name of the primary key column
 on the User entity.
 
-+++ Defining One-To-Many Associations
+### Defining One-To-Many Associations
 
 The one-to-many association is *ALWAYS* the inverse side of any association. There exists no such thing as a
 uni-directional one-to-many association, which means this association only ever exists for bi-directional associations.
@@ -395,7 +395,7 @@ Optional attributes:
 
 * fetch - Either LAZY or FETCH, defaults to LAZY.
 
-+++ Defining Many-To-Many Associations
+### Defining Many-To-Many Associations
 
 From all the associations the many-to-many has the most complex definition. When you rely on the mapping defaults
 you can omit many definitions and rely on their implicit values.
@@ -437,7 +437,7 @@ Here both the `<join-columns>` and `<inverse-join-columns>` tags are necessary t
 specified join-columns apply. These are nested inside a `<join-table />` attribute which allows to specify
 the table name of the many-to-many join-table.
 
-+++ Cascade Element
+### Cascade Element
 
 Doctrine allows cascading of several UnitOfWork operations to related entities. You can specify the cascade
 operations in the `<cascade />` element inside any of the association mapping tags.
@@ -458,7 +458,7 @@ Besides `<cascade-all />` the following operations can be specified by their res
 * `<cascade-remove />`
 * `<cascade-refresh />`
 
-+++ Join Column Element
+### Join Column Element
 
 In any explicitly defined association mapping you will need the `<join-column />` tag. It defines how the
 foreign key and primary key names are called that are used for joining two entities.
@@ -474,7 +474,7 @@ Optional attributes:
 * nullable - should the join column be nullable, defaults to true.
 * on-delete - Foreign Key Cascade action to perform when entity is deleted, defaults to NO ACTION/RESTRICT but can be set to "CASCADE".
 
-+++ Defining Order of To-Many Associations
+### Defining Order of To-Many Associations
 
 You can require one-to-many or many-to-many associations to be retrieved using an additional `ORDER BY`.
 
@@ -487,7 +487,7 @@ You can require one-to-many or many-to-many associations to be retrieved using a
         </many-to-many>
     </entity>
 
-+++ Defining Indexes or Unique Constraints
+### Defining Indexes or Unique Constraints
 
 To define additional indexes or unique constraints on the entities table you can use the
 `<indexes />` and `<unique-constraints />` elements:

@@ -1,4 +1,4 @@
-++ Transaction Demarcation
+## Transaction Demarcation
 
 Transaction demarcation is the task of defining your transaction boundaries. Proper transaction demarcation is very
 important because if not done properly it can negatively affect the performance of your application.
@@ -14,12 +14,12 @@ However, Doctrine 2 also allows (and encourages) you to take over and control tr
 
 These are two ways to deal with transactions when using the Doctrine ORM and are now described in more detail.
 
-+++ Approach 1: Implicitly
+### Approach 1: Implicitly
 
 The first approach is to use the implicit transaction handling provided by the Doctrine ORM
 EntityManager. Given the following code snippet, without any explicit transaction demarcation:
 
-    [php]
+    <?php
     // $em instanceof EntityManager
     $user = new User;
     $user->setName('George');
@@ -32,12 +32,12 @@ by the Doctrine ORM and is sufficient if all the data manipulation that is part 
 through the domain model and thus the ORM.
 
 
-+++ Approach 2: Explicitly
+### Approach 2: Explicitly
 
 The explicit alternative is to use the `Doctrine\DBAL\Connection` API
 directly to control the transaction boundaries. The code then looks like this:
 
-    [php]
+    <?php
     // $em instanceof EntityManager
     $em->getConnection()->beginTransaction(); // suspend auto-commit
     try {
@@ -63,7 +63,7 @@ When used, these control abstractions ensure that you never forget to rollback t
 close the `EntityManager`, apart from the obvious code reduction. An example that is functionally
 equivalent to the previously shown code looks as follows:
 
-    [php]
+    <?php
     // $em instanceof EntityManager
     $em->transactional(function($em) {
         //... do some work
@@ -77,7 +77,7 @@ that the latter abstraction flushes the `EntityManager` prior to transaction com
 the `EntityManager` properly when an exception occurs (in addition to rolling back the transaction).
 
 
-+++ Exception Handling
+### Exception Handling
 
 When using implicit transaction demarcation and an exception occurs during `EntityManager#flush()`, the transaction
 is automatically rolled back and the `EntityManager` closed.
@@ -98,12 +98,12 @@ accurate.
 
 If you intend to start another unit of work after an exception has occurred you should do that with a new `EntityManager`.
 
-++ Locking Support
+## Locking Support
 
 Doctrine 2 offers support for Pessimistic- and Optimistic-locking strategies natively. This allows to take
 very fine-grained control over what kind of locking is required for your Entities in your application.
 
-+++ Optimistic Locking
+### Optimistic Locking
 
 Database transactions are fine for concurrency control during a single request. However, a database transaction
 should not span across requests, the so-called "user think time". Therefore a long-running "business transaction"
@@ -120,7 +120,7 @@ entity has been modified by someone else already.
 
 You designate a version field in an entity as follows. In this example we'll use an integer.
 
-    [php]
+    <?php
     class User
     {
         // ...
@@ -131,7 +131,7 @@ You designate a version field in an entity as follows. In this example we'll use
 
 Alternatively a datetime type can be used (which maps to an SQL timestamp or datetime):
 
-    [php]
+    <?php
     class User
     {
         // ...
@@ -155,7 +155,7 @@ when retrieving the entity that you will hit an optimistic locking exception:
 
 You can always verify the version of an entity during a request either when calling `EntityManager#find()`:
 
-    [php]
+    <?php
     use Doctrine\DBAL\LockMode;
     use Doctrine\ORM\OptimisticLockException;
 
@@ -174,7 +174,7 @@ You can always verify the version of an entity during a request either when call
 
 Or you can use `EntityManager#lock()` to find out:
 
-    [php]
+    <?php
     use Doctrine\DBAL\LockMode;
     use Doctrine\ORM\OptimisticLockException;
 
@@ -191,7 +191,7 @@ Or you can use `EntityManager#lock()` to find out:
         echo "Sorry, but someone else has already changed this entity. Please apply the changes again!";
     }
 
-++++ Important Implementation Notes
+#### Important Implementation Notes
 
 You can easily get the optimistic locking workflow wrong if you compare the wrong versions.
 Say you have Alice and Bob accessing a hypothetical bank account:
@@ -212,7 +212,7 @@ see lost updates you wanted to prevent with Optimistic Locking.
 
 See the example code, The form (GET Request):
 
-    [php]
+    <?php
     $post = $em->find('BlogPost', 123456);
 
     echo '<input type="hidden" name="id" value="' . $post->getId() . '" />';
@@ -220,13 +220,13 @@ See the example code, The form (GET Request):
 
 And the change headline action (POST Request):
 
-    [php]
+    <?php
     $postId = (int)$_GET['id'];
     $postVersion = (int)$_GET['version'];
 
     $post = $em->find('BlogPost', $postId, \Doctrine\DBAL\LockMode::OPTIMISTIC, $postVersion);
 
-+++ Pessimistic Locking
+### Pessimistic Locking
 
 Doctrine 2 supports Pessimistic Locking at the database level. No attempt is being made to implement pessimistic locking
 inside Doctrine, rather vendor-specific and ANSI-SQL commands are used to acquire row-level locks. Every Entity can

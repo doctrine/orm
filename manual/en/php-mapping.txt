@@ -2,20 +2,20 @@ Doctrine 2 also allows you to provide the ORM metadata in the form of plain
 PHP code using the `ClassMetadata` API. You can write the code in PHP files or 
 inside of a static function named `loadMetadata($class)` on the entity class itself.
 
-++ PHP Files
+## PHP Files
 
 If you wish to write your mapping information inside PHP files that are named 
 after the entity and included to populate the metadata for an entity you can do 
 so by using the `PHPDriver`:
 
-    [php]
+    <?php
     $driver = new PHPDriver('/path/to/php/mapping/files');
     $em->getConfiguration()->setMetadataDriverImpl($driver);
 
 Now imagine we had an entity named `Entities\User` and we wanted to write a mapping
 file for it using the above configured `PHPDriver` instance:
 
-    [php]
+    <?php
     namespace Entities;
     
     class User
@@ -27,7 +27,7 @@ file for it using the above configured `PHPDriver` instance:
 To write the mapping information you just need to create a file named 
 `Entities.User.php` inside of the `/path/to/php/mapping/files` folder:
 
-    [php]
+    <?php
     // /path/to/php/mapping/files/Entities.User.php
 
     $metadata->mapField(array(
@@ -44,23 +44,23 @@ To write the mapping information you just need to create a file named
 Now we can easily retrieve the populated `ClassMetadata` instance where the `PHPDriver`
 includes the file and the `ClassMetadataFactory` caches it for later retrieval:
 
-    [php]
+    <?php
     $class = $em->getMetadataFor('Entities\User');
 
-++ Static Function
+## Static Function
 
 In addition to the PHP files you can also specify your mapping information inside
 of a static function defined on the entity class itself. This is useful for cases
 where you want to keep your entity and mapping information together but don't want
 to use annotations. For this you just need to use the `StaticPHPDriver`:
 
-    [php]
+    <?php
     $driver = new StaticPHPDriver('/path/to/entities');
     $em->getConfiguration()->setMetadataDriverImpl($driver);
 
 Now you just need to define a static function named `loadMetadata($metadata)` on your entity:
 
-    [php]
+    <?php
     namespace Entities;
     
     use Doctrine\ORM\Mapping\ClassMetadata;
@@ -84,13 +84,13 @@ Now you just need to define a static function named `loadMetadata($metadata)` on
         }
     }
 
-++ ClassMetadataInfo API
+## ClassMetadataInfo API
 
 The `ClassMetadataInfo` class is the base data object for storing the mapping
 metadata for a single entity. It contains all the getters and setters you need 
 populate and retrieve information for an entity.
 
-+++ General Setters
+### General Setters
 
  * `setTableName($tableName)`
  * `setPrimaryTable(array $primaryTableDefinition)`
@@ -101,7 +101,7 @@ populate and retrieve information for an entity.
  * `setChangeTrackingPolicy($policy)`
  * `setIdentifier(array $identifier)`
 
-+++ Inheritance Setters
+### Inheritance Setters
 
  * `setInheritanceType($type)`
  * `setSubclasses(array $subclasses)`
@@ -109,7 +109,7 @@ populate and retrieve information for an entity.
  * `setDiscriminatorColumn($columnDef)`
  * `setDiscriminatorMap(array $map)`
 
-+++ Field Mapping Setters
+### Field Mapping Setters
 
  * `mapField(array $mapping)`
  * `mapOneToOne(array $mapping)`
@@ -117,23 +117,23 @@ populate and retrieve information for an entity.
  * `mapManyToOne(array $mapping)`
  * `mapManyToMany(array $mapping)`
 
-+++ Lifecycle Callback Setters
+### Lifecycle Callback Setters
 
  * `addLifecycleCallback($callback, $event)`
  * `setLifecycleCallbacks(array $callbacks)`
 
-+++ Versioning Setters
+### Versioning Setters
 
  * `setVersionMapping(array &$mapping)`
  * `setVersioned($bool)`
  * `setVersionField()`
  
-+++ General Getters
+### General Getters
 
  * `getTableName()`
  * `getTemporaryIdTableName()`
 
-+++ Identifier Getters
+### Identifier Getters
 
  * `getIdentifierColumnNames()`
  * `usesIdGenerator()`
@@ -146,7 +146,7 @@ populate and retrieve information for an entity.
  * `getSingleIdentifierFieldName()`
  * `getSingleIdentifierColumnName()`
 
-+++ Inheritance Getters
+### Inheritance Getters
 
  * `isInheritanceTypeNone()`
  * `isInheritanceTypeJoined()`
@@ -155,13 +155,13 @@ populate and retrieve information for an entity.
  * `isInheritedField($fieldName)`
  * `isInheritedAssociation($fieldName)`
  
-+++ Change Tracking Getters
+### Change Tracking Getters
 
  * `isChangeTrackingDeferredExplicit()`
  * `isChangeTrackingDeferredImplicit()`
  * `isChangeTrackingNotify()`
 
-+++ Field & Association Getters
+### Field & Association Getters
 
  * `isUniqueField($fieldName)`
  * `isNullable($fieldName)`
@@ -178,12 +178,12 @@ populate and retrieve information for an entity.
  * `isSingleValuedAssociation($fieldName)`
  * `isCollectionValuedAssociation($fieldName)`
 
-+++ Lifecycle Callback Getters
+### Lifecycle Callback Getters
 
  * `hasLifecycleCallbacks($lifecycleEvent)`
  * `getLifecycleCallbacks($event)`
 
-++ ClassMetadata API
+## ClassMetadata API
 
 The `ClassMetadata` class extends `ClassMetadataInfo` and adds the runtime functionality
 required by Doctrine. It adds a few extra methods related to runtime reflection

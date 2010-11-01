@@ -1,18 +1,18 @@
 Doctrine 2 features a lightweight event system that is part of the Common package.
 
-++ The Event System
+## The Event System
 
 The event system is controlled by the `EventManager`. It is the central point
 of Doctrine's event listener system. Listeners are registered on the manager
 and events are dispatched through the manager.
 
-    [php]
+    <?php
     $evm = new EventManager();
 
 Now we can add some event listeners to the `$evm`. Let's create a `EventTest` class
 to play around with.
 
-    [php]
+    <?php
     class EventTest
     {
         const preFoo = 'preFoo';
@@ -44,13 +44,13 @@ to play around with.
 
 Events can be dispatched by using the `dispatchEvent()` method.
 
-    [php]
+    <?php
     $evm->dispatchEvent(EventTest::preFoo);
     $evm->dispatchEvent(EventTest::postFoo);
 
 You can easily remove a listener with the `removeEventListener()` method.
 
-    [php]
+    <?php
     $evm->removeEventListener(array(self::preFoo, self::postFoo), $this);
 
 The Doctrine 2 event system also has a simple concept of event subscribers. We
@@ -58,7 +58,7 @@ can define a simple `TestEventSubscriber` class which implements the
 `\Doctrine\Common\EventSubscriber` interface and implements a `getSubscribedEvents()`
 method which returns an array of events it should be subscribed to.
 
-    [php]
+    <?php
     class TestEventSubscriber implements \Doctrine\Common\EventSubscriber
     {
         public $preFooInvoked = false;
@@ -79,17 +79,17 @@ method which returns an array of events it should be subscribed to.
 
 Now when you dispatch an event any event subscribers will be notified for that event.
 
-    [php]
+    <?php
     $evm->dispatchEvent(TestEvent::preFoo);
 
 Now you can test the `$eventSubscriber` instance to see if the `preFoo()` method was invoked.
 
-    [php]
+    <?php
     if ($eventSubscriber->preFooInvoked) {
         echo 'pre foo invoked!';
     }
 
-+++ Naming convention
+### Naming convention
 
 Events being used with the Doctrine 2 EventManager are best named with camelcase and the value of the corresponding constant should be the name of the constant itself, even with spelling. This has several reasons:
 
@@ -99,7 +99,7 @@ Events being used with the Doctrine 2 EventManager are best named with camelcase
 
 An example for a correct notation can be found in the example `EventTest` above.
 
-++ Lifecycle Events
+## Lifecycle Events
 
 The EntityManager and UnitOfWork trigger a bunch of events during the life-time of their registered entities.
 
@@ -120,7 +120,7 @@ The EntityManager and UnitOfWork trigger a bunch of events during the life-time 
 
 You can access the Event constants from the `Events` class in the ORM package.
 
-    [php]
+    <?php
     use Doctrine\ORM\Events;
     echo Events::preUpdate;
 
@@ -134,13 +134,13 @@ These can be hooked into by two different types of event listeners:
 > operations that can be executed. Please read the *Implementing Event Listeners* section very carefully to understand
 > which operations are allowed in which lifecycle event.
 
-++ Lifecycle Callbacks
+## Lifecycle Callbacks
 
 A lifecycle event is a regular event with the additional feature of providing
 a mechanism to register direct callbacks inside the corresponding entity classes
 that are executed when the lifecycle event occurs.
 
-    [php]
+    <?php
 
     /** @Entity @HasLifecycleCallbacks */
     class User
@@ -225,7 +225,7 @@ XML would look something like this:
 
 You just need to make sure a public `doStuffOnPrePersist()` and `doStuffOnPostPersist()` method is defined on your `User` model.
 
-    [php]
+    <?php
     // ...
 
     class User
@@ -246,7 +246,7 @@ You just need to make sure a public `doStuffOnPrePersist()` and `doStuffOnPostPe
 The `key` of the lifecycleCallbacks is the name of the method and the value is
 the event type. The allowed event types are the ones listed in the previous Lifecycle Events section.
 
-++ Listening to Lifecycle Events
+## Listening to Lifecycle Events
 
 Lifecycle event listeners are much more powerful than the simple lifecycle callbacks that are defined on the entity
 classes. They allow to implement re-usable behaviors between different entity classes, yet require much more detailed
@@ -255,7 +255,7 @@ section carefully if you are trying to write your own listener.
 
 To register an event listener you have to hook it into the EventManager that is passed to the EntityManager factory:
 
-    [php]
+    <?php
     $eventManager = new EventManager();
     $eventManager->addEventListener(array(Events::preUpdate), MyEventListener());
     $eventManager->addEventSubscriber(new MyEventSubscriber());
@@ -264,11 +264,11 @@ To register an event listener you have to hook it into the EventManager that is 
 
 You can also retrieve the event manager instance after the EntityManager was created:
 
-    [php]
+    <?php
     $entityManager->getEventManager()->addEventListener(array(Events::preUpdate), MyEventListener());
     $entityManager->getEventManager()->addEventSubscriber(new MyEventSubscriber());
 
-++ Implementing Event Listeners
+## Implementing Event Listeners
 
 This section explains what is and what is not allowed during specific lifecycle events of the UnitOfWork.
 Although you get passed the EntityManager in all of these events, you have to follow this restrictions very
@@ -279,7 +279,7 @@ For the described events that are also lifecycle callback events the restriction
 apply as well, with the additional restriction that you do not have access to the EntityManager
 or UnitOfWork APIs inside these events.
 
-+++ prePersist
+### prePersist
 
 There are two ways for the `prePersist` event to be triggered. One is obviously
 when you call `EntityManager#persist()`. The event is also called for all
@@ -302,7 +302,7 @@ The following restrictions apply to `prePersist`:
   `UnitOfWork` API. We do not recommend such operations in the persistence by
   reachability context, so do this at your own risk and possibly supported by unit-tests.
 
-+++ preRemove
+### preRemove
 
 The `preRemove` event is called on every entity when its passed to
 the `EntityManager#remove()` method. It is cascaded for all
@@ -312,7 +312,7 @@ There are no restrictions to what methods can be called inside
 the `preRemove` event, except when the remove method itself was
 called during a flush operation.
 
-+++ onFlush
+### onFlush
 
 OnFlush is a very powerful event. It is called inside `EntityManager#flush()`
 after the changes to all the managed entities and their associations have
@@ -327,7 +327,7 @@ been computed. This means, the `onFlush` event has access to the sets of:
 To make use of the onFlush event you have to be familiar with the internal UnitOfWork API,
 which grants you access to the previously mentioned sets. See this example:
 
-    [php]
+    <?php
     class FlushExampleListener
     {
         public function onFlush(OnFlushEventArgs $eventArgs)
@@ -367,7 +367,7 @@ The following restrictions apply to the onFlush event:
   or `$unitOfWork->recomputeSingleEntityChangeSet($classMetadata, $entity)`. The second
   method has lower overhead, but only re-computes primitive fields, never associations.
 
-+++ preUpdate
+### preUpdate
 
 PreUpdate is the most restrictive to use event, since it is called right before
 an update statement is called for an entity inside the `EntityManager#flush()`
@@ -389,7 +389,7 @@ with their old and new value. The following methods are available on the `PreUpd
 
 A simple example for this event looks like:
 
-    [php]
+    <?php
     class NeverAliceOnlyBobListener
     {
         public function preUpdate(PreUpdateEventArgs $eventArgs)
@@ -406,7 +406,7 @@ You could also use this listener to implement validation of all the fields that 
 This is more efficient than using a lifecycle callback when there are expensive validations
 to call:
 
-    [php]
+    <?php
     class ValidCreditCardListener
     {
         public function preUpdate(PreUpdateEventArgs $eventArgs)
@@ -430,23 +430,23 @@ Restrictions for this event:
 * Changes to fields of the passed entities are not recognized by the flush operation anymore, use the computed change-set passed to the event to modify primitive field values.
 * Any calls to `EntityManager#persist()` or `EntityManager#remove()`, even in combination with the UnitOfWork API are strongly discouraged and don't work as expected outside the flush operation.
 
-+++ postUpdate, postRemove, postPersist
+### postUpdate, postRemove, postPersist
 
 The three post events are called inside `EntityManager#flush()`. Changes in here
 are not relevant to the persistence in the database, but you can use this events
 to
 
-+++ postLoad
+### postLoad
 
 This event is called after an entity is constructed by the EntityManager.
 
-++ Load ClassMetadata Event
+## Load ClassMetadata Event
 
 When the mapping information for an entity is read, it is populated in to a
 `ClassMetadataInfo` instance. You can hook in to this process and manipulate
 the instance.
 
-    [php]
+    <?php
     $test = new EventTest();
     $metadataFactory = $em->getMetadataFactory();
     $evm = $em->getEventManager();
