@@ -1,3 +1,6 @@
+XML Mapping
+===========
+
 The XML mapping driver enables you to provide the ORM metadata in
 form of XML documents.
 
@@ -13,9 +16,8 @@ code-completion based on such an XML Schema document. The following
 is an outline of a XML mapping document with the proper xmlns/xsi
 setup for the latest code in trunk.
 
-::
+.. code-block:: xml
 
-    [xml]
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
@@ -68,9 +70,8 @@ Example
 As a quick start, here is a small example document that makes use
 of several common elements:
 
-::
+.. code-block:: xml
 
-    [xml]
     // Doctrine.Tests.ORM.Mapping.User.dcm.xml
     <?xml version="1.0" encoding="UTF-8"?>
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
@@ -153,9 +154,8 @@ Each XML Mapping File contains the definition of one entity,
 specified as the ``<entity />`` element as a direct child of the
 ``<doctrine-mapping />`` element:
 
-::
+.. code-block:: xml
 
-    [xml]
     <doctrine-mapping>
         <entity name="MyProject\User" table="cms_users" repository-class="MyProject\UserRepository">
             <!-- definition here -->
@@ -188,9 +188,8 @@ element as a children to the ``<entity />`` element. The field
 element is only used for primitive types that are not the ID of the
 entity. For the ID mapping you have to use the ``<id />`` element.
 
-::
+.. code-block:: xml
 
-    [xml]
     <entity name="MyProject\User">
     
         <field name="name" type="string" length="50" />
@@ -238,9 +237,8 @@ surrogate keys are recommended for use with Doctrine 2. The Id
 field allows to define properties of the identifier and allows a
 subset of the ``<field />`` element attributes:
 
-::
+.. code-block:: xml
 
-    [xml]
     <entity name="MyProject\User">
         <id name="id" type="integer" column="user_id" />
     </entity>
@@ -270,9 +268,8 @@ to nest a ``<generator />`` element inside the id-element. This of
 course only works for surrogate keys. For composite keys you always
 have to use the ``ASSIGNED`` strategy.
 
-::
+.. code-block:: xml
 
-    [xml]
     <entity name="MyProject\User">
         <id name="id" type="integer" column="user_id">
             <generator strategy="AUTO" />
@@ -333,9 +330,8 @@ from, which itself is not an entity however. The chapter on
 *Inheritance Mapping* describes a Mapped Superclass in detail. You
 can define it in XML using the ``<mapped-superclass />`` tag.
 
-::
+.. code-block:: xml
 
-    [xml]
     <doctrine-mapping>
         <mapped-superclass name="MyProject\BaseClass">
             <field name="created" type="datetime" />
@@ -366,9 +362,8 @@ You can specify the inheritance type in the ``<entity />`` element
 and then use the ``<discriminator-column />`` and
 ``<discriminator-mapping />`` attributes.
 
-::
+.. code-block:: xml
 
-    [xml]
     <entity name="MyProject\Animal" inheritance-type="JOINED">
         <discriminator-column name="discr" type="string" />
         <discriminator-map>
@@ -381,7 +376,7 @@ and then use the ``<discriminator-column />`` and
 The allowed values for inheritance-type attribute are ``JOINED`` or
 ``SINGLE_TABLE``.
 
-    **NOTE**
+.. note::
 
     All inheritance related definitions have to be defined on the root
     entity of the hierarchy.
@@ -393,9 +388,8 @@ Defining Lifecycle Callbacks
 You can define the lifecycle callback methods on your entities
 using the ``<lifecycle-callbacks />`` element:
 
-::
+.. code-block:: xml
 
-    [xml]
     <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
     
         <lifecycle-callbacks>
@@ -412,9 +406,8 @@ depend on the associations being on the inverse or owning side.
 
 For the inverse side the mapping is as simple as:
 
-::
+.. code-block:: xml
 
-    [xml]
     <entity class="MyProject\User">
         <one-to-one field="address" target-entity="Address" mapped-by="user" />
     </entity>
@@ -431,9 +424,8 @@ Required attributes for inverse One-To-One:
 
 For the owning side this mapping would look like:
 
-::
+.. code-block:: xml
 
-    [xml]
     <entity class="MyProject\Address">
         <one-to-one field="user" target-entity="User" inversed-by="address" />
     </entity>
@@ -467,9 +459,8 @@ association, which means it contains the foreign key.
 
 The completed explicitly defined mapping is:
 
-::
+.. code-block:: xml
 
-    [xml]
     <entity class="MyProject\Address">
         <one-to-one field="user" target-entity="User" inversed-by="address">
             <join-column name="user_id" referenced-column-name="id" />
@@ -484,9 +475,8 @@ bidirectional association. This simplifies the mapping compared to
 the one-to-one case. The minimal mapping for this association looks
 like:
 
-::
+.. code-block:: xml
 
-    [xml]
     <entity class="MyProject\Article">
         <many-to-one field="author" target-entity="User" />
     </entity>
@@ -516,9 +506,8 @@ to the naming of the join-column/foreign key. The explicitly
 defined mapping includes a ``<join-column />`` tag nested inside
 the many-to-one association tag:
 
-::
+.. code-block:: xml
 
-    [xml]
     <entity class="MyProject\Article">
         <many-to-one field="author" target-entity="User">
             <join-column name="author_id" referenced-column-name="id" />
@@ -537,9 +526,8 @@ association. There exists no such thing as a uni-directional
 one-to-many association, which means this association only ever
 exists for bi-directional associations.
 
-::
+.. code-block:: xml
 
-    [xml]
     <entity class="MyProject\User">
         <one-to-many field="phonenumbers" target-entity="Phonenumber" mapped-by="user" />
     </entity>
@@ -566,9 +554,8 @@ From all the associations the many-to-many has the most complex
 definition. When you rely on the mapping defaults you can omit many
 definitions and rely on their implicit values.
 
-::
+.. code-block:: xml
 
-    [xml]
     <entity class="MyProject\User">
         <many-to-many field="groups" target-entity="Group" />
     </entity>
@@ -596,9 +583,8 @@ The mapping defaults would lead to a join-table with the name
 "User\_Group" being created that contains two columns "user\_id"
 and "group\_id". The explicit definition of this mapping would be:
 
-::
+.. code-block:: xml
 
-    [xml]
     <entity class="MyProject\User">
         <many-to-many field="groups" target-entity="Group">
             <join-table name="cms_users_groups">
@@ -626,9 +612,8 @@ related entities. You can specify the cascade operations in the
 ``<cascade />`` element inside any of the association mapping
 tags.
 
-::
+.. code-block:: xml
 
-    [xml]
     <entity class="MyProject\User">
         <many-to-many field="groups" target-entity="Group">
             <cascade>
@@ -677,9 +662,8 @@ Defining Order of To-Many Associations
 You can require one-to-many or many-to-many associations to be
 retrieved using an additional ``ORDER BY``.
 
-::
+.. code-block:: xml
 
-    [xml]
     <entity class="MyProject\User">
         <many-to-many field="groups" target-entity="Group">
             <order-by>
@@ -695,9 +679,8 @@ To define additional indexes or unique constraints on the entities
 table you can use the ``<indexes />`` and
 ``<unique-constraints />`` elements:
 
-::
+.. code-block:: xml
 
-    [xml]
     <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
     
         <indexes>

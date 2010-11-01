@@ -1,3 +1,6 @@
+Working with Associations
+=========================
+
 Associations between entities are represented just like in regular
 object-oriented PHP, with references to other objects or
 collections of objects. When it comes to persistence, it is
@@ -101,9 +104,8 @@ information about its type and if its the owning or inverse side.
 This two entities generate the following MySQL Schema (Foreign Key
 definitions omitted):
 
-::
+.. code-block:: sql
 
-    [sql]
     CREATE TABLE User (
         id VARCHAR(255) NOT NULL,
         firstComment_id VARCHAR(255) DEFAULT NULL,
@@ -262,7 +264,7 @@ essentially an ordered map (just like a PHP array). That is why the
 separate method that has O(n) complexity using ``array_search``,
 where n is the size of the map.
 
-    **NOTE**
+.. note::
 
     Since Doctrine always only looks at the owning side of a
     bidirectional association for updates, it is not necessary for
@@ -350,7 +352,7 @@ is needed. As you can see, proper bidirectional association
 management in plain OOP is a non-trivial task and encapsulating all
 the details inside the classes can be challenging.
 
-    **NOTE**
+.. note::
 
     If you want to make sure that your collections are perfectly
     encapsulated you should not return them from a

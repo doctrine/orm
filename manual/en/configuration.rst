@@ -1,3 +1,6 @@
+Configuration
+=============
+
 Bootstrapping
 -------------
 
@@ -32,7 +35,9 @@ namespace and where there is a common root namespace.
 The following example shows the setup of a ``ClassLoader`` for the
 different types of Doctrine Installations:
 
-    **NOTE** This assumes you've created some kind of script to test
+.. note::
+
+    This assumes you've created some kind of script to test
     the following code in. Something like a ``test.php`` file.
 
 
@@ -370,7 +375,8 @@ lazy-loading capabilities to them. Doctrine can then give you an
 instance of such a proxy class whenever you request an object of
 the class being proxied. This happens in two situations:
 
-**Reference Proxies**
+Reference Proxies
+~~~~~~~~~~~~~~~~~
 
 The method ``EntityManager#getReference($entityName, $identifier)``
 lets you obtain a reference to an entity for which the identifier
@@ -395,7 +401,8 @@ for the Item class but your code does not need to care. In fact it
 **should not care**. Proxy objects should be transparent to your
 code.
 
-**Association proxies**
+Association proxies
+~~~~~~~~~~~~~~~~~~~
 
 The second most important situation where Doctrine uses proxy
 objects is when querying for objects. Whenever you query for an
@@ -405,7 +412,9 @@ query, Doctrine puts proxy objects in place where normally the
 associated object would be. Just like other proxies it will
 transparently initialize itself on first access.
 
-    **NOTE** Joining an association in a DQL or native query
+.. note::
+
+    Joining an association in a DQL or native query
     essentially means eager loading of that association in that query.
     This will override the 'fetch' option specified in the mapping for
     that association, but only for that query.

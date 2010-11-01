@@ -1,5 +1,5 @@
-DQL Explained
--------------
+Doctrine Query Language
+===========================
 
 DQL stands for **D**octrine **Q**uery **L**anguage and is an Object
 Query Language derivate that is very similar to the **H**ibernate
@@ -433,9 +433,8 @@ starting with 0. However with INDEX BY you can specify any other
 column to be the key of your result, it really only makes sense
 with primary or unique fields though:
 
-::
+.. code-block:: sql
 
-    [sql]
     SELECT u.id, u.status, upper(u.name) nameUpper FROM User u INDEX BY u.id
     JOIN u.phonenumbers p INDEX BY p.phonenumber
 
@@ -470,15 +469,17 @@ can also execute bulk updates on a set of entities using an
 DQL-UPDATE query. The Syntax of an UPDATE query works as expected,
 as the following example shows:
 
-::
+.. code-block:: sql
 
     UPDATE MyProject\Model\User u SET u.password = 'new' WHERE u.id IN (1, 2, 3)
 
 References to related entities are only possible in the WHERE
 clause and using sub-selects.
 
-    **CAUTION** DQL UPDATE statements are ported directly into a
-    Database UPDATE statement and therefore bypass any locking scheme
+.. warning::
+
+    DQL UPDATE statements are ported directly into a
+    Database UPDATE statement and therefore bypass any locking scheme, events
     and do not increment the version column. Entities that are already
     loaded into the persistence context will *NOT* be synced with the
     updated database state. It is recommended to call
@@ -492,14 +493,16 @@ DELETE queries
 DELETE queries can also be specified using DQL and their syntax is
 as simple as the UPDATE syntax:
 
-::
+.. code-block:: sql
 
     DELETE MyProject\Model\User u WHERE u.id = 4
 
 The same restrictions apply for the reference of related entities.
 
-    **CAUTION** DQL DELETE statements are ported directly into a
-    Database DELETE statement and therefore bypass any checks for the
+.. warning::
+
+    DQL DELETE statements are ported directly into a
+    Database DELETE statement and therefore bypass any events and checks for the
     version column if they are not explicitly added to the WHERE clause
     of the query. Additionally Deletes of specifies entities are *NOT*
     cascaded to related entities even if specified in the metadata.
@@ -540,7 +543,7 @@ Arithmetic operators
 
 You can do math in DQL using numeric values, for example:
 
-::
+.. warning::
 
     SELECT person.salary * 1.5 FROM CompanyPerson person WHERE person.salary < 100000
 
@@ -694,9 +697,8 @@ scenario it is a generic Person and Employee example:
 First notice that the generated SQL to create the tables for these
 entities looks like the following:
 
-::
+.. code-block:: sql
 
-    [sql]
     CREATE TABLE Person (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name VARCHAR(50) NOT NULL, discr VARCHAR(255) NOT NULL, department VARCHAR(50) NOT NULL)
 
 Now when persist a new ``Employee`` instance it will set the
@@ -714,18 +716,16 @@ discriminator value for us automatically:
 Now lets run a simple query to retrieve the ``Employee`` we just
 created:
 
-::
+.. code-block:: sql
 
-    [sql]
     SELECT e FROM Entities\Employee e WHERE e.name = 'test'
 
 If we check the generated SQL you will notice it has some special
 conditions added to ensure that we will only get back ``Employee``
 entities:
 
-::
+.. code-block:: sql
 
-    [sql]
     SELECT p0_.id AS id0, p0_.name AS name1, p0_.department AS department2, p0_.discr AS discr3 FROM Person p0_ WHERE (p0_.name = ?) AND p0_.discr IN ('employee')
 
 Class Table Inheritance
@@ -761,9 +761,8 @@ table, you just need to change the inheritance type from
 Now take a look at the SQL which is generated to create the table,
 you'll notice some differences:
 
-::
+.. code-block:: sql
 
-    [sql]
     CREATE TABLE Person (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(50) NOT NULL, discr VARCHAR(255) NOT NULL, PRIMARY KEY(id)) ENGINE = InnoDB;
     CREATE TABLE Employee (id INT NOT NULL, department VARCHAR(50) NOT NULL, PRIMARY KEY(id)) ENGINE = InnoDB;
     ALTER TABLE Employee ADD FOREIGN KEY (id) REFERENCES Person(id) ON DELETE CASCADE
@@ -777,9 +776,8 @@ Now if were to insert the same ``Employee`` as we did in the
 generate different SQL joining the ``Person`` information
 automatically for you:
 
-::
+.. code-block:: sql
 
-    [sql]
     SELECT p0_.id AS id0, p0_.name AS name1, e1_.department AS department2, p0_.discr AS discr3 FROM Employee e1_ INNER JOIN Person p0_ ON e1_.id = p0_.id WHERE p0_.name = ?
 
 The Query class
@@ -892,9 +890,8 @@ structure:
 To better understand mixed results, consider the following DQL
 query:
 
-::
+.. code-block:: sql
 
-    [sql]
     SELECT u, UPPER(u.name) nameUpper FROM MyProject\Model\User u
 
 This query makes use of the ``UPPER`` DQL function that returns a
@@ -1186,7 +1183,9 @@ number of results:
 -  ``Query::setMaxResults($maxResults)``
 -  ``Query::setFirstResult($offset)``
 
-    **NOTE** If your query contains a fetch-joined collection
+.. note::
+
+    If your query contains a fetch-joined collection
     specifying the result limit methods are not working as you would
     expect. Set Max Results restricts the number of database result
     rows, however in the case of fetch-joined collections one root

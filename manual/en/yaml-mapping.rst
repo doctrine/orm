@@ -1,3 +1,6 @@
+YAML Mapping
+============
+
 The YAML mapping driver enables you to provide the ORM metadata in
 form of YAML documents.
 
@@ -42,9 +45,8 @@ Example
 As a quick start, here is a small example document that makes use
 of several common elements:
 
-::
+.. code-block:: yaml
 
-    [yml]
     # Doctrine.Tests.ORM.Mapping.User.dcm.yml
     Doctrine\Tests\ORM\Mapping\User:
       type: entity

@@ -1,3 +1,6 @@
+Working with Objects
+====================
+
 In this chapter we will help you understand the ``EntityManager``
 and the ``UnitOfWork``. A Unit of Work is similar to an
 object-level transaction. A new Unit of Work is implicitly started
@@ -10,7 +13,7 @@ A Unit of Work can be manually closed by calling
 EntityManager#close(). Any changes to objects within this Unit of
 Work that have not yet been persisted are lost.
 
-    **NOTE**
+.. note::
 
     It is very important to understand that only
     ``EntityManager#flush()`` ever causes write operations against the
@@ -172,7 +175,7 @@ methods along the lines of the ``getName()`` method shown below:
         // .. other public methods of User
     }
 
-    **Warning**
+.. warning::
 
     Traversing the object graph for parts that are lazy-loaded will
     easily trigger lots of SQL queries and will perform badly if used
@@ -191,7 +194,9 @@ a result the persistent state of such an entity will subsequently
 be properly synchronized with the database when
 ``EntityManager#flush()`` is invoked.
 
-    **CAUTION** Invoking the ``persist`` method on an entity does NOT
+.. warning::
+
+    Invoking the ``persist`` method on an entity does NOT
     cause an immediate SQL INSERT to be issued on the database.
     Doctrine applies a strategy called "transactional write-behind",
     which means that it will delay most SQL commands until
@@ -211,7 +216,9 @@ Example:
     $em->persist($user);
     $em->flush();
 
-    **CAUTION** Generated entity identifiers / primary keys are
+.. warning::
+
+    Generated entity identifiers / primary keys are
     guaranteed to be available after the next successful flush
     operation that involves the entity in question. You can not rely on
     a generated identifier to be available directly after invoking
@@ -244,7 +251,9 @@ the ``EntityManager#remove($entity)`` method. By applying the
 which means that its persistent state will be deleted once
 ``EntityManager#flush()`` is invoked.
 
-    **CAUTION** Just like ``persist``, invoking ``remove`` on an entity
+.. warning::
+
+    Just like ``persist``, invoking ``remove`` on an entity
     does NOT cause an immediate SQL DELETE to be issued on the
     database. The entity will be deleted on the next invocation of
     ``EntityManager#flush()`` that involves that entity.
@@ -423,7 +432,9 @@ the ``merge`` operation is to reattach entities to an EntityManager
 that come from some cache (and are therefore detached) and you want
 to modify and persist such an entity.
 
-    **NOTE** If you load some detached entities from a cache and you do
+.. note::
+
+    If you load some detached entities from a cache and you do
     not need to persist or delete them or otherwise make use of them
     without the need for persistence services there is no need to use
     ``merge``. I.e. you can simply pass detached objects from a cache
@@ -516,7 +527,9 @@ to change tracking (see "Change Tracking Policies") and, of course,
 memory consumption, so you may want to check it from time to time
 during development.
 
-    **CAUTION** Do not invoke ``flush`` after every change to an entity
+.. warning::
+
+    Do not invoke ``flush`` after every change to an entity
     or every single invocation of persist/remove/merge/... This is an
     anti-pattern and unnecessarily reduces the performance of your
     application. Instead, form units of work that operate on your

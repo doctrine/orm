@@ -1,3 +1,6 @@
+Association Mapping
+===================
+
 This chapter explains how associations between entities are mapped
 with Doctrine. We start out with an explanation of the concept of
 owning and inverse sides which is important to understand when
@@ -65,7 +68,9 @@ The owning side of a bidirectional association is the side Doctrine
 consequently whether there is anything to do to update the
 association in the database.
 
-    **NOTE** "Owning side" and "inverse side" are technical concepts of
+.. note::
+
+    "Owning side" and "inverse side" are technical concepts of
     the ORM technology, not concepts of your domain model. What you
     consider as the owning side in your domain model can be different
     from what the owning side is for Doctrine. These are unrelated.
@@ -96,7 +101,9 @@ and more importantly because you can not pass this collection to
 all the useful PHP array functions, which makes it very hard to
 work with.
 
-    **CAUTION** The Collection interface and ArrayCollection class,
+.. warning::
+
+    The Collection interface and ArrayCollection class,
     like everything else in the Doctrine namespace, are neither part of
     the ORM, nor the DBAL, it is a plain PHP class that has no outside
     dependencies apart from dependencies on PHP itself (and the SPL).
@@ -280,7 +287,7 @@ Or you can trigger the validation manually:
 If the mapping is invalid the errors array contains a positive
 number of elements with error messages.
 
-    **NOTE**
+.. note::
 
     One common error is to use a backlash in front of the
     fully-qualified class-name. Whenever a FQCN is represented inside a
@@ -325,9 +332,8 @@ as the defaults would be the same.
 
 Generated MySQL Schema:
 
-::
+.. code-block:: sql
 
-    [sql]
     CREATE TABLE Product (
         id INT AUTO_INCREMENT NOT NULL,
         shipping_id INT DEFAULT NULL,
@@ -381,9 +387,8 @@ as the defaults would be the same.
 
 Generated MySQL Schema:
 
-::
+.. code-block:: sql
 
-    [sql]
     CREATE TABLE Cart (
         id INT AUTO_INCREMENT NOT NULL,
         customer_id INT DEFAULT NULL,
@@ -426,9 +431,8 @@ as the defaults would be the same.
 
 With the generated MySQL Schema:
 
-::
+.. code-block:: sql
 
-    [sql]
     CREATE TABLE Student (
         id INT AUTO_INCREMENT NOT NULL,
         mentor_id INT DEFAULT NULL,
@@ -476,15 +480,16 @@ association:
         // ...
     }
 
-    **NOTE** One-To-Many uni-directional relations with join-table only
+.. note::
+
+    One-To-Many uni-directional relations with join-table only
     work using the @ManyToMany annotation and a unique-constraint.
 
 
 Generates the following MySQL Schema:
 
-::
+.. code-block:: sql
 
-    [sql]
     CREATE TABLE User (
         id INT AUTO_INCREMENT NOT NULL,
         PRIMARY KEY(id)
@@ -532,16 +537,17 @@ with the following:
         // ...
     }
 
-    **TIP** The above ``@JoinColumn`` is optional as it would default
+.. note::
+
+    The above ``@JoinColumn`` is optional as it would default
     to ``address_id`` and ``id`` anyways. You can omit it and let it
     use the defaults.
 
 
 Generated MySQL Schema:
 
-::
+.. code-block:: sql
 
-    [sql]
     CREATE TABLE User (
         id INT AUTO_INCREMENT NOT NULL,
         address_id INT DEFAULT NULL,
@@ -597,9 +603,8 @@ as the defaults would be the same.
 
 Generated MySQL Schema:
 
-::
+.. code-block:: sql
 
-    [sql]
     CREATE TABLE Product (
         id INT AUTO_INCREMENT NOT NULL,
         PRIMARY KEY(id)
@@ -649,9 +654,8 @@ as the defaults would be the same.
 
 Generated MySQL Schema:
 
-::
+.. code-block:: sql
 
-    [sql]
     CREATE TABLE Category (
         id INT AUTO_INCREMENT NOT NULL,
         parent_id INT DEFAULT NULL,
@@ -706,9 +710,8 @@ entities:
 
 Generated MySQL Schema:
 
-::
+.. code-block:: sql
 
-    [sql]
     CREATE TABLE User (
         id INT AUTO_INCREMENT NOT NULL,
         PRIMARY KEY(id)
@@ -868,9 +871,8 @@ field named ``$friendsWithMe`` and ``$myFriends``.
 
 Generated MySQL Schema:
 
-::
+.. code-block:: sql
 
-    [sql]
     CREATE TABLE User (
         id INT AUTO_INCREMENT NOT NULL,
         PRIMARY KEY(id)
@@ -940,30 +942,26 @@ ORDER BY, since g is not fetch joined:
 
 However the following:
 
-::
+.. code-block:: sql
 
-    [sql]
     SELECT u, g FROM User u JOIN u.groups g WHERE u.id = 10
 
 ...would internally be rewritten to:
 
-::
+.. code-block:: sql
 
-    [sql]
     SELECT u, g FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name ASC
 
 You can't reverse the order with an explicit DQL ORDER BY:
 
-::
+.. code-block:: sql
 
-    [sql]
     SELECT u, g FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name DESC
 
 ...is internally rewritten to:
 
-::
+.. code-block:: sql
 
-    [sql]
     SELECT u, g FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name DESC, g.name ASC
 
 

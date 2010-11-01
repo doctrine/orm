@@ -1,5 +1,8 @@
-The Doctrine Console
---------------------
+Tools
+=====
+
+Doctrine Console
+----------------
 
 The Doctrine Console is a Command Line Interface tool for
 simplifying common tasks during the development of a project that
@@ -170,7 +173,7 @@ The following Commands are currently available:
 Database Schema Generation
 --------------------------
 
-    **Note**
+.. note::
 
     SchemaTool can do harm to your database. It will drop or alter
     tables, indexes, sequences and such. Please use this tool with
@@ -274,7 +277,7 @@ will output the SQL for the ran operation.
 Before using the orm:schema-tool commands, remember to configure
 your cli-config.php properly.
 
-    **NOTE**
+.. note::
 
     When using the Annotation Mapping Driver you have to either setup
     your autoloader in the cli-config.php correctly to find all the
@@ -364,7 +367,9 @@ You can also reverse engineer a database using the
 
     $ php doctrine orm:convert-mapping --from-database yml /path/to/mapping-path-converted-to-yml
 
-    **CAUTION** Reverse Engineering is not always working perfectly
+.. warning::
+
+    Reverse Engineering is not always working perfectly
     depending on special cases. It will only detect Many-To-One
     relations (even if they are One-To-One) and will try to create
     entities from Many-To-Many tables. It also has problems with naming

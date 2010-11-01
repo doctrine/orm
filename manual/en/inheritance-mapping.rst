@@ -1,3 +1,6 @@
+Inheritance Mapping
+===================
+
 Mapped Superclasses
 -------------------
 
@@ -11,7 +14,7 @@ Mapped superclasses, just as regular, non-mapped classes, can
 appear in the middle of an otherwise mapped inheritance hierarchy
 (through Single Table Inheritance or Class Table Inheritance).
 
-    **NOTE**
+.. note::
 
     A mapped superclass cannot be an entity, it is not query-able and
     persistent relationships defined by a mapped superclass must be
@@ -54,9 +57,8 @@ Example:
 The DDL for the corresponding database schema would look something
 like this (this is for SQLite):
 
-::
+.. code-block:: sql
 
-    [sql]
     CREATE TABLE EntitySubClass (mapped1 INTEGER NOT NULL, mapped2 TEXT NOT NULL, id INTEGER NOT NULL, name TEXT NOT NULL, related1_id INTEGER DEFAULT NULL, PRIMARY KEY(id))
 
 As you can see from this DDL snippet, there is only a single table
@@ -202,7 +204,9 @@ Things to note:
    namespace as the entity class on which the discriminator map is
    applied.
 
-    **NOTE** When you do not use the SchemaTool to generate the
+.. note::
+
+    When you do not use the SchemaTool to generate the
     required SQL you should know that deleting a class table
     inheritance makes use of the foreign key property
     ``ON DELETE CASCADE`` in all database implementations. A failure to

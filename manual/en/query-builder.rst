@@ -1,5 +1,5 @@
 The QueryBuilder
-----------------
+================
 
 A ``QueryBuilder`` provides an API that is designed for
 conditionally constructing a DQL query in several steps.

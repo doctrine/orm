@@ -11,6 +11,33 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   introduction
+   architecture
+   configuration
+   basic-mapping
+   association-mapping
+   inheritance-mapping
+   working-with-objects
+   working-with-associations
+   transactions-and-concurrency
+   events
+   batch-processing
+   dql-doctrine-query-language
+   query-builder
+   native-sql
+   change-tracking-policies
+   partial-objects
+   xml-mapping
+   yaml-mapping
+   annotations-reference
+   php-mapping
+   caching
+   improving-performance
+   tools
+   metadata-drivers
+   best-practices
+   limitations-and-Known-issues
+
 Indices and tables
 ==================
 

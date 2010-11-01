@@ -1,3 +1,6 @@
+Annotations Reference
+=====================
+
 In this chapter a reference of every Doctrine 2 Annotation is given
 with short explanations on their context and usage.
 
@@ -38,7 +41,8 @@ Index
 Reference
 ---------
 
-### @Column
+@Column
+~~~~~~~
 
 Marks an annotated instance variable as "persistent". It has to be
 inside the instance variables PHP DocBlock comment. Any value hold
@@ -97,7 +101,8 @@ Examples:
      */
     protected $height;
 
-### @ChangeTrackingPolicy
+@ChangeTrackingPolicy
+~~~~~~~~~~~~~~~~~~~~~
 
 The Change Tracking Policy annotation allows to specify how the
 Doctrine 2 UnitOfWork should detect changes in properties of
@@ -125,7 +130,8 @@ Example:
      */
     class User {}
 
-### @DiscrimnatorColumn
+@DiscrimnatorColumn
+~~~~~~~~~~~~~~~~~~~~~
 
 This annotation is a required annotation for the topmost/super
 class of an inheritance hierarchy. It specifies the details of the
@@ -144,7 +150,8 @@ Optional attributes:
 -  type - By default this is string.
 -  length - By default this is 255.
 
-### @DiscriminatorMap
+@DiscriminatorMap
+~~~~~~~~~~~~~~~~~~~~~
 
 The discriminator map is a required annotation on the
 top-most/super class in an inheritance hierarchy. It takes an array
@@ -167,7 +174,8 @@ depending if the classes are in the namespace or not.
         // ...
     }
 
-### @Entity
+@Entity
+~~~~~~~
 
 Required annotation to mark a PHP class as Entity. Doctrine manages
 the persistence of all classes marked as entity.
@@ -193,7 +201,8 @@ Example:
         //...
     }
 
-### @GeneratedValue
+@GeneratedValue
+~~~~~~~~~~~~~~~~~~~~~
 
 Specifies which strategy is used for identifier generation for an
 instance variable which is annotated by `@Id <#ann_id>`_. This
@@ -221,7 +230,8 @@ Example:
      */
     protected $id = null;
 
-### @HasLifecycleCallbacks
+@HasLifecycleCallbacks
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Annotation which has to be set on the entity-class PHP DocBlock to
 notify Doctrine that this entity has entity life-cycle callback
@@ -247,7 +257,8 @@ Example:
         public function sendOptinMail() {}
     }
 
-### @Index
+@Index
+~~~~~~~
 
 Annotation is used inside the `@Table <#ann_table>`_ annotation on
 the entity-class level. It allows to hint the SchemaTool to
@@ -273,7 +284,8 @@ Example:
     {
     }
 
-### @Id
+@Id
+~~~~~~~
 
 The annotated instance variable will be marked as entity
 identifier, the primary key in the database. This annotation is a
@@ -292,7 +304,8 @@ Example:
      */
     protected $id = null;
 
-### @InheritanceType
+@InheritanceType
+~~~~~~~~~~~~~~~~~~~~~
 
 In an inheritance hierarchy you have to use this annotation on the
 topmost/super class to define which strategy should be used for
@@ -330,7 +343,8 @@ Examples:
         // ...
     }
 
-### @JoinColumn
+@JoinColumn
+~~~~~~~~~~~~~~
 
 This annotation is used in the context of relations in
 `@ManyToOne <#ann_manytoone>`_, `@OneToOne <#ann_onetoone>`_ fields
@@ -379,13 +393,15 @@ Example:
      */
     private $customer;
 
-### @JoinColumns
+@JoinColumns
+~~~~~~~~~~~~~~
 
 An array of @JoinColumn annotations for a
 `@ManyToOne <#ann_manytoone>`_ or `@OneToOne <#ann_onetoone>`_
 relation with an entity that has multiple identifiers.
 
-### @JoinTable
+@JoinTable
+~~~~~~~~~~~~~~
 
 Using `@OneToMany <#ann_onetomany>`_ or
 `@ManyToMany <#ann_manytomany>`_ on the owning side of the relation
@@ -423,7 +439,8 @@ Example:
      */
     public $phonenumbers;
 
-### @ManyToOne
+@ManyToOne
+~~~~~~~~~~~~~~
 
 Defines that the annotated instance variable holds a reference that
 describes a many-to-one relationship between two entities.
@@ -453,7 +470,8 @@ Example:
      */
     private $cart;
 
-### @ManyToMany
+@ManyToMany
+~~~~~~~~~~~~~~
 
 Defines an instance variable holds a many-to-many relationship
 between two entities. `@JoinTable <#ann_jointable>`_ is an
@@ -508,7 +526,8 @@ Example:
      */
     private $features;
 
-### @MappedSuperclass
+@MappedSuperclass
+~~~~~~~~~~~~~~~~~~~~~
 
 An mapped superclass is an abstract or concrete class that provides
 persistent entity state and mapping information for its subclasses,
@@ -519,7 +538,8 @@ The @MappedSuperclass annotation cannot be used in conjunction with
 @Entity. See the Inheritance Mapping section for
 `more details on the restrictions of mapped superclasses </../inheritance-mapping#mapped-superclasses>`_.
 
-### @OneToOne
+@OneToOne
+~~~~~~~~~~~~~~
 
 The @OneToOne annotation works almost exactly as the
 `@ManyToOne <#ann_manytoone>`_ with one additional option that can
@@ -556,7 +576,8 @@ Example:
      */
     private $customer;
 
-### @OneToMany
+@OneToMany
+~~~~~~~~~~~~~~
 
 Required attributes:
 
@@ -586,7 +607,8 @@ Example:
      */
     public $phonenumbers;
 
-### @OrderBy
+@OrderBy
+~~~~~~~~~~~~~~
 
 Optional annotation that can be specified with a
 `@ManyToMany <#ann_manytomany>`_ or `@OneToMany <#ann_onetomany>`_
@@ -613,49 +635,57 @@ positional statement. Multiple Fields are separated by a comma (,).
 The referenced field names have to exist on the ``targetEntity``
 class of the ``@ManyToMany`` or ``@OneToMany`` annotation.
 
-### @PostLoad
+@PostLoad
+~~~~~~~~~~~~~~
 
 Marks a method on the entity to be called as a @PostLoad event.
 Only works with @HasLifecycleCallbacks in the entity class PHP
 DocBlock.
 
-### @PostPersist
+@PostPersist
+~~~~~~~~~~~~~~
 
 Marks a method on the entity to be called as a @PostPersist event.
 Only works with @HasLifecycleCallbacks in the entity class PHP
 DocBlock.
 
-### @PostRemove
+@PostRemove
+~~~~~~~~~~~~~~
 
 Marks a method on the entity to be called as a @PostRemove event.
 Only works with @HasLifecycleCallbacks in the entity class PHP
 DocBlock.
 
-### @PostUpdate
+@PostUpdate
+~~~~~~~~~~~~~~
 
 Marks a method on the entity to be called as a @PostUpdate event.
 Only works with @HasLifecycleCallbacks in the entity class PHP
 DocBlock.
 
-### @PrePersist
+@PrePersist
+~~~~~~~~~~~~~~
 
 Marks a method on the entity to be called as a @PrePersist event.
 Only works with @HasLifecycleCallbacks in the entity class PHP
 DocBlock.
 
-### @PreRemove
+@PreRemove
+~~~~~~~~~~~~~~
 
 Marks a method on the entity to be called as a @PreRemove event.
 Only works with @HasLifecycleCallbacks in the entity class PHP
 DocBlock.
 
-### @PreUpdate
+@PreUpdate
+~~~~~~~~~~~~~~
 
 Marks a method on the entity to be called as a @PreUpdate event.
 Only works with @HasLifecycleCallbacks in the entity class PHP
 DocBlock.
 
-### @SequenceGenerator
+@SequenceGenerator
+~~~~~~~~~~~~~~~~~~~~~
 
 For the use with @generatedValue(strategy="SEQUENCE") this
 annotation allows to specify details about the sequence, such as
@@ -688,7 +718,8 @@ Example:
      */
     protected $id = null;
 
-### @Table
+@Table
+~~~~~~~
 
 Annotation describes the table an entity is persisted in. It is
 placed on the entity-class PHP DocBlock and is optional. If it is
@@ -721,7 +752,8 @@ Example:
      */
     class User { }
 
-### @UniqueConstraint
+@UniqueConstraint
+~~~~~~~~~~~~~~~~~~~~~
 
 Annotation is used inside the `@Table <#ann_table>`_ annotation on
 the entity-class level. It allows to hint the SchemaTool to
@@ -748,7 +780,8 @@ Example:
     {
     }
 
-### @Version
+@Version
+~~~~~~~~~~~~~~
 
 Marker annotation that defines a specified column as version
 attribute used in an optimistic locking scenario. It only works on

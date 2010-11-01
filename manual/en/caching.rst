@@ -1,3 +1,6 @@
+Caching
+=======
+
 Doctrine provides cache drivers in the ``Common`` package for some
 of the most popular caching implementations such as APC, Memcache
 and Xcache. We also provide an ``ArrayCache`` driver which stores

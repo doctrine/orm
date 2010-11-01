@@ -1,3 +1,6 @@
+Architecture
+============
+
 This chapter gives an overview of the overall architecture,
 terminology and constraints of Doctrine 2. It is recommended to
 read this chapter carefully.

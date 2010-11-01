@@ -1,9 +1,14 @@
+Batch Processing
+================
+
 This chapter shows you how to accomplish bulk inserts, updates and
 deletes with Doctrine in an efficient way. The main problem with
 bulk operations is usually not to run out of memory and this is
 especially what the strategies presented here provide help with.
 
-    **CAUTION** An ORM tool is not primarily well-suited for mass
+.. warning::
+
+    An ORM tool is not primarily well-suited for mass
     inserts, updates or deletions. Every RDBMS has its own, most
     effective way of dealing with such operations and if the options
     outlined below are not sufficient for your purposes we recommend

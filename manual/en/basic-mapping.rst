@@ -1,3 +1,6 @@
+Basic Mapping
+=============
+
 This chapter explains the basic mapping of objects and properties.
 Mapping of associations will be covered in the next chapter
 "Association Mapping".
@@ -17,7 +20,9 @@ This manual usually uses docblock annotations in all the examples
 that are spread throughout all chapters. There are dedicated
 chapters for XML and YAML mapping, respectively.
 
-    **NOTE** If you're wondering which mapping driver gives the best
+.. note::
+
+    If you're wondering which mapping driver gives the best
     performance, the answer is: None. Once the metadata of a class has
     been read from the source (annotations, xml or yaml) it is stored
     in an instance of the ``Doctrine\ORM\Mapping\ClassMetadata`` class
@@ -127,11 +132,14 @@ built-in mapping types:
    PHP double. *IMPORTANT*: Works only with locale settings that use
    decimal points as separator.
 
-    **NOTE** Doctrine Mapping Types are NOT SQL types and NOT PHP
+.. note::
+
+    Doctrine Mapping Types are NOT SQL types and NOT PHP
     types! They are mapping types between 2 types.
 
+.. warning::
 
-    **CAUTION** Mapping types are *case-sensitive*. For example, using
+    Mapping types are *case-sensitive*. For example, using
     a DateTime column will NOT match the datetime type that ships with
     Doctrine 2!
 
@@ -259,7 +267,9 @@ know about it. This can be achieved through the
 ``Doctrine\DBAL\Configuration#setCustomTypes(array $types)``
 method.
 
-    **NOTE** ``Doctrine\ORM\Configuration`` is a subclass of
+.. note::
+
+    ``Doctrine\ORM\Configuration`` is a subclass of
     ``Doctrine\DBAL\Configuration``, so the methods are available on
     your ORM Configuration instance as well.
 
@@ -428,7 +438,9 @@ need to access the sequence once to generate the identifiers for
     INCREMENT BY value, otherwise you may get duplicate keys.
 
 
-    **TIP** It is possible to use strategy="AUTO" and at the same time
+.. note::
+
+    It is possible to use strategy="AUTO" and at the same time
     specifying a @SequenceGenerator. In such a case, your custom
     sequence settings are used in the case where the preferred strategy
     of the underlying platform is SEQUENCE, such as for Oracle and
@@ -467,11 +479,14 @@ backticks. Here is an example:
 Doctrine will then quote this column name in all SQL statements
 according to the used database platform.
 
-    **CAUTION** Identifier Quoting is not supported for join column
+.. warning::
+
+    Identifier Quoting is not supported for join column
     names or discriminator column names.
 
+.. warning::
 
-    **CAUTION** Identifier Quoting is a feature that is mainly intended
+    Identifier Quoting is a feature that is mainly intended
     to support legacy database schemas. The use of reserved words and
     identifier quoting is generally discouraged. Identifier quoting
     should not be used to enable the use non-standard-characters such

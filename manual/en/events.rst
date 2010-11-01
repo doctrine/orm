@@ -1,3 +1,6 @@
+Events
+======
+
 Doctrine 2 features a lightweight event system that is part of the
 Common package.
 
@@ -139,10 +142,10 @@ the life-time of their registered entities.
 
 -  preRemove - The preRemove event occurs for a given entity before
    the respective EntityManager remove operation for that entity is
-   executed.
+   executed.  It is not called for a DQL DELETE statement.
 -  postRemove - The postRemove event occurs for an entity after the
    entity has been deleted. It will be invoked after the database
-   delete operations.
+   delete operations. It is not called for a DQL DELETE statement.
 -  prePersist - The prePersist event occurs for a given entity
    before the respective EntityManager persist operation for that
    entity is executed.
@@ -151,9 +154,9 @@ the life-time of their registered entities.
    database insert operations. Generated primary key values are
    available in the postPersist event.
 -  preUpdate - The preUpdate event occurs before the database
-   update operations to entity data.
+   update operations to entity data. It is not called for a DQL UPDATE statement.
 -  postUpdate - The postUpdate event occurs after the database
-   update operations to entity data.
+   update operations to entity data. It is not called for a DQL UPDATE statement.
 -  postLoad - The postLoad event occurs for an entity after the
    entity has been loaded into the current EntityManager from the
    database or after the refresh operation has been applied to it.
@@ -164,7 +167,9 @@ the life-time of their registered entities.
    managed entities are computed. This event is not a lifecycle
    callback.
 
-    **CAUTION** Note that the postLoad event occurs for an entity
+.. warning::
+
+    Note that the postLoad event occurs for an entity
     before any associations have been initialized. Therefore it is not
     safe to access associations in a postLoad callback or event
     handler.
@@ -191,7 +196,9 @@ listeners:
    methods that receives some kind of ``EventArgs`` instance which
    give access to the entity, EntityManager or other relevant data.
 
-    **NOTE** All Lifecycle events that happen during the ``flush()`` of
+.. note::
+
+    All Lifecycle events that happen during the ``flush()`` of
     an EntityManager have very specific constraints on the allowed
     operations that can be executed. Please read the
     *Implementing Event Listeners* section very carefully to understand

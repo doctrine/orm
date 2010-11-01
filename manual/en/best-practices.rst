@@ -1,7 +1,10 @@
-    **NOTE** The best practices mentioned here that affect database
-    design generally refer to best practices when working with Doctrine
-    and do not necessarily reflect best practices for database design
-    in general.
+Best Practices
+==============
+
+The best practices mentioned here that affect database
+design generally refer to best practices when working with Doctrine
+and do not necessarily reflect best practices for database design
+in general.
 
 
 Don't use public properties on entities

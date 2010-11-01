@@ -1,3 +1,6 @@
+Native SQL
+==========
+
 A ``NativeQuery`` lets you execute native SQL, mapping the results
 according to your specifications. Such a specification that
 describes how an SQL result set is mapped to a Doctrine result is
@@ -44,7 +47,9 @@ components:
    root entities or joined entities must be present in the SQL query
    and mapped accordingly using ``ResultSetMapping#addMetaResult``.
 
-    **TIP** It might not surprise you that Doctrine uses
+.. note::
+
+    It might not surprise you that Doctrine uses
     ``ResultSetMapping``s internally when you create DQL queries. As
     the query gets parsed and transformed to SQL, Doctrine fills a
     ``ResultSetMapping`` that describes how the results should be

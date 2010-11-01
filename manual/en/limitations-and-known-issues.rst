@@ -1,3 +1,6 @@
+Limitations and Known Issues
+============================
+
 We try to make using Doctrine2 a very pleasant experience.
 Therefore we think it is very important to be honest about the
 current limitations to our users. Much like every other piece of
@@ -21,9 +24,8 @@ There are many use-cases where you would want to use an
 Entity-Attribute-Value approach to modelling and define a
 table-schema like the following:
 
-::
+.. code-block:: sql
 
-    [sql]
     CREATE TABLE product (
         id INTEGER,
         name VARCHAR,
@@ -41,9 +43,8 @@ This is currently *NOT* possible with Doctrine2. You have to define
 a surrogate key on the ``product_attributes`` table and use a
 unique-constraint for the ``product_id`` and ``attribute_name``.
 
-::
+.. code-block:: sql
 
-    [sql]
     CREATE TABLE product_attributes (
         attribute_id, INTEGER,
         product_id INTEGER,
@@ -109,9 +110,8 @@ Identifier" you might be interested in mapping the same table
 structure as given above to an array. However this is not yet
 possible either. See the following example:
 
-::
+.. code-block:: sql
 
-    [sql]
     CREATE TABLE product (
         id INTEGER,
         name VARCHAR,

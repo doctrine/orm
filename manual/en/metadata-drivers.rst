@@ -1,3 +1,6 @@
+Metadata Drivers
+================
+
 The heart of an object relational mapper is the mapping information
 that glues everything together. It instructs the EntityManager how
 it should behave when dealing with the different entities.

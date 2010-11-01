@@ -1,3 +1,6 @@
+Improving Performance
+=====================
+
 Bytecode Cache
 --------------
 
@@ -5,7 +8,9 @@ It is highly recommended to make use of a bytecode cache like APC.
 A bytecode cache removes the need for parsing PHP code on every
 request and can greatly improve performance.
 
-    **NOTE** "If you care about performance and don't use a bytecode
+.. note::
+
+    "If you care about performance and don't use a bytecode
     cache then you don't really care about performance. Please get one
     and start using it." (Stas Malyshev, Core Contributor to PHP and
     Zend Employee).

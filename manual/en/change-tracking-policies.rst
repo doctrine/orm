@@ -1,5 +1,5 @@
 Change Tracking Policies
-------------------------
+========================
 
 Change tracking is the process of determining what has changed in
 managed entities since the last time they were synchronized with
