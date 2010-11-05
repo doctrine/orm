@@ -689,7 +689,7 @@ class SqlWalker implements TreeWalker
             $sql = $this->_scalarResultAliasMap[$columnName];
         }
 
-        return $sql . ' ' . strtoupper($orderByItem->type);;
+        return $sql . ' ' . strtoupper($orderByItem->type);
     }
 
     /**
