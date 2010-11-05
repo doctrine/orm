@@ -211,7 +211,7 @@ class AnnotationDriver implements Driver
             $mapping = array();
             $mapping['fieldName'] = $property->getName();
 
-            // Check for JoinColummn/JoinColumns annotations
+            // Check for JoinColumn/JoinColumns annotations
             $joinColumns = array();
 
             if ($joinColumnAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinColumn')) {

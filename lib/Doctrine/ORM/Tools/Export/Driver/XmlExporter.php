@@ -77,7 +77,7 @@ class XmlExporter extends AbstractExporter
         }
 
         if ($metadata->discriminatorColumn) {
-            $discriminatorColumnXml = $root->addChild('discriminiator-column');
+            $discriminatorColumnXml = $root->addChild('discriminator-column');
             $discriminatorColumnXml->addAttribute('name', $metadata->discriminatorColumn['name']);
             $discriminatorColumnXml->addAttribute('type', $metadata->discriminatorColumn['type']);
             $discriminatorColumnXml->addAttribute('length', $metadata->discriminatorColumn['length']);
@@ -315,7 +315,7 @@ class XmlExporter extends AbstractExporter
     {
         $xml = $simpleXml->asXml();
 
-        // add marker linefeeds to aid the pretty-tokeniser (adds a linefeed between all tag-end boundaries)
+        // add marker linefeeds to aid the pretty-tokenizer (adds a linefeed between all tag-end boundaries)
         $xml = preg_replace('/(>)(<)(\/*)/', "$1\n$2$3", $xml);
 
         // now indent the tags

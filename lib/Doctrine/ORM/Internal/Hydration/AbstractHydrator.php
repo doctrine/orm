@@ -120,14 +120,14 @@ abstract class AbstractHydrator
     }
 
     /**
-     * Excutes one-time preparation tasks, once each time hydration is started
+     * Executes one-time preparation tasks, once each time hydration is started
      * through {@link hydrateAll} or {@link iterate()}.
      */
     protected function _prepare()
     {}
 
     /**
-     * Excutes one-time cleanup tasks at the end of a hydration that was initiated
+     * Executes one-time cleanup tasks at the end of a hydration that was initiated
      * through {@link hydrateAll} or {@link iterate()}.
      */
     protected function _cleanup()

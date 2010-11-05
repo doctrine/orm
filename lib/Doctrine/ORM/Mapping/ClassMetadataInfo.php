@@ -1367,7 +1367,7 @@ class ClassMetadataInfo
      * lifecycle callbacks and lifecycle listeners.
      *
      * @param string $event The lifecycle event.
-     * @param Entity $entity The Entity on which the event occured.
+     * @param Entity $entity The Entity on which the event occurred.
      */
     public function invokeLifecycleCallbacks($lifecycleEvent, $entity)
     {

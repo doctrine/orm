@@ -274,8 +274,8 @@ class SchemaTool
                 $pkColumns[] = $class->getQuotedColumnName($mapping['fieldName'], $this->_platform);
             }
         }
-        // For now, this is a hack required for single table inheritence, since this method is called
-        // twice by single table inheritence relations
+        // For now, this is a hack required for single table inheritance, since this method is called
+        // twice by single table inheritance relations
         if(!$table->hasIndex('primary')) {
             $table->setPrimaryKey($pkColumns);
         }
@@ -476,7 +476,7 @@ class SchemaTool
     /**
      * Drops the database schema for the given classes.
      *
-     * In any way when an exception is thrown it is supressed since drop was
+     * In any way when an exception is thrown it is suppressed since drop was
      * issued for all classes of the schema and some probably just don't exist.
      *
      * @param array $classes

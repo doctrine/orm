@@ -42,9 +42,9 @@ class QueryException extends \Doctrine\ORM\ORMException
         return new self('[Syntax Error] ' . $message);
     }
 
-    public static function semanticalError($message)
+    public static function semanticError($message)
     {
-        return new self('[Semantical Error] ' . $message);
+        return new self('[Semantic Error] ' . $message);
     }
 
     public static function invalidParameterType($expected, $received)
@@ -91,7 +91,7 @@ class QueryException extends \Doctrine\ORM\ORMException
     {
         return new self(
             "Invalid query operation: Not allowed to iterate over fetch join collections ".
-            "in class ".$assoc['sourceEntity']." assocation ".$assoc['fieldName']
+            "in class ".$assoc['sourceEntity']." association ".$assoc['fieldName']
         );
     }
 
@@ -108,7 +108,7 @@ class QueryException extends \Doctrine\ORM\ORMException
     {
         return new self(
             "Unsupported query operation: It is not yet possible to overwrite the join ".
-            "conditions in class ".$assoc['sourceEntityName']." assocation ".$assoc['fieldName'].". ".
+            "conditions in class ".$assoc['sourceEntityName']." association ".$assoc['fieldName'].". ".
             "Use WITH to append additional join conditions to the association."
         );
     }

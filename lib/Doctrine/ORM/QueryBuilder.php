@@ -612,7 +612,7 @@ class QueryBuilder
      *         ->from('User', 'u')
      *         ->where('u.id = ?');
      *
-     *     // You can optionally programatically build and/or expressions
+     *     // You can optionally programmatically build and/or expressions
      *     $qb = $em->createQueryBuilder();
      *
      *     $or = $qb->expr()->orx();

@@ -86,7 +86,7 @@ class Parser
     /**
      * The EntityManager.
      *
-     * @var EnityManager
+     * @var EntityManager
      */
     private $_em;
 
@@ -228,7 +228,7 @@ class Parser
      *
      * @param int|string token type or value
      * @return void
-     * @throws QueryException If the tokens dont match.
+     * @throws QueryException If the tokens don't match.
      */
     public function match($token)
     {
@@ -346,14 +346,14 @@ class Parser
     }
 
     /**
-     * Generates a new semantical error.
+     * Generates a new semantic error.
      *
      * @param string $message Optional message.
      * @param array $token Optional token.
      *
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    public function semanticalError($message = '', $token = null)
+    public function semanticError($message = '', $token = null)
     {
         if ($token === null) {
             $token = $this->_lexer->lookahead;
@@ -374,7 +374,7 @@ class Parser
             (isset($token['position']) && $token['position'] > 0) ? $token['position'] : '-1'
         ) . " near '" . substr($dql, $token['position'], $length) . "': Error: " . $message;
 
-        throw \Doctrine\ORM\Query\QueryException::semanticalError($message);
+        throw \Doctrine\ORM\Query\QueryException::semanticError($message);
     }
 
     /**
@@ -498,7 +498,7 @@ class Parser
 
             // Check if IdentificationVariable exists in queryComponents
             if ( ! isset($this->_queryComponents[$identVariable])) {
-                $this->semanticalError(
+                $this->semanticError(
                     "'$identVariable' is not defined.", $deferredItem['token']
                 );
             }
@@ -507,14 +507,14 @@ class Parser
 
             // Check if queryComponent points to an AbstractSchemaName or a ResultVariable
             if ( ! isset($qComp['metadata'])) {
-                $this->semanticalError(
+                $this->semanticError(
                     "'$identVariable' does not point to a Class.", $deferredItem['token']
                 );
             }
 
             // Validate if identification variable nesting level is lower or equal than the current one
             if ($qComp['nestingLevel'] > $deferredItem['nestingLevel']) {
-                $this->semanticalError(
+                $this->semanticError(
                     "'$identVariable' is used outside the scope of its declaration.", $deferredItem['token']
                 );
             }
@@ -535,7 +535,7 @@ class Parser
 
             foreach ($expr->partialFieldSet as $field) {
                 if ( ! isset($class->fieldMappings[$field])) {
-                    $this->semanticalError(
+                    $this->semanticError(
                         "There is no mapped field named '$field' on class " . $class->name . ".",
                         $deferredItem['token']
                     );
@@ -543,7 +543,7 @@ class Parser
             }
 
             if (array_intersect($class->identifier, $expr->partialFieldSet) != $class->identifier) {
-                $this->semanticalError(
+                $this->semanticError(
                     "The partial field selection of class " . $class->name . " must contain the identifier.",
                     $deferredItem['token']
                 );
@@ -564,7 +564,7 @@ class Parser
 
             // Check if ResultVariable exists in queryComponents
             if ( ! isset($this->_queryComponents[$resultVariable])) {
-                $this->semanticalError(
+                $this->semanticError(
                     "'$resultVariable' is not defined.", $deferredItem['token']
                 );
             }
@@ -573,14 +573,14 @@ class Parser
 
             // Check if queryComponent points to an AbstractSchemaName or a ResultVariable
             if ( ! isset($qComp['resultVariable'])) {
-                $this->semanticalError(
+                $this->semanticError(
                     "'$identVariable' does not point to a ResultVariable.", $deferredItem['token']
                 );
             }
 
             // Validate if identification variable nesting level is lower or equal than the current one
             if ($qComp['nestingLevel'] > $deferredItem['nestingLevel']) {
-                $this->semanticalError(
+                $this->semanticError(
                     "'$resultVariable' is used outside the scope of its declaration.", $deferredItem['token']
                 );
             }
@@ -613,7 +613,7 @@ class Parser
             
             // Check if field or association exists
             if ( ! isset($class->associationMappings[$field]) && ! isset($class->fieldMappings[$field])) {
-                $this->semanticalError(
+                $this->semanticError(
                     'Class ' . $class->name . ' has no field or association named ' . $field,
                     $deferredItem['token']
                 );
@@ -663,7 +663,7 @@ class Parser
                     $semanticalError .= implode(' or ', $expectedStringTypes) . ' expected.';
                 }
 
-                $this->semanticalError($semanticalError, $deferredItem['token']);
+                $this->semanticError($semanticalError, $deferredItem['token']);
             }
             
             // We need to force the type in PathExpression
@@ -790,7 +790,7 @@ class Parser
         $exists = isset($this->_queryComponents[$aliasIdentVariable]);
 
         if ($exists) {
-            $this->semanticalError(
+            $this->semanticError(
                 "'$aliasIdentVariable' is already defined.", $this->_lexer->token
             );
         }
@@ -817,7 +817,7 @@ class Parser
         $exists = class_exists($schemaName, true);
 
         if ( ! $exists) {
-            $this->semanticalError("Class '$schemaName' is not defined.", $this->_lexer->token);
+            $this->semanticError("Class '$schemaName' is not defined.", $this->_lexer->token);
         }
 
         return $schemaName;
@@ -836,7 +836,7 @@ class Parser
         $exists = isset($this->_queryComponents[$resultVariable]);
 
         if ($exists) {
-            $this->semanticalError(
+            $this->semanticError(
                 "'$resultVariable' is already defined.", $this->_lexer->token
             );
         }
@@ -885,14 +885,14 @@ class Parser
         $class = $qComp['metadata'];
 
         if ( ! isset($class->associationMappings[$field])) {
-            $this->semanticalError('Class ' . $class->name . ' has no association named ' . $field);
+            $this->semanticError('Class ' . $class->name . ' has no association named ' . $field);
         }
 
         return new AST\JoinAssociationPathExpression($identVariable, $field);
     }
 
     /**
-     * Parses an arbitrary path expression and defers semantical validation
+     * Parses an arbitrary path expression and defers semantic validation
      * based on expected types.
      *
      * PathExpression ::= IdentificationVariable "." identifier
@@ -916,7 +916,7 @@ class Parser
         // Creating AST node
         $pathExpr = new AST\PathExpression($expectedTypes, $identVariable, $field);
 
-        // Defer PathExpression validation if requested to be defered
+        // Defer PathExpression validation if requested to be deferred
         $this->_deferredPathExpressions[] = array(
             'expression'   => $pathExpr,
             'nestingLevel' => $this->_nestingLevel,
@@ -1515,7 +1515,7 @@ class Parser
         $assocField = $joinPathExpression->associationField;
 
         if ( ! $parentClass->hasAssociation($assocField)) {
-            $this->semanticalError(
+            $this->semanticError(
                 "Class " . $parentClass->name . " has no association named '$assocField'."
             );
         }
@@ -1615,7 +1615,7 @@ class Parser
         // else if "CASE" => SimpleCaseExpression
         // else if "COALESCE" => CoalesceExpression
         // else if "NULLIF" => NullifExpression
-        $this->semanticalError('CaseExpression not yet supported.');
+        $this->semanticError('CaseExpression not yet supported.');
     }
 
     /**
@@ -1896,7 +1896,7 @@ class Parser
 
         if ($token['type'] === Lexer::T_IDENTIFIER || $token['type'] === Lexer::T_INPUT_PARAMETER) {
             if ($peek['value'] == '(') {
-                // Peek beyond the matching closing paranthesis ')'
+                // Peek beyond the matching closing parenthesis ')'
                 $this->_lexer->peek();
                 $token = $this->_peekBeyondClosingParenthesis();
             } else {
@@ -1915,7 +1915,7 @@ class Parser
 
                 $token = $peek;
 
-                // We need to go even further in case of IS (differenciate between NULL and EMPTY)
+                // We need to go even further in case of IS (differentiate between NULL and EMPTY)
                 $lookahead = $this->_lexer->peek();
 
                 // Also peek beyond a NOT if there is one
@@ -1955,19 +1955,19 @@ class Parser
      */
     public function EmptyCollectionComparisonExpression()
     {
-        $emptyColletionCompExpr = new AST\EmptyCollectionComparisonExpression(
+        $emptyCollectionCompExpr = new AST\EmptyCollectionComparisonExpression(
             $this->CollectionValuedPathExpression()
         );
         $this->match(Lexer::T_IS);
 
         if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
-            $emptyColletionCompExpr->not = true;
+            $emptyCollectionCompExpr->not = true;
         }
 
         $this->match(Lexer::T_EMPTY);
 
-        return $emptyColletionCompExpr;
+        return $emptyCollectionCompExpr;
     }
 
     /**

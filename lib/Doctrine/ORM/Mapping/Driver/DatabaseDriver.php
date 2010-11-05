@@ -96,7 +96,7 @@ class DatabaseDriver implements Driver
 
             if ($pkColumns == $allForeignKeyColumns) {
                 if (count($table->getForeignKeys()) > 2) {
-                    throw new \InvalidArgumentException("ManyToMany table '" . $tableName . "' with more or less than two foreign keys are not supported by the Database Reverese Engineering Driver.");
+                    throw new \InvalidArgumentException("ManyToMany table '" . $tableName . "' with more or less than two foreign keys are not supported by the Database Reverse Engineering Driver.");
                 }
 
                 $this->manyToManyTables[$tableName] = $table;

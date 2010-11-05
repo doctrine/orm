@@ -88,12 +88,12 @@ EOT
             throw new \LogicException("Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.");
         }
 
-        $outputed = false;
+        $outputted = false;
 
         // Removing based on --id
         if (($ids = $input->getOption('id')) !== null && $ids) {
             foreach ($ids as $id) {
-                $output->write($outputed ? PHP_EOL : '');
+                $output->write($outputted ? PHP_EOL : '');
                 $output->write(sprintf('Clearing Result cache entries that match the id "<info>%s</info>"', $id) . PHP_EOL);
 
                 $deleted = $cacheDriver->delete($id);
@@ -104,54 +104,54 @@ EOT
                     $this->_printDeleted($output, array($id));
                 }
 
-                $outputed = true;
+                $outputted = true;
             }
         }
 
         // Removing based on --regex
         if (($regexps = $input->getOption('regex')) !== null && $regexps) {
             foreach($regexps as $regex) {
-                $output->write($outputed ? PHP_EOL : '');
+                $output->write($outputted ? PHP_EOL : '');
                 $output->write(sprintf('Clearing Result cache entries that match the regular expression "<info>%s</info>"', $regex) . PHP_EOL);
 
                 $this->_printDeleted($output, $cacheDriver->deleteByRegex('/' . $regex. '/'));
 
-                $outputed = true;
+                $outputted = true;
             }
         }
 
         // Removing based on --prefix
         if (($prefixes = $input->getOption('prefix')) !== null & $prefixes) {
             foreach ($prefixes as $prefix) {
-                $output->write($outputed ? PHP_EOL : '');
+                $output->write($outputted ? PHP_EOL : '');
                 $output->write(sprintf('Clearing Result cache entries that have the prefix "<info>%s</info>"', $prefix) . PHP_EOL);
 
                 $this->_printDeleted($output, $cacheDriver->deleteByPrefix($prefix));
 
-                $outputed = true;
+                $outputted = true;
             }
         }
 
         // Removing based on --suffix
         if (($suffixes = $input->getOption('suffix')) !== null && $suffixes) {
             foreach ($suffixes as $suffix) {
-                $output->write($outputed ? PHP_EOL : '');
+                $output->write($outputted ? PHP_EOL : '');
                 $output->write(sprintf('Clearing Result cache entries that have the suffix "<info>%s</info>"', $suffix) . PHP_EOL);
 
                 $this->_printDeleted($output, $cacheDriver->deleteBySuffix($suffix));
 
-                $outputed = true;
+                $outputted = true;
             }
         }
 
         // Removing ALL entries
         if ( ! $ids && ! $regexps && ! $prefixes && ! $suffixes) {
-            $output->write($outputed ? PHP_EOL : '');
+            $output->write($outputted ? PHP_EOL : '');
             $output->write('Clearing ALL Result cache entries' . PHP_EOL);
 
             $this->_printDeleted($output, $cacheDriver->deleteAll());
 
-            $outputed = true;
+            $outputted = true;
         }
     }
 

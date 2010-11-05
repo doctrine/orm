@@ -59,7 +59,7 @@ class OrderBy
         return count($this->_parts);
     }
 
-    public function __tostring()
+    public function __toString()
     {
         return $this->_preSeparator . implode($this->_separator, $this->_parts) . $this->_postSeparator;
     }

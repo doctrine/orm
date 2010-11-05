@@ -70,7 +70,7 @@ class ClassMetadata extends ClassMetadataInfo
     }
 
     /**
-     * Gets the ReflectionPropertys of the mapped class.
+     * Gets the ReflectionProperties of the mapped class.
      *
      * @return array An array of ReflectionProperty instances.
      */
