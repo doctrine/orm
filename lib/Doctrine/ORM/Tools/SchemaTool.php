@@ -93,6 +93,22 @@ class SchemaTool
     }
 
     /**
+     * Some instances of ClassMetadata don't need to be processed in the SchemaTool context. This method detects them.
+     * 
+     * @param ClassMetadata $class
+     * @param array $processedClasses
+     * @return bool
+     */
+    private function processingNotRequired($class, array $processedClasses)
+    {
+        return (
+            isset($processedClasses[$class->name]) ||
+            $class->isMappedSuperclass ||
+            ($class->isInheritanceTypeSingleTable() && $class->name != $class->rootEntityName)
+        );
+    }
+
+    /**
      * From a given set of metadata classes this method creates a Schema instance.
      *
      * @param array $classes
@@ -110,7 +126,7 @@ class SchemaTool
         $evm = $this->_em->getEventManager();
 
         foreach ($classes as $class) {
-            if (isset($processedClasses[$class->name]) || $class->isMappedSuperclass) {
+            if ($this->processingNotRequired($class, $processedClasses)) {
                 continue;
             }
 
