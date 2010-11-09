@@ -1297,7 +1297,7 @@ Path Expressions
     StateFieldPathExpression                  ::= IdentificationVariable "." StateField | SingleValuedAssociationPathExpression "." StateField
     
     /* "u.Group" */
-    SingleValuedAssociationPathExpression     ::= IdentificationVariable "." {SingleValuedAssociationField "."}* SingleValuedAssociationField
+    SingleValuedAssociationPathExpression     ::= IdentificationVariable "." SingleValuedAssociationField
     
     /* "u.Group.Permissions" */
     CollectionValuedPathExpression            ::= IdentificationVariable "." {SingleValuedAssociationField "."}* CollectionValuedAssociationField
