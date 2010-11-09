@@ -938,7 +938,7 @@ The following context-free grammar, written in an EBNF variant, describes the Do
     StateFieldPathExpression                  ::= IdentificationVariable "." StateField | SingleValuedAssociationPathExpression "." StateField
 
     /* "u.Group" */
-    SingleValuedAssociationPathExpression     ::= IdentificationVariable "." {SingleValuedAssociationField "."}* SingleValuedAssociationField
+    SingleValuedAssociationPathExpression     ::= IdentificationVariable "." SingleValuedAssociationField
 
     /* "u.Group.Permissions" */
     CollectionValuedPathExpression            ::= IdentificationVariable "." {SingleValuedAssociationField "."}* CollectionValuedAssociationField
