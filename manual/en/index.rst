@@ -36,7 +36,7 @@ Contents:
    tools
    metadata-drivers
    best-practices
-   limitations-and-Known-issues
+   limitations-and-known-issues
 
 Indices and tables
 ==================
