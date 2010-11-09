@@ -205,6 +205,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             // table were affected.
             if ($isVersioned && ! isset($updateData[$versionedTable])) {
                 $this->_updateTable($entity, $versionedClass->getQuotedTableName($this->_platform), array(), true);
+
+                $id = $this->_em->getUnitOfWork()->getEntityIdentifier($entity);
+                $this->_assignDefaultVersionValue($this->_class, $entity, $id);
             }
         }
     }

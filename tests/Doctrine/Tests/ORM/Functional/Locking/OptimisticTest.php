@@ -100,6 +100,20 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
+    public function testMultipleFlushesDoIncrementalUpdates()
+    {
+        $test = new OptimisticStandard();
+
+        for ($i = 0; $i < 5; $i++) {
+            $test->name = 'test' . $i;
+            $this->_em->persist($test);
+            $this->_em->flush();
+
+            $this->assertType('int', $test->getVersion());
+            $this->assertEquals($i + 1, $test->getVersion());
+        }
+    }
+
     public function testStandardInsertSetsInitialVersionValue()
     {
         $test = new OptimisticStandard();
@@ -107,6 +121,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($test);
         $this->_em->flush();
 
+        $this->assertType('int', $test->getVersion());
         $this->assertEquals(1, $test->getVersion());
 
         return $test;
@@ -139,10 +154,13 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $test = new OptimisticTimestamp();
         $test->name = 'Testing';
+
+        $this->assertNull($test->version, "Pre-Condition");
+
         $this->_em->persist($test);
         $this->_em->flush();
 
-        $this->assertTrue(strtotime($test->version) > 0);
+        $this->assertType('DateTime', $test->version);
 
         return $test;
     }

@@ -251,6 +251,8 @@ class BasicEntityPersister
         $sql = "SELECT " . $versionFieldColumnName . " FROM " . $class->getQuotedTableName($this->_platform)
                . " WHERE " . implode(' = ? AND ', $identifier) . " = ?";
         $value = $this->_conn->fetchColumn($sql, array_values((array)$id));
+
+        $value = Type::getType($class->fieldMappings[$versionField]['type'])->convertToPHPValue($value, $this->_platform);
         $this->_class->setFieldValue($entity, $versionField, $value);
     }
 
@@ -277,6 +279,11 @@ class BasicEntityPersister
                 $entity, $this->_class->getQuotedTableName($this->_platform),
                 $updateData[$tableName], $this->_class->isVersioned
             );
+
+            if ($this->_class->isVersioned) {
+                $id = $this->_em->getUnitOfWork()->getEntityIdentifier($entity);
+                $this->_assignDefaultVersionValue($this->_class, $entity, $id);
+            }
         }
     }
 
@@ -313,7 +320,7 @@ class BasicEntityPersister
 
         if ($versioned) {
             $versionField = $this->_class->versionField;
-            $versionFieldType = $this->_class->getTypeOfField($versionField);
+            $versionFieldType = $this->_class->fieldMappings[$versionField]['type'];
             $versionColumn = $this->_class->getQuotedColumnName($versionField, $this->_platform);
             if ($versionFieldType == Type::INTEGER) {
                 $set[] = $versionColumn . ' = ' . $versionColumn . ' + 1';
