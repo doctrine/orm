@@ -308,6 +308,12 @@ and `remove`. The most common scenario for the `merge` operation is to reattach
 entities to an EntityManager that come from some cache (and are therefore detached) 
 and you want to modify and persist such an entity.
 
+> **CAUTION**
+> If you need to perform multiple merges of entities that share certain subparts
+> of their object-graphs and cascade merge, then you have to call `EntityManager#clear()` between the
+> successive calls to `EntityManager#merge()`. Otherwise you might end up with
+> multiple copies of the "same" object in the database, however with different ids.
+
 > **NOTE**
 > If you load some detached entities from a cache and you do not need to persist or
 > delete them or otherwise make use of them without the need for persistence services
