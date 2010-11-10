@@ -105,7 +105,8 @@
     <target name="build" depends="test, build-orm"/>
 
     <!--
-        Runs the full test suite.
+        Runs the full test suite. This will be used during package building;
+        if you wish to run the tests on your own, please read tests/README.markdown
     -->
     <target name="test" depends="prepare">
         <if><equals arg1="${test.phpunit_generate_coverage}" arg2="1" />

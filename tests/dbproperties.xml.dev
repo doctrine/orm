@@ -7,9 +7,11 @@
            i.e. "mysqlconf.xml" (It needs the ending .xml).
         2) Edit the file and fill in your settings (database name, type, username, etc.)
            Just change the "value"s, not the names of the var elements.
-        3) To run the tests against the database type the following from within the
+        3) Remove this comment, or otherwise PHPUnit won't run (-- isn't allowed within XML comments)
+        4) To run the tests against the database type the following from within the
            tests/ folder: phpunit --configuration <filename> ...
            Example: phpunit --configuration mysqlconf.xml AllTests
+        
 -->
 <phpunit>
   <php>

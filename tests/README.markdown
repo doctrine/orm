@@ -4,6 +4,41 @@
 
 ..
 
+## Running the unit tests
+If you haven't prepared your system to run unit tests, please read the previous chapter.
+
+Once your system is set up, "cd" into the tests directory, then run:
+
+	phpunit --configuration dbproperties.xml Doctrine/Tests/AllTest
+	
+
+## Preparing to run Unit Tests
+In order to run the unit tests, you need [phing](http://www.phing.info), [PHPUnit](http://www.phpunit.de) > 3.4.0 and < 3.5.0.
+
+You can simply issue the following commands to install all you need to run the unit tests. Note that we pull in all dependencies.
+If you do not wish that, you need to go through every package manually.
+
+Please note that you *need* the XSL extension of PHP.
+
+	\# Install XML-Serializer manually, because it is beta
+	pear install channel://pear.php.net/XML_Serializer-0.20.2
+	
+	\# Install phing with all dependencies
+	pear channel-discover pear.phing.info
+	pear install -a phing/phing
+	
+	\# Additional phing task for packaging
+	pear channel-discover pear.domain51.com
+	pear install channel://pear.domain51.com/Phing_d51PearPkg2Task-0.6.3
+	
+	\# Install PHPUnit
+	pear channel-discover pear.phpunit.de
+	pear channel-discover components.ez.no
+	pear channel-discover pear.symfony-project.com
+	pear install phpunit/PHPUnit-3.4.15
+	
+Now, copy dbproperties.xml.dev to dbproperties.xml and put your database settings into that.
+
 ## Testing Lock-Support
 
 The Lock support in Doctrine 2 is tested using Gearman, which allows to run concurrent tasks in parallel.
