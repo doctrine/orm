@@ -84,6 +84,9 @@ root level of the result array. In the previous example an array of User instanc
 and the address of each user is fetched and hydrated into the `User#address` variable. If you access
 the address Doctrine does not need to lazy load the association with another query.
 
+You have to make sure that the order of the fetch join aliases matches the order in which
+the entities are defined in the FROM and JOIN clauses. Otherwise the hydration algorithm will go bust.
+
 > **NOTE**
 > Doctrine allows you to walk all the associations between all the objects in your domain model.
 > Objects that were not already loaded from the database are replaced with lazy load proxy instances.
