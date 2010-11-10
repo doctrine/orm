@@ -733,6 +733,11 @@ class ClassMetadataInfo
 
         // Cascades
         $cascades = isset($mapping['cascade']) ? $mapping['cascade'] : array();
+        
+        if (!is_array($cascades)) {
+        	throw MappingException::invalidCascadeArgument($this->name, $mapping['fieldName'], $mapping['cascade']);
+        } 
+        	
         if (in_array('all', $cascades)) {
             $cascades = array(
                'remove',

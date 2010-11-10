@@ -216,4 +216,15 @@ class MappingException extends \Doctrine\ORM\ORMException
     {
         return new self("Duplicate definition of column '".$columnName."' on entity '".$className."' in a field or discriminator column mapping.");
     }
+    
+    /**
+     * Throws an exception if the argument to cascade= is not an array.
+     * 
+     * @param string $className
+     * @param string $field
+     * @param string $argument
+     */
+    public static function invalidCascadeArgument ($className, $field, $argument) {
+     	return new self("The cascade argument passed to '".$className."' on field '".$field."' is invalid. The argument you passed was '".$argument."', which is not an array. Try {'".$argument."'} instead, and consult the manual about the parameters for cascade=.");
+    }
 }
