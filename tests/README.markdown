@@ -7,10 +7,19 @@
 ## Running the unit tests
 If you haven't prepared your system to run unit tests, please read the previous chapter.
 
-Once your system is set up, "cd" into the tests directory, then run:
+Once your system is set up, "cd" into the tests directory.
+
+If you wish to run the whole test suite:
 
 	phpunit --configuration dbproperties.xml Doctrine/Tests/AllTest
-	
+
+For individual tests:
+
+	phpunit --configuration dbproperties.xml Doctrine/Tests/<file>
+
+An example for an individual test:
+
+	phpunit --configuration dbproperties.xml Doctrine/Tests/ORM/Functional/Ticket/DDC850Test.php
 
 ## Preparing to run Unit Tests
 In order to run the unit tests, you need [phing](http://www.phing.info), [PHPUnit](http://www.phpunit.de) > 3.4.0 and < 3.5.0.
