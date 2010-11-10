@@ -599,7 +599,8 @@ Example:
 +++ @Version
 
 Marker annotation that defines a specified column as version attribute used in an optimistic locking scenario.
-It only works on [@Column](#ann_column) annotations that have the type integer or datetime.
+It only works on [@Column](#ann_column) annotations that have the type integer or datetime. Combining @Version
+with [@Id](#ann_id) is not supported.
 
 Example:
 
