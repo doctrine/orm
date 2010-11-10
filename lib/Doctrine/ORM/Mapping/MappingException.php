@@ -227,4 +227,15 @@ class MappingException extends \Doctrine\ORM\ORMException
     public static function invalidCascadeArgument ($className, $field, $argument) {
      	return new self("The cascade argument passed to '".$className."' on field '".$field."' is invalid. The argument you passed was '".$argument."', which is not an array. Try {'".$argument."'} instead, and consult the manual about the parameters for cascade=.");
     }
+    
+    /**
+     * Throws an exception if @version and @id is used on the same field.
+     * 
+     * @param string $className
+     * @param string $field
+     * @param string $argument
+     */
+    public static function invalidUseOfVersionAndId ($className, $field) {
+     	return new self("If you wish to use @Version, you may not use @Id at the same time in '".$className."' on field '".$field."'.");
+    }
 }

@@ -1551,6 +1551,10 @@ class ClassMetadataInfo
      */
     public function setVersionMapping(array &$mapping)
     {
+    	if (isset($mapping['id']) && $mapping['id'] == true) {
+    		throw MappingException::invalidUseOfVersionAndId($this->name, $mapping['fieldName']);
+    	}
+    	
         $this->isVersioned = true;
         $this->versionField = $mapping['fieldName'];
 
