@@ -2,9 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\Broken\BrokenCascade,
-	Doctrine\Tests\Models\Broken\BrokenCascadeTarget,
-	Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 require_once __DIR__ . '/../../../TestInit.php';
 

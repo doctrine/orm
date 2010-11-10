@@ -11,7 +11,7 @@ Once your system is set up, "cd" into the tests directory.
 
 If you wish to run the whole test suite:
 
-	phpunit --configuration dbproperties.xml Doctrine/Tests/AllTest
+	phpunit --configuration dbproperties.xml Doctrine/Tests/AllTests
 
 For individual tests:
 
