@@ -207,6 +207,11 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self("Entity class '$className' is using inheritance but no discriminator column was defined.");
     }
 
+    public static function invalidDiscriminatorColumnType($className, $type)
+    {
+        return new self("Discriminator column type on entity class '$className' is not allowed to be '$type'. 'string' or 'integer' type variables are suggested!");
+    }
+
     /**
      * @param  string $className
      * @param  string $columnName
@@ -216,4 +221,5 @@ class MappingException extends \Doctrine\ORM\ORMException
     {
         return new self("Duplicate definition of column '".$columnName."' on entity '".$className."' in a field or discriminator column mapping.");
     }
+
 }

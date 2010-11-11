@@ -1442,6 +1442,13 @@ class ClassMetadataInfo
             if ( ! isset($columnDef['fieldName'])) {
                 $columnDef['fieldName'] = $columnDef['name'];
             }
+            if ( ! isset($columnDef['type'])) {
+                $columnDef['type'] = "string";
+            }
+            if (in_array($columnDef['type'], array("boolean", "array", "object", "datetime", "time", "date"))) {
+                throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']);
+            }
+
             $this->discriminatorColumn = $columnDef;
         }
     }
