@@ -670,6 +670,10 @@ class ClassMetadataInfo
 
         // Complete id mapping
         if (isset($mapping['id']) && $mapping['id'] === true) {
+            if ($this->versionField == $mapping['fieldName']) {
+                throw MappingException::cannotVersionIdField($this->name, $mapping['fieldName']);
+            }
+
             if ( ! in_array($mapping['fieldName'], $this->identifier)) {
                 $this->identifier[] = $mapping['fieldName'];
             }
