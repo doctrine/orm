@@ -126,6 +126,16 @@ class Parser
     private $_customOutputWalker;
 
     /**
+     * @var array
+     */
+    private $_identVariableOrder = array();
+
+    /**
+     * @var array
+     */
+    private $_identVariableExpressions = array();
+
+    /**
      * Creates a new query parser object.
      *
      * @param Query $query The Query to parse.
@@ -294,6 +304,19 @@ class Parser
                 $treeWalkerChain->walkUpdateStatement($AST);
             } else {
                 $treeWalkerChain->walkDeleteStatement($AST);
+            }
+        }
+
+        // fix order of identification variables
+        if ( count($this->_identVariableExpressions) > 1) {
+            $n = count($this->_identVariableOrder);
+            for ($i = 0; $i < $n; $i++) {
+                if (isset($this->_identVariableExpressions[$this->_identVariableOrder[$i]])) {
+                    $expr = $this->_identVariableExpressions[$this->_identVariableOrder[$i]];
+                    $key = array_search($expr, $AST->selectClause->selectExpressions);
+                    unset($AST->selectClause->selectExpressions[$key]);
+                    $AST->selectClause->selectExpressions[] = $expr;
+                }
             }
         }
 
@@ -1419,6 +1442,7 @@ class Parser
 
         $token = $this->_lexer->lookahead;
         $aliasIdentificationVariable = $this->AliasIdentificationVariable();
+        $this->_identVariableOrder[] = $aliasIdentificationVariable;
         $classMetadata = $this->_em->getClassMetadata($abstractSchemaName);
 
         // Building queryComponent
@@ -1509,6 +1533,7 @@ class Parser
 
         $token = $this->_lexer->lookahead;
         $aliasIdentificationVariable = $this->AliasIdentificationVariable();
+        $this->_identVariableOrder[] = $aliasIdentificationVariable;
 
         // Verify that the association exists.
         $parentClass = $this->_queryComponents[$joinPathExpression->identificationVariable]['metadata'];
@@ -1628,6 +1653,7 @@ class Parser
     public function SelectExpression()
     {
         $expression = null;
+        $identVariable = null;
         $fieldAliasIdentificationVariable = null;
         $peek = $this->_lexer->glimpse();
 
@@ -1639,7 +1665,7 @@ class Parser
                 $expression = $this->ScalarExpression();
             } else {
                 $supportsAlias = false;
-                $expression = $this->IdentificationVariable();
+                $expression = $identVariable = $this->IdentificationVariable();
             }
         } else if ($this->_lexer->lookahead['value'] == '(') {
             if ($peek['type'] == Lexer::T_SELECT) {
@@ -1666,6 +1692,7 @@ class Parser
         } else if ($this->_lexer->lookahead['type'] == Lexer::T_PARTIAL) {
             $supportsAlias = false;
             $expression = $this->PartialObjectExpression();
+            $identVariable = $expression->identificationVariable;
         } else if ($this->_lexer->lookahead['type'] == Lexer::T_INTEGER ||
                 $this->_lexer->lookahead['type'] == Lexer::T_FLOAT) {
             // Shortcut: ScalarExpression => SimpleArithmeticExpression
@@ -1694,7 +1721,11 @@ class Parser
             }
         }
 
-        return new AST\SelectExpression($expression, $fieldAliasIdentificationVariable);
+        $expr = new AST\SelectExpression($expression, $fieldAliasIdentificationVariable);
+        if (!$supportsAlias) {
+            $this->_identVariableExpressions[$identVariable] = $expr;
+        }
+        return $expr;
     }
 
     /**
