@@ -128,11 +128,6 @@ class Parser
     /**
      * @var array
      */
-    private $_identVariableOrder = array();
-
-    /**
-     * @var array
-     */
     private $_identVariableExpressions = array();
 
     /**
@@ -307,12 +302,14 @@ class Parser
             }
         }
 
-        // fix order of identification variables
+        // Fix order of identification variables.
+        // They have to appear in the select clause in the same order as the
+        // declarations (from ... x join ... y join ... z ...) appear in the query
+        // as the hydration process relies on that order for proper operation.
         if ( count($this->_identVariableExpressions) > 1) {
-            $n = count($this->_identVariableOrder);
-            for ($i = 0; $i < $n; $i++) {
-                if (isset($this->_identVariableExpressions[$this->_identVariableOrder[$i]])) {
-                    $expr = $this->_identVariableExpressions[$this->_identVariableOrder[$i]];
+            foreach ($this->_queryComponents as $dqlAlias => $qComp) {
+                if (isset($this->_identVariableExpressions[$dqlAlias])) {
+                    $expr = $this->_identVariableExpressions[$dqlAlias];
                     $key = array_search($expr, $AST->selectClause->selectExpressions);
                     unset($AST->selectClause->selectExpressions[$key]);
                     $AST->selectClause->selectExpressions[] = $expr;
@@ -1442,7 +1439,6 @@ class Parser
 
         $token = $this->_lexer->lookahead;
         $aliasIdentificationVariable = $this->AliasIdentificationVariable();
-        $this->_identVariableOrder[] = $aliasIdentificationVariable;
         $classMetadata = $this->_em->getClassMetadata($abstractSchemaName);
 
         // Building queryComponent
@@ -1533,7 +1529,6 @@ class Parser
 
         $token = $this->_lexer->lookahead;
         $aliasIdentificationVariable = $this->AliasIdentificationVariable();
-        $this->_identVariableOrder[] = $aliasIdentificationVariable;
 
         // Verify that the association exists.
         $parentClass = $this->_queryComponents[$joinPathExpression->identificationVariable]['metadata'];

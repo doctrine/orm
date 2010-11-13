@@ -32,11 +32,15 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $cart2 = $this->_em->createQuery("select c, ca from Doctrine\Tests\Models\ECommerce\ECommerceCart ca join ca.customer c")
+        $result = $this->_em->createQuery("select c, c.name, ca, ca.payment from Doctrine\Tests\Models\ECommerce\ECommerceCart ca join ca.customer c")
             ->getSingleResult(/*\Doctrine\ORM\Query::HYDRATE_ARRAY*/);
+        
+        $cart2 = $result[0];
+        unset($result[0]);
 
-        $this->assertTrue($cart2 instanceof ECommerceCart);
-        $this->assertFalse($cart2->getCustomer() instanceof \Doctrine\ORM\Proxy\Proxy);
-        $this->assertTrue($cart2->getCustomer() instanceof ECommerceCustomer);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCart', $cart2);
+        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $cart2->getCustomer());
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCustomer', $cart2->getCustomer());
+        $this->assertEquals(array('name' => 'roman', 'payment' => 'cash'), $result);
     }
 }
