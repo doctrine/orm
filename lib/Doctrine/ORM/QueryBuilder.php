@@ -932,4 +932,24 @@ class QueryBuilder
     {
         return $this->getDQL();
     }
+
+    /**
+     * Deep clone of all expression objects in the DQL parts.
+     *
+     * @return void
+     */
+    public function __clone()
+    {
+        foreach ($this->_dqlParts AS $part => $elements) {
+            if (is_array($this->_dqlParts[$part])) {
+                foreach ($this->_dqlParts[$part] AS $idx => $element) {
+                    if (is_object($element)) {
+                        $this->_dqlParts[$part][$idx] = clone $element;
+                    }
+                }
+            } else if (\is_object($elements)) {
+                $this->_dqlParts[$part] = clone $elements;
+            }
+        }
+    }
 }

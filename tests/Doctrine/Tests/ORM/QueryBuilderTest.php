@@ -569,4 +569,24 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertNull($qb->getDQLPart('where'));
         $this->assertEquals(0, count($qb->getDQLPart('orderBy')));
     }
+
+    /**
+     * @group DDC-867
+     */
+    public function testDeepClone()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->andWhere('u.username = ?1')
+            ->andWhere('u.status = ?2');
+
+        $expr = $qb->getDQLPart('where');
+        $this->assertEquals(2, $expr->count(), "Modifying the second query should affect the first one.");
+        
+        $qb2 = clone $qb;
+        $qb2->andWhere('u.name = ?3');
+
+        $this->assertEquals(2, $expr->count(), "Modifying the second query should affect the first one.");
+    }
 }
