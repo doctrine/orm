@@ -262,15 +262,19 @@ class ClassMetadataFactory
             $class = $this->newClassMetadataInstance($className);
 
             if ($parent) {
-                $class->setInheritanceType($parent->inheritanceType);
-                $class->setDiscriminatorColumn($parent->discriminatorColumn);
+                if (!$parent->isMappedSuperclass) {
+                    $class->setInheritanceType($parent->inheritanceType);
+                    $class->setDiscriminatorColumn($parent->discriminatorColumn);
+                }
                 $class->setIdGeneratorType($parent->generatorType);
                 $this->addInheritedFields($class, $parent);
                 $this->addInheritedRelations($class, $parent);
                 $class->setIdentifier($parent->identifier);
                 $class->setVersioned($parent->isVersioned);
                 $class->setVersionField($parent->versionField);
-                $class->setDiscriminatorMap($parent->discriminatorMap);
+                if (!$parent->isMappedSuperclass) {
+                    $class->setDiscriminatorMap($parent->discriminatorMap);
+                }
                 $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
                 $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
             }
