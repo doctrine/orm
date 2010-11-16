@@ -29,15 +29,15 @@ class DDC809Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $conn->insert('variant_test', array('variant_id' => 545208));
         $conn->insert('variant_test', array('variant_id' => 545209));
         
-        $conn->insert('variant_specification_value_test', array('variant_id' => 545208, 'specification_value_id' => 94606));
-        $conn->insert('variant_specification_value_test', array('variant_id' => 545208, 'specification_value_id' => 94607));
-        $conn->insert('variant_specification_value_test', array('variant_id' => 545208, 'specification_value_id' => 94609));
-        $conn->insert('variant_specification_value_test', array('variant_id' => 545208, 'specification_value_id' => 94711));
+        $conn->insert('var_spec_value_test', array('variant_id' => 545208, 'specification_value_id' => 94606));
+        $conn->insert('var_spec_value_test', array('variant_id' => 545208, 'specification_value_id' => 94607));
+        $conn->insert('var_spec_value_test', array('variant_id' => 545208, 'specification_value_id' => 94609));
+        $conn->insert('var_spec_value_test', array('variant_id' => 545208, 'specification_value_id' => 94711));
 
-        $conn->insert('variant_specification_value_test', array('variant_id' => 545209, 'specification_value_id' => 94589));
-        $conn->insert('variant_specification_value_test', array('variant_id' => 545209, 'specification_value_id' => 94593));
-        $conn->insert('variant_specification_value_test', array('variant_id' => 545209, 'specification_value_id' => 94606));
-        $conn->insert('variant_specification_value_test', array('variant_id' => 545209, 'specification_value_id' => 94607));
+        $conn->insert('var_spec_value_test', array('variant_id' => 545209, 'specification_value_id' => 94589));
+        $conn->insert('var_spec_value_test', array('variant_id' => 545209, 'specification_value_id' => 94593));
+        $conn->insert('var_spec_value_test', array('variant_id' => 545209, 'specification_value_id' => 94606));
+        $conn->insert('var_spec_value_test', array('variant_id' => 545209, 'specification_value_id' => 94607));
     }
 
     /**
@@ -72,7 +72,7 @@ class DDC809Variant
 
     /**
      * @ManyToMany(targetEntity="DDC809SpecificationValue", inversedBy="Variants")
-     * @JoinTable(name="variant_specification_value_test",
+     * @JoinTable(name="var_spec_value_test",
      *   joinColumns={
      *     @JoinColumn(name="variant_id", referencedColumnName="variant_id")
      *   },

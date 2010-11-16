@@ -13,6 +13,11 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
+        $platform = $this->_em->getConnection()->getDatabasePlatform();
+        if ($platform->getName() == "oracle") {
+            $this->markTestSkipped('Doesnt run on Oracle.');
+        }
+
         try {
             $this->_schemaTool->createSchema(array(
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC832JoinedIndex'),
