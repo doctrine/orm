@@ -61,6 +61,9 @@ Now, here is what your Doctrine.php file should look like. Customize it to your 
         $config = new Configuration;
         $cache = new ArrayCache;
         $config->setMetadataCacheImpl($cache);
+        $driverImpl = $config->newDefaultAnnotationDriver(array(APPPATH.'models/Entities'));
+        $config->setMetadataDriverImpl($driverImpl);
+
         $config->setQueryCacheImpl($cache);
 
         // Proxy configuration
