@@ -22,6 +22,7 @@ namespace Doctrine\Tests\Models\DirectoryTree;
 
 /**
  * @Entity
+ * @Table(name="File_model")
  */
 class File extends AbstractContentItem
 {
