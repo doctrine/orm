@@ -185,6 +185,7 @@ class SchemaTool
                     $idMapping = $class->fieldMappings[$class->identifier[0]];
                     $this->_gatherColumn($class, $idMapping, $table);
                     $columnName = $class->getQuotedColumnName($class->identifier[0], $this->_platform);
+					$table->getColumn($class->identifier[0])->setAutoincrement(false);
 
                     $pkColumns[] = $columnName;
                     // TODO: REMOVE
