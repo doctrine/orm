@@ -42,12 +42,10 @@ class ModFunction extends FunctionNode
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        //TODO: Use platform to get SQL
-        return 'MOD(' 
-             . $sqlWalker->walkSimpleArithmeticExpression($this->firstSimpleArithmeticExpression)
-             . ', ' 
-             . $sqlWalker->walkSimpleArithmeticExpression($this->secondSimpleArithmeticExpression) 
-             . ')';
+        return $sqlWalker->getConnection()->getDatabasePlatform()->getModExpression(
+               $sqlWalker->walkSimpleArithmeticExpression($this->firstSimpleArithmeticExpression),
+               $sqlWalker->walkSimpleArithmeticExpression($this->secondSimpleArithmeticExpression)
+        );
     }
 
     /**

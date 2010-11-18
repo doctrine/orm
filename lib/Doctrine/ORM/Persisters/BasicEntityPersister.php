@@ -844,8 +844,8 @@ class BasicEntityPersister
         }
 
         return 'SELECT ' . $this->_getSelectColumnListSQL() 
-             . ' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' '
-             . $this->_getSQLTableAlias($this->_class->name)
+             . $this->_platform->appendLockHint(' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' '
+             . $this->_getSQLTableAlias($this->_class->name), $lockMode)
              . $joinSql
              . ($conditionSql ? ' WHERE ' . $conditionSql : '')
              . $orderBySql 
@@ -1082,7 +1082,7 @@ class BasicEntityPersister
         }
 
         $sql = 'SELECT 1 '
-             . $this->getLockTablesSql()
+             . $this->_platform->appendLockHint($this->getLockTablesSql(), $lockMode)
              . ($conditionSql ? ' WHERE ' . $conditionSql : '') . ' ' . $lockSql;
         $params = array_values($criteria);
         $this->_conn->executeQuery($sql, $params);
