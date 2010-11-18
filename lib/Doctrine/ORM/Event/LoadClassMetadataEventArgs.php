@@ -4,7 +4,7 @@ namespace Doctrine\ORM\Event;
 
 use Doctrine\Common\EventArgs;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -26,17 +26,17 @@ class LoadClassMetadataEventArgs extends EventArgs
     private $em;
 
     /**
-     * @param ClassMetadata $classMetadata
+     * @param ClassMetadataInfo $classMetadata
      * @param EntityManager $em
      */
-    public function __construct(ClassMetadata $classMetadata, EntityManager $em)
+    public function __construct(ClassMetadataInfo $classMetadata, EntityManager $em)
     {
         $this->classMetadata = $classMetadata;
         $this->em = $em;
     }
 
     /**
-     * @return ClassMetadata
+     * @return ClassMetadataInfo
      */
     public function getClassMetadata()
     {
