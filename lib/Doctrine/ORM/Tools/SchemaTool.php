@@ -194,7 +194,7 @@ class SchemaTool
 
                     // Add a FK constraint on the ID column
                     $table->addUnnamedForeignKeyConstraint(
-                        $this->_em->getClassMetadata($class->rootEntityName)->getQuotedTableName($this->_platform),
+                        $this->_em->getClassMetadata($class->rootEntityName)->getTableName(),
                         array($columnName), array($columnName), array('onDelete' => 'CASCADE')
                     );
                 }
@@ -485,7 +485,7 @@ class SchemaTool
         }
 
         $theJoinTable->addUnnamedForeignKeyConstraint(
-            $class->getQuotedTableName($this->_platform), $localColumns, $foreignColumns, $fkOptions
+            $class->getTableName(), $localColumns, $foreignColumns, $fkOptions
         );
     }
 

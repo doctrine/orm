@@ -89,7 +89,7 @@ class DatabaseDriver implements Driver
             foreach ($foreignKeys AS $foreignKey) {
                 $allForeignKeyColumns = array_merge($allForeignKeyColumns, $foreignKey->getLocalColumns());
             }
-
+            
             $pkColumns = $table->getPrimaryKey()->getColumns();
             sort($pkColumns);
             sort($allForeignKeyColumns);

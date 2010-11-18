@@ -18,6 +18,7 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->markTestSkipped('Doesnt run on Oracle.');
         }
 
+        $this->_em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
         try {
             $this->_schemaTool->createSchema(array(
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC832JoinedIndex'),

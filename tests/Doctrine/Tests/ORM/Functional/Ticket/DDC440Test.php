@@ -159,6 +159,7 @@ class DDC440Client
     protected $main_phone;
     /**
      * @OneToMany(targetEntity="DDC440Phone", mappedBy="client", cascade={"persist", "remove"}, fetch="EAGER")
+     * @orderBy({"number"="ASC"})
      */
     protected $phones;
     /**
