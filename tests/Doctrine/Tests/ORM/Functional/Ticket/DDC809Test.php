@@ -66,7 +66,6 @@ class DDC809Variant
     /**
      * @Column(name="variant_id", type="integer")
      * @Id
-     * @GeneratedValue(strategy="AUTO")
      */
     protected $variantId;
 
@@ -98,7 +97,6 @@ class DDC809SpecificationValue
     /**
      * @Column(name="specification_value_id", type="integer")
      * @Id
-     * @GeneratedValue(strategy="AUTO")
      */
     protected $specificationValueId;
 

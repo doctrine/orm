@@ -41,8 +41,9 @@ class UpperFunction extends FunctionNode
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        //TODO: Use platform to get SQL
-        return 'UPPER(' . $sqlWalker->walkStringPrimary($this->stringPrimary) . ')';
+        return $sqlWalker->getConnection()->getDatabasePlatform()->getUpperExpression(
+               $sqlWalker->walkSimpleArithmeticExpression($this->stringPrimary)
+        );
     }
 
     /**

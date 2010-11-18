@@ -41,8 +41,9 @@ class LengthFunction extends FunctionNode
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        //TODO: Use platform to get SQL
-        return 'LENGTH(' . $sqlWalker->walkStringPrimary($this->stringPrimary) . ')';
+        return $sqlWalker->getConnection()->getDatabasePlatform()->getLengthExpression(
+               $sqlWalker->walkSimpleArithmeticExpression($this->stringPrimary)
+        );
     }
 
     /**
