@@ -94,7 +94,7 @@ class SchemaTool
 
     /**
      * Some instances of ClassMetadata don't need to be processed in the SchemaTool context. This method detects them.
-     * 
+     *
      * @param ClassMetadata $class
      * @param array $processedClasses
      * @return bool
@@ -259,6 +259,11 @@ class SchemaTool
     private function _getDiscriminatorColumnDefinition($class, $table)
     {
         $discrColumn = $class->discriminatorColumn;
+
+        if($table->hasColumn($discrColumn['name']))
+        {
+            return;
+        }
 
         if (!isset($discrColumn['type']) || (strtolower($discrColumn['type']) == 'string' && $discrColumn['length'] === null)) {
             $discrColumn['type'] = 'string';
@@ -549,7 +554,7 @@ class SchemaTool
     public function getDropSchemaSQL(array $classes)
     {
         $sm = $this->_em->getConnection()->getSchemaManager();
-        
+
         $sql = array();
         $orderedTables = array();
 
