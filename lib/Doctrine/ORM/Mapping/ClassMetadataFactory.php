@@ -74,11 +74,9 @@ class ClassMetadataFactory
     private $initialized = false;
     
     /**
-     * Creates a new factory instance that uses the given metadata driver implementation.
-     *
-     * @param $driver  The metadata driver to use.
+     * @param EntityManager $$em
      */
-    public function __construct(EntityManager $em)
+    public function setEntityManager(EntityManager $em)
     {
         $this->em = $em;
     }

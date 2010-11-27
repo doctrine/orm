@@ -77,7 +77,8 @@ class ConvertDoctrine1SchemaTest extends \Doctrine\Tests\OrmTestCase
 
         $metadataDriver = new \Doctrine\ORM\Mapping\Driver\YamlDriver(__DIR__ . '/convert');
         $em = $this->_createEntityManager($metadataDriver);
-        $cmf = new DisconnectedClassMetadataFactory($em);
+        $cmf = new DisconnectedClassMetadataFactory();
+        $cmf->setEntityManager($em);
         $metadata = $cmf->getAllMetadata();
         $profileClass = $metadata[0];
         $userClass = $metadata[1];

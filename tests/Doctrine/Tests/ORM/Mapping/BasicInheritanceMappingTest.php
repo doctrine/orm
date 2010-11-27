@@ -11,7 +11,8 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
     private $_factory;
     
     protected function setUp() {
-        $this->_factory = new ClassMetadataFactory($this->_getTestEntityManager());
+        $this->_factory = new ClassMetadataFactory();
+        $this->_factory->setEntityManager($this->_getTestEntityManager());
     }
     
     /**

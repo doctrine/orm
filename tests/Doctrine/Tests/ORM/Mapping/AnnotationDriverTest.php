@@ -122,7 +122,8 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
-        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory($em);
+        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory->setEntityManager($em);
 
         $classPage = new ClassMetadata('Doctrine\Tests\Models\DirectoryTree\File');
         $classPage = $factory->getMetadataFor('Doctrine\Tests\Models\DirectoryTree\File');

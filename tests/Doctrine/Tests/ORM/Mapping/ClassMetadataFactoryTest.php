@@ -42,7 +42,8 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
         // SUT
-        $cmf = new ClassMetadataFactoryTestSubject($entityManager);
+        $cmf = new ClassMetadataFactoryTestSubject();
+        $cmf->setEntityManager($entityManager);
         $cmf->setMetadataForClass('Doctrine\Tests\ORM\Mapping\TestEntity1', $cm1);
 
         // Prechecks
