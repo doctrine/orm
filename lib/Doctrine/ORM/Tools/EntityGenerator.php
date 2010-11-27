@@ -218,7 +218,7 @@ public function <methodName>()
         $body = str_replace('<spaces>', $this->_spaces, $body);
         $last = strrpos($currentCode, '}');
 
-        return substr($currentCode, 0, $last) . $body . "\n}";
+        return substr($currentCode, 0, $last) . $body . (strlen($body) > 0 ? "\n" : ''). "}";
     }
 
     /**
