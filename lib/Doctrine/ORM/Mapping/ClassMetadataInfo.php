@@ -940,6 +940,7 @@ class ClassMetadataInfo
     public function setIdentifier(array $identifier)
     {
         $this->identifier = $identifier;
+        $this->isIdentifierComposite = (count($this->identifier) > 1);
     }
 
     /**

@@ -276,4 +276,17 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('cmsaddress_id', $cm->associationMappings['user']['joinTable']['joinColumns'][0]['name']);
         $this->assertEquals('cmsuser_id', $cm->associationMappings['user']['joinTable']['inverseJoinColumns'][0]['name']);
     }
+
+    /**
+     * @group DDC-886
+     */
+    public function testSetMultipleIdentifierSetsComposite()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->mapField(array('fieldName' => 'name'));
+        $cm->mapField(array('fieldName' => 'username'));
+
+        $cm->setIdentifier(array('name', 'username'));
+        $this->assertTrue($cm->isIdentifierComposite);
+    }
 }
