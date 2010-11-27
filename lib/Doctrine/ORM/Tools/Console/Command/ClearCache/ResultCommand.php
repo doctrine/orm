@@ -49,19 +49,19 @@ class ResultCommand extends Console\Command\Command
         ->setDescription('Clear result cache of the various cache drivers.')
         ->setDefinition(array(
             new InputOption(
-                'id', null, InputOption::PARAMETER_REQUIRED | InputOption::PARAMETER_IS_ARRAY,
+                'id', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'ID(s) of the cache entry to delete (accepts * wildcards).', array()
             ),
             new InputOption(
-                'regex', null, InputOption::PARAMETER_REQUIRED | InputOption::PARAMETER_IS_ARRAY,
+                'regex', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'Delete cache entries that match the given regular expression(s).', array()
             ),
             new InputOption(
-                'prefix', null, InputOption::PARAMETER_REQUIRED | InputOption::PARAMETER_IS_ARRAY,
+                'prefix', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'Delete cache entries that have the given prefix(es).', array()
             ),
             new InputOption(
-                'suffix', null, InputOption::PARAMETER_REQUIRED | InputOption::PARAMETER_IS_ARRAY,
+                'suffix', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'Delete cache entries that have the given suffix(es).', array()
             ),
         ))

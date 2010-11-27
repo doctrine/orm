@@ -49,7 +49,7 @@ class EnsureProductionSettingsCommand extends Console\Command\Command
         ->setDescription('Verify that Doctrine is properly configured for a production environment.')
         ->setDefinition(array(
             new InputOption(
-                'complete', null, InputOption::PARAMETER_NONE,
+                'complete', null, InputOption::VALUE_NONE,
                 'Flag to also inspect database connection existance.'
             )
         ))

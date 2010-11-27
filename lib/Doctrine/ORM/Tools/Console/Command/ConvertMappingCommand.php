@@ -53,7 +53,7 @@ class ConvertMappingCommand extends Console\Command\Command
         ->setDescription('Convert mapping information between supported formats.')
         ->setDefinition(array(
             new InputOption(
-                'filter', null, InputOption::PARAMETER_REQUIRED | InputOption::PARAMETER_IS_ARRAY,
+                'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'A string pattern used to match entities that should be processed.'
             ),
             new InputArgument(
@@ -67,11 +67,11 @@ class ConvertMappingCommand extends Console\Command\Command
                 'from-database', null, null, 'Whether or not to convert mapping information from existing database.'
             ),
             new InputOption(
-                'extend', null, InputOption::PARAMETER_OPTIONAL,
+                'extend', null, InputOption::VALUE_OPTIONAL,
                 'Defines a base class to be extended by generated entity classes.'
             ),
             new InputOption(
-                'num-spaces', null, InputOption::PARAMETER_OPTIONAL,
+                'num-spaces', null, InputOption::VALUE_OPTIONAL,
                 'Defines the number of indentation spaces', 4
             )
         ))
