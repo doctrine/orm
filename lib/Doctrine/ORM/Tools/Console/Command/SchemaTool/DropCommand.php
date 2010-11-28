@@ -53,15 +53,15 @@ class DropCommand extends AbstractCommand
         )
         ->setDefinition(array(
             new InputOption(
-                'dump-sql', null, InputOption::PARAMETER_NONE,
+                'dump-sql', null, InputOption::VALUE_NONE,
                 'Instead of try to apply generated SQLs into EntityManager Storage Connection, output them.'
             ),
             new InputOption(
-                'force', null, InputOption::PARAMETER_NONE,
+                'force', null, InputOption::VALUE_NONE,
                 "Don't ask for the deletion of the database, but force the operation to run."
             ),
             new InputOption(
-                'full-database', null, InputOption::PARAMETER_NONE,
+                'full-database', null, InputOption::VALUE_NONE,
                 'Instead of using the Class Metadata to detect the database table schema, drop ALL assets that the database contains.'
             ),
         ))
