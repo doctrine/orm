@@ -112,16 +112,16 @@ class ConvertDoctrine1SchemaCommand extends Console\Command\Command
                 'The path to generate your Doctrine 2.X mapping information.'
             ),
             new InputOption(
-                'from', null, InputOption::PARAMETER_REQUIRED | InputOption::PARAMETER_IS_ARRAY,
+                'from', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'Optional paths of Doctrine 1.X schema information.',
                 array()
             ),
             new InputOption(
-                'extend', null, InputOption::PARAMETER_OPTIONAL,
+                'extend', null, InputOption::VALUE_OPTIONAL,
                 'Defines a base class to be extended by generated entity classes.'
             ),
             new InputOption(
-                'num-spaces', null, InputOption::PARAMETER_OPTIONAL,
+                'num-spaces', null, InputOption::VALUE_OPTIONAL,
                 'Defines the number of indentation spaces', 4
             )
         ))

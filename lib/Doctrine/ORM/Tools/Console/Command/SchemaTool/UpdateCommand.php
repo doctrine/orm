@@ -53,15 +53,15 @@ class UpdateCommand extends AbstractCommand
         )
         ->setDefinition(array(
             new InputOption(
-                'complete', null, InputOption::PARAMETER_NONE,
+                'complete', null, InputOption::VALUE_NONE,
                 'If defined, all assets of the database which are not relevant to the current metadata will be dropped.'
             ),
             new InputOption(
-                'dump-sql', null, InputOption::PARAMETER_NONE,
+                'dump-sql', null, InputOption::VALUE_NONE,
                 'Instead of try to apply generated SQLs into EntityManager Storage Connection, output them.'
             ),
             new InputOption(
-                'force', null, InputOption::PARAMETER_NONE,
+                'force', null, InputOption::VALUE_NONE,
                 "Don't ask for the incremental update of the database, but force the operation to run."
             ),
         ))
