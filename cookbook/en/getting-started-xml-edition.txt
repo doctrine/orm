@@ -374,9 +374,8 @@ steps and then discuss them step by step:
 
     [php]
     // Setup Autoloader (1)
-    require '/path/to/lib/Doctrine/Common/ClassLoader.php';
-    $loader = new Doctrine\Common\ClassLoader("Doctrine", '/path/to/Doctrine/trunk/lib/');
-    $loader->register();
+    // See the ORM Documentation Chapter "Configuration" for the up to day information
+    // on autoloading Doctrine 2.
 
     $config = new Doctrine\ORM\Configuration(); // (2)
 

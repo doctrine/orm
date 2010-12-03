@@ -25,7 +25,7 @@ All the commands of the Doctrine Console require either the `db` or the `em` hel
 In case of a project that is dealing exclusively with DBAL, the ConnectionHelper is required:
 
     [php]
-    $helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
+    $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
         'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($conn)
     ));
     $cli->setHelperSet($helperSet);
@@ -33,7 +33,7 @@ In case of a project that is dealing exclusively with DBAL, the ConnectionHelper
 When dealing with the ORM package, the EntityManagerHelper is required:
 
     [php]
-    $helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
+    $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
         'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
     ));
     $cli->setHelperSet($helperSet);
@@ -62,7 +62,7 @@ bootstrap code and predefines the needed HelperSet attributes mentioned above. A
 
     $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);
 
-    $helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
+    $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
         'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
         'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
     ));

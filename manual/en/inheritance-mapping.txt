@@ -50,8 +50,6 @@ The DDL for the corresponding database schema would look something like this (th
     
 As you can see from this DDL snippet, there is only a single table for the entity subclass. All the mappings from the mapped superclass were inherited to the subclass as if they had been defined on that class directly.
 
-
-
 ++ Single Table Inheritance
 
 [Single Table Inheritance](http://martinfowler.com/eaaCatalog/singleTableInheritance.html) is an inheritance mapping strategy where all classes of a hierarchy are mapped to a single database table. In order to distinguish which row represents which type in the hierarchy a so-called discriminator column is used.
@@ -59,15 +57,15 @@ As you can see from this DDL snippet, there is only a single table for the entit
 Example:
 
     [php]
-    namespace MyProject\Model;
+    namespace Zoo\Entities;
     
     /**
      * @Entity
      * @InheritanceType("SINGLE_TABLE")
      * @DiscriminatorColumn(name="discr", type="string")
-     * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
+     * @DiscriminatorMap({"animal" = "Animal", "cat" = "Cat", "dog" = "Dog"})
      */
-    class Person
+    class Animal
     {
         // ...
     }
@@ -75,15 +73,23 @@ Example:
     /**
      * @Entity
      */
-    class Employee extends Person
+    class Cat extends Animal
+    {
+        // ...
+    }
+
+    /**
+     * @Entity
+     */
+    class Dog extends Animal
     {
         // ...
     }
 
 Things to note:
 
-* The @InheritanceType, @DiscriminatorColumn and @DiscriminatorMap must be specified on the topmost class that is part of the mapped entity hierarchy.
-* The @DiscriminatorMap specifies which values of the discriminator column identify a row as being of a certain type. In the case above a value of "person" identifies a row as being of type `Person` and "employee" identifies a row as being of type `Employee`.
+* The @InheritanceType, @DiscriminatorColumn and @DiscriminatorMap must be specified *ONLY* on the topmost class that is part of the mapped entity hierarchy.
+* The @DiscriminatorMap specifies which values of the discriminator column identify a row as being of a certain type. In the case above a value of "animal" identifies a row as being of type `Animal`, "cat" identifies a row as being of type `Cat` and "dog" is an instance of `Dog`.
 * The names of the classes in the discriminator map do not need to be fully qualified if the classes are contained in the same namespace as the entity class on which the discriminator map is applied.
 
 +++ Design-time considerations
@@ -111,29 +117,23 @@ Doctrine 2 implements this strategy through the use of a discriminator column in
 Example:
 
     [php]
-    namespace MyProject\Model;
-    
+    namespace Zoo\Entities;
+
     /**
      * @Entity
      * @InheritanceType("JOINED")
      * @DiscriminatorColumn(name="discr", type="string")
-     * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
+     * @DiscriminatorMap({"animal" = "Animal", "cat" = "Cat", "dog" = "Dog"})
      */
-    class Person
-    {
-        // ...
-    }
-    
-    /** @Entity */
-    class Employee extends Person
+    class Animal
     {
         // ...
     }
 
 Things to note:
 
-* The @InheritanceType, @DiscriminatorColumn and @DiscriminatorMap must be specified on the topmost class that is part of the mapped entity hierarchy.
-* The @DiscriminatorMap specifies which values of the discriminator column identify a row as being of which type. In the case above a value of "person" identifies a row as being of type `Person` and "employee" identifies a row as being of type `Employee`.
+* The @InheritanceType, @DiscriminatorColumn and @DiscriminatorMap must be specified *ONLY* on the topmost class that is part of the mapped entity hierarchy.
+* The @DiscriminatorMap specifies which values of the discriminator column identify a row as being of a certain type. In the case above a value of "animal" identifies a row as being of type `Animal`, "cat" identifies a row as being of type `Cat` and "dog" is an instance of `Dog`.
 * The names of the classes in the discriminator map do not need to be fully qualified if the classes are contained in the same namespace as the entity class on which the discriminator map is applied.
 
 > **NOTE**
@@ -157,3 +157,16 @@ For each entity in the Class-Table Inheritance hierarchy all the mapped fields h
 table of this entity. Additionally each child table has to have an id column that matches the id column
 definition on the root table (except for any sequence or auto-increment details). Furthermore each child table has
 to have a foreign key pointing from the id column to the root table id column and cascading on delete.
+
+++ Querying Inheritance Hierachies
+
+By definition you cannot query for the type of a MappedSuperclass. However in Single- or Class-Table Inheritance scenarios
+you can query for any instance specified in the DiscriminatorMap or the root entity name. For both inheritance scenarios
+the following queries would work:
+
+    [php]
+    $animals = $em->getRepository('Zoo\Entities\Animal')->findAll();
+    $cats = $em->getRepository('Zoo\Entities\Cat')->findAll();
+    $dogs = $em->getRepository('Zoo\Entities\Dog')->findAll();
+
+This works for all finder methods, the Query Builder and DQL.

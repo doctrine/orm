@@ -186,16 +186,6 @@ Here is an example:
     // Register my type
     Type::addType('mytype', 'My\Project\Types\MyType');
 
-As can be seen above, when registering the custom types in the configuration you specify a unique name
-for the mapping type and map that to the corresponding fully qualified class name. Now you can use your new type in your mapping like this:
-
-    [php]
-    class MyPersistentClass
-    {
-        /** @Column(type="mytype") */
-        private $field;
-    }
-
 To have Schema-Tool convert the underlying database type of your new "mytype" directly into an instance of `MyType`
 you have to additionally register this mapping with your database platform:
 
@@ -206,6 +196,16 @@ you have to additionally register this mapping with your database platform:
 Now using Schema-Tool, whenever it detects a column having the `db_mytype` it will convert it into a `mytype`
 Doctrine Type instance for Schema representation. Keep in mind that you can easily produce clashes this way,
 each database type can only map to exactly one Doctrine mapping type.
+
+As can be seen above, when registering the custom types in the configuration you specify a unique name
+for the mapping type and map that to the corresponding fully qualified class name. Now you can use your new type in your mapping like this:
+
+    [php]
+    class MyPersistentClass
+    {
+        /** @Column(type="mytype") */
+        private $field;
+    }
 
 ++ Identifiers / Primary Keys
 
