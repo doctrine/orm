@@ -96,7 +96,8 @@ EOT
             );
         }
 
-        $cmf = new DisconnectedClassMetadataFactory($em);
+        $cmf = new DisconnectedClassMetadataFactory();
+        $cmf->setEntityManager($em);
         $metadata = $cmf->getAllMetadata();
         $metadata = MetadataFilter::filter($metadata, $input->getOption('filter'));
 
