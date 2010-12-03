@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Common\Cache\ArrayCache;
 
 require_once __DIR__ . '/../../TestInit.php';
@@ -145,5 +146,64 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->getArrayResult();
 
         $this->assertEquals($cacheCount + 1, count($cache->getIds()));
+    }
+
+    /**
+     * @group DDC-909
+     */
+    public function testResultCacheWithObjectParameter()
+    {
+        $user1 = new CmsUser;
+        $user1->name = 'Roman';
+        $user1->username = 'romanb';
+        $user1->status = 'dev';
+
+        $user2 = new CmsUser;
+        $user2->name = 'Benjamin';
+        $user2->username = 'beberlei';
+        $user2->status = 'dev';
+
+        $article = new CmsArticle();
+        $article->text = "foo";
+        $article->topic = "baz";
+        $article->user = $user1;
+
+        $this->_em->persist($article);
+        $this->_em->persist($user1);
+        $this->_em->persist($user2);
+        $this->_em->flush();
+
+        $query = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.user = ?1');
+        $query->setParameter(1, $user1);
+
+        $cache = new ArrayCache();
+
+        $query->setResultCacheDriver($cache)->useResultCache(true);
+
+        $articles = $query->getResult();
+
+        $this->assertEquals(1, count($articles));
+        $this->assertEquals('baz', $articles[0]->topic);
+
+        $this->_em->clear();
+
+        $query2 = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.user = ?1');
+        $query2->setParameter(1, $user1);
+        
+        $query2->setResultCacheDriver($cache)->useResultCache(true);
+
+        $articles = $query2->getResult();
+
+        $this->assertEquals(1, count($articles));
+        $this->assertEquals('baz', $articles[0]->topic);
+
+        $query3 = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.user = ?1');
+        $query3->setParameter(1, $user2);
+
+        $query3->setResultCacheDriver($cache)->useResultCache(true);
+
+        $articles = $query3->getResult();
+
+        $this->assertEquals(0, count($articles));
     }
 }
