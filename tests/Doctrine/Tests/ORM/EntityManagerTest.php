@@ -14,6 +14,16 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         $this->_em = $this->_getTestEntityManager();
     }
 
+    /**
+     * @group DDC-899
+     */
+    public function testIsOpen()
+    {
+        $this->assertTrue($this->_em->isOpen());
+        $this->_em->close();
+        $this->assertFalse($this->_em->isOpen());
+    }
+
     public function testGetConnection()
     {
         $this->assertType('\Doctrine\DBAL\Connection', $this->_em->getConnection());
