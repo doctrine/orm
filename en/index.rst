@@ -60,6 +60,7 @@ Cookbook
    cookbook/sql-table-prefixes
    cookbook/strategy-cookbook-introduction
    cookbook/validation-of-entities
+   cookbook/working-with-datetime
 
 Indices and tables
 ==================
