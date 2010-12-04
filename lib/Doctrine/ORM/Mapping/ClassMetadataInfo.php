@@ -122,6 +122,12 @@ class ClassMetadataInfo
      */
     const FETCH_EAGER = 3;
     /**
+     * Specifies that an association is to be fetched lazy (on first access) and that
+     * commands such as Collection#count, Collection#slice are issued directly against
+     * the database if the collection is not yet initialized.
+     */
+    const FETCH_EXTRALAZY = 4;
+    /**
      * Identifies a one-to-one association.
      */
     const ONE_TO_ONE = 1;

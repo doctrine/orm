@@ -55,6 +55,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\IdentityMapTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\DatabaseDriverTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\PostgreSQLIdentityStrategyTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\ExtraLazyCollectionTest');
         
         $suite->addTest(Locking\AllTests::suite());
         $suite->addTest(Ticket\AllTests::suite());

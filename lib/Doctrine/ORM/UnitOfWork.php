@@ -1958,11 +1958,11 @@ class UnitOfWork implements PropertyChangedListener
                         $reflField = $class->reflFields[$field];
                         $reflField->setValue($entity, $pColl);
                         
-                        if ($assoc['fetch'] == ClassMetadata::FETCH_LAZY) {
-                            $pColl->setInitialized(false);
-                        } else {
+                        if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER) {
                             $this->loadCollection($pColl);
                             $pColl->takeSnapshot();
+                        } else {
+                            $pColl->setInitialized(false);
                         }
                         $this->originalEntityData[$oid][$field] = $pColl;
                     }
@@ -2123,7 +2123,7 @@ class UnitOfWork implements PropertyChangedListener
      * Gets the EntityPersister for an Entity.
      *
      * @param string $entityName  The name of the Entity.
-     * @return Doctrine\ORM\Persister\AbstractEntityPersister
+     * @return Doctrine\ORM\Persisters\AbstractEntityPersister
      */
     public function getEntityPersister($entityName)
     {

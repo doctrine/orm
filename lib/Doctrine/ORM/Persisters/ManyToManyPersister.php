@@ -181,4 +181,53 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         return $params;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count(PersistentCollection $coll)
+    {
+        $params = array();
+        $mapping = $coll->getMapping();
+        $class = $this->_em->getClassMetadata($mapping['sourceEntity']);
+        $id = $this->_em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
+
+        if ($mapping['isOwningSide']) {
+            $joinTable = $mapping['joinTable'];
+            $joinColumns = $mapping['relationToSourceKeyColumns'];
+        } else {
+            $mapping = $this->_em->getClassMetadata($mapping['targetEntity'])->associationMappings[$mapping['mappedBy']];
+            $joinTable = $mapping['joinTable'];
+            $joinColumns = $mapping['relationToTargetKeyColumns'];
+        }
+
+        $whereClause = '';
+        foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
+            if (isset($joinColumns[$joinTableColumn])) {
+                if ($whereClause !== '') {
+                    $whereClause .= ' AND ';
+                }
+                $whereClause .= "$joinTableColumn = ?";
+
+                $params[] = $id[$class->fieldNames[$joinColumns[$joinTableColumn]]];
+            }
+        }
+        $sql = 'SELECT count(*) FROM ' . $joinTable['name'] . ' WHERE ' . $whereClause;
+
+        return $this->_conn->fetchColumn($sql, $params);
+    }
+
+    /**
+     * @param PersistentCollection $coll
+     * @param int $offset
+     * @param int $length
+     * @return array
+     */
+    public function slice(PersistentCollection $coll, $offset, $length = null)
+    {
+        $mapping = $coll->getMapping();
+        return $this->_em->getUnitOfWork()
+                  ->getEntityPersister($mapping['targetEntity'])
+                  ->loadManyToManyCollection($mapping, $coll->getOwner(), null, $offset, $length);
+    }
 }

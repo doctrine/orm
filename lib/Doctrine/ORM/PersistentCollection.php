@@ -59,16 +59,16 @@ final class PersistentCollection implements Collection
      * The association mapping the collection belongs to.
      * This is currently either a OneToManyMapping or a ManyToManyMapping.
      *
-     * @var Doctrine\ORM\Mapping\AssociationMapping
+     * @var array
      */
-    private $association;
+    protected $association;
 
     /**
      * The EntityManager that manages the persistence of the collection.
      *
      * @var Doctrine\ORM\EntityManager
      */
-    private $em;
+    protected $em;
 
     /**
      * The name of the field on the target entities that points to the owner
@@ -96,7 +96,7 @@ final class PersistentCollection implements Collection
      * 
      * @var boolean
      */
-    private $initialized = true;
+    protected $initialized = true;
     
     /**
      * The wrapped Collection instance.
@@ -475,6 +475,17 @@ final class PersistentCollection implements Collection
      */
     public function count()
     {
+        if (!$this->initialized && $this->association['fetch'] == Mapping\ClassMetadataInfo::FETCH_EXTRALAZY) {
+            // use a dynamic public property here. That may be slower, but its not using so much
+            // memory as having a count variable in each collection.
+            if (!isset($this->doctrineCollectionCount)) {
+                $this->doctrineCollectionCount = $this->em->getUnitOfWork()
+                                ->getCollectionPersister($this->association)
+                                ->count($this) + count ($this->coll->toArray());
+            }
+            return $this->doctrineCollectionCount;
+        }
+
         $this->initialize();
         return $this->coll->count();
     }
@@ -675,6 +686,12 @@ final class PersistentCollection implements Collection
      */
     public function slice($offset, $length = null)
     {
+        if (!$this->initialized && $this->association['fetch'] == Mapping\ClassMetadataInfo::FETCH_EXTRALAZY) {
+            return $this->em->getUnitOfWork()
+                            ->getCollectionPersister($this->association)
+                            ->slice($this, $offset, $length);
+        }
+
         $this->initialize();
         return $this->coll->slice($offset, $length);
     }

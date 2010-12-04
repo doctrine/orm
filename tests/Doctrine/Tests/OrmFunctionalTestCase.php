@@ -314,4 +314,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
         throw $e;
     }
+
+    /**
+     * Using the SQL Logger Stack this method retrieves the current query count executed in this test.
+     * 
+     * @return int
+     */
+    protected function getCurrentQueryCount()
+    {
+        return count($this->_sqlLoggerStack->queries);
+    }
 }

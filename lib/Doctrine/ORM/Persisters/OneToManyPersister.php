@@ -116,4 +116,41 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     protected function _getDeleteRowSQLParameters(PersistentCollection $coll, $element)
     {}
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count(PersistentCollection $coll)
+    {
+        $mapping = $coll->getMapping();
+        $class = $this->_em->getClassMetadata($mapping['targetEntity']);
+        $params = array();
+        $id = $this->_em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
+
+        $where = '';
+        foreach ($class->associationMappings[$mapping['mappedBy']]['joinColumns'] AS $joinColumn) {
+            if ($where != '') {
+                $where .= ' AND ';
+            }
+            $where .= $joinColumn['name'] . " = ?";
+            $params[] = $id[$class->fieldNames[$joinColumn['referencedColumnName']]];
+        }
+
+        $sql = "SELECT count(*) FROM " . $class->getQuotedTableName($this->_conn->getDatabasePlatform()) . " WHERE " . $where;
+        return $this->_conn->fetchColumn($sql, $params);
+    }
+
+    /**
+     * @param PersistentCollection $coll
+     * @param int $offset
+     * @param int $length
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
+    public function slice(PersistentCollection $coll, $offset, $length = null)
+    {
+        $mapping = $coll->getMapping();
+        return $this->_em->getUnitOfWork()
+                  ->getEntityPersister($mapping['targetEntity'])
+                  ->loadOneToManyCollection($mapping, $coll->getOwner(), null, $offset, $length);
+    }
 }

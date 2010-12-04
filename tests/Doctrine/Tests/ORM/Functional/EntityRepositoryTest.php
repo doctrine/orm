@@ -9,8 +9,6 @@ use Doctrine\Tests\Models\CMS\CmsAddress;
 require_once __DIR__ . '/../../TestInit.php';
 
 /**
- * Description of DetachedEntityTest
- *
  * @author robo
  */
 class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase

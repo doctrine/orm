@@ -723,9 +723,12 @@ class BasicEntityPersister
      * @param ManyToManyMapping $assoc The association mapping of the association being loaded.
      * @param object $sourceEntity The entity that owns the collection.
      * @param PersistentCollection $coll The collection to fill.
+     * @param int|null $offset
+     * @param int|null $limit
+     * @return array
      */
-    public function loadManyToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
-    {        
+    public function loadManyToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll = null, $offset = null, $limit = null)
+    {
         $criteria = array();
         $sourceClass = $this->_em->getClassMetadata($assoc['sourceEntity']);
         $joinTableConditions = array();
@@ -772,10 +775,17 @@ class BasicEntityPersister
         $sql = $this->_getSelectEntitiesSQL($criteria, $assoc);
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->_conn->executeQuery($sql, $params, $types);
-        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $coll->hydrateAdd($this->_createEntity($result));
+        if ($coll) {
+            while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $coll->hydrateAdd($this->_createEntity($result));
+            }
+        } else {
+            $entities = array();
+            while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $entities[] = $this->_createEntity($result);
+            }
+            return $entities;
         }
-        $stmt->closeCursor();
     }
 
     /**
@@ -854,7 +864,7 @@ class BasicEntityPersister
      * @return string
      * @todo Refactor: _getSelectSQL(...)
      */
-    protected function _getSelectEntitiesSQL(array $criteria, $assoc = null, $lockMode = 0)
+    protected function _getSelectEntitiesSQL(array $criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null)
     {
         $joinSql = $assoc != null && $assoc['type'] == ClassMetadata::MANY_TO_MANY ?
                 $this->_getSelectManyToManyJoinSQL($assoc) : '';
@@ -872,12 +882,12 @@ class BasicEntityPersister
             $lockSql = ' ' . $this->_platform->getWriteLockSql();
         }
 
-        return 'SELECT ' . $this->_getSelectColumnListSQL() 
+        return $this->_platform->modifyLimitQuery('SELECT ' . $this->_getSelectColumnListSQL()
              . $this->_platform->appendLockHint(' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' '
              . $this->_getSQLTableAlias($this->_class->name), $lockMode)
              . $joinSql
              . ($conditionSql ? ' WHERE ' . $conditionSql : '')
-             . $orderBySql 
+             . $orderBySql, $limit, $offset)
              . $lockSql;
     }
 
@@ -1181,8 +1191,10 @@ class BasicEntityPersister
      * @param OneToManyMapping $assoc
      * @param array $criteria The criteria by which to select the entities.
      * @param PersistentCollection The collection to load/fill.
+     * @param int|null $offset
+     * @param int|null $limit
      */
-    public function loadOneToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
+    public function loadOneToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll = null, $offset = null, $limit = null)
     {
         $criteria = array();
         $owningAssoc = $this->_class->associationMappings[$assoc['mappedBy']];
@@ -1204,10 +1216,17 @@ class BasicEntityPersister
         $sql = $this->_getSelectEntitiesSQL($criteria, $assoc);
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->_conn->executeQuery($sql, $params, $types);
-        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $coll->hydrateAdd($this->_createEntity($result));
+        if ($coll) {
+            while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $coll->hydrateAdd($this->_createEntity($result));
+            }
+        } else {
+            $entities = array();
+            while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $entities[] = $this->_createEntity($result);
+            }
+            return $entities;
         }
-        $stmt->closeCursor();
     }
 
     /**
@@ -1252,4 +1271,6 @@ class BasicEntityPersister
     {
         
     }*/
+
+    #public function countCollection
 }
