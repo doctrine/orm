@@ -779,11 +779,13 @@ class BasicEntityPersister
             while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $coll->hydrateAdd($this->_createEntity($result));
             }
+            $stmt->closeCursor();
         } else {
             $entities = array();
             while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $entities[] = $this->_createEntity($result);
             }
+            $stmt->closeCursor();
             return $entities;
         }
     }
@@ -1220,11 +1222,13 @@ class BasicEntityPersister
             while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $coll->hydrateAdd($this->_createEntity($result));
             }
+            $stmt->closeCursor();
         } else {
             $entities = array();
             while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $entities[] = $this->_createEntity($result);
             }
+            $stmt->closeCursor();
             return $entities;
         }
     }

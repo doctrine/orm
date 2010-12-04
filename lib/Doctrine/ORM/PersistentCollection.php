@@ -61,14 +61,14 @@ final class PersistentCollection implements Collection
      *
      * @var array
      */
-    protected $association;
+    private $association;
 
     /**
      * The EntityManager that manages the persistence of the collection.
      *
      * @var Doctrine\ORM\EntityManager
      */
-    protected $em;
+    private $em;
 
     /**
      * The name of the field on the target entities that points to the owner
@@ -96,7 +96,7 @@ final class PersistentCollection implements Collection
      * 
      * @var boolean
      */
-    protected $initialized = true;
+    private $initialized = true;
     
     /**
      * The wrapped Collection instance.
