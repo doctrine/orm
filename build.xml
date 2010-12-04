@@ -5,8 +5,6 @@
 -->
 
 <project name="Doctrine2" default="build" basedir=".">
-
-    <taskdef classname="NativePhpunitTask" classpath="./tests/" name="nativephpunit" />
     <taskdef classname="phing.tasks.ext.d51PearPkg2Task" name="d51pearpkg2" />
 
     <property file="build.properties" />
@@ -24,6 +22,7 @@
     <fileset id="bin-scripts" dir="./bin">
         <include name="doctrine"/>
         <include name="doctrine.php"/>
+        <include name="doctrine.bat"/>
     </fileset>
 
     <!--
@@ -83,7 +82,7 @@
     <!--
         Builds ORM package, preparing it for distribution.
     -->
-    <target name="build-orm" depends="test">
+    <target name="build-orm" depends="prepare">
         <copy todir="${build.dir}/doctrine-orm">
             <fileset refid="shared-artifacts"/>
         </copy>
@@ -187,7 +186,7 @@
     </target>
 
     <target name="pirum-release">
-        <exec command="sudo pirum add ${project.pirum_dir} ${project.basedir}/dist/DoctrineDBAL-${version}.tgz" dir="."  passthru="true" />
+        <exec command="sudo pirum add ${project.pirum_dir} ${project.basedir}/dist/DoctrineORM-${version}.tgz" dir="."  passthru="true" />
         <exec command="sudo pirum build ${project.pirum_dir}" passthru="true" />
     </target>
 
