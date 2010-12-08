@@ -277,6 +277,21 @@ class Parser
     {
         $AST = $this->getAST();
 
+        // Fix order of identification variables.
+        // They have to appear in the select clause in the same order as the
+        // declarations (from ... x join ... y join ... z ...) appear in the query
+        // as the hydration process relies on that order for proper operation.
+        if ( count($this->_identVariableExpressions) > 1) {
+            foreach ($this->_queryComponents as $dqlAlias => $qComp) {
+                if (isset($this->_identVariableExpressions[$dqlAlias])) {
+                    $expr = $this->_identVariableExpressions[$dqlAlias];
+                    $key = array_search($expr, $AST->selectClause->selectExpressions);
+                    unset($AST->selectClause->selectExpressions[$key]);
+                    $AST->selectClause->selectExpressions[] = $expr;
+                }
+            }
+        }
+
         if (($customWalkers = $this->_query->getHint(Query::HINT_CUSTOM_TREE_WALKERS)) !== false) {
             $this->_customTreeWalkers = $customWalkers;
         }
@@ -299,21 +314,6 @@ class Parser
                 $treeWalkerChain->walkUpdateStatement($AST);
             } else {
                 $treeWalkerChain->walkDeleteStatement($AST);
-            }
-        }
-
-        // Fix order of identification variables.
-        // They have to appear in the select clause in the same order as the
-        // declarations (from ... x join ... y join ... z ...) appear in the query
-        // as the hydration process relies on that order for proper operation.
-        if ( count($this->_identVariableExpressions) > 1) {
-            foreach ($this->_queryComponents as $dqlAlias => $qComp) {
-                if (isset($this->_identVariableExpressions[$dqlAlias])) {
-                    $expr = $this->_identVariableExpressions[$dqlAlias];
-                    $key = array_search($expr, $AST->selectClause->selectExpressions);
-                    unset($AST->selectClause->selectExpressions[$key]);
-                    $AST->selectClause->selectExpressions[] = $expr;
-                }
             }
         }
 
