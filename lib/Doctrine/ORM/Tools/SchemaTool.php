@@ -546,7 +546,7 @@ class SchemaTool
         $orderedTables = array();
 
         foreach ($classes AS $class) {
-            if ($class->isIdGeneratorSequence() && $class->name == $class->rootEntityName && $this->_platform->supportsSequences()) {
+            if ($class->isIdGeneratorSequence() && !$class->isMappedSuperclass && $class->name == $class->rootEntityName && $this->_platform->supportsSequences()) {
                 $sql[] = $this->_platform->getDropSequenceSQL($class->sequenceGeneratorDefinition['sequenceName']);
             }
         }
