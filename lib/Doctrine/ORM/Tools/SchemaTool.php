@@ -132,13 +132,6 @@ class SchemaTool
 
             $table = $schema->createTable($class->getQuotedTableName($this->_platform));
 
-            // TODO: Remove
-            /**if ($class->isIdGeneratorIdentity()) {
-                $table->setIdGeneratorType(\Doctrine\DBAL\Schema\Table::ID_IDENTITY);
-            } else if ($class->isIdGeneratorSequence()) {
-                $table->setIdGeneratorType(\Doctrine\DBAL\Schema\Table::ID_SEQUENCE);
-            }*/
-
             $columns = array(); // table columns
 
             if ($class->isInheritanceTypeSingleTable()) {
@@ -189,10 +182,6 @@ class SchemaTool
                     $table->getColumn($class->identifier[0])->setAutoincrement(false);
 
                     $pkColumns[] = $columnName;
-                    // TODO: REMOVE
-                    /*if ($table->isIdGeneratorIdentity()) {
-                       $table->setIdGeneratorType(\Doctrine\DBAL\Schema\Table::ID_NONE);
-                    }*/
 
                     // Add a FK constraint on the ID column
                     $table->addUnnamedForeignKeyConstraint(
@@ -346,6 +335,9 @@ class SchemaTool
 
         if ($class->isIdGeneratorIdentity() && $class->getIdentifierFieldNames() == array($mapping['fieldName'])) {
             $options['autoincrement'] = true;
+        }
+        if ($class->isInheritanceTypeJoined() && $class->name != $class->rootEntityName) {
+            $options['autoincrement'] = false;
         }
 
         if ($table->hasColumn($columnName)) {
@@ -502,7 +494,7 @@ class SchemaTool
      */
     public function dropSchema(array $classes)
     {
-        $dropSchemaSql = $this->getDropSchemaSql($classes);
+        $dropSchemaSql = $this->getDropSchemaSQL($classes);
         $conn = $this->_em->getConnection();
 
         foreach ($dropSchemaSql as $sql) {
