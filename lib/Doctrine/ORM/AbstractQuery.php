@@ -482,15 +482,6 @@ abstract class AbstractQuery
      */
     public function execute($params = array(), $hydrationMode = null)
     {
-        // If there are still pending insertions in the UnitOfWork we need to flush
-        // in order to guarantee a correct result.
-        //TODO: Think this over. Its tricky. Not doing this can lead to strange results
-        //      potentially, but doing it could result in endless loops when querying during
-        //      a flush, i.e. inside an event listener.
-        if ($this->_em->getUnitOfWork()->hasPendingInsertions()) {
-            $this->_em->flush();
-        }
-
         if ($hydrationMode !== null) {
             $this->setHydrationMode($hydrationMode);
         }
