@@ -4,6 +4,8 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\AST;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
@@ -18,7 +20,7 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-736
      */
-    public function testFetchJoinInitializesPreviouslyUninitializedCollectionOfManagedEntity()
+    public function testReorderEntityFetchJoinForHydration()
     {
         $cust = new ECommerceCustomer;
         $cust->setName('roman');
@@ -43,4 +45,56 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCustomer', $cart2->getCustomer());
         $this->assertEquals(array('name' => 'roman', 'payment' => 'cash'), $result);
     }
+
+    /**
+     * @group DDC-736
+     * @group DDC-925
+     * @group DDC-915
+     */
+    public function testDqlTreeWalkerReordering()
+    {
+        $cust = new ECommerceCustomer;
+        $cust->setName('roman');
+
+        $cart = new ECommerceCart;
+        $cart->setPayment('cash');
+        $cart->setCustomer($cust);
+
+        $this->_em->persist($cust);
+        $this->_em->persist($cart);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $dql = "select c, c.name, ca, ca.payment from Doctrine\Tests\Models\ECommerce\ECommerceCart ca join ca.customer c";
+        $result = $this->_em->createQuery($dql)
+                            ->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\Tests\ORM\Functional\Ticket\DisableFetchJoinTreeWalker'))
+                            ->getResult();
+
+        /* @var $cart2 Doctrine\Tests\Models\ECommerce\ECommerceCart */
+        $cart2 = $result[0][0];
+        $this->assertType('Doctrine\ORM\Proxy\Proxy', $cart2->getCustomer());
+    }
 }
+
+class DisableFetchJoinTreeWalker extends \Doctrine\ORM\Query\TreeWalkerAdapter
+{
+    public function walkSelectStatement(AST\SelectStatement $AST)
+    {
+        $this->walkSelectClause($AST->selectClause);
+    }
+
+    /**
+     * @param \Doctrine\ORM\Query\AST\SelectClause $selectClause
+     */
+    public function walkSelectClause($selectClause)
+    {
+        foreach ($selectClause->selectExpressions AS $key => $selectExpr) {
+            /* @var $selectExpr \Doctrine\ORM\Query\AST\SelectExpression */
+            if ($selectExpr->expression == "c") {
+                unset($selectClause->selectExpressions[$key]);
+                break;
+            }
+        }
+    }
+}
+
