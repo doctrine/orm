@@ -173,5 +173,23 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertType('Doctrine\Tests\Models\CMS\CmsUser', $newUser);
         $this->assertEquals('gblanco', $newUser->username);
     }
+
+    /**
+     * @group DDC-920
+     */
+    public function testDetachManagedUnpersistedEntity()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        $this->_em->persist($user);
+        $this->_em->detach($user);
+
+        $this->_em->flush();
+
+        $this->assertNull($user->id);
+    }
 }
 
