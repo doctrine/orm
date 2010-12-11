@@ -781,6 +781,7 @@ automatically for you:
 
     SELECT p0_.id AS id0, p0_.name AS name1, e1_.department AS department2, p0_.discr AS discr3 FROM Employee e1_ INNER JOIN Person p0_ ON e1_.id = p0_.id WHERE p0_.name = ?
 
+
 The Query class
 ---------------
 

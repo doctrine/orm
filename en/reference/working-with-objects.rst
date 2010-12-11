@@ -256,8 +256,12 @@ which means that its persistent state will be deleted once
     Just like ``persist``, invoking ``remove`` on an entity
     does NOT cause an immediate SQL DELETE to be issued on the
     database. The entity will be deleted on the next invocation of
-    ``EntityManager#flush()`` that involves that entity.
-
+    ``EntityManager#flush()`` that involves that entity. This
+    means that entities scheduled for removal can still be queried
+    for and appear in query and collection results. See
+    the section on :ref:`Database and UnitOfWork Out-Of-Sync <workingobjects_database_uow_outofsync>`
+    for more information.
+    
 
 Example:
 
@@ -464,6 +468,26 @@ in the Association Mapping chapter.
 When ``EntityManager#flush()`` is called, Doctrine inspects all
 managed, new and removed entities and will perform the following
 operations.
+
+.. _workingobjects_database_uow_outofsync:
+
+Effects of Database and UnitOfWork being Out-Of-Sync
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As soon as you begin to change the state ofentities, call persist or remove the
+contents of the UnitOfWork and the database will drive out of sync. They can
+only be sychronized by calling ``EntityManager#flush()`. This section
+describes the effects of database and UnitOfWork being out of sync.
+
+-  Entities that are scheduled for removal can still be queried from the database.
+   They are returned from DQL and Repository queries and are visible in collections.
+-  Entities that are passed to ``EntityManager#persist`` do not turn up in query
+   results.
+-  Entities that have changed will not be overwritten with the state from the database.
+   This is because the identity map will detect the construction of an already existing
+   entity and assumes its the most up to date version.
+
+``EntityManager#flush()`` is never called implicitly by Doctrine. You always have to trigger it manually.
 
 Synchronizing New and Managed Entities
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
