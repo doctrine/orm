@@ -254,7 +254,7 @@ legacy-databases to work with Doctrine 2.
 
 
 -  You can quote column-names as described in the
-   `Basic-Mapping <basic-mapping>`_ section.
+   :doc:`Basic-Mapping <basic-mapping>` section.
 -  You cannot quote join column names.
 -  You cannot use non [a-zA-Z0-9\_]+ characters, they will break
    several SQL statements.

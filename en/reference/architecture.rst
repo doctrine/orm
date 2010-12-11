@@ -17,11 +17,11 @@ be any regular PHP class observing the following restrictions:
    always be private or protected, otherwise lazy-loading might not
    work as expected.
 -  An entity class must not implement ``__clone`` or
-   `do so safely <http://www.doctrine-project.org/documentation/cookbook/2_0/en/implementing-wakeup-or-clone>`_.
+   :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
 -  An entity class must not implement ``__wakeup`` or
-   `do so safely <http://www.doctrine-project.org/documentation/cookbook/2_0/en/implementing-wakeup-or-clone>`_.
+   :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
    Also consider implementing
-   `Serializable <http://de3.php.net/manual/en/class.serializable.php]>`_
+   `Serializable <http://de3.php.net/manual/en/class.serializable.php>`_
    instead.
 -  Any two entity classes in a class hierarchy that inherit
    directly or indirectly from one another must not have a mapped
