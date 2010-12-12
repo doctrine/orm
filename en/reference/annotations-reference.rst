@@ -789,7 +789,6 @@ Required attributes:
 Optional attributes:
 
 
--  schema - Database schema name of this table.
 -  indexes - Array of @Index annotations
 -  uniqueConstraints - Array of @UniqueConstraint annotations.
 
