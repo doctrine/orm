@@ -189,7 +189,8 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->flush();
 
-        $this->assertNull($user->id);
+        $this->assertFalse($this->_em->contains($user));
+        $this->assertFalse($this->_em->getUnitOfWork()->isInIdentityMap($user));
     }
 }
 
