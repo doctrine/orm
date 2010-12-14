@@ -371,7 +371,7 @@ database.
 
     ## PUT YOUR TEST CODE BELOW
 
-    $q = $em->createQuery('select u from Entities u where u.name = ?1');
+    $q = $em->createQuery('select u from Entities\User u where u.name = ?1');
     $q->setParameter(1, 'Garfield'); $garfield =
     $q->getSingleResult();
 
