@@ -168,6 +168,8 @@
                 <install as="doctrine.php" name="bin/doctrine.php" />
                 <install as="doctrine.bat" name="bin/doctrine.bat" />
            </release>
+           <replacement path="bin/doctrine.bat" type="pear-config" from="@php_bin@" to="php_bin" />
+           <replacement path="bin/doctrine.bat" type="pear-config" from="@bin_dir@" to="bin_dir" />
         </d51pearpkg2>
         <exec command="pear package" dir="${build.dir}/doctrine-orm" passthru="true" />
         <exec command="mv DoctrineORM-${version}.tgz ../../dist" dir="${build.dir}/doctrine-orm" passthru="true" />
