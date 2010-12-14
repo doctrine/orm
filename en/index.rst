@@ -30,7 +30,6 @@ Reference Guide
    reference/php-mapping
    reference/caching
    reference/improving-performance
-   reference/best-practices
    reference/tools
    reference/metadata-drivers
    reference/best-practices
