@@ -318,19 +318,19 @@ Mini-tutorial
    the following:
 
    
-.. raw:: html
+.. code-block:: php
 
-      <?php
-      //... bootstrap stuff
-      
-      ## PUT YOUR TEST CODE BELOW
-      
-      $user = new \Entities\User;
-      $user->
-      
-   setName('Garfield'); :math:`$em->persist($`user); $em->flush();
+    <?php
+    //... bootstrap stuff
 
-   echo "User saved!";
+    ## PUT YOUR TEST CODE BELOW
+
+    $user = new \Entities\User;
+    $user->setName('Garfield');
+    $em->persist($user);
+    $em->flush();
+
+    echo "User saved!";
 
 
 Open index.php in your browser or execute it on the command line.
