@@ -364,20 +364,18 @@ database.
 5) Replace the contents of index.php with the following:
 
    
-.. raw:: html
+.. code-block:: php
 
-      <?php
-      //... bootstrap stuff
-      
-      ## PUT YOUR TEST CODE BELOW
-      
-      $q = $em->
-      
-   createQuery('select u from Entities u where u.name = ?1');
-   $q->setParameter(1, 'Garfield'); $garfield =
-   $q->getSingleResult();
+    <?php
+    //... bootstrap stuff
 
-   echo "Hello " . $garfield->getName() . "!";
+    ## PUT YOUR TEST CODE BELOW
+
+    $q = $em->createQuery('select u from Entities u where u.name = ?1');
+    $q->setParameter(1, 'Garfield'); $garfield =
+    $q->getSingleResult();
+
+    echo "Hello " . $garfield->getName() . "!";
 
 
 You just created your first DQL query to retrieve the user with the
