@@ -238,7 +238,7 @@ element. Here are some examples:
     $comment->getUserFavorites()->removeElement($user);
     
     // Remove by Key
-    $user->getComments()->removeElement($ithComment);
+    $user->getComments()->remove($ithComment);
     $comment->setAuthor(null);
 
 You need to call ``$em->flush()`` to make persist these changes in
