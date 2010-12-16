@@ -1,5 +1,5 @@
-Getting Started (XML Edition)
-=============================
+Getting Started
+===============
 
 Doctrine 2 is a project that aims to handle the persistence of the
 domain model in a non-interfering way. The Data Mapper pattern is
@@ -22,9 +22,8 @@ or contain final methods. Additionally it must not implement
 **clone** nor **wakeup** or :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
 
 An entity contains persistable properties. A persistable property
-is an instance variable of the entity that contains the data which
-is persisted and retrieved by Doctrine's data mapping
-capabilities.
+is an instance variable of the entity that is saved into and retrieved from the database
+by Doctrine's data mapping capabilities.
 
 An Example Model: Bug Tracker
 -----------------------------
@@ -225,8 +224,8 @@ the bi-directional reference:
     <?php
     class Bug
     {
-        protected $engineer;
-        protected $reporter;
+        private $engineer;
+        private $reporter;
     
         public function setEngineer($engineer)
         {
@@ -252,6 +251,9 @@ the bi-directional reference:
     }
     class User
     {
+        private $reportedBugs = null;
+        private $assignedBugs = null;
+
         public function addReportedBug($bug)
         {
             $this->reportedBugs[] = $bug;
@@ -298,7 +300,7 @@ the database that points from from Bugs to Products.
     <?php
     class Bug
     {
-        protected $products = null; // Set protected for encapsulation
+        private $products = null;
     
         public function assignToProduct($product)
         {
@@ -344,37 +346,64 @@ should be applied to them.
 
 Metadata for entities are loaded using a
 ``Doctrine\ORM\Mapping\Driver\Driver`` implementation and Doctrine
-2 already comes with XML, YAML and Annotations Drivers. In this
-Getting Started Guide I will use the XML Mapping Driver. I think
-XML beats YAML because of schema validation, and my favorite IDE
-netbeans offers me auto-completion for the XML mapping files which
-is awesome to work with and you don't have to look up all the
-different metadata mapping commands all the time.
+2 already comes with XML, YAML and Annotations Drivers. This
+Getting Started Guide will show the mappings for all Mapping Drivers.
+References in the text will be made to the XML mapping.
 
 Since we haven't namespaced our three entities, we have to
 implement three mapping files called Bug.dcm.xml, Product.dcm.xml
-and User.dcm.xml and put them into a distinct folder for mapping
-configurations.
+and User.dcm.xml (or .yml) and put them into a distinct folder for mapping
+configurations. For the annotations driver we need to use
+doc-block comments on the entity classes themselves.
 
 The first discussed definition will be for the Product, since it is
 the most simple one:
 
-.. code-block:: xml
+.. configuration-block::
 
-    <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-    
-          <entity name="Product" table="zf_products">
-              <id name="id" type="integer" column="product_id">
-                  <generator strategy="AUTO" />
-              </id>
-    
-              <field name="name" column="product_name" type="string" />
-          </entity>
-    
-    </doctrine-mapping>
+    .. code-block:: php
+
+        <?php
+        /**
+         * @Entity @Table(name="products")
+         */
+        class Product
+        {
+            /** @Id @Column(type="integer") @GeneratedValue */
+            public $id;
+            /** @Column(type="string") */
+            public $name;
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                            http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+              <entity name="Product" table="products">
+                  <id name="id" type="integer" column="product_id">
+                      <generator strategy="AUTO" />
+                  </id>
+
+                  <field name="name" column="product_name" type="string" />
+              </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        Product:
+          type: entity
+          table: products
+          id:
+            id:
+              type: integer
+              generator:
+                strategy: AUTO
+          fields:
+            name:
+              type: string
 
 The top-level ``entity`` definition tag specifies information about
 the class and table-name. The primitive type ``Product::$name`` is
@@ -387,43 +416,99 @@ case of PostgreSql and Oracle.
 
 We then go on specifying the definition of a Bug:
 
-.. code-block:: xml
+.. configuration-block::
+    .. code-block:: php
 
-    <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-    
-        <entity name="Bug" table="zf_bugs">
-            <id name="id" type="integer" column="bug_id">
-                <generator strategy="AUTO" />
-            </id>
-    
-            <field name="description" column="bug_description" type="text" />
-            <field name="created" column="bug_created" type="datetime" />
-            <field name="status" column="bug_status" type="string" />
-    
-            <many-to-one target-entity="User" field="reporter" inversed-by="reportedBugs">
-                <join-column name="reporter_id" referenced-column-name="account_id" />
-            </many-to-one>
-    
-            <many-to-one target-entity="User" field="engineer" inversed-by="assignedBugs">
-                <join-column name="engineer_id" referenced-column-name="account_id" />
-            </many-to-one>
-    
-            <many-to-many target-entity="Product" field="products">
-                <join-table name="zf_bugs_products">
-                    <join-columns>
-                        <join-column name="bug_id" referenced-column-name="bug_id" />
-                    </join-columns>
-                    <inverse-join-columns>
-                        <join-column name="product_id" referenced-column-name="product_id" />
-                    </inverse-join-columns>
-                </join-table>
-            </many-to-many>
-        </entity>
-    
-    </doctrine-mapping>
+        <?php
+        /**
+         * @Entity @Table(name="bugs")
+         */
+        class Bug
+        {
+            /**
+             * @Id @Column(type="integer") @GeneratedValue
+             */
+            public $id;
+            /**
+             * @Column(type="string")
+             */
+            public $description;
+            /**
+             * @Column(type="datetime")
+             */
+            public $created;
+            /**
+             * @Column(type="string")
+             */
+            public $status;
+
+            /**
+             * @ManyToOne(targetEntity="User", inversedBy="assignedBugs")
+             */
+            private $engineer;
+
+            /**
+             * @ManyToOne(targetEntity="User", inversedBy="reportedBugs")
+             */
+            private $reporter;
+
+            /**
+             * @ManyToMany(targetEntity="Product")
+             */
+            private $products = null; // Set private for encapsulation
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                            http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+            <entity name="Bug" table="bugs">
+                <id name="id" type="integer">
+                    <generator strategy="AUTO" />
+                </id>
+
+                <field name="description" type="text" />
+                <field name="created" type="datetime" />
+                <field name="status" type="string" />
+
+                <many-to-one target-entity="User" field="reporter" inversed-by="reportedBugs" />
+                <many-to-one target-entity="User" field="engineer" inversed-by="assignedBugs" />
+
+                <many-to-many target-entity="Product" field="products" />
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        Bug:
+          type: entity
+          table: bugs
+          id:
+            id:
+              type: integer
+              generator:
+                strategy: AUTO
+          fields:
+            description:
+              type: text
+            created:
+              type: datetime
+            status:
+              type: string
+          manyToOne:
+            reporter:
+              targetEntity: User
+              inversedBy: reportedBugs
+            engineer:
+              targetEntity: User
+              inversedBy: assignedBugs
+          manyToMany:
+            products:
+              targetEntity: Product
+              
 
 Here again we have the entity, id and primitive type definitions.
 The column names are used from the Zend\_Db\_Table examples and
@@ -456,26 +541,79 @@ schema details all the time.
 
 The last missing definition is that of the User entity:
 
-.. code-block:: xml
+.. configuration-block::
 
-    <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-    
-         <entity name="User" table="zf_accounts">
-             <id name="id" type="integer" column="account_id">
-                 <generator strategy="AUTO" />
-             </id>
-    
-             <field name="name" column="account_name" type="string" />
-    
-             <one-to-many target-entity="Bug" field="reportedBugs" mapped-by="reporter" />
-             <one-to-many target-entity="Bug" field="assignedBugs" mapped-by="engineer" />
-    
-         </entity>
-    
-    </doctrine-mapping>
+    .. code-block:: php
+
+        <?php
+        /**
+         * @Entity @Table(name="users")
+         */
+        class User
+        {
+            /**
+             * @Id @GeneratedValue @Column(type="integer")
+             * @var string
+             */
+            public $id;
+
+            /**
+             * @Column(type="string")
+             * @var string
+             */
+            public $name;
+
+            /**
+             * @OneToMany(targetEntity="Bug", mappedBy="reporter")
+             * @var Bug[]
+             */
+            protected $reportedBugs = null;
+
+            /**
+             * @OneToMany(targetEntity="Bug", mappedBy="engineer")
+             * @var Bug[]
+             */
+            protected $assignedBugs = null;
+
+    .. code-block:: xml
+
+        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                            http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+             <entity name="User" name="users">
+                 <id name="id" type="integer">
+                     <generator strategy="AUTO" />
+                 </id>
+
+                 <field name="name" type="string" />
+
+                 <one-to-many target-entity="Bug" field="reportedBugs" mapped-by="reporter" />
+                 <one-to-many target-entity="Bug" field="assignedBugs" mapped-by="engineer" />
+             </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        User:
+          type: entity
+          table: users
+          id:
+            id:
+              type: integer
+              generator:
+                strategy: AUTO
+          fields:
+            name:
+              type: string
+          oneToMany:
+            reportedBugs:
+              targetEntity: Bug
+              mappedBy: reporter
+            assignedBugs:
+              targetEntity: Bug
+              mappedBy: engineer
 
 Here are some new things to mention about the ``one-to-many`` tags.
 Remember that we discussed about the inverse and owning side. Now
@@ -511,7 +649,9 @@ step:
     $config->setAutoGenerateProxyClasses((APPLICATION_ENV == "development"));
     
     // Mapping Configuration (4)
-    $driverImpl = new Doctrine\ORM\Mapping\Driver\XmlDriver(__DIR__."/config/mappings");
+    $driverImpl = new Doctrine\ORM\Mapping\Driver\XmlDriver(__DIR__."/config/mappings/xml");
+    //$driverImpl = new Doctrine\ORM\Mapping\Driver\XmlDriver(__DIR__."/config/mappings/yml");
+    //$driverImpl = $config->newDefaultAnnotationDriver(__DIR__."/entities");
     $config->setMetadataDriverImpl($driverImpl);
     
     // Caching Configuration (5)
@@ -603,10 +743,10 @@ doctrine command. Its a fairly simple file:
 You can then change into your project directory and call the
 Doctrine command-line tool:
 
-.. code-block:: bash
+::
 
     doctrine@my-desktop> cd myproject/
-    doctrine@my-desktop> doctrine orm:schema-tool:create
+    doctrine@my-desktop> doctrine orm:schema-tool:create --force
 
 .. note::
 
@@ -624,16 +764,16 @@ During the development you probably need to re-create the database
 several times when changing the Entity metadata. You can then
 either re-create the database:
 
-.. code-block:: bash
+::
 
-    doctrine@my-desktop> doctrine orm:schema-tool:drop
-    doctrine@my-desktop> doctrine orm:schema-tool:create
+    doctrine@my-desktop> doctrine orm:schema-tool:drop --force
+    doctrine@my-desktop> doctrine orm:schema-tool:create --force
 
 Or use the update functionality:
 
-.. code-block:: bash
+::
 
-    doctrine@my-desktop> doctrine orm:schema-tool:update
+    doctrine@my-desktop> doctrine orm:schema-tool:update --force
 
 The updating of databases uses a Diff Algorithm for a given
 Database Schema, a cornerstone of the ``Doctrine\DBAL`` package,
