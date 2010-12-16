@@ -79,7 +79,7 @@ driver by itself.
     $memcache->connect('memcache_host', 11211);
     
     $cacheDriver = new \Doctrine\Common\Cache\MemcacheCache();
-    $cacheDriver->setMemcache()
+    $cacheDriver->setMemcache($memcache);
     $cacheDriver->save('cache_id', 'my_data');
 
 Xcache
