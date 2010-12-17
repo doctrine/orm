@@ -536,7 +536,7 @@ public function <methodName>()
                 }
             }
 
-            return implode('', $methods);
+            return implode("\n\n", $methods);
         }
     }
 
