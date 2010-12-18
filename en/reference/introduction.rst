@@ -394,6 +394,6 @@ Can you **find** the easier way?).
 
 Instead of reading through the reference manual we also recommend to look at the tutorials:
 
-:doc:`Getting Started XML Edition <../tutorials/getting-started-xml-edition>`
+:doc:`Getting Started Tutorial <../tutorials/getting-started-xml-edition>`
 
 

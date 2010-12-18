@@ -347,7 +347,8 @@ First you need to retrieve the metadata instances with the
         )
     );
     
-    $cmf = new DisconnectedClassMetadataFactory($em);
+    $cmf = new DisconnectedClassMetadataFactory();
+    $cmf->setEntityManager($em);
     $metadata = $cmf->getAllMetadata();
 
 Now you can get an exporter instance and export the loaded metadata
