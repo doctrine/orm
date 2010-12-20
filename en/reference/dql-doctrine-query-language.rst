@@ -159,6 +159,9 @@ contrast to many SQL dialects positional parameters are specified
 with numbers, for example "?1", "?2" and so on. Named parameters
 are specified with ":name1", ":name2" and so on.
 
+When referencing the parameters in ``Query#setParameter($param, $value)``
+both named and positional parameters are used **without** their prefixies.
+
 DQL SELECT Examples
 ~~~~~~~~~~~~~~~~~~~
 
