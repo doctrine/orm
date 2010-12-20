@@ -1086,6 +1086,8 @@ pass parameters to the query the following methods can be used:
 -  ``AbstractQuery::getParameter($param)``
 -  ``AbstractQuery::getParameters()``
 
+Both named and positional parameters are passed to these methods without their ? or : prefix.
+
 Cache related API
 ^^^^^^^^^^^^^^^^^
 
