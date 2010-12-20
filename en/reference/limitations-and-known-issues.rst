@@ -173,6 +173,38 @@ DQL and Repository/Persister generated queries, but as this is a
 pretty important feature we plan to add support for it in the
 future.
 
+Restricing Associations
+~~~~~~~~~~~~~~~~~~~~~~~
+
+There is currently no way to restrict associations to a subset of entities matching a given condition.
+You should use a DQL query to retrieve a subset of associated entities. For example
+if you need all visible articles in a certain category you could have the following code
+in an entity repository:
+
+.. code-block:: php
+
+    <?php
+    class ArticleRepository extends EntityRepository
+    {
+        public function getVisibleByCategory(Category $category)
+        {
+            $dql = "SELECT a FROM Article a WHERE a.category = ?1 and a.visible = true";
+            return $this->getEntityManager()
+                        ->createQuery($dql)
+                        ->setParameter(1, $category)
+                        ->getResult();
+        }
+    }
+
+Cascade Merge with Bi-directional Associations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are two bugs now that concern the use of cascade merge in combination with bi-directional associations.
+Make sure to study the behavior of cascade merge if you are using it:
+
+-  `DDC-875 Merge can sometimes add the same entity twice into a collection<http://www.doctrine-project.org/jira/browse/DDC-875>`_
+-  `DDC-763 Cascade merge on associated entities can insert too many rows through "Persistence by Reachability"<http://www.doctrine-project.org/jira/browse/DDC-763>`_
+
 Custom Persisters
 ~~~~~~~~~~~~~~~~~
 
@@ -186,6 +218,17 @@ benefit from custom persister implementations:
 -  `Add Upsert Support <http://www.doctrine-project.org/jira/browse/DDC-668>`_
 -  `Evaluate possible ways in which stored-procedures can be used <http://www.doctrine-project.org/jira/browse/DDC-445>`_
 -  The previous Filter Rules Feature Request
+
+Paginating Associations
+~~~~~~~~~~~~~~~~~~~~~~~
+
+It is not possible to paginate only parts of an associations at the moment. You can always only
+load the whole association/collection into memory. This is rather problematic for large collections,
+but we already plan to add facilities to fix this for Doctrine 2.1
+
+-  `DDC-546 New Fetch Mode EXTRA_LAZY <http://www.doctrine-project.org/jira/browse/DDC-546>`_
+-  `Blog: Working with large collections (Workaround) <http://www.doctrine-project.org/blog/doctrine2-large-collections>`_
+-  `LargeCollections Helper <http://github.com/beberlei/DoctrineExtensions>`_
 
 Persist Keys of Collections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -213,10 +256,11 @@ in the core library. We don't think behaviors add more value than
 they cost pain and debugging hell. Please see the many different
 blog posts we have written on this topics:
 
-
 -  `Doctrine2 "Behaviors" in a Nutshell <http://www.doctrine-project.org/blog/doctrine2-behaviours-nutshell>`_
 -  `A re-usable Versionable behavior for Doctrine2 <http://www.doctrine-project.org/blog/doctrine2-versionable>`_
 -  `Write your own ORM on top of Doctrine2 <http://www.doctrine-project.org/blog/your-own-orm-doctrine2>`_
+-  `Doctrine 2 Behavioral Extensions<http://www.doctrine-project.org/blog/doctrine2-behavioral-extensions>`_
+-  `Doctrator<https://github.com/pablodip/doctrator`>_
 
 Doctrine 2 has enough hooks and extension points so that *you* can
 add whatever you want on top of it. None of this will ever become
@@ -263,5 +307,4 @@ Having problems with these kind of column names? Many databases
 support all CRUD operations on views that semantically map to
 certain tables. You can create views for all your problematic
 tables and column names to avoid the legacy quoting nightmare.
-
 
