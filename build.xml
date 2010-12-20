@@ -83,6 +83,7 @@
         Builds ORM package, preparing it for distribution.
     -->
     <target name="build-orm" depends="prepare">
+        <exec command="grep '${version}' ${project.basedir}/lib/Doctrine/ORM/Version.php" checkreturn="true"/>
         <copy todir="${build.dir}/doctrine-orm">
             <fileset refid="shared-artifacts"/>
         </copy>
@@ -183,6 +184,7 @@
     </target>
 
     <target name="git-tag">
+        <exec command="grep '${version}' ${project.basedir}/lib/Doctrine/ORM/Version.php" checkreturn="true"/>
         <exec command="git tag -a ${version}" passthru="true" />
         <exec command="git push origin ${version}" passthru="true" />
     </target>
@@ -197,6 +199,7 @@
     </target>
 
     <target name="update-dev-version">
+        <exec command="grep '${version}' ${project.basedir}/lib/Doctrine/ORM/Version.php" checkreturn="true"/>
         <propertyprompt propertyName="next_version" defaultValue="${version}" promptText="Enter next version string (without -DEV)" />
         <exec command="sed 's/${version}-DEV/${next_version}-DEV/' ${project.basedir}/lib/Doctrine/ORM/Version.php > ${project.basedir}/lib/Doctrine/ORM/Version2.php" passthru="true" />
         <exec command="mv ${project.basedir}/lib/Doctrine/ORM/Version2.php ${project.basedir}/lib/Doctrine/ORM/Version.php" passthru="true" />
