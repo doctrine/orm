@@ -68,9 +68,9 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self("No mapping file found named '$fileName' for class '$entityName'.");
     }
 
-    public static function mappingNotFound($fieldName)
+    public static function mappingNotFound($className, $fieldName)
     {
-        return new self("No mapping found for field '$fieldName'.");
+        return new self("No mapping found for field '$fieldName' on class '$className'.");
     }
 
     public static function oneToManyRequiresMappedBy($fieldName)
