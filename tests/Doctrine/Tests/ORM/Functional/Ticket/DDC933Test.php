@@ -21,6 +21,8 @@ class DDC933Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testLockCTIClass()
     {
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
+
         $manager = new \Doctrine\Tests\Models\Company\CompanyManager();
         $manager->setName('beberlei');
         $manager->setSalary(1234);
