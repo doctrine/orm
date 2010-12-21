@@ -289,4 +289,15 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->setIdentifier(array('name', 'username'));
         $this->assertTrue($cm->isIdentifierComposite);
     }
+
+    /**
+     * @group DDC-944
+     */
+    public function testMappingNotFound()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', "No mapping found for field 'foo' on class 'Doctrine\Tests\Models\CMS\CmsUser'.");
+        $cm->getFieldMapping('foo');
+    }
 }
