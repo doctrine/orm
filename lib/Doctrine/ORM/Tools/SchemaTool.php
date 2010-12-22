@@ -498,7 +498,11 @@ class SchemaTool
         $conn = $this->_em->getConnection();
 
         foreach ($dropSchemaSql as $sql) {
-            $conn->executeQuery($sql);
+            try {
+                $conn->executeQuery($sql);
+            } catch(\Exception $e) {
+                
+            }
         }
     }
 
