@@ -1309,11 +1309,7 @@ Path Expressions
     
     /* "u.Group" */
     SingleValuedAssociationPathExpression     ::= IdentificationVariable "." SingleValuedAssociationField
-<<<<<<< HEAD:manual/en/dql-doctrine-query-language.txt
 
-=======
-    
->>>>>>> ReST:en/reference/dql-doctrine-query-language.rst
     /* "u.Group.Permissions" */
     CollectionValuedPathExpression            ::= IdentificationVariable "." {SingleValuedAssociationField "."}* CollectionValuedAssociationField
     
