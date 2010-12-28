@@ -277,20 +277,8 @@ class Parser
     {
         $AST = $this->getAST();
 
-        // Fix order of identification variables.
-        // They have to appear in the select clause in the same order as the
-        // declarations (from ... x join ... y join ... z ...) appear in the query
-        // as the hydration process relies on that order for proper operation.
-        if ( count($this->_identVariableExpressions) > 1) {
-            foreach ($this->_queryComponents as $dqlAlias => $qComp) {
-                if (isset($this->_identVariableExpressions[$dqlAlias])) {
-                    $expr = $this->_identVariableExpressions[$dqlAlias];
-                    $key = array_search($expr, $AST->selectClause->selectExpressions);
-                    unset($AST->selectClause->selectExpressions[$key]);
-                    $AST->selectClause->selectExpressions[] = $expr;
-                }
-            }
-        }
+        $this->fixIdentificationVariableOrder($AST);
+        $this->assertSelectEntityRootAliasRequirement();
 
         if (($customWalkers = $this->_query->getHint(Query::HINT_CUSTOM_TREE_WALKERS)) !== false) {
             $this->_customTreeWalkers = $customWalkers;
@@ -331,6 +319,46 @@ class Parser
         $this->_parserResult->setSqlExecutor($outputWalker->getExecutor($AST));
 
         return $this->_parserResult;
+    }
+    
+    private function assertSelectEntityRootAliasRequirement()
+    {
+        if ( count($this->_identVariableExpressions) > 0) {
+            $foundRootEntity = false;
+            foreach ($this->_identVariableExpressions AS $dqlAlias => $expr) {
+                if (isset($this->_queryComponents[$dqlAlias]) && $this->_queryComponents[$dqlAlias]['parent'] === null) {
+                    $foundRootEntity = true;
+                }
+            }
+            
+            if (!$foundRootEntity) {
+                $this->semanticalError('Cannot select entity through identification variables without choosing at least one root entity alias.');
+            }
+        }
+    }
+    
+    /**
+     * Fix order of identification variables.
+     * 
+     * They have to appear in the select clause in the same order as the
+     * declarations (from ... x join ... y join ... z ...) appear in the query
+     * as the hydration process relies on that order for proper operation.
+     * 
+     * @param AST\SelectStatement|AST\DeleteStatement|AST\UpdateStatement $AST
+     * @return void
+     */
+    private function fixIdentificationVariableOrder($AST)
+    {
+        if ( count($this->_identVariableExpressions) > 1) {
+            foreach ($this->_queryComponents as $dqlAlias => $qComp) {
+                if (isset($this->_identVariableExpressions[$dqlAlias])) {
+                    $expr = $this->_identVariableExpressions[$dqlAlias];
+                    $key = array_search($expr, $AST->selectClause->selectExpressions);
+                    unset($AST->selectClause->selectExpressions[$key]);
+                    $AST->selectClause->selectExpressions[] = $expr;
+                }
+            }
+        }
     }
 
     /**
