@@ -234,6 +234,23 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $article = $this->_em->find(get_class($this->article1), $this->article1->id());
         $this->assertEquals('not so very long text!', $article->getText());
     }
+
+    /**
+     * @group DDC-117
+     */
+    public function testOneToOneCascadePersist()
+    {
+        if (!$this->_em->getConnection()->getDatabasePlatform()->prefersSequences()) {
+            $this->markTestSkipped('Test only works with databases that prefer sequences as ID strategy.');
+        }
+
+        $this->article1 = new DDC117Article("Foo");
+
+        $this->articleDetails = new DDC117ArticleDetails($this->article1, "Very long text");
+
+        $this->_em->persist($this->article1);
+        $this->_em->flush();
+    }
 }
 
 /**
@@ -252,7 +269,7 @@ class DDC117Article
     private $references;
 
     /**
-     * @OneToOne(targetEntity="DDC117ArticleDetails", mappedBy="article")
+     * @OneToOne(targetEntity="DDC117ArticleDetails", mappedBy="article", cascade={"persist"})
      */
     private $details;
 

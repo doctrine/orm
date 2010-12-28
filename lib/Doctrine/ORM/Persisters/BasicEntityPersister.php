@@ -913,7 +913,22 @@ class BasicEntityPersister
             $columnList .= $this->_getSelectColumnSQL($field, $this->_class);
         }
 
-        $this->_selectColumnListSql = $columnList . $this->_getSelectJoinColumnsSQL($this->_class);
+        foreach ($this->_class->associationMappings as $assoc) {
+            if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
+                foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
+                    if ($columnList) $columnList .= ', ';
+
+                    $columnAlias = $srcColumn . $this->_sqlAliasCounter++;
+                    $columnList .= $this->_getSQLTableAlias($this->_class->name) . ".$srcColumn AS $columnAlias";
+                    $resultColumnName = $this->_platform->getSQLResultCasing($columnAlias);
+                    if ( ! isset($this->_resultColumnNames[$resultColumnName])) {
+                        $this->_resultColumnNames[$resultColumnName] = $srcColumn;
+                    }
+                }
+            }
+        }
+
+        $this->_selectColumnListSql = $columnList;
 
         return $this->_selectColumnListSql;
     }
@@ -1024,33 +1039,6 @@ class BasicEntityPersister
         }
 
         return "$sql AS $columnAlias";
-    }
-
-    /**
-     * Gets the SQL snippet for all join columns of the given class that are to be
-     * placed in an SQL SELECT statement.
-     *
-     * @param $class
-     * @return string
-     * @todo Not reused... inline?
-     */
-    private function _getSelectJoinColumnsSQL(ClassMetadata $class)
-    {
-        $sql = '';
-        foreach ($class->associationMappings as $assoc) {
-            if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
-                foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
-                    $columnAlias = $srcColumn . $this->_sqlAliasCounter++;
-                    $sql .= ', ' . $this->_getSQLTableAlias($this->_class->name) . ".$srcColumn AS $columnAlias";
-                    $resultColumnName = $this->_platform->getSQLResultCasing($columnAlias);
-                    if ( ! isset($this->_resultColumnNames[$resultColumnName])) {
-                        $this->_resultColumnNames[$resultColumnName] = $srcColumn;
-                    }
-                }
-            }
-        }
-
-        return $sql;
     }
 
     /**
