@@ -125,13 +125,29 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
         $factory->setEntityManager($em);
 
-        $classPage = new ClassMetadata('Doctrine\Tests\Models\DirectoryTree\File');
         $classPage = $factory->getMetadataFor('Doctrine\Tests\Models\DirectoryTree\File');
         $this->assertEquals('Doctrine\Tests\Models\DirectoryTree\File', $classPage->associationMappings['parentDirectory']['sourceEntity']);
 
-        $classDirectory = new ClassMetadata('Doctrine\Tests\Models\DirectoryTree\Directory');
         $classDirectory = $factory->getMetadataFor('Doctrine\Tests\Models\DirectoryTree\Directory');
         $this->assertEquals('Doctrine\Tests\Models\DirectoryTree\Directory', $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
+    }
+
+    /**
+     * @group DDC-945
+     */
+    public function testInvalidMappedSuperClassWithManyToManyAssociation()
+    {
+        $annotationDriver = $this->_loadDriver();
+
+        $em = $this->_getTestEntityManager();
+        $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
+        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory->setEntityManager($em);
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException',
+            "It is illegal to put a one-to-many or many-to-many association on ".
+            "mapped superclass 'Doctrine\Tests\ORM\Mapping\InvalidMappedSuperClass#users'");
+        $usingInvalidMsc = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\UsingInvalidMappedSuperClass');
     }
 }
 
@@ -142,4 +158,26 @@ class ColumnWithoutType
 {
     /** @Id @Column */
     public $id;
+}
+
+/**
+ * @MappedSuperclass
+ */
+class InvalidMappedSuperClass
+{
+    /**
+     * @ManyToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser")
+     */
+    private $users;
+}
+
+/**
+ * @Entity
+ */
+class UsingInvalidMappedSuperClass extends InvalidMappedSuperClass
+{
+    /**
+     * @Id @Column(type="integer") @GeneratedValue
+     */
+    private $id;
 }
