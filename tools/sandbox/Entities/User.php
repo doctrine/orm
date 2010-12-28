@@ -13,7 +13,7 @@ class User
     /** @Column(type="string", length=50) */
     private $name;
     /**
-     * @OneToOne(targetEntity="Address")
+     * @OneToOne(targetEntity="Address", inversedBy="user")
      * @JoinColumn(name="address_id", referencedColumnName="id")
      */
     private $address;

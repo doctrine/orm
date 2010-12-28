@@ -7,13 +7,13 @@ namespace Doctrine\Tests\Models\Company;
 class CompanyFlexContract extends CompanyContract
 {
     /**
-     * @column(type="integer", nullable=true)
+     * @column(type="integer")
      * @var int
      */
     private $hoursWorked = 0;
 
     /**
-     * @column(type="integer", nullable=true)
+     * @column(type="integer")
      * @var int
      */
     private $pricePerHour = 0;

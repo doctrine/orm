@@ -49,13 +49,21 @@ class DropCommand extends AbstractCommand
         $this
         ->setName('orm:schema-tool:drop')
         ->setDescription(
-            'Processes the schema and either drop the database schema of EntityManager Storage Connection or generate the SQL output.'
+            'Drop the complete database schema of EntityManager Storage Connection or generate the corresponding SQL output.'
         )
         ->setDefinition(array(
             new InputOption(
-                'dump-sql', null, InputOption::PARAMETER_NONE,
+                'dump-sql', null, InputOption::VALUE_NONE,
                 'Instead of try to apply generated SQLs into EntityManager Storage Connection, output them.'
-            )
+            ),
+            new InputOption(
+                'force', null, InputOption::VALUE_NONE,
+                "Don't ask for the deletion of the database, but force the operation to run."
+            ),
+            new InputOption(
+                'full-database', null, InputOption::VALUE_NONE,
+                'Instead of using the Class Metadata to detect the database table schema, drop ALL assets that the database contains.'
+            ),
         ))
         ->setHelp(<<<EOT
 Processes the schema and either drop the database schema of EntityManager Storage Connection or generate the SQL output.
@@ -66,13 +74,38 @@ EOT
 
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
     {
+        $isFullDatabaseDrop = ($input->getOption('full-database'));
+
         if ($input->getOption('dump-sql') === true) {
-            $sqls = $schemaTool->getDropSchemaSql($metadatas);
+            if ($isFullDatabaseDrop) {
+                $sqls = $schemaTool->getDropDatabaseSQL();
+            } else {
+                $sqls = $schemaTool->getDropSchemaSQL($metadatas);
+            }
             $output->write(implode(';' . PHP_EOL, $sqls) . PHP_EOL);
-        } else {
+        } else if ($input->getOption('force') === true) {
             $output->write('Dropping database schema...' . PHP_EOL);
-            $schemaTool->dropSchema($metadatas);
+            if ($isFullDatabaseDrop) {
+                $schemaTool->dropDatabase();
+            } else {
+                $schemaTool->dropSchema($metadatas);
+            }
             $output->write('Database schema dropped successfully!' . PHP_EOL);
+        } else {
+            $output->write('ATTENTION: This operation should not be executed in an production enviroment.' . PHP_EOL . PHP_EOL);
+
+            if ($isFullDatabaseDrop) {
+                $sqls = $schemaTool->getDropDatabaseSQL();
+            } else {
+                $sqls = $schemaTool->getDropSchemaSQL($metadatas);
+            }
+
+            if (count($sqls)) {
+                $output->write('Schema-Tool would execute ' . count($sqls) . ' queries to drop the database.' . PHP_EOL);
+                $output->write('Please run the operation with --force to execute these queries or use --dump-sql to see them.' . PHP_EOL);
+            } else {
+                $output->write('Nothing to drop. The database is empty!' . PHP_EOL);
+            }
         }
     }
 }

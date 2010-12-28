@@ -50,20 +50,20 @@ class RunDqlCommand extends Console\Command\Command
         ->setDefinition(array(
             new InputArgument('dql', InputArgument::REQUIRED, 'The DQL to execute.'),
             new InputOption(
-                'hydrate', null, InputOption::PARAMETER_REQUIRED,
+                'hydrate', null, InputOption::VALUE_REQUIRED,
                 'Hydration mode of result set. Should be either: object, array, scalar or single-scalar.',
                 'object'
             ),
             new InputOption(
-                'first-result', null, InputOption::PARAMETER_REQUIRED,
+                'first-result', null, InputOption::VALUE_REQUIRED,
                 'The first result in the result set.'
             ),
             new InputOption(
-                'max-result', null, InputOption::PARAMETER_REQUIRED,
+                'max-result', null, InputOption::VALUE_REQUIRED,
                 'The maximum number of results in the result set.'
             ),
             new InputOption(
-                'depth', null, InputOption::PARAMETER_REQUIRED,
+                'depth', null, InputOption::VALUE_REQUIRED,
                 'Dumping depth of Entity graph.', 7
             )
         ))
@@ -114,7 +114,7 @@ EOT
                 throw new \LogicException("Option 'max-result' must contains an integer value");
             }
 
-            $query->setMaxResult((int) $maxResult);
+            $query->setMaxResults((int) $maxResult);
         }
 
         $resultSet = $query->execute(array(), constant($hydrationMode));

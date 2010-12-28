@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -82,7 +80,7 @@ class EntityGenerator
     private static $_classTemplate =
 '<?php
 
-<namespace><use>
+<namespace>
 
 <entityAnnotation>
 <entityClassName>
@@ -189,7 +187,6 @@ public function <methodName>()
     {
         $placeHolders = array(
             '<namespace>',
-            '<use>',
             '<entityAnnotation>',
             '<entityClassName>',
             '<entityBody>'
@@ -197,7 +194,6 @@ public function <methodName>()
 
         $replacements = array(
             $this->_generateEntityNamespace($metadata),
-            $this->_generateEntityUse($metadata),
             $this->_generateEntityDocBlock($metadata),
             $this->_generateEntityClassName($metadata),
             $this->_generateEntityBody($metadata)
@@ -222,7 +218,7 @@ public function <methodName>()
         $body = str_replace('<spaces>', $this->_spaces, $body);
         $last = strrpos($currentCode, '}');
 
-        return substr($currentCode, 0, $last) . $body . "\n}";
+        return substr($currentCode, 0, $last) . $body . (strlen($body) > 0 ? "\n" : ''). "}";
     }
 
     /**
@@ -309,13 +305,6 @@ public function <methodName>()
         }
     }
 
-    private function _generateEntityUse(ClassMetadataInfo $metadata)
-    {
-        if ($this->_extendsClass()) {
-            return "\n\nuse " . $this->_getClassToExtendNamespace() . ";\n";
-        }
-    }
-
     private function _generateEntityClassName(ClassMetadataInfo $metadata)
     {
         return 'class ' . $this->_getClassName($metadata) .
@@ -379,14 +368,7 @@ public function <methodName>()
     {
         $refl = new \ReflectionClass($this->_getClassToExtend());
 
-        return $refl->getName();
-    }
-
-    private function _getClassToExtendNamespace()
-    {
-        $refl = new \ReflectionClass($this->_getClassToExtend());
-
-        return $refl->getNamespaceName() ? $refl->getNamespaceName():$refl->getShortName();        
+        return '\\' . $refl->getName();
     }
 
     private function _getClassName(ClassMetadataInfo $metadata)

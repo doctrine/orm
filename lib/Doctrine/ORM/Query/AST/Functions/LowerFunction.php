@@ -41,8 +41,9 @@ class LowerFunction extends FunctionNode
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        //TODO: Use platform to get SQL
-        return 'LOWER(' . $sqlWalker->walkStringPrimary($this->stringPrimary) . ')';
+        return $sqlWalker->getConnection()->getDatabasePlatform()->getLowerExpression(
+               $sqlWalker->walkSimpleArithmeticExpression($this->stringPrimary)
+        );
     }
 
     /**

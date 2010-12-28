@@ -106,4 +106,20 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         )->fetchColumn();
         $this->assertEquals($value, $foreignKey);
     }
+
+    /**
+     * @group DDC-762
+     */
+    public function testNullForeignKey()
+    {
+        $product = new ECommerceProduct();
+        $product->setName('Doctrine 2 Manual');
+
+        $this->_em->persist($product);
+        $this->_em->flush();
+
+        $product = $this->_em->find(get_class($product), $product->getId());
+
+        $this->assertNull($product->getShipping());
+    }
 }

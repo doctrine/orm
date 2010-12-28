@@ -573,7 +573,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->computeChangeSet($targetClass, $entry);
             } else if ($state == self::STATE_REMOVED) {
                 return new InvalidArgumentException("Removed entity detected during flush: "
-                        . self::objToStr($removedEntity).". Remove deleted entities from associations.");
+                        . self::objToStr($entry).". Remove deleted entities from associations.");
             } else if ($state == self::STATE_DETACHED) {
                 // Can actually not happen right now as we assume STATE_NEW,
                 // so the exception will be raised from the DBAL layer (constraint violation).
@@ -1437,7 +1437,16 @@ class UnitOfWork implements PropertyChangedListener
                             $prop->setValue($managedCopy, $managedCol);
                             $this->originalEntityData[$oid][$name] = $managedCol;
                         }
-                        $managedCol->setInitialized($assoc2['isCascadeMerge']);
+                        if ($assoc2['isCascadeMerge']) {
+                            $managedCol->initialize();
+                            if (!$managedCol->isEmpty()) {
+                                $managedCol->unwrap()->clear();
+                                $managedCol->setDirty(true);
+                                if ($assoc2['isOwningSide'] && $assoc2['type'] == ClassMetadata::MANY_TO_MANY && $class->isChangeTrackingNotify()) {
+                                    $this->scheduleForDirtyCheck($managedCopy);
+                                }
+                            }
+                        }
                     }
                 }
                 if ($class->isChangeTrackingNotify()) {
@@ -1456,7 +1465,7 @@ class UnitOfWork implements PropertyChangedListener
             if ($assoc['type'] & ClassMetadata::TO_ONE) {
                 $prevClass->reflFields[$assocField]->setValue($prevManagedCopy, $managedCopy);
             } else {
-                $prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->unwrap()->add($managedCopy);
+                $prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->add($managedCopy);
                 if ($assoc['type'] == ClassMetadata::ONE_TO_MANY) {
                     $class->reflFields[$assoc['mappedBy']]->setValue($managedCopy, $prevManagedCopy);
                 }
@@ -1500,7 +1509,9 @@ class UnitOfWork implements PropertyChangedListener
         
         switch ($this->getEntityState($entity, self::STATE_DETACHED)) {
             case self::STATE_MANAGED:
-                $this->removeFromIdentityMap($entity);
+                if ($this->isInIdentityMap($entity)) {
+                    $this->removeFromIdentityMap($entity);
+                }
                 unset($this->entityInsertions[$oid], $this->entityUpdates[$oid],
                         $this->entityDeletions[$oid], $this->entityIdentifiers[$oid],
                         $this->entityStates[$oid], $this->originalEntityData[$oid]);
@@ -1889,7 +1900,7 @@ class UnitOfWork implements PropertyChangedListener
                         if ($assoc['isOwningSide']) {
                             $associatedId = array();
                             foreach ($assoc['targetToSourceKeyColumns'] as $targetColumn => $srcColumn) {
-                                $joinColumnValue = $data[$srcColumn];
+                                $joinColumnValue = isset($data[$srcColumn]) ? $data[$srcColumn] : null;
                                 if ($joinColumnValue !== null) {
                                     $associatedId[$targetClass->fieldNames[$targetColumn]] = $joinColumnValue;
                                 }
@@ -1937,14 +1948,12 @@ class UnitOfWork implements PropertyChangedListener
                         }
                     } else {
                         // Inject collection
-                        $reflField = $class->reflFields[$field];
-                        $pColl = new PersistentCollection(
-                            $this->em, $targetClass,
-                            //TODO: getValue might be superfluous once DDC-79 is implemented. 
-                            $reflField->getValue($entity) ?: new ArrayCollection
-                        );
+                        $pColl = new PersistentCollection($this->em, $targetClass, new ArrayCollection);
                         $pColl->setOwner($entity, $assoc);
+                        
+                        $reflField = $class->reflFields[$field];
                         $reflField->setValue($entity, $pColl);
+                        
                         if ($assoc['fetch'] == ClassMetadata::FETCH_LAZY) {
                             $pColl->setInitialized(false);
                         } else {

@@ -11,15 +11,5 @@ namespace Doctrine\Tests;
  */
 class OrmFunctionalTestSuite extends OrmTestSuite
 {
-    protected function setUp()
-    {
-        if ( ! isset($this->sharedFixture['conn'])) {
-            $this->sharedFixture['conn'] = TestUtil::getConnection();
-        }
-    }
-    
-    protected function tearDown()
-    {
-        $this->sharedFixture = null;
-    }
+
 }

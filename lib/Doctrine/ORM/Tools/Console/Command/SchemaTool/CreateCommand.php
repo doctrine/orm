@@ -53,7 +53,7 @@ class CreateCommand extends AbstractCommand
         )
         ->setDefinition(array(
             new InputOption(
-                'dump-sql', null, InputOption::PARAMETER_NONE,
+                'dump-sql', null, InputOption::VALUE_NONE,
                 'Instead of try to apply generated SQLs into EntityManager Storage Connection, output them.'
             )
         ))
@@ -65,6 +65,8 @@ EOT
 
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
     {
+        $output->write('ATTENTION: This operation should not be executed in an production enviroment.' . PHP_EOL . PHP_EOL);
+
         if ($input->getOption('dump-sql') === true) {
             $sqls = $schemaTool->getCreateSchemaSql($metadatas);
             $output->write(implode(';' . PHP_EOL, $sqls) . PHP_EOL);

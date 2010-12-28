@@ -60,17 +60,21 @@ class DriverChainTest extends \Doctrine\Tests\OrmTestCase
         $driver1 = $this->getMock('Doctrine\ORM\Mapping\Driver\Driver');
         $driver1->expects($this->once())
                 ->method('getAllClassNames')
-                ->will($this->returnValue(array('Foo')));
+                ->will($this->returnValue(array('Doctrine\Tests\Models\Company\Foo')));
 
         $driver2 = $this->getMock('Doctrine\ORM\Mapping\Driver\Driver');
         $driver2->expects($this->once())
                 ->method('getAllClassNames')
-                ->will($this->returnValue(array('Bar', 'Baz')));
+                ->will($this->returnValue(array('Doctrine\Tests\ORM\Mapping\Bar', 'Doctrine\Tests\ORM\Mapping\Baz', 'FooBarBaz')));
 
         $chain->addDriver($driver1, 'Doctrine\Tests\Models\Company');
         $chain->addDriver($driver2, 'Doctrine\Tests\ORM\Mapping');
 
-        $this->assertEquals(array('Foo', 'Bar', 'Baz'), $chain->getAllClassNames());
+        $this->assertEquals(array(
+            'Doctrine\Tests\Models\Company\Foo',
+            'Doctrine\Tests\ORM\Mapping\Bar',
+            'Doctrine\Tests\ORM\Mapping\Baz'
+        ), $chain->getAllClassNames());
     }
 
     /**

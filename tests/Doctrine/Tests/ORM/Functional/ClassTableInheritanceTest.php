@@ -353,4 +353,61 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($manager->getId(), $dqlManager->getId());
         $this->assertEquals($person->getId(), $dqlManager->getSpouse()->getId());
     }
+
+    /**
+     * @group DDC-817
+     */
+    public function testFindByAssociation()
+    {
+        $manager = new CompanyManager();
+        $manager->setName('gblanco');
+        $manager->setSalary(1234);
+        $manager->setTitle('Awesome!');
+        $manager->setDepartment('IT');
+
+        $person = new CompanyPerson();
+        $person->setName('spouse');
+
+        $manager->setSpouse($person);
+
+        $this->_em->persist($manager);
+        $this->_em->persist($person);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyManager');
+        $pmanager = $repos->findOneBy(array('spouse' => $person->getId()));
+
+        $this->assertEquals($manager->getId(), $pmanager->getId());
+
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyPerson');
+        $pmanager = $repos->findOneBy(array('spouse' => $person->getId()));
+
+        $this->assertEquals($manager->getId(), $pmanager->getId());
+    }
+
+    /**
+     * @group DDC-834
+     */
+    public function testGetReferenceEntityWithSubclasses()
+    {
+        $manager = new CompanyManager();
+        $manager->setName('gblanco');
+        $manager->setSalary(1234);
+        $manager->setTitle('Awesome!');
+        $manager->setDepartment('IT');
+
+        $this->_em->persist($manager);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $ref = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyPerson', $manager->getId());
+        $this->assertNotType('Doctrine\ORM\Proxy\Proxy', $ref, "Cannot Request a proxy from a class that has subclasses.");
+        $this->assertType('Doctrine\Tests\Models\Company\CompanyPerson', $ref);
+        $this->assertType('Doctrine\Tests\Models\Company\CompanyEmployee', $ref, "Direct fetch of the reference has to load the child class Emplyoee directly.");
+        $this->_em->clear();
+
+        $ref = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyManager', $manager->getId());
+        $this->assertType('Doctrine\ORM\Proxy\Proxy', $ref, "A proxy can be generated only if no subclasses exists for the requested reference.");
+    }
 }

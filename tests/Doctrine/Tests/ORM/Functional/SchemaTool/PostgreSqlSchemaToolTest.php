@@ -38,15 +38,18 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals("CREATE TABLE cms_users (id INT NOT NULL, status VARCHAR(50) NOT NULL, username VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id))", $sql[2]);
         $this->assertEquals("CREATE UNIQUE INDEX cms_users_username_uniq ON cms_users (username)", $sql[3]);
         $this->assertEquals("CREATE TABLE cms_users_groups (user_id INT NOT NULL, group_id INT NOT NULL, PRIMARY KEY(user_id, group_id))", $sql[4]);
-        $this->assertEquals("CREATE TABLE cms_phonenumbers (phonenumber VARCHAR(50) NOT NULL, user_id INT DEFAULT NULL, PRIMARY KEY(phonenumber))", $sql[5]);
-        $this->assertEquals("CREATE SEQUENCE cms_addresses_id_seq INCREMENT BY 1 MINVALUE 1 START 1", $sql[6]);
-        $this->assertEquals("CREATE SEQUENCE cms_users_id_seq INCREMENT BY 1 MINVALUE 1 START 1", $sql[7]);
-        $this->assertEquals("ALTER TABLE cms_addresses ADD FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[8]);
-        $this->assertEquals("ALTER TABLE cms_users_groups ADD FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[9]);
-        $this->assertEquals("ALTER TABLE cms_users_groups ADD FOREIGN KEY (group_id) REFERENCES cms_groups(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[10]);
-        $this->assertEquals("ALTER TABLE cms_phonenumbers ADD FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[11]);
+        $this->assertEquals("CREATE INDEX cms_users_groups_user_id_idx ON cms_users_groups (user_id)", $sql[5]);
+        $this->assertEquals("CREATE INDEX cms_users_groups_group_id_idx ON cms_users_groups (group_id)", $sql[6]);
+        $this->assertEquals("CREATE TABLE cms_phonenumbers (phonenumber VARCHAR(50) NOT NULL, user_id INT DEFAULT NULL, PRIMARY KEY(phonenumber))", $sql[7]);
+        $this->assertEquals("CREATE INDEX cms_phonenumbers_user_id_idx ON cms_phonenumbers (user_id)", $sql[8]);
+        $this->assertEquals("CREATE SEQUENCE cms_addresses_id_seq INCREMENT BY 1 MINVALUE 1 START 1", $sql[9]);
+        $this->assertEquals("CREATE SEQUENCE cms_users_id_seq INCREMENT BY 1 MINVALUE 1 START 1", $sql[10]);
+        $this->assertEquals("ALTER TABLE cms_addresses ADD FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[11]);
+        $this->assertEquals("ALTER TABLE cms_users_groups ADD FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[12]);
+        $this->assertEquals("ALTER TABLE cms_users_groups ADD FOREIGN KEY (group_id) REFERENCES cms_groups(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[13]);
+        $this->assertEquals("ALTER TABLE cms_phonenumbers ADD FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[14]);
         
-        $this->assertEquals(count($sql), 12);
+        $this->assertEquals(count($sql), 15);
     }
     
     public function testGetCreateSchemaSql2()

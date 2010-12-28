@@ -6,8 +6,6 @@ namespace Doctrine\Tests;
 
 error_reporting(E_ALL | E_STRICT);
 
-require_once 'PHPUnit/Framework.php';
-require_once 'PHPUnit/TextUI/TestRunner.php';
 require_once __DIR__ . '/../../../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
 
 if (isset($GLOBALS['DOCTRINE_COMMON_PATH'])) {

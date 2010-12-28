@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsAddress;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -19,7 +20,8 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
     }
 
-    public function testBasicFinders() {
+    public function loadFixture()
+    {
         $user = new CmsUser;
         $user->name = 'Roman';
         $user->username = 'romanb';
@@ -38,35 +40,58 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         unset($user2);
         $this->_em->clear();
 
+        return $user1Id;
+    }
+
+    public function testBasicFind()
+    {
+        $user1Id = $this->loadFixture();
         $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
 
         $user = $repos->find($user1Id);
         $this->assertTrue($user instanceof CmsUser);
         $this->assertEquals('Roman', $user->name);
         $this->assertEquals('freak', $user->status);
+    }
 
-        $this->_em->clear();
+    public function testFindByField()
+    {
+        $user1Id = $this->loadFixture();
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
 
         $users = $repos->findBy(array('status' => 'dev'));
         $this->assertEquals(1, count($users));
         $this->assertTrue($users[0] instanceof CmsUser);
         $this->assertEquals('Guilherme', $users[0]->name);
         $this->assertEquals('dev', $users[0]->status);
+    }
 
-        $this->_em->clear();
+
+    public function testFindFieldByMagicCall()
+    {
+        $user1Id = $this->loadFixture();
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
 
         $users = $repos->findByStatus('dev');
         $this->assertEquals(1, count($users));
         $this->assertTrue($users[0] instanceof CmsUser);
         $this->assertEquals('Guilherme', $users[0]->name);
         $this->assertEquals('dev', $users[0]->status);
-
-        $this->_em->clear();
+    }
+    
+    public function testFindAll()
+    {
+        $user1Id = $this->loadFixture();
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
 
         $users = $repos->findAll();
         $this->assertEquals(2, count($users));
+    }
 
-        $this->_em->clear();
+    public function testFindByAlias()
+    {
+        $user1Id = $this->loadFixture();
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
 
         $this->_em->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
 
@@ -74,8 +99,12 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $users = $repos->findAll();
         $this->assertEquals(2, count($users));
+    }
 
+    public function tearDown()
+    {
         $this->_em->getConfiguration()->setEntityNamespaces(array());
+        parent::tearDown();
     }
 
     /**
@@ -149,6 +178,117 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $this->setExpectedException('Doctrine\ORM\OptimisticLockException');
         $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $userId, \Doctrine\DBAL\LockMode::OPTIMISTIC);
+    }
+
+    /**
+     * @group DDC-819
+     */
+    public function testFindMagicCallByNullValue()
+    {
+        $this->loadFixture();
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $this->setExpectedException('Doctrine\ORM\ORMException');
+        $users = $repos->findByStatus(null);
+    }
+
+    /**
+     * @group DDC-819
+     */
+    public function testInvalidMagicCall()
+    {
+        $this->setExpectedException('BadMethodCallException');
+
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $repos->foo();
+    }
+
+    public function loadAssociatedFixture()
+    {
+        $address = new CmsAddress();
+        $address->city = "Berlin";
+        $address->country = "Germany";
+        $address->street = "Foostreet";
+        $address->zip = "12345";
+
+        $user = new CmsUser();
+        $user->name = 'Roman';
+        $user->username = 'romanb';
+        $user->status = 'freak';
+        $user->setAddress($address);
+
+        $this->_em->persist($user);
+        $this->_em->persist($address);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        return array($user->id, $address->id);
+    }
+
+    /**
+     * @group DDC-817
+     */
+    public function testFindByAssociationKey_ExceptionOnInverseSide()
+    {
+        list($userId, $addressId) = $this->loadAssociatedFixture();
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $this->setExpectedException('Doctrine\ORM\ORMException', "You cannot search for the association field 'Doctrine\Tests\Models\CMS\CmsUser#address', because it is the inverse side of an association. Find methods only work on owning side associations.");
+        $user = $repos->findBy(array('address' => $addressId));
+    }
+
+    /**
+     * @group DDC-817
+     */
+    public function testFindOneByAssociationKey()
+    {
+        list($userId, $addressId) = $this->loadAssociatedFixture();
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
+        $address = $repos->findOneBy(array('user' => $userId));
+
+        $this->assertType('Doctrine\Tests\Models\CMS\CmsAddress', $address);
+        $this->assertEquals($addressId, $address->id);
+    }
+
+    /**
+     * @group DDC-817
+     */
+    public function testFindByAssociationKey()
+    {
+        list($userId, $addressId) = $this->loadAssociatedFixture();
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
+        $addresses = $repos->findBy(array('user' => $userId));
+
+        $this->assertContainsOnly('Doctrine\Tests\Models\CMS\CmsAddress', $addresses);
+        $this->assertEquals(1, count($addresses));
+        $this->assertEquals($addressId, $addresses[0]->id);
+    }
+
+    /**
+     * @group DDC-817
+     */
+    public function testFindAssociationByMagicCall()
+    {
+        list($userId, $addressId) = $this->loadAssociatedFixture();
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
+        $addresses = $repos->findByUser($userId);
+
+        $this->assertContainsOnly('Doctrine\Tests\Models\CMS\CmsAddress', $addresses);
+        $this->assertEquals(1, count($addresses));
+        $this->assertEquals($addressId, $addresses[0]->id);
+    }
+
+    /**
+     * @group DDC-817
+     */
+    public function testFindOneAssociationByMagicCall()
+    {
+        list($userId, $addressId) = $this->loadAssociatedFixture();
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
+        $address = $repos->findOneByUser($userId);
+
+        $this->assertType('Doctrine\Tests\Models\CMS\CmsAddress', $address);
+        $this->assertEquals($addressId, $address->id);
     }
 }
 

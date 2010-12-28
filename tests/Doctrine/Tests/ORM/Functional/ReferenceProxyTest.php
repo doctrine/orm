@@ -40,4 +40,15 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $productProxy = $this->_factory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceProduct', array('id' => $id));
         $this->assertEquals('Doctrine Cookbook', $productProxy->getName());
     }
+
+    /**
+     * @group DDC-727
+     */
+    public function testAccessMetatadaForProxy()
+    {
+        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , 1);
+        $class = $this->_em->getClassMetadata(get_class($entity));
+
+        $this->assertEquals('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $class->name);
+    }
 }

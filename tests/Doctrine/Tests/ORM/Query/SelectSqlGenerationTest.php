@@ -325,7 +325,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testSupportsMultipleJoins()
     {
         $this->assertSqlGeneration(
-            'SELECT u.id, a.id, p, c.id from Doctrine\Tests\Models\CMS\CmsUser u JOIN u.articles a JOIN u.phonenumbers p JOIN a.comments c',
+            'SELECT u.id, a.id, p.phonenumber, c.id from Doctrine\Tests\Models\CMS\CmsUser u JOIN u.articles a JOIN u.phonenumbers p JOIN a.comments c',
             'SELECT c0_.id AS id0, c1_.id AS id1, c2_.phonenumber AS phonenumber2, c3_.id AS id3 FROM cms_users c0_ INNER JOIN cms_articles c1_ ON c0_.id = c1_.user_id INNER JOIN cms_phonenumbers c2_ ON c0_.id = c2_.user_id INNER JOIN cms_comments c3_ ON c1_.id = c3_.article_id'
         );
     }
@@ -831,6 +831,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
 
         $config->setCustomNumericFunctions(array());
+    }
+
+    /**
+     * @group DDC-826
+     */
+    public function testMappedSuperclassAssociationJoin()
+    {
+        $this->assertSqlGeneration(
+            'SELECT f FROM Doctrine\Tests\Models\DirectoryTree\File f JOIN f.parentDirectory d WHERE f.id = ?1',
+            'SELECT f0_.id AS id0, f0_.extension AS extension1, f0_.name AS name2 FROM "file" f0_ INNER JOIN Directory d1_ ON f0_.parentDirectory_id = d1_.id WHERE f0_.id = ?'
+        );
     }
 }
 

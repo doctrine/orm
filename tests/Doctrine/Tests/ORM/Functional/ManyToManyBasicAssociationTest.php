@@ -248,6 +248,34 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
     }
 
     /**
+     * @group DDC-839
+     */
+    public function testWorkWithDqlHydratedEmptyCollection()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(0);
+        $group = new CmsGroup();
+        $group->name = "Developers0";
+        $this->_em->persist($group);
+        
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $newUser = $this->_em->createQuery('SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.groups g WHERE u.id = ?1')
+                             ->setParameter(1, $user->getId())
+                             ->getSingleResult();
+        $this->assertEquals(0, count($newUser->groups));
+        $this->assertType('array', $newUser->groups->getMapping());
+
+        $newUser->addGroup($group);
+        
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $newUser = $this->_em->find(get_class($user), $user->getId());
+        $this->assertEquals(1, count($newUser->groups));
+    }
+
+    /**
      * @param  int $groupCount
      * @return CmsUser
      */

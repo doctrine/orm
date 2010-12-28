@@ -89,11 +89,6 @@ class YamlExporter extends AbstractExporter
         
         $ids = array();
         foreach ($fieldMappings as $name => $fieldMapping) {
-            if (isset($fieldMapping['length'])) {
-                $fieldMapping['type'] = $fieldMapping['type'] . '(' . $fieldMapping['length'] . ')';
-                unset($fieldMapping['length']);
-            }
-
             $fieldMapping['column'] = $fieldMapping['columnName'];
             unset(
                 $fieldMapping['columnName'],

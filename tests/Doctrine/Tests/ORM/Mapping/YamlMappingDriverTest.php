@@ -18,4 +18,29 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
 
         return new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
     }
+
+    /**
+     * @group DDC-671
+     *
+     * Entities for this test are in AbstractMappingDriverTest
+     */
+    public function testJoinTablesWithMappedSuperclassForYamlDriver()
+    {
+        $yamlDriver = $this->_loadDriver();
+        $yamlDriver->addPaths(array(__DIR__ . DIRECTORY_SEPARATOR . 'yaml'));
+
+        $em = $this->_getTestEntityManager();
+        $em->getConfiguration()->setMetadataDriverImpl($yamlDriver);
+        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory->setEntityManager($em);
+
+        $classPage = new ClassMetadata('Doctrine\Tests\Models\DirectoryTree\File');
+        $classPage = $factory->getMetadataFor('Doctrine\Tests\Models\DirectoryTree\File');
+        $this->assertEquals('Doctrine\Tests\Models\DirectoryTree\File', $classPage->associationMappings['parentDirectory']['sourceEntity']);
+
+        $classDirectory = new ClassMetadata('Doctrine\Tests\Models\DirectoryTree\Directory');
+        $classDirectory = $factory->getMetadataFor('Doctrine\Tests\Models\DirectoryTree\Directory');
+        $this->assertEquals('Doctrine\Tests\Models\DirectoryTree\Directory', $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
+    }
+
 }

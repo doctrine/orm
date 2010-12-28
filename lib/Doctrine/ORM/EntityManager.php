@@ -118,8 +118,12 @@ class EntityManager
         $this->conn = $conn;
         $this->config = $config;
         $this->eventManager = $eventManager;
-        $this->metadataFactory = new ClassMetadataFactory($this);
+
+        $metadataFactoryClassName = $config->getClassMetadataFactoryName();
+        $this->metadataFactory = new $metadataFactoryClassName;
+        $this->metadataFactory->setEntityManager($this);
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
+        
         $this->unitOfWork = new UnitOfWork($this);
         $this->proxyFactory = new ProxyFactory($this,
                 $config->getProxyDir(),
@@ -352,11 +356,15 @@ class EntityManager
         if ($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) {
             return $entity;
         }
-        if ( ! is_array($identifier)) {
-            $identifier = array($class->identifier[0] => $identifier);
+        if ($class->subClasses) {
+            $entity = $this->find($entityName, $identifier);
+        } else {
+            if ( ! is_array($identifier)) {
+                $identifier = array($class->identifier[0] => $identifier);
+            }
+            $entity = $this->proxyFactory->getProxy($class->name, $identifier);
+            $this->unitOfWork->registerManaged($entity, $identifier, array());
         }
-        $entity = $this->proxyFactory->getProxy($class->name, $identifier);
-        $this->unitOfWork->registerManaged($entity, $identifier, array());
 
         return $entity;
     }
@@ -609,6 +617,16 @@ class EntityManager
         if ($this->closed) {
             throw ORMException::entityManagerClosed();
         }
+    }
+
+    /**
+     * Check if the Entity manager is open or closed.
+     * 
+     * @return bool
+     */
+    public function isOpen()
+    {
+        return (!$this->closed);
     }
 
     /**

@@ -53,13 +53,17 @@ class UpdateCommand extends AbstractCommand
         )
         ->setDefinition(array(
             new InputOption(
-                'complete', null, InputOption::PARAMETER_NONE,
+                'complete', null, InputOption::VALUE_NONE,
                 'If defined, all assets of the database which are not relevant to the current metadata will be dropped.'
             ),
             new InputOption(
-                'dump-sql', null, InputOption::PARAMETER_NONE,
+                'dump-sql', null, InputOption::VALUE_NONE,
                 'Instead of try to apply generated SQLs into EntityManager Storage Connection, output them.'
-            )
+            ),
+            new InputOption(
+                'force', null, InputOption::VALUE_NONE,
+                "Don't ask for the incremental update of the database, but force the operation to run."
+            ),
         ))
         ->setHelp(<<<EOT
 Processes the schema and either update the database schema of EntityManager Storage Connection or generate the SQL output.
@@ -72,15 +76,28 @@ EOT
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
     {
         // Defining if update is complete or not (--complete not defined means $saveMode = true)
-        $saveMode = ($input->getOption('complete') === true);
+        $saveMode = ($input->getOption('complete') !== true);
 
         if ($input->getOption('dump-sql') === true) {
             $sqls = $schemaTool->getUpdateSchemaSql($metadatas, $saveMode);
             $output->write(implode(';' . PHP_EOL, $sqls) . PHP_EOL);
-        } else {
+        } else if ($input->getOption('force') === true) {
             $output->write('Updating database schema...' . PHP_EOL);
             $schemaTool->updateSchema($metadatas, $saveMode);
             $output->write('Database schema updated successfully!' . PHP_EOL);
+        } else {
+            $output->write('ATTENTION: This operation should not be executed in an production enviroment.' . PHP_EOL);
+            $output->write('Use the incremental update to detect changes during development and use' . PHP_EOL);
+            $output->write('this SQL DDL to manually update your database in production.' . PHP_EOL . PHP_EOL);
+
+            $sqls = $schemaTool->getUpdateSchemaSql($metadatas, $saveMode);
+
+            if (count($sqls)) {
+                $output->write('Schema-Tool would execute ' . count($sqls) . ' queries to update the database.' . PHP_EOL);
+                $output->write('Please run the operation with --force to execute these queries or use --dump-sql to see them.' . PHP_EOL);
+            } else {
+                $output->write('Nothing to update. The database is in sync with the current entity metadata.' . PHP_EOL);
+            }
         }
     }
 }

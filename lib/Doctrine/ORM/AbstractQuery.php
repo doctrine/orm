@@ -482,15 +482,6 @@ abstract class AbstractQuery
      */
     public function execute($params = array(), $hydrationMode = null)
     {
-        // If there are still pending insertions in the UnitOfWork we need to flush
-        // in order to guarantee a correct result.
-        //TODO: Think this over. Its tricky. Not doing this can lead to strange results
-        //      potentially, but doing it could result in endless loops when querying during
-        //      a flush, i.e. inside an event listener.
-        if ($this->_em->getUnitOfWork()->hasPendingInsertions()) {
-            $this->_em->flush();
-        }
-
         if ($hydrationMode !== null) {
             $this->setHydrationMode($hydrationMode);
         }
@@ -562,9 +553,22 @@ abstract class AbstractQuery
         if ($this->_resultCacheId) {
             return $this->_resultCacheId;
         } else {
+            $params = $this->_params;
+            foreach ($params AS $key => $value) {
+                if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(get_class($value))) {
+                    if ($this->_em->getUnitOfWork()->getEntityState($value) == UnitOfWork::STATE_MANAGED) {
+                        $idValues = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
+                    } else {
+                        $class = $this->_em->getClassMetadata(get_class($value));
+                        $idValues = $class->getIdentifierValues($value);
+                    }
+                    $params[$key] = $idValues;
+                }
+            }
+
             $sql = $this->getSql();
             ksort($this->_hints);
-            return md5(implode(";", (array)$sql) . var_export($this->_params, true) .
+            return md5(implode(";", (array)$sql) . var_export($params, true) .
                 var_export($this->_hints, true)."&hydrationMode=".$this->_hydrationMode);
         }
     }
@@ -583,6 +587,8 @@ abstract class AbstractQuery
      */
     public function __clone()
     {
-        $this->free();
+        $this->_params = array();
+        $this->_paramTypes = array();
+        $this->_hints = array();
     }
 }

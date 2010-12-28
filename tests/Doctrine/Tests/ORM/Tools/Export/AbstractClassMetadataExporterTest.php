@@ -88,10 +88,12 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     protected function _createClassMetadataFactory($em, $type)
     {
         if ($type === 'annotation') {
-            return new ClassMetadataFactory($em);
+            $factory = new ClassMetadataFactory();
         } else {
-            return new DisconnectedClassMetadataFactory($em);
+            $factory = new DisconnectedClassMetadataFactory();
         }
+        $factory->setEntityManager($em);
+        return $factory;
     }
 
     public function testExportDirectoryAndFilesAreCreated()

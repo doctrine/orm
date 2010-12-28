@@ -8,9 +8,23 @@ require_once __DIR__ . '/../../../TestInit.php';
 
 class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
+    protected $oldMetadata;
+
     protected function setUp() {
         $this->useModelSet('company');
         parent::setUp();
+
+        $this->oldMetadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyEmployee');
+        
+        $metadata = clone $this->oldMetadata;
+        ksort($metadata->reflFields);
+        $this->_em->getMetadataFactory()->setMetadataFor('Doctrine\Tests\Models\Company\CompanyEmployee', $metadata);
+    }
+
+    public function tearDown()
+    {
+        $this->_em->getMetadataFactory()->setMetadataFor('Doctrine\Tests\Models\Company\CompanyEmployee', $this->oldMetadata);
+        parent::tearDown();
     }
     
     /**
@@ -19,9 +33,6 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testJoinedSubclassPersisterRequiresSpecificOrderOfMetadataReflFieldsArray()
     {
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        
-        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyEmployee');
-        ksort($metadata->reflFields);
 
         $spouse = new CompanyEmployee;
         $spouse->setName("Blub");

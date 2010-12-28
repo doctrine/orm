@@ -65,6 +65,23 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($fkt2->cart instanceof \Doctrine\ORM\Proxy\Proxy);
         $this->assertFalse($fkt2->cart->__isInitialized__);
     }
+
+    /**
+     * @group DDC-522
+     * @group DDC-762
+     */
+    public function testJoinColumnWithNullSameNameAssociationField()
+    {
+        $fkCust = new DDC522ForeignKeyTest;
+        $fkCust->name = "name";
+        $fkCust->cart = null;
+
+        $this->_em->persist($fkCust);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $newCust = $this->_em->find(get_class($fkCust), $fkCust->id);
+    }
 }
 
 /** @Entity */
@@ -94,7 +111,7 @@ class DDC522Cart {
 class DDC522ForeignKeyTest {
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
-    /** @Column(type="integer", name="cart_id") */
+    /** @Column(type="integer", name="cart_id", nullable="true") */
     public $cartId;
     /**
      * @OneToOne(targetEntity="DDC522Cart")

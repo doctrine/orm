@@ -86,6 +86,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Navigation\NavTour',
             'Doctrine\Tests\Models\Navigation\NavPointOfInterest',
         ),
+        'directorytree' => array(
+            'Doctrine\Tests\Models\DirectoryTree\AbstractContentItem',
+            'Doctrine\Tests\Models\DirectoryTree\File',
+            'Doctrine\Tests\Models\DirectoryTree\Directory',
+        ),
     );
 
     protected function useModelSet($setName)
@@ -98,10 +103,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      */
     protected function tearDown()
     {
-        $conn = $this->sharedFixture['conn'];
+        $conn = static::$_sharedConn;
 
         $this->_sqlLoggerStack->enabled = false;
-        
+
         if (isset($this->_usedModelSets['cms'])) {
             $conn->executeUpdate('DELETE FROM cms_users_groups');
             $conn->executeUpdate('DELETE FROM cms_groups');
@@ -111,7 +116,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM cms_articles');
             $conn->executeUpdate('DELETE FROM cms_users');
         }
-        
+
         if (isset($this->_usedModelSets['ecommerce'])) {
             $conn->executeUpdate('DELETE FROM ecommerce_carts_products');
             $conn->executeUpdate('DELETE FROM ecommerce_products_categories');
@@ -124,7 +129,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('UPDATE ecommerce_categories SET parent_id = NULL');
             $conn->executeUpdate('DELETE FROM ecommerce_categories');
         }
-        
+
         if (isset($this->_usedModelSets['company'])) {
             $conn->executeUpdate('DELETE FROM company_contract_employees');
             $conn->executeUpdate('DELETE FROM company_contracts');
@@ -139,7 +144,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM company_events');
             $conn->executeUpdate('DELETE FROM company_organizations');
         }
-        
+
         if (isset($this->_usedModelSets['generic'])) {
             $conn->executeUpdate('DELETE FROM boolean_model');
             $conn->executeUpdate('DELETE FROM date_time_model');
@@ -162,6 +167,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM navigation_tours');
             $conn->executeUpdate('DELETE FROM navigation_countries');
         }
+        if (isset($this->_usedModelSets['directorytree'])) {
+            $conn->executeUpdate('DELETE FROM ' . $this->_em->getConnection()->getDatabasePlatform()->quoteIdentifier("file"));
+            // MySQL doesnt know deferred deletions therefore only executing the second query gives errors.
+            $conn->executeUpdate('DELETE FROM Directory WHERE parentDirectory_id IS NOT NULL');
+            $conn->executeUpdate('DELETE FROM Directory');
+        }
 
         $this->_em->clear();
     }
@@ -174,23 +185,19 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     {
         $forceCreateTables = false;
         
-        if ( ! isset($this->sharedFixture['conn'])) {
-            if ( ! isset(static::$_sharedConn)) {
-                static::$_sharedConn = TestUtil::getConnection();
-            }
+        if ( ! isset(static::$_sharedConn)) {
+            static::$_sharedConn = TestUtil::getConnection();
             
-            $this->sharedFixture['conn'] = static::$_sharedConn;
-            
-            if ($this->sharedFixture['conn']->getDriver() instanceof \Doctrine\DBAL\Driver\PDOSqlite\Driver) {
+            if (static::$_sharedConn->getDriver() instanceof \Doctrine\DBAL\Driver\PDOSqlite\Driver) {
                 $forceCreateTables = true;
             }
         }
 
         if (isset($GLOBALS['DOCTRINE_MARK_SQL_LOGS'])) {
-            if (in_array($this->sharedFixture['conn']->getDatabasePlatform()->getName(), array("mysql", "postgresql"))) {
-                $this->sharedFixture['conn']->executeQuery('SELECT 1 /*' . get_class($this) . '*/');
-            } else if ($this->sharedFixture['conn']->getDatabasePlatform()->getName() == "oracle") {
-                $this->sharedFixture['conn']->executeQuery('SELECT 1 /*' . get_class($this) . '*/ FROM dual');
+            if (in_array(static::$_sharedConn->getDatabasePlatform()->getName(), array("mysql", "postgresql"))) {
+                static::$_sharedConn->executeQuery('SELECT 1 /*' . get_class($this) . '*/');
+            } else if (static::$_sharedConn->getDatabasePlatform()->getName() == "oracle") {
+                static::$_sharedConn->executeQuery('SELECT 1 /*' . get_class($this) . '*/ FROM dual');
             }
         }
         
@@ -250,7 +257,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver());
         
-        $conn = $this->sharedFixture['conn'];
+        $conn = static::$_sharedConn;
         $conn->getConfiguration()->setSQLLogger($this->_sqlLoggerStack);
         
         return \Doctrine\ORM\EntityManager::create($conn, $config);
@@ -264,7 +271,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         if(isset($this->_sqlLoggerStack->queries) && count($this->_sqlLoggerStack->queries)) {
             $queries = "";
-            for($i = count($this->_sqlLoggerStack->queries)-1; $i > max(count($this->_sqlLoggerStack->queries)-25, 0); $i--) {
+            for($i = count($this->_sqlLoggerStack->queries)-1; $i > max(count($this->_sqlLoggerStack->queries)-25, 0) && isset($this->_sqlLoggerStack->queries[$i]); $i--) {
                 $query = $this->_sqlLoggerStack->queries[$i];
                 $params = array_map(function($p) { if (is_object($p)) return get_class($p); else return "'".$p."'"; }, $query['params'] ?: array());
                 $queries .= ($i+1).". SQL: '".$query['sql']."' Params: ".implode(", ", $params).PHP_EOL;

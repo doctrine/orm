@@ -128,6 +128,13 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = $q->getSingleResult();
     }
 
+    public function testSetParameters()
+    {
+        $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?1 AND u.status = ?2');
+        $q->setParameters(array(1 => 'jwage', 2 => 'active'));
+        $users = $q->getResult();
+    }
+
     public function testIterateResult_IterativelyBuildUpUnitOfWork()
     {
         $article1 = new CmsArticle;
@@ -174,26 +181,6 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $query = $this->_em->createQuery("SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.articles a");
         $articles = $query->iterate();
-    }
-
-    public function testFluentQueryInterface()
-    {
-        $q = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a");
-        $q2 = $q->expireQueryCache(true)
-          ->setQueryCacheLifetime(3600)
-          ->setQueryCacheDriver(null)
-          ->expireResultCache(true)
-          ->setHint('foo', 'bar')
-          ->setHint('bar', 'baz')
-          ->setParameter(1, 'bar')
-          ->setParameters(array(2 => 'baz'))
-          ->setResultCacheDriver(null)
-          ->setResultCacheId('foo')
-          ->setDql('foo')
-          ->setFirstResult(10)
-          ->setMaxResults(10);
-
-        $this->assertSame($q2, $q);
     }
     
     /**

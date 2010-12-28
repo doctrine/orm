@@ -888,4 +888,124 @@ class ObjectHydratorTest extends HydrationTestCase
             ++$rowNum;
         }
     }
+
+    /**
+     * This issue tests if, with multiple joined multiple-valued collections the hydration is done correctly.
+     *
+     * User x Phonenumbers x Groups blow up the resultset quite a bit, however the hydration should correctly assemble those.
+     *
+     * @group DDC-809
+     */
+    public function testManyToManyHydration()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+        $rsm->addJoinedEntityResult('Doctrine\Tests\Models\CMS\CmsGroup', 'g', 'u', 'groups');
+        $rsm->addFieldResult('g', 'g__id', 'id');
+        $rsm->addFieldResult('g', 'g__name', 'name');
+        $rsm->addJoinedEntityResult('Doctrine\Tests\Models\CMS\CmsPhonenumber', 'p', 'u', 'phonenumbers');
+        $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb',
+                'g__id' => '3',
+                'g__name' => 'TestGroupB',
+                'p__phonenumber' => 1111,
+                ),
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb',
+                'g__id' => '5',
+                'g__name' => 'TestGroupD',
+                'p__phonenumber' => 1111,
+                ),
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb',
+                'g__id' => '3',
+                'g__name' => 'TestGroupB',
+                'p__phonenumber' => 2222,
+                ),
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb',
+                'g__id' => '5',
+                'g__name' => 'TestGroupD',
+                'p__phonenumber' => 2222,
+                ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'g__id' => '2',
+                'g__name' => 'TestGroupA',
+                'p__phonenumber' => 3333,
+                ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'g__id' => '3',
+                'g__name' => 'TestGroupB',
+                'p__phonenumber' => 3333,
+                ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'g__id' => '4',
+                'g__name' => 'TestGroupC',
+                'p__phonenumber' => 3333,
+                ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'g__id' => '5',
+                'g__name' => 'TestGroupD',
+                'p__phonenumber' => 3333,
+                ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'g__id' => '2',
+                'g__name' => 'TestGroupA',
+                'p__phonenumber' => 4444,
+                ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'g__id' => '3',
+                'g__name' => 'TestGroupB',
+                'p__phonenumber' => 4444,
+                ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'g__id' => '4',
+                'g__name' => 'TestGroupC',
+                'p__phonenumber' => 4444,
+                ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'g__id' => '5',
+                'g__name' => 'TestGroupD',
+                'p__phonenumber' => 4444,
+                ),
+            );
+
+        $stmt = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+
+        $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+
+        $this->assertEquals(2, count($result));
+        $this->assertContainsOnly('Doctrine\Tests\Models\CMS\CmsUser', $result);
+        $this->assertEquals(2, count($result[0]->groups));
+        $this->assertEquals(2, count($result[0]->phonenumbers));
+        $this->assertEquals(4, count($result[1]->groups));
+        $this->assertEquals(2, count($result[1]->phonenumbers));
+    }
 }

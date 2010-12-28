@@ -63,7 +63,7 @@
       <xs:element name="discriminator-column" type="orm:discriminator-column" minOccurs="0"/>
       <xs:element name="discriminator-map" type="orm:discriminator-map" minOccurs="0"/>
       <xs:element name="lifecycle-callbacks" type="orm:lifecycle-callbacks" minOccurs="0" maxOccurs="1" />
-      <xs:element name="id" type="orm:id" />
+      <xs:element name="id" type="orm:id" minOccurs="0" maxOccurs="1" />
       <xs:element name="field" type="orm:field" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="one-to-one" type="orm:one-to-one" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="one-to-many" type="orm:one-to-many" minOccurs="0" maxOccurs="unbounded" />
@@ -73,7 +73,7 @@
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="table" type="xs:NMTOKEN" />
     <xs:attribute name="schema" type="xs:NMTOKEN" />
-    <xs:attribute name="repository-class" type="xs:NMTOKEN"/>
+    <xs:attribute name="repository-class" type="xs:string"/>
     <xs:attribute name="inheritance-type" type="orm:inheritance-type"/>
     <xs:attribute name="change-tracking-policy" type="orm:change-tracking-policy" />
   </xs:complexType>
@@ -252,7 +252,7 @@
       <xs:element name="join-table" type="orm:join-table" minOccurs="0" />
       <xs:element name="order-by" type="orm:order-by" minOccurs="0" />
     </xs:sequence>
-    <xs:attribute name="target-entity" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="target-entity" type="xs:string" use="required" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
@@ -264,7 +264,7 @@
       <xs:element name="cascade" type="orm:cascade-type" minOccurs="0" />
       <xs:element name="order-by" type="orm:order-by" minOccurs="0" />
     </xs:sequence>
-    <xs:attribute name="target-entity" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="target-entity" type="xs:string" use="required" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
@@ -279,7 +279,7 @@
         <xs:element name="join-columns" type="orm:join-columns"/>
       </xs:choice>
     </xs:sequence>
-    <xs:attribute name="target-entity" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="target-entity" type="xs:string" use="required" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
@@ -295,7 +295,7 @@
       </xs:choice>
     </xs:sequence>
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="target-entity" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="target-entity" type="xs:string" use="required" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
     <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />

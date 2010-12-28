@@ -462,4 +462,25 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $this->_attributes['customHydrationModes'][$modeName] = $hydrator;
     }
+
+    /**
+     * Set a class metadata factory.
+     * 
+     * @param string $cmf
+     */
+    public function setClassMetadataFactoryName($cmfName)
+    {
+        $this->_attributes['classMetadataFactoryName'] = $cmfName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClassMetadataFactoryName()
+    {
+        if (!isset($this->_attributes['classMetadataFactoryName'])) {
+            $this->_attributes['classMetadataFactoryName'] = 'Doctrine\ORM\Mapping\ClassMetadataFactory';
+        }
+        return $this->_attributes['classMetadataFactoryName'];
+    }
 }

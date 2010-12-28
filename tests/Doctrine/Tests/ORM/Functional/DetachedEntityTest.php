@@ -54,7 +54,7 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->status = 'developer';
         
         $ph1 = new CmsPhonenumber;
-        $ph1->phonenumber = 1234;
+        $ph1->phonenumber = "1234";
         $user->addPhonenumber($ph1);
 
         $this->_em->persist($user);
@@ -68,24 +68,36 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         unset($user);
         
         $user = unserialize($serialized);
+
+        $this->assertEquals(1, count($user->getPhonenumbers()), "Pre-Condition: 1 Phonenumber");
         
         $ph2 = new CmsPhonenumber;
-        $ph2->phonenumber = 56789;
+        $ph2->phonenumber = "56789";
         $user->addPhonenumber($ph2);
-        $this->assertEquals(2, count($user->getPhonenumbers()));
+        $oldPhonenumbers = $user->getPhonenumbers();
+        $this->assertEquals(2, count($oldPhonenumbers), "Pre-Condition: 2 Phonenumbers");
         $this->assertFalse($this->_em->contains($user));
         
         $this->_em->persist($ph2);
-        
+
         // Merge back in
         $user = $this->_em->merge($user); // merge cascaded to phonenumbers
+        $this->assertType('Doctrine\Tests\Models\CMS\CmsUser', $user->phonenumbers[0]->user);
+        $this->assertType('Doctrine\Tests\Models\CMS\CmsUser', $user->phonenumbers[1]->user);
+        $im = $this->_em->getUnitOfWork()->getIdentityMap();
         $this->_em->flush();
         
-        $this->assertTrue($this->_em->contains($user));
-        $this->assertEquals(2, count($user->getPhonenumbers()));
+        $this->assertTrue($this->_em->contains($user), "Failed to assert that merged user is contained inside EntityManager persistence context.");
         $phonenumbers = $user->getPhonenumbers();
-        $this->assertTrue($this->_em->contains($phonenumbers[0]));
-        $this->assertTrue($this->_em->contains($phonenumbers[1]));
+        $this->assertNotSame($oldPhonenumbers, $phonenumbers, "Merge should replace the Detached Collection with a new PersistentCollection.");
+        $this->assertEquals(2, count($phonenumbers), "Failed to assert that two phonenumbers are contained in the merged users phonenumber collection.");
+
+        $this->assertType('Doctrine\Tests\Models\CMS\CmsPhonenumber', $phonenumbers[1]);
+        $this->assertTrue($this->_em->contains($phonenumbers[1]), "Failed to assert that second phonenumber in collection is contained inside EntityManager persistence context.");
+
+        $this->assertType('Doctrine\Tests\Models\CMS\CmsPhonenumber', $phonenumbers[0]);
+        $this->assertTrue($this->_em->getUnitOfWork()->isInIdentityMap($phonenumbers[0]));
+        $this->assertTrue($this->_em->contains($phonenumbers[0]), "Failed to assert that first phonenumber in collection is contained inside EntityManager persistence context.");
     }
 
     /**
@@ -105,8 +117,8 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         } catch (\Exception $expected) {}
     }
 
-    public function testUninitializedLazyAssociationsAreIgnoredOnMerge() {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+    public function testUninitializedLazyAssociationsAreIgnoredOnMerge()
+    {
         $user = new CmsUser;
         $user->name = 'Guilherme';
         $user->username = 'gblanco';
@@ -135,6 +147,50 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($managedAddress2->user instanceof \Doctrine\ORM\Proxy\Proxy);
         $this->assertFalse($managedAddress2->user === $detachedAddress2->user);
         $this->assertFalse($managedAddress2->user->__isInitialized__);
+    }
+
+    /**
+     * @group DDC-822
+     */
+    public function testUseDetachedEntityAsQueryParameter()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        $this->_em->persist($user);
+
+        $this->_em->flush();
+        $this->_em->detach($user);
+
+        $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1";
+        $query = $this->_em->createQuery($dql);
+        $query->setParameter(1, $user);
+
+        $newUser = $query->getSingleResult();
+
+        $this->assertType('Doctrine\Tests\Models\CMS\CmsUser', $newUser);
+        $this->assertEquals('gblanco', $newUser->username);
+    }
+
+    /**
+     * @group DDC-920
+     */
+    public function testDetachManagedUnpersistedEntity()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        $this->_em->persist($user);
+        $this->_em->detach($user);
+
+        $this->_em->flush();
+
+        $this->assertFalse($this->_em->contains($user));
+        $this->assertFalse($this->_em->getUnitOfWork()->isInIdentityMap($user));
     }
 }
 
