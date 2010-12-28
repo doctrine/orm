@@ -227,4 +227,8 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self("Duplicate definition of column '".$columnName."' on entity '".$className."' in a field or discriminator column mapping.");
     }
 
+    public static function illegalToManyAssocationOnMappedSuperclass($className, $field)
+    {
+        return new self("It is illegal to put a one-to-many or many-to-many association on mapped superclass '".$className."#".$field."'.");
+    }
 }
