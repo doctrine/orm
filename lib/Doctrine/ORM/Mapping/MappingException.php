@@ -231,4 +231,16 @@ class MappingException extends \Doctrine\ORM\ORMException
     {
         return new self("It is illegal to put a one-to-many or many-to-many association on mapped superclass '".$className."#".$field."'.");
     }
+
+    /**
+     * @param string $className
+     * @param string $targetEntity
+     * @param string $targetField
+     * @return self
+     */
+    public static function cannotMapCompositePrimaryKeyEntitiesAsForeignId($className, $targetEntity, $targetField)
+    {
+        return new self("It is not possible to map entity '".$className."' with a composite primary key ".
+            "as part of the primary key of another entity '".$targetEntity."#".$targetField."'.");
+    }
 }

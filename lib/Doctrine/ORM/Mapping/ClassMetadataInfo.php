@@ -713,6 +713,12 @@ class ClassMetadataInfo
         // Complete id mapping
         if (isset($mapping['id']) && $mapping['id'] === true) {
             if ( ! in_array($mapping['fieldName'], $this->identifier)) {
+                if (count($mapping['joinColumns']) >= 2) {
+                    throw MappingException::cannotMapCompositePrimaryKeyEntitiesAsForeignId(
+                        $mapping['targetEntity'], $this->name, $mapping['fieldName']
+                    );
+                }
+
                 $this->identifier[] = $mapping['fieldName'];
             }
             // Check for composite key
@@ -994,14 +1000,18 @@ class ClassMetadataInfo
             $columnNames = array();
             foreach ($this->identifier as $idField) {
                 if (isset($this->associationMappings[$idField])) {
+                    // no composite pk as fk entity assumption:
                     $columnNames[] = $this->associationMappings[$idField]['joinColumns'][0]['name'];
                 } else {
                     $columnNames[] = $this->fieldMappings[$idField]['columnName'];
                 }
             }
             return $columnNames;
-        } else {
+        } else if(isset($this->fieldMappings[$this->identifier[0]])) {
             return array($this->fieldMappings[$this->identifier[0]]['columnName']);
+        } else {
+            // no composite pk as fk entity assumption:
+            return array($this->associationMappings[$this->identifier[0]]['joinColumns'][0]['name']);
         }
     }
 
@@ -1263,34 +1273,6 @@ class ClassMetadataInfo
                 $type == self::INHERITANCE_TYPE_SINGLE_TABLE ||
                 $type == self::INHERITANCE_TYPE_JOINED ||
                 $type == self::INHERITANCE_TYPE_TABLE_PER_CLASS;
-    }
-
-    /**
-     * Makes some automatic additions to the association mapping to make the life
-     * easier for the user, and store join columns in the metadata.
-     *
-     * @param array $mapping
-     * @todo Pass param by ref?
-     */
-    private function _completeAssociationMapping(array $mapping)
-    {
-        $mapping['sourceEntity'] = $this->name;
-        if (isset($mapping['targetEntity']) && strpos($mapping['targetEntity'], '\\') === false && strlen($this->namespace) > 0) {
-            $mapping['targetEntity'] = $this->namespace . '\\' . $mapping['targetEntity'];
-        }
-
-        // Complete id mapping
-        if (isset($mapping['id']) && $mapping['id'] === true) {
-            if ( ! in_array($mapping['fieldName'], $this->identifier)) {
-                $this->identifier[] = $mapping['fieldName'];
-            }
-            // Check for composite key
-            if ( ! $this->isIdentifierComposite && count($this->identifier) > 1) {
-                $this->isIdentifierComposite = true;
-            }
-        }
-        
-        return $mapping;
     }
 
     /**

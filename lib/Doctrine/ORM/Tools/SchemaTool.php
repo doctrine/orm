@@ -423,12 +423,46 @@ class SchemaTool
     }
 
     /**
+     * Get the class metadata that is responsible for the definition of the referenced column name.
+     *
+     * Previously this was a simple task, but with DDC-117 this problem is actually recursive. If its
+     * not a simple field, go through all identifier field names that are associations recursivly and
+     * find that referenced column name.
+     *
+     * TODO: Is there any way to make this code more pleasing?
+     *
+     * @param ClassMetadata $class
+     * @param string $referencedColumnName
+     * @return array(ClassMetadata, referencedFieldName)
+     */
+    private function getDefiningClass($class, $referencedColumnName)
+    {
+        $referencedFieldName = $class->getFieldName($referencedColumnName);
+
+        if ($class->hasField($referencedFieldName)) {
+            return array($class, $referencedFieldName);
+        } else if (in_array($referencedColumnName, $class->getIdentifierColumnNames())) {
+            // it seems to be an entity as foreign key
+            foreach ($class->getIdentifierFieldNames() AS $fieldName) {
+                if ($class->hasAssociation($fieldName) && $class->associationMappings[$fieldName]['joinColumns'][0]['name'] == $referencedColumnName) {
+                    return $this->getDefiningClass(
+                        $this->_em->getClassMetadata($class->associationMappings[$fieldName]['targetEntity']),
+                        $class->associationMappings[$fieldName]['joinColumns'][0]['referencedColumnName']
+                    );
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Gather columns and fk constraints that are required for one part of relationship.
      *
      * @param array $joinColumns
      * @param \Doctrine\DBAL\Schema\Table $theJoinTable
      * @param ClassMetadata $class
-     * @param \Doctrine\ORM\Mapping\AssociationMapping $mapping
+     * @param array $mapping
      * @param array $primaryKeyColumns
      * @param array $uniqueConstraints
      */
@@ -437,12 +471,13 @@ class SchemaTool
         $localColumns = array();
         $foreignColumns = array();
         $fkOptions = array();
+        $foreignTableName = $class->getTableName();
 
         foreach ($joinColumns as $joinColumn) {
             $columnName = $joinColumn['name'];
-            $referencedFieldName = $class->getFieldName($joinColumn['referencedColumnName']);
+            list($definingClass, $referencedFieldName) = $this->getDefiningClass($class, $joinColumn['referencedColumnName']);
 
-            if ( ! $class->hasField($referencedFieldName)) {
+            if (!$definingClass) {
                 throw new \Doctrine\ORM\ORMException(
                     "Column name `".$joinColumn['referencedColumnName']."` referenced for relation from ".
                     $mapping['sourceEntity'] . " towards ". $mapping['targetEntity'] . " does not exist."
@@ -458,7 +493,7 @@ class SchemaTool
                 // It might exist already if the foreign key is mapped into a regular
                 // property as well.
 
-                $fieldMapping = $class->getFieldMapping($referencedFieldName);
+                $fieldMapping = $definingClass->getFieldMapping($referencedFieldName);
 
                 $columnDef = null;
                 if (isset($joinColumn['columnDefinition'])) {
@@ -477,9 +512,7 @@ class SchemaTool
                     $columnOptions['precision'] = $fieldMapping['precision'];
                 }
 
-                $theJoinTable->addColumn(
-                    $columnName, $class->getTypeOfColumn($joinColumn['referencedColumnName']), $columnOptions
-                );
+                $theJoinTable->addColumn($columnName, $fieldMapping['type'], $columnOptions);
             }
 
             if (isset($joinColumn['unique']) && $joinColumn['unique'] == true) {
@@ -496,7 +529,7 @@ class SchemaTool
         }
 
         $theJoinTable->addUnnamedForeignKeyConstraint(
-            $class->getTableName(), $localColumns, $foreignColumns, $fkOptions
+            $foreignTableName, $localColumns, $foreignColumns, $fkOptions
         );
     }
 
