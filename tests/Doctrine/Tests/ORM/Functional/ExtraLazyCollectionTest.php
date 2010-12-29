@@ -15,6 +15,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     private $userId;
     private $groupId;
+    private $articleId;
 
     public function setUp()
     {
@@ -215,6 +216,70 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
     }
 
+    /**
+     * @group DDC-546
+     */
+    public function testContainsOneToMany()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        $this->assertFalse($user->articles->isInitialized(), "Pre-Condition: Collection is not initialized.");
+
+        $article = $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId);
+        
+        $queryCount = $this->getCurrentQueryCount();
+        $this->assertTrue($user->articles->contains($article));
+        $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        $article = new \Doctrine\Tests\Models\CMS\CmsArticle();
+        $article->topic = "Testnew";
+        $article->text = "blub";
+
+        $queryCount = $this->getCurrentQueryCount();
+        $this->assertFalse($user->articles->contains($article));
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of new entity should cause no query to be executed.");
+
+        $this->_em->persist($article);
+        $this->_em->flush();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $this->assertFalse($user->articles->contains($article));
+        $this->assertEquals($queryCount+1, $this->getCurrentQueryCount(), "Checking for contains of managed entity should cause one query to be executed.");
+        $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
+    }
+
+    /**
+     * @group DDC-546
+     */
+    public function testContainsManyToMany()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        $this->assertFalse($user->groups->isInitialized(), "Pre-Condition: Collection is not initialized.");
+
+        $group = $this->_em->find('Doctrine\Tests\Models\CMS\CmsGroup', $this->groupId);
+
+        $queryCount = $this->getCurrentQueryCount();
+        $this->assertTrue($user->groups->contains($group));
+        $this->assertEquals($queryCount+1, $this->getCurrentQueryCount(), "Checking for contains of managed entity should cause one query to be executed.");
+        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+
+        $group = new \Doctrine\Tests\Models\CMS\CmsGroup();
+        $group->name = "A New group!";
+
+        $queryCount = $this->getCurrentQueryCount();
+        $this->assertFalse($user->groups->contains($group));
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of new entity should cause no query to be executed.");
+        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+
+        $this->_em->persist($group);
+        $this->_em->flush();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $this->assertFalse($user->groups->contains($group));
+        $this->assertEquals($queryCount+1, $this->getCurrentQueryCount(), "Checking for contains of managed entity should cause one query to be executed.");
+        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+    }
+
     private function loadFixture()
     {
         $user1 = new \Doctrine\Tests\Models\CMS\CmsUser();
@@ -278,7 +343,8 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $this->_em->flush();
         $this->_em->clear();
-        
+
+        $this->articleId = $article1->id;
         $this->userId = $user1->getId();
         $this->groupId = $group1->id;
     }

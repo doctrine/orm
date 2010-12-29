@@ -1326,21 +1326,17 @@ class BasicEntityPersister
      * @param object $entity
      * @return boolean TRUE if the entity exists in the database, FALSE otherwise.
      */
-    public function exists($entity)
+    public function exists($entity, array $extraConditions = array())
     {
         $criteria = $this->_class->getIdentifierValues($entity);
+        if ($extraConditions) {
+            $criteria = array_merge($criteria, $extraConditions);
+        }
+
         $sql = 'SELECT 1 FROM ' . $this->_class->getQuotedTableName($this->_platform)
                 . ' ' . $this->_getSQLTableAlias($this->_class->name)
                 . ' WHERE ' . $this->_getSelectConditionSQL($criteria);
 
         return (bool) $this->_conn->fetchColumn($sql, array_values($criteria));
     }
-
-    //TODO
-    /*protected function _getOneToOneEagerFetchSQL()
-    {
-        
-    }*/
-
-    #public function countCollection
 }

@@ -21,7 +21,8 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\PersistentCollection,
+    Doctrine\ORM\UnitOfWork;
 
 /**
  * Persister for many-to-many collections.
@@ -229,5 +230,54 @@ class ManyToManyPersister extends AbstractCollectionPersister
         return $this->_em->getUnitOfWork()
                   ->getEntityPersister($mapping['targetEntity'])
                   ->getManyToManyCollection($mapping, $coll->getOwner(), $offset, $length);
+    }
+
+    /**
+     * @param PersistentCollection $coll
+     * @param object $element
+     */
+    public function contains(PersistentCollection $coll, $element)
+    {
+        $uow = $this->_em->getUnitOfWork();
+
+        // shortcut for new entities
+        if ($uow->getEntityState($element, UnitOfWork::STATE_NEW) == UnitOfWork::STATE_NEW) {
+            return false;
+        }
+
+        $params = array();
+        $mapping = $coll->getMapping();
+        $sourceClass = $this->_em->getClassMetadata($mapping['sourceEntity']);
+        $elementClass = $this->_em->getClassMetadata($mapping['targetEntity']);
+        $sourceId = $uow->getEntityIdentifier($coll->getOwner());
+        $elementId = $uow->getEntityIdentifier($element);
+
+        if ($mapping['isOwningSide']) {
+            $joinTable = $mapping['joinTable'];
+        } else {
+            $joinTable = $elementClass->associationMappings[$mapping['mappedBy']]['joinTable'];
+        }
+
+        $whereClause = '';
+        foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
+            if (isset($mapping['relationToTargetKeyColumns'][$joinTableColumn])) {
+                if ($whereClause !== '') {
+                    $whereClause .= ' AND ';
+                }
+                $whereClause .= "$joinTableColumn = ?";
+
+                $params[] = $elementId[$sourceClass->fieldNames[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]];
+            } else if (isset($mapping['relationToSourceKeyColumns'][$joinTableColumn])) {
+                if ($whereClause !== '') {
+                    $whereClause .= ' AND ';
+                }
+                $whereClause .= "$joinTableColumn = ?";
+
+                $params[] = $sourceId[$sourceClass->fieldNames[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]];
+            }
+        }
+        $sql = 'SELECT 1 FROM ' . $joinTable['name'] . ' WHERE ' . $whereClause;
+
+        return (bool)$this->_conn->fetchColumn($sql, $params);
     }
 }

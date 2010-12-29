@@ -135,12 +135,12 @@ abstract class AbstractCollectionPersister
         throw new \BadMethodCallException("Slicing elements is not supported by this CollectionPersister.");
     }
 
-    public function contains(PersistentCollection $coll, $key)
+    public function contains(PersistentCollection $coll, $element)
     {
         throw new \BadMethodCallException("Checking for existance of an element is not supported by this CollectionPersister.");
     }
 
-    public function containsKey(PersistentCollection $coll, $element)
+    public function containsKey(PersistentCollection $coll, $key)
     {
         throw new \BadMethodCallException("Checking for existance of a key is not supported by this CollectionPersister.");
     }

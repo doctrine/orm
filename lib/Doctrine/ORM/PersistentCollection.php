@@ -404,22 +404,12 @@ final class PersistentCollection implements Collection
      */
     public function contains($element)
     {
-        /* DRAFT
-        if ($this->initialized) {
-            return $this->coll->contains($element);
-        } else {
-            if ($element is MANAGED) {
-                if ($this->coll->contains($element)) {
-                    return true;
-                }
-                $exists = check db for existence;
-                if ($exists) {
-                    $this->coll->add($element);
-                }
-                return $exists;
-            }
-            return false;
-        }*/
+        if (!$this->initialized && $this->association['fetch'] == Mapping\ClassMetadataInfo::FETCH_EXTRALAZY) {
+            return $this->coll->contains($element) ||
+                   $this->em->getUnitOfWork()
+                            ->getCollectionPersister($this->association)
+                            ->contains($this, $element);
+        }
         
         $this->initialize();
         return $this->coll->contains($element);
@@ -481,7 +471,7 @@ final class PersistentCollection implements Collection
             if (!isset($this->doctrineCollectionCount)) {
                 $this->doctrineCollectionCount = $this->em->getUnitOfWork()
                                 ->getCollectionPersister($this->association)
-                                ->count($this) + count ($this->coll->toArray());
+                                ->count($this) + $this->coll->count();
             }
             return $this->doctrineCollectionCount;
         }
