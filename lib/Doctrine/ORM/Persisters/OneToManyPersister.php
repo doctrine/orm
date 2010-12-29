@@ -151,6 +151,6 @@ class OneToManyPersister extends AbstractCollectionPersister
         $mapping = $coll->getMapping();
         return $this->_em->getUnitOfWork()
                   ->getEntityPersister($mapping['targetEntity'])
-                  ->loadOneToManyCollection($mapping, $coll->getOwner(), null, $offset, $length);
+                  ->getOneToManyCollection($mapping, $coll->getOwner(), $offset, $length);
     }
 }

@@ -28,6 +28,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup');
         $class->associationMappings['users']['fetch'] = ClassMetadataInfo::FETCH_EXTRALAZY;
 
+        
         $this->loadFixture();
     }
 

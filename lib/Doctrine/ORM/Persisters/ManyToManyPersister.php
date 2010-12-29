@@ -228,6 +228,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $mapping = $coll->getMapping();
         return $this->_em->getUnitOfWork()
                   ->getEntityPersister($mapping['targetEntity'])
-                  ->loadManyToManyCollection($mapping, $coll->getOwner(), null, $offset, $length);
+                  ->getManyToManyCollection($mapping, $coll->getOwner(), $offset, $length);
     }
 }
