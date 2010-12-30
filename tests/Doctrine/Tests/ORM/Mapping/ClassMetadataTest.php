@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 
 require_once __DIR__ . '/../../TestInit.php';
+require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
  
 class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 {
@@ -299,5 +300,16 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', "No mapping found for field 'foo' on class 'Doctrine\Tests\Models\CMS\CmsUser'.");
         $cm->getFieldMapping('foo');
+    }
+
+    /**
+     * @group DDC-961
+     */
+    public function testJoinTableMappingDefaults()
+    {
+        $cm = new ClassMetadata('DoctrineGlobal_Article');
+        $cm->mapManyToMany(array('fieldName' => 'author', 'targetEntity' => 'Doctrine\Tests\Models\CMS\CmsUser'));
+
+        $this->assertEquals('doctrineglobal_article_cmsuser', $cm->associationMappings['author']['joinTable']['name']);
     }
 }
