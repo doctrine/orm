@@ -1,13 +1,21 @@
 Native SQL
 ==========
 
-A ``NativeQuery`` lets you execute native SQL, mapping the results
+A ``NativeQuery`` lets you execute native SELECT SQL statements, mapping the results
 according to your specifications. Such a specification that
 describes how an SQL result set is mapped to a Doctrine result is
 represented by a ``ResultSetMapping``. It describes how each column
 of the database result should be mapped by Doctrine in terms of the
 object graph. This allows you to map arbitrary SQL code to objects,
 such as highly vendor-optimized SQL or stored-procedures.
+
+.. note::
+
+    If you want to execute DELETE, UPDATE or INSERT statements
+    the Native SQL API cannot be used and will probably throw errors.
+    Use ``EntityManager#getConnection()`` to access the native database
+    connection and call the ``executeUpdate()`` method for these
+    queries.
 
 The NativeQuery class
 ---------------------
