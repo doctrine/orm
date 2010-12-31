@@ -229,6 +229,6 @@ class MappingException extends \Doctrine\ORM\ORMException
 
     public static function illegalToManyAssocationOnMappedSuperclass($className, $field)
     {
-        return new self("It is illegal to put a one-to-many or many-to-many association on mapped superclass '".$className."#".$field."'.");
+        return new self("It is illegal to put an inverse side one-to-many or many-to-many association on mapped superclass '".$className."#".$field."'.");
     }
 }
