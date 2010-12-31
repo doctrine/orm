@@ -145,7 +145,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory->setEntityManager($em);
 
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException',
-            "It is illegal to put a one-to-many or many-to-many association on ".
+            "It is illegal to put an inverse side one-to-many or many-to-many association on ".
             "mapped superclass 'Doctrine\Tests\ORM\Mapping\InvalidMappedSuperClass#users'");
         $usingInvalidMsc = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\UsingInvalidMappedSuperClass');
     }
@@ -166,7 +166,7 @@ class ColumnWithoutType
 class InvalidMappedSuperClass
 {
     /**
-     * @ManyToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser")
+     * @ManyToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", mappedBy="invalid")
      */
     private $users;
 }
