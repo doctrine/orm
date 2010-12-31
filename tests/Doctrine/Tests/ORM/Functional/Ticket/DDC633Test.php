@@ -21,6 +21,10 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
+    /**
+     * @group DDC-633
+     * @group DDC-952
+     */
     public function testOneToOneEager()
     {
         $app = new DDC633Appointment();
@@ -35,7 +39,35 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $eagerAppointment = $this->_em->find(__NAMESPACE__ . '\DDC633Appointment', $app->id);
 
-        $this->assertNotType('Doctrine\ORM\Proxy\Proxy', $eagerAppointment->patient);
+        // Eager loading still produces proxies
+        $this->assertType('Doctrine\ORM\Proxy\Proxy', $eagerAppointment->patient);
+        $this->assertTrue($eagerAppointment->patient->__isInitialized__, "Proxy should already be initialized due to eager loading!");
+    }
+
+    /**
+     * @group DDC-633
+     * @group DDC-952
+     */
+    public function testDQLDeferredEagerLoad()
+    {
+        for ($i = 0; $i < 10; $i++) {
+            $app = new DDC633Appointment();
+            $pat = new DDC633Patient();
+            $app->patient = $pat;
+            $pat->appointment = $app;
+
+            $this->_em->persist($app);
+            $this->_em->persist($pat);
+        }
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $appointments = $this->_em->createQuery("SELECT a FROM " . __NAMESPACE__ . "\DDC633Appointment a")->getResult();
+
+        foreach ($appointments AS $eagerAppointment) {
+            $this->assertType('Doctrine\ORM\Proxy\Proxy', $eagerAppointment->patient);
+            $this->assertTrue($eagerAppointment->patient->__isInitialized__, "Proxy should already be initialized due to eager loading!");
+        }
     }
 }
 

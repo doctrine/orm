@@ -560,7 +560,10 @@ class BasicEntityPersister
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
 
-        return $this->_createEntity($result, $entity, $hints);
+        $hints['deferEagerLoad'] = true;
+        $entity = $this->_createEntity($result, $entity, $hints);
+        $this->_em->getUnitOfWork()->triggerEagerLoads();
+        return $entity;
     }
 
     /**
@@ -577,6 +580,10 @@ class BasicEntityPersister
      */
     public function loadOneToOneEntity(array $assoc, $sourceEntity, $targetEntity, array $identifier = array())
     {
+        if ($foundEntity = $this->_em->getUnitOfWork()->tryGetById($identifier, $assoc['targetEntity'])) {
+            return $foundEntity;
+        }
+
         $targetClass = $this->_em->getClassMetadata($assoc['targetEntity']);
 
         if ($assoc['isOwningSide']) {
@@ -739,9 +746,12 @@ class BasicEntityPersister
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
 
+        $hints = array('deferEagerLoads' => true);
         foreach ($result as $row) {
-            $entities[] = $this->_createEntity($row);
+            $entities[] = $this->_createEntity($row, null, $hints);
         }
+
+        $this->_em->getUnitOfWork()->triggerEagerLoads();
 
         return $entities;
     }
@@ -870,7 +880,14 @@ class BasicEntityPersister
 
         $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, 0, $limit, $offset);
         list($params, $types) = $this->expandParameters($criteria);
-        return $this->_conn->executeQuery($sql, $params, $types);
+        $stmt = $this->_conn->executeQuery($sql, $params, $types);
+        $hints = array('deferEagerLoads' => true);
+        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $coll->hydrateAdd($this->_createEntity($result, null, $hints));
+        }
+        $stmt->closeCursor();
+
+        $this->_em->getUnitOfWork()->triggerEagerLoads();
     }
 
     /**
@@ -1330,7 +1347,16 @@ class BasicEntityPersister
 
         $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, 0, $limit, $offset);
         list($params, $types) = $this->expandParameters($criteria);
-        return $this->_conn->executeQuery($sql, $params, $types);
+
+        $stmt = $this->_conn->executeQuery($sql, $params, $types);
+        $hints = array('deferEagerLoads' => true);
+        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $coll->hydrateAdd($this->_createEntity($result, null, $hints));
+        }
+        $stmt->closeCursor();
+
+        $this->_em->getUnitOfWork()->triggerEagerLoads();
+	return $stmt;
     }
 
     /**

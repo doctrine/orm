@@ -1928,10 +1928,18 @@ class UnitOfWork implements PropertyChangedListener
                                         $newValue = $this->getEntityPersister($assoc['targetEntity'])
                                                 ->loadOneToOneEntity($assoc, $entity, null, $associatedId);
                                     } else {
-                                        if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER) {
-                                            // TODO: Maybe it could be optimized to do an eager fetch with a JOIN inside
-                                            // the persister instead of this rather unperformant approach.
-                                            $newValue = $this->em->find($assoc['targetEntity'], $associatedId);
+                                        if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER && isset($hints['deferEagerLoad'])) {
+                                            if (!isset($this->eagerLoadingEntities[$assoc['targetEntity']])) {
+                                                $this->eagerLoadingEntities[$assoc['targetEntity']] = array();
+                                            }
+
+                                            // TODO: Is there a faster approach?
+                                            $this->eagerLoadingEntities[$assoc['targetEntity']] = array_merge_recursive(
+                                                $this->eagerLoadingEntities[$assoc['targetEntity']],
+                                                array_map(function($id) {
+                                                    return array($id);
+                                                }, $associatedId)
+                                            );
                                         } else {
                                             $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $associatedId);
                                         }
@@ -1983,6 +1991,26 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * @return void
+     */
+    public function triggerEagerLoads()
+    {
+        if (!$this->eagerLoadingEntities) {
+            return;
+        }
+
+        $eagerLoadingEntities = $this->eagerLoadingEntities;
+        $this->eagerLoadingEntities = array();
+
+        foreach ($eagerLoadingEntities AS $entityName => $ids) {
+            $this->getEntityPersister($entityName)->loadAll($ids);
+        }
+    }
+
+    /**
+>>>>>>> DDC-952 - Implemented first approach for batching eager loads of ToOne associations.
      * Initializes (loads) an uninitialized persistent collection of an entity.
      *
      * @param PeristentCollection $collection The collection to initialize.

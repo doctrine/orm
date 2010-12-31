@@ -59,6 +59,7 @@ class ObjectHydrator extends AbstractHydrator
         $this->_resultPointers =
         $this->_idTemplate = array();
         $this->_resultCounter = 0;
+        $this->_hints['deferEagerLoad'] = true;
         
         foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
             $this->_identifierMap[$dqlAlias] = array();
@@ -131,6 +132,8 @@ class ObjectHydrator extends AbstractHydrator
         foreach ($this->_initializedCollections as $coll) {
             $coll->takeSnapshot();
         }
+
+        $this->_em->getUnitOfWork()->triggerEagerLoads();
 
         return $result;
     }
