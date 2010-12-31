@@ -219,6 +219,20 @@ class UnitOfWork implements PropertyChangedListener
     //private $_readOnlyObjects = array();
 
     /**
+     * Map of Entity Class-Names and corresponding IDs that should eager loaded when requested.
+     * 
+     * @var array
+     */
+    private $eagerLoadingEntities = array();
+
+    /**
+     * Map of Collections that should be eager loaded when requested.
+     *
+     * @var array
+     */
+    private $eagerLoadingCollections = array();
+
+    /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      *
      * @param Doctrine\ORM\EntityManager $em
@@ -1928,9 +1942,16 @@ class UnitOfWork implements PropertyChangedListener
                                         $newValue = $this->getEntityPersister($assoc['targetEntity'])
                                                 ->loadOneToOneEntity($assoc, $entity, null, $associatedId);
                                     } else {
-                                        if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER && isset($hints['deferEagerLoad'])) {
-                                            if (!isset($this->eagerLoadingEntities[$assoc['targetEntity']])) {
-                                                $this->eagerLoadingEntities[$assoc['targetEntity']] = array();
+                                        // Deferred eager load only works for single identifier classes
+                                        if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER) {
+                                            if (isset($hints['deferEagerLoad']) && !$targetClass->isIdentifierComposite) {
+                                                // TODO: Is there a faster approach?
+                                                $this->eagerLoadingEntities[$assoc['targetEntity']][] = current($id);
+
+                                                $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $associatedId);
+                                            } else {
+                                                // TODO: This is very imperformant, ignore it?
+                                                $newValue = $this->em->find($assoc['targetEntity'], $associatedId);
                                             }
 
                                             // TODO: Is there a faster approach?
@@ -2005,7 +2026,8 @@ class UnitOfWork implements PropertyChangedListener
         $this->eagerLoadingEntities = array();
 
         foreach ($eagerLoadingEntities AS $entityName => $ids) {
-            $this->getEntityPersister($entityName)->loadAll($ids);
+            $class = $this->em->getClassMetadata($entityName);
+            $this->getEntityPersister($entityName)->loadAll(array_combine($class->identifier, array($ids)));
         }
     }
 

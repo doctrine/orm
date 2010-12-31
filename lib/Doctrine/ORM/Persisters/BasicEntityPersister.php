@@ -837,7 +837,6 @@ class BasicEntityPersister
     {
         $criteria = array();
         $sourceClass = $this->_em->getClassMetadata($assoc['sourceEntity']);
-        $joinTableConditions = array();
         if ($assoc['isOwningSide']) {
             foreach ($assoc['relationToSourceKeyColumns'] as $relationKeyColumn => $sourceKeyColumn) {
                 if ($sourceClass->containsForeignIdentifier) {
