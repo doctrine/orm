@@ -1144,7 +1144,6 @@ class BasicEntityPersister
                 }
                 $conditionSql .= $this->_class->getQuotedColumnName($field, $this->_platform);
             } else if (isset($this->_class->associationMappings[$field])) {
-                // TODO: Composite Keys as Foreign Key PK? That would be super ugly! And should probably be disallowed ;)
                 if (!$this->_class->associationMappings[$field]['isOwningSide']) {
                     throw ORMException::invalidFindByInverseAssociation($this->_class->name, $field);
                 }

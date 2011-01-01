@@ -994,24 +994,26 @@ class SqlWalker implements TreeWalker
                 $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
             }
 
-            // Add double entry for association identifier columns to simplify hydrator code
-            foreach ($class->identifier AS $idField) {
-                if (isset($class->associationMappings[$idField])) {
-                    if (isset($mapping['inherited'])) {
-                        $tableName = $this->_em->getClassMetadata($mapping['inherited'])->table['name'];
-                    } else {
-                        $tableName = $class->table['name'];
+            if ($class->containsForeignIdentifier) {
+                // Add double entry for association identifier columns to simplify hydrator code
+                foreach ($class->identifier AS $idField) {
+                    if (isset($class->associationMappings[$idField])) {
+                        if (isset($mapping['inherited'])) {
+                            $tableName = $this->_em->getClassMetadata($mapping['inherited'])->table['name'];
+                        } else {
+                            $tableName = $class->table['name'];
+                        }
+
+                        if ($beginning) $beginning = false; else $sql .= ', ';
+
+                        $joinColumnName = $class->associationMappings[$idField]['joinColumns'][0]['name'];
+                        $sqlTableAlias = $this->getSqlTableAlias($tableName, $dqlAlias);
+                        $columnAlias = $this->getSqlColumnAlias($joinColumnName);
+                        $sql .= $sqlTableAlias . '.' . $joinColumnName . ' AS ' . $columnAlias;
+
+                        $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
+                        $this->_rsm->addMetaResult($dqlAlias, $columnAlias, $idField);
                     }
-
-                    if ($beginning) $beginning = false; else $sql .= ', ';
-
-                    $joinColumnName = $class->associationMappings[$idField]['joinColumns'][0]['name'];
-                    $sqlTableAlias = $this->getSqlTableAlias($tableName, $dqlAlias);
-                    $columnAlias = $this->getSqlColumnAlias($joinColumnName);
-                    $sql .= $sqlTableAlias . '.' . $joinColumnName . ' AS ' . $columnAlias;
-
-                    $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
-                    $this->_rsm->addMetaResult($dqlAlias, $columnAlias, $idField);
                 }
             }
 

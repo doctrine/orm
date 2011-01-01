@@ -50,7 +50,7 @@ class AssignedGenerator extends AbstractIdGenerator
                 $value = $class->getReflectionProperty($idField)->getValue($entity);
                 if (isset($value)) {
                     if (is_object($value)) {
-                        // TODO: Single Id only, i enforce that. Compoite Key as Foreign Keys Primary Key part sounds ugly
+                        // NOTE: Single Columns as associated identifiers only allowed - this constraint it is enforced.
                         $identifier[$idField] = current($em->getUnitOfWork()->getEntityIdentifier($value));
                     } else {
                         $identifier[$idField] = $value;
@@ -64,7 +64,7 @@ class AssignedGenerator extends AbstractIdGenerator
             $value = $class->reflFields[$idField]->getValue($entity);
             if (isset($value)) {
                 if (is_object($value)) {
-                    // TODO: Single Id only, i enforce that. Compoite Key as Foreign Keys Primary Key part sounds ugly
+                    // NOTE: Single Columns as associated identifiers only allowed - this constraint it is enforced.
                     $identifier[$idField] = current($em->getUnitOfWork()->getEntityIdentifier($value));
                 } else {
                     $identifier[$idField] = $value;
