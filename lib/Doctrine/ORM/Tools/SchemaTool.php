@@ -444,10 +444,10 @@ class SchemaTool
         } else if (in_array($referencedColumnName, $class->getIdentifierColumnNames())) {
             // it seems to be an entity as foreign key
             foreach ($class->getIdentifierFieldNames() AS $fieldName) {
-                if ($class->hasAssociation($fieldName) && $class->associationMappings[$fieldName]['joinColumns'][0]['name'] == $referencedColumnName) {
+                if ($class->hasAssociation($fieldName) && $class->getSingleAssociationJoinColumnName($fieldName) == $referencedColumnName) {
                     return $this->getDefiningClass(
                         $this->_em->getClassMetadata($class->associationMappings[$fieldName]['targetEntity']),
-                        $class->associationMappings[$fieldName]['joinColumns'][0]['referencedColumnName']
+                        $class->getSingleAssociationReferencedJoinColumnName($fieldName)
                     );
                 }
             }

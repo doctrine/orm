@@ -91,6 +91,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\DirectoryTree\File',
             'Doctrine\Tests\Models\DirectoryTree\Directory',
         ),
+        'ddc117' => array(
+            'Doctrine\Tests\Models\DDC117\DDC117Article',
+            'Doctrine\Tests\Models\DDC117\DDC117Reference',
+            'Doctrine\Tests\Models\DDC117\DDC117Translation',
+            'Doctrine\Tests\Models\DDC117\DDC117ArticleDetails',
+            'Doctrine\Tests\Models\DDC117\DDC117ApproveChanges',
+            'Doctrine\Tests\Models\DDC117\DDC117Editor',
+        ),
     );
 
     protected function useModelSet($setName)
@@ -172,6 +180,16 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             // MySQL doesnt know deferred deletions therefore only executing the second query gives errors.
             $conn->executeUpdate('DELETE FROM Directory WHERE parentDirectory_id IS NOT NULL');
             $conn->executeUpdate('DELETE FROM Directory');
+        }
+        if (isset($this->_usedModelSets['ddc117'])) {
+            return;
+            $conn->executeUpdate('DELETE FROM ddc117editor_ddc117translation');
+            $conn->executeUpdate('DELETE FROM DDC117Editor');
+            $conn->executeUpdate('DELETE FROM DDC117ApproveChanges');
+            $conn->executeUpdate('DELETE FROM DDC117Reference');
+            $conn->executeUpdate('DELETE FROM DDC117ArticleDetails');
+            $conn->executeUpdate('DELETE FROM DDC117Translation');
+            $conn->executeUpdate('DELETE FROM DDC117Article');
         }
 
         $this->_em->clear();

@@ -495,6 +495,22 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertInvalidDQL('SELECT g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g');
     }
+
+    /**
+     * @group DDC-117
+     */
+    public function testSizeOfForeignKeyOneToManyPrimaryKeyEntity()
+    {
+        $this->assertValidDQL("SELECT a, t FROM Doctrine\Tests\Models\DDC117\DDC117Article a JOIN a.translations t WHERE SIZE(a.translations) > 0");
+    }
+
+    /**
+     * @group DDC-117
+     */
+    public function testSizeOfForeignKeyManyToManyPrimaryKeyEntity()
+    {
+        $this->assertValidDQL("SELECT e, t FROM Doctrine\Tests\Models\DDC117\DDC117Editor e JOIN e.reviewingTranslations t WHERE SIZE(e.reviewingTranslations) > 0");
+    }
 }
 
 /** @Entity */

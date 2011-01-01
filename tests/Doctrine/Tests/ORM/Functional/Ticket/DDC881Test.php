@@ -18,7 +18,7 @@ class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC881Phonecall'),
             ));
         } catch (\Exception $e) {
-
+            
         }
     }
 
@@ -74,6 +74,22 @@ class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($call2);
 
         $this->_em->flush();
+        $this->_em->clear();
+
+        // fetch-join that foreign-key/primary-key entity association
+        $dql = "SELECT c, p FROM " . __NAMESPACE__ . "\DDC881PhoneCall c JOIN c.phonenumber p";
+        $calls = $this->_em->createQuery($dql)->getResult();
+
+        $this->assertEquals(2, count($calls));
+        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $calls[0]->getPhoneNumber());
+        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $calls[1]->getPhoneNumber());
+
+        $dql = "SELECT p, c FROM " . __NAMESPACE__ . "\DDC881PhoneNumber p JOIN p.calls c";
+        $numbers = $this->_em->createQuery($dql)->getResult();
+
+        $this->assertEquals(2, count($numbers));
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $numbers[0]->getCalls());
+        $this->assertTrue($numbers[0]->getCalls()->isInitialized());
     }
 
 }
@@ -131,6 +147,16 @@ class DDC881PhoneNumber
      */
     private $phonenumber;
 
+    /**
+     * @OneToMany(targetEntity="DDC881PhoneCall", mappedBy="phonenumber")
+     */
+    private $calls;
+
+    public function __construct()
+    {
+        $this->calls = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
     public function setId($id)
     {
         $this->id = $id;
@@ -146,6 +172,10 @@ class DDC881PhoneNumber
         $this->phonenumber = $phoneNumber;
     }
 
+    public function getCalls()
+    {
+        return $this->calls;
+    }
 }
 
 /**
@@ -161,7 +191,7 @@ class DDC881PhoneCall
      */
     private $id;
     /**
-     * @OneToOne(targetEntity="DDC881PhoneNumber",cascade={"all"})
+     * @ManyToOne(targetEntity="DDC881PhoneNumber", inversedBy="calls", cascade={"all"})
      * @JoinColumns({
      *  @JoinColumn(name="phonenumber_id", referencedColumnName="id"),
      *  @JoinColumn(name="user_id", referencedColumnName="user_id")
@@ -178,4 +208,8 @@ class DDC881PhoneCall
         $this->phonenumber = $phoneNumber;
     }
 
+    public function getPhoneNumber()
+    {
+        return $this->phonenumber;
+    }
 }

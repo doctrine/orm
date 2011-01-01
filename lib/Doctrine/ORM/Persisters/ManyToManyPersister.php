@@ -117,13 +117,21 @@ class ManyToManyPersister extends AbstractCollectionPersister
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
             if (isset($mapping['relationToSourceKeyColumns'][$joinTableColumn])) {
                 if ($isComposite) {
-                    $params[] = $identifier1[$class1->fieldNames[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]];
+                    if ($class1->containsForeignIdentifier) {
+                        $params[] = $identifier1[$class1->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])];
+                    } else {
+                        $params[] = $identifier1[$class1->fieldNames[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]];
+                    }
                 } else {
                     $params[] = array_pop($identifier1);
                 }
             } else {
                 if ($isComposite) {
-                    $params[] = $identifier2[$class2->fieldNames[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]];
+                    if ($class2->containsForeignIdentifier) {
+                        $params[] = $identifier2[$class2->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])];
+                    } else {
+                        $params[] = $identifier2[$class2->fieldNames[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]];
+                    }
                 } else {
                     $params[] = array_pop($identifier2);
                 }

@@ -473,6 +473,8 @@ class BasicEntityPersister
                 foreach ($assoc['sourceToTargetKeyColumns'] as $sourceColumn => $targetColumn) {
                     if ($newVal === null) {
                         $result[$owningTable][$sourceColumn] = null;
+                    } else if ($targetClass->containsForeignIdentifier) {
+                        $result[$owningTable][$sourceColumn] = $newValId[$targetClass->getFieldForColumn($targetColumn)];
                     } else {
                         $result[$owningTable][$sourceColumn] = $newValId[$targetClass->fieldNames[$targetColumn]];
                     }
@@ -720,13 +722,21 @@ class BasicEntityPersister
      * @param PersistentCollection $coll The collection to fill.
      */
     public function loadManyToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
-    {
+    {        
         $criteria = array();
         $sourceClass = $this->_em->getClassMetadata($assoc['sourceEntity']);
         $joinTableConditions = array();
         if ($assoc['isOwningSide']) {
             foreach ($assoc['relationToSourceKeyColumns'] as $relationKeyColumn => $sourceKeyColumn) {
-                if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
+                if ($sourceClass->containsForeignIdentifier) {
+                    $field = $sourceClass->getFieldForColumn($sourceKeyColumn);
+                    $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
+                    if (isset($sourceClass->associationMappings[$field])) {
+                        $value = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
+                        $value = $value[$this->_em->getClassMetadata($assoc['targetEntity'])->identifier[0]];
+                    }
+                    $criteria[$relationKeyColumn] = $value;
+                } else if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                     $criteria[$relationKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
                     throw MappingException::joinColumnMustPointToMappedField(
@@ -738,7 +748,15 @@ class BasicEntityPersister
             $owningAssoc = $this->_em->getClassMetadata($assoc['targetEntity'])->associationMappings[$assoc['mappedBy']];
             // TRICKY: since the association is inverted source and target are flipped
             foreach ($owningAssoc['relationToTargetKeyColumns'] as $relationKeyColumn => $sourceKeyColumn) {
-                if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
+                if ($sourceClass->containsForeignIdentifier) {
+                    $field = $sourceClass->getFieldForColumn($sourceKeyColumn);
+                    $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
+                    if (isset($sourceClass->associationMappings[$field])) {
+                        $value = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
+                        $value = $value[$this->_em->getClassMetadata($assoc['targetEntity'])->identifier[0]];
+                    }
+                    $criteria[$relationKeyColumn] = $value;
+                } else if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                     $criteria[$relationKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
                     throw MappingException::joinColumnMustPointToMappedField(
@@ -955,8 +973,15 @@ class BasicEntityPersister
         $joinSql = '';
         foreach ($joinClauses as $joinTableColumn => $sourceColumn) {
             if ($joinSql != '') $joinSql .= ' AND ';
+
+            if ($this->_class->containsForeignIdentifier && !isset($this->_class->fieldNames[$sourceColumn])) {
+                $quotedColumn = $sourceColumn; // join columns cannot be quoted
+            } else {
+                $quotedColumn = $this->_class->getQuotedColumnName($this->_class->fieldNames[$sourceColumn], $this->_platform);
+            }
+
             $joinSql .= $this->_getSQLTableAlias($this->_class->name) .
-                    '.' . $this->_class->getQuotedColumnName($this->_class->fieldNames[$sourceColumn], $this->_platform) . ' = '
+                    '.' . $quotedColumn . ' = '
                     . $joinTableName . '.' . $joinTableColumn;
         }
 
@@ -1160,7 +1185,17 @@ class BasicEntityPersister
         $owningAssoc = $this->_class->associationMappings[$assoc['mappedBy']];
         $sourceClass = $this->_em->getClassMetadata($assoc['sourceEntity']);
         foreach ($owningAssoc['targetToSourceKeyColumns'] as $sourceKeyColumn => $targetKeyColumn) {
-            $criteria[$targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
+            if ($sourceClass->containsForeignIdentifier) {
+                $field = $sourceClass->getFieldForColumn($sourceKeyColumn);
+                $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
+                if (isset($sourceClass->associationMappings[$field])) {
+                    $value = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
+                    $value = $value[$this->_em->getClassMetadata($assoc['targetEntity'])->identifier[0]];
+                }
+                $criteria[$targetKeyColumn] = $value;
+            } else {
+                $criteria[$targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
+            }
         }
 
         $sql = $this->_getSelectEntitiesSQL($criteria, $assoc);
