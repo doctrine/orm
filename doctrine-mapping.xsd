@@ -187,8 +187,9 @@
       <xs:element name="sequence-generator" type="orm:sequence-generator" minOccurs="0" maxOccurs="1" />
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="type" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="type" type="xs:NMTOKEN" />
     <xs:attribute name="column" type="xs:NMTOKEN" />
+    <xs:attribute name="association-key" type="xs:boolean" default="false" />
   </xs:complexType>
 
   <xs:complexType name="sequence-generator">
