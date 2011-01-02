@@ -280,6 +280,30 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
     }
 
+    /**
+     * @group DDC-546
+     */
+    public function testContainsManyToManyInverse()
+    {
+        $group = $this->_em->find('Doctrine\Tests\Models\CMS\CmsGroup', $this->groupId);
+        $this->assertFalse($group->users->isInitialized(), "Pre-Condition: Collection is not initialized.");
+
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+
+        $queryCount = $this->getCurrentQueryCount();
+        $this->assertTrue($group->users->contains($user));
+        $this->assertEquals($queryCount+1, $this->getCurrentQueryCount(), "Checking for contains of managed entity should cause one query to be executed.");
+        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+
+        $newUser = new \Doctrine\Tests\Models\CMS\CmsUser();
+        $newUser->name = "A New group!";
+
+        $queryCount = $this->getCurrentQueryCount();
+        $this->assertFalse($group->users->contains($newUser));
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of new entity should cause no query to be executed.");
+        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+    }
+
     private function loadFixture()
     {
         $user1 = new \Doctrine\Tests\Models\CMS\CmsUser();

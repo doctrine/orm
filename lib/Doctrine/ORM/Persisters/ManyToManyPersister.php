@@ -247,16 +247,21 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         $params = array();
         $mapping = $coll->getMapping();
-        $sourceClass = $this->_em->getClassMetadata($mapping['sourceEntity']);
-        $elementClass = $this->_em->getClassMetadata($mapping['targetEntity']);
-        $sourceId = $uow->getEntityIdentifier($coll->getOwner());
-        $elementId = $uow->getEntityIdentifier($element);
 
-        if ($mapping['isOwningSide']) {
-            $joinTable = $mapping['joinTable'];
+        if (!$mapping['isOwningSide']) {
+            $sourceClass = $this->_em->getClassMetadata($mapping['targetEntity']);
+            $targetClass = $this->_em->getClassMetadata($mapping['sourceEntity']);
+            $sourceId = $uow->getEntityIdentifier($element);
+            $targetId = $uow->getEntityIdentifier($coll->getOwner());
+            
+            $mapping = $sourceClass->associationMappings[$mapping['mappedBy']];
         } else {
-            $joinTable = $elementClass->associationMappings[$mapping['mappedBy']]['joinTable'];
+            $sourceClass = $this->_em->getClassMetadata($mapping['sourceEntity']);
+            $targetClass = $this->_em->getClassMetadata($mapping['targetEntity']);
+            $sourceId = $uow->getEntityIdentifier($coll->getOwner());
+            $targetId = $uow->getEntityIdentifier($element);
         }
+        $joinTable = $mapping['joinTable'];
 
         $whereClause = '';
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
@@ -266,7 +271,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 }
                 $whereClause .= "$joinTableColumn = ?";
 
-                $params[] = $elementId[$sourceClass->fieldNames[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]];
+                $params[] = $targetId[$sourceClass->fieldNames[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]];
             } else if (isset($mapping['relationToSourceKeyColumns'][$joinTableColumn])) {
                 if ($whereClause !== '') {
                     $whereClause .= ' AND ';
