@@ -312,4 +312,71 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals('doctrineglobal_article_cmsuser', $cm->associationMappings['author']['joinTable']['name']);
     }
+
+    /**
+     * @group DDC-117
+     */
+    public function testMapIdentifierAssociation()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
+        $cm->mapOneToOne(array(
+            'fieldName' => 'article',
+            'id' => true,
+            'targetEntity' => 'Doctrine\Tests\Models\DDC117\DDC117Article',
+            'joinColumns' => array(),
+        ));
+
+        $this->assertTrue($cm->containsForeignIdentifier, "Identifier Association should set 'containsForeignIdentifier' boolean flag.");
+        $this->assertEquals(array("article"), $cm->identifier);
+    }
+
+    /**
+     * @group DDC-117
+     */
+    public function testOrphanRemovalIdentifierAssociation()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', 'The orphan removal option is not allowed on an association that');
+        $cm->mapOneToOne(array(
+            'fieldName' => 'article',
+            'id' => true,
+            'targetEntity' => 'Doctrine\Tests\Models\DDC117\DDC117Article',
+            'orphanRemoval' => true,
+            'joinColumns' => array(),
+        ));
+    }
+
+    /**
+     * @group DDC-117
+     */
+    public function testInverseIdentifierAssocation()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', 'An inverse association is not allowed to be identifier in');
+        $cm->mapOneToOne(array(
+            'fieldName' => 'article',
+            'id' => true,
+            'mappedBy' => 'details', // INVERSE!
+            'targetEntity' => 'Doctrine\Tests\Models\DDC117\DDC117Article',
+            'joinColumns' => array(),
+        ));
+    }
+
+    /**
+     * @group DDC-117
+     */
+    public function testIdentifierAssocationManyToMany()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', 'Many-to-many or one-to-many associations are not allowed to be identifier in');
+        $cm->mapManyToMany(array(
+            'fieldName' => 'article',
+            'id' => true,
+            'targetEntity' => 'Doctrine\Tests\Models\DDC117\DDC117Article',
+            'joinColumns' => array(),
+        ));
+    }
 }

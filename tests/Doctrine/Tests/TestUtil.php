@@ -93,6 +93,10 @@ class TestUtil
                 'driver' => 'pdo_sqlite',
                 'memory' => true
             );
+            if (isset($GLOBALS['db_path'])) {
+                $params['path'] = $GLOBALS['db_path'];
+                unlink($GLOBALS['db_path']);
+            }
             $conn = \Doctrine\DBAL\DriverManager::getConnection($params);
         }
 

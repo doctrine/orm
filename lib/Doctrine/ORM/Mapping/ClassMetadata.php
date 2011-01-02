@@ -317,6 +317,10 @@ class ClassMetadata extends ClassMetadataInfo
             $serialized[] = 'isMappedSuperclass';
         }
 
+        if ($this->containsForeignIdentifier) {
+            $serialized[] = 'containsForeignIdentifier';
+        }
+
         if ($this->isVersioned) {
             $serialized[] = 'isVersioned';
             $serialized[] = 'versionField';
