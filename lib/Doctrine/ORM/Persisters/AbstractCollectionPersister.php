@@ -125,6 +125,31 @@ abstract class AbstractCollectionPersister
         }
     }
 
+    public function count(PersistentCollection $coll)
+    {
+        throw new \BadMethodCallException("Counting the size of this persistent collection is not supported by this CollectionPersister.");
+    }
+
+    public function slice(PersistentCollection $coll, $offset, $length = null)
+    {
+        throw new \BadMethodCallException("Slicing elements is not supported by this CollectionPersister.");
+    }
+
+    public function contains(PersistentCollection $coll, $element)
+    {
+        throw new \BadMethodCallException("Checking for existance of an element is not supported by this CollectionPersister.");
+    }
+
+    public function containsKey(PersistentCollection $coll, $key)
+    {
+        throw new \BadMethodCallException("Checking for existance of a key is not supported by this CollectionPersister.");
+    }
+
+    public function get(PersistentCollection $coll, $index)
+    {
+        throw new \BadMethodCallException("Selecting a collection by index is not supported by this CollectionPersister.");
+    }
+
     /**
      * Gets the SQL statement used for deleting a row from the collection.
      * 

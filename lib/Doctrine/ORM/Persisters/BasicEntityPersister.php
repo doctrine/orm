@@ -718,14 +718,48 @@ class BasicEntityPersister
     }
 
     /**
+     * Get (sliced or full) elements of the given collection.
+     * 
+     * @param array $assoc
+     * @param object $sourceEntity
+     * @param int|null $offset
+     * @param int|null $limit
+     * @return array
+     */
+    public function getManyToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null)
+    {
+        $stmt = $this->getManyToManyStatement($assoc, $sourceEntity, $offset, $limit);
+
+        $entities = array();
+        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $entities[] = $this->_createEntity($result);
+        }
+        $stmt->closeCursor();
+        return $entities;
+    }
+
+    /**
      * Loads a collection of entities of a many-to-many association.
      *
      * @param ManyToManyMapping $assoc The association mapping of the association being loaded.
      * @param object $sourceEntity The entity that owns the collection.
      * @param PersistentCollection $coll The collection to fill.
+     * @param int|null $offset
+     * @param int|null $limit
+     * @return array
      */
     public function loadManyToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
-    {        
+    {
+        $stmt = $this->getManyToManyStatement($assoc, $sourceEntity);
+
+        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $coll->hydrateAdd($this->_createEntity($result));
+        }
+        $stmt->closeCursor();
+    }
+
+    private function getManyToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
+    {
         $criteria = array();
         $sourceClass = $this->_em->getClassMetadata($assoc['sourceEntity']);
         $joinTableConditions = array();
@@ -769,13 +803,9 @@ class BasicEntityPersister
             }
         }
 
-        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc);
+        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, 0, $limit, $offset);
         list($params, $types) = $this->expandParameters($criteria);
-        $stmt = $this->_conn->executeQuery($sql, $params, $types);
-        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $coll->hydrateAdd($this->_createEntity($result));
-        }
-        $stmt->closeCursor();
+        return $this->_conn->executeQuery($sql, $params, $types);
     }
 
     /**
@@ -854,7 +884,7 @@ class BasicEntityPersister
      * @return string
      * @todo Refactor: _getSelectSQL(...)
      */
-    protected function _getSelectEntitiesSQL(array $criteria, $assoc = null, $lockMode = 0)
+    protected function _getSelectEntitiesSQL(array $criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null)
     {
         $joinSql = $assoc != null && $assoc['type'] == ClassMetadata::MANY_TO_MANY ?
                 $this->_getSelectManyToManyJoinSQL($assoc) : '';
@@ -872,12 +902,12 @@ class BasicEntityPersister
             $lockSql = ' ' . $this->_platform->getWriteLockSql();
         }
 
-        return 'SELECT ' . $this->_getSelectColumnListSQL() 
+        return $this->_platform->modifyLimitQuery('SELECT ' . $this->_getSelectColumnListSQL()
              . $this->_platform->appendLockHint(' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' '
              . $this->_getSQLTableAlias($this->_class->name), $lockMode)
              . $joinSql
              . ($conditionSql ? ' WHERE ' . $conditionSql : '')
-             . $orderBySql 
+             . $orderBySql, $limit, $offset)
              . $lockSql;
     }
 
@@ -1176,13 +1206,55 @@ class BasicEntityPersister
     }
 
     /**
+     * Return an array with (sliced or full list) of elements in the specified collection.
+     *
+     * @param array $assoc
+     * @param object $sourceEntity
+     * @param int $offset
+     * @param int $limit
+     * @return array
+     */
+    public function getOneToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null)
+    {
+        $stmt = $this->getOneToManyStatement($assoc, $sourceEntity, $offset, $limit);
+
+        $entities = array();
+        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $entities[] = $this->_createEntity($result);
+        }
+        $stmt->closeCursor();
+        return $entities;
+    }
+
+    /**
      * Loads a collection of entities in a one-to-many association.
      *
-     * @param OneToManyMapping $assoc
-     * @param array $criteria The criteria by which to select the entities.
-     * @param PersistentCollection The collection to load/fill.
+     * @param array $assoc
+     * @param object $sourceEntity
+     * @param PersistentCollection $coll The collection to load/fill.
+     * @param int|null $offset
+     * @param int|null $limit
      */
     public function loadOneToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
+    {
+        $stmt = $this->getOneToManyStatement($assoc, $sourceEntity);
+
+        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $coll->hydrateAdd($this->_createEntity($result));
+        }
+        $stmt->closeCursor();
+    }
+
+    /**
+     * Build criteria and execute SQL statement to fetch the one to many entities from.
+     *
+     * @param array $assoc
+     * @param object $sourceEntity
+     * @param int|null $offset
+     * @param int|null $limit
+     * @return Doctrine\DBAL\Statement
+     */
+    private function getOneToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
         $criteria = array();
         $owningAssoc = $this->_class->associationMappings[$assoc['mappedBy']];
@@ -1201,13 +1273,9 @@ class BasicEntityPersister
             }
         }
 
-        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc);
+        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, 0, $limit, $offset);
         list($params, $types) = $this->expandParameters($criteria);
-        $stmt = $this->_conn->executeQuery($sql, $params, $types);
-        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $coll->hydrateAdd($this->_createEntity($result));
-        }
-        $stmt->closeCursor();
+        return $this->_conn->executeQuery($sql, $params, $types);
     }
 
     /**
@@ -1237,19 +1305,17 @@ class BasicEntityPersister
      * @param object $entity
      * @return boolean TRUE if the entity exists in the database, FALSE otherwise.
      */
-    public function exists($entity)
+    public function exists($entity, array $extraConditions = array())
     {
         $criteria = $this->_class->getIdentifierValues($entity);
+        if ($extraConditions) {
+            $criteria = array_merge($criteria, $extraConditions);
+        }
+
         $sql = 'SELECT 1 FROM ' . $this->_class->getQuotedTableName($this->_platform)
                 . ' ' . $this->_getSQLTableAlias($this->_class->name)
                 . ' WHERE ' . $this->_getSelectConditionSQL($criteria);
 
         return (bool) $this->_conn->fetchColumn($sql, array_values($criteria));
     }
-
-    //TODO
-    /*protected function _getOneToOneEagerFetchSQL()
-    {
-        
-    }*/
 }

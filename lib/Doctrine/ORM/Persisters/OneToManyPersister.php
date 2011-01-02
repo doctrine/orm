@@ -21,7 +21,8 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\PersistentCollection,
+    Doctrine\ORM\UnitOfWork;
 
 /**
  * Persister for one-to-many collections.
@@ -116,4 +117,67 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     protected function _getDeleteRowSQLParameters(PersistentCollection $coll, $element)
     {}
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count(PersistentCollection $coll)
+    {
+        $mapping = $coll->getMapping();
+        $class = $this->_em->getClassMetadata($mapping['targetEntity']);
+        $params = array();
+        $id = $this->_em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
+
+        $where = '';
+        foreach ($class->associationMappings[$mapping['mappedBy']]['joinColumns'] AS $joinColumn) {
+            if ($where != '') {
+                $where .= ' AND ';
+            }
+            $where .= $joinColumn['name'] . " = ?";
+            if ($class->containsForeignIdentifier) {
+                $params[] = $id[$class->getFieldForColumn($joinColumn['referencedColumnName'])];
+            } else {
+                $params[] = $id[$class->fieldNames[$joinColumn['referencedColumnName']]];
+            }
+        }
+
+        $sql = "SELECT count(*) FROM " . $class->getQuotedTableName($this->_conn->getDatabasePlatform()) . " WHERE " . $where;
+        return $this->_conn->fetchColumn($sql, $params);
+    }
+
+    /**
+     * @param PersistentCollection $coll
+     * @param int $offset
+     * @param int $length
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
+    public function slice(PersistentCollection $coll, $offset, $length = null)
+    {
+        $mapping = $coll->getMapping();
+        return $this->_em->getUnitOfWork()
+                  ->getEntityPersister($mapping['targetEntity'])
+                  ->getOneToManyCollection($mapping, $coll->getOwner(), $offset, $length);
+    }
+
+    /**
+     * @param PersistentCollection $coll
+     * @param object $element
+     */
+    public function contains(PersistentCollection $coll, $element)
+    {
+        $mapping = $coll->getMapping();
+        $uow = $this->_em->getUnitOfWork();
+        
+        // shortcut for new entities
+        if ($uow->getEntityState($element, UnitOfWork::STATE_NEW) == UnitOfWork::STATE_NEW) {
+            return false;
+        }
+
+        // only works with single id identifier entities. Will throw an exception in Entity Persisters
+        // if that is not the case for the 'mappedBy' field.
+        $id = current( $uow->getEntityIdentifier($coll->getOwner()) );
+
+        return $uow->getEntityPersister($mapping['targetEntity'])
+                   ->exists($element, array($mapping['mappedBy'] => $id));
+    }
 }

@@ -21,7 +21,8 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\PersistentCollection,
+    Doctrine\ORM\UnitOfWork;
 
 /**
  * Persister for many-to-many collections.
@@ -180,5 +181,120 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         return $params;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count(PersistentCollection $coll)
+    {
+        $params = array();
+        $mapping = $coll->getMapping();
+        $class = $this->_em->getClassMetadata($mapping['sourceEntity']);
+        $id = $this->_em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
+
+        if ($mapping['isOwningSide']) {
+            $joinTable = $mapping['joinTable'];
+            $joinColumns = $mapping['relationToSourceKeyColumns'];
+        } else {
+            $mapping = $this->_em->getClassMetadata($mapping['targetEntity'])->associationMappings[$mapping['mappedBy']];
+            $joinTable = $mapping['joinTable'];
+            $joinColumns = $mapping['relationToTargetKeyColumns'];
+        }
+
+        $whereClause = '';
+        foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
+            if (isset($joinColumns[$joinTableColumn])) {
+                if ($whereClause !== '') {
+                    $whereClause .= ' AND ';
+                }
+                $whereClause .= "$joinTableColumn = ?";
+
+                if ($class->containsForeignIdentifier) {
+                    $params[] = $id[$class->getFieldForColumn($joinColumns[$joinTableColumn])];
+                } else {
+                    $params[] = $id[$class->fieldNames[$joinColumns[$joinTableColumn]]];
+                }
+            }
+        }
+        $sql = 'SELECT count(*) FROM ' . $joinTable['name'] . ' WHERE ' . $whereClause;
+
+        return $this->_conn->fetchColumn($sql, $params);
+    }
+
+    /**
+     * @param PersistentCollection $coll
+     * @param int $offset
+     * @param int $length
+     * @return array
+     */
+    public function slice(PersistentCollection $coll, $offset, $length = null)
+    {
+        $mapping = $coll->getMapping();
+        return $this->_em->getUnitOfWork()
+                  ->getEntityPersister($mapping['targetEntity'])
+                  ->getManyToManyCollection($mapping, $coll->getOwner(), $offset, $length);
+    }
+
+    /**
+     * @param PersistentCollection $coll
+     * @param object $element
+     */
+    public function contains(PersistentCollection $coll, $element)
+    {
+        $uow = $this->_em->getUnitOfWork();
+
+        // shortcut for new entities
+        if ($uow->getEntityState($element, UnitOfWork::STATE_NEW) == UnitOfWork::STATE_NEW) {
+            return false;
+        }
+
+        $params = array();
+        $mapping = $coll->getMapping();
+
+        if (!$mapping['isOwningSide']) {
+            $sourceClass = $this->_em->getClassMetadata($mapping['targetEntity']);
+            $targetClass = $this->_em->getClassMetadata($mapping['sourceEntity']);
+            $sourceId = $uow->getEntityIdentifier($element);
+            $targetId = $uow->getEntityIdentifier($coll->getOwner());
+            
+            $mapping = $sourceClass->associationMappings[$mapping['mappedBy']];
+        } else {
+            $sourceClass = $this->_em->getClassMetadata($mapping['sourceEntity']);
+            $targetClass = $this->_em->getClassMetadata($mapping['targetEntity']);
+            $sourceId = $uow->getEntityIdentifier($coll->getOwner());
+            $targetId = $uow->getEntityIdentifier($element);
+        }
+        $joinTable = $mapping['joinTable'];
+
+        $whereClause = '';
+        foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
+            if (isset($mapping['relationToTargetKeyColumns'][$joinTableColumn])) {
+                if ($whereClause !== '') {
+                    $whereClause .= ' AND ';
+                }
+                $whereClause .= "$joinTableColumn = ?";
+
+                if ($targetClass->containsForeignIdentifier) {
+                    $params[] = $targetId[$targetClass->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])];
+                } else {
+                    $params[] = $targetId[$targetClass->fieldNames[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]];
+                }
+            } else if (isset($mapping['relationToSourceKeyColumns'][$joinTableColumn])) {
+                if ($whereClause !== '') {
+                    $whereClause .= ' AND ';
+                }
+                $whereClause .= "$joinTableColumn = ?";
+
+                if ($sourceClass->containsForeignIdentifier) {
+                    $params[] = $sourceId[$sourceClass->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])];
+                } else {
+                    $params[] = $sourceId[$sourceClass->fieldNames[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]];
+                }
+            }
+        }
+        $sql = 'SELECT 1 FROM ' . $joinTable['name'] . ' WHERE ' . $whereClause;
+
+        return (bool)$this->_conn->fetchColumn($sql, $params);
     }
 }
