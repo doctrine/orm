@@ -210,7 +210,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 }
                 $whereClause .= "$joinTableColumn = ?";
 
-                $params[] = $id[$class->fieldNames[$joinColumns[$joinTableColumn]]];
+                if ($class->containsForeignIdentifier) {
+                    $params[] = $id[$class->getFieldForColumn($joinColumns[$joinTableColumn])];
+                } else {
+                    $params[] = $id[$class->fieldNames[$joinColumns[$joinTableColumn]]];
+                }
             }
         }
         $sql = 'SELECT count(*) FROM ' . $joinTable['name'] . ' WHERE ' . $whereClause;

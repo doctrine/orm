@@ -134,7 +134,11 @@ class OneToManyPersister extends AbstractCollectionPersister
                 $where .= ' AND ';
             }
             $where .= $joinColumn['name'] . " = ?";
-            $params[] = $id[$class->fieldNames[$joinColumn['referencedColumnName']]];
+            if ($class->containsForeignIdentifier) {
+                $params[] = $id[$class->getFieldForColumn($joinColumn['referencedColumnName'])];
+            } else {
+                $params[] = $id[$class->fieldNames[$joinColumn['referencedColumnName']]];
+            }
         }
 
         $sql = "SELECT count(*) FROM " . $class->getQuotedTableName($this->_conn->getDatabasePlatform()) . " WHERE " . $where;
