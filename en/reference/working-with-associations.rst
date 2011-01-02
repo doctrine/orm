@@ -517,4 +517,76 @@ that are found on already managed entities are automatically
 persisted as long as the association is defined as cascade
 persist.
 
+Orphan Removal
+--------------
 
+There is another concept of cascading that is relevant only when removing entities
+from collections. If an Entity of type ``A`` contains references to privately
+owned Entities ``B`` then if the reference from ``A`` to ``B`` is removed the
+entity ``B`` should also be removed, because it is not used anymore.
+
+OrphanRemoval works with both one-to-one and one-to-many associations.
+
+.. note::
+
+    When using the ``orphanRemoval=true`` option Doctrine makes the assumption
+    that the entities are privately owned and will **NOT** be reused by other entities.
+    If you neglect this assumption your entities will get deleted by Doctrine anyways.
+
+As a better example consider an Addressbook application where you have Contacts, Addresses
+and StandingData:
+
+.. code-block:: php
+
+    <?php
+
+    namespace Addressbook;
+
+    use Doctrine\Common\Collections\ArrayCollection;
+
+    /**
+     * @Entity
+     */
+    class Contact
+    {
+        /** @Id @Column(type="integer") @GeneratedValue */
+        private $id;
+
+        /** @OneToOne(targetEntity="StandingData", orphanRemoval=true) */
+        private $standingData;
+
+        /** @OneToMany(targetEntity="Address", mappedBy="contact", orphanRemoval=true) */
+        private $addresses;
+
+        public function __construct()
+        {
+            $this->addresses = new ArrayCollection();
+        }
+
+        public function newStandingData(StandingData $sd)
+        {
+            $this->standingData = $sd;
+        }
+
+        public function removeAddress($pos)
+        {
+            unset($this->addresses[$pos]);
+        }
+    }
+
+Now two examples what happens when you remove the references:
+
+.. code-block:: php
+
+    <?php
+
+    $contact = $em->find("Addressbook\Contact", $contactId);
+    $contact->newStandingData(new StandingData("Firstname", "Lastname", "Street"));
+    $contact->removeAddress(1);
+
+    $em->flush();
+
+In this case you have only changed the ``Contact`` entity but you removed
+the references for standing data and one address reference. When flush is called
+not only are the references removed also both the old standing data and the one address entity
+are deleted from the database.
