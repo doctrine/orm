@@ -466,14 +466,9 @@ final class PersistentCollection implements Collection
     public function count()
     {
         if (!$this->initialized && $this->association['fetch'] == Mapping\ClassMetadataInfo::FETCH_EXTRALAZY) {
-            // use a dynamic public property here. That may be slower, but its not using so much
-            // memory as having a count variable in each collection.
-            if (!isset($this->doctrineCollectionCount)) {
-                $this->doctrineCollectionCount = $this->em->getUnitOfWork()
-                                ->getCollectionPersister($this->association)
-                                ->count($this);
-            }
-            return $this->doctrineCollectionCount + $this->coll->count();
+            return $this->em->getUnitOfWork()
+                        ->getCollectionPersister($this->association)
+                        ->count($this) + $this->coll->count();
         }
 
         $this->initialize();
