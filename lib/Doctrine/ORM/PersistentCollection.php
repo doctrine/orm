@@ -471,9 +471,9 @@ final class PersistentCollection implements Collection
             if (!isset($this->doctrineCollectionCount)) {
                 $this->doctrineCollectionCount = $this->em->getUnitOfWork()
                                 ->getCollectionPersister($this->association)
-                                ->count($this) + $this->coll->count();
+                                ->count($this);
             }
-            return $this->doctrineCollectionCount;
+            return $this->doctrineCollectionCount + $this->coll->count();
         }
 
         $this->initialize();
