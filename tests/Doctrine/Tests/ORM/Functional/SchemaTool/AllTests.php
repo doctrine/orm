@@ -19,6 +19,7 @@ class AllTests
     {
         $suite = new \Doctrine\Tests\DoctrineTestSuite('Doctrine Orm Functional Tools');
 
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\SchemaTool\CompanySchemaTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\SchemaTool\MySqlSchemaToolTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\SchemaTool\PostgreSqlSchemaToolTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\SchemaTool\DDC214Test');
