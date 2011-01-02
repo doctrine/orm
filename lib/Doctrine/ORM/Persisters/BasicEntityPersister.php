@@ -803,7 +803,7 @@ class BasicEntityPersister
             }
         }
 
-        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc);
+        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, 0, $limit, $offset);
         list($params, $types) = $this->expandParameters($criteria);
         return $this->_conn->executeQuery($sql, $params, $types);
     }
@@ -1273,30 +1273,9 @@ class BasicEntityPersister
             }
         }
 
-<<<<<<< HEAD
-        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc);
+        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, 0, $limit, $offset);
         list($params, $types) = $this->expandParameters($criteria);
-        $stmt = $this->_conn->executeQuery($sql, $params, $types);
-        if ($coll) {
-            while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $coll->hydrateAdd($this->_createEntity($result));
-            }
-            $stmt->closeCursor();
-        } else {
-            $entities = array();
-            while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $entities[] = $this->_createEntity($result);
-            }
-            $stmt->closeCursor();
-            return $entities;
-        }
-=======
-        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, LockMode::NONE, $limit, $offset);
-        $params = array_values($criteria);
-        $stmt = $this->_conn->executeQuery($sql, $params);
-
-        return $stmt;
->>>>>>> Refactor DDC-546 persister approach.
+        return $this->_conn->executeQuery($sql, $params, $types);
     }
 
     /**
