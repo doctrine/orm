@@ -284,10 +284,6 @@ class ClassMetadataFactory
                 throw MappingException::reflectionFailure($className, $e);
             }
 
-            // Verify & complete identifier mapping
-            if ( ! $class->identifier && ! $class->isMappedSuperclass) {
-                throw MappingException::identifierRequired($className);
-            }
             if ($parent && ! $parent->isMappedSuperclass) {
                 if ($parent->isIdGeneratorSequence()) {
                     $class->setSequenceGeneratorDefinition($parent->sequenceGeneratorDefinition);
@@ -313,6 +309,11 @@ class ClassMetadataFactory
             if ($this->evm->hasListeners(Events::loadClassMetadata)) {
                 $eventArgs = new \Doctrine\ORM\Event\LoadClassMetadataEventArgs($class, $this->em);
                 $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
+            }
+
+            // Verify & complete identifier mapping
+            if ( ! $class->identifier && ! $class->isMappedSuperclass) {
+                throw MappingException::identifierRequired($className);
             }
 
             // verify inheritance
