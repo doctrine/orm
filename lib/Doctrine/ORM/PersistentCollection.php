@@ -404,7 +404,7 @@ final class PersistentCollection implements Collection
      */
     public function contains($element)
     {
-        if (!$this->initialized && $this->association['fetch'] == Mapping\ClassMetadataInfo::FETCH_EXTRALAZY) {
+        if (!$this->initialized && $this->association['fetch'] == Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {
             return $this->coll->contains($element) ||
                    $this->em->getUnitOfWork()
                             ->getCollectionPersister($this->association)
@@ -465,7 +465,7 @@ final class PersistentCollection implements Collection
      */
     public function count()
     {
-        if (!$this->initialized && $this->association['fetch'] == Mapping\ClassMetadataInfo::FETCH_EXTRALAZY) {
+        if (!$this->initialized && $this->association['fetch'] == Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {
             return $this->em->getUnitOfWork()
                         ->getCollectionPersister($this->association)
                         ->count($this) + $this->coll->count();
@@ -671,7 +671,7 @@ final class PersistentCollection implements Collection
      */
     public function slice($offset, $length = null)
     {
-        if (!$this->initialized && $this->association['fetch'] == Mapping\ClassMetadataInfo::FETCH_EXTRALAZY) {
+        if (!$this->initialized && $this->association['fetch'] == Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {
             return $this->em->getUnitOfWork()
                             ->getCollectionPersister($this->association)
                             ->slice($this, $offset, $length);

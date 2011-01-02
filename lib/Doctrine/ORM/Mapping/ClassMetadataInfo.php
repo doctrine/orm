@@ -126,7 +126,7 @@ class ClassMetadataInfo
      * commands such as Collection#count, Collection#slice are issued directly against
      * the database if the collection is not yet initialized.
      */
-    const FETCH_EXTRALAZY = 4;
+    const FETCH_EXTRA_LAZY = 4;
     /**
      * Identifies a one-to-one association.
      */
