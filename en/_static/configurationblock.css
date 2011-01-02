@@ -1,9 +1,9 @@
-ul.simple
+div.configuration-block ul.simple
 {
   padding: 5px 0 0 0;
 }
 
-ul.simple li
+div.configuration-block ul.simple li
 {
   margin: 0;
   margin-right: 5px;

@@ -7,7 +7,6 @@ with short explanations on their context and usage.
 Index
 -----
 
-
 -  :ref:`@Column <annref_column>`
 -  :ref:`@ChangeTrackingPolicy <annref_changetrackingpolicy>`
 -  :ref:`@DiscriminatorColumn <annref_discriminatorcolumn>`
@@ -53,27 +52,31 @@ as part of the lifecycle of the instance variables entity-class.
 
 Required attributes:
 
-
--  type - Name of the Doctrine Type which is converted between PHP
+-  **type**: Name of the Doctrine Type which is converted between PHP
    and Database representation.
 
 Optional attributes:
 
-
--  name - By default the property name is used for the database
+-  **name**: By default the property name is used for the database
    column name also, however the 'name' attribute allows you to
    determine the column name.
--  length - Used by the "string" type to determine its maximum
+
+-  **length**: Used by the "string" type to determine its maximum
    length in the database. Doctrine does not validate the length of a
    string values for you.
--  precision - The precision for a decimal (exact numeric) column
+
+-  **precision**: The precision for a decimal (exact numeric) column
    (Applies only for decimal column)
--  scale - The scale for a decimal (exact numeric) column (Applies
+
+-  **scale**: The scale for a decimal (exact numeric) column (Applies
    only for decimal column)
--  unique - Boolean value to determine if the value of the column
+
+-  **unique**: Boolean value to determine if the value of the column
    should be unique across all rows of the underlying entities table.
--  nullable - Determines if NULL values allowed for this column.
--  columnDefinition - DDL SQL snippet that starts after the column
+
+-  **nullable**: Determines if NULL values allowed for this column.
+
+-  **columnDefinition**: DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.
    This attribute allows to make use of advanced RMDBS features.
    However you should make careful use of this feature and the
@@ -146,14 +149,14 @@ actually instantiated as.
 Required attributes:
 
 
--  name - The column name of the discriminator. This name is also
+-  **name**: The column name of the discriminator. This name is also
    used during Array hydration as key to specify the class-name.
 
 Optional attributes:
 
 
--  type - By default this is string.
--  length - By default this is 255.
+-  **type**: By default this is string.
+-  **length**: By default this is 255.
 
 .. _annref_discriminatormap:
 
@@ -192,7 +195,7 @@ the persistence of all classes marked as entity.
 Optional attributes:
 
 
--  repositoryClass - Specifies the FQCN of a subclass of the
+-  **repositoryClass**: Specifies the FQCN of a subclass of the
    Doctrine. Use of repositories for entities is encouraged to keep
    specialized DQL and SQL operations separated from the Model/Domain
    Layer.
@@ -226,7 +229,7 @@ used as default.
 Required attributes:
 
 
--  strategy - Set the name of the identifier generation strategy.
+-  **strategy**: Set the name of the identifier generation strategy.
    Valid values are AUTO, SEQUENCE, TABLE, IDENTITY and NONE.
 
 Example:
@@ -283,8 +286,8 @@ has meaning in the SchemaTool schema generation context.
 Required attributes:
 
 
--  name - Name of the Index
--  columns - Array of columns.
+-  **name**: Name of the Index
+-  **columns**: Array of columns.
 
 Example:
 
@@ -377,23 +380,23 @@ inferred from the table and primary key names.
 Required attributes:
 
 
--  name - Column name that holds the foreign key identifier for
+-  **name**: Column name that holds the foreign key identifier for
    this relation. In the context of @JoinTable it specifies the column
    name in the join table.
--  referencedColumnName - Name of the primary key identifier that
+-  **referencedColumnName**: Name of the primary key identifier that
    is used for joining of this relation.
 
 Optional attributes:
 
 
--  unique - Determines if this relation exclusive between the
+-  **unique**: Determines if this relation exclusive between the
    affected entities and should be enforced so on the database
    constraint level. Defaults to false.
--  nullable - Determine if the related entity is required, or if
+-  **nullable**: Determine if the related entity is required, or if
    null is an allowed state for the relation. Defaults to true.
--  onDelete - Cascade Action (Database-level)
--  onUpdate - Cascade Action (Database-level)
--  columnDefinition - DDL SQL snippet that starts after the column
+-  **onDelete**: Cascade Action (Database-level)
+-  **onUpdate**: Cascade Action (Database-level)
+-  **columnDefinition**: DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.
    This attribute allows to make use of advanced RMDBS features. Using
    this attribute on @JoinColumn is necessary if you need slightly
@@ -438,17 +441,12 @@ using the affected table and the column names.
 Required attributes:
 
 
--  name - Database name of the join-table
--  joinColumns - An array of @JoinColumn annotations describing the
+-  **name**: Database name of the join-table
+-  **joinColumns**: An array of @JoinColumn annotations describing the
    join-relation between the owning entities table and the join table.
--  inverseJoinColumns - An array of @JoinColumn annotations
+-  **inverseJoinColumns**: An array of @JoinColumn annotations
    describing the join-relation between the inverse entities table and
    the join table.
-
-Optional attributes:
-
-
--  schema - Database schema name of this table.
 
 Example:
 
@@ -475,15 +473,15 @@ describes a many-to-one relationship between two entities.
 Required attributes:
 
 
--  targetEntity - FQCN of the referenced target entity. Can be the
+-  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
    *IMPORTANT:* No leading backslash!
 
 Optional attributes:
 
 
--  cascade - Cascade Option
--  fetch - One of LAZY or EAGER
+-  **cascade**: Cascade Option
+-  **fetch**: One of LAZY or EAGER
 -  inversedBy - The inversedBy attribute designates the field in
    the entity that is the inverse side of the relationship.
 
@@ -511,20 +509,20 @@ entities.
 Required attributes:
 
 
--  targetEntity - FQCN of the referenced target entity. Can be the
+-  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
    *IMPORTANT:* No leading backslash!
 
 Optional attributes:
 
 
--  mappedBy - This option specifies the property name on the
+-  **mappedBy**: This option specifies the property name on the
    targetEntity that is the owning side of this relation. Its a
    required attribute for the inverse side of a relationship.
--  inversedBy - The inversedBy attribute designates the ﬁeld in the
+-  **inversedBy**: The inversedBy attribute designates the ﬁeld in the
    entity that is the inverse side of the relationship.
--  cascade - Cascade Option
--  fetch - One of LAZY or EAGER
+-  **cascade**: Cascade Option
+-  **fetch**: One of LAZY or EAGER
 
     **NOTE** For ManyToMany bidirectional relationships either side may
     be the owning side (the side that defines the @JoinTable and/or
@@ -583,19 +581,19 @@ primary key column names apply here too.
 Required attributes:
 
 
--  targetEntity - FQCN of the referenced target entity. Can be the
+-  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
    *IMPORTANT:* No leading backslash!
 
 Optional attributes:
 
 
--  cascade - Cascade Option
--  fetch - One of LAZY or EAGER
--  orphanRemoval - Boolean that specifies if orphans, inverse
+-  **cascade**: Cascade Option
+-  **fetch**: One of LAZY or EAGER
+-  **orphanRemoval**: Boolean that specifies if orphans, inverse
    OneToOne entities that are not connected to any owning instance,
    should be removed by Doctrine. Defaults to false.
--  inversedBy - The inversedBy attribute designates the ﬁeld in the
+-  **inversedBy**: The inversedBy attribute designates the ﬁeld in the
    entity that is the inverse side of the relationship.
 
 Example:
@@ -617,18 +615,18 @@ Example:
 Required attributes:
 
 
--  targetEntity - FQCN of the referenced target entity. Can be the
+-  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
    *IMPORTANT:* No leading backslash!
 
 Optional attributes:
 
 
--  cascade - Cascade Option
--  orphanRemoval - Boolean that specifies if orphans, inverse
+-  **cascade**: Cascade Option
+-  **orphanRemoval**: Boolean that specifies if orphans, inverse
    OneToOne entities that are not connected to any owning instance,
    should be removed by Doctrine. Defaults to false.
--  mappedBy - This option specifies the property name on the
+-  **mappedBy**: This option specifies the property name on the
    targetEntity that is the owning side of this relation. Its a
    required attribute for the inverse side of a relationship.
 
@@ -747,16 +745,16 @@ the increment size and initial values of the sequence.
 Required attributes:
 
 
--  sequenceName - Name of the sequence
+-  **sequenceName**: Name of the sequence
 
 Optional attributes:
 
 
--  allocationSize - Increment the sequence by the allocation size
+-  **allocationSize**: Increment the sequence by the allocation size
    when its fetched. A value larger than 1 allows to optimize for
    scenarios where you create more than one new entity per request.
    Defaults to 10
--  initialValue - Where does the sequence start, defaults to 1.
+-  **initialValue**: Where does the sequence start, defaults to 1.
 
 Example:
 
@@ -784,13 +782,13 @@ unqualified classname.
 Required attributes:
 
 
--  name - Name of the table
+-  **name**: Name of the table
 
 Optional attributes:
 
 
--  indexes - Array of @Index annotations
--  uniqueConstraints - Array of @UniqueConstraint annotations.
+-  **indexes**: Array of @Index annotations
+-  **uniqueConstraints**: Array of @UniqueConstraint annotations.
 
 Example:
 
@@ -820,8 +818,8 @@ context.
 Required attributes:
 
 
--  name - Name of the Index
--  columns - Array of columns.
+-  **name**: Name of the Index
+-  **columns**: Array of columns.
 
 Example:
 
@@ -856,5 +854,4 @@ Example:
      * @version
      */
     protected $version;
-
 
