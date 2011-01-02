@@ -275,6 +275,10 @@ class SchemaTool
         $pkColumns = array();
 
         foreach ($class->fieldMappings as $fieldName => $mapping) {
+            if ($class->isInheritanceTypeSingleTable() && isset($mapping['inherited'])) {
+                continue;
+            }
+
             $column = $this->_gatherColumn($class, $mapping, $table);
 
             if ($class->isIdentifier($mapping['fieldName'])) {
