@@ -271,14 +271,22 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 }
                 $whereClause .= "$joinTableColumn = ?";
 
-                $params[] = $targetId[$sourceClass->fieldNames[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]];
+                if ($targetClass->containsForeignIdentifier) {
+                    $params[] = $targetId[$targetClass->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])];
+                } else {
+                    $params[] = $targetId[$targetClass->fieldNames[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]];
+                }
             } else if (isset($mapping['relationToSourceKeyColumns'][$joinTableColumn])) {
                 if ($whereClause !== '') {
                     $whereClause .= ' AND ';
                 }
                 $whereClause .= "$joinTableColumn = ?";
 
-                $params[] = $sourceId[$sourceClass->fieldNames[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]];
+                if ($sourceClass->containsForeignIdentifier) {
+                    $params[] = $sourceId[$sourceClass->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])];
+                } else {
+                    $params[] = $sourceId[$sourceClass->fieldNames[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]];
+                }
             }
         }
         $sql = 'SELECT 1 FROM ' . $joinTable['name'] . ' WHERE ' . $whereClause;
