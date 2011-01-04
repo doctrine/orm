@@ -68,9 +68,9 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self("No mapping file found named '$fileName' for class '$entityName'.");
     }
 
-    public static function mappingNotFound($className, $fieldName)
+    public static function mappingNotFound($fieldName)
     {
-        return new self("No mapping found for field '$fieldName' on class '$className'.");
+        return new self("No mapping found for field '$fieldName'.");
     }
 
     public static function oneToManyRequiresMappedBy($fieldName)
@@ -135,6 +135,11 @@ class MappingException extends \Doctrine\ORM\ORMException
     public static function classIsNotAValidEntityOrMappedSuperClass($className)
     {
         return new self('Class '.$className.' is not a valid entity or mapped super class.');
+    }
+
+    public static function classIsNotMappedInConfig($className)
+    {
+        return new self('Class '.$className.' has not been mapped in the config file.');
     }
 
     public static function propertyTypeIsRequired($className, $propertyName)
@@ -227,47 +232,4 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self("Duplicate definition of column '".$columnName."' on entity '".$className."' in a field or discriminator column mapping.");
     }
 
-    public static function illegalToManyAssocationOnMappedSuperclass($className, $field)
-    {
-        return new self("It is illegal to put an inverse side one-to-many or many-to-many association on mapped superclass '".$className."#".$field."'.");
-    }
-
-    /**
-     * @param string $className
-     * @param string $targetEntity
-     * @param string $targetField
-     * @return self
-     */
-    public static function cannotMapCompositePrimaryKeyEntitiesAsForeignId($className, $targetEntity, $targetField)
-    {
-        return new self("It is not possible to map entity '".$className."' with a composite primary key ".
-            "as part of the primary key of another entity '".$targetEntity."#".$targetField."'.");
-    }
-
-    public static function noSingleAssociationJoinColumnFound($className, $field)
-    {
-        return new self("'$className#$field' is not an association with a single join column.");
-    }
-
-    public static function noFieldNameFoundForColumn($className, $column)
-    {
-        return new self("Cannot find a field on '$className' that is mapped to column '$column'. Either the ".
-            "field does not exist or an association exists but it has multiple join columns.");
-    }
-
-    public static function illegalOrphanRemovalOnIdentifierAssociation($className, $field)
-    {
-        return new self("The orphan removal option is not allowed on an association that is ".
-            "part of the identifier in '$className#$field'.");
-    }
-
-    public static function illegalInverseIdentifierAssocation($className, $field)
-    {
-        return new self("An inverse association is not allowed to be identifier in '$className#$field'.");
-    }
-
-    public static function illegalToManyIdentifierAssoaction($className, $field)
-    {
-        return new self("Many-to-many or one-to-many associations are not allowed to be identifier in '$className#$field'.");
-    }
 }

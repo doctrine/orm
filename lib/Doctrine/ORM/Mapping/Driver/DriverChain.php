@@ -77,7 +77,7 @@ class DriverChain implements Driver
             }
         }
 
-        throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
+        throw MappingException::classIsNotMappedInConfig($className);
     }
 
     /**
