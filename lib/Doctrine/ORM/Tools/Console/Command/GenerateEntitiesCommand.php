@@ -81,6 +81,10 @@ class GenerateEntitiesCommand extends Console\Command\Command
             new InputOption(
                 'num-spaces', null, InputOption::VALUE_OPTIONAL,
                 'Defines the number of indentation spaces', 4
+            ),
+			new InputOption(
+                'attribute-visibility', null, InputOption::VALUE_OPTIONAL,
+                'Defines the visibility of generated attributes'
             )
         ))
         ->setHelp(<<<EOT
@@ -123,6 +127,10 @@ EOT
             $entityGenerator->setRegenerateEntityIfExists($input->getOption('regenerate-entities'));
             $entityGenerator->setUpdateEntityIfExists($input->getOption('update-entities'));
             $entityGenerator->setNumSpaces($input->getOption('num-spaces'));
+            
+			if (($attributeVisibility = $input->getOption('attribute-visibility')) !== null) {
+				$entityGenerator->setAttributeVisibility($attributeVisibility);
+			}
 
             if (($extend = $input->getOption('extend')) !== null) {
                 $entityGenerator->setClassToExtend($extend);
