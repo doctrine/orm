@@ -1465,7 +1465,10 @@ class UnitOfWork implements PropertyChangedListener
             if ($assoc['type'] & ClassMetadata::TO_ONE) {
                 $prevClass->reflFields[$assocField]->setValue($prevManagedCopy, $managedCopy);
             } else {
-                $prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->add($managedCopy);
+				// Only add to the collection if the entity doesn't already exist in it
+				if (!$prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->unwrap()->contains($managedCopy))
+					$prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->add($managedCopy);
+
                 if ($assoc['type'] == ClassMetadata::ONE_TO_MANY) {
                     $class->reflFields[$assoc['mappedBy']]->setValue($managedCopy, $prevManagedCopy);
                 }
