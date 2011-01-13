@@ -179,7 +179,7 @@ class SchemaTool
                     $this->_gatherColumn($class, $idMapping, $table);
                     $columnName = $class->getQuotedColumnName($class->identifier[0], $this->_platform);
                     // TODO: This seems rather hackish, can we optimize it?
-                    $table->getColumn($class->identifier[0])->setAutoincrement(false);
+                    $table->getColumn($class->fieldMappings[$class->identifier[0]]['columnName'])->setAutoincrement(false);
 
                     $pkColumns[] = $columnName;
 
