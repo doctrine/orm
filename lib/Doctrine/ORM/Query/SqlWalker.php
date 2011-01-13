@@ -209,9 +209,13 @@ class SqlWalker implements TreeWalker
      *
      * @param string $tableName
      * @param string $alias
+     * @param string $dqlAlias
+     * @return string
      */
-    public function setSqlTableAlias($tableName, $alias)
+    public function setSqlTableAlias($tableName, $alias, $dqlAlias = '')
     {
+        $tableName .= $dqlAlias;
+
         $this->_tableAliasMap[$tableName] = $alias;
 
         return $alias;
@@ -1260,9 +1264,7 @@ class SqlWalker implements TreeWalker
         $class = $this->_em->getClassMetadata($deleteClause->abstractSchemaName);
         $sql .= $class->getQuotedTableName($this->_platform);
 
-        if ($this->_useSqlTableAliases) {
-            $sql .= ' ' . $this->getSqlTableAlias($class->getTableName());
-        }
+        $this->setSqlTableAlias($class->getTableName(), $class->getTableName(), $deleteClause->aliasIdentificationVariable);
 
         $this->_rootAliases[] = $deleteClause->aliasIdentificationVariable;
 
@@ -1281,9 +1283,7 @@ class SqlWalker implements TreeWalker
         $class = $this->_em->getClassMetadata($updateClause->abstractSchemaName);
         $sql .= $class->getQuotedTableName($this->_platform);
 
-        if ($this->_useSqlTableAliases) {
-            $sql .= ' ' . $this->getSqlTableAlias($class->getTableName());
-        }
+        $this->setSqlTableAlias($class->getTableName(), $class->getTableName(), $updateClause->aliasIdentificationVariable);
 
         $this->_rootAliases[] = $updateClause->aliasIdentificationVariable;
 
