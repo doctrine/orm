@@ -175,4 +175,15 @@ class UpdateSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "UPDATE cms_comments SET article_id = NULL WHERE article_id = ?"
         );
     }
+
+    /**
+     * @group DDC-980
+     */
+    public function testSubselectTableAliasReferencing()
+    {
+        $this->assertSqlGeneration(
+            "UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = 'inactive' WHERE SIZE(u.groups) = 10",
+            "UPDATE cms_users SET status = 'inactive' WHERE (SELECT COUNT(*) FROM cms_users_groups c0_ WHERE c0_.user_id = cms_users.id) = 10"
+        );
+    }
 }
