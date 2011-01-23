@@ -23,6 +23,7 @@
 namespace Doctrine\ORM\Tools\Export\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Tools\Export\ExportException;
 
 /**
  * Abstract base class which is to be used for the Exporter drivers
@@ -39,10 +40,16 @@ abstract class AbstractExporter
     protected $_metadata = array();
     protected $_outputDir;
     protected $_extension;
+    protected $_overwriteExistingFiles = false;
 
     public function __construct($dir = null)
     {
         $this->_outputDir = $dir;
+    }
+
+    public function setOverwriteExistingFiles($overwrite)
+    {
+        $this->_overwriteExistingFiles = $overwrite;
     }
 
     /**
@@ -109,6 +116,9 @@ abstract class AbstractExporter
             $dir = dirname($path);
             if ( ! is_dir($dir)) {
                 mkdir($dir, 0777, true);
+            }
+            if (file_exists($path) && !$this->_overwriteExistingFiles) {
+                throw ExportException::attemptOverwriteExistingFile($path);
             }
             file_put_contents($path, $output);
         }
