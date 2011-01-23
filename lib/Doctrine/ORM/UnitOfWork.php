@@ -462,6 +462,7 @@ class UnitOfWork implements PropertyChangedListener
                         // A PersistentCollection was de-referenced, so delete it.
                         if  ( ! in_array($orgValue, $this->collectionDeletions, true)) {
                             $this->collectionDeletions[] = $orgValue;
+                            $changeSet[$propName] = $orgValue; // Signal changeset, to-many assocs will be ignored.
                         }
                     }
                 } else if ($isChangeTrackingNotify) {
