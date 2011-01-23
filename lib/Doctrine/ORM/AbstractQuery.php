@@ -506,10 +506,10 @@ abstract class AbstractQuery
 
         // Check result cache
         if ($this->_useResultCache && $cacheDriver = $this->getResultCacheDriver()) {
-            $id = $this->_getResultCacheId();
+            list($id, $hash) = $this->getResultCacheId();
             $cached = $this->_expireResultCache ? false : $cacheDriver->fetch($id);
 
-            if ($cached === false) {
+            if ($cached === false || !isset($cached[$id])) {
                 // Cache miss.
                 $stmt = $this->_doExecute();
 
@@ -522,7 +522,7 @@ abstract class AbstractQuery
                 return $result;
             } else {
                 // Cache hit.
-                return $cached;
+                return $cached[$id];
             }
         }
 
@@ -556,12 +556,12 @@ abstract class AbstractQuery
      * Will return the configured id if it exists otherwise a hash will be
      * automatically generated for you.
      *
-     * @return string $id
+     * @return array ($id, $hash)
      */
-    protected function _getResultCacheId()
+    protected function getResultCacheId()
     {
         if ($this->_resultCacheId) {
-            return $this->_resultCacheId;
+            return array($this->_resultCacheId, $this->_resultCacheId);
         } else {
             $params = $this->_params;
             foreach ($params AS $key => $value) {
@@ -573,13 +573,16 @@ abstract class AbstractQuery
                         $idValues = $class->getIdentifierValues($value);
                     }
                     $params[$key] = $idValues;
+                } else {
+                    $params[$key] = $value;
                 }
             }
 
             $sql = $this->getSql();
             ksort($this->_hints);
-            return md5(implode(";", (array)$sql) . var_export($params, true) .
-                var_export($this->_hints, true)."&hydrationMode=".$this->_hydrationMode);
+            $key = implode(";", (array)$sql) . var_export($params, true) .
+                var_export($this->_hints, true)."&hydrationMode=".$this->_hydrationMode;
+            return array($key, md5($key));
         }
     }
 
