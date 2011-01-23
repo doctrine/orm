@@ -194,6 +194,7 @@ abstract class AbstractHydrator
                     $cache[$key]['isMetaColumn'] = true;
                     $cache[$key]['fieldName'] = $fieldName;
                     $cache[$key]['dqlAlias'] = $this->_rsm->columnOwnerMap[$key];
+                    $classMetadata = $this->_em->getClassMetadata($this->_rsm->aliasMap[$cache[$key]['dqlAlias']]);
                     $cache[$key]['isIdentifier'] = $classMetadata->isIdentifier($fieldName);
                 }
             }
