@@ -83,6 +83,27 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
+     * @group DDC-958
+     */
+    public function testPostLoadTriggeredOnRefresh()
+    {
+        $entity = new LifecycleCallbackTestEntity;
+        $entity->value = 'hello';
+        $this->_em->persist($entity);
+        $this->_em->flush();
+        $id = $entity->getId();
+
+        $this->_em->clear();
+
+        $reference = $this->_em->find('Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity', $id);
+        $this->assertTrue($reference->postLoadCallbackInvoked);
+        $reference->postLoadCallbackInvoked = false;
+
+        $this->_em->refresh($reference);
+        $this->assertTrue($reference->postLoadCallbackInvoked, "postLoad should be invoked when refresh() is called.");
+    }
+
+    /**
      * @group DDC-113
      */
     public function testCascadedEntitiesCallsPrePersist()
