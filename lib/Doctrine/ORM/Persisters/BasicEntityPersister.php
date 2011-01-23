@@ -223,7 +223,7 @@ class BasicEntityPersister
             }
 
             if ($this->_class->isVersioned) {
-                $this->_assignDefaultVersionValue($this->_class, $entity, $id);
+                $this->assignDefaultVersionValue($entity, $id);
             }
         }
 
@@ -238,22 +238,33 @@ class BasicEntityPersister
      * by the preceding INSERT statement and assigns it back in to the 
      * entities version field.
      *
-     * @param Doctrine\ORM\Mapping\ClassMetadata $class
      * @param object $entity
      * @param mixed $id
      */
-    protected function _assignDefaultVersionValue($class, $entity, $id)
+    protected function assignDefaultVersionValue($entity, $id)
     {
-        $versionField = $this->_class->versionField;
-        $identifier = $this->_class->getIdentifierColumnNames();
-        $versionFieldColumnName = $this->_class->getColumnName($versionField);
+        $value = $this->fetchVersionValue($this->_class, $id);
+        $this->_class->setFieldValue($entity, $this->_class->versionField, $value);
+    }
+
+    /**
+     * Fetch the current version value of a versioned entity.
+     * 
+     * @param Doctrine\ORM\Mapping\ClassMetadata $versionedClass
+     * @param mixed $id
+     * @return mixed
+     */
+    protected function fetchVersionValue($versionedClass, $id)
+    {
+        $versionField = $versionedClass->versionField;
+        $identifier = $versionedClass->getIdentifierColumnNames();
+        $versionFieldColumnName = $versionedClass->getColumnName($versionField);
         //FIXME: Order with composite keys might not be correct
-        $sql = "SELECT " . $versionFieldColumnName . " FROM " . $class->getQuotedTableName($this->_platform)
+        $sql = "SELECT " . $versionFieldColumnName . " FROM " . $versionedClass->getQuotedTableName($this->_platform)
                . " WHERE " . implode(' = ? AND ', $identifier) . " = ?";
         $value = $this->_conn->fetchColumn($sql, array_values((array)$id));
 
-        $value = Type::getType($class->fieldMappings[$versionField]['type'])->convertToPHPValue($value, $this->_platform);
-        $this->_class->setFieldValue($entity, $versionField, $value);
+        return Type::getType($versionedClass->fieldMappings[$versionField]['type'])->convertToPHPValue($value, $this->_platform);
     }
 
     /**
@@ -282,7 +293,7 @@ class BasicEntityPersister
 
             if ($this->_class->isVersioned) {
                 $id = $this->_em->getUnitOfWork()->getEntityIdentifier($entity);
-                $this->_assignDefaultVersionValue($this->_class, $entity, $id);
+                $this->assignDefaultVersionValue($entity, $id);
             }
         }
     }
