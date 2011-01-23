@@ -459,6 +459,16 @@ abstract class AbstractQuery
     }
 
     /**
+     * Return the key value map of query hints that are currently set.
+     * 
+     * @return array
+     */
+    public function getHints()
+    {
+        return $this->_hints;
+    }
+
+    /**
      * Executes the query and returns an IterableResult that can be used to incrementally
      * iterate over the result.
      *
