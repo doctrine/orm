@@ -312,4 +312,15 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals('doctrineglobal_article_cmsuser', $cm->associationMappings['author']['joinTable']['name']);
     }
+
+    /**
+     * @group DDC-996
+     */
+    public function testEmptyFieldNameThrowsException()
+    {
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException',
+            "The field or association mapping misses the 'fieldName' attribute in entity 'Doctrine\Tests\Models\CMS\CmsUser'.");
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->mapField(array('fieldName' => ''));
+    }
 }
