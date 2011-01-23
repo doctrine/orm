@@ -28,7 +28,9 @@ use PDO,
     Doctrine\ORM\Query,
     Doctrine\ORM\PersistentCollection,
     Doctrine\ORM\Mapping\MappingException,
-    Doctrine\ORM\Mapping\ClassMetadata;
+    Doctrine\ORM\Mapping\ClassMetadata,
+    Doctrine\ORM\Events,
+    Doctrine\ORM\Event\LifecycleEventArgs;
 
 /**
  * A BasicEntityPersiter maps an entity to a single table in a relational database.
@@ -695,6 +697,14 @@ class BasicEntityPersister
         }
 
         $this->_em->getUnitOfWork()->setOriginalEntityData($entity, $newData);
+
+        if (isset($this->_class->lifecycleCallbacks[Events::postLoad])) {
+            $this->_class->invokeLifecycleCallbacks(Events::postLoad, $entity);
+        }
+        $evm = $this->_em->getEventManager();
+        if ($evm->hasListeners(Events::postLoad)) {
+            $evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($entity, $this->_em));
+        }
     }
 
     /**
