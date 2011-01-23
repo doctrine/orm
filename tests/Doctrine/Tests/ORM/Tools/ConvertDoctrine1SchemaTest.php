@@ -69,6 +69,7 @@ class ConvertDoctrine1SchemaTest extends \Doctrine\Tests\OrmTestCase
         $converter = new ConvertDoctrine1Schema(__DIR__ . '/doctrine1schema');
 
         $exporter = $cme->getExporter('yml', __DIR__ . '/convert');
+        $exporter->setOverwriteExistingFiles(true);
         $exporter->setMetadata($converter->getMetadata());
         $exporter->export();
 
@@ -80,8 +81,8 @@ class ConvertDoctrine1SchemaTest extends \Doctrine\Tests\OrmTestCase
         $cmf = new DisconnectedClassMetadataFactory();
         $cmf->setEntityManager($em);
         $metadata = $cmf->getAllMetadata();
-        $profileClass = $metadata[0];
-        $userClass = $metadata[1];
+        $profileClass = $cmf->getMetadataFor('Profile');
+        $userClass = $cmf->getMetadataFor('User');
 
         $this->assertEquals(2, count($metadata));
         $this->assertEquals('Profile', $profileClass->name);
@@ -96,9 +97,12 @@ class ConvertDoctrine1SchemaTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('User', $profileClass->associationMappings['User']['targetEntity']);
 
         $this->assertEquals('username', $userClass->table['uniqueConstraints']['username']['columns'][0]);
+    }
 
-        unlink(__DIR__ . '/convert/User.dcm.yml');
-        unlink(__DIR__ . '/convert/Profile.dcm.yml');
-        rmdir(__DIR__ . '/convert');
+    public function tearDown()
+    {
+        @unlink(__DIR__ . '/convert/User.dcm.yml');
+        @unlink(__DIR__ . '/convert/Profile.dcm.yml');
+        @rmdir(__DIR__ . '/convert');
     }
 }
