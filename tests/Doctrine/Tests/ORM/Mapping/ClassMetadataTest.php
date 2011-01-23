@@ -379,4 +379,15 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
             'joinColumns' => array(),
         ));
     }
+
+    /**
+     * @group DDC-996
+     */
+    public function testEmptyFieldNameThrowsException()
+    {
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException',
+            "The field or association mapping misses the 'fieldName' attribute in entity 'Doctrine\Tests\Models\CMS\CmsUser'.");
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->mapField(array('fieldName' => ''));
+    }
 }

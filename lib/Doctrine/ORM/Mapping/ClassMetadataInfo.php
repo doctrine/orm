@@ -658,8 +658,8 @@ class ClassMetadataInfo
     protected function _validateAndCompleteFieldMapping(array &$mapping)
     {
         // Check mandatory fields
-        if ( ! isset($mapping['fieldName'])) {
-            throw MappingException::missingFieldName($this->name, $mapping);
+        if ( ! isset($mapping['fieldName']) || strlen($mapping['fieldName']) == 0) {
+            throw MappingException::missingFieldName($this->name);
         }
         if ( ! isset($mapping['type'])) {
             // Default to string
@@ -749,8 +749,8 @@ class ClassMetadataInfo
 
         // Mandatory attributes for both sides
         // Mandatory: fieldName, targetEntity
-        if ( ! isset($mapping['fieldName'])) {
-            throw MappingException::missingFieldName();
+        if ( ! isset($mapping['fieldName']) || strlen($mapping['fieldName']) == 0) {
+            throw MappingException::missingFieldName($this->name);
         }
         if ( ! isset($mapping['targetEntity'])) {
             throw MappingException::missingTargetEntity($mapping['fieldName']);

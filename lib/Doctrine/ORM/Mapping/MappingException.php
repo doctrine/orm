@@ -48,9 +48,9 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self("Id generators can't be used with a composite id.");
     }
 
-    public static function missingFieldName()
+    public static function missingFieldName($entity)
     {
-        return new self("The association mapping misses the 'fieldName' attribute.");
+        return new self("The field or association mapping misses the 'fieldName' attribute in entity '$entity'.");
     }
 
     public static function missingTargetEntity($fieldName)
