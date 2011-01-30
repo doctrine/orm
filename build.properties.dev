@@ -1,6 +1,6 @@
-version=2.0.0BETA2
-dependencies.common=2.0.0BETA4
-dependencies.dbal=2.0.0BETA4
+version=2.0.1
+dependencies.common=2.0.1
+dependencies.dbal=2.0.1
 stability=beta
 build.dir=build
 dist.dir=dist

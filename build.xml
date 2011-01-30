@@ -184,9 +184,12 @@
     </target>
 
     <target name="git-tag">
-        <exec command="grep '${version}' ${project.basedir}/lib/Doctrine/ORM/Version.php" checkreturn="true"/>
-        <exec command="git tag -a ${version}" passthru="true" />
-        <exec command="git push origin ${version}" passthru="true" />
+        <exec command="grep '${version}-DEV' ${project.basedir}/lib/Doctrine/ORM/Version.php" checkreturn="true"/>
+        <exec command="sed 's/${version}-DEV/${version}-DEV/' ${project.basedir}/lib/Doctrine/ORM/Version.php > ${project.basedir}/lib/Doctrine/ORM/Version2.php" passthru="true" />
+        <exec command="mv ${project.basedir}/lib/Doctrine/ORM/Version2.php ${project.basedir}/lib/Doctrine/ORM/Version.php" passthru="true" />
+        <exec command="git add ${project.basedir}/lib/Doctrine/ORM/Version.php" passthru="true" />
+        <exec command="git commit -m 'Release ${version}'" />
+        <exec command="git tag -m 'Tag ${version}' -a ${version}" passthru="true" />
     </target>
 
     <target name="pirum-release">
@@ -201,11 +204,10 @@
     <target name="update-dev-version">
         <exec command="grep '${version}' ${project.basedir}/lib/Doctrine/ORM/Version.php" checkreturn="true"/>
         <propertyprompt propertyName="next_version" defaultValue="${version}" promptText="Enter next version string (without -DEV)" />
-        <exec command="sed 's/${version}-DEV/${next_version}-DEV/' ${project.basedir}/lib/Doctrine/ORM/Version.php > ${project.basedir}/lib/Doctrine/ORM/Version2.php" passthru="true" />
+        <exec command="sed 's/${version}/${next_version}-DEV/' ${project.basedir}/lib/Doctrine/ORM/Version.php > ${project.basedir}/lib/Doctrine/ORM/Version2.php" passthru="true" />
         <exec command="mv ${project.basedir}/lib/Doctrine/ORM/Version2.php ${project.basedir}/lib/Doctrine/ORM/Version.php" passthru="true" />
         <exec command="git add ${project.basedir}/lib/Doctrine/ORM/Version.php" passthru="true" />
         <exec command="git commit -m 'Bump Dev Version to ${next_version}-DEV'" passthru="true" />
-        <exec command="git push origin master" passthru="true" />
     </target>
 
     <target name="release" depends="git-tag,build-packages,distribute-download,pirum-release,update-dev-version" />
