@@ -85,6 +85,23 @@ class GenerateEntitiesCommand extends Console\Command\Command
         ))
         ->setHelp(<<<EOT
 Generate entity classes and method stubs from your mapping information.
+
+If you use the <comment>--update-entities</comment> or <comment>--regenerate-entities</comment> flags your exisiting
+code gets overwritten. The EntityGenerator will only append new code to your
+file and will not delete the old code. However this approach may still be prone
+to error and we suggest you use code repositories such as GIT or SVN to make
+backups of your code.
+
+It makes sense to generate the entity code if you are using entities as Data
+Access Objects only and dont put much additional logic on them. If you are
+however putting much more logic on the entities you should refrain from using
+the entity-generator and code your entities manually.
+
+<error>Important:</error> Even if you specified Inheritance options in your
+XML or YAML Mapping files the generator cannot generate the base and
+child classes for you correctly, because it doesn't know which
+class is supposed to extend which. You have to adjust the entity
+code manually for inheritance to work!
 EOT
         );
     }
