@@ -170,6 +170,49 @@ mentioned syntax with "getParameter()" or "getParameters()":
 Note: If you try to get a parameter that was not bound yet,
 getParameter() simply returns NULL.
 
+Limiting the Result
+^^^^^^^^^^^^^^^^^^^
+
+To limit a result the query builder has some methods in common with
+the Query object which can be retrieved from ``EntityManager#createQuery()``.
+
+.. code-block:: php
+
+    <?php
+    // $qb instanceof QueryBuilder
+    $offset = (int)$_GET['offset'];
+    $limit = (int)$_GET['limit'];
+
+    $qb->add('select', 'u')
+       ->add('from', 'User u')
+       ->add('orderBy', 'u.name ASC')
+       ->setFirstResult( $offset )
+       ->setMaxResults( $limit );
+
+Executing a Query
+^^^^^^^^^^^^^^^^^
+
+The QueryBuilder is a builder object only, it has no means of actually
+executing the Query. Additionally a set of parameters such as query hints
+cannot be set on the QueryBuilder itself. This is why you always have to convert
+a querybuilder instance into a Query object:
+
+.. code-block::
+
+    // $qb instanceof QueryBuilder
+    $query = $qb->getQuery();
+
+    // Set additional Query options
+    $query->setQueryHint('foo', 'bar');
+    $query->useResultCache('my_cache_id');
+
+    // Execute Query
+    $result = $query->getResult();
+    $single = $query->getSingleResult();
+    $array = $query->getArrayResult();
+    $scalar = $query->getScalarResult();
+    $singleScalar = $query->getSingleScalarResult();
+
 Expr\* classes
 ^^^^^^^^^^^^^^
 
