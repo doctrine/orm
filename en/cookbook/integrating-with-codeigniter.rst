@@ -49,7 +49,7 @@ Customize it to your needs.
         Doctrine\ORM\Configuration,
         Doctrine\ORM\EntityManager,
         Doctrine\Common\Cache\ArrayCache,
-        Doctrine\DBAL\Logging\EchoSqlLogger;
+        Doctrine\DBAL\Logging\EchoSQLLogger;
     
     class Doctrine {
     
@@ -86,8 +86,8 @@ Customize it to your needs.
         $config->setProxyNamespace('Proxies');
     
         // Set up logger
-        $logger = new EchoSqlLogger;
-        $config->setSqlLogger($logger);
+        $logger = new EchoSQLLogger;
+        $config->setSQLLogger($logger);
     
         $config->setAutoGenerateProxyClasses( TRUE );
     
