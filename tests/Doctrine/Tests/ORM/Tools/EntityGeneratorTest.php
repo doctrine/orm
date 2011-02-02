@@ -91,6 +91,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $book = $this->newInstance($metadata);
 
         $this->assertTrue(class_exists($metadata->name), "Class does not exist.");
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', '__construct'), "EntityGeneratorBook::__construct() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getId'), "EntityGeneratorBook::getId() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'setName'), "EntityGeneratorBook::setName() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getName'), "EntityGeneratorBook::getName() missing.");
@@ -110,7 +111,8 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $comment = new EntityGeneratorComment();
         $book->addComments($comment);
-        $this->assertEquals(array($comment), $book->getComments());
+        $this->assertInstanceOf('Doctrine\Common\Collections\ArrayCollection', $book->getComments());
+        $this->assertEquals(new \Doctrine\Common\Collections\ArrayCollection(array($comment)), $book->getComments());
     }
 
     public function testEntityUpdatingWorks()
