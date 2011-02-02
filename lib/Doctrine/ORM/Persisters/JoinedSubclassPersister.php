@@ -108,10 +108,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             return;
         }
 
-        if ($this->_class->isVersioned) {
-            $versionedClass = $this->_getVersionedClassMetadata();
-        }
-
         $postInsertIds = array();
         $idGen = $this->_class->idGenerator;
         $isPostInsertId = $idGen->isPostInsertGenerator();
@@ -177,8 +173,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $stmt->closeCursor();
         }
 
-        if (isset($versionedClass)) {
-            $this->_assignDefaultVersionValue($versionedClass, $entity, $id);
+        if ($this->_class->isVersioned) {
+            $this->assignDefaultVersionValue($entity, $id);
         }
 
         $this->_queuedInserts = array();
@@ -208,7 +204,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 $this->_updateTable($entity, $versionedClass->getQuotedTableName($this->_platform), array(), true);
 
                 $id = $this->_em->getUnitOfWork()->getEntityIdentifier($entity);
-                $this->_assignDefaultVersionValue($this->_class, $entity, $id);
+                $this->assignDefaultVersionValue($entity, $id);
             }
         }
     }
@@ -427,5 +423,14 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         return $columns;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function assignDefaultVersionValue($entity, $id)
+    {
+        $value = $this->fetchVersionValue($this->_getVersionedClassMetadata(), $id);
+        $this->_class->setFieldValue($entity, $this->_class->versionField, $value);
     }
 }

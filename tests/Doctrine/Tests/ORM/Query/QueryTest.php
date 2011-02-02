@@ -86,4 +86,17 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertSame($q2, $q);
     }
+
+    /**
+     * @group DDC-968
+     */
+    public function testHints()
+    {
+        $q = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a");
+        $q->setHint('foo', 'bar')->setHint('bar', 'baz');
+
+        $this->assertEquals('bar', $q->getHint('foo'));
+        $this->assertEquals('baz', $q->getHint('bar'));
+        $this->assertEquals(array('foo' => 'bar', 'bar' => 'baz'), $q->getHints());
+    }
 }
