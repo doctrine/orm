@@ -139,6 +139,13 @@ public function <methodName>()
 <spaces>// Add your code here
 }';
 
+    private static $_constructorMethodTemplate =
+'public function __construct()
+{
+<spaces><collections>
+}
+';
+
     /**
      * Generate and write entity classes for the given array of ClassMetadataInfo instances
      *
@@ -345,7 +352,7 @@ public function <methodName>()
 
     private function _generateEntityBody(ClassMetadataInfo $metadata)
     {
-        $fieldMappingProperties  = $this->_generateEntityFieldMappingProperties($metadata);
+        $fieldMappingProperties = $this->_generateEntityFieldMappingProperties($metadata);
         $associationMappingProperties = $this->_generateEntityAssociationMappingProperties($metadata);
         $stubMethods = $this->_generateEntityStubMethods ? $this->_generateEntityStubMethods($metadata) : null;
         $lifecycleCallbackMethods = $this->_generateEntityLifecycleCallbackMethods($metadata);
@@ -360,6 +367,8 @@ public function <methodName>()
             $code[] = $associationMappingProperties;
         }
 
+        $code[] = $this->_generateEntityConstructor($metadata);
+
         if ($stubMethods) {
             $code[] = $stubMethods;
         }
@@ -369,6 +378,24 @@ public function <methodName>()
         }
 
         return implode("\n", $code);
+    }
+
+    private function _generateEntityConstructor(ClassMetadataInfo $metadata)
+    {
+        if ($this->_hasMethod('__construct', $metadata)) {
+            return '';
+        }
+
+        $collections = array();
+        foreach ($metadata->associationMappings AS $mapping) {
+            if ($mapping['type'] & ClassMetadataInfo::TO_MANY) {
+                $collections[] = '$this->'.$mapping['fieldName'].' = new \Doctrine\Common\Collections\ArrayCollection();';
+            }
+        }
+        if ($collections) {
+            return $this->_prefixCodeWithSpaces(str_replace("<collections>", implode("\n", $collections), self::$_constructorMethodTemplate));
+        }
+        return '';
     }
 
     /**
@@ -539,7 +566,7 @@ public function <methodName>()
         $methods = array();
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
-            if ( ! isset($fieldMapping['id']) || ! $fieldMapping['id']) {
+            if ( ! isset($fieldMapping['id']) || ! $fieldMapping['id'] || $metadata->generatorType == ClassMetadataInfo::GENERATOR_TYPE_NONE) {
                 if ($code = $this->_generateEntityStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type'])) {
                     $methods[] = $code;
                 }
