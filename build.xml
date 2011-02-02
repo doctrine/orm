@@ -185,7 +185,7 @@
 
     <target name="git-tag">
         <exec command="grep '${version}-DEV' ${project.basedir}/lib/Doctrine/ORM/Version.php" checkreturn="true"/>
-        <exec command="sed 's/${version}-DEV/${version}-DEV/' ${project.basedir}/lib/Doctrine/ORM/Version.php > ${project.basedir}/lib/Doctrine/ORM/Version2.php" passthru="true" />
+        <exec command="sed 's/${version}-DEV/${version}/' ${project.basedir}/lib/Doctrine/ORM/Version.php > ${project.basedir}/lib/Doctrine/ORM/Version2.php" passthru="true" />
         <exec command="mv ${project.basedir}/lib/Doctrine/ORM/Version2.php ${project.basedir}/lib/Doctrine/ORM/Version.php" passthru="true" />
         <exec command="git add ${project.basedir}/lib/Doctrine/ORM/Version.php" passthru="true" />
         <exec command="git commit -m 'Release ${version}'" />
