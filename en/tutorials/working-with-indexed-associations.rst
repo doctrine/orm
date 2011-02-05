@@ -285,6 +285,10 @@ The same applies to DQL queries: The ``indexBy`` configuration acts as implicit 
 
     echo $stock->getSymbol(); // will print "AAPL"
 
+If you want to use ``INDEX BY`` explicitly on an indexed association you are free to do so. Additionally
+indexed associations also work with the ``Collection::slice()`` functionality, no matter if marked as
+LAZY or EXTRA_LAZY.
+
 Outlook into the Future
 ~~~~~~~~~~~~~~~~~~~~~~~
 
