@@ -259,7 +259,7 @@ now query for the market:
     $market = $em->find("Doctrine\Tests\Models\StockExchange\Market", $marketId);
 
     // Access the stocks by symbol now:
-    $stock = $market->getSymbol($symbol);
+    $stock = $market->getStock($symbol);
 
     echo $stock->getSymbol(); // will print "AAPL"
 
@@ -281,7 +281,7 @@ The same applies to DQL queries: The ``indexBy`` configuration acts as implicit 
                  ->getSingleResult();
 
     // Access the stocks by symbol now:
-    $stock = $market->getSymbol($symbol);
+    $stock = $market->getStock($symbol);
 
     echo $stock->getSymbol(); // will print "AAPL"
 
