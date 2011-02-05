@@ -376,6 +376,11 @@ class ClassMetadataInfo
      * Only valid for many-to-many mappings. Note that one-to-many associations can be mapped
      * through a join table by simply mapping the association as many-to-many with a unique
      * constraint on the join table.
+     *
+     * - <b>indexBy</b> (string, optional, to-many only)
+     * Specification of a field on target-entity that is used to index the collection by.
+     * This field HAS to be either the primary key or a unique column. Otherwise the collection
+     * does not contain all the entities that are actually related.
      * 
      * A join table definition has the following structure:
      * <pre>
@@ -716,6 +721,11 @@ class ClassMetadataInfo
             $mapping['inversedBy'] = null;
         }
         $mapping['isOwningSide'] = true; // assume owning side until we hit mappedBy
+
+        // unset optional indexBy attribute if its empty
+        if (isset($mapping['indexBy']) && !$mapping['indexBy']) {
+            unset($mapping['indexBy']);
+        }
 
         // If targetEntity is unqualified, assume it is in the same namespace as
         // the sourceEntity.

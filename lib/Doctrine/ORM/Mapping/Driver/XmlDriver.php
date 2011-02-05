@@ -309,6 +309,10 @@ class XmlDriver extends AbstractFileDriver
                     $mapping['orderBy'] = $orderBy;
                 }
 
+                if (isset($oneToManyElement->{'index-by'})) {
+                    $mapping['indexBy'] = (string)$oneToManyElement->{'index-by'};
+                }
+
                 $metadata->mapOneToMany($mapping);
             }
         }
@@ -413,6 +417,10 @@ class XmlDriver extends AbstractFileDriver
                         $orderBy[(string)$orderByField['name']] = (string)$orderByField['direction'];
                     }
                     $mapping['orderBy'] = $orderBy;
+                }
+
+                if (isset($manyToManyElement->{'index-by'})) {
+                    $mapping['indexBy'] = (string)$manyToManyElement->{'index-by'};
                 }
 
                 $metadata->mapManyToMany($mapping);
