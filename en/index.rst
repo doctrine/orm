@@ -44,6 +44,7 @@ Tutorials
    tutorials/getting-started-xml-edition
    tutorials/working-with-indexed-associations
    tutorials/extra-lazy-associations
+   tutorials/composite-primary-keys
 
 
 Cookbook
