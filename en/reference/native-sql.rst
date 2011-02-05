@@ -58,7 +58,7 @@ components:
 .. note::
 
     It might not surprise you that Doctrine uses
-    ``ResultSetMapping``s internally when you create DQL queries. As
+    ``ResultSetMapping`` internally when you create DQL queries. As
     the query gets parsed and transformed to SQL, Doctrine fills a
     ``ResultSetMapping`` that describes how the results should be
     processed by the hydration routines.

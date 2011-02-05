@@ -6,11 +6,11 @@ domain model in a non-interfering way. The Data Mapper pattern is
 at the heart of this project, aiming for a complete separation of
 the domain/business logic from the persistence in a relational
 database management system. The benefit of Doctrine for the
-programmer is the possibility can focus solely on the business and
+programmer is the ability to focus solely on the business logic and
 worry about persistence only as a secondary task. This doesn't mean
 persistence is not important to Doctrine 2, however it is our
 belief that there are considerable benefits for object-oriented
-programming, if persistence and entities are kept perfectly
+programming if persistence and entities are kept perfectly
 separated.
 
 What are Entities?

@@ -276,8 +276,8 @@ can do it with the following.
         name:
           type: string(50)
       lifecycleCallbacks:
-        doStuffOnPrePersist: prePersist
-        doStuffOnPostPersist: postPersist
+        prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersistToo ]
+        postPersist: [ doStuffOnPostPersist ] 
 
 XML would look something like this:
 
