@@ -276,7 +276,7 @@ complete list of supported helper methods available:
         public function from($from, $alias); // Returns Expr\From instance
     
         // Example - $qb->expr()->leftJoin('u.Phonenumbers', 'p', Expr\Join::ON, 'p.user_id = u.id AND p.country_code = 55');
-        // Example - $qb->expr()->leftJoin('u. Phonenumbers', 'p', 'ON', $qb->expr()->andx($qb->expr()->eq('p.user_id', 'u.id'), $qb->expr()->eq('p.country_code', '55'));
+        // Example - $qb->expr()->leftJoin('u.Phonenumbers', 'p', 'ON', $qb->expr()->andx($qb->expr()->eq('p.user_id', 'u.id'), $qb->expr()->eq('p.country_code', '55'));
         public function leftJoin($join, $alias, $conditionType = null, $condition = null); // Returns Expr\Join instance
     
         // Example - $qb->expr()->innerJoin('u.Group', 'g', Expr\Join::WITH, 'g.manager_level = 100');

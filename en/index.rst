@@ -42,6 +42,7 @@ Tutorials
    :maxdepth: 1
 
    tutorials/getting-started-xml-edition
+   tutorials/working-with-indexed-associations
 
 Cookbook
 --------
