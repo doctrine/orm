@@ -120,7 +120,7 @@ The code and mappings for the Market entity looks like this:
             </entity>
         </doctrine-mapping>
 
-    .. code-block:: yml
+    .. code-block:: yaml
 
         Doctrine\Tests\Models\StockExchange\Market:
           type: entity
@@ -207,7 +207,7 @@ here are the code and mappings for it:
             </entity>
         </doctrine-mapping>
 
-    .. code-block:: yml
+    .. code-block:: yaml
 
         Doctrine\Tests\Models\StockExchange\Stock:
           type: entity
@@ -289,6 +289,6 @@ Outlook into the Future
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 For the inverse side of a many-to-many associations there will be a way to persist the keys and the order
-as a third and fourth parameter into the join table. This feature is discussed in `DDC-213<http://www.doctrine-project.org/jira/browse/DDC-213>`_
+as a third and fourth parameter into the join table. This feature is discussed in `DDC-213 <http://www.doctrine-project.org/jira/browse/DDC-213>`_
 This feature cannot be implemeted for One-To-Many associations, because they are never the owning side.
 
