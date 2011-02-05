@@ -301,6 +301,10 @@ class YamlDriver extends AbstractFileDriver
                     $mapping['orderBy'] = $oneToManyElement['orderBy'];
                 }
 
+                if (isset($oneToManyElement['indexBy'])) {
+                    $mapping['indexBy'] = $oneToManyElement['indexBy'];
+                }
+
                 $metadata->mapOneToMany($mapping);
             }
         }
@@ -402,6 +406,10 @@ class YamlDriver extends AbstractFileDriver
 
                 if (isset($manyToManyElement['orderBy'])) {
                     $mapping['orderBy'] = $manyToManyElement['orderBy'];
+                }
+
+                if (isset($manyToManyElement['indexBy'])) {
+                    $mapping['indexBy'] = $manyToManyElement['indexBy'];
                 }
 
                 $metadata->mapManyToMany($mapping);

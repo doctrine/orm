@@ -750,13 +750,53 @@ class BasicEntityPersister
     public function getManyToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
         $stmt = $this->getManyToManyStatement($assoc, $sourceEntity, $offset, $limit);
+        return $this->loadArrayFromStatement($assoc, $stmt);
+    }
 
+    /**
+     * Load an array of entities from a given dbal statement.
+     * 
+     * @param array $assoc
+     * @param Doctrine\DBAL\Statement $stmt
+     * @return array
+     */
+    private function loadArrayFromStatement($assoc, $stmt)
+    {
         $entities = array();
-        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $entities[] = $this->_createEntity($result);
+        if (isset($assoc['indexBy'])) {
+            while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $entity = $this->_createEntity($result);
+                $entities[$this->_class->reflFields[$assoc['indexBy']]->getValue($entity)] = $entity;
+            }
+        } else {
+            while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $entities[] = $this->_createEntity($result);
+            }
         }
         $stmt->closeCursor();
         return $entities;
+    }
+
+    /**
+     * Hydrate a collection from a given dbal statement.
+     * 
+     * @param array $assoc
+     * @param Doctrine\DBAL\Statement $stmt
+     * @param PersistentCollection $coll
+     */
+    private function loadCollectionFromStatement($assoc, $stmt, $coll)
+    {
+        if (isset($assoc['indexBy'])) {
+            while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $entity = $this->_createEntity($result);
+                $coll->hydrateSet($this->_class->reflFields[$assoc['indexBy']]->getValue($entity), $entity);
+            }
+        } else {
+            while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $coll->hydrateAdd($this->_createEntity($result));
+            }
+        }
+        $stmt->closeCursor();
     }
 
     /**
@@ -772,11 +812,7 @@ class BasicEntityPersister
     public function loadManyToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
     {
         $stmt = $this->getManyToManyStatement($assoc, $sourceEntity);
-
-        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $coll->hydrateAdd($this->_createEntity($result));
-        }
-        $stmt->closeCursor();
+        return $this->loadCollectionFromStatement($assoc, $stmt, $coll);
     }
 
     private function getManyToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
@@ -1238,13 +1274,7 @@ class BasicEntityPersister
     public function getOneToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
         $stmt = $this->getOneToManyStatement($assoc, $sourceEntity, $offset, $limit);
-
-        $entities = array();
-        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $entities[] = $this->_createEntity($result);
-        }
-        $stmt->closeCursor();
-        return $entities;
+        return $this->loadArrayFromStatement($assoc, $stmt);
     }
 
     /**
@@ -1259,11 +1289,7 @@ class BasicEntityPersister
     public function loadOneToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
     {
         $stmt = $this->getOneToManyStatement($assoc, $sourceEntity);
-
-        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $coll->hydrateAdd($this->_createEntity($result));
-        }
-        $stmt->closeCursor();
+        $this->loadCollectionFromStatement($assoc, $stmt, $coll);
     }
 
     /**
