@@ -99,6 +99,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\DDC117\DDC117ApproveChanges',
             'Doctrine\Tests\Models\DDC117\DDC117Editor',
         ),
+        'stockexchange' => array(
+            'Doctrine\Tests\Models\StockExchange\Bond',
+            'Doctrine\Tests\Models\StockExchange\Stock',
+            'Doctrine\Tests\Models\StockExchange\Market',
+        ),
     );
 
     protected function useModelSet($setName)
@@ -190,6 +195,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM DDC117ArticleDetails');
             $conn->executeUpdate('DELETE FROM DDC117Translation');
             $conn->executeUpdate('DELETE FROM DDC117Article');
+        }
+        if (isset($this->_usedModelSets['stockexchange'])) {
+            $conn->executeUpdate('DELETE FROM exchange_bonds_stocks');
+            $conn->executeUpdate('DELETE FROM exchange_bonds');
+            $conn->executeUpdate('DELETE FROM exchange_stocks');
+            $conn->executeUpdate('DELETE FROM exchange_markets');
         }
 
         $this->_em->clear();

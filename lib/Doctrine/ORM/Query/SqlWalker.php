@@ -718,14 +718,6 @@ class SqlWalker implements TreeWalker
         $join = $joinVarDecl->join;
         $joinType = $join->joinType;
 
-        if ($joinVarDecl->indexBy) {
-            // For Many-To-One or One-To-One associations this obviously makes no sense, but is ignored silently.
-            $this->_rsm->addIndexBy(
-                $joinVarDecl->indexBy->simpleStateFieldPathExpression->identificationVariable,
-                $joinVarDecl->indexBy->simpleStateFieldPathExpression->field
-            );
-        }
-
         if ($joinType == AST\Join::JOIN_TYPE_LEFT || $joinType == AST\Join::JOIN_TYPE_LEFTOUTER) {
             $sql = ' LEFT JOIN ';
         } else {
@@ -748,6 +740,16 @@ class SqlWalker implements TreeWalker
             if ($relation['type'] == ClassMetadata::ONE_TO_MANY || $relation['type'] == ClassMetadata::MANY_TO_MANY) {
                 throw QueryException::iterateWithFetchJoinNotAllowed($assoc);
             }
+        }
+
+        if ($joinVarDecl->indexBy) {
+            // For Many-To-One or One-To-One associations this obviously makes no sense, but is ignored silently.
+            $this->_rsm->addIndexBy(
+                $joinVarDecl->indexBy->simpleStateFieldPathExpression->identificationVariable,
+                $joinVarDecl->indexBy->simpleStateFieldPathExpression->field
+            );
+        } else if (isset($relation['indexBy'])) {
+            $this->_rsm->addIndexBy($joinedDqlAlias, $relation['indexBy']);
         }
 
         // This condition is not checking ClassMetadata::MANY_TO_ONE, because by definition it cannot

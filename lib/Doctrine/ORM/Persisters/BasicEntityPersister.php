@@ -763,7 +763,7 @@ class BasicEntityPersister
     private function loadArrayFromStatement($assoc, $stmt)
     {
         $entities = array();
-        if ($assoc['indexBy']) {
+        if (isset($assoc['indexBy'])) {
             while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $entity = $this->_createEntity($result);
                 $entities[$this->_class->reflFields[$assoc['indexBy']]->getValue($entity)] = $entity;
@@ -786,7 +786,7 @@ class BasicEntityPersister
      */
     private function loadCollectionFromStatement($assoc, $stmt, $coll)
     {
-        if ($assoc['indexBy']) {
+        if (isset($assoc['indexBy'])) {
             while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $entity = $this->_createEntity($result);
                 $coll->hydrateSet($this->_class->reflFields[$assoc['indexBy']]->getValue($entity), $entity);

@@ -923,6 +923,10 @@ class Parser
         $token = $this->_lexer->lookahead;
         $identVariable = $this->IdentificationVariable();
 
+        if (!isset($this->_queryComponents[$identVariable])) {
+            $this->semanticalError('Identification Variable ' . $identVariable .' used in join path expression but was not defined before.');
+        }
+
         $this->match(Lexer::T_DOT);
         $this->match(Lexer::T_IDENTIFIER);
 
