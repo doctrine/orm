@@ -1,7 +1,7 @@
 Working with Indexed Assocations
 ================================
 
-.. note:
+.. note::
 
     This feature is scheduled for version 2.1 of Doctrine and not included in the 2.0.x series.
 
