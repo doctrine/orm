@@ -20,6 +20,10 @@ releases.
 Foreign Keys as Identifiers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. note::
+
+    Foreign keys as identifiers are currently in master and will be included in Doctrine 2.1
+
 There are many use-cases where you would want to use an
 Entity-Attribute-Value approach to modelling and define a
 table-schema like the following:
@@ -221,6 +225,10 @@ benefit from custom persister implementations:
 
 Paginating Associations
 ~~~~~~~~~~~~~~~~~~~~~~~
+
+.. note::
+
+    Extra Lazy Collections are currently in master and will be included in Doctrine 2.1
 
 It is not possible to paginate only parts of an associations at the moment. You can always only
 load the whole association/collection into memory. This is rather problematic for large collections,
