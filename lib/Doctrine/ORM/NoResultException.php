@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM;
 
+use \Exception;
+
 /**
  * Exception thrown when an ORM query unexpectedly does not return any results.
  * 
@@ -27,8 +29,12 @@ namespace Doctrine\ORM;
  */
 class NoResultException extends ORMException
 {
-    public function __construct()
+    public function __construct($message = null, $code = 0, Exception $previous = null)
     {
-        parent::__construct('No result was found for query although at least one row was expected.');
+        parent::__construct(
+            $message ?: 'No result was found for query although at least one row was expected.',
+            $code,
+            $previous
+        );
     }
 }
