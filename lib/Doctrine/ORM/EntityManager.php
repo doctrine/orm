@@ -455,6 +455,21 @@ class EntityManager
     }
 
     /**
+     * Tells the EntityManager to manage and persist an entity directly to the database.
+     *
+     * NOTE: this method is just a shortcut for the two operations but it's useful as 
+     * developers generally persist only one entity at a time and it avoids to write two 
+     * lines of code everytime.
+     *
+     * @param object $object The instance to make managed and persist immediatly.
+     */
+    public function persistAndFlush($entity)
+    {
+        $this->persist($entity);
+        $this->flush();
+    }
+
+    /**
      * Removes an entity instance.
      *
      * A removed entity will be removed from the database at or before transaction commit

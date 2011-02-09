@@ -105,6 +105,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
     {
         return array(
             array('persist'),
+            array('persistAndFlush'),
             array('remove'),
             array('merge'),
             array('refresh'),
@@ -126,6 +127,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         return array(
             array('flush'),
             array('persist'),
+            array('persistAndFlush'),
             array('remove'),
             array('merge'),
             array('refresh'),
