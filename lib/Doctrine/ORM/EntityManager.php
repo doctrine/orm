@@ -461,7 +461,7 @@ class EntityManager
      * developers generally persist only one entity at a time and it avoids to write two 
      * lines of code everytime.
      *
-     * @param object $object The instance to make managed and persist immediatly.
+     * @param object $entity The entity to make managed and persisted immediatly
      */
     public function persistAndFlush($entity)
     {
