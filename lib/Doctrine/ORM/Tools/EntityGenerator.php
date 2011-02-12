@@ -639,7 +639,8 @@ public function <methodName>()
         $lines = array();
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
-            if ($this->_hasProperty($fieldMapping['fieldName'], $metadata)) {
+            if ($this->_hasProperty($fieldMapping['fieldName'], $metadata) ||
+                $metadata->isInheritedField($fieldMapping['fieldName'])) {
                 continue;
             }
 
