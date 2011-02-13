@@ -64,11 +64,3 @@ Cookbook
    cookbook/strategy-cookbook-introduction
    cookbook/validation-of-entities
    cookbook/working-with-datetime
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
