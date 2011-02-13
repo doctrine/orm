@@ -412,6 +412,8 @@ public function <methodName>()
             $token = $tokens[$i];
             if ($token[0] == T_NAMESPACE) {
                 $lastSeenNamespace = $tokens[$i+2][1] . "\\";
+            } else if ($token[0] == T_NS_SEPARATOR) {
+                $lastSeenNamespace .= $tokens[$i+1][1] . "\\";
             } else if ($token[0] == T_CLASS) {
                 $lastSeenClass = $lastSeenNamespace . $tokens[$i+2][1];
                 $this->_staticReflection[$lastSeenClass]['properties'] = array();
