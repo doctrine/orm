@@ -134,7 +134,8 @@ the ``ClassLoader`` with the following code.
 
     <?php
     require 'Doctrine/Common/ClassLoader.php';
-    $classLoader = new \Doctrine\Common\ClassLoader();
+    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
+    $classLoader->register();
 
 The packages are installed in to your shared PEAR PHP code folder
 in a folder named ``Doctrine``. You also get a nice command line

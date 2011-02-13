@@ -53,7 +53,7 @@ dealing exclusively with DBAL, the ConnectionHelper is required:
 .. code-block:: php
 
     <?php
-    $helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
+    $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
         'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($conn)
     ));
     $cli->setHelperSet($helperSet);
@@ -64,7 +64,7 @@ required:
 .. code-block:: php
 
     <?php
-    $helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
+    $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
         'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
     ));
     $cli->setHelperSet($helperSet);
@@ -97,7 +97,7 @@ typical ``cli-config.php`` file looks as follows:
     
     $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);
     
-    $helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
+    $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
         'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
         'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
     ));
