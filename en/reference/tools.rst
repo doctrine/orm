@@ -286,9 +286,63 @@ your cli-config.php properly.
     (or mapping files), i.e.
     ``new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em, $mappingPaths);``
 
+Entity Generation
+-----------------
+
+Generate entity classes and method stubs from your mapping information.
+
+.. code-block:: php
+
+    $ php doctrine orm:generate-entities
+    $ php doctrine orm:generate-entities --update-entities
+    $ php doctrine orm:generate-entities --regenerate-entities
+
+This command is not suited for constant usage. It is a little helper and does
+not support all the mapping edge cases very well. You still have to put work
+in your entities after using this command.
+
+It is possible to use the EntityGenerator on code that you have already written. It will
+not be lost. The EntityGenerator will only append new code to your
+file and will not delete the old code. However this approach may still be prone
+to error and we suggest you use code repositories such as GIT or SVN to make
+backups of your code.
+
+It makes sense to generate the entity code if you are using entities as Data
+Access Objects only and dont put much additional logic on them. If you are
+however putting much more logic on the entities you should refrain from using
+the entity-generator and code your entities manually.
+
+.. note::
+
+    Even if you specified Inheritance options in your
+    XML or YAML Mapping files the generator cannot generate the base and
+    child classes for you correctly, because it doesn't know which
+    class is supposed to extend which. You have to adjust the entity
+    code manually for inheritance to work!
+
 
 Convert Mapping Information
 ---------------------------
+
+Convert mapping information between supported formats.
+
+This is an **execute one-time** command. It should not be necessary for
+you to call this method multiple times, escpecially when using the ``--from-database``
+flag.
+
+Converting an existing databsae schema into mapping files only solves about 70-80%
+of the necessary mapping information. Additionally the detection from an existing
+database cannot detect inverse associations, inheritance types,
+entities with foreign keys as primary keys and many of the
+semantical operations on associations such as cascade.
+
+.. note::
+
+    There is no need to convert YAML or XML mapping files to annotations
+    every time you make changes. All mapping drivers are first class citizens
+    in Doctrine 2 and can be used as runtime mapping for the ORM. See the
+    docs on XML and YAML Mapping for an example how to register this metadata
+    drivers as primary mapping source.
 
 To convert some mapping information between the various supported
 formats you can use the ``ClassMetadataExporter`` to get exporter
@@ -334,6 +388,15 @@ Reverse Engineering
 You can use the ``DatabaseDriver`` to reverse engineer a database
 to an array of ``ClassMetadataInfo`` instances and generate YAML,
 XML, etc. from them.
+
+.. note::
+
+    Reverse Engineering is a **one-time** process that can get you started with a project.
+    Converting an existing database schema into mapping files only detects about 70-80%
+    of the necessary mapping information. Additionally the detection from an existing
+    database cannot detect inverse associations, inheritance types,
+    entities with foreign keys as primary keys and many of the
+    semantical operations on associations such as cascade.
 
 First you need to retrieve the metadata instances with the
 ``DatabaseDriver``:
