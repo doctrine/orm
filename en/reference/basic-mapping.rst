@@ -317,6 +317,17 @@ instance for Schema representation. Keep in mind that you can
 easily produce clashes this way, each database type can only map to
 exactly one Doctrine mapping type.
 
+Custom ColumnDefinition
+-----------------------
+
+You can define a custom definition for each column using the "columnDefinition"
+attribute of ``@Column``. You have to define all the definitions that follow
+the name of a column here.
+
+.. note::
+
+    Using columnDefinition will break change-detection in SchemaTool.
+
 Identifiers / Primary Keys
 --------------------------
 
