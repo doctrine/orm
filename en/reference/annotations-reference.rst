@@ -80,11 +80,14 @@ Optional attributes:
    name and specifies the complete (non-portable!) column definition.
    This attribute allows to make use of advanced RMDBS features.
    However you should make careful use of this feature and the
-   consequences. Additionally you should remember that the "type"
+   consequences. SchemaTool will not detect changes on the column correctly
+   anymore if you use "columnDefinition".
+
+   Additionally you should remember that the "type"
    attribute still handles the conversion between PHP and Database
    values. If you use this attribute on a column that is used for
    joins between tables you should also take a look at
-   :ref:`@JoinColumn <annref_joincolumn>`.
+   :ref:`@JoinColumn <annref_joincolumn>`. 
 
 Examples:
 

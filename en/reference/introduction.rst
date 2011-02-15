@@ -117,14 +117,17 @@ it with the following command.
 
     $ sudo pear install pear.doctrine-project.org/DoctrineORM-<version>
 
-    **NOTE** The ``<version>`` tag above represents the version you
-    want to install. For example the current version at the time of
-    writing this is ``2.0.0BETA3`` for the ORM, so you could install it
+
+.. note::
+
+    The ``<version>`` tag above represents the version you
+    want to install. For example if the current version at the time of
+    writing this is ``2.0.7`` for the ORM, so you could install it
     like the following:
 
     .. code-block:: bash
 
-        $ sudo pear install pear.doctrine-project.org/DoctrineORM-2.0.0BETA3
+        $ sudo pear install pear.doctrine-project.org/DoctrineORM-2.0.7
 
 
 When you have a package installed via PEAR you can require and load
