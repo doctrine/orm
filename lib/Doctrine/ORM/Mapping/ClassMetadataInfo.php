@@ -19,7 +19,6 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use ReflectionClass;
 
 /**
@@ -40,7 +39,7 @@ use ReflectionClass;
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @since 2.0
  */
-class ClassMetadataInfo implements ClassMetadata
+class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMetadata
 {
     /* The inheritance mapping types */
     /**

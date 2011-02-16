@@ -20,7 +20,7 @@
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Cache\Cache,
-    Doctrine\ORM\Mapping\Driver\Driver;
+    Doctrine\Common\Persistence\Mapping\Driver;
 
 /**
  * Configuration container for all configuration options of Doctrine.

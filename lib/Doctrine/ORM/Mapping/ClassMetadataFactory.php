@@ -23,8 +23,7 @@ use ReflectionException,
     Doctrine\ORM\ORMException,
     Doctrine\ORM\EntityManager,
     Doctrine\DBAL\Platforms,
-    Doctrine\ORM\Events,
-    Doctrine\Common\Persistence\Mapping\ClassMetadataFactory as ClassMetadataFactoryInterface;
+    Doctrine\ORM\Events;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -37,7 +36,7 @@ use ReflectionException,
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class ClassMetadataFactory implements ClassMetadataFactoryInterface
+class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\ClassMetadataFactory
 {
     /**
      * @var EntityManager

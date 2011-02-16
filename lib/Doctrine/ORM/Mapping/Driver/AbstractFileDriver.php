@@ -22,6 +22,7 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\Common\Persistence\Mapping\Driver;
 
 /**
  * Base driver for file-based metadata drivers.
