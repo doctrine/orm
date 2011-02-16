@@ -19,9 +19,9 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Mapping\MappingException,
-    Doctrine\Common\Persistence\Mapping\Driver;
+use Doctrine\ORM\Mapping\Driver\Driver,
+    Doctrine\ORM\Mapping\ClassMetadataInfo,
+    Doctrine\ORM\Mapping\MappingException;
 
 /**
  * The DriverChain allows you to add multiple other mapping drivers for
@@ -68,7 +68,7 @@ class DriverChain implements Driver
      * @param string $className
      * @param ClassMetadataInfo $metadata
      */
-    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $metadata)
+    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
     {
         foreach ($this->_drivers as $namespace => $driver) {
             if (strpos($className, $namespace) === 0) {

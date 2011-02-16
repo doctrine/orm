@@ -20,8 +20,7 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Mapping\MappingException,
-    Doctrine\Common\Persistence\Mapping\Driver;
+    Doctrine\ORM\Mapping\MappingException;
 
 /**
  * The YamlDriver reads the mapping metadata from yaml schema files.
@@ -42,7 +41,7 @@ class YamlDriver extends AbstractFileDriver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $metadata)
+    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
     {
         $element = $this->getElement($className);
 

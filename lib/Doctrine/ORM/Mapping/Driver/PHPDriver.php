@@ -25,8 +25,7 @@ use Doctrine\Common\Cache\ArrayCache,
     Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\MappingException,
     Doctrine\Common\Util\Inflector,
-    Doctrine\ORM\Mapping\Driver\AbstractFileDriver,
-    Doctrine\Common\Persistence\Mapping\Driver;
+    Doctrine\ORM\Mapping\Driver\AbstractFileDriver;
 
 /**
  * The PHPDriver includes php files which just populate ClassMetadataInfo
@@ -53,7 +52,7 @@ class PHPDriver extends AbstractFileDriver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $metadata)
+    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
     {
         $this->_metadata = $metadata;
         $this->_loadMappingFile($this->_findMappingFile($className));

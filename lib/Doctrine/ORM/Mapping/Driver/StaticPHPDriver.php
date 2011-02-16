@@ -22,8 +22,7 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Mapping\MappingException,
-    Doctrine\Common\Persistence\Mapping\Driver;
+    Doctrine\ORM\Mapping\MappingException;
 
 /**
  * The StaticPHPDriver calls a static loadMetadata() method on your entity
@@ -55,7 +54,7 @@ class StaticPHPDriver implements Driver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $metadata)
+    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
     {
         call_user_func_array(array($className, 'loadMetadata'), array($metadata));
     }
