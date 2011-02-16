@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use ReflectionClass;
 
 /**
@@ -39,7 +40,7 @@ use ReflectionClass;
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @since 2.0
  */
-class ClassMetadataInfo
+class ClassMetadataInfo implements ClassMetadata
 {
     /* The inheritance mapping types */
     /**
@@ -778,7 +779,7 @@ class ClassMetadataInfo
             $mapping['isOwningSide'] = false;
         }
 
-        if (isset($mapping['id']) && $mapping['id'] === true && $mapping['type'] & ClassMetadata::TO_MANY) {
+        if (isset($mapping['id']) && $mapping['id'] === true && $mapping['type'] & self::TO_MANY) {
             throw MappingException::illegalToManyIdentifierAssoaction($this->name, $mapping['fieldName']);
         }
         
@@ -1022,6 +1023,16 @@ class ClassMetadataInfo
     {
         $this->identifier = $identifier;
         $this->isIdentifierComposite = (count($this->identifier) > 1);
+    }
+
+    /**
+     * Gets the mapped identifier field of this class.
+     *
+     * @return string $identifier
+     */
+    public function getIdentifier()
+    {
+        return $this->identifier;
     }
 
     /**

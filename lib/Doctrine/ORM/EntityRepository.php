@@ -20,6 +20,7 @@
 namespace Doctrine\ORM;
 
 use Doctrine\DBAL\LockMode;
+use Doctrine\Common\Persistence\ObjectRepository;
 
 /**
  * An EntityRepository serves as a repository for entities with generic as well as
@@ -34,7 +35,7 @@ use Doctrine\DBAL\LockMode;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class EntityRepository
+class EntityRepository implements ObjectRepository
 {
     /**
      * @var string

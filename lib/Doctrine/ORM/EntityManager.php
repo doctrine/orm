@@ -21,6 +21,7 @@ namespace Doctrine\ORM;
 
 use Closure, Exception,
     Doctrine\Common\EventManager,
+    Doctrine\Common\Persistence\ObjectManager,
     Doctrine\DBAL\Connection,
     Doctrine\DBAL\LockMode,
     Doctrine\ORM\Mapping\ClassMetadata,
@@ -37,7 +38,7 @@ use Closure, Exception,
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class EntityManager
+class EntityManager implements ObjectManager
 {
     /**
      * The used Configuration.
