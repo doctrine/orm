@@ -15,7 +15,7 @@ class ParserResultTest extends \PHPUnit_Framework_TestCase
 
     public function testGetRsm()
     {
-        $this->assertType(
+        $this->assertInstanceOf(
             'Doctrine\ORM\Query\ResultSetMapping',
             $this->parserResult->getResultSetMapping()
         );
@@ -39,7 +39,7 @@ class ParserResultTest extends \PHPUnit_Framework_TestCase
 
     public function testGetParameterMappings()
     {
-        $this->assertType('array', $this->parserResult->getParameterMappings());
+        $this->assertInternalType('array', $this->parserResult->getParameterMappings());
 
         $this->parserResult->addParameterMapping(1, 1);
         $this->parserResult->addParameterMapping(1, 2);

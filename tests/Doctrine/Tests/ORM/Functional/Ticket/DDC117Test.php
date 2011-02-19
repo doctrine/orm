@@ -51,9 +51,9 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $idCriteria = array('source' => $this->article1->id(), 'target' => $this->article2->id());
 
         $mapRef = $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Reference", $idCriteria);
-        $this->assertType("Doctrine\Tests\Models\DDC117\DDC117Reference", $mapRef);
-        $this->assertType("Doctrine\Tests\Models\DDC117\DDC117Article", $mapRef->target());
-        $this->assertType("Doctrine\Tests\Models\DDC117\DDC117Article", $mapRef->source());
+        $this->assertInstanceOf("Doctrine\Tests\Models\DDC117\DDC117Reference", $mapRef);
+        $this->assertInstanceOf("Doctrine\Tests\Models\DDC117\DDC117Article", $mapRef->target());
+        $this->assertInstanceOf("Doctrine\Tests\Models\DDC117\DDC117Article", $mapRef->source());
         $this->assertSame($mapRef, $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Reference", $idCriteria));
 
         $this->_em->clear();
@@ -61,9 +61,9 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = "SELECT r, s FROM "."Doctrine\Tests\Models\DDC117\DDC117Reference r JOIN r.source s WHERE r.source = ?1";
         $dqlRef = $this->_em->createQuery($dql)->setParameter(1, 1)->getSingleResult();
 
-        $this->assertType("Doctrine\Tests\Models\DDC117\DDC117Reference", $mapRef);
-        $this->assertType("Doctrine\Tests\Models\DDC117\DDC117Article", $mapRef->target());
-        $this->assertType("Doctrine\Tests\Models\DDC117\DDC117Article", $mapRef->source());
+        $this->assertInstanceOf("Doctrine\Tests\Models\DDC117\DDC117Reference", $mapRef);
+        $this->assertInstanceOf("Doctrine\Tests\Models\DDC117\DDC117Article", $mapRef->target());
+        $this->assertInstanceOf("Doctrine\Tests\Models\DDC117\DDC117Article", $mapRef->source());
         $this->assertSame($dqlRef, $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Reference", $idCriteria));
 
         $this->_em->clear();
@@ -71,9 +71,9 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = "SELECT r, s FROM "."Doctrine\Tests\Models\DDC117\DDC117Reference r JOIN r.source s WHERE s.title = ?1";
         $dqlRef = $this->_em->createQuery($dql)->setParameter(1, 'Foo')->getSingleResult();
 
-        $this->assertType("Doctrine\Tests\Models\DDC117\DDC117Reference", $dqlRef);
-        $this->assertType("Doctrine\Tests\Models\DDC117\DDC117Article", $dqlRef->target());
-        $this->assertType("Doctrine\Tests\Models\DDC117\DDC117Article", $dqlRef->source());
+        $this->assertInstanceOf("Doctrine\Tests\Models\DDC117\DDC117Reference", $dqlRef);
+        $this->assertInstanceOf("Doctrine\Tests\Models\DDC117\DDC117Article", $dqlRef->target());
+        $this->assertInstanceOf("Doctrine\Tests\Models\DDC117\DDC117Article", $dqlRef->source());
         $this->assertSame($dqlRef, $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Reference", $idCriteria));
 
         $dql = "SELECT r, s FROM "."Doctrine\Tests\Models\DDC117\DDC117Reference r JOIN r.source s WHERE s.title = ?1";
@@ -109,8 +109,9 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $refs = $this->_em->createQuery($dql)->setParameter(1, 'Foo')->getResult();
 
         $this->assertTrue(count($refs) > 0, "Has to contain at least one Reference.");
+
         foreach ($refs AS $ref) {
-            $this->assertType("Doctrine\Tests\Models\DDC117\DDC117Reference", $ref, "Contains only Reference instances.");
+            $this->assertInstanceOf("Doctrine\Tests\Models\DDC117\DDC117Reference", $ref, "Contains only Reference instances.");
             $this->assertTrue($this->_em->contains($ref), "Contains Reference in the IdentityMap.");
         }
     }
@@ -155,8 +156,9 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->article1 = $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Article", $this->article1->id());
 
         $this->assertEquals(1, count($this->article1->references()));
+
         foreach ($this->article1->references() AS $this->reference) {
-            $this->assertType("Doctrine\Tests\Models\DDC117\DDC117Reference", $this->reference);
+            $this->assertInstanceOf("Doctrine\Tests\Models\DDC117\DDC117Reference", $this->reference);
             $this->assertSame($this->article1, $this->reference->source());
         }
 
@@ -168,8 +170,9 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
                                 ->getSingleResult();
 
         $this->assertEquals(1, count($this->article1->references()));
+
         foreach ($this->article1->references() AS $this->reference) {
-            $this->assertType("Doctrine\Tests\Models\DDC117\DDC117Reference", $this->reference);
+            $this->assertInstanceOf("Doctrine\Tests\Models\DDC117\DDC117Reference", $this->reference);
             $this->assertSame($this->article1, $this->reference->source());
         }
     }
@@ -182,7 +185,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $idCriteria = array('article' => $this->article1->id(), 'language' => 'en');
 
         $this->translation = $this->_em->find('Doctrine\Tests\Models\DDC117\DDC117Translation', $idCriteria);
-        $this->assertType('Doctrine\Tests\Models\DDC117\DDC117Translation', $this->translation);
+        $this->assertInstanceOf('Doctrine\Tests\Models\DDC117\DDC117Translation', $this->translation);
 
         $this->assertSame($this->translation, $this->_em->find('Doctrine\Tests\Models\DDC117\DDC117Translation', $idCriteria));
 
@@ -194,7 +197,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
                               ->setParameter(2, 'en')
                               ->getSingleResult();
 
-        $this->assertType('Doctrine\Tests\Models\DDC117\DDC117Translation', $this->translation);
+        $this->assertInstanceOf('Doctrine\Tests\Models\DDC117\DDC117Translation', $this->translation);
     }
 
     /**
@@ -279,9 +282,9 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $approveChanges = $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117ApproveChanges", $approveChanges->getId());
 
-        $this->assertType('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails', $approveChanges->getArticleDetails());
-        $this->assertType('Doctrine\Tests\Models\DDC117\DDC117Reference', $approveChanges->getReference());
-        $this->assertType('Doctrine\Tests\Models\DDC117\DDC117Translation', $approveChanges->getTranslation());
+        $this->assertInstanceOf('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails', $approveChanges->getArticleDetails());
+        $this->assertInstanceOf('Doctrine\Tests\Models\DDC117\DDC117Reference', $approveChanges->getReference());
+        $this->assertInstanceOf('Doctrine\Tests\Models\DDC117\DDC117Translation', $approveChanges->getTranslation());
     }
 
     /**
@@ -340,7 +343,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $editor = $this->loadEditorFixture();
         
-        $this->assertType('Doctrine\Tests\Models\DDC117\DDC117Translation', $editor->reviewingTranslations[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\DDC117\DDC117Translation', $editor->reviewingTranslations[0]);
 
         $reviewedBy = $editor->reviewingTranslations[0]->getReviewedByEditors();
         $this->assertEquals(1, count($reviewedBy));
@@ -355,7 +358,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
                            ->setParameter(2, $this->translation->getLanguage())
                            ->getSingleResult();
 
-        $this->assertType('Doctrine\Tests\Models\DDC117\DDC117Translation', $trans);
+        $this->assertInstanceOf('Doctrine\Tests\Models\DDC117\DDC117Translation', $trans);
         $this->assertContainsOnly('Doctrine\Tests\Models\DDC117\DDC117Editor', $trans->reviewedByEditors);
         $this->assertEquals(1, count($trans->reviewedByEditors));
     }

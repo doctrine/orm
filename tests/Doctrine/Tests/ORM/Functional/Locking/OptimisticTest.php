@@ -109,7 +109,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->_em->persist($test);
             $this->_em->flush();
 
-            $this->assertType('int', $test->getVersion());
+            $this->assertInternalType('int', $test->getVersion());
             $this->assertEquals($i + 1, $test->getVersion());
         }
     }
@@ -121,7 +121,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($test);
         $this->_em->flush();
 
-        $this->assertType('int', $test->getVersion());
+        $this->assertInternalType('int', $test->getVersion());
         $this->assertEquals(1, $test->getVersion());
 
         return $test;
@@ -160,7 +160,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($test);
         $this->_em->flush();
 
-        $this->assertType('DateTime', $test->version);
+        $this->assertInstanceOf('DateTime', $test->version);
 
         return $test;
     }
@@ -174,7 +174,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $q->setParameter('id', $entity->id);
         $test = $q->getSingleResult();
 
-        $this->assertType('DateTime', $test->version);
+        $this->assertInstanceOf('DateTime', $test->version);
 
         // Manually increment the version datetime column
         $format = $this->_em->getConnection()->getDatabasePlatform()->getDateTimeFormatString();

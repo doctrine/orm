@@ -78,7 +78,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testEntitySequence($class)
     {
-        $this->assertType('array', $class->sequenceGeneratorDefinition, 'No Sequence Definition set on this driver.');
+        $this->assertInternalType('array', $class->sequenceGeneratorDefinition, 'No Sequence Definition set on this driver.');
         $this->assertEquals(
             array(
                 'sequenceName' => 'tablename_seq',

@@ -26,32 +26,32 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
 
     public function testGetConnection()
     {
-        $this->assertType('\Doctrine\DBAL\Connection', $this->_em->getConnection());
+        $this->assertInstanceOf('\Doctrine\DBAL\Connection', $this->_em->getConnection());
     }
 
     public function testGetMetadataFactory()
     {
-        $this->assertType('\Doctrine\ORM\Mapping\ClassMetadataFactory', $this->_em->getMetadataFactory());
+        $this->assertInstanceOf('\Doctrine\ORM\Mapping\ClassMetadataFactory', $this->_em->getMetadataFactory());
     }
 
     public function testGetConfiguration()
     {
-        $this->assertType('\Doctrine\ORM\Configuration', $this->_em->getConfiguration());
+        $this->assertInstanceOf('\Doctrine\ORM\Configuration', $this->_em->getConfiguration());
     }
 
     public function testGetUnitOfWork()
     {
-        $this->assertType('\Doctrine\ORM\UnitOfWork', $this->_em->getUnitOfWork());
+        $this->assertInstanceOf('\Doctrine\ORM\UnitOfWork', $this->_em->getUnitOfWork());
     }
 
     public function testGetProxyFactory()
     {
-        $this->assertType('\Doctrine\ORM\Proxy\ProxyFactory', $this->_em->getProxyFactory());
+        $this->assertInstanceOf('\Doctrine\ORM\Proxy\ProxyFactory', $this->_em->getProxyFactory());
     }
 
     public function testGetEventManager()
     {
-        $this->assertType('\Doctrine\Common\EventManager', $this->_em->getEventManager());
+        $this->assertInstanceOf('\Doctrine\Common\EventManager', $this->_em->getEventManager());
     }
 
     public function testCreateNativeQuery()
@@ -64,7 +64,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
 
     public function testCreateQueryBuilder()
     {
-        $this->assertType('\Doctrine\ORM\QueryBuilder', $this->_em->createQueryBuilder());
+        $this->assertInstanceOf('\Doctrine\ORM\QueryBuilder', $this->_em->createQueryBuilder());
     }
 
     public function testCreateQueryBuilderAliasValid()
@@ -83,7 +83,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
 
     public function testCreateQuery_DqlIsOptional()
     {
-        $this->assertType('\Doctrine\ORM\Query', $this->_em->createQuery());
+        $this->assertInstanceOf('\Doctrine\ORM\Query', $this->_em->createQuery());
     }
 
     public function testGetPartialReference()
@@ -97,7 +97,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
     public function testCreateQuery()
     {
         $q = $this->_em->createQuery('SELECT 1');
-        $this->assertType('\Doctrine\ORM\Query', $q);
+        $this->assertInstanceOf('\Doctrine\ORM\Query', $q);
         $this->assertEquals('SELECT 1', $q->getDql());
     }
 

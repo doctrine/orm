@@ -150,7 +150,7 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
             $user->groups[] = $group;
         }
 
-        $this->assertType('Doctrine\ORM\PersistentCollection', $user->groups);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $user->groups);
         $this->assertTrue($user->groups->isDirty());
         
         $this->assertEquals($groupCount, count($user->groups), "There should be 10 groups in the collection.");
@@ -265,7 +265,7 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
                              ->setParameter(1, $user->getId())
                              ->getSingleResult();
         $this->assertEquals(0, count($newUser->groups));
-        $this->assertType('array', $newUser->groups->getMapping());
+        $this->assertInternalType('array', $newUser->groups->getMapping());
 
         $newUser->addGroup($group);
         
