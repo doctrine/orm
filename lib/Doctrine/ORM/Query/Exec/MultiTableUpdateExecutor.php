@@ -51,7 +51,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         $em = $sqlWalker->getEntityManager();
         $conn = $em->getConnection();
         $platform = $conn->getDatabasePlatform();
-        
+
         $updateClause = $AST->updateClause;
 
         $primaryClass = $sqlWalker->getEntityManager()->getClassMetadata($updateClause->abstractSchemaName);
@@ -64,11 +64,14 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         $idColumnList = implode(', ', $idColumnNames);
 
         // 1. Create an INSERT INTO temptable ... SELECT identifiers WHERE $AST->getWhereClause()
+        $sqlWalker->setSQLTableAlias($primaryClass->table['name'], 't0', $updateClause->aliasIdentificationVariable);
+
         $this->_insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ')'
                 . ' SELECT t0.' . implode(', t0.', $idColumnNames);
-        $sqlWalker->setSqlTableAlias($primaryClass->table['name'] . $updateClause->aliasIdentificationVariable, 't0');
+
         $rangeDecl = new AST\RangeVariableDeclaration($primaryClass->name, $updateClause->aliasIdentificationVariable);
         $fromClause = new AST\FromClause(array(new AST\IdentificationVariableDeclaration($rangeDecl, null, array())));
+
         $this->_insertSql .= $sqlWalker->walkFromClause($fromClause);
 
         // 2. Create ID subselect statement used in UPDATE ... WHERE ... IN (subselect)
@@ -85,8 +88,9 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
             foreach ($updateItems as $updateItem) {
                 $field = $updateItem->pathExpression->field;
+                
                 if (isset($class->fieldMappings[$field]) && ! isset($class->fieldMappings[$field]['inherited']) ||
-                        isset($class->associationMappings[$field]) && ! isset($class->associationMappings[$field]['inherited'])) {
+                    isset($class->associationMappings[$field]) && ! isset($class->associationMappings[$field]['inherited'])) {
                     $newValue = $updateItem->newValue;
                     
                     if ( ! $affected) {
@@ -103,6 +107,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
                     if ($newValue instanceof AST\InputParameter) {
                         $paramKey = $newValue->name;
                         $this->_sqlParameters[$i][] = $sqlWalker->getQuery()->getParameter($paramKey);
+                        
                         ++$this->_numParametersInUpdateClause;
                     }
                 }
@@ -120,14 +125,17 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         
         // 4. Store DDL for temporary identifier table.
         $columnDefinitions = array();
+
         foreach ($idColumnNames as $idColumnName) {
             $columnDefinitions[$idColumnName] = array(
                 'notnull' => true,
                 'type' => Type::getType($rootClass->getTypeOfColumn($idColumnName))
             );
         }
+        
         $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
                 . $platform->getColumnDeclarationListSQL($columnDefinitions) . ')';
+        
         $this->_dropTempTableSql = 'DROP TABLE ' . $tempTable;
     }
 
