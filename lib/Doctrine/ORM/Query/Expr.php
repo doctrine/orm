@@ -444,6 +444,28 @@ class Expr
     }
 
     /**
+     * Creates an IS NULL expression with the given arguments.
+     *
+     * @param string $x Field in string format to be restricted by IS NULL
+     * @return string
+     */
+    public function isNull($x)
+    {
+        return $x . ' IS NULL';
+    }
+
+    /**
+     * Creates an IS NOT NULL expression with the given arguments.
+     *
+     * @param string $x Field in string format to be restricted by IS NOT NULL
+     * @return string
+     */
+    public function isNotNull($x)
+    {
+        return $x . ' IS NOT NULL';
+    }
+
+    /**
      * Creates a LIKE() comparison expression with the given arguments.
      *
      * @param string $x Field in string format to be inspected by LIKE() comparison.
