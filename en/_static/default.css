@@ -306,16 +306,6 @@ p.admonition-title:after {
     content: ":";
 }
 
-pre {
-    padding: 5px;
-    background-color: #eeffcc;
-    color: #333333;
-    line-height: 120%;
-    border-left: none;
-    border-right: none;
-    margin-left: 30px;
-}
-
 tt {
     background-color: #ecf0f3;
     padding: 0 1px 0 1px;
@@ -372,7 +362,7 @@ pre
 {
   padding: 0.7em;
   background-color: #000;
-  line-height: 1.3em;
+  line-height: 1.3em !important;
   font-size: 100%;
   color: #fff;
 }
