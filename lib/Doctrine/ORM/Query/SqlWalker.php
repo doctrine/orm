@@ -194,7 +194,7 @@ class SqlWalker implements TreeWalker
      */
     public function getSQLTableAlias($tableName, $dqlAlias = '')
     {
-        $tableName .= $dqlAlias;
+        $tableName .= ($dqlAlias) ? '@[' . $dqlAlias . ']' : '';
 
         if ( ! isset($this->_tableAliasMap[$tableName])) {
             $this->_tableAliasMap[$tableName] = strtolower(substr($tableName, 0, 1)) . $this->_tableAliasCounter++ . '_';
@@ -214,7 +214,7 @@ class SqlWalker implements TreeWalker
      */
     public function setSQLTableAlias($tableName, $alias, $dqlAlias = '')
     {
-        $tableName .= $dqlAlias;
+        $tableName .= ($dqlAlias) ? '@[' . $dqlAlias . ']' : '';
 
         $this->_tableAliasMap[$tableName] = $alias;
 
