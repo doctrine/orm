@@ -1,13 +1,17 @@
 div.configuration-block ul.simple
 {
-  padding: 5px 0 0 0;
+    margin: 0;
+    padding: 0;
+    margin-left: 30px;
 }
 
 div.configuration-block ul.simple li
 {
-  margin: 0;
-  margin-right: 5px;
+  margin: 0 !important;
+  margin-right: 5px !important;
   display: inline;
+  margin-left: 10px;
+  padding: 10px;
 }
 
 div.configuration-block em

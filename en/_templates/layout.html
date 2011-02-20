@@ -104,6 +104,7 @@
     <title>{{ title|striptags }}{{ titlesuffix }}</title>
     <link rel="stylesheet" href="{{ pathto('_static/' + style, 1) }}" type="text/css" />
     <link rel="stylesheet" href="{{ pathto('_static/pygments.css', 1) }}" type="text/css" />
+    <link rel="stylesheet" href="http://www.doctrine-project.org/css/layout.css" type="text/css" />
     <link rel="stylesheet" href="{{ pathto('_static/configurationblock.css', 1) }}" type="text/css" />
     {%- if not embedded %}
     <script type="text/javascript">
@@ -155,47 +156,94 @@
 {%- block extrahead %} {% endblock %}
   </head>
   <body>
-{%- block header %}{% endblock %}
-
-{%- block relbar1 %}{{ relbar() }}{% endblock %}
-
-{%- block sidebar1 %} {# possible location for sidebar #} {% endblock %}
-
-    <div class="document">
-{%- block document %}
-      <div class="documentwrapper">
-      {%- if not embedded %}{% if not theme_nosidebar|tobool %}
-        <div class="bodywrapper">
-      {%- endif %}{% endif %}
-          <div class="body">
-            {% block body %} {% endblock %}
-          </div>
-      {%- if not embedded %}{% if not theme_nosidebar|tobool %}
+    <div id="wrapper">
+      <div id="header">
+          <h1 id="h1title">Documentation</h1>
+          <div id="logo">
+            <a href="/">Doctrine - PHP Database Libraries</a>       </div>
         </div>
-      {%- endif %}{% endif %}
+
+        <div id="nav" class="cls">
+          <div class="tl cls">
+            <ul>
+              <li><a target="_top" href="/">home</a></li>
+              <li><a class="" target="_top" href="/about">about</a></li>
+              <li><a class="" target="_top" href="/projects">projects</a></li>
+              <li><a class="" target="_top" href="/projects/orm">orm</a></li>
+              <li><a class="" target="_top" href="/projects/dbal">dbal</a></li>
+              <li><a class="" target="_top" href="/blog">blog</a></li>
+              <li><a class="" target="_top" href="http://www.doctrine-project.org/jira">development</a></li>
+              <li><a class="" target="_top" href="/contribute">contribute</a></li>
+              <li><a class="" target="_top" href="/community">community</a></li>
+              <li><a class="" target="_top" href="http://wiki.doctrine-project.org">wiki</a></li>
+            </ul>
+          </div>
+        </div>
+        <div id="content" class="cls">
+          {%- block header %}{% endblock %}
+
+          {%- block relbar1 %}{{ relbar() }}{% endblock %}
+
+          {%- block sidebar1 %} {# possible location for sidebar #} {% endblock %}
+
+              <div class="document">
+          {%- block document %}
+                <div class="documentwrapper">
+                {%- if not embedded %}{% if not theme_nosidebar|tobool %}
+                  <div class="bodywrapper">
+                {%- endif %}{% endif %}
+                    <div class="body">
+                      {% block body %} {% endblock %}
+                    </div>
+                {%- if not embedded %}{% if not theme_nosidebar|tobool %}
+                  </div>
+                {%- endif %}{% endif %}
+                </div>
+          {%- endblock %}
+
+          {%- block sidebar2 %}{{ sidebar() }}{% endblock %}
+                <div class="clearer"></div>
+              </div>
+
+          {%- block footer %}
+              <div class="footer">
+              {%- if hasdoc('copyright') %}
+                {% trans path=pathto('copyright'), copyright=copyright|e %}&copy; <a href="{{ path }}">Copyright</a> {{ copyright }}.{% endtrans %}
+              {%- else %}
+                {% trans copyright=copyright|e %}&copy; Copyright {{ copyright }}.{% endtrans %}
+              {%- endif %}
+              {%- if last_updated %}
+                {% trans last_updated=last_updated|e %}Last updated on {{ last_updated }}.{% endtrans %}
+              {%- endif %}
+              {%- if show_sphinx %}
+                {% trans sphinx_version=sphinx_version|e %}Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> {{ sphinx_version }}.{% endtrans %}
+              {%- endif %}
+              </div>
+          {%- endblock %}
       </div>
-{%- endblock %}
 
-{%- block sidebar2 %}{{ sidebar() }}{% endblock %}
-      <div class="clearer"></div>
+      <div id="bot-rcnr">
+        <div class="tl"><!-- corner --></div>
+      </div>
+
+      <div id="footer">
+        <br/>
+        <a target="_BLANK" href="http://www.servergrove.com"><img src="http://www.doctrine-project.org/images/servergrove.jpg" /></a>      <br/><br/>
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+        <input type="hidden" name="cmd" value="_s-xclick" />
+        <input type="hidden" name="hosted_button_id" value="BAE2E3XANQ77Y" />
+        <input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" />
+        <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+        </form>
+      </div>
     </div>
 
-{%- block relbar2 %}{{ relbar() }}{% endblock %}
+  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+  </script>
+  <script type="text/javascript">
+  _uacct = "UA-288343-7";
+  urchinTracker();
+  </script>
 
-{%- block footer %}
-    <div class="footer">
-    {%- if hasdoc('copyright') %}
-      {% trans path=pathto('copyright'), copyright=copyright|e %}&copy; <a href="{{ path }}">Copyright</a> {{ copyright }}.{% endtrans %}
-    {%- else %}
-      {% trans copyright=copyright|e %}&copy; Copyright {{ copyright }}.{% endtrans %}
-    {%- endif %}
-    {%- if last_updated %}
-      {% trans last_updated=last_updated|e %}Last updated on {{ last_updated }}.{% endtrans %}
-    {%- endif %}
-    {%- if show_sphinx %}
-      {% trans sphinx_version=sphinx_version|e %}Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> {{ sphinx_version }}.{% endtrans %}
-    {%- endif %}
-    </div>
-{%- endblock %}
   </body>
 </html>
