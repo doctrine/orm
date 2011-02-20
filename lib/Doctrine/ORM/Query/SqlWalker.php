@@ -1186,7 +1186,7 @@ class SqlWalker implements TreeWalker
     public function walkAggregateExpression($aggExpression)
     {
         return $aggExpression->functionName . '(' . ($aggExpression->isDistinct ? 'DISTINCT ' : '')
-             . $this->walkPathExpression($aggExpression->pathExpression) . ')';
+             . $this->walkSimpleArithmeticExpression($aggExpression->pathExpression) . ')';
     }
 
     /**

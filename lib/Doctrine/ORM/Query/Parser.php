@@ -2386,7 +2386,7 @@ class Parser
 
             $functionName = $this->_lexer->token['value'];
             $this->match(Lexer::T_OPEN_PARENTHESIS);
-            $pathExp = $this->StateFieldPathExpression();
+            $pathExp = $this->SimpleArithmeticExpression();
             $this->match(Lexer::T_CLOSE_PARENTHESIS);
         }
 
