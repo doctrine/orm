@@ -209,6 +209,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    public function testSupportsAggregateFunctionWithSimpleArithmetic()
+    {
+        $this->assertSqlGeneration(
+            'SELECT MAX(u.id + 4) * 2 FROM Doctrine\Tests\Models\CMS\CmsUser u',
+            'SELECT MAX(c0_.id + 4) * 2 AS sclr0 FROM cms_users c0_'
+        );
+    }
+
     public function testSupportsWhereClauseWithPositionalParameter()
     {
         $this->assertSqlGeneration(
