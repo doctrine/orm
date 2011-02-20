@@ -256,6 +256,16 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('TRIM(u.id)', (string) $this->_expr->trim('u.id'));
     }
 
+    public function testIsNullExpr()
+    {
+        $this->assertEquals('u.id IS NULL', (string) $this->_expr->isNull('u.id'));
+    }
+
+    public function testIsNotNullExpr()
+    {
+        $this->assertEquals('u.id IS NOT NULL', (string) $this->_expr->isNotNull('u.id'));
+    }
+
     public function testInExpr()
     {
         $this->assertEquals('u.id IN(1, 2, 3)', (string) $this->_expr->in('u.id', array(1, 2, 3)));
