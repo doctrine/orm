@@ -306,6 +306,16 @@ p.admonition-title:after {
     content: ":";
 }
 
+pre {
+    padding: 5px;
+    background-color: #eeffcc;
+    color: #333333;
+    line-height: 120%;
+    border-left: none;
+    border-right: none;
+    margin-left: 30px;
+}
+
 tt {
     background-color: #ecf0f3;
     padding: 0 1px 0 1px;
@@ -408,6 +418,11 @@ div.caution
   background: #fff url(http://www.doctrine-project.org/images/caution.png) no-repeat -5px -5px;
 }
 
+div.warning
+{
+  background: #fff url(http://www.doctrine-project.org/images/caution.png) no-repeat -5px -5px;
+}
+
 div.tip
 {
   background: #fff url(http://www.doctrine-project.org/images/tip.png) no-repeat -5px -5px;
@@ -426,18 +441,14 @@ div.note {
   padding: 5px 20px 5px 45px;
   margin: 10px 0;
   background: #ffd url(http://www.doctrine-project.org/images/note.png) no-repeat 5px 10px;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
 }
 
 /* Caution */
 
-div.caution {
+div.caution, div.warning {
   padding: 5px 20px 5px 45px;
   margin: 10px 0;
   background: #ffd url(http://www.doctrine-project.org/images/caution.png) no-repeat 5px 10px;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
 }
 
 /* Tip */
@@ -446,8 +457,6 @@ div.tip {
   padding: 5px 20px 5px 45px;
   margin: 10px 0;
   background: #ffd url(http://www.doctrine-project.org/images/tip.png) no-repeat 5px 10px;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
 }
 
 /* Sidebar */
@@ -472,14 +481,15 @@ div.seealso p.title {
 }
 
 /* Shared Styles */
-div.note, div.caution, div.tip, div.seealso {
+div.note, div.caution, div.tip, div.seealso, div.warning {
   overflow/**/: auto;
   margin-left: 30px;
   font-weight: normal;
   min-height: 40px;
+  border: 1px solid #ddd;
 }
 
-div.note p, div.caution p, div.tip p, div.seealso p {
+div.note p, div.caution p, div.tip p, div.seealso p, div.warning p {
   margin: 0 !important;
   padding: 0 !important;
   padding-top: 10px;
