@@ -725,6 +725,6 @@ class EntityManager implements ObjectManager
             throw new \InvalidArgumentException("Invalid argument: " . $conn);
         }
 
-        return new EntityManager($conn, $config, $conn->getEventManager());
+        return new self($conn, $config, $conn->getEventManager());
     }
 }
