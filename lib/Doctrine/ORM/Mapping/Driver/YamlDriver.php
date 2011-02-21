@@ -276,6 +276,10 @@ class YamlDriver extends AbstractFileDriver
                     $mapping['cascade'] = $oneToOneElement['cascade'];
                 }
 
+                if (isset($oneToOneElement['orphanRemoval'])) {
+                    $mapping['orphanRemoval'] = (bool)$oneToOneElement['orphanRemoval'];
+                }
+
                 $metadata->mapOneToOne($mapping);
             }
         }
@@ -295,6 +299,10 @@ class YamlDriver extends AbstractFileDriver
 
                 if (isset($oneToManyElement['cascade'])) {
                     $mapping['cascade'] = $oneToManyElement['cascade'];
+                }
+
+                if (isset($oneToManyElement['orphanRemoval'])) {
+                    $mapping['orphanRemoval'] = (bool)$oneToManyElement['orphanRemoval'];
                 }
 
                 if (isset($oneToManyElement['orderBy'])) {
@@ -347,6 +355,10 @@ class YamlDriver extends AbstractFileDriver
 
                 if (isset($manyToOneElement['cascade'])) {
                     $mapping['cascade'] = $manyToOneElement['cascade'];
+                }
+
+                if (isset($manyToOneElement['orphanRemoval'])) {
+                    $mapping['orphanRemoval'] = (bool)$manyToOneElement['orphanRemoval'];
                 }
 
                 $metadata->mapManyToOne($mapping);
@@ -402,6 +414,10 @@ class YamlDriver extends AbstractFileDriver
 
                 if (isset($manyToManyElement['cascade'])) {
                     $mapping['cascade'] = $manyToManyElement['cascade'];
+                }
+
+                if (isset($manyToManyElement['orphanRemoval'])) {
+                    $mapping['orphanRemoval'] = (bool)$manyToManyElement['orphan-removal'];
                 }
 
                 if (isset($manyToManyElement['orderBy'])) {
