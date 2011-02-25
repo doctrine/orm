@@ -486,7 +486,7 @@ abstract class AbstractQuery
     /**
      * Executes the query.
      *
-     * @param string $params Any additional query parameters.
+     * @param array $params Any additional query parameters.
      * @param integer $hydrationMode Processing mode to be used during the hydration process.
      * @return mixed
      */
