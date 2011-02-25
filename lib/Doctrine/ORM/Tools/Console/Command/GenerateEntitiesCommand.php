@@ -39,6 +39,7 @@ use Symfony\Component\Console\Input\InputArgument,
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ * @author  Mykhailo Stadnyk <mikhus@gmail.com>
  */
 class GenerateEntitiesCommand extends Console\Command\Command
 {
@@ -133,7 +134,8 @@ EOT
 
         if (count($metadatas)) {
             // Create EntityGenerator
-            $entityGenerator = new EntityGenerator();
+            $codeWriter = $em->getConfiguration()->getEntityWriterImpl();
+            $entityGenerator = new EntityGenerator( $codeWriter);
 
             $entityGenerator->setGenerateAnnotations($input->getOption('generate-annotations'));
             $entityGenerator->setGenerateStubMethods($input->getOption('generate-methods'));

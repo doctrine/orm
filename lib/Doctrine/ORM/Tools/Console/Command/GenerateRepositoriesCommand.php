@@ -38,6 +38,7 @@ use Symfony\Component\Console\Input\InputArgument,
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ * @author  Mykhailo Stadnyk <mikhus@gmail.com>
  */
 class GenerateRepositoriesCommand extends Console\Command\Command
 {
@@ -53,6 +54,10 @@ class GenerateRepositoriesCommand extends Console\Command\Command
             new InputOption(
                 'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'A string pattern used to match entities that should be processed.'
+            ),
+            new InputOption(
+                'extend', null, InputOption::VALUE_OPTIONAL,
+                'Defines a base class to be extended by generated repositories classes.'
             ),
             new InputArgument(
                 'dest-path', InputArgument::REQUIRED, 'The path to generate your repository classes.'
@@ -89,7 +94,13 @@ EOT
 
         if (count($metadatas)) {
             $numRepositories = 0;
-            $generator = new EntityRepositoryGenerator();
+            $codeWriter = $em->getConfiguration()->getRepositoryWriterImpl();
+            $generator = new EntityRepositoryGenerator( $codeWriter);
+
+            $parentClassName = $input->getOption('extend');
+            if (!$parentClassName) {
+            	$parentClassName = 'Doctrine\ORM\EntityRepository';
+            }
 
             foreach ($metadatas as $metadata) {
                 if ($metadata->customRepositoryClassName) {
@@ -97,7 +108,7 @@ EOT
                         sprintf('Processing repository "<info>%s</info>"', $metadata->customRepositoryClassName) . PHP_EOL
                     );
 
-                    $generator->writeEntityRepositoryClass($metadata->customRepositoryClassName, $destPath);
+                    $generator->writeEntityRepositoryClass($metadata->customRepositoryClassName, $destPath, $parentClassName);
 
                     $numRepositories++;
                 }
