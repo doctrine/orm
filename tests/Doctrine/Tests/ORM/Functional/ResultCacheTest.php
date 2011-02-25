@@ -86,6 +86,35 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
     }
 
+    /**
+     * @group DDC-1026
+     */
+    public function testUseResultCacheParams()
+    {
+        $cache = new \Doctrine\Common\Cache\ArrayCache();
+        $this->_em->getConfiguration()->setResultCacheImpl($cache);
+
+        $sqlCount = count($this->_sqlLoggerStack->queries);
+        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux WHERE ux.id = ?1');
+        $query->setParameter(1, 1);
+        $query->useResultCache(true);
+        $query->getResult();
+
+        $query->setParameter(1, 2);
+        $query->getResult();
+
+        $this->assertEquals($sqlCount + 2, count($this->_sqlLoggerStack->queries), "Two non-cached queries.");
+
+        $query->setParameter(1, 1);
+        $query->useResultCache(true);
+        $query->getResult();
+
+        $query->setParameter(1, 2);
+        $query->getResult();
+
+        $this->assertEquals($sqlCount + 2, count($this->_sqlLoggerStack->queries), "The next two sql should have been cached, but were not.");
+    }
+
     public function testNativeQueryResultCaching()
     {
         $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
