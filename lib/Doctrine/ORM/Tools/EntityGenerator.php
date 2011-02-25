@@ -168,7 +168,7 @@ class EntityGenerator
             '<entityAnnotation>' => $this->_generateEntityDocBlock($metadata),
             '<entityClassName>'  => $this->_generateEntityClassName($metadata),
             '<entityBody>'       => $this->_generateEntityBody($metadata),
-        	'<spaces>'           => $this->_spaces
+            '<spaces>'           => $this->_spaces
         );
 
         return $this->_codeWriter->renderTemplate('class', $replacements);

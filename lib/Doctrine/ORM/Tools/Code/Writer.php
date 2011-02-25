@@ -78,9 +78,8 @@ abstract class Writer
      */
     final public function getTemplate($name)
     {
-        if (! isset($this->_templates[$name])) {
-            throw \Doctrine\ORM\ORMException::missingCodeWriterTemplate(
-            $this, $name);
+        if (!isset($this->_templates[$name])) {
+            throw \Doctrine\ORM\ORMException::missingCodeWriterTemplate($this, $name);
         }
         return $this->_templates[$name];
     }

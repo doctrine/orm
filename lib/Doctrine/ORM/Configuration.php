@@ -182,7 +182,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * 
      * @param \Doctrine\ORM\Tools\Code\Writer $writerImpl
      */
-    public function setEntityWriterImpl( \Doctrine\ORM\Tools\Code\Writer $writerImpl)
+    public function setEntityWriterImpl(\Doctrine\ORM\Tools\Code\Writer $writerImpl)
     {
         $this->_attributes['entityWriterImpl'] = $writerImpl;
     }
@@ -195,7 +195,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function getEntityWriterImpl()
     {
         return isset($this->_attributes['entityWriterImpl']) ?
-                $this->_attributes['entityWriterImpl'] : new \Doctrine\ORM\Tools\Code\Writer\Entity;
+               $this->_attributes['entityWriterImpl'] : new \Doctrine\ORM\Tools\Code\Writer\Entity;
     }
 
     /**
@@ -203,7 +203,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * 
      * @param \Doctrine\ORM\Tools\Code\Writer $writerImpl
      */
-	public function setRepositoryWriterImpl( \Doctrine\ORM\Tools\Code\Writer $writerImpl)
+	public function setRepositoryWriterImpl(\Doctrine\ORM\Tools\Code\Writer $writerImpl)
 	{
         $this->_attributes['repositoryWriterImpl'] = $writerImpl;
     }
@@ -216,7 +216,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function getRepositoryWriterImpl()
     {
         return isset($this->_attributes['repositoryWriterImpl']) ?
-                $this->_attributes['repositoryWriterImpl'] : new \Doctrine\ORM\Tools\Code\Writer\Repository;
+               $this->_attributes['repositoryWriterImpl'] : new \Doctrine\ORM\Tools\Code\Writer\Repository;
     }
 
     /**
