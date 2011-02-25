@@ -142,7 +142,9 @@ EOT
         $exporter->setOverwriteExistingFiles( ($input->getOption('force') !== false) );
 
         if ($toType == 'annotation') {
-            $entityGenerator = new EntityGenerator();
+            $entityGenerator = new EntityGenerator(
+            	$em->getConfiguration()->getEntityWriterImpl()
+            );
             $exporter->setEntityGenerator($entityGenerator);
 
             $entityGenerator->setNumSpaces($input->getOption('num-spaces'));
