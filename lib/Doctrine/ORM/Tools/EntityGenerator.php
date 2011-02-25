@@ -91,7 +91,7 @@ class EntityGenerator
     /**
      * @var \Doctrine\ORM\Tools\Code\Writer
      */
-    private $_codeWriter = null;
+    private $codeWriter = null;
 
     /**
      * Constructor
@@ -100,7 +100,7 @@ class EntityGenerator
      */
     public function __construct( Writer $cw)
     {
-        $this->_codeWriter = $cw;
+        $this->codeWriter = $cw;
     }
 
     /**
@@ -171,7 +171,7 @@ class EntityGenerator
             '<spaces>'           => $this->_spaces
         );
 
-        return $this->_codeWriter->renderTemplate('class', $replacements);
+        return $this->codeWriter->renderTemplate('class', $replacements);
     }
 
     /**
@@ -348,7 +348,7 @@ class EntityGenerator
                 '<collections>' => implode("\n", $collections)
             );
 
-            $method = $this->_codeWriter->renderTemplate('constructorMethod', $replacements);
+            $method = $this->codeWriter->renderTemplate('constructorMethod', $replacements);
 
             return $this->_prefixCodeWithSpaces( $method);
         }
@@ -637,7 +637,7 @@ class EntityGenerator
             '<entityClassName>'   => $this->_generateEntityClassName($metadata)
         );
 
-        $method = $this->_codeWriter->renderTemplate($templateName, $replacements);
+        $method = $this->codeWriter->renderTemplate($templateName, $replacements);
 
         return $this->_prefixCodeWithSpaces($method);
     }
@@ -654,7 +654,7 @@ class EntityGenerator
             '<entityClassName>' => $this->_generateEntityClassName($metadata)
         );
 
-        $method = $this->_codeWriter->renderTemplate('lifecycleCallbackMethod', $replacements);
+        $method = $this->codeWriter->renderTemplate('lifecycleCallbackMethod', $replacements);
 
         return $this->_prefixCodeWithSpaces($method);
     }

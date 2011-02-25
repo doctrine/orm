@@ -42,7 +42,7 @@ class EntityRepositoryGenerator
 	/**
      * @var \Doctrine\ORM\Tools\Code\Writer
      */
-    private $_codeWriter = null;
+    private $codeWriter = null;
 
     /**
      * Constructor
@@ -50,7 +50,7 @@ class EntityRepositoryGenerator
      * @param \Doctrine\ORM\Tools\Code\Writer $codeWriter
      */
     public function __construct( Writer $codeWriter) {
-    	$this->_codeWriter = $codeWriter;
+    	$this->codeWriter = $codeWriter;
     }
 
     public function generateEntityRepositoryClass($fullClassName, $fullParentClassName)
@@ -66,7 +66,7 @@ class EntityRepositoryGenerator
             '<parentClassName>' => $parentClassName
         );
 
-        return $this->_codeWriter->renderTemplate('class', $variables);
+        return $this->codeWriter->renderTemplate('class', $variables);
     }
 
     public function writeEntityRepositoryClass($fullClassName, $outputDirectory, $parentClassName)

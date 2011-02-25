@@ -99,7 +99,7 @@ EOT
 
             $parentClassName = $input->getOption('extend');
             if (!$parentClassName) {
-            	$parentClassName = 'Doctrine\ORM\EntityRepository';
+                $parentClassName = 'Doctrine\ORM\EntityRepository';
             }
 
             foreach ($metadatas as $metadata) {

@@ -50,7 +50,8 @@ abstract class Writer
      * 
      * @var array
      */
-    private $_templates = array();
+    private $templates = array();
+
     /**
      * Constructor
      */
@@ -58,6 +59,7 @@ abstract class Writer
     {
         $this->init();
     }
+
     /**
      * Sets the template to internal holder
      * 
@@ -67,9 +69,10 @@ abstract class Writer
      */
     final public function setTemplate($name, $body)
     {
-        $this->_templates[$name] = $body;
+        $this->templates[$name] = $body;
         return $this;
     }
+
     /**
      * Gets the template from internal holder by its name
      * 
@@ -78,11 +81,12 @@ abstract class Writer
      */
     final public function getTemplate($name)
     {
-        if (!isset($this->_templates[$name])) {
+        if (!isset($this->templates[$name])) {
             throw \Doctrine\ORM\ORMException::missingCodeWriterTemplate($this, $name);
         }
-        return $this->_templates[$name];
+        return $this->templates[$name];
     }
+
     /**
      * Renders a template extracted from internal holder by its name. Replaces a placeholders defined in
      * template with a passed replacements. Returns a rendered code generated within specified template.
@@ -99,6 +103,7 @@ abstract class Writer
             $this->getTemplate($name)
         );
     }
+
     /**
      * Returns all the templates stored within current writer
      * 
@@ -106,8 +111,9 @@ abstract class Writer
      */
     final public function getTemplates()
     {
-        return $this->_templates;
+        return $this->templates;
     }
+
     /**
      * Initialized the code writer
      * 
