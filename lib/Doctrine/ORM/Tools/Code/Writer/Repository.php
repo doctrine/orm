@@ -16,6 +16,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
  */
+
 namespace Doctrine\ORM\Tools\Code\Writer;
 
 use Doctrine\ORM\Tools\Code\Writer;
@@ -30,13 +31,14 @@ use Doctrine\ORM\Tools\Code\Writer;
  * @version $Revision$
  * @author  Mykhailo Stadnyk <mikhus@gmail.com>
  */
-class Repository extends Writer {
-
-	/**
-	 * Initializes Doctrine's default templates for repositories classes generation
-	 */
-	public function init() {
-		$this->setTemplate( 'class',
+class Repository extends Writer
+{
+    /**
+     * Initializes Doctrine's default templates for repositories classes generation
+     */
+    public function init()
+    {
+        $this->setTemplate('class', 
 '<?php
 
 namespace <namespace>;
@@ -52,7 +54,6 @@ use <use>;
 class <className> extends <parentClassName>
 {
 }'
-		);
-	}
-
+        );
+    }
 }

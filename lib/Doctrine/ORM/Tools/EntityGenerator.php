@@ -19,8 +19,6 @@
 
 namespace Doctrine\ORM\Tools;
 
-use Doctrine\ORM\Tools\Code;
-
 use Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\AssociationMapping,
     Doctrine\Common\Util\Inflector,
@@ -100,8 +98,9 @@ class EntityGenerator
      * 
      * @param \Doctrine\ORM\Tools\Code\Writer $cw
      */
-    public function __construct( Writer $cw) {
-    	$this->_codeWriter = $cw;
+    public function __construct( Writer $cw)
+    {
+        $this->_codeWriter = $cw;
     }
 
     /**
@@ -345,13 +344,13 @@ class EntityGenerator
         }
 
         if ($collections) {
-        	$replacements = array(
-        		'<collections>' => implode("\n", $collections)
-        	);
+            $replacements = array(
+                '<collections>' => implode("\n", $collections)
+            );
 
-        	$method = $this->_codeWriter->renderTemplate('constructorMethod', $replacements);
+            $method = $this->_codeWriter->renderTemplate('constructorMethod', $replacements);
 
-        	return $this->_prefixCodeWithSpaces( $method);
+            return $this->_prefixCodeWithSpaces( $method);
         }
 
         return '';
@@ -629,13 +628,13 @@ class EntityGenerator
         $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : null;
 
         $replacements = array(
-          '<description>'       => ucfirst($type) . ' ' . $fieldName,
-          '<methodTypeHint>'    => $methodTypeHint,
-          '<variableType>'      => $variableType,
-          '<variableName>'      => Inflector::camelize($fieldName),
-          '<methodName>'        => $methodName,
-          '<fieldName>'         => $fieldName,
-          '<entityClassName>'   => $this->_generateEntityClassName($metadata)
+            '<description>'       => ucfirst($type) . ' ' . $fieldName,
+            '<methodTypeHint>'    => $methodTypeHint,
+            '<variableType>'      => $variableType,
+            '<variableName>'      => Inflector::camelize($fieldName),
+            '<methodName>'        => $methodName,
+            '<fieldName>'         => $fieldName,
+            '<entityClassName>'   => $this->_generateEntityClassName($metadata)
         );
 
         $method = $this->_codeWriter->renderTemplate($templateName, $replacements);

@@ -61,9 +61,9 @@ class EntityRepositoryGenerator
 
         $variables = array(
             '<namespace>'       => $namespace,
-        	'<use>'             => $fullParentClassName,
+            '<use>'             => $fullParentClassName,
             '<className>'       => $className,
-        	'<parentClassName>' => $parentClassName
+            '<parentClassName>' => $parentClassName
         );
 
         return $this->_codeWriter->renderTemplate('class', $variables);

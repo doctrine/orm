@@ -95,7 +95,7 @@ EOT
         if (count($metadatas)) {
             $numRepositories = 0;
             $codeWriter = $em->getConfiguration()->getRepositoryWriterImpl();
-            $generator = new EntityRepositoryGenerator( $codeWriter);
+            $generator = new EntityRepositoryGenerator($codeWriter);
 
             $parentClassName = $input->getOption('extend');
             if (!$parentClassName) {

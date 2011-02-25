@@ -30,10 +30,10 @@ use Exception;
  */
 class ORMException extends Exception
 {
-	public static function missingCodeWriterTemplate( $writer, $tplName)
-	{
-		return new self( get_class( $writer) . ": template '$tplName' is required but was not set!");
-	}
+    public static function missingCodeWriterTemplate( $writer, $tplName)
+    {
+        return new self( get_class( $writer) . ": template '$tplName' is required but was not set!");
+    }
 
     public static function missingMappingDriverImpl()
     {

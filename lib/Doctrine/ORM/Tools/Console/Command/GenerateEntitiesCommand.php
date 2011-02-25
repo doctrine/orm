@@ -135,7 +135,7 @@ EOT
         if (count($metadatas)) {
             // Create EntityGenerator
             $codeWriter = $em->getConfiguration()->getEntityWriterImpl();
-            $entityGenerator = new EntityGenerator( $codeWriter);
+            $entityGenerator = new EntityGenerator($codeWriter);
 
             $entityGenerator->setGenerateAnnotations($input->getOption('generate-annotations'));
             $entityGenerator->setGenerateStubMethods($input->getOption('generate-methods'));

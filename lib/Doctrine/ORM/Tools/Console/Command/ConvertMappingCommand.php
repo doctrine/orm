@@ -143,7 +143,7 @@ EOT
 
         if ($toType == 'annotation') {
             $entityGenerator = new EntityGenerator(
-            	$em->getConfiguration()->getEntityWriterImpl()
+                $em->getConfiguration()->getEntityWriterImpl()
             );
             $exporter->setEntityGenerator($entityGenerator);
 

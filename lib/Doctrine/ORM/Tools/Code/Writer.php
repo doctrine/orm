@@ -27,8 +27,8 @@ namespace Doctrine\ORM\Tools\Code;
  * extend this writer class and configure entity manager to use your own custom
  * implementation. Usually it can be done in cli-config.php:
  * 
- * 		$config->setEntityWriterImpl( new \My\EntityWriter);
- * 		$config->setRepositoryWriterImpl( new \My\RepositoryWriter);
+ * $config->setEntityWriterImpl( new \My\EntityWriter);
+ * $config->setRepositoryWriterImpl( new \My\RepositoryWriter);
  * 
  * Don't forget that custom classes should be correcly included or handled by an autoloader.
  * 
@@ -45,81 +45,76 @@ namespace Doctrine\ORM\Tools\Code;
  */
 abstract class Writer
 {
-
-	/**
-	 * Holder for collection of templates
-	 * 
-	 * @var array
-	 */
-	private $_templates = array();
-
-	/**
-	 * Constructor
-	 */
-	public function __construct() {
-		$this->init();
-	}
-
-	/**
-	 * Sets the template to internal holder
-	 * 
-	 * @param  string $name
-	 * @param  string $body
-	 * @return \Doctrine\ORM\Tools\Code\Writer
-	 */
-	final public function setTemplate( $name, $body)
-	{
-		$this->_templates[$name] = $body;
-		return $this;
-	}
-
-	/**
-	 * Gets the template from internal holder by its name
-	 * 
-	 * @param  string $name
-	 * @return string
-	 */
-	final public function getTemplate( $name)
-	{
-		if (!isset( $this->_templates[$name])) {
-			throw \Doctrine\ORM\ORMException::missingCodeWriterTemplate( $this, $name);
-		}
-	
-		return  $this->_templates[$name];
-	}
-
-	/**
-	 * Renders a template extracted from internal holder by its name. Replaces a placeholders defined in
-	 * template with a passed replacements. Returns a rendered code generated within specified template.
-	 * 
-	 * @param string $name
-	 * @param array $replacements
-	 * 
-	 */
-	public function renderTemplate( $name, array $replacements = array())
-	{
-		return str_replace(
-			array_keys( $replacements),
-			array_values( $replacements),
-			$this->getTemplate( $name)
-		);
-	}
-
-	/**
-	 * Returns all the templates stored within current writer
-	 * 
-	 * @return array
-	 */
-	final public function getTemplates() {
-		return $this->_templates;
-	}
-
-	/**
-	 * Initialized the code writer
-	 * 
-	 * @internal This method should be implemented with a custom class. In this method
-	 *           required templates should be initialized and added to internal templates
-	 *           holder. This method is called on object instantiation.
-	 */
-	abstract public function init();
+    /**
+     * Holder for collection of templates
+     * 
+     * @var array
+     */
+    private $_templates = array();
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->init();
+    }
+    /**
+     * Sets the template to internal holder
+     * 
+     * @param  string $name
+     * @param  string $body
+     * @return \Doctrine\ORM\Tools\Code\Writer
+     */
+    final public function setTemplate($name, $body)
+    {
+        $this->_templates[$name] = $body;
+        return $this;
+    }
+    /**
+     * Gets the template from internal holder by its name
+     * 
+     * @param  string $name
+     * @return string
+     */
+    final public function getTemplate($name)
+    {
+        if (! isset($this->_templates[$name])) {
+            throw \Doctrine\ORM\ORMException::missingCodeWriterTemplate(
+            $this, $name);
+        }
+        return $this->_templates[$name];
+    }
+    /**
+     * Renders a template extracted from internal holder by its name. Replaces a placeholders defined in
+     * template with a passed replacements. Returns a rendered code generated within specified template.
+     * 
+     * @param string $name
+     * @param array $replacements
+     * 
+     */
+    public function renderTemplate($name, array $replacements = array())
+    {
+        return str_replace(
+            array_keys($replacements), 
+            array_values($replacements), 
+            $this->getTemplate($name)
+        );
+    }
+    /**
+     * Returns all the templates stored within current writer
+     * 
+     * @return array
+     */
+    final public function getTemplates()
+    {
+        return $this->_templates;
+    }
+    /**
+     * Initialized the code writer
+     * 
+     * @internal This method should be implemented with a custom class. In this method
+     * required templates should be initialized and added to internal templates
+     * holder. This method is called on object instantiation.
+     */
+    abstract public function init();
 }

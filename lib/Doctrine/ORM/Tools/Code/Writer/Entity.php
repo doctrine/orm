@@ -16,6 +16,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
  */
+
 namespace Doctrine\ORM\Tools\Code\Writer;
 
 use Doctrine\ORM\Tools\Code\Writer;
@@ -30,15 +31,14 @@ use Doctrine\ORM\Tools\Code\Writer;
  * @version $Revision$
  * @author  Mykhailo Stadnyk <mikhus@gmail.com>
  */
-class Entity extends Writer {
-
-	/**
-	 * Initializes Doctrine's default templates for entities classes generation
-	 */
-	public function init()
-	{
-		$this
-			->setTemplate( 'class',
+class Entity extends Writer
+{
+    /**
+     * Initializes Doctrine's default templates for entities classes generation
+     */
+    public function init()
+    {
+        $this->setTemplate('class', 
 '<?php
 
 <namespace>
@@ -48,7 +48,7 @@ class Entity extends Writer {
 {
 <entityBody>
 }'
-			)->setTemplate( 'getMethod',
+        )->setTemplate('getMethod', 
 '/**
  * <description>
  *
@@ -58,7 +58,7 @@ public function <methodName>()
 {
 <spaces>return $this-><fieldName>;
 }'
-			)->setTemplate( 'setMethod',
+        )->setTemplate('setMethod', 
 '/**
  * <description>
  *
@@ -68,7 +68,7 @@ public function <methodName>(<methodTypeHint>$<variableName>)
 {
 <spaces>$this-><fieldName> = $<variableName>;
 }'
-			)->setTemplate( 'addMethod',
+        )->setTemplate('addMethod', 
 '/**
  * <description>
  *
@@ -78,7 +78,7 @@ public function <methodName>(<methodTypeHint>$<variableName>)
 {
 <spaces>$this-><fieldName>[] = $<variableName>;
 }'
-			)->setTemplate( 'lifecycleCallbackMethod',
+        )->setTemplate('lifecycleCallbackMethod', 
 '/**
  * @<name>
  */
@@ -86,13 +86,12 @@ public function <methodName>()
 {
 <spaces>// Add your code here
 }'
-			)->setTemplate( 'constructorMethod',
+        )->setTemplate('constructorMethod', 
 'public function __construct()
 {
 <spaces><collections>
 }
 '
-			);
-	}
-
+        );
+    }
 }
