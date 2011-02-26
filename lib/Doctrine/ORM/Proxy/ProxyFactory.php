@@ -130,11 +130,12 @@ class ProxyFactory
     {
         $methods = $this->_generateMethods($class);
         $sleepImpl = $this->_generateSleep($class);
+        $cloneImpl = $class->reflClass->hasMethod('__clone') ? 'parent::__clone();' : ''; // hasMethod() checks case-insensitive
 
         $placeholders = array(
             '<namespace>',
             '<proxyClassName>', '<className>',
-            '<methods>', '<sleepImpl>'
+            '<methods>', '<sleepImpl>', '<cloneImpl>'
         );
 
         if(substr($class->name, 0, 1) == "\\") {
@@ -146,7 +147,7 @@ class ProxyFactory
         $replacements = array(
             $this->_proxyNamespace,
             $proxyClassName, $className,
-            $methods, $sleepImpl
+            $methods, $sleepImpl, $cloneImpl
         );
 
         $file = str_replace($placeholders, $replacements, $file);
@@ -166,7 +167,7 @@ class ProxyFactory
 
         foreach ($class->reflClass->getMethods() as $method) {
             /* @var $method ReflectionMethod */
-            if ($method->isConstructor() || strtolower($method->getName()) == "__sleep") {
+            if ($method->isConstructor() || in_array(strtolower($method->getName()), array("__sleep", "__clone"))) {
                 continue;
             }
 
@@ -284,6 +285,23 @@ class <proxyClassName> extends \<className> implements \Doctrine\ORM\Proxy\Proxy
     public function __sleep()
     {
         <sleepImpl>
+    }
+
+    public function __clone()
+    {
+        if (!$this->__isInitialized__ && $this->_entityPersister) {
+            $this->__isInitialized__ = true;
+            $class = $this->_entityPersister->getClassMetadata();
+            $original = $this->_entityPersister->load($this->_identifier);
+            if ($original === null) {
+                throw new \Doctrine\ORM\EntityNotFoundException();
+            }
+            foreach ($class->reflFields AS $field => $reflProperty) {
+                $reflProperty->setValue($this, $reflProperty->getValue($original));
+            }
+            unset($this->_entityPersister, $this->_identifier);
+        }
+        <cloneImpl>
     }
 }';
 }
