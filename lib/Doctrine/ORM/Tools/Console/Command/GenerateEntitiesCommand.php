@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
+use Doctrine\ORM\Tools;
+
 use Symfony\Component\Console\Input\InputArgument,
     Symfony\Component\Console\Input\InputOption,
     Symfony\Component\Console,
@@ -82,6 +84,10 @@ class GenerateEntitiesCommand extends Console\Command\Command
             new InputOption(
                 'num-spaces', null, InputOption::VALUE_OPTIONAL,
                 'Defines the number of indentation spaces', 4
+            ),
+            new InputOption(
+                'code-writer', null, InputOption::VALUE_OPTIONAL,
+                'Defines the code templates writer class which should be used on a generation process', 4
             )
         ))
         ->setHelp(<<<EOT
@@ -133,10 +139,18 @@ EOT
         }
 
         if (count($metadatas)) {
-            // Create EntityGenerator
-            $codeWriter = $em->getConfiguration()->getEntityWriterImpl();
-            $entityGenerator = new EntityGenerator($codeWriter);
+            $writerClass = $input->getOption('code-writer');
 
+            if (!($writerClass && class_exists( $writerClass))) {
+                $writerClass = 'Doctrine\ORM\Tools\Code\Writer\Entity';
+            }
+            $writerClass = str_replace( '\\\\', '\\', '\\' . $writerClass);
+            
+
+            // Create EntityGenerator
+            $entityGenerator = new EntityGenerator();
+
+            $entityGenerator->setCodeWriter(new $writerClass);
             $entityGenerator->setGenerateAnnotations($input->getOption('generate-annotations'));
             $entityGenerator->setGenerateStubMethods($input->getOption('generate-methods'));
             $entityGenerator->setRegenerateEntityIfExists($input->getOption('regenerate-entities'));

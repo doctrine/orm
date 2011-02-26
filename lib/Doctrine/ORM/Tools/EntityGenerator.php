@@ -94,13 +94,25 @@ class EntityGenerator
     private $codeWriter = null;
 
     /**
-     * Constructor
+     * Sets the code writer implementation to use it within code generation process
      * 
      * @param \Doctrine\ORM\Tools\Code\Writer $cw
      */
-    public function __construct( Writer $cw)
-    {
+    public function setCodeWriter(Writer $cw) {
         $this->codeWriter = $cw;
+        return $this;
+    }
+
+    /**
+     * Returns the code writer implementation specified for this class
+     * 
+     * @return \Doctrine\ORM\Tools\Code\Writer
+     */
+    public function getCodeWriter() {
+        if ($this->codeWriter === null) {
+            $this->setCodeWriter(new Writer\Entity);
+        }
+        return $this->codeWriter;
     }
 
     /**
@@ -171,7 +183,7 @@ class EntityGenerator
             '<spaces>'           => $this->_spaces
         );
 
-        return $this->codeWriter->renderTemplate('class', $replacements);
+        return $this->getCodeWriter()->renderTemplate('class', $replacements);
     }
 
     /**
@@ -348,7 +360,7 @@ class EntityGenerator
                 '<collections>' => implode("\n", $collections)
             );
 
-            $method = $this->codeWriter->renderTemplate('constructorMethod', $replacements);
+            $method = $this->getCodeWriter()->renderTemplate('constructorMethod', $replacements);
 
             return $this->_prefixCodeWithSpaces( $method);
         }
@@ -637,7 +649,7 @@ class EntityGenerator
             '<entityClassName>'   => $this->_generateEntityClassName($metadata)
         );
 
-        $method = $this->codeWriter->renderTemplate($templateName, $replacements);
+        $method = $this->getCodeWriter()->renderTemplate($templateName, $replacements);
 
         return $this->_prefixCodeWithSpaces($method);
     }
@@ -654,7 +666,7 @@ class EntityGenerator
             '<entityClassName>' => $this->_generateEntityClassName($metadata)
         );
 
-        $method = $this->codeWriter->renderTemplate('lifecycleCallbackMethod', $replacements);
+        $method = $this->getCodeWriter()->renderTemplate('lifecycleCallbackMethod', $replacements);
 
         return $this->_prefixCodeWithSpaces($method);
     }

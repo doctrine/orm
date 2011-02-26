@@ -32,7 +32,6 @@ use Doctrine\Common\Cache\Cache,
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
- * @author  Mykhailo Stadnyk <mikhus@gmail.com>
  */
 class Configuration extends \Doctrine\DBAL\Configuration
 {
@@ -175,48 +174,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         return isset($this->_attributes['metadataDriverImpl']) ?
                 $this->_attributes['metadataDriverImpl'] : null;
-    }
-
-    /**
-     * Sets entity code writer implementation for code auto-generation
-     * 
-     * @param \Doctrine\ORM\Tools\Code\Writer $writerImpl
-     */
-    public function setEntityWriterImpl(\Doctrine\ORM\Tools\Code\Writer $writerImpl)
-    {
-        $this->_attributes['entityWriterImpl'] = $writerImpl;
-    }
-
-    /**
-     * Gets entity code writer implementation for code auto-generation
-     * 
-     * @return \Doctrine\ORM\Tools\Code\Writer
-     */
-    public function getEntityWriterImpl()
-    {
-        return isset($this->_attributes['entityWriterImpl']) ?
-               $this->_attributes['entityWriterImpl'] : new \Doctrine\ORM\Tools\Code\Writer\Entity;
-    }
-
-    /**
-     * Sets repository code writer implementation for code auto-generation
-     * 
-     * @param \Doctrine\ORM\Tools\Code\Writer $writerImpl
-     */
-	public function setRepositoryWriterImpl(\Doctrine\ORM\Tools\Code\Writer $writerImpl)
-	{
-        $this->_attributes['repositoryWriterImpl'] = $writerImpl;
-    }
-
-    /**
-     * Gets repository code writer implementation for code auto-generation
-     * 
-     * @return \Doctrine\ORM\Tools\Code\Writer
-     */
-    public function getRepositoryWriterImpl()
-    {
-        return isset($this->_attributes['repositoryWriterImpl']) ?
-               $this->_attributes['repositoryWriterImpl'] : new \Doctrine\ORM\Tools\Code\Writer\Repository;
     }
 
     /**

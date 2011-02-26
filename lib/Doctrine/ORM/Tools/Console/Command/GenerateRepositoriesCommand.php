@@ -21,6 +21,8 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
+use Doctrine\ORM\Tools;
+
 use Symfony\Component\Console\Input\InputArgument,
     Symfony\Component\Console\Input\InputOption,
     Symfony\Component\Console,
@@ -61,6 +63,10 @@ class GenerateRepositoriesCommand extends Console\Command\Command
             ),
             new InputArgument(
                 'dest-path', InputArgument::REQUIRED, 'The path to generate your repository classes.'
+            ),
+            new InputOption(
+                'code-writer', null, InputOption::VALUE_OPTIONAL,
+                'Defines the code templates writer class which should be used on a generation process', 4
             )
         ))
         ->setHelp(<<<EOT
@@ -94,8 +100,15 @@ EOT
 
         if (count($metadatas)) {
             $numRepositories = 0;
-            $codeWriter = $em->getConfiguration()->getRepositoryWriterImpl();
-            $generator = new EntityRepositoryGenerator($codeWriter);
+
+            $writerClass = $input->getOption('code-writer');
+            if (!($writerClass && class_exists( $writerClass))) {
+                $writerClass = 'Doctrine\ORM\Tools\Code\Writer\Repository';
+            }
+            $writerClass = str_replace( '\\\\', '\\', '\\' . $writerClass);
+
+            $generator = new EntityRepositoryGenerator();
+            $generator->setCodeWriter(new $writerClass);
 
             $parentClassName = $input->getOption('extend');
             if (!$parentClassName) {

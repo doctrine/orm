@@ -45,15 +45,33 @@ class EntityRepositoryGenerator
     private $codeWriter = null;
 
     /**
-     * Constructor
-     * 
-     * @param \Doctrine\ORM\Tools\Code\Writer $codeWriter
+     * Defualt parent class for repositories object
      */
-    public function __construct( Writer $codeWriter) {
-    	$this->codeWriter = $codeWriter;
+    const DEFAULT_EXTEND_CLASS = 'Doctrine\ORM\EntityRepository';
+
+    /**
+     * Sets the code writer implementation to use it within code generation process
+     * 
+     * @param \Doctrine\ORM\Tools\Code\Writer $cw
+     */
+    public function setCodeWriter(Writer $cw) {
+        $this->codeWriter = $cw;
+        return $this;
     }
 
-    public function generateEntityRepositoryClass($fullClassName, $fullParentClassName)
+    /**
+     * Returns the code writer implementation specified for this class
+     * 
+     * @return \Doctrine\ORM\Tools\Code\Writer
+     */
+    public function getCodeWriter() {
+        if ($this->codeWriter === null) {
+            $this->setCodeWriter(new Writer\Repository);
+        }
+        return $this->codeWriter;
+    }
+
+    public function generateEntityRepositoryClass($fullClassName, $fullParentClassName = self::DEFAULT_EXTEND_CLASS)
     {
         $namespace       = substr($fullClassName, 0, strrpos($fullClassName, '\\'));
         $className       = substr($fullClassName, strrpos($fullClassName, '\\') + 1, strlen($fullClassName));
@@ -66,10 +84,10 @@ class EntityRepositoryGenerator
             '<parentClassName>' => $parentClassName
         );
 
-        return $this->codeWriter->renderTemplate('class', $variables);
+        return $this->getCodeWriter()->renderTemplate('class', $variables);
     }
 
-    public function writeEntityRepositoryClass($fullClassName, $outputDirectory, $parentClassName)
+    public function writeEntityRepositoryClass($fullClassName, $outputDirectory, $parentClassName = self::DEFAULT_EXTEND_CLASS)
     {
         $code = $this->generateEntityRepositoryClass($fullClassName, $parentClassName);
 

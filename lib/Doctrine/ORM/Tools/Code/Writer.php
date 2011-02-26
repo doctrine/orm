@@ -53,14 +53,6 @@ abstract class Writer
     private $templates = array();
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->init();
-    }
-
-    /**
      * Sets the template to internal holder
      * 
      * @param  string $name
@@ -81,9 +73,14 @@ abstract class Writer
      */
     final public function getTemplate($name)
     {
+        if (!$this->templates) {
+            $this->init();
+        }
+
         if (!isset($this->templates[$name])) {
             throw \Doctrine\ORM\ORMException::missingCodeWriterTemplate($this, $name);
         }
+
         return $this->templates[$name];
     }
 
@@ -111,6 +108,10 @@ abstract class Writer
      */
     final public function getTemplates()
     {
+        if (!$this->templates) {
+            $this->init();
+        }
+
         return $this->templates;
     }
 
@@ -119,7 +120,7 @@ abstract class Writer
      * 
      * @internal This method should be implemented with a custom class. In this method
      * required templates should be initialized and added to internal templates
-     * holder. This method is called on object instantiation.
+     * holder.
      */
     abstract public function init();
 }

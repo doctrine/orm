@@ -20,7 +20,8 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->_namespace = uniqid("doctrine_");
         $this->_tmpDir = \sys_get_temp_dir();
         \mkdir($this->_tmpDir . \DIRECTORY_SEPARATOR . $this->_namespace);
-        $this->_generator = new EntityGenerator(new \Doctrine\ORM\Tools\Code\Writer\Entity);
+        $this->_generator = new EntityGenerator();
+        $this->_generator->setCodeWriter(new \Doctrine\ORM\Tools\Code\Writer\Entity);
         $this->_generator->setGenerateAnnotations(true);
         $this->_generator->setGenerateStubMethods(true);
         $this->_generator->setRegenerateEntityIfExists(false);
