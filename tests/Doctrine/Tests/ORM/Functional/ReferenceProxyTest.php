@@ -26,7 +26,7 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 true);
     }
 
-    public function testLazyLoadsFieldValuesFromDatabase()
+    public function createProduct()
     {
         $product = new ECommerceProduct();
         $product->setName('Doctrine Cookbook');
@@ -34,8 +34,13 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->flush();
         $this->_em->clear();
-        
-        $id = $product->getId();
+
+        return $product->getId();
+    }
+
+    public function testLazyLoadsFieldValuesFromDatabase()
+    {
+        $id = $this->createProduct();
 
         $productProxy = $this->_factory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceProduct', array('id' => $id));
         $this->assertEquals('Doctrine Cookbook', $productProxy->getName());
@@ -46,9 +51,50 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testAccessMetatadaForProxy()
     {
-        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , 1);
+        $id = $this->createProduct();
+
+        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
         $class = $this->_em->getClassMetadata(get_class($entity));
 
         $this->assertEquals('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $class->name);
+    }
+
+    /**
+     * @group DDC-1033
+     */
+    public function testReferenceFind()
+    {
+        $id = $this->createProduct();
+
+        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+        $entity2 = $this->_em->find('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+
+        $this->assertSame($entity, $entity2);
+        $this->assertEquals('Doctrine Cookbook', $entity2->getName());
+    }
+
+    /**
+     * @group DDC-1033
+     */
+    public function testCloneProxy()
+    {
+        $id = $this->createProduct();
+
+        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
+        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+
+        /* @var $clone Doctrine\Tests\Models\ECommerce\ECommerceProduct */
+        $clone = clone $entity;
+
+        $this->assertEquals($id, $entity->getId());
+        $this->assertEquals('Doctrine Cookbook', $entity->getName());
+
+        $this->assertFalse($this->_em->contains($clone), "Cloning a reference proxy should return an unmanaged/detached entity.");
+        $this->assertEquals($id, $clone->getId(), "Cloning a reference proxy should return same id.");
+        $this->assertEquals('Doctrine Cookbook', $clone->getName(), "Cloning a reference proxy should return same product name.");
+
+        // domain logic, Product::__clone sets isCloned public property
+        $this->assertTrue($clone->isCloned);
+        $this->assertFalse($entity->isCloned);
     }
 }
