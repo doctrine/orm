@@ -279,7 +279,7 @@ With Nested Conditions in WHERE Clause:
     $query = $em->createQuery('SELECT u from ForumUser u WHERE (u.username = :name OR u.username = :name2) AND u.id = :id');
     $query->setParameters(array(
         ':name' => 'Bob',
-        ':name' => 'Alice',
+        ':name2' => 'Alice',
         ':id' => 321,
     ));
     $users = $query->getResult(); // array of ForumUser objects
