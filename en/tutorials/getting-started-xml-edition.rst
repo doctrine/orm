@@ -455,7 +455,7 @@ We then go on specifying the definition of a Bug:
             /**
              * @ManyToMany(targetEntity="Product")
              */
-            private $products = null; // Set private for encapsulation
+            private $products;
         }
 
     .. code-block:: xml
@@ -521,14 +521,13 @@ After the field definitions the two qualified references to the
 user entity are defined. They are created by the ``many-to-one``
 tag. The class name of the related entity has to be specified with
 the ``target-entity`` attribute, which is enough information for
-the database mapper to access the foreign-table. The
-``join-column`` tags are used to specify how the foreign and
-referenced columns are named, an information Doctrine needs to
-construct joins between those two entities correctly. Since
+the database mapper to access the foreign-table. Since
 ``reporter`` and ``engineer`` are on the owning side of a
 bi-directional relation we also have to specify the ``inversed-by``
 attribute. They have to point to the field names on the inverse
-side of the relationship.
+side of the relationship. We will see in the next example that the ``inversed-by``
+attribute has a counterpart ``mapped-by`` which makes that
+the inverse side.
 
 The last missing property is the ``Bug::$products`` collection. It
 holds all products where the specific bug is occurring in. Again
