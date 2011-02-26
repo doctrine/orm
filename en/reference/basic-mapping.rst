@@ -137,12 +137,22 @@ built-in mapping types:
 
     Doctrine Mapping Types are NOT SQL types and NOT PHP
     types! They are mapping types between 2 types.
+    Additionally Mapping types are *case-sensitive*. For example, using
+    a DateTime column will NOT match the datetime type that ships with
+    Doctrine 2.    
 
 .. warning::
 
-    Mapping types are *case-sensitive*. For example, using
-    a DateTime column will NOT match the datetime type that ships with
-    Doctrine 2!
+    All Date types assume that you are exclusively using the default timezone
+    set by `date_default_timezone_set() <http://docs.php.net/manual/en/function.date-default-timezone-set.php>`_
+    or by the php.ini configuration ``date.timezone``. Working with
+    different timezones will cause troubles and unexpected behavior.
+
+    If you need specific timezone handling you have to handle this
+    in your domain, converting all the values back and forth from UTC.
+    There is also a `cookbook entry <../cookbook/working-with-datetime>`
+    on working with datetimes that gives hints for implementing
+    multi timezone applications.
 
 
 Property Mapping
