@@ -55,6 +55,8 @@ class ECommerceProduct
      */
     private $related;
 
+    public $isCloned = false;
+
     public function __construct()
     {
         $this->features = new ArrayCollection;
@@ -158,5 +160,10 @@ class ECommerceProduct
         if ($removed) {
             $related->removeRelated($this);
         }
+    }
+
+    public function __clone()
+    {
+        $this->isCloned = true;
     }
 }
