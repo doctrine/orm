@@ -27,7 +27,8 @@ use Symfony\Component\Console\Input\InputArgument,
     Doctrine\ORM\Tools\Console\MetadataFilter,
     Doctrine\ORM\Tools\Export\ClassMetadataExporter,
     Doctrine\ORM\Tools\EntityGenerator,
-    Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
+    Doctrine\ORM\Tools\DisconnectedClassMetadataFactory,
+    Doctrine\ORM\Tools\Code;
 
 /**
  * Command to convert your mapping information between the various formats.
@@ -78,6 +79,11 @@ class ConvertMappingCommand extends Console\Command\Command
                 'num-spaces', null, InputOption::VALUE_OPTIONAL,
                 'Defines the number of indentation spaces', 4
             ),
+			new InputOption(
+                'code-writer', null, InputOption::VALUE_OPTIONAL,
+                'Defines the code templates writer class which should be used on a generation process',
+				'Doctrine\ORM\Tools\Code\Writer\Entity'
+            )
         ))
         ->setHelp(<<<EOT
 Convert mapping information between supported formats.
@@ -142,9 +148,9 @@ EOT
         $exporter->setOverwriteExistingFiles( ($input->getOption('force') !== false) );
 
         if ($toType == 'annotation') {
-            $entityGenerator = new EntityGenerator(
-                $em->getConfiguration()->getEntityWriterImpl()
-            );
+            $entityGenerator = new EntityGenerator();
+			$entityGenerator->setCodeWriter(Code\Writer\Factory::create($input, 'entity'));
+
             $exporter->setEntityGenerator($entityGenerator);
 
             $entityGenerator->setNumSpaces($input->getOption('num-spaces'));

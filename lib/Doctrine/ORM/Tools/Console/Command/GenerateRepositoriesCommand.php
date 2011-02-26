@@ -21,13 +21,12 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
-use Doctrine\ORM\Tools;
-
 use Symfony\Component\Console\Input\InputArgument,
     Symfony\Component\Console\Input\InputOption,
     Symfony\Component\Console,
     Doctrine\ORM\Tools\Console\MetadataFilter,
-    Doctrine\ORM\Tools\EntityRepositoryGenerator;
+    Doctrine\ORM\Tools\EntityRepositoryGenerator,
+    Doctrine\ORM\Tools\Code;
 
 /**
  * Command to generate repository classes for mapping information.
@@ -66,7 +65,8 @@ class GenerateRepositoriesCommand extends Console\Command\Command
             ),
             new InputOption(
                 'code-writer', null, InputOption::VALUE_OPTIONAL,
-                'Defines the code templates writer class which should be used on a generation process', 4
+                'Defines the code templates writer class which should be used on a generation process',
+				'Doctrine\ORM\Tools\Code\Writer\Repository'
             )
         ))
         ->setHelp(<<<EOT
@@ -101,14 +101,8 @@ EOT
         if (count($metadatas)) {
             $numRepositories = 0;
 
-            $writerClass = $input->getOption('code-writer');
-            if (!($writerClass && class_exists( $writerClass))) {
-                $writerClass = 'Doctrine\ORM\Tools\Code\Writer\Repository';
-            }
-            $writerClass = str_replace( '\\\\', '\\', '\\' . $writerClass);
-
             $generator = new EntityRepositoryGenerator();
-            $generator->setCodeWriter(new $writerClass);
+            $generator->setCodeWriter(Code\Writer\Factory::create($input, 'repository'));
 
             $parentClassName = $input->getOption('extend');
             if (!$parentClassName) {
