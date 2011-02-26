@@ -197,7 +197,7 @@ executing the Query. Additionally a set of parameters such as query hints
 cannot be set on the QueryBuilder itself. This is why you always have to convert
 a querybuilder instance into a Query object:
 
-.. code-block::
+.. code-block:: php
 
     // $qb instanceof QueryBuilder
     $query = $qb->getQuery();

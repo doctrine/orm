@@ -206,8 +206,8 @@ Cascade Merge with Bi-directional Associations
 There are two bugs now that concern the use of cascade merge in combination with bi-directional associations.
 Make sure to study the behavior of cascade merge if you are using it:
 
--  `DDC-875 Merge can sometimes add the same entity twice into a collection<http://www.doctrine-project.org/jira/browse/DDC-875>`_
--  `DDC-763 Cascade merge on associated entities can insert too many rows through "Persistence by Reachability"<http://www.doctrine-project.org/jira/browse/DDC-763>`_
+-  `DDC-875 <http://www.doctrine-project.org/jira/browse/DDC-875>`_ Merge can sometimes add the same entity twice into a collection
+-  `DDC-763 <http://www.doctrine-project.org/jira/browse/DDC-763>`_ Cascade merge on associated entities can insert too many rows through "Persistence by Reachability"
 
 Custom Persisters
 ~~~~~~~~~~~~~~~~~
@@ -267,8 +267,8 @@ blog posts we have written on this topics:
 -  `Doctrine2 "Behaviors" in a Nutshell <http://www.doctrine-project.org/blog/doctrine2-behaviours-nutshell>`_
 -  `A re-usable Versionable behavior for Doctrine2 <http://www.doctrine-project.org/blog/doctrine2-versionable>`_
 -  `Write your own ORM on top of Doctrine2 <http://www.doctrine-project.org/blog/your-own-orm-doctrine2>`_
--  `Doctrine 2 Behavioral Extensions<http://www.doctrine-project.org/blog/doctrine2-behavioral-extensions>`_
--  `Doctrator<https://github.com/pablodip/doctrator`>_
+-  `Doctrine 2 Behavioral Extensions <http://www.doctrine-project.org/blog/doctrine2-behavioral-extensions>`_
+-  `Doctrator <https://github.com/pablodip/doctrator`>_
 
 Doctrine 2 has enough hooks and extension points so that *you* can
 add whatever you want on top of it. None of this will ever become
