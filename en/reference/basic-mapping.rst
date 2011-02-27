@@ -275,13 +275,8 @@ Restrictions to keep in mind:
 
 When you have implemented the type you still need to let Doctrine
 know about it. This can be achieved through the
-``Doctrine\DBAL\Configuration#setCustomTypes(array $types)``
-method. ``Doctrine\ORM\Configuration`` is a subclass of
-``Doctrine\DBAL\Configuration``, so the methods are available on
-your ORM Configuration instance as well.
-
-
-Here is an example:
+``Doctrine\DBAL\Types\Type#addType($name, $className)``
+method. See the following example:
 
 .. code-block:: php
 
