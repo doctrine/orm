@@ -149,6 +149,24 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
             "mapped superclass 'Doctrine\Tests\ORM\Mapping\InvalidMappedSuperClass#users'");
         $usingInvalidMsc = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\UsingInvalidMappedSuperClass');
     }
+    
+    /**
+     * @group DDC-1050
+     */
+    public function testInvalidMappedSuperClassWithInheritanceInformation()
+    {
+        $annotationDriver = $this->_loadDriver();
+
+        $em = $this->_getTestEntityManager();
+        $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
+        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory->setEntityManager($em);
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException',
+            "Its not supported to define inheritance information on a mapped ".
+            "superclass 'Doctrine\Tests\ORM\Mapping\MappedSuperClassInheritence'.");
+        $usingInvalidMsc = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\MappedSuperClassInheritence');
+    }
 }
 
 /**
@@ -180,4 +198,14 @@ class UsingInvalidMappedSuperClass extends InvalidMappedSuperClass
      * @Id @Column(type="integer") @GeneratedValue
      */
     private $id;
+}
+
+/**
+ * @MappedSuperclass
+ * @InheritanceType("JOINED")
+ * @DiscriminatorMap({"test" = "ColumnWithoutType"})
+ */
+class MappedSuperClassInheritence
+{
+    
 }
