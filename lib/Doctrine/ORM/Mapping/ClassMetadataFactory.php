@@ -325,6 +325,8 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 if (!$class->discriminatorColumn) {
                     throw MappingException::missingDiscriminatorColumn($class->name);
                 }
+            } else if ($class->isMappedSuperclass && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
+                throw MappingException::noInheritanceOnMappedSuperClass($class->name);
             }
 
             $this->loadedMetadata[$className] = $class;
