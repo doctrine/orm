@@ -355,7 +355,7 @@ class EntityManager implements ObjectManager
 
         // Check identity map first, if its already in there just return it.
         if ($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) {
-            return $entity;
+            return ($entity instanceof $class->name) ? $entity : null;
         }
         if ($class->subClasses) {
             $entity = $this->find($entityName, $identifier);
@@ -395,7 +395,7 @@ class EntityManager implements ObjectManager
 
         // Check identity map first, if its already in there just return it.
         if ($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) {
-            return $entity;
+            return ($entity instanceof $class->name) ? $entity : null;
         }
         if ( ! is_array($identifier)) {
             $identifier = array($class->identifier[0] => $identifier);
