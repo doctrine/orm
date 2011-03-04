@@ -167,6 +167,26 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
             "superclass 'Doctrine\Tests\ORM\Mapping\MappedSuperClassInheritence'.");
         $usingInvalidMsc = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\MappedSuperClassInheritence');
     }
+    
+    /**
+     * @group DDC-1034
+     */
+    public function testInheritanceSkipsParentLifecycleCallbacks()
+    {
+        $annotationDriver = $this->_loadDriver();
+        
+        $cm = new ClassMetadata('Doctrine\Tests\ORM\Mapping\AnnotationChild');
+        $em = $this->_getTestEntityManager();
+        $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
+        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory->setEntityManager($em);
+        
+        $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\AnnotationChild');
+        $this->assertEquals(array("postLoad" => array("postLoad"), "preUpdate" => array("preUpdate")), $cm->lifecycleCallbacks);
+        
+        $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\AnnotationParent');
+        $this->assertEquals(array("postLoad" => array("postLoad"), "preUpdate" => array("preUpdate")), $cm->lifecycleCallbacks);
+    }
 }
 
 /**
@@ -206,6 +226,45 @@ class UsingInvalidMappedSuperClass extends InvalidMappedSuperClass
  * @DiscriminatorMap({"test" = "ColumnWithoutType"})
  */
 class MappedSuperClassInheritence
+{
+    
+}
+
+/**
+ * @Entity
+ * @InheritanceType("JOINED")
+ * @DiscriminatorMap({"parent" = "AnnotationParent", "child" = "AnnotationChild"})
+ * @HasLifecycleCallbacks
+ */
+class AnnotationParent
+{
+    /**
+     * @Id @Column(type="integer") @GeneratedValue
+     */
+    private $id;
+    
+    /**
+     * @PostLoad
+     */
+    public function postLoad()
+    {
+        
+    }
+    
+    /**
+     * @PreUpdate
+     */
+    public function preUpdate()
+    {
+        
+    }
+}
+
+/**
+ * @Entity
+ * @HasLifecycleCallbacks
+ */
+class AnnotationChild extends AnnotationParent
 {
     
 }
