@@ -41,6 +41,18 @@ class StaticPHPDriver implements Driver
 {
     private $_paths = array();
 
+    /**
+     * The file extension of mapping documents.
+     *
+     * @var string
+     */
+    protected $_fileExtension = '.php';
+
+    /**
+     * @param array
+     */
+    protected $_classNames;
+
     public function __construct($paths)
     {
         $this->addPaths((array) $paths);
