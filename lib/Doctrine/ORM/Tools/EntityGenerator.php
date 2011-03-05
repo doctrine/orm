@@ -646,7 +646,7 @@ class EntityGenerator
             '<variableName>'      => Inflector::camelize($fieldName),
             '<methodName>'        => $methodName,
             '<fieldName>'         => $fieldName,
-            '<entityClassName>'   => $this->_generateEntityClassName($metadata)
+            '<entityClassName>'   => $this->_getNamespace($metadata) . '\\' . $this->_getClassName($metadata)
         );
 
         $method = $this->getCodeWriter()->renderTemplate($templateName, $replacements);
@@ -663,7 +663,7 @@ class EntityGenerator
         $replacements = array(
             '<name>'            => $this->_annotationsPrefix . $name,
             '<methodName>'      => $methodName,
-            '<entityClassName>' => $this->_generateEntityClassName($metadata)
+            '<entityClassName>' => $this->_getNamespace($metadata) . '\\' . $this->_getClassName($metadata)
         );
 
         $method = $this->getCodeWriter()->renderTemplate('lifecycleCallbackMethod', $replacements);
