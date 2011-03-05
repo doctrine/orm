@@ -160,6 +160,8 @@
                <pear minimum_version="1.6.0" recommended_version="1.6.1" />
                <package name="DoctrineCommon" channel="pear.doctrine-project.org" minimum_version="${dependencies.common}" />
                <package name="DoctrineDBAL" channel="pear.doctrine-project.org" minimum_version="${dependencies.dbal}" />
+               <package name="DoctrineSymfonyConsole" channel="pear.doctrine-project.org" minimum_version="2.0.0" />
+               <package name="DoctrineSymfonyYaml" channel="pear.doctrine-project.org" minimum_version="2.0.0" />
            </dependencies>
            <dirroles key="bin">script</dirroles>
            <ignore>Doctrine/Common/</ignore>
@@ -211,4 +213,57 @@
     </target>
 
     <target name="release" depends="git-tag,build-packages,distribute-download,pirum-release,update-dev-version" />
+    
+    <!--
+        Builds distributable PEAR packages for the Symfony Dependencies
+    -->
+    <target name="release-symfony-dependencies" depends="build-orm">
+        <d51pearpkg2 baseinstalldir="/" dir="${build.dir}/doctrine-orm">
+           <name>DoctrineSymfonyConsole</name>
+           <summary>Symfony Console Component</summary>
+           <channel>pear.doctrine-project.org</channel>
+           <description>A command line interface tool from the Symfony project. Packaged for shipping with Doctrine projects using ORM version numbers.</description>
+           <lead user="fabpot" name="Fabien Potencier" email="fabien.potencier@symfony-project.com" />
+           <license>NewBSD License</license>
+           <version release="${version}" api="${version}" />
+           <stability release="${stability}" api="${stability}" />
+           <notes>-</notes>
+           <dependencies>
+               <php minimum_version="5.3.0" />
+               <pear minimum_version="1.6.0" recommended_version="1.6.1" />
+           </dependencies>
+           <ignore>Doctrine/Common/</ignore>
+           <ignore>Doctrine/DBAL/</ignore>
+           <ignore>Doctrine/ORM/</ignore>
+           <ignore>Symfony/Component/Yaml/</ignore>
+        </d51pearpkg2>
+        <exec command="pear package" dir="${build.dir}/doctrine-orm" passthru="true" />
+        <exec command="mv DoctrineSymfonyConsole-${version}.tgz ../../dist" dir="${build.dir}/doctrine-orm" passthru="true" />
+        
+        <d51pearpkg2 baseinstalldir="/" dir="${build.dir}/doctrine-orm">
+           <name>DoctrineSymfonyYaml</name>
+           <summary>Symfony Yaml Component</summary>
+           <channel>pear.doctrine-project.org</channel>
+           <description>A YAML Parser from the Symfony project. Packaged for shipping with Doctrine projects using ORM version numbers.</description>
+           <lead user="fabpot" name="Fabien Potencier" email="fabien.potencier@symfony-project.com" />
+           <license>NewBSD License</license>
+           <version release="${version}" api="${version}" />
+           <stability release="${stability}" api="${stability}" />
+           <notes>-</notes>
+           <dependencies>
+               <php minimum_version="5.3.0" />
+               <pear minimum_version="1.6.0" recommended_version="1.6.1" />
+           </dependencies>
+           <ignore>Doctrine/Common/</ignore>
+           <ignore>Doctrine/DBAL/</ignore>
+           <ignore>Doctrine/ORM/</ignore>
+           <ignore>Symfony/Component/Console/</ignore>
+        </d51pearpkg2>
+        <exec command="pear package" dir="${build.dir}/doctrine-orm" passthru="true" />
+        <exec command="mv DoctrineSymfonyYaml-${version}.tgz ../../dist" dir="${build.dir}/doctrine-orm" passthru="true" />
+        
+        <exec command="sudo pirum add ${project.pirum_dir} ${project.basedir}/dist/DoctrineSymfonyConsole-${version}.tgz" dir="."  passthru="true" />
+        <exec command="sudo pirum add ${project.pirum_dir} ${project.basedir}/dist/DoctrineSymfonyYaml-${version}.tgz" dir="."  passthru="true" />
+        <exec command="sudo pirum build ${project.pirum_dir}" passthru="true" />
+    </target>
 </project>
