@@ -804,18 +804,21 @@ class BasicEntityPersister
      * @param PersistentCollection $coll
      */
     private function loadCollectionFromStatement($assoc, $stmt, $coll)
-    {
+    {        
+        $hints = array('deferEagerLoads' => true);
         if (isset($assoc['indexBy'])) {
             while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $entity = $this->_createEntity($result);
+                $entity = $this->_createEntity($result, null, $hints);
                 $coll->hydrateSet($this->_class->reflFields[$assoc['indexBy']]->getValue($entity), $entity);
             }
         } else {
             while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $coll->hydrateAdd($this->_createEntity($result));
+                $coll->hydrateAdd($this->_createEntity($result, null, $hints));
             }
         }
         $stmt->closeCursor();
+        
+        $this->_em->getUnitOfWork()->triggerEagerLoads();
     }
 
     /**
@@ -880,14 +883,7 @@ class BasicEntityPersister
 
         $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, 0, $limit, $offset);
         list($params, $types) = $this->expandParameters($criteria);
-        $stmt = $this->_conn->executeQuery($sql, $params, $types);
-        $hints = array('deferEagerLoads' => true);
-        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $coll->hydrateAdd($this->_createEntity($result, null, $hints));
-        }
-        $stmt->closeCursor();
-
-        $this->_em->getUnitOfWork()->triggerEagerLoads();
+        return $this->_conn->executeQuery($sql, $params, $types);
     }
 
     /**
@@ -1348,15 +1344,7 @@ class BasicEntityPersister
         $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, 0, $limit, $offset);
         list($params, $types) = $this->expandParameters($criteria);
 
-        $stmt = $this->_conn->executeQuery($sql, $params, $types);
-        $hints = array('deferEagerLoads' => true);
-        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $coll->hydrateAdd($this->_createEntity($result, null, $hints));
-        }
-        $stmt->closeCursor();
-
-        $this->_em->getUnitOfWork()->triggerEagerLoads();
-	return $stmt;
+        return $this->_conn->executeQuery($sql, $params, $types);
     }
 
     /**
