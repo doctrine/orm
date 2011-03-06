@@ -21,7 +21,8 @@ namespace Doctrine\ORM\Persisters;
 
 use Doctrine\ORM\ORMException,
     Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\DBAL\LockMode;
+    Doctrine\DBAL\LockMode,
+    Doctrine\ORM\Query\ResultSetMapping;
 
 /**
  * The joined subclass persister maps a single entity instance to several tables in the
@@ -243,6 +244,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         // Create the column list fragment only once
         if ($this->_selectColumnListSql === null) {
+            
+            $this->_rsm = new ResultSetMapping();
+            $this->_rsm->addEntityResult($this->_class->name, 'r');
+            
             // Add regular columns
             $columnList = '';
             foreach ($this->_class->fieldMappings as $fieldName => $mapping) {
@@ -279,6 +284,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             $resultColumnName = $this->_platform->getSQLResultCasing($discrColumn);
             $this->_resultColumnNames[$resultColumnName] = $discrColumn;
+            $this->_rsm->setDiscriminatorColumn('r', $discrColumn);
+            $this->_rsm->addMetaResult('r', $resultColumnName, $discrColumn);
         }
 
         // INNER JOIN parent tables

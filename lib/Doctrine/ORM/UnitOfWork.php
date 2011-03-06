@@ -1966,6 +1966,11 @@ class UnitOfWork implements PropertyChangedListener
                                 }
                                 $this->originalEntityData[$oid][$field] = $newValue;
                                 $class->reflFields[$field]->setValue($entity, $newValue);
+                                
+                                if ($assoc['inversedBy'] && $assoc['type'] & ClassMetadata::ONE_TO_ONE) {
+                                    $inverseAssoc = $targetClass->associationMappings[$assoc['inversedBy']];
+                                    $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($newValue, $entity);
+                                }
                             }
                         } else {
                             // Inverse side of x-to-one can never be lazy
@@ -1973,18 +1978,27 @@ class UnitOfWork implements PropertyChangedListener
                                     ->loadOneToOneEntity($assoc, $entity, null));
                         }
                     } else {
-                        // Inject collection
-                        $pColl = new PersistentCollection($this->em, $targetClass, new ArrayCollection);
-                        $pColl->setOwner($entity, $assoc);
                         
-                        $reflField = $class->reflFields[$field];
-                        $reflField->setValue($entity, $pColl);
-                        
-                        if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER) {
-                            $this->loadCollection($pColl);
-                            $pColl->takeSnapshot();
-                        } else {
+                        if (isset($hints[Query::HINT_REFRESH])) {
+                            $pColl = $this->_class->reflFields[$field]->getValue($entity);
                             $pColl->setInitialized(false);
+                            // no matter if dirty or non-dirty entities are already loaded, smoke them out!
+                            // the beauty of it being, they are still in the identity map
+                            $pColl->unwrap()->clear(); 
+                        } else {
+                            // Inject collection
+                            $pColl = new PersistentCollection($this->em, $targetClass, new ArrayCollection);
+                            $pColl->setOwner($entity, $assoc);
+
+                            $reflField = $class->reflFields[$field];
+                            $reflField->setValue($entity, $pColl);
+
+                            if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER) {
+                                $this->loadCollection($pColl);
+                                $pColl->takeSnapshot();
+                            } else {
+                                $pColl->setInitialized(false);
+                            }
                         }
                         $this->originalEntityData[$oid][$field] = $pColl;
                     }

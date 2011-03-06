@@ -112,6 +112,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
             $this->_resultColumnNames[$columnAlias] = $columnName;
             $this->declaringClassMap[$columnAlias] = $class;
         }
+        $this->_rsm->addFieldResult('r', $columnAlias, $field, $class->name);
 
         return "$sql AS $columnAlias";
     }
@@ -124,6 +125,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
             $this->_resultColumnNames[$resultColumnName] = $joinColumnName;
             $this->declaringJoinColumnMap[$resultColumnName] = $className;
         }
+        $this->_rsm->addMetaResult('r', $resultColumnName, $joinColumnName);
         
         return $tableAlias . ".$joinColumnName AS $columnAlias";
     }

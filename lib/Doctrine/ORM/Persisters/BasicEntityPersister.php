@@ -117,6 +117,15 @@ class BasicEntityPersister
      * @var array
      */
     protected $_resultColumnNames = array();
+    
+    /**
+     * ResultSetMapping that is used for all queries. Is generated lazily once per request.
+     * 
+     * TODO: Evaluate Caching in combination with the other cached SQL snippets.
+     * 
+     * @var Query\ResultSetMapping
+     */
+    protected $_rsm;
 
     /**
      * The map of column names to DBAL mapping types of all prepared columns used
@@ -558,13 +567,14 @@ class BasicEntityPersister
         $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, $lockMode);
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->_conn->executeQuery($sql, $params, $types);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        $stmt->closeCursor();
-
-        $hints['deferEagerLoad'] = true;
-        $entity = $this->_createEntity($result, $entity, $hints);
-        $this->_em->getUnitOfWork()->triggerEagerLoads();
-        return $entity;
+        
+        if ($entity !== null) {
+            $hints[Query::HINT_REFRESH] = true;
+        }
+        
+        $hydrator = $this->_em->newHydrator(Query::HYDRATE_OBJECT);
+        $entities = $hydrator->hydrateAll($stmt, $this->_rsm, $hints);
+        return $entities ? $entities[0] : null;
     }
 
     /**
@@ -649,79 +659,9 @@ class BasicEntityPersister
         $sql = $this->_getSelectEntitiesSQL($id);
         list($params, $types) = $this->expandParameters($id);
         $stmt = $this->_conn->executeQuery($sql, $params, $types);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        $stmt->closeCursor();
-
-        $metaColumns = array();
-        $newData = array();
-
-        // Refresh simple state
-        foreach ($result as $column => $value) {
-            $column = $this->_resultColumnNames[$column];
-            if (isset($this->_class->fieldNames[$column])) {
-                $fieldName = $this->_class->fieldNames[$column];
-                $newValue = $this->_conn->convertToPHPValue($value, $this->_class->fieldMappings[$fieldName]['type']);
-                $this->_class->reflFields[$fieldName]->setValue($entity, $newValue);
-                $newData[$fieldName] = $newValue;
-            } else {
-                $metaColumns[$column] = $value;
-            }
-        }
-
-        // Refresh associations
-        foreach ($this->_class->associationMappings as $field => $assoc) {
-            $value = $this->_class->reflFields[$field]->getValue($entity);
-            if ($assoc['type'] & ClassMetadata::TO_ONE) {
-                if ($value instanceof Proxy && ! $value->__isInitialized__) {
-                    continue; // skip uninitialized proxies
-                }
-                
-                if ($assoc['isOwningSide']) {
-                    $joinColumnValues = array();
-                    foreach ($assoc['targetToSourceKeyColumns'] as $targetColumn => $srcColumn) {
-                        if ($metaColumns[$srcColumn] !== null) {
-                            $joinColumnValues[$targetColumn] = $metaColumns[$srcColumn];
-                        }
-                    }
-                    if ( ! $joinColumnValues && $value !== null) {
-                        $this->_class->reflFields[$field]->setValue($entity, null);
-                        $newData[$field] = null;
-                    } else if ($value !== null) {
-                        // Check identity map first, if the entity is not there,
-                        // place a proxy in there instead.
-                        $targetClass = $this->_em->getClassMetadata($assoc['targetEntity']);
-                        if ($found = $this->_em->getUnitOfWork()->tryGetById($joinColumnValues, $targetClass->rootEntityName)) {
-                            $this->_class->reflFields[$field]->setValue($entity, $found);
-                            // Complete inverse side, if necessary.
-                            if ($assoc['inversedBy'] && $assoc['type'] & ClassMetadata::ONE_TO_ONE) {
-                                $inverseAssoc = $targetClass->associationMappings[$assoc['inversedBy']];
-                                $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($found, $entity);
-                            }
-                            $newData[$field] = $found;
-                        } else {
-                            // FIXME: What is happening with subClassees here?
-                            $proxy = $this->_em->getProxyFactory()->getProxy($assoc['targetEntity'], $joinColumnValues);
-                            $this->_class->reflFields[$field]->setValue($entity, $proxy);
-                            $newData[$field] = $proxy;
-                            $this->_em->getUnitOfWork()->registerManaged($proxy, $joinColumnValues, array());
-                        }
-                    }
-                } else {
-                    // Inverse side of 1-1/1-x can never be lazy.
-                    //$newData[$field] = $assoc->load($entity, null, $this->_em);
-                    $newData[$field] = $this->_em->getUnitOfWork()->getEntityPersister($assoc['targetEntity'])
-                            ->loadOneToOneEntity($assoc, $entity, null);
-                }
-            } else if ($value instanceof PersistentCollection && $value->isInitialized()) {
-                $value->setInitialized(false);
-                // no matter if dirty or non-dirty entities are already loaded, smoke them out!
-                // the beauty of it being, they are still in the identity map
-                $value->unwrap()->clear(); 
-                $newData[$field] = $value;
-            }
-        }
-
-        $this->_em->getUnitOfWork()->setOriginalEntityData($entity, $newData);
+        
+        $hydrator = $this->_em->newHydrator(Query::HYDRATE_OBJECT);
+        $hydrator->hydrateAll($stmt, $this->_rsm, array(Query::HINT_REFRESH => true));
 
         if (isset($this->_class->lifecycleCallbacks[Events::postLoad])) {
             $this->_class->invokeLifecycleCallbacks(Events::postLoad, $entity);
@@ -744,17 +684,9 @@ class BasicEntityPersister
         $sql = $this->_getSelectEntitiesSQL($criteria);
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->_conn->executeQuery($sql, $params, $types);
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $stmt->closeCursor();
 
-        $hints = array('deferEagerLoads' => true);
-        foreach ($result as $row) {
-            $entities[] = $this->_createEntity($row, null, $hints);
-        }
-
-        $this->_em->getUnitOfWork()->triggerEagerLoads();
-
-        return $entities;
+        $hydrator = $this->_em->newHydrator(Query::HYDRATE_OBJECT);
+        return $hydrator->hydrateAll($stmt, $this->_rsm, array('deferEagerLoads' => true));
     }
 
     /**
@@ -1036,6 +968,8 @@ class BasicEntityPersister
         }
 
         $columnList = '';
+        $this->_rsm = new Query\ResultSetMapping();
+        $this->_rsm->addEntityResult($this->_class->name, 'r'); // r for root
 
         // Add regular columns to select list
         foreach ($this->_class->fieldNames as $field) {
@@ -1054,6 +988,7 @@ class BasicEntityPersister
                     if ( ! isset($this->_resultColumnNames[$resultColumnName])) {
                         $this->_resultColumnNames[$resultColumnName] = $srcColumn;
                     }
+                    $this->_rsm->addMetaResult('r', $this->_platform->getSQLResultCasing($columnAlias), $srcColumn);
                 }
             }
         }
@@ -1174,6 +1109,7 @@ class BasicEntityPersister
         if ( ! isset($this->_resultColumnNames[$columnAlias])) {
             $this->_resultColumnNames[$columnAlias] = $columnName;
         }
+        $this->_rsm->addFieldResult('r', $columnAlias, $field);
 
         return "$sql AS $columnAlias";
     }
