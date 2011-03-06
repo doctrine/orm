@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Persisters;
 use PDO,
     Doctrine\DBAL\LockMode,
     Doctrine\DBAL\Types\Type,
+    Doctrine\DBAL\Connection,
     Doctrine\ORM\ORMException,
     Doctrine\ORM\OptimisticLockException,
     Doctrine\ORM\EntityManager,
@@ -1281,7 +1282,7 @@ class BasicEntityPersister
             } else {
                 throw ORMException::unrecognizedField($field);
             }
-            $conditionSql .= ' = ?';
+            $conditionSql .= (is_array($value)) ? ' IN (?)' : ' = ?';
         }
         return $conditionSql;
     }
@@ -1373,6 +1374,10 @@ class BasicEntityPersister
             if (isset($this->_class->fieldMappings[$field])) {
                 $type = Type::getType($this->_class->fieldMappings[$field]['type'])->getBindingType();
             }
+            if (is_array($value)) {
+                $type += Connection::ARRAY_PARAM_OFFSET;
+            }
+            
             $params[] = $value;
             $types[] = $type;
         }

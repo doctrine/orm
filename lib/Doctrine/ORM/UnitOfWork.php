@@ -1953,14 +1953,6 @@ class UnitOfWork implements PropertyChangedListener
                                                 // TODO: This is very imperformant, ignore it?
                                                 $newValue = $this->em->find($assoc['targetEntity'], $associatedId);
                                             }
-
-                                            // TODO: Is there a faster approach?
-                                            $this->eagerLoadingEntities[$assoc['targetEntity']] = array_merge_recursive(
-                                                $this->eagerLoadingEntities[$assoc['targetEntity']],
-                                                array_map(function($id) {
-                                                    return array($id);
-                                                }, $associatedId)
-                                            );
                                         } else {
                                             $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $associatedId);
                                         }
@@ -2012,8 +2004,6 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-<<<<<<< HEAD
-=======
      * @return void
      */
     public function triggerEagerLoads()
@@ -2022,6 +2012,7 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
+        // avoid infinite recursion
         $eagerLoadingEntities = $this->eagerLoadingEntities;
         $this->eagerLoadingEntities = array();
 
@@ -2032,7 +2023,6 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
->>>>>>> DDC-952 - Implemented first approach for batching eager loads of ToOne associations.
      * Initializes (loads) an uninitialized persistent collection of an entity.
      *
      * @param PeristentCollection $collection The collection to initialize.
