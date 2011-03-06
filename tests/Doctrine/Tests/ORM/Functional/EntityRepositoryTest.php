@@ -288,5 +288,24 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertType('Doctrine\Tests\Models\CMS\CmsAddress', $address);
         $this->assertEquals($addressId, $address->id);
     }
+
+    public function testValidNamedQueryRetrieval()
+    {
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $query = $repos->createNamedQuery('all');
+
+        $this->assertType('Doctrine\ORM\Query', $query);
+        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $query->getDQL());
+    }
+
+    public function testInvalidNamedQueryRetrieval()
+    {
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+
+        $repos->createNamedQuery('invalidNamedQuery');
+    }
 }
 

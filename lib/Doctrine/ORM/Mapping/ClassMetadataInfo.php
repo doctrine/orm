@@ -205,6 +205,13 @@ class ClassMetadataInfo implements ClassMetadata
     public $subClasses = array();
 
     /**
+     * READ-ONLY: The named queries allowed to be called directly from Repository.
+     * 
+     * @var array
+     */
+    public $namedQueries = array();
+
+    /**
      * READ-ONLY: The field names of all fields that are part of the identifier/primary key
      * of the mapped entity class.
      *
@@ -653,6 +660,32 @@ class ClassMetadataInfo implements ClassMetadata
     {
         return isset($this->fieldNames[$columnName]) ?
                 $this->fieldNames[$columnName] : $columnName;
+    }
+
+    /**
+     * Gets the named query.
+     *
+     * @see ClassMetadataInfo::$namedQueries
+     * @throws MappingException
+     * @param string $queryName The query name
+     * @return string
+     */
+    public function getNamedQuery($queryName)
+    {
+        if ( ! isset($this->namedQueries[$queryName])) {
+            throw MappingException::queryNotFound($this->name, $queryName);
+        }
+        return $this->namedQueries[$queryName];
+    }
+
+    /**
+     * Gets all named queries of the class.
+     *
+     * @return array
+     */
+    public function getNamedQueries()
+    {
+        return $this->namedQueries;
     }
 
     /**
@@ -1368,8 +1401,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Adds an association mapping without completing/validating it.
      * This is mainly used to add inherited association mappings to derived classes.
      *
-     * @param AssociationMapping $mapping
-     * @param string $owningClassName The name of the class that defined this mapping.
+     * @param array $mapping
      */
     public function addInheritedAssociationMapping(array $mapping/*, $owningClassName = null*/)
     {
@@ -1385,13 +1417,28 @@ class ClassMetadataInfo implements ClassMetadata
      * This is mainly used to add inherited field mappings to derived classes.
      *
      * @param array $mapping
-     * @todo Rename: addInheritedFieldMapping
      */
     public function addInheritedFieldMapping(array $fieldMapping)
     {
         $this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
         $this->columnNames[$fieldMapping['fieldName']] = $fieldMapping['columnName'];
         $this->fieldNames[$fieldMapping['columnName']] = $fieldMapping['fieldName'];
+    }
+
+    /**
+     * INTERNAL:
+     * Adds a named query to this class.
+     *
+     * @throws MappingException
+     * @param array $queryMapping
+     */
+    public function addNamedQuery(array $queryMapping)
+    {
+        if (isset($this->namedQueries[$queryMapping['name']])) {
+            throw MappingException::duplicateQueryMapping($this->name, $queryMapping['name']);
+        }
+        $query = str_replace('__CLASS__', $this->name, $queryMapping['query']);
+        $this->namedQueries[$queryMapping['name']] = $query;
     }
 
     /**
@@ -1582,6 +1629,17 @@ class ClassMetadataInfo implements ClassMetadata
                 }
             }
         }
+    }
+
+    /**
+     * Checks whether the class has a named query with the given query name.
+     *
+     * @param string $fieldName
+     * @return boolean
+     */
+    public function hasNamedQuery($queryName)
+    {
+        return isset($this->namedQueries[$queryName]);
     }
 
     /**

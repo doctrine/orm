@@ -165,6 +165,18 @@ class AnnotationDriver implements Driver
             $metadata->setPrimaryTable($primaryTable);
         }
 
+        // Evaluate NamedQueries annotation
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\NamedQueries'])) {
+            $namedQueriesAnnot = $classAnnotations['Doctrine\ORM\Mapping\NamedQueries'];
+
+            foreach ($namedQueriesAnnot->value as $namedQuery) {
+                $metadata->addNamedQuery(array(
+                    'name'  => $namedQuery->name,
+                    'query' => $namedQuery->query
+                ));
+            }
+        }
+
         // Evaluate InheritanceType annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\InheritanceType'])) {
             $inheritanceTypeAnnot = $classAnnotations['Doctrine\ORM\Mapping\InheritanceType'];

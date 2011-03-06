@@ -69,6 +69,16 @@ class XmlDriver extends AbstractFileDriver
 
         $metadata->setPrimaryTable($table);
 
+        // Evaluate named queries
+        if (isset($xmlRoot['named-queries'])) {
+            foreach ($xmlRoot->{'named-queries'}->{'named-query'} as $namedQueryElement) {
+                $metadata->addNamedQuery(array(
+                    'name'  => (string)$namedQueryElement['name'],
+                    'query' => (string)$namedQueryElement['query']
+                ));
+            }
+        }
+
         /* not implemented specially anyway. use table = schema.table
         if (isset($xmlRoot['schema'])) {
             $metadata->table['schema'] = (string)$xmlRoot['schema'];

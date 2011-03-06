@@ -390,4 +390,60 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->mapField(array('fieldName' => ''));
     }
+
+    public function testRetrievalOfNamedQueries()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $this->assertEquals(0, count($cm->getNamedQueries()));
+
+        $cm->addNamedQuery(array(
+            'name'  => 'userById',
+            'query' => 'SELECT u FROM __CLASS__ u WHERE u.id = ?1'
+        ));
+
+        $this->assertEquals(1, count($cm->getNamedQueries()));
+    }
+
+    public function testExistanceOfNamedQuery()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $cm->addNamedQuery(array(
+            'name'  => 'all',
+            'query' => 'SELECT u FROM __CLASS__ u'
+        ));
+
+        $this->assertTrue($cm->hasNamedQuery('all'));
+        $this->assertFalse($cm->hasNamedQuery('userById'));
+    }
+
+    public function testRetrieveOfNamedQuery()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $cm->addNamedQuery(array(
+            'name'  => 'userById',
+            'query' => 'SELECT u FROM __CLASS__ u WHERE u.id = ?1'
+        ));
+
+        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1', $cm->getNamedQuery('userById'));
+    }
+
+    public function testNamingCollisionNamedQueryShouldThrowException()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+
+        $cm->addNamedQuery(array(
+            'name'  => 'userById',
+            'query' => 'SELECT u FROM __CLASS__ u WHERE u.id = ?1'
+        ));
+
+        $cm->addNamedQuery(array(
+            'name'  => 'userById',
+            'query' => 'SELECT u FROM __CLASS__ u WHERE u.id = ?1'
+        ));
+    }
 }
