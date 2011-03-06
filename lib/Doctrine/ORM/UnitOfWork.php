@@ -1978,27 +1978,18 @@ class UnitOfWork implements PropertyChangedListener
                                     ->loadOneToOneEntity($assoc, $entity, null));
                         }
                     } else {
-                        
-                        if (isset($hints[Query::HINT_REFRESH])) {
-                            $pColl = $this->_class->reflFields[$field]->getValue($entity);
-                            $pColl->setInitialized(false);
-                            // no matter if dirty or non-dirty entities are already loaded, smoke them out!
-                            // the beauty of it being, they are still in the identity map
-                            $pColl->unwrap()->clear(); 
+                        // Inject collection
+                        $pColl = new PersistentCollection($this->em, $targetClass, new ArrayCollection);
+                        $pColl->setOwner($entity, $assoc);
+
+                        $reflField = $class->reflFields[$field];
+                        $reflField->setValue($entity, $pColl);
+
+                        if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER) {
+                            $this->loadCollection($pColl);
+                            $pColl->takeSnapshot();
                         } else {
-                            // Inject collection
-                            $pColl = new PersistentCollection($this->em, $targetClass, new ArrayCollection);
-                            $pColl->setOwner($entity, $assoc);
-
-                            $reflField = $class->reflFields[$field];
-                            $reflField->setValue($entity, $pColl);
-
-                            if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER) {
-                                $this->loadCollection($pColl);
-                                $pColl->takeSnapshot();
-                            } else {
-                                $pColl->setInitialized(false);
-                            }
+                            $pColl->setInitialized(false);
                         }
                         $this->originalEntityData[$oid][$field] = $pColl;
                     }
