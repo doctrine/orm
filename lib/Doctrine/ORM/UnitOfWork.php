@@ -1955,7 +1955,7 @@ class UnitOfWork implements PropertyChangedListener
                                                 ->loadOneToOneEntity($assoc, $entity, null, $associatedId);
                                     } else {
                                         // Deferred eager load only works for single identifier classes
-                                        if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER || isset($hints['eagerFetch'][$class->name][$field])) {
+                                        if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER || isset($hints['fetchEager'][$class->name][$field])) {
                                             if (isset($hints['deferEagerLoad']) && !$targetClass->isIdentifierComposite) {
                                                 // TODO: Is there a faster approach?
                                                 $this->eagerLoadingEntities[$assoc['targetEntity']][] = current($id);

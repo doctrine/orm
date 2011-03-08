@@ -335,7 +335,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
         
         $articles = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
-                         ->setHint('eagerFetch', array('Doctrine\Tests\Models\CMS\CmsArticle' => array('user' => true)))
+                         ->setHint('fetchEager', array('Doctrine\Tests\Models\CMS\CmsArticle' => array('user' => true)))
                          ->getResult();
         
         $this->assertEquals(10, count($articles));
