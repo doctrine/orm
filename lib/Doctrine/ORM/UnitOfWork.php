@@ -1936,6 +1936,18 @@ class UnitOfWork implements PropertyChangedListener
                                 $relatedIdHash = implode(' ', $associatedId);
                                 if (isset($this->identityMap[$targetClass->rootEntityName][$relatedIdHash])) {
                                     $newValue = $this->identityMap[$targetClass->rootEntityName][$relatedIdHash];
+                                    
+                                    // if this is an uninitialized proxy, we are deferring eager loads,
+                                    // this association is marked as eager fetch, and its an uninitialized proxy (wtf!)
+                                    // then we cann append this entity for eager loading!
+                                    if (isset($hints['fetchEager'][$class->name][$field]) &&
+                                        isset($hints['deferEagerLoad']) &&
+                                        !$targetClass->isIdentifierComposite &&
+                                        $newValue instanceof Proxy &&
+                                        $newValue->__isInitialized__ === false) {
+                                        
+                                        $this->eagerLoadingEntities[$assoc['targetEntity']][] = $relatedIdHash;
+                                    }
                                 } else {
                                     if ($targetClass->subClasses) {
                                         // If it might be a subtype, it can not be lazy
@@ -1943,7 +1955,7 @@ class UnitOfWork implements PropertyChangedListener
                                                 ->loadOneToOneEntity($assoc, $entity, null, $associatedId);
                                     } else {
                                         // Deferred eager load only works for single identifier classes
-                                        if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER) {
+                                        if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER || isset($hints['eagerFetch'][$class->name][$field])) {
                                             if (isset($hints['deferEagerLoad']) && !$targetClass->isIdentifierComposite) {
                                                 // TODO: Is there a faster approach?
                                                 $this->eagerLoadingEntities[$assoc['targetEntity']][] = current($id);
