@@ -1,6 +1,8 @@
 Doctrine\Tests\ORM\Mapping\User:
   type: entity
   table: cms_users
+  namedQueries:
+    all: SELECT u FROM __CLASS__ u
   id:
     id:
       type: integer

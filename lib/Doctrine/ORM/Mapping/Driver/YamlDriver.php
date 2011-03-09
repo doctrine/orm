@@ -62,6 +62,21 @@ class YamlDriver extends AbstractFileDriver
         }
         $metadata->setPrimaryTable($table);
 
+        // Evaluate named queries
+        if (isset($element['namedQueries'])) {
+            foreach ($element['namedQueries'] as $name => $queryMapping) {
+                if (is_string($queryMapping)) {
+                    $queryMapping = array('query' => $queryMapping);
+                }
+
+                if ( ! isset($queryMapping['name'])) {
+                    $queryMapping['name'] = $name;
+                }
+
+                $metadata->addNamedQuery($queryMapping);
+            }
+        }
+
         /* not implemented specially anyway. use table = schema.table
         if (isset($element['schema'])) {
             $metadata->table['schema'] = $element['schema'];

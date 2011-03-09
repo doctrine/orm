@@ -56,6 +56,17 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="named-query">
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="query" type="xs:string" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="named-queries">
+    <xs:sequence>
+      <xs:element name="named-query" type="orm:named-query" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="entity">
     <xs:sequence>
       <xs:element name="indexes" type="orm:indexes" minOccurs="0"/>
@@ -63,6 +74,7 @@
       <xs:element name="discriminator-column" type="orm:discriminator-column" minOccurs="0"/>
       <xs:element name="discriminator-map" type="orm:discriminator-map" minOccurs="0"/>
       <xs:element name="lifecycle-callbacks" type="orm:lifecycle-callbacks" minOccurs="0" maxOccurs="1" />
+      <xs:element name="named-queries" type="orm:named-queries" minOccurs="0" maxOccurs="1" />
       <xs:element name="id" type="orm:id" minOccurs="0" maxOccurs="1" />
       <xs:element name="field" type="orm:field" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="one-to-one" type="orm:one-to-one" minOccurs="0" maxOccurs="unbounded"/>
