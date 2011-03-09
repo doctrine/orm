@@ -1901,6 +1901,8 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
             
+            unset($this->eagerLoadingEntities[$class->name][$idHash]);
+            
             // Properly initialize any unfetched associations, if partial objects are not allowed.
             if ( ! isset($hints[Query::HINT_FORCE_PARTIAL_LOAD])) {
                 foreach ($class->associationMappings as $field => $assoc) {
@@ -1947,7 +1949,7 @@ class UnitOfWork implements PropertyChangedListener
                                         $newValue instanceof Proxy &&
                                         $newValue->__isInitialized__ === false) {
                                         
-                                        $this->eagerLoadingEntities[$assoc['targetEntity']][] = $relatedIdHash;
+                                        $this->eagerLoadingEntities[$assoc['targetEntity']][$relatedIdHash] = current($associatedId);
                                     }
                                 } else {
                                     if ($targetClass->subClasses) {
@@ -1959,7 +1961,7 @@ class UnitOfWork implements PropertyChangedListener
                                         if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER || isset($hints['fetchEager'][$class->name][$field])) {
                                             if (isset($hints['deferEagerLoad']) && !$targetClass->isIdentifierComposite) {
                                                 // TODO: Is there a faster approach?
-                                                $this->eagerLoadingEntities[$assoc['targetEntity']][] = current($id);
+                                                $this->eagerLoadingEntities[$assoc['targetEntity']][$relatedIdHash] = current($associatedId);
 
                                                 $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $associatedId);
                                             } else {
