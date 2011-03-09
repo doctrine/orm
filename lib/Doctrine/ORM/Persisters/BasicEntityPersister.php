@@ -994,7 +994,7 @@ class BasicEntityPersister
                 $columnList .= $assocColumnSQL;
             }
             
-            if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER && $assoc['type'] & ClassMetadata::TO_ONE) {
+            if ($assoc['type'] & ClassMetadata::TO_ONE && ($assoc['fetch'] == ClassMetadata::FETCH_EAGER/* || !$assoc['isOwningSide']*/)) {
                 $eagerEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
                 if ($eagerEntity->inheritanceType != ClassMetadata::INHERITANCE_TYPE_NONE) {
                     continue; // now this is why you shouldn't use inheritance
@@ -1024,7 +1024,7 @@ class BasicEntityPersister
                                                  $this->_getSQLTableAlias($assoc['targetEntity'], $assocAlias) . '.'.$targetCol.' ';
                     }
                 } else {
-                    $eagerEntity = $this->_em->getClassMetadata($assoc['sourceEntity']);
+                    $eagerEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
                     $owningAssoc = $eagerEntity->getAssociationMapping($assoc['mappedBy']);
                     
                     $this->_selectJoinSql .= ' ' . $eagerEntity->table['name'] . ' ' . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) .' ON ';
