@@ -24,6 +24,7 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-633
      * @group DDC-952
+     * @group DDC-914
      */
     public function testOneToOneEager()
     {
@@ -39,9 +40,9 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $eagerAppointment = $this->_em->find(__NAMESPACE__ . '\DDC633Appointment', $app->id);
 
-        // Eager loading still produces proxies
-        $this->assertType('Doctrine\ORM\Proxy\Proxy', $eagerAppointment->patient);
-        $this->assertTrue($eagerAppointment->patient->__isInitialized__, "Proxy should already be initialized due to eager loading!");
+        // Eager loading of one to one leads to fetch-join
+        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $eagerAppointment->patient);
+        $this->assertTrue($this->_em->contains($eagerAppointment->patient));
     }
 
     /**

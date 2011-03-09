@@ -152,6 +152,14 @@ class BasicEntityPersister
      * @var string
      */
     protected $_selectColumnListSql;
+    
+    /**
+     * The JOIN SQL fragement used to eagerly load all many-to-one and one-to-one
+     * associations configured as FETCH_EAGER, aswell as all inverse one-to-one associations.
+     * 
+     * @var string
+     */
+    protected $_selectJoinSql;
 
     /**
      * Counter for creating unique SQL table and column aliases.
@@ -915,7 +923,7 @@ class BasicEntityPersister
         return $this->_platform->modifyLimitQuery('SELECT ' . $this->_getSelectColumnListSQL()
              . $this->_platform->appendLockHint(' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' '
              . $this->_getSQLTableAlias($this->_class->name), $lockMode)
-             . $joinSql
+             . $this->_selectJoinSql . $joinSql
              . ($conditionSql ? ' WHERE ' . $conditionSql : '')
              . $orderBySql, $limit, $offset)
              . $lockSql;
@@ -977,18 +985,54 @@ class BasicEntityPersister
             $columnList .= $this->_getSelectColumnSQL($field, $this->_class);
         }
 
-        foreach ($this->_class->associationMappings as $assoc) {
-            if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
-                foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
+        $this->_selectJoinSql = '';
+        $eagerAliasCounter = 0;
+        foreach ($this->_class->associationMappings as $assocField => $assoc) {
+            $assocColumnSQL = $this->_getSelectColumnAssociationSQL($assocField, $assoc, $this->_class);
+            if ($assocColumnSQL) {
+                if ($columnList) $columnList .= ', ';
+                $columnList .= $assocColumnSQL;
+            }
+            
+            if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER && $assoc['type'] & ClassMetadata::TO_ONE) {
+                $eagerEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
+                if ($eagerEntity->inheritanceType != ClassMetadata::INHERITANCE_TYPE_NONE) {
+                    continue; // now this is why you shouldn't use inheritance
+                }
+                
+                $assocAlias = 'e' + ($eagerAliasCounter++);
+                $this->_rsm->addJoinedEntityResult($assoc['targetEntity'], $assocAlias, 'r', $assocField);
+                
+                foreach ($eagerEntity->fieldNames AS $field) {
                     if ($columnList) $columnList .= ', ';
-
-                    $columnAlias = $srcColumn . $this->_sqlAliasCounter++;
-                    $columnList .= $this->_getSQLTableAlias($this->_class->name) . ".$srcColumn AS $columnAlias";
-                    $resultColumnName = $this->_platform->getSQLResultCasing($columnAlias);
-                    if ( ! isset($this->_resultColumnNames[$resultColumnName])) {
-                        $this->_resultColumnNames[$resultColumnName] = $srcColumn;
+                    $columnList .= $this->_getSelectColumnSQL($field, $eagerEntity, $assocAlias);
+                }
+                
+                foreach ($eagerEntity->associationMappings as $assoc2Field => $assoc2) {
+                    $assoc2ColumnSQL = $this->_getSelectColumnAssociationSQL($assoc2Field, $assoc2, $eagerEntity);
+                    if ($assoc2ColumnSQL) {
+                        if ($columnList) $columnList .= ', ';
+                        $columnList .= $assoc2ColumnSQL;
                     }
-                    $this->_rsm->addMetaResult('r', $this->_platform->getSQLResultCasing($columnAlias), $srcColumn);
+                }
+                $this->_selectJoinSql .= ' LEFT JOIN';
+                if ($assoc['isOwningSide']) {
+                    $this->_selectJoinSql .= ' ' . $eagerEntity->table['name'] . ' ' . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) .' ON ';
+                    
+                    foreach ($assoc['sourceToTargetKeyColumns'] AS $sourceCol => $targetCol) {
+                        $this->_selectJoinSql .= $this->_getSQLTableAlias($assoc['sourceEntity']) . '.'.$sourceCol.' = ' .
+                                                 $this->_getSQLTableAlias($assoc['targetEntity'], $assocAlias) . '.'.$targetCol.' ';
+                    }
+                } else {
+                    $eagerEntity = $this->_em->getClassMetadata($assoc['sourceEntity']);
+                    $owningAssoc = $eagerEntity->getAssociationMapping($assoc['mappedBy']);
+                    
+                    $this->_selectJoinSql .= ' ' . $eagerEntity->table['name'] . ' ' . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) .' ON ';
+
+                    foreach ($owningAssoc['sourceToTargetKeyColumns'] AS $sourceCol => $targetCol) {
+                        $this->_selectJoinSql .= $this->_getSQLTableAlias($owningAssoc['sourceEntity'], $assocAlias) . '.'.$sourceCol.' = ' .
+                                                 $this->_getSQLTableAlias($assoc['targetEntity']) . '.' . $targetCol . ' ';
+                    }
                 }
             }
         }
@@ -996,6 +1040,25 @@ class BasicEntityPersister
         $this->_selectColumnListSql = $columnList;
 
         return $this->_selectColumnListSql;
+    }
+    
+    protected function _getSelectColumnAssociationSQL($field, $assoc, ClassMetadata $class)
+    {
+        $columnList = '';
+        if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
+            foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
+                if ($columnList) $columnList .= ', ';
+
+                $columnAlias = $srcColumn . $this->_sqlAliasCounter++;
+                $columnList .= $this->_getSQLTableAlias($class->name) . ".$srcColumn AS $columnAlias";
+                $resultColumnName = $this->_platform->getSQLResultCasing($columnAlias);
+                if ( ! isset($this->_resultColumnNames[$resultColumnName])) {
+                    $this->_resultColumnNames[$resultColumnName] = $srcColumn;
+                }
+                $this->_rsm->addMetaResult('r', $this->_platform->getSQLResultCasing($columnAlias), $srcColumn);
+            }
+        }
+        return $columnList;
     }
 
     /**
@@ -1100,16 +1163,17 @@ class BasicEntityPersister
      * @param string $field The field name.
      * @param ClassMetadata $class The class that declares this field. The table this class is
      *                             mapped to must own the column for the given field.
+     * @param string $alias
      */
-    protected function _getSelectColumnSQL($field, ClassMetadata $class)
+    protected function _getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
         $columnName = $class->columnNames[$field];
-        $sql = $this->_getSQLTableAlias($class->name) . '.' . $class->getQuotedColumnName($field, $this->_platform);
+        $sql = $this->_getSQLTableAlias($class->name, $alias == 'r' ? '' : $alias) . '.' . $class->getQuotedColumnName($field, $this->_platform);
         $columnAlias = $this->_platform->getSQLResultCasing($columnName . $this->_sqlAliasCounter++);
         if ( ! isset($this->_resultColumnNames[$columnAlias])) {
             $this->_resultColumnNames[$columnAlias] = $columnName;
         }
-        $this->_rsm->addFieldResult('r', $columnAlias, $field);
+        $this->_rsm->addFieldResult($alias, $columnAlias, $field);
 
         return "$sql AS $columnAlias";
     }
@@ -1121,8 +1185,12 @@ class BasicEntityPersister
      * @return string The SQL table alias.
      * @todo Reconsider. Binding table aliases to class names is not such a good idea.
      */
-    protected function _getSQLTableAlias($className)
+    protected function _getSQLTableAlias($className, $assocName = '')
     {
+        if ($assocName) {
+            $className .= '#'.$assocName;
+        }
+        
         if (isset($this->_sqlTableAliases[$className])) {
             return $this->_sqlTableAliases[$className];
         }

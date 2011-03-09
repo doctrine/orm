@@ -1914,6 +1914,7 @@ class UnitOfWork implements PropertyChangedListener
                     if ($assoc['type'] & ClassMetadata::TO_ONE) {
                         if ($assoc['isOwningSide']) {
                             $associatedId = array();
+                            // TODO: Is this even computed right in all cases of composite keys?
                             foreach ($assoc['targetToSourceKeyColumns'] as $targetColumn => $srcColumn) {
                                 $joinColumnValue = isset($data[$srcColumn]) ? $data[$srcColumn] : null;
                                 if ($joinColumnValue !== null) {
