@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -22,7 +20,7 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Mapping\MappingException;
+ Doctrine\ORM\Mapping\MappingException;
 
 /**
  * The StaticPHPDriver calls a static loadMetadata() method on your entity
@@ -31,15 +29,33 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo,
  * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    	www.doctrine-project.org
  * @since   	2.0
- * @version     $Revision$
- * @author		Benjamin Eberlei <kontakt@beberlei.de>
- * @author		Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author      Benjamin Eberlei <kontakt@beberlei.de>
+ * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
 class StaticPHPDriver implements Driver
 {
+    /**
+     * Paths of entity directories.
+     * 
+     * @var array
+     */
     private $_paths = array();
+    
+    /**
+     * Map of all class names.
+     * 
+     * @var array
+     */
+    private $_classNames;
+    
+    /**
+     * The file extension of mapping documents.
+     * 
+     * @var string
+     */
+    private $_fileExtension = '.php';
 
     public function __construct($paths)
     {
@@ -58,7 +74,7 @@ class StaticPHPDriver implements Driver
     {
         call_user_func_array(array($className, 'loadMetadata'), array($metadata));
     }
-    
+
     /**
      * {@inheritDoc}
      * @todo Same code exists in AnnotationDriver, should we re-use it somehow or not worry about it?
@@ -77,13 +93,13 @@ class StaticPHPDriver implements Driver
         $includedFiles = array();
 
         foreach ($this->_paths as $path) {
-            if ( ! is_dir($path)) {
+            if (!is_dir($path)) {
                 throw MappingException::fileMappingDriversRequireConfiguredDirectoryPath($path);
             }
 
             $iterator = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($path),
-                \RecursiveIteratorIterator::LEAVES_ONLY
+                            new \RecursiveDirectoryIterator($path),
+                            \RecursiveIteratorIterator::LEAVES_ONLY
             );
 
             foreach ($iterator as $file) {
@@ -102,7 +118,7 @@ class StaticPHPDriver implements Driver
         foreach ($declared as $className) {
             $rc = new \ReflectionClass($className);
             $sourceFile = $rc->getFileName();
-            if (in_array($sourceFile, $includedFiles) && ! $this->isTransient($className)) {
+            if (in_array($sourceFile, $includedFiles) && !$this->isTransient($className)) {
                 $classes[] = $className;
             }
         }

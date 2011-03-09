@@ -279,4 +279,9 @@ class MappingException extends \Doctrine\ORM\ORMException
     {
         return new self("Many-to-many or one-to-many associations are not allowed to be identifier in '$className#$field'.");
     }
+    
+    public static function noInheritanceOnMappedSuperClass($className)
+    {
+        return new self("Its not supported to define inheritance information on a mapped superclass '" . $className . "'.");
+    }
 }

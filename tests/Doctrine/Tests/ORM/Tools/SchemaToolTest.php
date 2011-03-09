@@ -28,12 +28,8 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
-        $this->assertTrue($schema->hasTable('cms_users'));
-        $this->assertTrue($schema->getTable('cms_users')->hasIndex('cms_users_username_uniq'));
-        $this->assertEquals(
-            array('username'),
-            array_map('strtolower', $schema->getTable('cms_users')->getIndex('cms_users_username_uniq')->getColumns())
-        );
+        $this->assertTrue($schema->hasTable('cms_users'), "Table cms_users should exist.");
+        $this->assertTrue($schema->getTable('cms_users')->columnsAreIndexed(array('username')), "username column should be indexed.");
     }
 
     /**

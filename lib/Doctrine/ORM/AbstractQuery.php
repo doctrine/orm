@@ -486,7 +486,7 @@ abstract class AbstractQuery
     /**
      * Executes the query.
      *
-     * @param string $params Any additional query parameters.
+     * @param array $params Any additional query parameters.
      * @param integer $hydrationMode Processing mode to be used during the hydration process.
      * @return mixed
      */
@@ -506,10 +506,10 @@ abstract class AbstractQuery
 
         // Check result cache
         if ($this->_useResultCache && $cacheDriver = $this->getResultCacheDriver()) {
-            list($id, $hash) = $this->getResultCacheId();
-            $cached = $this->_expireResultCache ? false : $cacheDriver->fetch($id);
+            list($key, $hash) = $this->getResultCacheId();
+            $cached = $this->_expireResultCache ? false : $cacheDriver->fetch($hash);
 
-            if ($cached === false || !isset($cached[$id])) {
+            if ($cached === false || !isset($cached[$key])) {
                 // Cache miss.
                 $stmt = $this->_doExecute();
 
@@ -517,12 +517,12 @@ abstract class AbstractQuery
                         $stmt, $this->_resultSetMapping, $this->_hints
                         );
 
-                $cacheDriver->save($id, $result, $this->_resultCacheTTL);
+                $cacheDriver->save($hash, array($key => $result), $this->_resultCacheTTL);
 
                 return $result;
             } else {
                 // Cache hit.
-                return $cached[$id];
+                return $cached[$key];
             }
         }
 
@@ -556,7 +556,7 @@ abstract class AbstractQuery
      * Will return the configured id if it exists otherwise a hash will be
      * automatically generated for you.
      *
-     * @return array ($id, $hash)
+     * @return array ($key, $hash)
      */
     protected function getResultCacheId()
     {

@@ -109,6 +109,10 @@ class EntityRepository implements ObjectRepository
     {
         // Check identity map first
         if ($entity = $this->_em->getUnitOfWork()->tryGetById($id, $this->_class->rootEntityName)) {
+            if (!($entity instanceof $this->_class->name)) {
+                return null;
+            }
+            
             if ($lockMode != LockMode::NONE) {
                 $this->_em->lock($entity, $lockMode, $lockVersion);
             }

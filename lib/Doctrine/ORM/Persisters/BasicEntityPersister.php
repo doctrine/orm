@@ -173,6 +173,14 @@ class BasicEntityPersister
     }
 
     /**
+     * @return Doctrine\ORM\Mapping\ClassMetadata
+     */
+    public function getClassMetadata()
+    {
+        return $this->_class;
+    }
+
+    /**
      * Adds an entity to the queued insertions.
      * The entity remains queued until {@link executeInserts} is invoked.
      *
