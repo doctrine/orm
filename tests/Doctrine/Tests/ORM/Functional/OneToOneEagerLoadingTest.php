@@ -84,7 +84,7 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testEagerLoadOneToOneNullInverseSide()
     {
-        $driver = new TrainDriver("Benjamin");
+        $driver = new TrainDriver("Dagny Taggert");
 
         $this->_em->persist($driver);
         $this->_em->flush();
@@ -95,11 +95,25 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $sqlCount = count($this->_sqlLoggerStack->queries);
 
         $driver = $this->_em->find(get_class($driver), $driver->id);
-        var_dump($this->_sqlLoggerStack->queries); // wrong table aliasing!
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $driver->train);
         $this->assertNull($driver->train);
 
         $this->assertEquals($sqlCount + 1, count($this->_sqlLoggerStack->queries));
+    }
+
+    public function testEagerLoadManyToOne()
+    {
+        $train = new Train();
+        $waggon = new Waggon();
+        $train->addWaggon($waggon);
+
+        $this->_em->persist($train); // cascades
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $waggon = $this->_em->find(get_class($waggon), $waggon->id);
+        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $waggon->train);
+        $this->assertNotNull($waggon->train);
     }
 }
 
@@ -174,7 +188,7 @@ class Waggon
 {
     /** @id @generatedValue @column(type="integer") */
     public $id;
-    /** @ManyToOne(targetEntity="Train", inversedBy="waggons") */
+    /** @ManyToOne(targetEntity="Train", inversedBy="waggons", fetch="EAGER") */
     public $train;
 
     public function setTrain($train)

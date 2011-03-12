@@ -1031,7 +1031,7 @@ class BasicEntityPersister
 
                     foreach ($owningAssoc['sourceToTargetKeyColumns'] AS $sourceCol => $targetCol) {
                         $this->_selectJoinSql .= $this->_getSQLTableAlias($owningAssoc['sourceEntity'], $assocAlias) . '.'.$sourceCol.' = ' .
-                                                 $this->_getSQLTableAlias($assoc['targetEntity']) . '.' . $targetCol . ' ';
+                                                 $this->_getSQLTableAlias($owningAssoc['targetEntity']) . '.' . $targetCol . ' ';
                     }
                 }
             }
