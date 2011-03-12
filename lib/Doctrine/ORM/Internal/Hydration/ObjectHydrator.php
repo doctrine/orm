@@ -404,6 +404,10 @@ class ObjectHydrator extends AbstractHydrator
                             $result[$key] = $element;
                             $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $key;
                         }
+
+                        if (isset($this->_hints['collection'])) {
+                            $this->_hints['collection']->hydrateSet($key, $element);
+                        }
                     } else {
                         if ($this->_rsm->isMixed) {
                             $element = array(0 => $element);
@@ -411,6 +415,10 @@ class ObjectHydrator extends AbstractHydrator
                         $result[] = $element;
                         $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $this->_resultCounter;
                         ++$this->_resultCounter;
+
+                        if (isset($this->_hints['collection'])) {
+                            $this->_hints['collection']->hydrateAdd($element);
+                        }
                     }
 
                     // Update result pointer

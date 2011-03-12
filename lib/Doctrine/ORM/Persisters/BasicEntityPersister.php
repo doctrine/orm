@@ -721,19 +721,17 @@ class BasicEntityPersister
      */
     private function loadArrayFromStatement($assoc, $stmt)
     {
-        $entities = array();
+        $hints = array('deferEagerLoads' => true);
+
         if (isset($assoc['indexBy'])) {
-            while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $entity = $this->_createEntity($result);
-                $entities[$this->_class->reflFields[$assoc['indexBy']]->getValue($entity)] = $entity;
-            }
+            $rsm = clone ($this->_rsm); // this is necessary because the "default rsm" should be changed.
+            $rsm->addIndexBy('r', $assoc['indexBy']);
         } else {
-            while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $entities[] = $this->_createEntity($result);
-            }
+            $rsm = $this->_rsm;
         }
-        $stmt->closeCursor();
-        return $entities;
+
+        $hydrator = $this->_em->newHydrator(Query::HYDRATE_OBJECT);
+        return $hydrator->hydrateAll($stmt, $rsm, $hints);
     }
 
     /**
@@ -745,20 +743,17 @@ class BasicEntityPersister
      */
     private function loadCollectionFromStatement($assoc, $stmt, $coll)
     {        
-        $hints = array('deferEagerLoads' => true);
+        $hints = array('deferEagerLoads' => true, 'collection' => $coll);
+
         if (isset($assoc['indexBy'])) {
-            while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $entity = $this->_createEntity($result, null, $hints);
-                $coll->hydrateSet($this->_class->reflFields[$assoc['indexBy']]->getValue($entity), $entity);
-            }
+            $rsm = clone ($this->_rsm); // this is necessary because the "default rsm" should be changed.
+            $rsm->addIndexBy('r', $assoc['indexBy']);
         } else {
-            while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $coll->hydrateAdd($this->_createEntity($result, null, $hints));
-            }
+            $rsm = $this->_rsm;
         }
-        $stmt->closeCursor();
-        
-        $this->_em->getUnitOfWork()->triggerEagerLoads();
+
+        $hydrator = $this->_em->newHydrator(Query::HYDRATE_OBJECT);
+        $hydrator->hydrateAll($stmt, $rsm, $hints);
     }
 
     /**
@@ -994,13 +989,13 @@ class BasicEntityPersister
                 $columnList .= $assocColumnSQL;
             }
             
-            if ($assoc['type'] & ClassMetadata::TO_ONE && ($assoc['fetch'] == ClassMetadata::FETCH_EAGER/* || !$assoc['isOwningSide']*/)) {
+            if ($assoc['type'] & ClassMetadata::TO_ONE && ($assoc['fetch'] == ClassMetadata::FETCH_EAGER || !$assoc['isOwningSide'])) {
                 $eagerEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
                 if ($eagerEntity->inheritanceType != ClassMetadata::INHERITANCE_TYPE_NONE) {
                     continue; // now this is why you shouldn't use inheritance
                 }
                 
-                $assocAlias = 'e' + ($eagerAliasCounter++);
+                $assocAlias = 'e' . ($eagerAliasCounter++);
                 $this->_rsm->addJoinedEntityResult($assoc['targetEntity'], $assocAlias, 'r', $assocField);
                 
                 foreach ($eagerEntity->fieldNames AS $field) {
@@ -1009,13 +1004,13 @@ class BasicEntityPersister
                 }
                 
                 foreach ($eagerEntity->associationMappings as $assoc2Field => $assoc2) {
-                    $assoc2ColumnSQL = $this->_getSelectColumnAssociationSQL($assoc2Field, $assoc2, $eagerEntity);
+                    $assoc2ColumnSQL = $this->_getSelectColumnAssociationSQL($assoc2Field, $assoc2, $eagerEntity, $assocAlias);
                     if ($assoc2ColumnSQL) {
                         if ($columnList) $columnList .= ', ';
                         $columnList .= $assoc2ColumnSQL;
                     }
                 }
-                $this->_selectJoinSql .= ' LEFT JOIN';
+                $this->_selectJoinSql .= ' LEFT JOIN'; // TODO: Inner join when all join columns are NOT nullable.
                 if ($assoc['isOwningSide']) {
                     $this->_selectJoinSql .= ' ' . $eagerEntity->table['name'] . ' ' . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) .' ON ';
                     
@@ -1042,7 +1037,7 @@ class BasicEntityPersister
         return $this->_selectColumnListSql;
     }
     
-    protected function _getSelectColumnAssociationSQL($field, $assoc, ClassMetadata $class)
+    protected function _getSelectColumnAssociationSQL($field, $assoc, ClassMetadata $class, $alias = 'r')
     {
         $columnList = '';
         if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
@@ -1050,12 +1045,12 @@ class BasicEntityPersister
                 if ($columnList) $columnList .= ', ';
 
                 $columnAlias = $srcColumn . $this->_sqlAliasCounter++;
-                $columnList .= $this->_getSQLTableAlias($class->name) . ".$srcColumn AS $columnAlias";
+                $columnList .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )  . ".$srcColumn AS $columnAlias";
                 $resultColumnName = $this->_platform->getSQLResultCasing($columnAlias);
                 if ( ! isset($this->_resultColumnNames[$resultColumnName])) {
                     $this->_resultColumnNames[$resultColumnName] = $srcColumn;
                 }
-                $this->_rsm->addMetaResult('r', $this->_platform->getSQLResultCasing($columnAlias), $srcColumn);
+                $this->_rsm->addMetaResult($alias, $this->_platform->getSQLResultCasing($columnAlias), $srcColumn);
             }
         }
         return $columnList;
@@ -1195,8 +1190,8 @@ class BasicEntityPersister
             return $this->_sqlTableAliases[$className];
         }
         $tableAlias = 't' . $this->_sqlAliasCounter++;
-        $this->_sqlTableAliases[$className] = $tableAlias;
 
+        $this->_sqlTableAliases[$className] = $tableAlias;
         return $tableAlias;
     }
 
