@@ -29,6 +29,7 @@ use Doctrine\ORM\ORMException,
  * database as it is defined by the <tt>Class Table Inheritance</tt> strategy.
  *
  * @author Roman Borschel <roman@code-factory.org>
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
  * @since 2.0
  * @see http://martinfowler.com/eaaCatalog/classTableInheritance.html
  */
@@ -283,7 +284,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             }
 
             $resultColumnName = $this->_platform->getSQLResultCasing($discrColumn);
-            $this->_resultColumnNames[$resultColumnName] = $discrColumn;
             $this->_rsm->setDiscriminatorColumn('r', $discrColumn);
             $this->_rsm->addMetaResult('r', $resultColumnName, $discrColumn);
         }

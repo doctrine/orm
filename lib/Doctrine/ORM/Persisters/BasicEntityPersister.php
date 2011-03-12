@@ -70,6 +70,7 @@ use PDO,
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
  * @since 2.0
  */
 class BasicEntityPersister
@@ -108,15 +109,6 @@ class BasicEntityPersister
      * @var array
      */
     protected $_queuedInserts = array();
-
-    /**
-     * Case-sensitive mappings of column names as they appear in an SQL result set
-     * to column names as they are defined in the mapping. This is necessary because different
-     * RDBMS vendors return column names in result sets in different casings.
-     * 
-     * @var array
-     */
-    protected $_resultColumnNames = array();
     
     /**
      * ResultSetMapping that is used for all queries. Is generated lazily once per request.
@@ -822,72 +814,6 @@ class BasicEntityPersister
     }
 
     /**
-     * Creates or fills a single entity object from an SQL result.
-     * 
-     * @param $result The SQL result.
-     * @param object $entity The entity object to fill, if any.
-     * @param array $hints Hints for entity creation.
-     * @return object The filled and managed entity object or NULL, if the SQL result is empty.
-     */
-    private function _createEntity($result, $entity = null, array $hints = array())
-    {
-        if ($result === false) {
-            return null;
-        }
-
-        list($entityName, $data) = $this->_processSQLResult($result);
-
-        if ($entity !== null) {
-            $hints[Query::HINT_REFRESH] = true;
-            $id = array();
-            if ($this->_class->isIdentifierComposite) {
-                foreach ($this->_class->identifier as $fieldName) {
-                    $id[$fieldName] = $data[$fieldName];
-                }
-            } else {
-                $id = array($this->_class->identifier[0] => $data[$this->_class->identifier[0]]);
-            }
-            $this->_em->getUnitOfWork()->registerManaged($entity, $id, $data);
-        }
-
-        return $this->_em->getUnitOfWork()->createEntity($entityName, $data, $hints);
-    }
-
-    /**
-     * Processes an SQL result set row that contains data for an entity of the type
-     * this persister is responsible for.
-     *
-     * Subclasses are supposed to override this method if they need to change the
-     * hydration procedure for entities loaded through basic find operations or
-     * lazy-loading (not DQL).
-     * 
-     * @param array $sqlResult The SQL result set row to process.
-     * @return array A tuple where the first value is the actual type of the entity and
-     *               the second value the prepared data of the entity (a map from field
-     *               names to values).
-     */
-    protected function _processSQLResult(array $sqlResult)
-    {
-        $data = array();
-        foreach ($sqlResult as $column => $value) {
-            $column = $this->_resultColumnNames[$column];
-            if (isset($this->_class->fieldNames[$column])) {
-                $field = $this->_class->fieldNames[$column];
-                if (isset($data[$field])) {
-                    $data[$column] = $value;
-                } else {
-                    $data[$field] = Type::getType($this->_class->fieldMappings[$field]['type'])
-                            ->convertToPHPValue($value, $this->_platform);
-                }
-            } else {
-                $data[$column] = $value;
-            }
-        }
-
-        return array($this->_class->name, $data);
-    }
-
-    /**
      * Gets the SELECT SQL to select one or more entities by a set of field criteria.
      *
      * @param array $criteria
@@ -1047,9 +973,6 @@ class BasicEntityPersister
                 $columnAlias = $srcColumn . $this->_sqlAliasCounter++;
                 $columnList .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )  . ".$srcColumn AS $columnAlias";
                 $resultColumnName = $this->_platform->getSQLResultCasing($columnAlias);
-                if ( ! isset($this->_resultColumnNames[$resultColumnName])) {
-                    $this->_resultColumnNames[$resultColumnName] = $srcColumn;
-                }
                 $this->_rsm->addMetaResult($alias, $this->_platform->getSQLResultCasing($columnAlias), $srcColumn);
             }
         }
@@ -1165,9 +1088,6 @@ class BasicEntityPersister
         $columnName = $class->columnNames[$field];
         $sql = $this->_getSQLTableAlias($class->name, $alias == 'r' ? '' : $alias) . '.' . $class->getQuotedColumnName($field, $this->_platform);
         $columnAlias = $this->_platform->getSQLResultCasing($columnName . $this->_sqlAliasCounter++);
-        if ( ! isset($this->_resultColumnNames[$columnAlias])) {
-            $this->_resultColumnNames[$columnAlias] = $columnName;
-        }
         $this->_rsm->addFieldResult($alias, $columnAlias, $field);
 
         return "$sql AS $columnAlias";
