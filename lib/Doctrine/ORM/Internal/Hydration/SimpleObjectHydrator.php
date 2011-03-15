@@ -115,7 +115,9 @@ class SimpleObjectHydrator extends AbstractHydrator
                                     ->convertToPHPValue($value, $this->_platform);
                 }
 
-                if (isset($cache[$column])) {
+                // the second and part is to prevent overwrites in case of multiple
+                // inheritance classes using the same property name (See AbstractHydrator)
+                if (isset($cache[$column]) && (!isset($data[$cache[$column]['name']]) || $value !== null)) {
                     $data[$cache[$column]['name']] = $value;
                 }
             }
