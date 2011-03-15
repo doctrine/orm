@@ -685,7 +685,11 @@ class BasicEntityPersister
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->_conn->executeQuery($sql, $params, $types);
 
-        $hydrator = $this->_em->newHydrator(Query::HYDRATE_OBJECT);
+        if ($this->_selectJoinSql) {
+            $hydrator = $this->_em->newHydrator(Query::HYDRATE_OBJECT);
+        } else {
+            $hydrator = $this->_em->newHydrator(Query::HYDRATE_SIMPLEOBJECT);
+        }
         return $hydrator->hydrateAll($stmt, $this->_rsm, array('deferEagerLoads' => true));
     }
 

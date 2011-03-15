@@ -58,6 +58,11 @@ abstract class AbstractQuery
     const HYDRATE_SINGLE_SCALAR = 4;
 
     /**
+     * Very simple object hydrator (optimized for performance).
+     */
+    const HYDRATE_SIMPLEOBJECT = 5;
+
+    /**
      * @var array The parameter map of this query.
      */
     protected $_params = array();
