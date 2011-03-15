@@ -226,13 +226,6 @@ class UnitOfWork implements PropertyChangedListener
     private $eagerLoadingEntities = array();
 
     /**
-     * Map of Collections that should be eager loaded when requested.
-     *
-     * @var array
-     */
-    private $eagerLoadingCollections = array();
-
-    /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      *
      * @param Doctrine\ORM\EntityManager $em
@@ -1900,7 +1893,8 @@ class UnitOfWork implements PropertyChangedListener
                     $class->reflFields[$field]->setValue($entity, $value);
                 }
             }
-            
+
+            // Loading the entity right here, if its in the eager loading map get rid of it there.
             unset($this->eagerLoadingEntities[$class->name][$idHash]);
             
             // Properly initialize any unfetched associations, if partial objects are not allowed.
