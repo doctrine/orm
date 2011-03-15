@@ -33,6 +33,8 @@ class SimpleObjectHydrator extends AbstractHydrator
      */
     private $class;
 
+    private $declaringClasses = array();
+
     protected function _hydrateAll()
     {
         $result = array();
@@ -51,6 +53,11 @@ class SimpleObjectHydrator extends AbstractHydrator
     {
         if (count($this->_rsm->aliasMap) == 1) {
             $this->class = $this->_em->getClassMetadata(current($this->_rsm->aliasMap));
+            if ($this->class->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
+                foreach ($this->_rsm->declaringClasses AS $column => $class) {
+                    $this->declaringClasses[$column] = $this->_em->getClassMetadata($class);
+                }
+            }
         } else {
             throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping not containing exactly one object result.");
         }
@@ -87,7 +94,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             foreach ($sqlResult as $column => $value) {
                 if (isset($this->_rsm->fieldMappings[$column])) {
                     $realColumnName = $this->_rsm->fieldMappings[$column];
-                    $class = $this->_em->getClassMetadata($this->_rsm->declaringClasses[$column]);
+                    $class = $this->declaringClasses[$column];
                     if ($class->name == $entityName || is_subclass_of($entityName, $class->name)) {
                         $field = $class->fieldNames[$realColumnName];
                         if (isset($data[$field])) {
