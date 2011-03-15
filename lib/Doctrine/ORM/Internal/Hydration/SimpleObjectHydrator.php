@@ -52,7 +52,7 @@ class SimpleObjectHydrator extends AbstractHydrator
     protected function _prepare()
     {
         if (count($this->_rsm->aliasMap) == 1) {
-            $this->class = $this->_em->getClassMetadata(current($this->_rsm->aliasMap));
+            $this->class = $this->_em->getClassMetadata(reset($this->_rsm->aliasMap));
             if ($this->class->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
                 foreach ($this->_rsm->declaringClasses AS $column => $class) {
                     $this->declaringClasses[$column] = $this->_em->getClassMetadata($class);
@@ -72,19 +72,20 @@ class SimpleObjectHydrator extends AbstractHydrator
         if ($this->class->inheritanceType == ClassMetadata::INHERITANCE_TYPE_NONE) {
             foreach ($sqlResult as $column => $value) {
 
-                if (isset($this->_rsm->fieldMappings[$column])) {
-                    $column = $this->_rsm->fieldMappings[$column];
-                    $field = $this->class->fieldNames[$column];
-                    if (isset($data[$field])) {
-                        $data[$column] = $value;
+                if (!isset($cache[$column])) {
+                    if (isset($this->_rsm->fieldMappings[$column])) {
+                        $cache[$column]['name'] = $this->_rsm->fieldMappings[$column];
+                        $cache[$column]['field'] = true;
                     } else {
-                        $data[$field] = Type::getType($this->class->fieldMappings[$field]['type'])
-                                ->convertToPHPValue($value, $this->_platform);
+                        $cache[$column]['name'] = $this->_rsm->metaMappings[$column];
                     }
-                } else {
-                    $column = $this->_rsm->metaMappings[$column];
-                    $data[$column] = $value;
                 }
+
+                if (isset($cache[$column]['field'])) {
+                    $value = Type::getType($this->class->fieldMappings[$cache[$column]['name']]['type'])
+                                    ->convertToPHPValue($value, $this->_platform);
+                }
+                $data[$cache[$column]['name']] = $value;
             }
             $entityName = $this->class->name;
         } else {
@@ -92,25 +93,30 @@ class SimpleObjectHydrator extends AbstractHydrator
             $entityName = $this->class->discriminatorMap[$sqlResult[$discrColumnName]];
             unset($sqlResult[$discrColumnName]);
             foreach ($sqlResult as $column => $value) {
-                if (isset($this->_rsm->fieldMappings[$column])) {
-                    $realColumnName = $this->_rsm->fieldMappings[$column];
-                    $class = $this->declaringClasses[$column];
-                    if ($class->name == $entityName || is_subclass_of($entityName, $class->name)) {
-                        $field = $class->fieldNames[$realColumnName];
-                        if (isset($data[$field])) {
-                            $data[$realColumnName] = $value;
-                        } else {
-                            $data[$field] = Type::getType($class->fieldMappings[$field]['type'])
-                                    ->convertToPHPValue($value, $this->_platform);
+                if (!isset($cache[$column])) {
+                    if (isset($this->_rsm->fieldMappings[$column])) {
+                        $field = $this->_rsm->fieldMappings[$column];
+                        $class = $this->declaringClasses[$column];
+                        if ($class->name == $entityName || is_subclass_of($entityName, $class->name)) {
+                            $cache[$column]['name'] = $field;
+                            $cache[$column]['class'] = $class;
                         }
+                    } else if (isset($this->_rsm->relationMap[$column])) {
+                        if ($this->_rsm->relationMap[$column] == $entityName || is_subclass_of($entityName, $this->_rsm->relationMap[$column])) {
+                            $cache[$column]['name'] = $field;
+                        }
+                    } else {
+                        $cache[$column]['name'] = $this->_rsm->metaMappings[$column];
                     }
-                } else if (isset($this->_rsm->relationMap[$column])) {
-                    if ($this->_rsm->relationMap[$column] == $entityName || is_subclass_of($entityName, $this->_rsm->relationMap[$column])) {
-                        $data[$realColumnName] = $value;
-                    }
-                } else {
-                    $column = $this->_rsm->metaMappings[$column];
-                    $data[$realColumnName] = $value;
+                }
+
+                if (isset($cache[$column]['class'])) {
+                    $value = Type::getType($cache[$column]['class']->fieldMappings[$cache[$column]['name']]['type'])
+                                    ->convertToPHPValue($value, $this->_platform);
+                }
+
+                if (isset($cache[$column])) {
+                    $data[$cache[$column]['name']] = $value;
                 }
             }
         }

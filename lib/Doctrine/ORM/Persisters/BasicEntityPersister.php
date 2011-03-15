@@ -571,8 +571,12 @@ class BasicEntityPersister
         if ($entity !== null) {
             $hints[Query::HINT_REFRESH] = true;
         }
-        
-        $hydrator = $this->_em->newHydrator(Query::HYDRATE_OBJECT);
+
+        if ($this->_selectJoinSql) {
+            $hydrator = $this->_em->newHydrator(Query::HYDRATE_OBJECT);
+        } else {
+            $hydrator = $this->_em->newHydrator(Query::HYDRATE_SIMPLEOBJECT);
+        }
         $entities = $hydrator->hydrateAll($stmt, $this->_rsm, $hints);
         return $entities ? $entities[0] : null;
     }
