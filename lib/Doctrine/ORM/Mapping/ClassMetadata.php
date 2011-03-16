@@ -275,7 +275,6 @@ class ClassMetadata extends ClassMetadataInfo
     {
         // This metadata is always serialized/cached.
         $serialized = array(
-            'namedQueries',
             'associationMappings',
             'columnNames', //TODO: Not really needed. Can use fieldMappings[$fieldName]['columnName']
             'fieldMappings',
@@ -329,6 +328,10 @@ class ClassMetadata extends ClassMetadataInfo
 
         if ($this->lifecycleCallbacks) {
             $serialized[] = 'lifecycleCallbacks';
+        }
+
+        if ($this->namedQueries) {
+            $serialized[] = 'namedQueries';
         }
 
         return $serialized;
