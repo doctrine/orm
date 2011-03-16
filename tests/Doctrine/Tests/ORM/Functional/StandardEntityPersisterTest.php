@@ -33,12 +33,14 @@ class StandardEntityPersisterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($customer);
         $this->_em->flush();
         $this->_em->clear();
+        $cardId = $cart->getId();
         unset($cart);
         
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCart');
         
         $persister = $this->_em->getUnitOfWork()->getEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceCart');
         $newCart = new ECommerceCart();
+        $this->_em->getUnitOfWork()->registerManaged($newCart, array('id' => $cardId), array());
         $persister->load(array('customer_id' => $customer->getId()), $newCart, $class->associationMappings['customer']);
         $this->assertEquals('Credit card', $newCart->getPayment());
     }

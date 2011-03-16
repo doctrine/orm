@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
+
 require_once __DIR__ . '/../../TestInit.php';
 
 class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
@@ -348,5 +350,21 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $ref = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyFixContract', $this->fix->getId());
         $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $ref, "A proxy can be generated only if no subclasses exists for the requested reference.");
+    }
+
+    /**
+     * @group DDC-952
+     */
+    public function testEagerLoadInheritanceHierachy()
+    {
+        $this->loadFullFixture();
+
+        $dql = 'SELECT f FROM Doctrine\Tests\Models\Company\CompanyFixContract f WHERE f.id = ?1';
+        $contract = $this->_em->createQuery($dql)
+                              ->setFetchMode('Doctrine\Tests\Models\Company\CompanyFixContract', 'salesPerson', ClassMetadata::FETCH_EAGER)
+                              ->setParameter(1, $this->fix->getId())
+                              ->getSingleResult();
+
+        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $contract->getSalesPerson());
     }
 }

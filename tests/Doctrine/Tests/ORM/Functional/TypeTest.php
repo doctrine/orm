@@ -119,7 +119,7 @@ class TypeTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $dateTimeDb = $this->_em->find('Doctrine\Tests\Models\Generic\DateTimeModel', $dateTime->id);
 
-        $this->assertInstanceOf('DateTime', $dateTime->datetime);
+        $this->assertInstanceOf('DateTime', $dateTimeDb->datetime);
         $this->assertEquals('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
     }
 

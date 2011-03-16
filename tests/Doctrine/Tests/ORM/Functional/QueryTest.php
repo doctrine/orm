@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\CMS\CmsUser,
     Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -312,5 +313,35 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals("dr. dolittle", $result[0]->topic);
         $this->assertTrue($result[0]->user instanceof \Doctrine\ORM\Proxy\Proxy);
         $this->assertFalse($result[0]->user->__isInitialized__);
+    }
+    
+    /**
+     * @group DDC-952
+     */
+    public function testEnableFetchEagerMode()
+    {
+        for ($i = 0; $i < 10; $i++) {
+            $article = new CmsArticle;
+            $article->topic = "dr. dolittle";
+            $article->text = "Once upon a time ...";
+            $author = new CmsUser;
+            $author->name = "anonymous";
+            $author->username = "anon".$i;
+            $author->status = "here";
+            $article->user = $author;
+            $this->_em->persist($author);
+            $this->_em->persist($article);
+        }
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        $articles = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
+                         ->setFetchMode('Doctrine\Tests\Models\CMS\CmsArticle', 'user', ClassMetadata::FETCH_EAGER)
+                         ->getResult();
+        
+        $this->assertEquals(10, count($articles));
+        foreach ($articles AS $article) {
+            $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $article);
+        }
     }
 }
