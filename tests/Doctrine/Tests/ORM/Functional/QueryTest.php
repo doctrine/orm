@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\CMS\CmsUser,
     Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -335,7 +336,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
         
         $articles = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
-                         ->setHint('fetchEager', array('Doctrine\Tests\Models\CMS\CmsArticle' => array('user' => true)))
+                         ->setFetchMode('Doctrine\Tests\Models\CMS\CmsArticle', 'user', ClassMetadata::FETCH_EAGER)
                          ->getResult();
         
         $this->assertEquals(10, count($articles));

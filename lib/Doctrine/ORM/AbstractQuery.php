@@ -337,6 +337,26 @@ abstract class AbstractQuery
     }
 
     /**
+     * Change the default fetch mode of an association for this query.
+     *
+     * $fetchMode can be one of ClassMetadata::FETCH_EAGER or ClassMetadata::FETCH_LAZY
+     *
+     * @param  string $class
+     * @param  string $assocName
+     * @param  int $fetchMode
+     * @return AbstractQuery
+     */
+    public function setFetchMode($class, $assocName, $fetchMode)
+    {
+        if ($fetchMode !== Mapping\ClassMetadata::FETCH_EAGER) {
+            $fetchMode = Mapping\ClassMetadata::FETCH_LAZY;
+        }
+
+        $this->_hints['fetchMode'][$class][$assocName] = $fetchMode;
+        return $this;
+    }
+
+    /**
      * Defines the processing mode to be used during hydration / result set transformation.
      *
      * @param integer $hydrationMode Doctrine processing mode to be used during hydration process.
