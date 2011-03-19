@@ -219,6 +219,13 @@ class UnitOfWork implements PropertyChangedListener
     //private $_readOnlyObjects = array();
 
     /**
+     * Map of Entity Class-Names and corresponding IDs that should eager loaded when requested.
+     * 
+     * @var array
+     */
+    private $eagerLoadingEntities = array();
+
+    /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      *
      * @param Doctrine\ORM\EntityManager $em
@@ -1886,6 +1893,9 @@ class UnitOfWork implements PropertyChangedListener
                     $class->reflFields[$field]->setValue($entity, $value);
                 }
             }
+
+            // Loading the entity right here, if its in the eager loading map get rid of it there.
+            unset($this->eagerLoadingEntities[$class->rootEntityName][$idHash]);
             
             // Properly initialize any unfetched associations, if partial objects are not allowed.
             if ( ! isset($hints[Query::HINT_FORCE_PARTIAL_LOAD])) {
@@ -1900,6 +1910,7 @@ class UnitOfWork implements PropertyChangedListener
                     if ($assoc['type'] & ClassMetadata::TO_ONE) {
                         if ($assoc['isOwningSide']) {
                             $associatedId = array();
+                            // TODO: Is this even computed right in all cases of composite keys?
                             foreach ($assoc['targetToSourceKeyColumns'] as $targetColumn => $srcColumn) {
                                 $joinColumnValue = isset($data[$srcColumn]) ? $data[$srcColumn] : null;
                                 if ($joinColumnValue !== null) {
@@ -1915,6 +1926,10 @@ class UnitOfWork implements PropertyChangedListener
                                 $class->reflFields[$field]->setValue($entity, null);
                                 $this->originalEntityData[$oid][$field] = null;
                             } else {
+                                if (!isset($hints['fetchMode'][$class->name][$field])) {
+                                    $hints['fetchMode'][$class->name][$field] = $assoc['fetch'];
+                                }
+
                                 // Foreign key is set
                                 // Check identity map first
                                 // FIXME: Can break easily with composite keys if join column values are in
@@ -1922,16 +1937,38 @@ class UnitOfWork implements PropertyChangedListener
                                 $relatedIdHash = implode(' ', $associatedId);
                                 if (isset($this->identityMap[$targetClass->rootEntityName][$relatedIdHash])) {
                                     $newValue = $this->identityMap[$targetClass->rootEntityName][$relatedIdHash];
+                                    
+                                    // if this is an uninitialized proxy, we are deferring eager loads,
+                                    // this association is marked as eager fetch, and its an uninitialized proxy (wtf!)
+                                    // then we cann append this entity for eager loading!
+                                    if ($hints['fetchMode'][$class->name][$field] == ClassMetadata::FETCH_EAGER &&
+                                        isset($hints['deferEagerLoad']) &&
+                                        !$targetClass->isIdentifierComposite &&
+                                        $newValue instanceof Proxy &&
+                                        $newValue->__isInitialized__ === false) {
+                                        
+                                        $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($associatedId);
+                                    }
                                 } else {
                                     if ($targetClass->subClasses) {
-                                        // If it might be a subtype, it can not be lazy
+                                        // If it might be a subtype, it can not be lazy. There isn't even
+                                        // a way to solve this with deferred eager loading, which means putting
+                                        // an entity with subclasses at a *-to-one location is really bad! (performance-wise)
                                         $newValue = $this->getEntityPersister($assoc['targetEntity'])
                                                 ->loadOneToOneEntity($assoc, $entity, null, $associatedId);
                                     } else {
-                                        if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER) {
-                                            // TODO: Maybe it could be optimized to do an eager fetch with a JOIN inside
-                                            // the persister instead of this rather unperformant approach.
-                                            $newValue = $this->em->find($assoc['targetEntity'], $associatedId);
+                                        // Deferred eager load only works for single identifier classes
+
+                                        if ($hints['fetchMode'][$class->name][$field] == ClassMetadata::FETCH_EAGER) {
+                                            if (isset($hints['deferEagerLoad']) && !$targetClass->isIdentifierComposite) {
+                                                // TODO: Is there a faster approach?
+                                                $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($associatedId);
+
+                                                $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $associatedId);
+                                            } else {
+                                                // TODO: This is very imperformant, ignore it?
+                                                $newValue = $this->em->find($assoc['targetEntity'], $associatedId);
+                                            }
                                         } else {
                                             $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $associatedId);
                                         }
@@ -1945,6 +1982,11 @@ class UnitOfWork implements PropertyChangedListener
                                 }
                                 $this->originalEntityData[$oid][$field] = $newValue;
                                 $class->reflFields[$field]->setValue($entity, $newValue);
+                                
+                                if ($assoc['inversedBy'] && $assoc['type'] & ClassMetadata::ONE_TO_ONE) {
+                                    $inverseAssoc = $targetClass->associationMappings[$assoc['inversedBy']];
+                                    $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($newValue, $entity);
+                                }
                             }
                         } else {
                             // Inverse side of x-to-one can never be lazy
@@ -1955,10 +1997,10 @@ class UnitOfWork implements PropertyChangedListener
                         // Inject collection
                         $pColl = new PersistentCollection($this->em, $targetClass, new ArrayCollection);
                         $pColl->setOwner($entity, $assoc);
-                        
+
                         $reflField = $class->reflFields[$field];
                         $reflField->setValue($entity, $pColl);
-                        
+
                         if ($assoc['fetch'] == ClassMetadata::FETCH_EAGER) {
                             $this->loadCollection($pColl);
                             $pColl->takeSnapshot();
@@ -1980,6 +2022,25 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         return $entity;
+    }
+
+    /**
+     * @return void
+     */
+    public function triggerEagerLoads()
+    {
+        if (!$this->eagerLoadingEntities) {
+            return;
+        }
+
+        // avoid infinite recursion
+        $eagerLoadingEntities = $this->eagerLoadingEntities;
+        $this->eagerLoadingEntities = array();
+
+        foreach ($eagerLoadingEntities AS $entityName => $ids) {
+            $class = $this->em->getClassMetadata($entityName);
+            $this->getEntityPersister($entityName)->loadAll(array_combine($class->identifier, array(array_values($ids))));
+        }
     }
 
     /**

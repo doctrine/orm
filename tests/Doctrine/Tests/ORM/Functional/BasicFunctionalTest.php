@@ -946,4 +946,35 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertNull($this->_em->find(get_class($ph), $ph->phonenumber)->getUser());
     }
+
+    /**
+     * @group DDC-952
+     */
+    public function testManyToOneFetchModeQuery()
+    {
+        $user = new CmsUser();
+        $user->username = "beberlei";
+        $user->name = "Benjamin E.";
+        $user->status = 'active';
+
+        $article = new CmsArticle();
+        $article->topic = "foo";
+        $article->text = "bar";
+        $article->user = $user;
+
+        $this->_em->persist($article);
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $qc = $this->getCurrentQueryCount();
+        $dql = "SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.id = ?1";
+        $article = $this->_em->createQuery($dql)
+                             ->setParameter(1, $article->id)
+                             ->setFetchMode('Doctrine\Tests\Models\CMS\CmsArticle', 'user', \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EAGER)
+                             ->getSingleResult();
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $article->user, "It IS a proxy, ...");
+        $this->assertTrue($article->user->__isInitialized__, "...but its initialized!");
+        $this->assertEquals($qc+2, $this->getCurrentQueryCount());
+    }
 }

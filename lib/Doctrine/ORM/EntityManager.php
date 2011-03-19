@@ -679,6 +679,9 @@ class EntityManager implements ObjectManager
             case Query::HYDRATE_SINGLE_SCALAR:
                 $hydrator = new Internal\Hydration\SingleScalarHydrator($this);
                 break;
+            case Query::HYDRATE_SIMPLEOBJECT:
+                $hydrator = new Internal\Hydration\SimpleObjectHydrator($this);
+                break;
             default:
                 if ($class = $this->config->getCustomHydrationMode($hydrationMode)) {
                     $hydrator = new $class($this);

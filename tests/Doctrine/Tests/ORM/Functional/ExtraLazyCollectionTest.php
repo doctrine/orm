@@ -196,8 +196,8 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(2, count($someUsers));
         $this->assertEquals(2, count($otherUsers));
 
-        // +2 queries executed by slice, +4 are executed by EAGER fetching of User Address.
-        $this->assertEquals($queryCount + 2 + 4, $this->getCurrentQueryCount());
+        // +2 queries executed by slice
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Slicing two parts should only execute two additional queries.");
     }
 
     /**
