@@ -410,4 +410,29 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $ref = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyManager', $manager->getId());
         $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $ref, "A proxy can be generated only if no subclasses exists for the requested reference.");
     }
+
+    /**
+     * @group DDC-992
+     */
+    public function testGetSubClassManyToManyCollection()
+    {
+        $manager = new CompanyManager();
+        $manager->setName('gblanco');
+        $manager->setSalary(1234);
+        $manager->setTitle('Awesome!');
+        $manager->setDepartment('IT');
+
+        $person = new CompanyPerson();
+        $person->setName('friend');
+
+        $manager->addFriend($person);
+
+        $this->_em->persist($manager);
+        $this->_em->persist($person);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $manager = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $manager->getId());
+        $this->assertEquals(1, count($manager->getFriends()));
+    }
 }
