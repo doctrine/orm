@@ -1328,6 +1328,10 @@ class Parser
             $token = $this->_lexer->lookahead;
             $identVariable = $this->IdentificationVariable();
 
+            if (!isset($this->_queryComponents[$identVariable])) {
+                $this->semanticalError('Cannot group by undefined identification variable.');
+            }
+
             return $identVariable;
         }
 

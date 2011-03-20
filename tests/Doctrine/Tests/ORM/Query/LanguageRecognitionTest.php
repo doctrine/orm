@@ -497,6 +497,30 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group DDC-1053
+     */
+    public function testGroupBy()
+    {
+        $this->assertValidDQL('SELECT g.id, count(u.id) FROM Doctrine\Tests\Models\CMS\CmsGroup g JOIN g.users u GROUP BY g.id');
+    }
+
+    /**
+     * @group DDC-1053
+     */
+    public function testGroupByIdentificationVariable()
+    {
+        $this->assertValidDQL('SELECT g, count(u.id) FROM Doctrine\Tests\Models\CMS\CmsGroup g JOIN g.users u GROUP BY g');
+    }
+
+    /**
+     * @group DDC-1053
+     */
+    public function testGroupByUnknownIdentificationVariable()
+    {
+        $this->assertInvalidDQL('SELECT g, count(u.id) FROM Doctrine\Tests\Models\CMS\CmsGroup g JOIN g.users u GROUP BY m');
+    }
+
+    /**
      * @group DDC-117
      */
     public function testSizeOfForeignKeyOneToManyPrimaryKeyEntity()
