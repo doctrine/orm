@@ -155,6 +155,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->flush();
         $this->_em->clear();
+        $articleId = $article1->id;
 
         $query = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.topic = ?1");
         $articles = $query->iterate(array(1 => 'Doctrine 2'), Query::HYDRATE_ARRAY);
@@ -165,7 +166,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
         $this->assertEquals(1, count($found));
         $this->assertEquals(array(
-            array(array('id' => 1, 'topic' => 'Doctrine 2', 'text' => 'This is an introduction to Doctrine 2.', 'version' => 1))
+            array(array('id' => $articleId, 'topic' => 'Doctrine 2', 'text' => 'This is an introduction to Doctrine 2.', 'version' => 1))
         ), $found);
     }
 
