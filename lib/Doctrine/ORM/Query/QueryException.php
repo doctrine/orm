@@ -75,8 +75,7 @@ class QueryException extends \Doctrine\ORM\ORMException
     public static function invalidPathExpression($pathExpr)
     {
         return new self(
-            "Invalid PathExpression '" . $pathExpr->identificationVariable .
-            "." . implode('.', $pathExpr->parts) . "'."
+            "Invalid PathExpression '" . $pathExpr->identificationVariable . "." . $pathExpr->field . "'."
         );
     }
 
