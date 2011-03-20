@@ -446,4 +446,14 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
             'query' => 'SELECT u FROM __CLASS__ u WHERE u.id = ?1'
         ));
     }
+
+    /**
+     * @group DDC-1068
+     */
+    public function testClassCaseSensitivity()
+    {
+        $user = new \Doctrine\Tests\Models\CMS\CmsUser();
+        $cm = new ClassMetadata('DOCTRINE\TESTS\MODELS\CMS\CMSUSER');
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->name);
+    }
 }
