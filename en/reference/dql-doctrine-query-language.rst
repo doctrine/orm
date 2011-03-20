@@ -1457,18 +1457,7 @@ Scalar and Type Expressions
 .. code-block:: php
 
     ScalarExpression       ::= SimpleArithmeticExpression | StringPrimary | DateTimePrimary | StateFieldPathExpression
-                               BooleanPrimary | CaseExpression | EntityTypeExpression
-    CaseExpression         ::= GeneralCaseExpression | SimpleCaseExpression |
-                               CoalesceExpression | NullifExpression
-    GeneralCaseExpression  ::= "CASE" WhenClause {WhenClause}* "ELSE" ScalarExpression
-                               "END"
-    WhenClause             ::= "WHEN" ConditionalExpression "THEN" ScalarExpression
-    SimpleCaseExpression   ::= "CASE" CaseOperand SimpleWhenClause {SimpleWhenClause}*
-                               "ELSE" ScalarExpression "END"
-    CaseOperand            ::= StateFieldPathExpression | TypeDiscriminator
-    SimpleWhenClause       ::= "WHEN" ScalarExpression "THEN" ScalarExpression
-    CoalesceExpression     ::= "COALESCE" "(" ScalarExpression {"," ScalarExpression}* ")"
-    NullifExpression       ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
+                               BooleanPrimary | EntityTypeExpression
     StringExpression       ::= StringPrimary | "(" Subselect ")"
     StringPrimary          ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression
     BooleanExpression      ::= BooleanPrimary | "(" Subselect ")"
@@ -1477,6 +1466,10 @@ Scalar and Type Expressions
     SimpleEntityExpression ::= IdentificationVariable | InputParameter
     DatetimeExpression     ::= DatetimePrimary | "(" Subselect ")"
     DatetimePrimary        ::= StateFieldPathExpression | InputParameter | FunctionsReturningDatetime | AggregateExpression
+
+.. note::
+
+    Parts of CASE expressions are not yet implemented.
 
 Aggregate Expressions
 ~~~~~~~~~~~~~~~~~~~~~
