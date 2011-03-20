@@ -476,10 +476,20 @@ abstract class AbstractQuery
      * @param integer $hydrationMode The hydration mode to use.
      * @return IterableResult
      */
-    public function iterate(array $params = array(), $hydrationMode = self::HYDRATE_OBJECT)
+    public function iterate(array $params = array(), $hydrationMode = null)
     {
+        if ($hydrationMode !== null) {
+            $this->setHydrationMode($hydrationMode);
+        }
+
+        if ($params) {
+            $this->setParameters($params);
+        }
+
+        $stmt = $this->_doExecute();
+
         return $this->_em->newHydrator($this->_hydrationMode)->iterate(
-            $this->_doExecute($params, $hydrationMode), $this->_resultSetMapping, $this->_hints
+            $stmt, $this->_resultSetMapping, $this->_hints
         );
     }
 
