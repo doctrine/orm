@@ -1254,9 +1254,25 @@ class SqlWalker implements TreeWalker
      */
     public function walkGroupByClause($groupByClause)
     {
-        return ' GROUP BY ' . implode(
-            ', ', array_map(array($this, 'walkGroupByItem'), $groupByClause->groupByItems)
-        );
+        $sql = '';
+        foreach ($groupByClause->groupByItems AS $groupByItem) {
+            if (is_string($groupByItem)) {
+                foreach ($this->_queryComponents[$groupByItem]['metadata']->identifier AS $idField) {
+                    if ($sql != '') {
+                        $sql .= ', ';
+                    }
+                    $groupByItem = new AST\PathExpression(AST\PathExpression::TYPE_STATE_FIELD, $groupByItem, $idField);
+                    $groupByItem->type = AST\PathExpression::TYPE_STATE_FIELD;
+                    $sql .= $this->walkGroupByItem($groupByItem);
+                }
+            } else {
+                if ($sql != '') {
+                    $sql .= ', ';
+                }
+                $sql .= $this->walkGroupByItem($groupByItem);
+            }
+        }
+        return ' GROUP BY ' . $sql;
     }
 
     /**

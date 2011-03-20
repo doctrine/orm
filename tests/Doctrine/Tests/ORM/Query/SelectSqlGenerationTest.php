@@ -851,6 +851,28 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT f0_.id AS id0, f0_.extension AS extension1, f0_.name AS name2 FROM "file" f0_ INNER JOIN Directory d1_ ON f0_.parentDirectory_id = d1_.id WHERE f0_.id = ?'
         );
     }
+
+    /**
+     * @group DDC-1053
+     */
+    public function testGroupBy()
+    {
+        $this->assertSqlGeneration(
+            'SELECT g.id, count(u.id) FROM Doctrine\Tests\Models\CMS\CmsGroup g JOIN g.users u GROUP BY g.id',
+            'SELECT c0_.id AS id0, count(c1_.id) AS sclr1 FROM cms_groups c0_ INNER JOIN cms_users_groups c2_ ON c0_.id = c2_.group_id INNER JOIN cms_users c1_ ON c1_.id = c2_.user_id GROUP BY c0_.id'
+        );
+    }
+
+    /**
+     * @group DDC-1053
+     */
+    public function testGroupByIdentificationVariable()
+    {
+        $this->assertSqlGeneration(
+            'SELECT g, count(u.id) FROM Doctrine\Tests\Models\CMS\CmsGroup g JOIN g.users u GROUP BY g',
+            'SELECT c0_.id AS id0, c0_.name AS name1, count(c1_.id) AS sclr2 FROM cms_groups c0_ INNER JOIN cms_users_groups c2_ ON c0_.id = c2_.group_id INNER JOIN cms_users c1_ ON c1_.id = c2_.user_id GROUP BY c0_.id'
+        );
+    }
 }
 
 
