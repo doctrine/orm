@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\CMS\CmsUser,
     Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -134,6 +135,38 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?1 AND u.status = ?2');
         $q->setParameters(array(1 => 'jwage', 2 => 'active'));
         $users = $q->getResult();
+    }
+
+    /**
+     * @group DDC-1070
+     */
+    public function testIterateResultAsArrayAndParams()
+    {
+        $article1 = new CmsArticle;
+        $article1->topic = "Doctrine 2";
+        $article1->text = "This is an introduction to Doctrine 2.";
+
+        $article2 = new CmsArticle;
+        $article2->topic = "Symfony 2";
+        $article2->text = "This is an introduction to Symfony 2.";
+
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.topic = ?1");
+        $articles = $query->iterate(array(1 => 'Doctrine 2'), Query::HYDRATE_ARRAY);
+
+        $found = array();
+        foreach ($articles AS $article) {
+            $found[] = $article;
+        }
+        $this->assertEquals(1, count($found));
+        $this->assertEquals(array(
+            array(array('id' => 1, 'topic' => 'Doctrine 2', 'text' => 'This is an introduction to Doctrine 2.', 'version' => 1))
+        ), $found);
     }
 
     public function testIterateResult_IterativelyBuildUpUnitOfWork()
