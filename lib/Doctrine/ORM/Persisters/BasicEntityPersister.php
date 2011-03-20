@@ -358,7 +358,7 @@ class BasicEntityPersister
 
         $result = $this->_conn->executeUpdate($sql, $params, $types);
 
-        if ($this->_class->isVersioned && ! $result) {
+        if ($versioned && ! $result) {
             throw OptimisticLockException::lockFailed($entity);
         }
     }
