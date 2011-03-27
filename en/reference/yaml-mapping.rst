@@ -70,7 +70,7 @@ of several common elements:
         phonenumbers:
           targetEntity: Phonenumber
           mappedBy: user
-          cascade: cascadePersist
+          cascade: ["persist", "merge"]
       manyToMany:
         groups:
           targetEntity: Group
