@@ -268,7 +268,49 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Guilherme B.Complaint Department', $arg[2]['namedep']);
         $this->assertEquals('Benjamin E.HR', $arg[3]['namedep']);
     }
-    
+
+    /**
+     * @group DDC-1014
+     */
+    public function testDateDiff()
+    {
+        $arg = $this->_em->createQuery("SELECT DATE_DIFF(CURRENT_TIMESTAMP(), '2011-01-01') AS diff FROM Doctrine\Tests\Models\Company\CompanyManager m")
+                ->getARrayResult();
+
+        $this->assertTrue($arg[0]['diff'] > 0);
+    }
+
+    /**
+     * @group DDC-1014
+     */
+    public function testDateAdd()
+    {
+        $arg = $this->_em->createQuery("SELECT DATE_ADD(CURRENT_TIMESTAMP(), 10, 'day') AS add FROM Doctrine\Tests\Models\Company\CompanyManager m")
+                ->getArrayResult();
+
+        $this->assertTrue(strtotime($arg[0]['add']) > 0);
+
+        $arg = $this->_em->createQuery("SELECT DATE_ADD(CURRENT_TIMESTAMP(), 10, 'month') AS add FROM Doctrine\Tests\Models\Company\CompanyManager m")
+                ->getArrayResult();
+
+        $this->assertTrue(strtotime($arg[0]['add']) > 0);
+    }
+
+    /**
+     * @group DDC-1014
+     */
+    public function testDateSub()
+    {
+        $arg = $this->_em->createQuery("SELECT DATE_SUB(CURRENT_TIMESTAMP(), 10, 'day') AS add FROM Doctrine\Tests\Models\Company\CompanyManager m")
+                ->getArrayResult();
+
+        $this->assertTrue(strtotime($arg[0]['add']) > 0);
+
+        $arg = $this->_em->createQuery("SELECT DATE_SUB(CURRENT_TIMESTAMP(), 10, 'month') AS add FROM Doctrine\Tests\Models\Company\CompanyManager m")
+                ->getArrayResult();
+
+        $this->assertTrue(strtotime($arg[0]['add']) > 0);
+    }
 
     protected function generateFixture()
     {
