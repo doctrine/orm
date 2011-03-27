@@ -42,7 +42,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             parent::assertEquals($sqlToBeConfirmed, $query->getSql());
             $query->free();
         } catch (\Exception $e) {
-            $this->fail($e->getMessage());
+            $this->fail($e->getMessage() ."\n".$e->getTraceAsString());
         }
     }
 
@@ -169,6 +169,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT (SELECT c0_.user_id FROM cms_phonenumbers c0_ WHERE c0_.user_id = c1_.id) AS sclr0 FROM cms_users c1_ WHERE c1_.id = ?'
         );
     }*/
+
+    /**
+     * @group DDC-1077
+     */
+    public function testConstantValueInSelect()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name, 'foo' AS bar FROM Doctrine\Tests\Models\CMS\CmsUser u",
+            "SELECT c0_.name AS name0, 'foo' AS sclr1 FROM cms_users c0_"
+        );
+    }
 
     public function testSupportsOrderByWithAscAsDefault()
     {

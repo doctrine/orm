@@ -1732,7 +1732,8 @@ class Parser
             $expression = $this->PartialObjectExpression();
             $identVariable = $expression->identificationVariable;
         } else if ($this->_lexer->lookahead['type'] == Lexer::T_INTEGER ||
-                $this->_lexer->lookahead['type'] == Lexer::T_FLOAT) {
+                $this->_lexer->lookahead['type'] == Lexer::T_FLOAT ||
+                $this->_lexer->lookahead['type'] == Lexer::T_STRING) {
             // Shortcut: ScalarExpression => SimpleArithmeticExpression
             $expression = $this->SimpleArithmeticExpression();
         } else {
