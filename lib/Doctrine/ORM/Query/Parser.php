@@ -45,19 +45,22 @@ class Parser
 
     /** READ-ONLY: Maps BUILT-IN numeric function names to AST class names. */
     private static $_NUMERIC_FUNCTIONS = array(
-        'length' => 'Doctrine\ORM\Query\AST\Functions\LengthFunction',
-        'locate' => 'Doctrine\ORM\Query\AST\Functions\LocateFunction',
-        'abs'    => 'Doctrine\ORM\Query\AST\Functions\AbsFunction',
-        'sqrt'   => 'Doctrine\ORM\Query\AST\Functions\SqrtFunction',
-        'mod'    => 'Doctrine\ORM\Query\AST\Functions\ModFunction',
-        'size'   => 'Doctrine\ORM\Query\AST\Functions\SizeFunction'
+        'length'    => 'Doctrine\ORM\Query\AST\Functions\LengthFunction',
+        'locate'    => 'Doctrine\ORM\Query\AST\Functions\LocateFunction',
+        'abs'       => 'Doctrine\ORM\Query\AST\Functions\AbsFunction',
+        'sqrt'      => 'Doctrine\ORM\Query\AST\Functions\SqrtFunction',
+        'mod'       => 'Doctrine\ORM\Query\AST\Functions\ModFunction',
+        'size'      => 'Doctrine\ORM\Query\AST\Functions\SizeFunction',
+        'date_diff' => 'Doctrine\ORM\Query\AST\Functions\DateDiffFunction',
     );
 
     /** READ-ONLY: Maps BUILT-IN datetime function names to AST class names. */
     private static $_DATETIME_FUNCTIONS = array(
         'current_date'      => 'Doctrine\ORM\Query\AST\Functions\CurrentDateFunction',
         'current_time'      => 'Doctrine\ORM\Query\AST\Functions\CurrentTimeFunction',
-        'current_timestamp' => 'Doctrine\ORM\Query\AST\Functions\CurrentTimestampFunction'
+        'current_timestamp' => 'Doctrine\ORM\Query\AST\Functions\CurrentTimestampFunction',
+        'date_add'          => 'Doctrine\ORM\Query\AST\Functions\DateAddFunction',
+        'date_sub'          => 'Doctrine\ORM\Query\AST\Functions\DateSubFunction',
     );
 
     /**
