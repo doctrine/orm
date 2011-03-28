@@ -567,7 +567,8 @@ class EntityManager implements ObjectManager
         if ($customRepositoryClassName !== null) {
             $repository = new $customRepositoryClassName($this, $metadata);
         } else {
-            $repository = new EntityRepository($this, $metadata);
+            $repositoryClassName = $this->config->getEntityRepositoryClassName();
+            $repository = new $repositoryClassName($this, $metadata);
         }
 
         $this->repositories[$entityName] = $repository;
@@ -728,6 +729,7 @@ class EntityManager implements ObjectManager
             throw new \InvalidArgumentException("Invalid argument: " . $conn);
         }
 
-        return new EntityManager($conn, $config, $conn->getEventManager());
+        $managerClassName = $config->getEntityManagerClassName();
+        return new $managerClassName($conn, $config, $conn->getEventManager());
     }
 }

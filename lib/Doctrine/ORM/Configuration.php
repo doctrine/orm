@@ -483,4 +483,48 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
         return $this->_attributes['classMetadataFactoryName'];
     }
+
+    /**
+     * Set a custom class for EntityManager, to be returned by EntityManager::create().
+     * 
+     * @param string $emClassName The EntityManager class name. Must be a subclass of Doctrine\ORM\EntityManager.
+     */
+    public function setEntityManagerClassName($emClassName)
+    {
+        if (!is_subclass_of($emClassName, 'Doctrine\ORM\EntityManager')) {
+            throw ORMException::notSubclassOf('Doctrine\ORM\EntityManager');
+        }
+        $this->_attributes['entityManagerClassName'] = $emClassName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEntityManagerClassName()
+    {
+        return (isset($this->_attributes['entityManagerClassName']) ?
+            $this->_attributes['entityManagerClassName'] : 'Doctrine\ORM\EntityManager');
+    }
+
+    /**
+     * Set a custom class for EntityRepository, to be returned by EntityManager#getRepository().
+     * 
+     * @param string $erClassName The EntityRepository class name. Must be a subclass of Doctrine\ORM\EntityRepository.
+     */
+    public function setEntityRepositoryClassName($erClassName)
+    {
+        if (!is_subclass_of($erClassName, 'Doctrine\ORM\EntityRepository')) {
+            throw ORMException::notSubclassOf('Doctrine\ORM\EntityRepository');
+        }
+        $this->_attributes['entityRepositoryClassName'] = $erClassName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEntityRepositoryClassName()
+    {
+        return (isset($this->_attributes['entityRepositoryClassName']) ?
+            $this->_attributes['entityRepositoryClassName'] : 'Doctrine\ORM\EntityRepository');
+    }
 }
