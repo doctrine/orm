@@ -201,8 +201,8 @@ listeners:
     All Lifecycle events that happen during the ``flush()`` of
     an EntityManager have very specific constraints on the allowed
     operations that can be executed. Please read the
-    *Implementing Event Listeners* section very carefully to understand
-    which operations are allowed in which lifecycle event.
+    :ref:`reference-events-implementing-listeners` section very carefully
+    to understand which operations are allowed in which lifecycle event.
 
 
 Lifecycle Callbacks
@@ -360,6 +360,8 @@ EntityManager was created:
     <?php
     $entityManager->getEventManager()->addEventListener(array(Events::preUpdate), MyEventListener());
     $entityManager->getEventManager()->addEventSubscriber(new MyEventSubscriber());
+
+.. _reference-events-implementing-listeners:
 
 Implementing Event Listeners
 ----------------------------

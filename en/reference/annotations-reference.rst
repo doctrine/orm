@@ -494,7 +494,7 @@ Example:
 
     <?php
     /**
-     * @ManyToOne(targetEntity="Cart", cascade={"ALL"}, fetch="EAGER")
+     * @ManyToOne(targetEntity="Cart", cascade={"all"}, fetch="EAGER")
      */
     private $cart;
 

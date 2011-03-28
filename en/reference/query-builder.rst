@@ -199,6 +199,7 @@ a querybuilder instance into a Query object:
 
 .. code-block:: php
 
+    <?php
     // $qb instanceof QueryBuilder
     $query = $qb->getQuery();
 

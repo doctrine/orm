@@ -29,7 +29,7 @@ Association Example Entities
 We will use a simple comment system with Users and Comments as
 entities to show examples of association management. See the PHP
 docblocks of each association in the following example for
-information about its type and if its the owning or inverse side.
+information about its type and if it's the owning or inverse side.
 
 .. code-block:: php
 
@@ -398,7 +398,7 @@ can show the possible caveats you can encounter:
     $user->getFavorites()->contains($favoriteComment); // TRUE
     $favoriteComment->getUserFavorites()->contains($user); // FALSE
 
-There are to approaches to handle this problem in your code:
+There are two approaches to handle this problem in your code:
 
 
 1. Ignore updating the inverse side of bidirectional collections,
@@ -413,7 +413,7 @@ Transitive persistence / Cascade Operations
 -------------------------------------------
 
 Persisting, removing, detaching and merging individual entities can
-become pretty cumbersome, especially when a larger object graph
+become pretty cumbersome, especially when a large object graph
 with collections is involved. Therefore Doctrine 2 provides a
 mechanism for transitive persistence through cascading of these
 operations. Each association to another entity or a collection of
@@ -531,7 +531,8 @@ OrphanRemoval works with both one-to-one and one-to-many associations.
 
     When using the ``orphanRemoval=true`` option Doctrine makes the assumption
     that the entities are privately owned and will **NOT** be reused by other entities.
-    If you neglect this assumption your entities will get deleted by Doctrine anyways.
+    If you neglect this assumption your entities will get deleted by Doctrine even if
+    you assigned the orphaned entity to another one.
 
 As a better example consider an Addressbook application where you have Contacts, Addresses
 and StandingData:
@@ -588,5 +589,5 @@ Now two examples what happens when you remove the references:
 
 In this case you have only changed the ``Contact`` entity but you removed
 the references for standing data and one address reference. When flush is called
-not only are the references removed also both the old standing data and the one address entity
-are deleted from the database.
+not only are the references removed but both the old standing data and the one
+address entity are also deleted from the database.

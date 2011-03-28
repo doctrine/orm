@@ -30,8 +30,8 @@ Deferred Explicit
 
 The deferred explicit policy is similar to the deferred implicit
 policy in that it detects changes through a property-by-property
-comparison at commit time. The difference is that only entities are
-considered that have been explicitly marked for change detection
+comparison at commit time. The difference is that Doctrine 2 only
+considers entities that have been explicitly marked for change detection
 through a call to EntityManager#persist(entity) or through a save
 cascade. All other entities are skipped. This policy therefore
 gives improved performance for larger units of work while

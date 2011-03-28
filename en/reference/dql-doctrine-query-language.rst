@@ -35,7 +35,7 @@ object model.
 DQL SELECT statements are a very powerful way of retrieving parts
 of your domain model that are not accessible via associations.
 Additionally they allow to retrieve entities and their associations
-in one single sql select statement which can make a huge difference
+in one single SQL select statement which can make a huge difference
 in performance in contrast to using several queries.
 
 DQL UPDATE and DELETE statements offer a way to execute bulk
@@ -67,7 +67,7 @@ Lets examine the query:
 -  ``u`` is a so called identification variable or alias that
    refers to the ``MyProject\Model\User`` class. By placing this alias
    in the SELECT clause we specify that we want all instances of the
-   User class that are matched by this query appear in the query
+   User class that are matched by this query to appear in the query
    result.
 -  The FROM keyword is always followed by a fully-qualified class
    name which in turn is followed by an identification variable or
@@ -160,7 +160,7 @@ with numbers, for example "?1", "?2" and so on. Named parameters
 are specified with ":name1", ":name2" and so on.
 
 When referencing the parameters in ``Query#setParameter($param, $value)``
-both named and positional parameters are used **without** their prefixies.
+both named and positional parameters are used **without** their prefixes.
 
 DQL SELECT Examples
 ~~~~~~~~~~~~~~~~~~~
@@ -208,7 +208,7 @@ Retrieve the Username and Name of a CmsUser:
 
     <?php
     $query = $em->createQuery('SELECT u.username, u.name FROM CmsUser u');
-    $users = $query->getResults(); // array of CmsUser username and id values
+    $users = $query->getResults(); // array of CmsUser username and name values
     echo $users[0]['username'];
 
 Retrieve a ForumUser and his single associated entity:
@@ -268,7 +268,7 @@ With WHERE Clause and Named Parameter:
 
     <?php
     $query = $em->createQuery('SELECT u FROM ForumUser u WHERE u.username = :name');
-    $query->setParameter(':name', 'Bob');
+    $query->setParameter('name', 'Bob');
     $users = $query->getResult(); // array of ForumUser objects
 
 With Nested Conditions in WHERE Clause:
@@ -278,9 +278,9 @@ With Nested Conditions in WHERE Clause:
     <?php
     $query = $em->createQuery('SELECT u from ForumUser u WHERE (u.username = :name OR u.username = :name2) AND u.id = :id');
     $query->setParameters(array(
-        ':name' => 'Bob',
-        ':name2' => 'Alice',
-        ':id' => 321,
+        'name' => 'Bob',
+        'name2' => 'Alice',
+        'id' => 321,
     ));
     $users = $query->getResult(); // array of ForumUser objects
 
@@ -384,7 +384,7 @@ Get all users who are members of $group.
 
     <?php
     $query = $em->createQuery('SELECT u.id FROM CmsUser u WHERE :groupId MEMBER OF u.groups');
-    $query->setParameter(':groupId', $group);
+    $query->setParameter('groupId', $group);
     $ids = $query->getResult();
 
 Get all users that have more than 1 phonenumber
@@ -915,12 +915,12 @@ structure:
 .. code-block:: php
 
     array
-        array
+        [0]
             [0] => Object
             [1] => "some scalar string"
             ['count'] => 42
             // ... more scalar values, either indexed numerically or with a name
-        array
+        [1]
             [0] => Object
             [1] => "some scalar string"
             ['count'] => 42

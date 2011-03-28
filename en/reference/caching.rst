@@ -483,6 +483,6 @@ Ways exist to work around this, like pre-populating your cache and
 not letting your users requests populate the cache.
 
 You can read more about cache slams
-`in this blog post <http://t3.dotgnu.info/blog/php/user-cache-timebomb>`_.
+`in this blog post <http://notmysock.org/blog/php/user-cache-timebomb.html>`_.
 
 
