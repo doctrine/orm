@@ -202,6 +202,9 @@ Optional attributes:
    Doctrine. Use of repositories for entities is encouraged to keep
    specialized DQL and SQL operations separated from the Model/Domain
    Layer.
+-  **readOnly**: (>= 2.1) Specifies that this entity is marked as read only and not
+   considered for change-tracking. Entities of this type can be persisted
+   and removed though.
 
 Example:
 

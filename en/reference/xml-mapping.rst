@@ -170,14 +170,17 @@ Required attributes:
 Optional attributes:
 
 
--  table - The Table-Name to be used for this entity. Otherwise the
+-  **table** - The Table-Name to be used for this entity. Otherwise the
    Unqualified Class-Name is used by default.
--  repository-class - The fully qualified class-name of an
+-  **repository-class** - The fully qualified class-name of an
    alternative ``Doctrine\ORM\EntityRepository`` implementation to be
    used with this entity.
--  inheritance-type - The type of inheritance, defaults to none. A
+-  **inheritance-type** - The type of inheritance, defaults to none. A
    more detailed description follows in the
    *Defining Inheritance Mappings* section.
+-  **read-only** - (>= 2.1) Specifies that this entity is marked as read only and not
+   considered for change-tracking. Entities of this type can be persisted
+   and removed though.
 
 Defining Fields
 ~~~~~~~~~~~~~~~
