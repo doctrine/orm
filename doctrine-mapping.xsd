@@ -88,6 +88,7 @@
     <xs:attribute name="repository-class" type="xs:string"/>
     <xs:attribute name="inheritance-type" type="orm:inheritance-type"/>
     <xs:attribute name="change-tracking-policy" type="orm:change-tracking-policy" />
+    <xs:attribute name="read-only" type="xs:boolean" default="false" />
   </xs:complexType>
   
   <xs:complexType name="mapped-superclass" >

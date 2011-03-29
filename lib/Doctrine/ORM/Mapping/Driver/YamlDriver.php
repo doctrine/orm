@@ -49,6 +49,9 @@ class YamlDriver extends AbstractFileDriver
             $metadata->setCustomRepositoryClass(
                 isset($element['repositoryClass']) ? $element['repositoryClass'] : null
             );
+            if (isset($element['readOnly']) && $element['readOnly'] == true) {
+                $metadata->markReadOnly();
+            }
         } else if ($element['type'] == 'mappedSuperclass') {
             $metadata->isMappedSuperclass = true;
         } else {

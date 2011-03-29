@@ -59,6 +59,7 @@ class AllTests
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\PostgreSQLIdentityStrategyTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\ExtraLazyCollectionTest');
         $suite->addTestSuite('Doctrine\Tests\ORM\Functional\ClearEventTest');
+        $suite->addTestSuite('Doctrine\Tests\ORM\Functional\ReadOnlyTest');
         
         $suite->addTest(Locking\AllTests::suite());
         $suite->addTest(Ticket\AllTests::suite());
