@@ -119,4 +119,12 @@ final class Events
      * @var string
      */
     const onFlush = 'onFlush';
+
+    /**
+     * The onClear event occurs when the EntityManager#clear() operation is invoked,
+     * after all references to entities have been removed from the unit of work.
+     *
+     * @var string
+     */
+    const onClear = 'onClear';
 }

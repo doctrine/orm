@@ -1790,6 +1790,10 @@ class UnitOfWork implements PropertyChangedListener
         if ($this->commitOrderCalculator !== null) {
             $this->commitOrderCalculator->clear();
         }
+
+        if ($this->evm->hasListeners(Events::onClear)) {
+            $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->em));
+        }
     }
     
     /**
