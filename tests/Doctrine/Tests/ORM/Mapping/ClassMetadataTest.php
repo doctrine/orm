@@ -30,6 +30,8 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm->setCustomRepositoryClass("UserRepository");
         $cm->setDiscriminatorColumn(array('name' => 'disc', 'type' => 'integer'));
         $cm->mapOneToOne(array('fieldName' => 'phonenumbers', 'targetEntity' => 'Bar', 'mappedBy' => 'foo'));
+        $cm->markReadOnly();
+        $cm->addNamedQuery(array('name' => 'dql', 'query' => 'foo'));
         $this->assertEquals(1, count($cm->associationMappings));
 
         $serialized = serialize($cm);
@@ -51,6 +53,8 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($oneOneMapping['fetch'] == ClassMetadata::FETCH_LAZY);
         $this->assertEquals('phonenumbers', $oneOneMapping['fieldName']);
         $this->assertEquals('Doctrine\Tests\Models\CMS\Bar', $oneOneMapping['targetEntity']);
+        $this->assertTrue($cm->isReadOnly);
+        $this->assertEquals(array('dql' => 'foo'), $cm->namedQueries);
     }
 
     public function testFieldIsNullable()
