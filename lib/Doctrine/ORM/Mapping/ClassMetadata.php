@@ -334,6 +334,10 @@ class ClassMetadata extends ClassMetadataInfo
             $serialized[] = 'namedQueries';
         }
 
+        if ($this->isReadOnly) {
+            $serialized[] = 'isReadOnly';
+        }
+
         return $serialized;
     }
 

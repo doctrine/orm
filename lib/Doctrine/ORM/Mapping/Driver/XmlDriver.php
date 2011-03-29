@@ -55,6 +55,9 @@ class XmlDriver extends AbstractFileDriver
             $metadata->setCustomRepositoryClass(
                 isset($xmlRoot['repository-class']) ? (string)$xmlRoot['repository-class'] : null
             );
+            if (isset($xmlRoot['read-only']) && $xmlRoot['read-only'] == "true") {
+                $metadata->markReadOnly();
+            }
         } else if ($xmlRoot->getName() == 'mapped-superclass') {
             $metadata->isMappedSuperclass = true;
         } else {
