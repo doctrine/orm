@@ -392,39 +392,4 @@ class ResultSetMapping
         $this->metaMappings[$columnName] = $fieldName;
         $this->columnOwnerMap[$columnName] = $alias;
     }
-
-    /**
-     * Adds a root entity and all of its fields to the result set.
-     *
-     * @param ClassMetadata $classMetadata
-     * @param string $alias The unique alias to use for the root entity.
-     * @param string $prefix Prefix for columns
-     */
-    public function addRootEntityFromClassMetadata(ClassMetadata $classMetadata, $alias, $prefix = '')
-    {
-        $this->addEntityResult($classMetadata->getReflectionClass()->getName(), $alias);
-        foreach ($classMetadata->getColumnNames() AS $columnName) {
-            // $columnName should use DBAL\Platforms\AbstractPlatform::getSQLResultCasing() but we don't have the EM
-            $this->addFieldResult($alias, $prefix . $columnName, $classMetadata->getFieldName($columnName));
-        }
-    }
-
-    /**
-     * Adds a joined entity and all of its fields to the result set.
-     *
-     * @param ClassMetadata $classMetadata
-     * @param string $alias The unique alias to use for the joined entity.
-     * @param string $parentAlias The alias of the entity result that is the parent of this joined result.
-     * @param object $relation The association field that connects the parent entity result with the joined entity result.
-     * @param string $prefix Prefix for columns
-     */
-    public function addJoinedEntityFromClassMetadata(ClassMetadata $classMetadata, $alias, $parentAlias, $relation, $prefix = '')
-    {
-        $this->addJoinedEntityResult($classMetadata->getReflectionClass()->getName(), $alias, $parentAlias, $relation);
-        foreach ($classMetadata->getColumnNames() AS $columnName) {
-            // $columnName should use DBAL\Platforms\AbstractPlatform::getSQLResultCasing() but we don't have the EM
-            $this->addFieldResult($alias, $prefix . $columnName, $classMetadata->getFieldName($columnName));
-        }
-    }
 }
-

@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
@@ -157,7 +158,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertSame($q, $q2);
     }
 
-    public function testJoinedOneToManyNativeQueryWithRSMHelper()
+    public function testJoinedOneToManyNativeQueryWithRSMBuilder()
     {
         $user = new CmsUser;
         $user->name = 'Roman';
@@ -174,11 +175,9 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $rsm = new ResultSetMapping;
-        $userMetadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $phoneMetadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber');
-        $rsm->addRootEntityFromClassMetadata($userMetadata, 'u');
-        $rsm->addJoinedEntityFromClassMetadata($phoneMetadata, 'p', 'u', 'phonenumbers', 'p_');
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addJoinedEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber', 'p', 'u', 'phonenumbers', 'p_');
         $query = $this->_em->createNativeQuery('SELECT u.*, p.phonenumber AS p_phonenumber FROM cms_users u INNER JOIN cms_phonenumbers p ON u.id = p.user_id WHERE username = ?', $rsm);
         $query->setParameter(1, 'romanb');
 
@@ -194,7 +193,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($phones[0]->getUser() === $users[0]);
     }
 
-    public function testJoinedOneToOneNativeQueryWithRSMHelper()
+    public function testJoinedOneToOneNativeQueryWithRSMBuilder()
     {
         $user = new CmsUser;
         $user->name = 'Roman';
@@ -215,11 +214,9 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
 
-        $rsm = new ResultSetMapping;
-        $userMetadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $addressMetadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
-        $rsm->addRootEntityFromClassMetadata($userMetadata, 'u');
-        $rsm->addJoinedEntityFromClassMetadata($addressMetadata, 'a', 'u', 'address', 'a_');
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addJoinedEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', 'a', 'u', 'address', 'a_');
 
         $query = $this->_em->createNativeQuery('SELECT u.id, u.name, u.status, a.id AS a_id, a.country AS a_country, a.zip AS a_zip, a.city AS a_city FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
         $query->setParameter(1, 'romanb');
