@@ -156,5 +156,86 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertSame($q, $q2);
     }
+
+    public function testJoinedOneToManyNativeQueryWithRSMHelper()
+    {
+        $user = new CmsUser;
+        $user->name = 'Roman';
+        $user->username = 'romanb';
+        $user->status = 'dev';
+
+        $phone = new CmsPhonenumber;
+        $phone->phonenumber = 424242;
+
+        $user->addPhonenumber($phone);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        $rsm = new ResultSetMapping;
+        $userMetadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $phoneMetadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber');
+        $rsm->addRootEntityFromClassMetadata($userMetadata, 'u');
+        $rsm->addJoinedEntityFromClassMetadata($phoneMetadata, 'p', 'u', 'phonenumbers', 'p_');
+        $query = $this->_em->createNativeQuery('SELECT u.*, p.phonenumber AS p_phonenumber FROM cms_users u INNER JOIN cms_phonenumbers p ON u.id = p.user_id WHERE username = ?', $rsm);
+        $query->setParameter(1, 'romanb');
+
+        $users = $query->getResult();
+        $this->assertEquals(1, count($users));
+        $this->assertTrue($users[0] instanceof CmsUser);
+        $this->assertEquals('Roman', $users[0]->name);
+        $this->assertTrue($users[0]->getPhonenumbers() instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertTrue($users[0]->getPhonenumbers()->isInitialized());
+        $this->assertEquals(1, count($users[0]->getPhonenumbers()));
+        $phones = $users[0]->getPhonenumbers();
+        $this->assertEquals(424242, $phones[0]->phonenumber);
+        $this->assertTrue($phones[0]->getUser() === $users[0]);
+    }
+
+    public function testJoinedOneToOneNativeQueryWithRSMHelper()
+    {
+        $user = new CmsUser;
+        $user->name = 'Roman';
+        $user->username = 'romanb';
+        $user->status = 'dev';
+
+        $addr = new CmsAddress;
+        $addr->country = 'germany';
+        $addr->zip = 10827;
+        $addr->city = 'Berlin';
+
+
+        $user->setAddress($addr);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+
+        $rsm = new ResultSetMapping;
+        $userMetadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $addressMetadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $rsm->addRootEntityFromClassMetadata($userMetadata, 'u');
+        $rsm->addJoinedEntityFromClassMetadata($addressMetadata, 'a', 'u', 'address', 'a_');
+
+        $query = $this->_em->createNativeQuery('SELECT u.id, u.name, u.status, a.id AS a_id, a.country AS a_country, a.zip AS a_zip, a.city AS a_city FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
+        $query->setParameter(1, 'romanb');
+
+        $users = $query->getResult();
+
+        $this->assertEquals(1, count($users));
+        $this->assertTrue($users[0] instanceof CmsUser);
+        $this->assertEquals('Roman', $users[0]->name);
+        $this->assertTrue($users[0]->getPhonenumbers() instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertFalse($users[0]->getPhonenumbers()->isInitialized());
+        $this->assertTrue($users[0]->getAddress() instanceof CmsAddress);
+        $this->assertTrue($users[0]->getAddress()->getUser() == $users[0]);
+        $this->assertEquals('germany', $users[0]->getAddress()->getCountry());
+        $this->assertEquals(10827, $users[0]->getAddress()->getZipCode());
+        $this->assertEquals('Berlin', $users[0]->getAddress()->getCity());
+    }
 }
 
