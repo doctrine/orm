@@ -420,7 +420,7 @@ abstract class AbstractQuery
      * @param int $hydrationMode
      * @return mixed
      */
-    public function getOneResult($hydrationMode = null)
+    public function getOneOrNullResult($hydrationMode = null)
     {
         $result = $this->execute(array(), $hydrationMode);
 
