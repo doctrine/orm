@@ -19,8 +19,6 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
-
 /**
  * A ResultSetMapping describes how a result set of an SQL query maps to a Doctrine result.
  *
