@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id: Abstract.php 1393 2008-03-06 17:49:16Z guilhermeblanco $
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -413,6 +411,31 @@ abstract class AbstractQuery
     public function getScalarResult()
     {
         return $this->execute(array(), self::HYDRATE_SCALAR);
+    }
+
+    /**
+     * Get exactly one result or null.
+     *
+     * @throws NonUniqueResultException
+     * @param int $hydrationMode
+     * @return mixed
+     */
+    public function getOneOrNullResult($hydrationMode = null)
+    {
+        $result = $this->execute(array(), $hydrationMode);
+
+        if ($this->_hydrationMode !== self::HYDRATE_SINGLE_SCALAR && ! $result) {
+            return null;
+        }
+
+        if (is_array($result)) {
+            if (count($result) > 1) {
+                throw new NonUniqueResultException;
+            }
+            return array_shift($result);
+        }
+
+        return $result;
     }
 
     /**

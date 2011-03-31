@@ -378,4 +378,64 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $article);
         }
     }
+
+    /**
+     * @group DDC-991
+     */
+    public function testgetOneOrNullResult()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = 'gblanco'");
+
+        $fetchedUser = $query->getOneOrNullResult();
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $fetchedUser);
+        $this->assertEquals('gblanco', $fetchedUser->username);
+
+        $query = $this->_em->createQuery("select u.username from Doctrine\Tests\Models\CMS\CmsUser u where u.username = 'gblanco'");
+        $fetchedUsername = $query->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR);
+        $this->assertEquals('gblanco', $fetchedUsername);
+    }
+
+    /**
+     * @group DDC-991
+     */
+    public function testgetOneOrNullResultSeveralRows()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+        $this->_em->persist($user);
+        $user = new CmsUser;
+        $user->name = 'Roman';
+        $user->username = 'romanb';
+        $user->status = 'developer';
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u");
+
+        $this->setExpectedException('Doctrine\ORM\NonUniqueResultException');
+        $fetchedUser = $query->getOneOrNullResult();
+    }
+
+    /**
+     * @group DDC-991
+     */
+    public function testgetOneOrNullResultNoRows()
+    {
+        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u");
+        $this->assertNull($query->getOneOrNullResult());
+
+        $query = $this->_em->createQuery("select u.username from Doctrine\Tests\Models\CMS\CmsUser u where u.username = 'gblanco'");
+        $this->assertNull($query->getOneOrNullResult(Query::HYDRATE_SCALAR));
+    }
 }
