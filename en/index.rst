@@ -64,3 +64,4 @@ Cookbook
    cookbook/strategy-cookbook-introduction
    cookbook/validation-of-entities
    cookbook/working-with-datetime
+   cookbook/mysql-enums
