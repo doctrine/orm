@@ -1180,7 +1180,7 @@ class BasicEntityPersister
             } else {
                 throw ORMException::unrecognizedField($field);
             }
-            $conditionSql .= ' = ?';
+            $conditionSql .= ($value === null) ? ' IS NULL' : ' = ?';
         }
         return $conditionSql;
     }
@@ -1226,6 +1226,10 @@ class BasicEntityPersister
         $params = $types = array();
 
         foreach ($criteria AS $field => $value) {
+            if ($value === null) {
+                continue; // skip null values.
+            }
+
             $type = null;
             if (isset($this->_class->fieldMappings[$field])) {
                 $type = Type::getType($this->_class->fieldMappings[$field]['type'])->getBindingType();
