@@ -903,6 +903,8 @@ A pure result usually looks like this:
 
 .. code-block:: php
 
+    $dql = "SELECT u FROM User u";
+
     array
         [0] => Object
         [1] => Object
@@ -914,16 +916,18 @@ structure:
 
 .. code-block:: php
 
+    $dql = "SELECT u, 'some scalar string', count(u.groups) AS num FROM User u";
+
     array
         [0]
             [0] => Object
             [1] => "some scalar string"
-            ['count'] => 42
+            ['num'] => 42
             // ... more scalar values, either indexed numerically or with a name
         [1]
             [0] => Object
             [1] => "some scalar string"
-            ['count'] => 42
+            ['num'] => 42
             // ... more scalar values, either indexed numerically or with a name
 
 To better understand mixed results, consider the following DQL
@@ -936,6 +940,13 @@ query:
 This query makes use of the ``UPPER`` DQL function that returns a
 scalar value and because there is now a scalar value in the SELECT
 clause, we get a mixed result.
+
+Conventions for mixed results are as follows:
+
+-  The object fetched in the FROM clause is always positioned with the key '0'.
+-  Every scalar without a name is numbered in the order given in the query, starting with 1.
+-  Every aliased scalar is given with its alias-name as the key. The case of the name is kept.
+-  If several objects are fetched from the FROM clause they alternate every row.
 
 Here is how the result could look like:
 
@@ -960,8 +971,22 @@ And here is how you would access it in PHP code:
         echo "Name UPPER: " . $row['nameUpper'];
     }
 
-You may have observed that in a mixed result, the object always
-ends up on index 0 of a result row.
+Fetching Multiple FROM Entities
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you fetch multiple entities that are listed in the FROM clause then the hydration
+will return the rows iterating the different top-level entities.
+
+.. code-block:: php
+
+    $dql = "SELECT u, g FROM User u, Group g";
+
+    array
+        [0] => Object (User)
+        [1] => Object (Group)
+        [2] => Object (User)
+        [3] => Object (Group)
+
 
 Hydration Modes
 ~~~~~~~~~~~~~~~
