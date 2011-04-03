@@ -943,10 +943,12 @@ clause, we get a mixed result.
 
 Conventions for mixed results are as follows:
 
+
 -  The object fetched in the FROM clause is always positioned with the key '0'.
 -  Every scalar without a name is numbered in the order given in the query, starting with 1.
 -  Every aliased scalar is given with its alias-name as the key. The case of the name is kept.
 -  If several objects are fetched from the FROM clause they alternate every row.
+
 
 Here is how the result could look like:
 
