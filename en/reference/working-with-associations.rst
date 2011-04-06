@@ -413,8 +413,8 @@ Transitive persistence / Cascade Operations
 -------------------------------------------
 
 Persisting, removing, detaching and merging individual entities can
-become pretty cumbersome, especially when a large object graph
-with collections is involved. Therefore Doctrine 2 provides a
+become pretty cumbersome, especially when a highly interveawed object graph
+is involved. Therefore Doctrine 2 provides a
 mechanism for transitive persistence through cascading of these
 operations. Each association to another entity or a collection of
 entities can be configured to automatically cascade certain
@@ -430,6 +430,21 @@ The following cascade options exist:
 -  detach : Cascades detach operations to the associated entities.
 -  all : Cascades persist, remove, merge and detach operations to
    associated entities.
+
+.. note::
+
+    Cascade operations are performed in memory. That means collections and related entities
+    are fetched into memory, even if they are still marked as lazy when
+    the cascade operation is about to be performed. However this approach allows
+    entity lifecycle events to be performed for each of these operations.
+
+    However, pulling objects graph into memory on cascade can cause considerable performance
+    overhead, especially when cascading collections are large. Makes sure
+    to weigh the benefits and downsides of each cascade operation that you define.
+
+    To rely on the database level cascade operations for the delete operation instead, you can
+    configure each join column with the **onDelete** option. See the respective
+    mapping driver chapters for more information.
 
 The following example is an extension to the User-Comment example
 of this chapter. Suppose in our application a user is created
