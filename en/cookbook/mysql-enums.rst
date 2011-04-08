@@ -34,7 +34,7 @@ will even detect this match correctly when using SchemaTool update commands.
 
     <?php
     $conn = $em->getConnection();
-    $conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'varchar');
+    $conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
 
 In this case you have to ensure that each varchar field that is an enum in the
 database only gets passed the allowed values. You can easily enforce this in your
