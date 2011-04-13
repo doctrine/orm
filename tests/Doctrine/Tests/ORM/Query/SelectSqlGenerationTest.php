@@ -42,7 +42,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             parent::assertEquals($sqlToBeConfirmed, $query->getSql());
             $query->free();
         } catch (\Exception $e) {
-            $this->fail($e->getMessage());
+            $this->fail($e->getMessage() ."\n".$e->getTraceAsString());
         }
     }
 
@@ -169,6 +169,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT (SELECT c0_.user_id FROM cms_phonenumbers c0_ WHERE c0_.user_id = c1_.id) AS sclr0 FROM cms_users c1_ WHERE c1_.id = ?'
         );
     }*/
+
+    /**
+     * @group DDC-1077
+     */
+    public function testConstantValueInSelect()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name, 'foo' AS bar FROM Doctrine\Tests\Models\CMS\CmsUser u",
+            "SELECT c0_.name AS name0, 'foo' AS sclr1 FROM cms_users c0_"
+        );
+    }
 
     public function testSupportsOrderByWithAscAsDefault()
     {
@@ -849,6 +860,28 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT f FROM Doctrine\Tests\Models\DirectoryTree\File f JOIN f.parentDirectory d WHERE f.id = ?1',
             'SELECT f0_.id AS id0, f0_.extension AS extension1, f0_.name AS name2 FROM "file" f0_ INNER JOIN Directory d1_ ON f0_.parentDirectory_id = d1_.id WHERE f0_.id = ?'
+        );
+    }
+
+    /**
+     * @group DDC-1053
+     */
+    public function testGroupBy()
+    {
+        $this->assertSqlGeneration(
+            'SELECT g.id, count(u.id) FROM Doctrine\Tests\Models\CMS\CmsGroup g JOIN g.users u GROUP BY g.id',
+            'SELECT c0_.id AS id0, count(c1_.id) AS sclr1 FROM cms_groups c0_ INNER JOIN cms_users_groups c2_ ON c0_.id = c2_.group_id INNER JOIN cms_users c1_ ON c1_.id = c2_.user_id GROUP BY c0_.id'
+        );
+    }
+
+    /**
+     * @group DDC-1053
+     */
+    public function testGroupByIdentificationVariable()
+    {
+        $this->assertSqlGeneration(
+            'SELECT g, count(u.id) FROM Doctrine\Tests\Models\CMS\CmsGroup g JOIN g.users u GROUP BY g',
+            'SELECT c0_.id AS id0, c0_.name AS name1, count(c1_.id) AS sclr2 FROM cms_groups c0_ INNER JOIN cms_users_groups c2_ ON c0_.id = c2_.group_id INNER JOIN cms_users c1_ ON c1_.id = c2_.user_id GROUP BY c0_.id'
         );
     }
 }

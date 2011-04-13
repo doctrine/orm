@@ -249,7 +249,12 @@ final class Query extends AbstractQuery
                     $idValues = $class->getIdentifierValues($value);
                 }
                 $sqlPositions = $paramMappings[$key];
-                $sqlParams += array_combine((array)$sqlPositions, $idValues);
+                $cSqlPos = count($sqlPositions);
+                $cIdValues = count($idValues);
+                $idValues = array_values($idValues);
+                for ($i = 0; $i < $cSqlPos; $i++) {
+                    $sqlParams[$sqlPositions[$i]] = $idValues[ ($i % $cIdValues) ];
+                }
             } else {
                 foreach ($paramMappings[$key] as $position) {
                     $sqlParams[$position] = $value;

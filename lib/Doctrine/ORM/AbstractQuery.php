@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id: Abstract.php 1393 2008-03-06 17:49:16Z guilhermeblanco $
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -416,6 +414,31 @@ abstract class AbstractQuery
     }
 
     /**
+     * Get exactly one result or null.
+     *
+     * @throws NonUniqueResultException
+     * @param int $hydrationMode
+     * @return mixed
+     */
+    public function getOneOrNullResult($hydrationMode = null)
+    {
+        $result = $this->execute(array(), $hydrationMode);
+
+        if ($this->_hydrationMode !== self::HYDRATE_SINGLE_SCALAR && ! $result) {
+            return null;
+        }
+
+        if (is_array($result)) {
+            if (count($result) > 1) {
+                throw new NonUniqueResultException;
+            }
+            return array_shift($result);
+        }
+
+        return $result;
+    }
+
+    /**
      * Gets the single result of the query.
      *
      * Enforces the presence as well as the uniqueness of the result.
@@ -501,10 +524,20 @@ abstract class AbstractQuery
      * @param integer $hydrationMode The hydration mode to use.
      * @return IterableResult
      */
-    public function iterate(array $params = array(), $hydrationMode = self::HYDRATE_OBJECT)
+    public function iterate(array $params = array(), $hydrationMode = null)
     {
+        if ($hydrationMode !== null) {
+            $this->setHydrationMode($hydrationMode);
+        }
+
+        if ($params) {
+            $this->setParameters($params);
+        }
+
+        $stmt = $this->_doExecute();
+
         return $this->_em->newHydrator($this->_hydrationMode)->iterate(
-            $this->_doExecute($params, $hydrationMode), $this->_resultSetMapping, $this->_hints
+            $stmt, $this->_resultSetMapping, $this->_hints
         );
     }
 

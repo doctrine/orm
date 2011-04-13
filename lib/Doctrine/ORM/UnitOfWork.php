@@ -514,9 +514,9 @@ class UnitOfWork implements PropertyChangedListener
             $class = $this->em->getClassMetadata($className);
 
             // Skip class if instances are read-only
-            //if ($class->isReadOnly) {
-            //    continue;
-            //}
+            if ($class->isReadOnly) {
+                continue;
+            }
 
             // If change tracking is explicit or happens through notification, then only compute
             // changes on entities of that type that are explicitly marked for synchronization.
@@ -1789,6 +1789,10 @@ class UnitOfWork implements PropertyChangedListener
         $this->orphanRemovals = array();
         if ($this->commitOrderCalculator !== null) {
             $this->commitOrderCalculator->clear();
+        }
+
+        if ($this->evm->hasListeners(Events::onClear)) {
+            $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->em));
         }
     }
     
