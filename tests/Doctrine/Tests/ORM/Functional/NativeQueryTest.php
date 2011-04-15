@@ -7,6 +7,8 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\Company\CompanyFixContract;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -177,8 +179,8 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
-        $rsm->addJoinedEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber', 'p', 'u', 'phonenumbers', 'p_');
-        $query = $this->_em->createNativeQuery('SELECT u.*, p.phonenumber AS p_phonenumber FROM cms_users u INNER JOIN cms_phonenumbers p ON u.id = p.user_id WHERE username = ?', $rsm);
+        $rsm->addJoinedEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber', 'p', 'u', 'phonenumbers');
+        $query = $this->_em->createNativeQuery('SELECT u.*, p.* FROM cms_users u LEFT JOIN cms_phonenumbers p ON u.id = p.user_id WHERE username = ?', $rsm);
         $query->setParameter(1, 'romanb');
 
         $users = $query->getResult();
@@ -216,9 +218,9 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
-        $rsm->addJoinedEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', 'a', 'u', 'address', 'a_');
+        $rsm->addJoinedEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', 'a', 'u', 'address', array('id' => 'a_id'));
 
-        $query = $this->_em->createNativeQuery('SELECT u.id, u.name, u.status, a.id AS a_id, a.country AS a_country, a.zip AS a_zip, a.city AS a_city FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
+        $query = $this->_em->createNativeQuery('SELECT u.*, a.*, a.id AS a_id FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
         $query->setParameter(1, 'romanb');
 
         $users = $query->getResult();
@@ -233,6 +235,16 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('germany', $users[0]->getAddress()->getCountry());
         $this->assertEquals(10827, $users[0]->getAddress()->getZipCode());
         $this->assertEquals('Berlin', $users[0]->getAddress()->getCity());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testRSMBuilderThrowsExceptionOnColumnConflict()
+    {
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addJoinedEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', 'a', 'u', 'address');
     }
 }
 
