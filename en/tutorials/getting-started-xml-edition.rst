@@ -745,7 +745,7 @@ Doctrine command-line tool:
 ::
 
     doctrine@my-desktop> cd myproject/
-    doctrine@my-desktop> doctrine orm:schema-tool:create --force
+    doctrine@my-desktop> doctrine orm:schema-tool:create
 
 .. note::
 
