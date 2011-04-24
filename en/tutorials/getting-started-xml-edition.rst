@@ -1244,7 +1244,8 @@ we have to adjust the metadata slightly.
 
         <?php
         /**
-         * @Entity @Table(name="bugs", repositoryClass="BugRepository")
+         * @Entity(repositoryClass="BugRepository")
+         * @Table(name="bugs")
          */
         class Bug
         {
