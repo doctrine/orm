@@ -766,7 +766,7 @@ either re-create the database:
 ::
 
     doctrine@my-desktop> doctrine orm:schema-tool:drop --force
-    doctrine@my-desktop> doctrine orm:schema-tool:create --force
+    doctrine@my-desktop> doctrine orm:schema-tool:create
 
 Or use the update functionality:
 
