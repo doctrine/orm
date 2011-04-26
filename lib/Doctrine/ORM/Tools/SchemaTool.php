@@ -598,7 +598,11 @@ class SchemaTool
      */
     public function getDropSchemaSQL(array $classes)
     {
-        $sm = $this->_em->getConnection()->getSchemaManager();
+        /* @var $conn \Doctrine\DBAL\Connection */
+        $conn = $this->_em->getConnection();
+        
+        /* @var $sm \Doctrine\DBAL\Schema\AbstractSchemaManager */
+        $sm = $conn->getSchemaManager();
         
         $sql = array();
         $orderedTables = array();
@@ -633,13 +637,18 @@ class SchemaTool
             }
         }
 
+        $supportsForeignKeyConstraints = $conn->getDatabasePlatform()->supportsForeignKeyConstraints();
         $dropTablesSql = array();
+        
         foreach ($orderedTables AS $tableName) {
-            /* @var $sm \Doctrine\DBAL\Schema\AbstractSchemaManager */
-            $foreignKeys = $sm->listTableForeignKeys($tableName);
-            foreach ($foreignKeys AS $foreignKey) {
-                $sql[] = $this->_platform->getDropForeignKeySQL($foreignKey, $tableName);
+            if ($supportsForeignKeyConstraints) {
+                $foreignKeys = $sm->listTableForeignKeys($tableName);
+
+                foreach ($foreignKeys AS $foreignKey) {
+                    $sql[] = $this->_platform->getDropForeignKeySQL($foreignKey, $tableName);
+                }
             }
+            
             $dropTablesSql[] = $this->_platform->getDropTableSQL($tableName);
         }
 
