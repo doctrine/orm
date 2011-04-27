@@ -234,7 +234,7 @@ class Parser
      * If they match, updates the lookahead token; otherwise raises a syntax
      * error.
      *
-     * @param int|string token type or value
+     * @param int token type
      * @return void
      * @throws QueryException If the tokens dont match.
      */
