@@ -104,9 +104,42 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertArrayHasKey('user', $metadatas['CmsGroups']->associationMappings);
     }
 
+    public function testIgnoreManyToManyTableWithoutFurtherForeignKeyDetails()
+    {
+        $tableB = new \Doctrine\DBAL\Schema\Table("dbdriver_bar");
+        $tableB->addColumn('id', 'integer');
+        $tableB->setPrimaryKey(array('id'));
+
+        $tableA = new \Doctrine\DBAL\Schema\Table("dbdriver_baz");
+        $tableA->addColumn('id', 'integer');
+        $tableA->setPrimaryKey(array('id'));
+
+        $tableMany = new \Doctrine\DBAL\Schema\Table("dbdriver_bar_baz");
+        $tableMany->addColumn('bar_id', 'integer');
+        $tableMany->addColumn('baz_id', 'integer');
+        $tableMany->addForeignKeyConstraint('dbdriver_bar', array('bar_id'), array('id'));
+
+        $metadatas = $this->convertToClassMetadata(array($tableA, $tableB), array($tableMany));
+
+        $this->assertEquals(0, count($metadatas['DbdriverBaz']->associationMappings), "no association mappings should be detected.");
+    }
+
+    protected function convertToClassMetadata(array $entityTables, array $manyTables = array())
+    {
+        $driver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($this->_sm);
+        $driver->setTables($entityTables, $manyTables);
+
+        $metadatas = array();
+        foreach ($driver->getAllClassNames() AS $className) {
+            $class = new ClassMetadataInfo($className);
+            $driver->loadMetadataForClass($className, $class);
+            $metadatas[$className] = $class;
+        }
+
+        return $metadatas;
+    }
 
     /**
-     *
      * @param  string $className
      * @return ClassMetadata
      */
