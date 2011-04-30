@@ -745,7 +745,7 @@ Doctrine command-line tool:
 ::
 
     doctrine@my-desktop> cd myproject/
-    doctrine@my-desktop> doctrine orm:schema-tool:create --force
+    doctrine@my-desktop> doctrine orm:schema-tool:create
 
 .. note::
 
@@ -766,7 +766,7 @@ either re-create the database:
 ::
 
     doctrine@my-desktop> doctrine orm:schema-tool:drop --force
-    doctrine@my-desktop> doctrine orm:schema-tool:create --force
+    doctrine@my-desktop> doctrine orm:schema-tool:create
 
 Or use the update functionality:
 
@@ -975,7 +975,7 @@ can rewrite our code:
     <?php
     $dql = "SELECT b, e, r, p FROM Bug b JOIN b.engineer e ".
            "JOIN b.reporter r JOIN b.products p ORDER BY b.created DESC";
-    $query = $em->createQuery($dql);
+    $query = $entityManager->createQuery($dql);
     $bugs = $query->getArrayResult();
     
     foreach ($bugs AS $bug) {
@@ -1116,7 +1116,7 @@ grouped by product:
     <?php
     $dql = "SELECT p.id, p.name, count(b.id) AS openBugs FROM Bug b ".
            "JOIN b.products p WHERE b.status = 'OPEN' GROUP BY p.id";
-    $productBugs = $em->createQuery($dql)->getScalarResult();
+    $productBugs = $entityManager->createQuery($dql)->getScalarResult();
     
     foreach($productBugs as $productBug) {
         echo $productBug['name']." has " . $productBug['openBugs'] . " open bugs!\n";
@@ -1244,7 +1244,8 @@ we have to adjust the metadata slightly.
 
         <?php
         /**
-         * @Entity @Table(name="bugs", repositoryClass="BugRepository")
+         * @Entity(repositoryClass="BugRepository")
+         * @Table(name="bugs")
          */
         class Bug
         {
