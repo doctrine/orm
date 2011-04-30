@@ -67,6 +67,26 @@ class DatabaseDriver implements Driver
         $this->_sm = $schemaManager;
     }
 
+    /**
+     * Set tables manually instead of relying on the reverse engeneering capabilities of SchemaManager.
+     *
+     * @param array $entityTables
+     * @param array $manyToManyTables
+     * @return void
+     */
+    public function setTables($entityTables, $manyToManyTables)
+    {
+        $this->tables = $this->manyToManyTables = $this->classToTableNames = array();
+        foreach ($entityTables AS $table) {
+            $className = Inflector::classify(strtolower($table->getName()));
+            $this->classToTableNames[$className] = $table->getName();
+            $this->tables[$table->getName()] = $table;
+        }
+        foreach ($manyToManyTables AS $table) {
+            $this->manyToManyTables[$table->getName()] = $table;
+        }
+    }
+
     private function reverseEngineerMappingFromDatabase()
     {
         if ($this->tables !== null) {
@@ -77,7 +97,7 @@ class DatabaseDriver implements Driver
             $tables[$tableName] = $this->_sm->listTableDetails($tableName);
         }
 
-        $this->tables = array();
+        $this->tables = $this->manyToManyTables = $this->classToTableNames = array();
         foreach ($tables AS $tableName => $table) {
             /* @var $table Table */
             if ($this->_sm->getDatabasePlatform()->supportsForeignKeyConstraints()) {
@@ -95,11 +115,7 @@ class DatabaseDriver implements Driver
             sort($pkColumns);
             sort($allForeignKeyColumns);
 
-            if ($pkColumns == $allForeignKeyColumns) {
-                if (count($table->getForeignKeys()) > 2) {
-                    throw new \InvalidArgumentException("ManyToMany table '" . $tableName . "' with more or less than two foreign keys are not supported by the Database Reverese Engineering Driver.");
-                }
-
+            if ($pkColumns == $allForeignKeyColumns && count($foreignKeys) == 2) {
                 $this->manyToManyTables[$tableName] = $table;
             } else {
                 // lower-casing is necessary because of Oracle Uppercase Tablenames,
@@ -191,13 +207,21 @@ class DatabaseDriver implements Driver
 
         foreach ($this->manyToManyTables AS $manyTable) {
             foreach ($manyTable->getForeignKeys() AS $foreignKey) {
+                // foreign  key maps to the table of the current entity, many to many association probably exists
                 if (strtolower($tableName) == strtolower($foreignKey->getForeignTableName())) {
                     $myFk = $foreignKey;
+                    $otherFk = null;
                     foreach ($manyTable->getForeignKeys() AS $foreignKey) {
                         if ($foreignKey != $myFk) {
                             $otherFk = $foreignKey;
                             break;
                         }
+                    }
+
+                    if (!$otherFk) {
+                        // the definition of this many to many table does not contain
+                        // enough foreign key information to continue reverse engeneering.
+                        continue;
                     }
 
                     $localColumn = current($myFk->getColumns());
