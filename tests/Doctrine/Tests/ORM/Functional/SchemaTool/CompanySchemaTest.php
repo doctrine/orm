@@ -50,4 +50,19 @@ class CompanySchemaTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($table->getColumn('pricePerHour')->getNotnull());
         $this->assertFalse($table->getColumn('maxPrice')->getNotnull());
     }
+
+    /**
+     * @group DBAL-115
+     */
+    public function testDropPartSchemaWithForeignKeys()
+    {
+        if (!$this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            $this->markTestSkipped("Foreign Key test");
+        }
+
+        $sql = $this->_schemaTool->getDropSchemaSQL(array(
+            $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyManager'),
+        ));
+        $this->assertEquals(3, count($sql));
+    }
 }
