@@ -179,7 +179,7 @@ public function <methodName>()
         $this->_isNew = !file_exists($path) || (file_exists($path) && $this->_regenerateEntityIfExists);
 
         if ( ! $this->_isNew) {
-            $this->_parseTokensInEntityFile($path);
+            $this->_parseTokensInEntityFile(file_get_contents($path));
         }
 
         if ($this->_backupExisting && file_exists($path)) {
@@ -400,24 +400,42 @@ public function <methodName>()
 
     /**
      * @todo this won't work if there is a namespace in brackets and a class outside of it.
-     * @param string $path
+     * @param string $src
      */
-    private function _parseTokensInEntityFile($path)
+    private function _parseTokensInEntityFile($src)
     {
-        $tokens = token_get_all(file_get_contents($path));
+        $tokens = token_get_all($src);
         $lastSeenNamespace = "";
         $lastSeenClass = false;
         
+        $inNamespace = false;
+        $inClass = false;
         for ($i = 0; $i < count($tokens); $i++) {
             $token = $tokens[$i];
-            if ($token[0] == T_NAMESPACE) {
-                $lastSeenNamespace = $tokens[$i+2][1] . "\\";
-            } else if ($token[0] == T_NS_SEPARATOR) {
-                $lastSeenNamespace .= $tokens[$i+1][1] . "\\";
-            } else if ($token[0] == T_CLASS) {
-                $lastSeenClass = $lastSeenNamespace . $tokens[$i+2][1];
+            if (in_array($token[0], array(T_WHITESPACE, T_COMMENT, T_DOC_COMMENT))) {
+                continue;
+            }
+
+            if ($inNamespace) {
+                if ($token[0] == T_NS_SEPARATOR || $token[0] == T_STRING) {
+                    $lastSeenNamespace .= $token[1];
+                } else if (is_string($token) && in_array($token, array(';', '{'))) {
+                    $inNamespace = false;
+                }
+            }
+
+            if ($inClass) {
+                $inClass = false;
+                $lastSeenClass = $lastSeenNamespace . '\\' . $token[1];
                 $this->_staticReflection[$lastSeenClass]['properties'] = array();
                 $this->_staticReflection[$lastSeenClass]['methods'] = array();
+            }
+
+            if ($token[0] == T_NAMESPACE) {
+                $lastSeenNamespace = "";
+                $inNamespace = true;
+            } else if ($token[0] == T_CLASS) {
+                $inClass = true;
             } else if ($token[0] == T_FUNCTION) {
                 if ($tokens[$i+2][0] == T_STRING) {
                     $this->_staticReflection[$lastSeenClass]['methods'][] = $tokens[$i+2][1];
