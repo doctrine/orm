@@ -514,6 +514,14 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group DDC-1108
+     */
+    public function testInputParameterSingleChar()
+    {
+        $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :q');
+    }
+
+    /**
      * @group DDC-1053
      */
     public function testGroupBy()
