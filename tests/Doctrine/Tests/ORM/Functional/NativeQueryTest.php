@@ -246,5 +246,24 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addJoinedEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', 'a', 'u', 'address');
     }
+
+    /**
+     * @group PR-39
+     */
+    public function testUnknownParentAliasThrowsException()
+    {
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addJoinedEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', 'a', 'un', 'address', array('id' => 'a_id'));
+
+        $query = $this->_em->createNativeQuery('SELECT u.*, a.*, a.id AS a_id FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
+        $query->setParameter(1, 'romanb');
+
+        $this->setExpectedException(
+            "Doctrine\ORM\Internal\Hydration\HydrationException",
+            "The parent object of entity result with alias 'a' was not found. The parent alias is 'un'."
+        );
+        $users = $query->getResult();
+    }
 }
 
