@@ -200,6 +200,54 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($cm->idGenerator, $metadata->idGenerator);
         $this->assertEquals($cm->customRepositoryClassName, $metadata->customRepositoryClassName);
     }
+
+    /**
+     * @dataProvider getParseTokensInEntityFileData
+     */
+    public function testParseTokensInEntityFile($php, $classes)
+    {
+        $r = new \ReflectionObject($this->_generator);
+        $m = $r->getMethod('_parseTokensInEntityFile');
+        $m->setAccessible(true);
+
+        $p = $r->getProperty('_staticReflection');
+        $p->setAccessible(true);
+
+        $ret = $m->invoke($this->_generator, $php);
+        $this->assertEquals($classes, array_keys($p->getValue($this->_generator)));
+    }
+
+    public function getParseTokensInEntityFileData()
+    {
+        return array(
+            array(
+                '<?php namespace Foo\Bar; class Baz {}',
+                array('Foo\Bar\Baz'),
+            ),
+            array(
+                '<?php namespace Foo\Bar; use Foo; class Baz {}',
+                array('Foo\Bar\Baz'),
+            ),
+            array(
+                '<?php namespace /*Comment*/ Foo\Bar; /** Foo */class /* Comment */ Baz {}',
+                array('Foo\Bar\Baz'),
+            ),
+            array(
+                '
+<?php namespace
+/*Comment*/
+Foo\Bar
+;
+
+/** Foo */
+class
+/* Comment */
+ Baz {}
+     ',
+                array('Foo\Bar\Baz'),
+            ),
+        );
+    }
 }
 
 class EntityGeneratorAuthor {}
