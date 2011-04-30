@@ -563,9 +563,10 @@ class SchemaTool
         $associationTables = $this->_getAssociationTables($commitOrder);
 
         // Drop association tables first
-        foreach ($associationTables as $associationTable) {
-            if (!in_array($associationTable, $orderedTables)) {
-                $orderedTables[] = $associationTable;
+        foreach ($associationTables as $quotedAssociationTableName) {
+            // avoid adding duplicates
+            if (!in_array($quotedAssociationTableName, $orderedTables)) {
+                $orderedTables[] = $quotedAssociationTableName;
             }
         }
 
@@ -579,7 +580,7 @@ class SchemaTool
             }
 
             if (!in_array($class->getTableName(), $orderedTables)) {
-                $orderedTables[] = $class->getTableName();
+                $orderedTables[] = $class->getQuotedTableName($this->_platform);
             }
         }
 
@@ -667,9 +668,10 @@ class SchemaTool
         $associationTables = array();
 
         foreach ($classes as $class) {
+            /* @var $class \Doctrine\ORM\Mapping\ClassMetadata */
             foreach ($class->associationMappings as $assoc) {
                 if ($assoc['isOwningSide'] && $assoc['type'] == ClassMetadata::MANY_TO_MANY) {
-                    $associationTables[] = $assoc['joinTable']['name'];
+                    $associationTables[] = $class->getQuotedJoinTableName($assoc, $this->_platform);
                 }
             }
         }
