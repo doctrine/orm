@@ -1479,6 +1479,7 @@ class ClassMetadataInfo
             if (strpos($className, '\\') === false && strlen($this->namespace)) {
                 $className = $this->namespace . '\\' . $className;
             }
+            $className = ltrim($className, '\\');
             $this->discriminatorMap[$value] = $className;
             if ($this->name == $className) {
                 $this->discriminatorValue = $value;
