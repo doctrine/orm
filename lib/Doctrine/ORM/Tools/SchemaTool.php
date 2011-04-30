@@ -592,68 +592,35 @@ class SchemaTool
     }
 
     /**
-     *
+     * Get SQL to drop the tables defined by the passed classes.
+     * 
      * @param array $classes
      * @return array
      */
     public function getDropSchemaSQL(array $classes)
     {
-        /* @var $conn \Doctrine\DBAL\Connection */
-        $conn = $this->_em->getConnection();
-        
-        /* @var $sm \Doctrine\DBAL\Schema\AbstractSchemaManager */
-        $sm = $conn->getSchemaManager();
-        
-        $sql = array();
-        $orderedTables = array();
+        $visitor = new \Doctrine\DBAL\Schema\Visitor\DropSchemaSqlCollector($this->_platform);
+        $schema = $this->getSchemaFromMetadata($classes);
 
-        foreach ($classes AS $class) {
-            if ($class->isIdGeneratorSequence() && !$class->isMappedSuperclass && $class->name == $class->rootEntityName && $this->_platform->supportsSequences()) {
-                $sql[] = $this->_platform->getDropSequenceSQL($class->sequenceGeneratorDefinition['sequenceName']);
-            }
-        }
-
-        $commitOrder = $this->_getCommitOrder($classes);
-        $associationTables = $this->_getAssociationTables($commitOrder);
-
-        // Drop association tables first
-        foreach ($associationTables as $quotedAssociationTableName) {
-            // avoid adding duplicates
-            if (!in_array($quotedAssociationTableName, $orderedTables)) {
-                $orderedTables[] = $quotedAssociationTableName;
-            }
-        }
-
-        // Drop tables in reverse commit order
-        for ($i = count($commitOrder) - 1; $i >= 0; --$i) {
-            $class = $commitOrder[$i];
-
-            if (($class->isInheritanceTypeSingleTable() && $class->name != $class->rootEntityName)
-                || $class->isMappedSuperclass) {
-                continue;
-            }
-
-            if (!in_array($class->getTableName(), $orderedTables)) {
-                $orderedTables[] = $class->getQuotedTableName($this->_platform);
-            }
-        }
-
-        $supportsForeignKeyConstraints = $conn->getDatabasePlatform()->supportsForeignKeyConstraints();
-        $dropTablesSql = array();
-        
-        foreach ($orderedTables AS $tableName) {
-            if ($supportsForeignKeyConstraints) {
-                $foreignKeys = $sm->listTableForeignKeys($tableName);
-
-                foreach ($foreignKeys AS $foreignKey) {
-                    $sql[] = $this->_platform->getDropForeignKeySQL($foreignKey, $tableName);
+        $sm = $this->_em->getConnection()->getSchemaManager();
+        $fullSchema = $sm->createSchema();
+        foreach ($fullSchema->getTables() AS $table) {
+            if (!$schema->hasTable($table->getName())) {
+                foreach ($table->getForeignKeys() AS $foreignKey) {
+                    /* @var $foreignKey \Doctrine\DBAL\Schema\ForeignKeyConstraint */
+                    if ($schema->hasTable($foreignKey->getForeignTableName())) {
+                        $visitor->acceptForeignKey($table, $foreignKey);
+                    }
+                }
+            } else {
+                $visitor->acceptTable($table);
+                foreach ($table->getForeignKeys() AS $foreignKey) {
+                    $visitor->acceptForeignKey($table, $foreignKey);
                 }
             }
-            
-            $dropTablesSql[] = $this->_platform->getDropTableSQL($tableName);
         }
 
-        return array_merge($sql, $dropTablesSql);
+        return $visitor->getQueries();
     }
 
     /**
@@ -700,46 +667,5 @@ class SchemaTool
         } else {
             return $schemaDiff->toSql($this->_platform);
         }
-    }
-
-    private function _getCommitOrder(array $classes)
-    {
-        $calc = new CommitOrderCalculator;
-
-        // Calculate dependencies
-        foreach ($classes as $class) {
-            $calc->addClass($class);
-
-            foreach ($class->associationMappings as $assoc) {
-                if ($assoc['isOwningSide']) {
-                    $targetClass = $this->_em->getClassMetadata($assoc['targetEntity']);
-
-                    if ( ! $calc->hasClass($targetClass->name)) {
-                        $calc->addClass($targetClass);
-                    }
-
-                    // add dependency ($targetClass before $class)
-                    $calc->addDependency($targetClass, $class);
-                }
-            }
-        }
-
-        return $calc->getCommitOrder();
-    }
-
-    private function _getAssociationTables(array $classes)
-    {
-        $associationTables = array();
-
-        foreach ($classes as $class) {
-            /* @var $class \Doctrine\ORM\Mapping\ClassMetadata */
-            foreach ($class->associationMappings as $assoc) {
-                if ($assoc['isOwningSide'] && $assoc['type'] == ClassMetadata::MANY_TO_MANY) {
-                    $associationTables[] = $class->getQuotedJoinTableName($assoc, $this->_platform);
-                }
-            }
-        }
-
-        return $associationTables;
     }
 }
