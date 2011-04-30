@@ -320,5 +320,40 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(1, count($params), "Should only execute with one parameter.");
         $this->assertEquals(array('romanb'), $params);
     }
+
+    /**
+     * @group DDC-1094
+     */
+    public function testFindByLimitOffset()
+    {
+        $this->loadFixture();
+        
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $users1 = $repos->findBy(array(), null, 1, 0);
+        $users2 = $repos->findBy(array(), null, 1, 1);
+
+        $this->assertEquals(2, count($repos->findBy(array())));
+        $this->assertEquals(1, count($users1));
+        $this->assertEquals(1, count($users2));
+        $this->assertNotSame($users1[0], $users2[0]);
+    }
+
+    /**
+     * @group DDC-1094
+     */
+    public function testFindByOrderBy()
+    {
+        $this->loadFixture();
+
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $usersAsc = $repos->findBy(array(), array("username" => "ASC"));
+        $usersDesc = $repos->findBy(array(), array("username" => "DESC"));
+
+        $this->assertEquals(2, count($usersAsc), "Pre-condition: only two users in fixture");
+        $this->assertEquals(2, count($usersDesc), "Pre-condition: only two users in fixture");
+        $this->assertSame($usersAsc[0], $usersDesc[1]);
+        $this->assertSame($usersAsc[1], $usersDesc[0]);
+    }
 }
 

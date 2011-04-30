@@ -238,7 +238,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    protected function _getSelectEntitiesSQL(array $criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null)
+    protected function _getSelectEntitiesSQL(array $criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null, array $orderBy = null)
     {
         $idColumns = $this->_class->getIdentifierColumnNames();
         $baseTableAlias = $this->_getSQLTableAlias($this->_class->name);
@@ -343,10 +343,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         $conditionSql = $this->_getSelectConditionSQL($criteria, $assoc);
 
-        $orderBySql = '';
-        if ($assoc != null && isset($assoc['orderBy'])) {
-            $orderBySql = $this->_getCollectionOrderBySQL($assoc['orderBy'], $baseTableAlias);
-        }
+        $orderBy = ($assoc !== null && isset($assoc['orderBy'])) ? $assoc['orderBy'] : $orderBy;
+        $orderBySql = $orderBy ? $this->_getOrderBySQL($orderBy, $baseTableAlias) : '';
 
         if ($this->_selectColumnListSql === null) {
             $this->_selectColumnListSql = $columnList;
