@@ -598,7 +598,11 @@ class SchemaTool
      */
     public function getDropSchemaSQL(array $classes)
     {
-        $sm = $this->_em->getConnection()->getSchemaManager();
+        /* @var $conn \Doctrine\DBAL\Connection */
+        $conn = $this->_em->getConnection();
+        
+        /* @var $sm \Doctrine\DBAL\Schema\AbstractSchemaManager */
+        $sm = $conn->getSchemaManager();
         
         $sql = array();
         $orderedTables = array();
@@ -633,13 +637,18 @@ class SchemaTool
             }
         }
 
+        $supportsForeignKeyConstraints = $conn->getDatabasePlatform()->supportsForeignKeyConstraints();
         $dropTablesSql = array();
+        
         foreach ($orderedTables AS $tableName) {
-            /* @var $sm \Doctrine\DBAL\Schema\AbstractSchemaManager */
-            $foreignKeys = $sm->listTableForeignKeys($tableName);
-            foreach ($foreignKeys AS $foreignKey) {
-                $sql[] = $this->_platform->getDropForeignKeySQL($foreignKey, $tableName);
+            if ($supportsForeignKeyConstraints) {
+                $foreignKeys = $sm->listTableForeignKeys($tableName);
+
+                foreach ($foreignKeys AS $foreignKey) {
+                    $sql[] = $this->_platform->getDropForeignKeySQL($foreignKey, $tableName);
+                }
             }
+            
             $dropTablesSql[] = $this->_platform->getDropTableSQL($tableName);
         }
 
@@ -648,9 +657,11 @@ class SchemaTool
 
     /**
      * Updates the database schema of the given classes by comparing the ClassMetadata
-     * ins$tableNametances to the current database schema that is inspected.
+     * instances to the current database schema that is inspected. If $saveMode is set
+     * to true the command is executed in the Database, else SQL is returned.
      *
      * @param array $classes
+     * @param boolean $saveMode
      * @return void
      */
     public function updateSchema(array $classes, $saveMode=false)
@@ -666,8 +677,11 @@ class SchemaTool
     /**
      * Gets the sequence of SQL statements that need to be performed in order
      * to bring the given class mappings in-synch with the relational schema.
+     * If $saveMode is set to true the command is executed in the Database, 
+     * else SQL is returned.
      *
      * @param array $classes The classes to consider.
+     * @param boolean $saveMode True for writing to DB, false for SQL string
      * @return array The sequence of SQL statements.
      */
     public function getUpdateSchemaSql(array $classes, $saveMode=false)

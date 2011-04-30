@@ -203,13 +203,18 @@ class EntityManager implements ObjectManager
     public function transactional(Closure $func)
     {
         $this->conn->beginTransaction();
+        
         try {
-            $func($this);
+            $return = $func($this);
+            
             $this->flush();
             $this->conn->commit();
+            
+            return $return ?: true;
         } catch (Exception $e) {
             $this->close();
             $this->conn->rollback();
+            
             throw $e;
         }
     }
