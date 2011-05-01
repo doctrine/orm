@@ -2301,7 +2301,8 @@ class Parser
             if ($peek['value'] == '.') {
                 return $this->StateFieldPathExpression();
             } else if ($peek['value'] == '(') {
-                return $this->FunctionsReturningStrings();
+                // do NOT directly go to FunctionsReturningString() because it doesnt check for custom functions.
+                return $this->FunctionDeclaration();
             } else {
                 $this->syntaxError("'.' or '('");
             }
