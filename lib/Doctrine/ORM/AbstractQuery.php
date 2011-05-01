@@ -272,7 +272,7 @@ abstract class AbstractQuery
      * @param boolean $bool
      * @param integer $timeToLive
      * @param string $resultCacheId
-     * @return This query instance.
+     * @return Doctrine\ORM\AbstractQuery This query instance.
      */
     public function useResultCache($bool, $timeToLive = null, $resultCacheId = null)
     {
