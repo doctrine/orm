@@ -399,8 +399,11 @@ class UnitOfWork implements PropertyChangedListener
         $actualData = array();
         foreach ($class->reflFields as $name => $refProp) {
             $value = $refProp->getValue($entity);
-            if ($class->isCollectionValuedAssociation($name) && $value !== null
+            if (isset($class->associationMappings[$name])
+                    && ($class->associationMappings[$name]['type'] & ClassMetadata::TO_MANY)
+                    && $value !== null
                     && ! ($value instanceof PersistentCollection)) {
+
                 // If $value is not a Collection then use an ArrayCollection.
                 if ( ! $value instanceof Collection) {
                     $value = new ArrayCollection($value);
@@ -419,7 +422,7 @@ class UnitOfWork implements PropertyChangedListener
                 $coll->setDirty( ! $coll->isEmpty());
                 $class->reflFields[$name]->setValue($entity, $coll);
                 $actualData[$name] = $coll;
-            } else if ( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity()) {
+            } else if ( (! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity()) && ($name !== $class->versionField) ) {
                 $actualData[$name] = $value;
             }
         }
