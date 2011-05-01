@@ -520,7 +520,7 @@ public function <methodName>()
             }
 
             if ($metadata->isMappedSuperclass) {
-                $lines[] = ' * @' . $this->_annotationsPrefix . 'MappedSupperClass';
+                $lines[] = ' * @' . $this->_annotationsPrefix . 'MappedSuperClass';
             } else {
                 $lines[] = ' * @' . $this->_annotationsPrefix . 'Entity';
             }
