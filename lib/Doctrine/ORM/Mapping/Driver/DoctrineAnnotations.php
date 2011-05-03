@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -27,6 +25,7 @@ use Doctrine\Common\Annotations\Annotation;
 
 final class Entity extends Annotation {
     public $repositoryClass;
+    public $readOnly = false;
 }
 final class MappedSuperclass extends Annotation {}
 final class InheritanceType extends Annotation {}
@@ -126,6 +125,12 @@ final class SequenceGenerator extends Annotation {
 }
 final class ChangeTrackingPolicy extends Annotation {}
 final class OrderBy extends Annotation {}
+
+final class NamedQueries extends Annotation {}
+final class NamedQuery extends Annotation {
+    public $name;
+    public $query;
+}
 
 /* Annotations for lifecycle callbacks */
 final class HasLifecycleCallbacks extends Annotation {}

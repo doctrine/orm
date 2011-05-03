@@ -3,9 +3,12 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\Company\CompanyFixContract;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -155,6 +158,112 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
           ->setResultCacheLifetime(3500);
 
         $this->assertSame($q, $q2);
+    }
+
+    public function testJoinedOneToManyNativeQueryWithRSMBuilder()
+    {
+        $user = new CmsUser;
+        $user->name = 'Roman';
+        $user->username = 'romanb';
+        $user->status = 'dev';
+
+        $phone = new CmsPhonenumber;
+        $phone->phonenumber = 424242;
+
+        $user->addPhonenumber($phone);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addJoinedEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber', 'p', 'u', 'phonenumbers');
+        $query = $this->_em->createNativeQuery('SELECT u.*, p.* FROM cms_users u LEFT JOIN cms_phonenumbers p ON u.id = p.user_id WHERE username = ?', $rsm);
+        $query->setParameter(1, 'romanb');
+
+        $users = $query->getResult();
+        $this->assertEquals(1, count($users));
+        $this->assertTrue($users[0] instanceof CmsUser);
+        $this->assertEquals('Roman', $users[0]->name);
+        $this->assertTrue($users[0]->getPhonenumbers() instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertTrue($users[0]->getPhonenumbers()->isInitialized());
+        $this->assertEquals(1, count($users[0]->getPhonenumbers()));
+        $phones = $users[0]->getPhonenumbers();
+        $this->assertEquals(424242, $phones[0]->phonenumber);
+        $this->assertTrue($phones[0]->getUser() === $users[0]);
+    }
+
+    public function testJoinedOneToOneNativeQueryWithRSMBuilder()
+    {
+        $user = new CmsUser;
+        $user->name = 'Roman';
+        $user->username = 'romanb';
+        $user->status = 'dev';
+
+        $addr = new CmsAddress;
+        $addr->country = 'germany';
+        $addr->zip = 10827;
+        $addr->city = 'Berlin';
+
+
+        $user->setAddress($addr);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addJoinedEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', 'a', 'u', 'address', array('id' => 'a_id'));
+
+        $query = $this->_em->createNativeQuery('SELECT u.*, a.*, a.id AS a_id FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
+        $query->setParameter(1, 'romanb');
+
+        $users = $query->getResult();
+
+        $this->assertEquals(1, count($users));
+        $this->assertTrue($users[0] instanceof CmsUser);
+        $this->assertEquals('Roman', $users[0]->name);
+        $this->assertTrue($users[0]->getPhonenumbers() instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertFalse($users[0]->getPhonenumbers()->isInitialized());
+        $this->assertTrue($users[0]->getAddress() instanceof CmsAddress);
+        $this->assertTrue($users[0]->getAddress()->getUser() == $users[0]);
+        $this->assertEquals('germany', $users[0]->getAddress()->getCountry());
+        $this->assertEquals(10827, $users[0]->getAddress()->getZipCode());
+        $this->assertEquals('Berlin', $users[0]->getAddress()->getCity());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testRSMBuilderThrowsExceptionOnColumnConflict()
+    {
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addJoinedEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', 'a', 'u', 'address');
+    }
+
+    /**
+     * @group PR-39
+     */
+    public function testUnknownParentAliasThrowsException()
+    {
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addJoinedEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', 'a', 'un', 'address', array('id' => 'a_id'));
+
+        $query = $this->_em->createNativeQuery('SELECT u.*, a.*, a.id AS a_id FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
+        $query->setParameter(1, 'romanb');
+
+        $this->setExpectedException(
+            "Doctrine\ORM\Internal\Hydration\HydrationException",
+            "The parent object of entity result with alias 'a' was not found. The parent alias is 'un'."
+        );
+        $users = $query->getResult();
     }
 }
 

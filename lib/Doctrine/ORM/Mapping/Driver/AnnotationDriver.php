@@ -67,10 +67,10 @@ class AnnotationDriver implements Driver
      * Initializes a new AnnotationDriver that uses the given AnnotationReader for reading
      * docblock annotations.
      * 
-     * @param $reader The AnnotationReader to use.
+     * @param AnnotationReader $reader The AnnotationReader to use, duck-typed.
      * @param string|array $paths One or multiple paths where mapping classes can be found. 
      */
-    public function __construct(AnnotationReader $reader, $paths = null)
+    public function __construct($reader, $paths = null)
     {
         $this->_reader = $reader;
         if ($paths) {
@@ -132,6 +132,10 @@ class AnnotationDriver implements Driver
         if (isset($classAnnotations['Doctrine\ORM\Mapping\Entity'])) {
             $entityAnnot = $classAnnotations['Doctrine\ORM\Mapping\Entity'];
             $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
+
+            if ($entityAnnot->readOnly) {
+                $metadata->markReadOnly();
+            }
         } else if (isset($classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'])) {
             $metadata->isMappedSuperclass = true;
         } else {
@@ -163,6 +167,18 @@ class AnnotationDriver implements Driver
             }
 
             $metadata->setPrimaryTable($primaryTable);
+        }
+
+        // Evaluate NamedQueries annotation
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\NamedQueries'])) {
+            $namedQueriesAnnot = $classAnnotations['Doctrine\ORM\Mapping\NamedQueries'];
+
+            foreach ($namedQueriesAnnot->value as $namedQuery) {
+                $metadata->addNamedQuery(array(
+                    'name'  => $namedQuery->name,
+                    'query' => $namedQuery->query
+                ));
+            }
         }
 
         // Evaluate InheritanceType annotation

@@ -97,12 +97,16 @@ class EntityManager implements ObjectManager
     private $proxyFactory;
 
     /**
-     * @var ExpressionBuilder The expression builder instance used to generate query expressions.
+     * The expression builder instance used to generate query expressions.
+     *
+     * @var Doctrine\ORM\Query\Expr
      */
     private $expressionBuilder;
 
     /**
      * Whether the EntityManager is closed or not.
+     *
+     * @var bool
      */
     private $closed = false;
 
@@ -164,7 +168,7 @@ class EntityManager implements ObjectManager
      *         ->where($expr->orX($expr->eq('u.id', 1), $expr->eq('u.id', 2)));
      * </code>
      *
-     * @return ExpressionBuilder
+     * @return Doctrine\ORM\Query\Expr
      */
     public function getExpressionBuilder()
     {
@@ -199,13 +203,18 @@ class EntityManager implements ObjectManager
     public function transactional(Closure $func)
     {
         $this->conn->beginTransaction();
+        
         try {
-            $func($this);
+            $return = $func($this);
+            
             $this->flush();
             $this->conn->commit();
+            
+            return $return ?: true;
         } catch (Exception $e) {
             $this->close();
             $this->conn->rollback();
+            
             throw $e;
         }
     }
@@ -678,6 +687,9 @@ class EntityManager implements ObjectManager
                 break;
             case Query::HYDRATE_SINGLE_SCALAR:
                 $hydrator = new Internal\Hydration\SingleScalarHydrator($this);
+                break;
+            case Query::HYDRATE_SIMPLEOBJECT:
+                $hydrator = new Internal\Hydration\SimpleObjectHydrator($this);
                 break;
             default:
                 if ($class = $this->config->getCustomHydrationMode($hydrationMode)) {

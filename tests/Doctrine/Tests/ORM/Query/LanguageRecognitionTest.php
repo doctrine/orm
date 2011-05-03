@@ -251,6 +251,23 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidDQL("SELECT (SELECT (SUM(u.id) / COUNT(u.id)) FROM Doctrine\Tests\Models\CMS\CmsUser u2) value FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = 'jon'");
     }
 
+    /**
+     * @group DDC-1079
+     */
+    public function testSelectLiteralInSubselect()
+    {
+        $this->assertValidDQL('SELECT (SELECT 1 FROM Doctrine\Tests\Models\CMS\CmsUser u2) value FROM Doctrine\Tests\Models\CMS\CmsUser u');
+        $this->assertValidDQL('SELECT (SELECT 0 FROM Doctrine\Tests\Models\CMS\CmsUser u2) value FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
+    /**
+     * @group DDC-1077
+     */
+    public function testConstantValueInSelect()
+    {
+        $this->assertValidDQL("SELECT u.name, 'foo' AS bar FROM Doctrine\Tests\Models\CMS\CmsUser u", true);
+    }
+
     public function testDuplicateAliasInSubselectPart()
     {
         $this->assertInvalidDQL("SELECT (SELECT SUM(u.id) / COUNT(u.id) AS foo FROM Doctrine\Tests\Models\CMS\CmsUser u2) foo FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = 'jon'");
@@ -466,6 +483,16 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group DDC-1091
+     */
+    public function testCustomFunctionsReturningStringInStringPrimary()
+    {
+        $this->_em->getConfiguration()->addCustomStringFunction('CC', 'Doctrine\ORM\Query\AST\Functions\ConcatFunction');
+
+        $this->assertValidDQL("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CC('%', u.name) LIKE '%foo%'", true);
+    }
+
+    /**
      * @group DDC-505
      */
     public function testDQLKeywordInJoinIsAllowed()
@@ -494,6 +521,38 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     public function testSelectOnlyNonRootEntityAlias()
     {
         $this->assertInvalidDQL('SELECT g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g');
+    }
+
+    /**
+     * @group DDC-1108
+     */
+    public function testInputParameterSingleChar()
+    {
+        $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :q');
+    }
+
+    /**
+     * @group DDC-1053
+     */
+    public function testGroupBy()
+    {
+        $this->assertValidDQL('SELECT g.id, count(u.id) FROM Doctrine\Tests\Models\CMS\CmsGroup g JOIN g.users u GROUP BY g.id');
+    }
+
+    /**
+     * @group DDC-1053
+     */
+    public function testGroupByIdentificationVariable()
+    {
+        $this->assertValidDQL('SELECT g, count(u.id) FROM Doctrine\Tests\Models\CMS\CmsGroup g JOIN g.users u GROUP BY g');
+    }
+
+    /**
+     * @group DDC-1053
+     */
+    public function testGroupByUnknownIdentificationVariable()
+    {
+        $this->assertInvalidDQL('SELECT g, count(u.id) FROM Doctrine\Tests\Models\CMS\CmsGroup g JOIN g.users u GROUP BY m');
     }
 
     /**

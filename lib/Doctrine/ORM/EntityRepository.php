@@ -79,6 +79,17 @@ class EntityRepository implements ObjectRepository
     }
 
     /**
+     * Create a new Query instance based on a predefined metadata named query.
+     *
+     * @param string $queryName
+     * @return Query
+     */
+    public function createNamedQuery($queryName)
+    {
+        return $this->_em->createQuery($this->_class->getNamedQuery($queryName));
+    }
+
+    /**
      * Clears the repository, causing all managed entities to become detached.
      */
     public function clear()
@@ -149,11 +160,14 @@ class EntityRepository implements ObjectRepository
      * Finds entities by a set of criteria.
      *
      * @param array $criteria
-     * @return array
+     * @param array|null $orderBy
+     * @param int|null $limit
+     * @param int|null $offset
+     * @return array The objects.
      */
-    public function findBy(array $criteria)
+    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
     {
-        return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->loadAll($criteria);
+        return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->loadAll($criteria, $orderBy, $limit, $offset);
     }
 
     /**

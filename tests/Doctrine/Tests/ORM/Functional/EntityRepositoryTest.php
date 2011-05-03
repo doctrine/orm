@@ -172,10 +172,10 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $userId = $user->id;
 
-        $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $userId);
+        $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $userId);
         
         $this->setExpectedException('Doctrine\ORM\OptimisticLockException');
-        $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $userId, \Doctrine\DBAL\LockMode::OPTIMISTIC);
+        $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $userId, \Doctrine\DBAL\LockMode::OPTIMISTIC);
     }
 
     /**
@@ -287,6 +287,73 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertType('Doctrine\Tests\Models\CMS\CmsAddress', $address);
         $this->assertEquals($addressId, $address->id);
+    }
+
+    public function testValidNamedQueryRetrieval()
+    {
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $query = $repos->createNamedQuery('all');
+
+        $this->assertType('Doctrine\ORM\Query', $query);
+        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $query->getDQL());
+    }
+
+    public function testInvalidNamedQueryRetrieval()
+    {
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+
+        $repos->createNamedQuery('invalidNamedQuery');
+    }
+
+    /**
+     * @group DDC-1087
+     */
+    public function testIsNullCriteria()
+    {
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $users = $repos->findBy(array('status' => null, 'username' => 'romanb'));
+
+        $params = $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['params'];
+        $this->assertEquals(1, count($params), "Should only execute with one parameter.");
+        $this->assertEquals(array('romanb'), $params);
+    }
+
+    /**
+     * @group DDC-1094
+     */
+    public function testFindByLimitOffset()
+    {
+        $this->loadFixture();
+        
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $users1 = $repos->findBy(array(), null, 1, 0);
+        $users2 = $repos->findBy(array(), null, 1, 1);
+
+        $this->assertEquals(2, count($repos->findBy(array())));
+        $this->assertEquals(1, count($users1));
+        $this->assertEquals(1, count($users2));
+        $this->assertNotSame($users1[0], $users2[0]);
+    }
+
+    /**
+     * @group DDC-1094
+     */
+    public function testFindByOrderBy()
+    {
+        $this->loadFixture();
+
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $usersAsc = $repos->findBy(array(), array("username" => "ASC"));
+        $usersDesc = $repos->findBy(array(), array("username" => "DESC"));
+
+        $this->assertEquals(2, count($usersAsc), "Pre-condition: only two users in fixture");
+        $this->assertEquals(2, count($usersDesc), "Pre-condition: only two users in fixture");
+        $this->assertSame($usersAsc[0], $usersDesc[1]);
+        $this->assertSame($usersAsc[1], $usersDesc[0]);
     }
 }
 

@@ -55,6 +55,9 @@ class XmlDriver extends AbstractFileDriver
             $metadata->setCustomRepositoryClass(
                 isset($xmlRoot['repository-class']) ? (string)$xmlRoot['repository-class'] : null
             );
+            if (isset($xmlRoot['read-only']) && $xmlRoot['read-only'] == "true") {
+                $metadata->markReadOnly();
+            }
         } else if ($xmlRoot->getName() == 'mapped-superclass') {
             $metadata->isMappedSuperclass = true;
         } else {
@@ -68,6 +71,16 @@ class XmlDriver extends AbstractFileDriver
         }
 
         $metadata->setPrimaryTable($table);
+
+        // Evaluate named queries
+        if (isset($xmlRoot['named-queries'])) {
+            foreach ($xmlRoot->{'named-queries'}->{'named-query'} as $namedQueryElement) {
+                $metadata->addNamedQuery(array(
+                    'name'  => (string)$namedQueryElement['name'],
+                    'query' => (string)$namedQueryElement['query']
+                ));
+            }
+        }
 
         /* not implemented specially anyway. use table = schema.table
         if (isset($xmlRoot['schema'])) {
