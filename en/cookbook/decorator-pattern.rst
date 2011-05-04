@@ -1,0 +1,280 @@
+Persisting the Decorator Pattern
+================================
+
+.. sectionauthor:: Chris Woodford <chris.woodford@gmail.com>
+
+
+
+Decorator Pattern
+-----------------
+
+Let's take a quick look at a visual representation of the Decorator 
+pattern
+
+
+Doctrine Implementation
+-----------------------
+
+In order to persist this pattern, we need fields in the Component 
+class to be stored and shared among the entire hierarchy, and we 
+needed any additional fields in the ConcreteComponent and 
+ConcreteDecorator to be stored as well. In this design, the Decorator 
+class just delegates calls to the Component decorated and doesn't 
+require any persistence of its own. However, the Decorator class 
+does have an association to the persistent Component that it's 
+decorating, and does need to be a part of this persistence hierarchy. 
+
+Since the Component class needs to be persisted, it's going to be a 
+Doctrine Entity. As the top of the inheritance hierarchy, it's going 
+to have to define the persistent inheritance. For this example, we 
+will use Single Table Inheritance, but Class Table Inheritance 
+would work as well. 
+
+In the discriminator map, we need to define two concrete subclasses, 
+ConcreteComponent and ConcreteDecorator. 
+
+Component
+---------
+
+.. code-block:: php
+
+    <?php
+    
+    namespace Test;
+ 
+    /**
+     * @Entity
+     * @InheritanceType("SINGLE_TABLE")
+     * @DiscriminatorColumn(name="discr", type="string")
+     * @DiscriminatorMap({"cc" = "TestComponentConcreteComponent", 
+        "cd" = "TestDecoratorConcreteDecorator"})
+     */
+    abstract class Component
+    {
+ 
+        /**
+         * @Id @Column(type="integer")
+         * @GeneratedValue(strategy="AUTO")
+         */
+        protected $id;
+ 
+        /** @Column(type="string", nullable="true") */
+        protected $name;
+ 
+        /**
+         * Get id
+         * @return integer $id
+         */
+        public function getId()
+        {
+            return $this->id;
+        }
+ 
+        /**
+         * Set name
+         * @param string $name
+         */
+        public function setName($name)
+        {
+            $this->name = $name;
+        }
+ 
+        /**
+         * Get name
+         * @return string $name
+         */
+        public function getName()
+        {
+            return $this->name;
+        }
+ 
+    }
+    
+ConcreteComponent
+-----------------
+
+The ConcreteComponent class is pretty simple and doesn't do much more 
+than extend the abstract Component class (only for the purpose of 
+keeping this example simple).
+
+.. code-block:: php
+
+    <?php
+    
+    namespace Test\Component;
+ 
+    use Test\Component;
+ 
+    /** @Entity */
+    class ConcreteComponent extends Component
+    {}
+    
+Decorator
+---------
+
+The Decorator class doesn't need to be persisted, but it does need to 
+define an association with a persisted Entity. We can use a 
+MappedSuperclass for this.
+
+.. code-block:: php
+
+    <?php
+
+    namespace Test;
+ 
+    /** @MappedSuperclass */
+    abstract class Decorator extends Component
+    {
+ 
+        /**
+         * @OneToOne(targetEntity="TestComponent", cascade={"all"})
+         * @JoinColumn(name="decorates", referencedColumnName="id")
+         */
+        protected $decorates;
+ 
+        /**
+         * intialize the decorator
+         * @param Component $c
+         */
+        public function __construct(Component $c)
+        {
+    	    $this->setDecorates($c);
+        }
+ 
+        /**
+         * (non-PHPdoc)
+         * @see ImedevacTest.Component::getName()
+         */
+        public function getName()
+        {
+    	    return 'Decorated ' . $this->getDecorates()->getName();
+        }
+ 
+        /**
+         * the component being decorated
+         * @return Component
+         */
+        protected function getDecorates()
+        {
+    	    return $this->decorates;
+        }
+ 
+        /**
+         * sets the component being decorated
+         * @param Component $c
+         */
+        protected function setDecorates(Component $c)
+        {
+    	    $this->decorates = $c;
+        }
+ 
+    }
+
+All operations on the Decorator (i.e. persist, remove, etc) will 
+cascade from the Decorator to the Component. This means that when we 
+persist a Decorator, Doctrine will take care of persisting the chain 
+of decorated objects for us. A Decorator can be treated exactly as a 
+Component when it comes time to persisting it.
+ 
+The Decorator's constructor accepts an instance of a Component, as 
+defined by the Decorator pattern (using constructor injection). The 
+setDecorates/getDecorates methods have been defined as protected to 
+hide the fact that a Decorator is decorating a Component and keeps 
+the Component interface and the Decorator interface identical.
+
+To illustrate the purpose of the Decorator pattern, the getName() 
+method has been overridden to append a string to the Component's 
+getName() method.
+
+ConcreteDecorator
+-----------------
+
+.. code-block:: php
+
+    <?php
+    
+    namespace Test\Decorator;
+ 
+    use Test\Decorator;
+ 
+    /** @Entity */
+    class ConcreteDecorator extends Decorator
+    {
+ 
+        /** @Column(type="string", nullable="true") */
+        protected $special;
+ 
+        /**
+         * Set special
+         * @param string $special
+         */
+        public function setSpecial($special)
+        {
+            $this->special = $special;
+        }
+ 
+        /**
+         * Get special
+         * @return string $special
+         */
+        public function getSpecial()
+        {
+            return $this->special;
+        }
+ 
+        /**
+         * (non-PHPdoc)
+         * @see ImedevacTest.Component::getName()
+         */
+        public function getName()
+        {
+            return '[' . $this->getSpecial()
+                . '] ' . parent::getName(); 
+        }
+ 
+    }
+    
+Tests
+-----
+
+.. code-block:: php
+
+    <?php
+    
+    use Test\Component\Concrete\Component,
+        Test\Decorator\Concrete\Decorator;
+ 
+    // assumes Doctrine 2 is configured and an instance of
+    // an EntityManager is available as $em
+ 
+    // create a new concrete component
+    $c = new ConcreteComponent();
+    $c->setName('Test Component 1');
+    $em->persist($c); // assigned unique ID = 1
+ 
+    // create a new concrete decorator
+    $c = new ConcreteComponent();
+    $c->setName('Test Component 2');
+ 
+    $d = new ConcreteDecorator($c);
+    $d->setSpecial('Really');
+    $em->persist($d); 
+    // assigns c as unique ID = 2, and d as unique ID = 3
+    
+    $em->flush();
+
+    $c = $em->find('Test\Component', 1);
+    $d = $em->find('Test\Component', 3);
+ 
+    echo get_class($c);
+    // prints: Test\Component\Concrete\Component
+ 
+    echo $c->getName();
+    // prints: Test Component 1 
+ 
+    echo get_class($d) 
+    // prints: Test\Component\Concrete\Decorator
+ 
+    echo $d->getName();
+    // prints: [Really] Decorated Test Component 2
+    
