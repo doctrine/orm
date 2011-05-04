@@ -3,38 +3,22 @@ Persisting the Decorator Pattern
 
 .. sectionauthor:: Chris Woodford <chris.woodford@gmail.com>
 
-
-
-Decorator Pattern
------------------
+INTRO
 
 Let's take a quick look at a visual representation of the Decorator 
 pattern
 
+DECORATOR PATTERN IMAGE
 
-Doctrine Implementation
------------------------
-
-In order to persist this pattern, we need fields in the Component 
-class to be stored and shared among the entire hierarchy, and we 
-needed any additional fields in the ConcreteComponent and 
-ConcreteDecorator to be stored as well. In this design, the Decorator 
-class just delegates calls to the Component decorated and doesn't 
-require any persistence of its own. However, the Decorator class 
-does have an association to the persistent Component that it's 
-decorating, and does need to be a part of this persistence hierarchy. 
+Component
+---------
 
 Since the Component class needs to be persisted, it's going to be a 
 Doctrine Entity. As the top of the inheritance hierarchy, it's going 
 to have to define the persistent inheritance. For this example, we 
 will use Single Table Inheritance, but Class Table Inheritance 
-would work as well. 
-
-In the discriminator map, we need to define two concrete subclasses, 
-ConcreteComponent and ConcreteDecorator. 
-
-Component
----------
+would work as well. In the discriminator map, we will define two 
+concrete subclasses, ConcreteComponent and ConcreteDecorator. 
 
 .. code-block:: php
 
@@ -46,8 +30,8 @@ Component
      * @Entity
      * @InheritanceType("SINGLE_TABLE")
      * @DiscriminatorColumn(name="discr", type="string")
-     * @DiscriminatorMap({"cc" = "TestComponentConcreteComponent", 
-        "cd" = "TestDecoratorConcreteDecorator"})
+     * @DiscriminatorMap({"cc" = "Test\Component\Concrete\Component", 
+        "cd" = "Test\Decorator\Concrete\Decorator"})
      */
     abstract class Component
     {
@@ -189,6 +173,13 @@ getName() method.
 ConcreteDecorator
 -----------------
 
+The final class required to complete a simple implementation of the 
+Decorator pattern is the ConcreteDecorator. In order to further 
+illustrate how the Decorator can alter data as it moves through the 
+chain of decoration, a new field, "special", has been added to this 
+class. The getName() has been overridden and appends the value of the 
+getSpecial() method to its return value.  
+
 .. code-block:: php
 
     <?php
@@ -234,8 +225,11 @@ ConcreteDecorator
  
     }
     
-Tests
------
+Examples
+--------
+
+Here is an example of how to persist and retrieve your decorated 
+objects
 
 .. code-block:: php
 
