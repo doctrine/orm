@@ -234,7 +234,7 @@ class Parser
      * If they match, updates the lookahead token; otherwise raises a syntax
      * error.
      *
-     * @param int|string token type or value
+     * @param int token type
      * @return void
      * @throws QueryException If the tokens dont match.
      */
@@ -2308,7 +2308,8 @@ class Parser
             if ($peek['value'] == '.') {
                 return $this->StateFieldPathExpression();
             } else if ($peek['value'] == '(') {
-                return $this->FunctionsReturningStrings();
+                // do NOT directly go to FunctionsReturningString() because it doesnt check for custom functions.
+                return $this->FunctionDeclaration();
             } else {
                 $this->syntaxError("'.' or '('");
             }

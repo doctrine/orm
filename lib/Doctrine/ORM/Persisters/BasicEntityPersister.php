@@ -680,12 +680,15 @@ class BasicEntityPersister
      * Loads a list of entities by a list of field criteria.
      * 
      * @param array $criteria
+     * @param array $orderBy
+     * @param int $limit
+     * @param int $offset
      * @return array
      */
-    public function loadAll(array $criteria = array())
+    public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null)
     {
         $entities = array();
-        $sql = $this->_getSelectEntitiesSQL($criteria);
+        $sql = $this->_getSelectEntitiesSQL($criteria, null, 0, $limit, $offset, $orderBy);
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->_conn->executeQuery($sql, $params, $types);
 
@@ -831,19 +834,21 @@ class BasicEntityPersister
      * @param AssociationMapping $assoc
      * @param string $orderBy
      * @param int $lockMode
+     * @param int $limit
+     * @param int $offset
+     * @param array $orderBy
      * @return string
      * @todo Refactor: _getSelectSQL(...)
      */
-    protected function _getSelectEntitiesSQL(array $criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null)
+    protected function _getSelectEntitiesSQL(array $criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null, array $orderBy = null)
     {
         $joinSql = $assoc != null && $assoc['type'] == ClassMetadata::MANY_TO_MANY ?
                 $this->_getSelectManyToManyJoinSQL($assoc) : '';
 
         $conditionSql = $this->_getSelectConditionSQL($criteria, $assoc);
 
-        $orderBySql = $assoc !== null && isset($assoc['orderBy']) ?
-                $this->_getCollectionOrderBySQL($assoc['orderBy'], $this->_getSQLTableAlias($this->_class->name))
-                : '';
+        $orderBy = ($assoc !== null && isset($assoc['orderBy'])) ? $assoc['orderBy'] : $orderBy;
+        $orderBySql = $orderBy ? $this->_getOrderBySQL($orderBy, $this->_getSQLTableAlias($this->_class->name)) : '';
 
         $lockSql = '';
         if ($lockMode == LockMode::PESSIMISTIC_READ) {
@@ -869,12 +874,12 @@ class BasicEntityPersister
      * @return string
      * @todo Rename: _getOrderBySQL
      */
-    protected final function _getCollectionOrderBySQL(array $orderBy, $baseTableAlias)
+    protected final function _getOrderBySQL(array $orderBy, $baseTableAlias)
     {
         $orderBySql = '';
         foreach ($orderBy as $fieldName => $orientation) {
             if ( ! isset($this->_class->fieldMappings[$fieldName])) {
-                ORMException::unrecognizedField($fieldName);
+                throw ORMException::unrecognizedField($fieldName);
             }
 
             $tableAlias = isset($this->_class->fieldMappings[$fieldName]['inherited']) ?

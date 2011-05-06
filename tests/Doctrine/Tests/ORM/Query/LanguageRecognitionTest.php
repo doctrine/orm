@@ -483,6 +483,16 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group DDC-1091
+     */
+    public function testCustomFunctionsReturningStringInStringPrimary()
+    {
+        $this->_em->getConfiguration()->addCustomStringFunction('CC', 'Doctrine\ORM\Query\AST\Functions\ConcatFunction');
+
+        $this->assertValidDQL("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CC('%', u.name) LIKE '%foo%'", true);
+    }
+
+    /**
      * @group DDC-505
      */
     public function testDQLKeywordInJoinIsAllowed()
@@ -511,6 +521,14 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
     public function testSelectOnlyNonRootEntityAlias()
     {
         $this->assertInvalidDQL('SELECT g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g');
+    }
+
+    /**
+     * @group DDC-1108
+     */
+    public function testInputParameterSingleChar()
+    {
+        $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :q');
     }
 
     /**

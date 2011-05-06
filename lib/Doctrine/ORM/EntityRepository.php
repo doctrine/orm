@@ -160,11 +160,14 @@ class EntityRepository implements ObjectRepository
      * Finds entities by a set of criteria.
      *
      * @param array $criteria
-     * @return array
+     * @param array|null $orderBy
+     * @param int|null $limit
+     * @param int|null $offset
+     * @return array The objects.
      */
-    public function findBy(array $criteria)
+    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
     {
-        return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->loadAll($criteria);
+        return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->loadAll($criteria, $orderBy, $limit, $offset);
     }
 
     /**
