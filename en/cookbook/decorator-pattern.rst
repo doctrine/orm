@@ -3,12 +3,14 @@ Persisting the Decorator Pattern
 
 .. sectionauthor:: Chris Woodford <chris.woodford@gmail.com>
 
-INTRO
+This recipe will show you a simple example of how you can use 
+Doctrine 2 to persist an implementaton of the 
+`Decorator Pattern <http://en.wikipedia.org/wiki/Decorator_pattern>`_
 
 Component
 ---------
 
-Since the ``Component`` class needs to be persisted, it's going to 
+The ``Component`` class needs to be persisted, so it's going to 
 be an ``Entity``. As the top of the inheritance hierarchy, it's going 
 to have to define the persistent inheritance. For this example, we 
 will use Single Table Inheritance, but Class Table Inheritance  
