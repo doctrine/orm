@@ -5,20 +5,15 @@ Persisting the Decorator Pattern
 
 INTRO
 
-Let's take a quick look at a visual representation of the Decorator 
-pattern
-
-DECORATOR PATTERN IMAGE
-
 Component
 ---------
 
-Since the Component class needs to be persisted, it's going to be a 
-Doctrine Entity. As the top of the inheritance hierarchy, it's going 
+Since the ``Component`` class needs to be persisted, it's going to 
+be an ``Entity``. As the top of the inheritance hierarchy, it's going 
 to have to define the persistent inheritance. For this example, we 
-will use Single Table Inheritance, but Class Table Inheritance 
+will use Single Table Inheritance, but Class Table Inheritance  
 would work as well. In the discriminator map, we will define two 
-concrete subclasses, ConcreteComponent and ConcreteDecorator. 
+concrete subclasses, ``ConcreteComponent`` and ``ConcreteDecorator``. 
 
 .. code-block:: php
 
@@ -30,8 +25,8 @@ concrete subclasses, ConcreteComponent and ConcreteDecorator.
      * @Entity
      * @InheritanceType("SINGLE_TABLE")
      * @DiscriminatorColumn(name="discr", type="string")
-     * @DiscriminatorMap({"cc" = "Test\Component\Concrete\Component", 
-        "cd" = "Test\Decorator\Concrete\Decorator"})
+     * @DiscriminatorMap({"cc" = "Test\Component\ConcreteComponent", 
+        "cd" = "Test\Decorator\ConcreteDecorator"})
      */
     abstract class Component
     {
@@ -77,9 +72,9 @@ concrete subclasses, ConcreteComponent and ConcreteDecorator.
 ConcreteComponent
 -----------------
 
-The ConcreteComponent class is pretty simple and doesn't do much more 
-than extend the abstract Component class (only for the purpose of 
-keeping this example simple).
+The ``ConcreteComponent`` class is pretty simple and doesn't do much 
+more than extend the abstract ``Component`` class (only for the 
+purpose of keeping this example simple).
 
 .. code-block:: php
 
@@ -96,9 +91,9 @@ keeping this example simple).
 Decorator
 ---------
 
-The Decorator class doesn't need to be persisted, but it does need to 
-define an association with a persisted Entity. We can use a 
-MappedSuperclass for this.
+The ``Decorator`` class doesn't need to be persisted, but it does 
+need to define an association with a persisted ``Entity``. We can 
+use a ``MappedSuperclass`` for this.
 
 .. code-block:: php
 
@@ -111,7 +106,7 @@ MappedSuperclass for this.
     {
  
         /**
-         * @OneToOne(targetEntity="TestComponent", cascade={"all"})
+         * @OneToOne(targetEntity="Test\Component", cascade={"all"})
          * @JoinColumn(name="decorates", referencedColumnName="id")
          */
         protected $decorates;
@@ -127,7 +122,7 @@ MappedSuperclass for this.
  
         /**
          * (non-PHPdoc)
-         * @see ImedevacTest.Component::getName()
+         * @see Test.Component::getName()
          */
         public function getName()
         {
@@ -154,31 +149,33 @@ MappedSuperclass for this.
  
     }
 
-All operations on the Decorator (i.e. persist, remove, etc) will 
-cascade from the Decorator to the Component. This means that when we 
-persist a Decorator, Doctrine will take care of persisting the chain 
-of decorated objects for us. A Decorator can be treated exactly as a 
-Component when it comes time to persisting it.
+All operations on the ``Decorator`` (i.e. persist, remove, etc) will 
+cascade from the ``Decorator`` to the ``Component``. This means that 
+when we persist a ``Decorator``, Doctrine will take care of 
+persisting the chain of decorated objects for us. A ``Decorator`` can 
+be treated exactly as a ``Component`` when it comes time to 
+persisting it.
  
-The Decorator's constructor accepts an instance of a Component, as 
-defined by the Decorator pattern (using constructor injection). The 
-setDecorates/getDecorates methods have been defined as protected to 
-hide the fact that a Decorator is decorating a Component and keeps 
-the Component interface and the Decorator interface identical.
+The ``Decorator's`` constructor accepts an instance of a 
+``Component``, as defined by the ``Decorator`` pattern (using 
+constructor injection). The setDecorates/getDecorates methods have 
+been defined as protected to hide the fact that a ``Decorator`` is 
+decorating a ``Component`` and keeps the ``Component`` interface and 
+the ``Decorator`` interface identical.
 
-To illustrate the purpose of the Decorator pattern, the getName() 
-method has been overridden to append a string to the Component's 
+To illustrate the purpose of the ``Decorator`` pattern, the getName() 
+method has been overridden to append a string to the ``Component's`` 
 getName() method.
 
 ConcreteDecorator
 -----------------
 
 The final class required to complete a simple implementation of the 
-Decorator pattern is the ConcreteDecorator. In order to further 
-illustrate how the Decorator can alter data as it moves through the 
-chain of decoration, a new field, "special", has been added to this 
-class. The getName() has been overridden and appends the value of the 
-getSpecial() method to its return value.  
+Decorator pattern is the ``ConcreteDecorator``. In order to further 
+illustrate how the ``Decorator`` can alter data as it moves through 
+the chain of decoration, a new field, "special", has been added to 
+this class. The getName() has been overridden and appends the value 
+of the getSpecial() method to its return value.  
 
 .. code-block:: php
 
@@ -215,7 +212,7 @@ getSpecial() method to its return value.
  
         /**
          * (non-PHPdoc)
-         * @see ImedevacTest.Component::getName()
+         * @see Test.Component::getName()
          */
         public function getName()
         {
@@ -235,8 +232,8 @@ objects
 
     <?php
     
-    use Test\Component\Concrete\Component,
-        Test\Decorator\Concrete\Decorator;
+    use Test\Component\ConcreteComponent,
+        Test\Decorator\ConcreteDecorator;
  
     // assumes Doctrine 2 is configured and an instance of
     // an EntityManager is available as $em
@@ -261,13 +258,13 @@ objects
     $d = $em->find('Test\Component', 3);
  
     echo get_class($c);
-    // prints: Test\Component\Concrete\Component
+    // prints: Test\Component\ConcreteComponent
  
     echo $c->getName();
     // prints: Test Component 1 
  
     echo get_class($d) 
-    // prints: Test\Component\Concrete\Decorator
+    // prints: Test\Component\ConcreteDecorator
  
     echo $d->getName();
     // prints: [Really] Decorated Test Component 2
