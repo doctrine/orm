@@ -157,15 +157,15 @@ be treated exactly as a ``Component`` when it comes time to
 persisting it.
  
 The ``Decorator's`` constructor accepts an instance of a 
-``Component``, as defined by the ``Decorator`` pattern (using 
-constructor injection). The setDecorates/getDecorates methods have 
-been defined as protected to hide the fact that a ``Decorator`` is 
-decorating a ``Component`` and keeps the ``Component`` interface and 
-the ``Decorator`` interface identical.
+``Component``, as defined by the ``Decorator`` pattern. The 
+setDecorates/getDecorates methods have been defined as protected to 
+hide the fact that a ``Decorator`` is decorating a ``Component`` and 
+keeps the ``Component`` interface and the ``Decorator`` interface 
+identical.
 
-To illustrate the purpose of the ``Decorator`` pattern, the getName() 
-method has been overridden to append a string to the ``Component's`` 
-getName() method.
+To illustrate the intended result of the ``Decorator`` pattern, the 
+getName() method has been overridden to append a string to the 
+``Component's`` getName() method.
 
 ConcreteDecorator
 -----------------
