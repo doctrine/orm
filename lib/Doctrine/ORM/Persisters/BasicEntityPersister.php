@@ -1296,10 +1296,6 @@ class BasicEntityPersister
         $params = $types = array();
 
         foreach ($criteria AS $field => $value) {
-            if ($value === null) {
-                continue; // skip null values.
-            }
-
             $type = null;
             if (isset($this->_class->fieldMappings[$field])) {
                 $type = Type::getType($this->_class->fieldMappings[$field]['type'])->getBindingType();
