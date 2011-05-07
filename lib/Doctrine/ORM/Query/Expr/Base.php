@@ -39,7 +39,7 @@ abstract class Base
     protected $_postSeparator = ')';
     protected $_allowedClasses = array();
 
-    private $_parts = array();
+    protected $_parts = array();
 
     public function __construct($args = array())
     {

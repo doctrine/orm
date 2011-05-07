@@ -22,7 +22,7 @@
 namespace Doctrine\ORM\Query\Expr;
 
 /**
- * Expression class for building DQL OR clauses
+ * Expression class for building DQL and parts
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -32,12 +32,22 @@ namespace Doctrine\ORM\Query\Expr;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class Orx extends Composite
+class Composite extends Base
 {
-    protected $_separator = ' OR ';
-    protected $_allowedClasses = array(
-        'Doctrine\ORM\Query\Expr\Andx',
-        'Doctrine\ORM\Query\Expr\Comparison',
-        'Doctrine\ORM\Query\Expr\Func',
-    );
+    public function __toString()
+    {
+        if ($this->count() === 1) {
+            return (string) $this->_parts[0];
+        }
+        
+        $components = array();
+        
+        foreach ($this->_parts as $part) {
+            $components[] = (is_object($part) && $part instanceof self && $part->count() > 1)
+                ? $this->_preSeparator . ((string) $part) . $this->_postSeparator
+                : ((string) $part);
+        }
+        
+        return implode($this->_separator, $components);
+    }
 }

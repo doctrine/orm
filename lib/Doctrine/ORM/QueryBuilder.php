@@ -629,7 +629,7 @@ class QueryBuilder
      */
     public function where($predicates)
     {
-        if ( ! (func_num_args() == 1 && ($predicates instanceof Expr\Andx || $predicates instanceof Expr\Orx))) {
+        if ( ! (func_num_args() == 1 && $predicates instanceof Expr\Composite)) {
             $predicates = new Expr\Andx(func_get_args());
         }
         
