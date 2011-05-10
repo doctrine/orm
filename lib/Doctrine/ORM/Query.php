@@ -218,7 +218,7 @@ final class Query extends AbstractQuery
     /**
      * {@inheritdoc}
      */
-    protected function _doExecute()
+    protected function _doPreExecute()
     {
         $executor = $this->_parse()->getSqlExecutor();
 
@@ -271,7 +271,17 @@ final class Query extends AbstractQuery
             $this->_resultSetMapping = $this->_parserResult->getResultSetMapping();
         }
 
-        return $executor->execute($this->_em->getConnection(), $sqlParams, $types);
+        return array(
+            'executor' => $executor,
+            'params' => $sqlParams,
+            'types' => $types,
+        );
+    }
+
+    protected function _doExecute()
+    {
+        $analysis = $this->_doPreExecute();
+        return $analysis['executor']->execute($this->_em->getConnection(), $analysis['params'], $analysis['types']);
     }
 
     /**

@@ -569,30 +569,29 @@ abstract class AbstractQuery
 
             if ($cached === false || !isset($cached[$key])) {
                 // Cache miss.
-                $stmt = $this->_doExecute();
-
-                $result = $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
-                        $stmt, $this->_resultSetMapping, $this->_hints
-                        );
-
-                $cacheDriver->save($hash, array($key => $result), $this->_resultCacheTTL);
-
-                return $result;
+                $stmt = new Internal\Hydration\ResultStatementDecorator($this->_doExecute());
             } else {
                 // Cache hit.
-                return $cached[$key];
+                $stmt = new Internal\Hydration\CachedResultStatement($cached[$key]);
+                $this->_doPreExecute();
             }
+        } else {
+            $stmt = $this->_doExecute();
         }
-
-        $stmt = $this->_doExecute();
 
         if (is_numeric($stmt)) {
             return $stmt;
         }
 
-        return $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
+        $result = $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
                 $stmt, $this->_resultSetMapping, $this->_hints
                 );
+
+        if ($stmt instanceof \Doctrine\ORM\Internal\Hydration\ResultStatementDecorator) {
+            $cacheDriver->save($hash, array($key => $stmt->getResult()), $this->_resultCacheTTL);
+        }
+
+        return $result;
     }
 
     /**
