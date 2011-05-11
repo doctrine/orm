@@ -13,15 +13,6 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
         $this->_em = $this->_getTestEntityManager();
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Query\QueryException
-     */
-    public function testParameterIndexZeroThrowsException()
-    {
-        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1");
-        $query->execute(array(42)); // same as array(0 => 42), 0 is invalid parameter position
-    }
-
     public function testGetParameters()
     {
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1");

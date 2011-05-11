@@ -558,10 +558,6 @@ abstract class AbstractQuery
             $this->setParameters($params);
         }
 
-        if (isset($this->_params[0])) {
-            throw QueryException::invalidParameterPosition(0);
-        }
-
         // Check result cache
         if ($this->_useResultCache && $cacheDriver = $this->getResultCacheDriver()) {
             list($key, $hash) = $this->getResultCacheId();
@@ -572,8 +568,8 @@ abstract class AbstractQuery
                 $stmt = $this->_doExecute();
 
                 $result = $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
-                        $stmt, $this->_resultSetMapping, $this->_hints
-                        );
+                    $stmt, $this->_resultSetMapping, $this->_hints
+                );
 
                 $cacheDriver->save($hash, array($key => $result), $this->_resultCacheTTL);
 

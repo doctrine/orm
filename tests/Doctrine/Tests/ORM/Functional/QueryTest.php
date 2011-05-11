@@ -95,6 +95,23 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Symfony 2', $users[0]->articles[1]->topic);
     }
 
+    public function testUsingZeroBasedQueryParameterShouldWork()
+    {
+        $user = new CmsUser;
+        $user->name = 'Jonathan';
+        $user->username = 'jwage';
+        $user->status = 'developer';
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = ?0');
+        $q->setParameter(0, 'jwage');
+        $user = $q->getSingleResult();
+        
+        $this->assertNotNull($user);
+    }
+
     public function testUsingUnknownQueryParameterShouldThrowException()
     {
         $this->setExpectedException(
