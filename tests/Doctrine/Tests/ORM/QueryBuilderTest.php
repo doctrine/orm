@@ -144,6 +144,50 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidQueryBuilder($qb, 'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
     }
 
+    public function testLeftJoinWithIndexBy()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u', 'a')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->leftJoin('u.articles', 'a', null, null, 'a.name');
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a INDEX BY a.name');
+    }
+    
+    public function testMultipleFrom()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u', 'g')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->from('Doctrine\Tests\Models\CMS\CmsGroup', 'g');
+        
+        $this->assertValidQueryBuilder($qb, 'SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsGroup g');
+    }
+    
+    public function testMultipleFromWithJoin()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u', 'g')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->from('Doctrine\Tests\Models\CMS\CmsGroup', 'g')
+            ->innerJoin('u.articles', 'a', 'ON', 'u.id = a.author_id');
+        
+        $this->assertValidQueryBuilder($qb, 'SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id, Doctrine\Tests\Models\CMS\CmsGroup g');
+    }
+    
+    public function testMultipleFromWithMultipleJoin()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u', 'g')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->from('Doctrine\Tests\Models\CMS\CmsArticle', 'a')
+            ->innerJoin('u.groups', 'g')
+            ->leftJoin('u.address', 'ad')
+            ->innerJoin('a.comments', 'c');
+        
+        $this->assertValidQueryBuilder($qb, 'SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.groups g LEFT JOIN u.address ad, Doctrine\Tests\Models\CMS\CmsArticle a INNER JOIN a.comments c');
+    }
+
     public function testWhere()
     {
         $qb = $this->_em->createQueryBuilder()
