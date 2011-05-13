@@ -487,4 +487,18 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $this->assertEquals(2, count($users));
     }
+    
+    public function testQueryBuilderWithStringWhereClauseContainingOrAndConditionalPrimary()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')
+           ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+           ->innerJoin('u.articles', 'a')
+           ->where('(u.id = 0) OR (u.id IS NULL)');
+        
+        $query = $qb->getQuery();
+        $users = $query->execute();
+        
+        $this->assertEquals(0, count($users));
+    }
 }
