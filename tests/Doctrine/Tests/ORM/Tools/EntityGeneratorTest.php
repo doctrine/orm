@@ -122,7 +122,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
 
-        $this->assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/~EntityGeneratorBook.php");
+        $this->assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/EntityGeneratorBook.php~");
 
         $book = $this->newInstance($metadata);
         $reflClass = new \ReflectionClass($metadata->name);

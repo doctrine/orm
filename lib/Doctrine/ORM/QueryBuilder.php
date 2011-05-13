@@ -256,10 +256,13 @@ class QueryBuilder
      */
     public function setParameter($key, $value, $type = null)
     {
-        if ($type !== null) {
-            $this->_paramTypes[$key] = $type;
+        if ($type === null) {
+            $type = Query\ParameterTypeInferer::inferType($value);
         }
+        
+        $this->_paramTypes[$key] = $type;
         $this->_params[$key] = $value;
+        
         return $this;
     }
     
