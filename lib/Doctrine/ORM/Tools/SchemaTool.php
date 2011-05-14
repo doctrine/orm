@@ -484,7 +484,7 @@ class SchemaTool
         }
 
         $theJoinTable->addUnnamedForeignKeyConstraint(
-            $class->getTableName(), $localColumns, $foreignColumns, $fkOptions
+            $foreignTableName, $localColumns, $foreignColumns, $fkOptions
         );
     }
 
