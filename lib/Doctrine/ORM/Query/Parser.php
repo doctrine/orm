@@ -1324,6 +1324,10 @@ class Parser
             $token = $this->_lexer->lookahead;
             $identVariable = $this->IdentificationVariable();
 
+            if (!isset($this->_queryComponents[$identVariable])) {
+                $this->semanticalError('Cannot group by undefined identification variable.');
+            }
+
             return $identVariable;
         }
 
@@ -1633,7 +1637,7 @@ class Parser
             return $this->StateFieldPathExpression();
         } else if ($lookahead == Lexer::T_INTEGER || $lookahead == Lexer::T_FLOAT) {
             return $this->SimpleArithmeticExpression();
-        } else if ($this->_isFunction()) {
+        } else if ($this->_isFunction() || $this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
             // We may be in an ArithmeticExpression (find the matching ")" and inspect for Math operator)
             $this->_lexer->peek(); // "("
             $peek = $this->_peekBeyondClosingParenthesis();
@@ -1641,8 +1645,12 @@ class Parser
             if ($this->_isMathOperator($peek)) {
                 return $this->SimpleArithmeticExpression();
             }
-            
-            return $this->FunctionDeclaration();
+
+            if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
+                return $this->AggregateExpression();
+            } else {
+                return $this->FunctionDeclaration();
+            }
         } else if ($lookahead == Lexer::T_STRING) {
             return $this->StringPrimary();
         } else if ($lookahead == Lexer::T_INPUT_PARAMETER) {
@@ -1717,7 +1725,8 @@ class Parser
             $expression = $this->PartialObjectExpression();
             $identVariable = $expression->identificationVariable;
         } else if ($this->_lexer->lookahead['type'] == Lexer::T_INTEGER ||
-                $this->_lexer->lookahead['type'] == Lexer::T_FLOAT) {
+                $this->_lexer->lookahead['type'] == Lexer::T_FLOAT ||
+                $this->_lexer->lookahead['type'] == Lexer::T_STRING) {
             // Shortcut: ScalarExpression => SimpleArithmeticExpression
             $expression = $this->SimpleArithmeticExpression();
         } else {
@@ -1786,15 +1795,8 @@ class Parser
         }
 
         $this->_lexer->peek();
-        $beyond = $this->_peekBeyondClosingParenthesis();
 
-        if ($this->_isMathOperator($beyond)) {
-            $expression = $this->ScalarExpression();
-        } else if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
-            $expression = $this->AggregateExpression();
-        } else {
-            $expression = $this->FunctionDeclaration();
-        }
+        $expression = $this->ScalarExpression();
 
         $expr = new AST\SimpleSelectExpression($expression);
 
@@ -2299,7 +2301,8 @@ class Parser
             if ($peek['value'] == '.') {
                 return $this->StateFieldPathExpression();
             } else if ($peek['value'] == '(') {
-                return $this->FunctionsReturningStrings();
+                // do NOT directly go to FunctionsReturningString() because it doesnt check for custom functions.
+                return $this->FunctionDeclaration();
             } else {
                 $this->syntaxError("'.' or '('");
             }
