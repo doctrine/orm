@@ -227,15 +227,28 @@ class QueryBuilder
      *         ->select('u')
      *         ->from('User', 'u');
      *
-     *     echo $qb->getRootAlias(); // u
+     *     $qb->getRootAliases(); // array('u')
      * </code>
      *
      * @return string $rootAlias
-     * @todo Rename/Refactor: getRootAliases(), there can be multiple roots!
      */
-    public function getRootAlias()
+    public function getRootAliases()
     {
-        return $this->_dqlParts['from'][0]->getAlias();
+        $aliases = array();
+        
+        foreach ($this->_dqlParts['from'] as &$fromClause) {
+            if (is_string($fromClause)) {
+                $spacePos = strrpos($fromClause, ' ');
+                $from     = substr($fromClause, 0, $spacePos);
+                $alias    = substr($fromClause, $spacePos + 1);
+
+                $fromClause = new Query\Expr\From($from, $alias);
+            }
+            
+            $aliases[] = $fromClause->getAlias();
+        }
+        
+        return $aliases;
     }
 
     /**
