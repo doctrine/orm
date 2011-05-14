@@ -77,21 +77,23 @@ class DDC719Group extends Entity {
 	 * adds group as new child
 	 *
 	 * @param Group $child
-	 * @todo check against endless recursion
-	 * @todo check if the group is already member of the group
 	 */
 	public function addGroup(Group $child) {
-		$this->children->add($child);
+        if ( ! $this->children->contains($child)) {
+            $this->children->add($child);
+            $child->addGroup($this);
+        }
 	}
 
 	/**
 	 * adds channel as new child
 	 *
 	 * @param Channel $child
-	 * @todo check if the channel is already member of the group
 	 */
 	public function addChannel(Channel $child) {
-		$this->channels->add($child);
+        if ( ! $this->channels->contains($child)) {
+            $this->channels->add($child);
+        }
 	}
 
 	/**
