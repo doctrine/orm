@@ -195,10 +195,13 @@ abstract class AbstractQuery
      */
     public function setParameter($key, $value, $type = null)
     {
-        if ($type !== null) {
-            $this->_paramTypes[$key] = $type;
+        if ($type === null) {
+            $type = Query\ParameterTypeInferer::inferType($value);
         }
+        
+        $this->_paramTypes[$key] = $type;
         $this->_params[$key] = $value;
+        
         return $this;
     }
 
@@ -558,10 +561,6 @@ abstract class AbstractQuery
             $this->setParameters($params);
         }
 
-        if (isset($this->_params[0])) {
-            throw QueryException::invalidParameterPosition(0);
-        }
-
         // Check result cache
         if ($this->_useResultCache && $cacheDriver = $this->getResultCacheDriver()) {
             list($key, $hash) = $this->getResultCacheId();
@@ -572,8 +571,8 @@ abstract class AbstractQuery
                 $stmt = $this->_doExecute();
 
                 $result = $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
-                        $stmt, $this->_resultSetMapping, $this->_hints
-                        );
+                    $stmt, $this->_resultSetMapping, $this->_hints
+                );
 
                 $cacheDriver->save($hash, array($key => $result), $this->_resultCacheTTL);
 

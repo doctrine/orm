@@ -227,15 +227,28 @@ class QueryBuilder
      *         ->select('u')
      *         ->from('User', 'u');
      *
-     *     echo $qb->getRootAlias(); // u
+     *     $qb->getRootAliases(); // array('u')
      * </code>
      *
      * @return string $rootAlias
-     * @todo Rename/Refactor: getRootAliases(), there can be multiple roots!
      */
-    public function getRootAlias()
+    public function getRootAliases()
     {
-        return $this->_dqlParts['from'][0]->getAlias();
+        $aliases = array();
+        
+        foreach ($this->_dqlParts['from'] as &$fromClause) {
+            if (is_string($fromClause)) {
+                $spacePos = strrpos($fromClause, ' ');
+                $from     = substr($fromClause, 0, $spacePos);
+                $alias    = substr($fromClause, $spacePos + 1);
+
+                $fromClause = new Query\Expr\From($from, $alias);
+            }
+            
+            $aliases[] = $fromClause->getAlias();
+        }
+        
+        return $aliases;
     }
 
     /**
@@ -256,10 +269,13 @@ class QueryBuilder
      */
     public function setParameter($key, $value, $type = null)
     {
-        if ($type !== null) {
-            $this->_paramTypes[$key] = $type;
+        if ($type === null) {
+            $type = Query\ParameterTypeInferer::inferType($value);
         }
+        
+        $this->_paramTypes[$key] = $type;
         $this->_params[$key] = $value;
+        
         return $this;
     }
     
@@ -282,8 +298,13 @@ class QueryBuilder
      */
     public function setParameters(array $params, array $types = array())
     {
-        $this->_paramTypes = $types;
-        $this->_params = $params;
+        foreach ($params as $key => $value) {
+            if (isset($types[$key])) {
+                $this->setParameter($key, $value, $types[$key]);
+            } else {
+                $this->setParameter($key, $value);
+            }
+        }
         return $this;
     }
 
@@ -370,7 +391,13 @@ class QueryBuilder
         $isMultiple = is_array($this->_dqlParts[$dqlPartName]);
     
         if ($append && $isMultiple) {
-            $this->_dqlParts[$dqlPartName][] = $dqlPart;
+            if (is_array($dqlPart)) {
+                $key = key($dqlPart);
+                
+                $this->_dqlParts[$dqlPartName][$key][] = $dqlPart[$key];
+            } else {
+                $this->_dqlParts[$dqlPartName][] = $dqlPart;
+            }
         } else {
             $this->_dqlParts[$dqlPartName] = ($isMultiple) ? array($dqlPart) : $dqlPart;
         }
@@ -523,11 +550,12 @@ class QueryBuilder
      * @param string $alias The alias of the join
      * @param string $conditionType The condition type constant. Either ON or WITH.
      * @param string $condition The condition for the join
+     * @param string $indexBy The index for the join
      * @return QueryBuilder This QueryBuilder instance.
      */
-    public function join($join, $alias, $conditionType = null, $condition = null)
+    public function join($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
-        return $this->innerJoin($join, $alias, $conditionType, $condition);
+        return $this->innerJoin($join, $alias, $conditionType, $condition, $indexBy);
     }
 
     /**
@@ -547,12 +575,15 @@ class QueryBuilder
      * @param string $alias The alias of the join
      * @param string $conditionType The condition type constant. Either ON or WITH.
      * @param string $condition The condition for the join
+     * @param string $indexBy The index for the join
      * @return QueryBuilder This QueryBuilder instance.
      */
-    public function innerJoin($join, $alias, $conditionType = null, $condition = null)
+    public function innerJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
-        return $this->add('join', new Expr\Join(
-            Expr\Join::INNER_JOIN, $join, $alias, $conditionType, $condition
+        $rootAlias = substr($join, 0, strpos($join, '.'));
+        
+        return $this->add('join', array(
+            $rootAlias => new Expr\Join(Expr\Join::INNER_JOIN, $join, $alias, $conditionType, $condition, $indexBy)
         ), true);
     }
 
@@ -574,12 +605,15 @@ class QueryBuilder
      * @param string $alias The alias of the join
      * @param string $conditionType The condition type constant. Either ON or WITH.
      * @param string $condition The condition for the join
+     * @param string $indexBy The index for the join
      * @return QueryBuilder This QueryBuilder instance.
      */
-    public function leftJoin($join, $alias, $conditionType = null, $condition = null)
+    public function leftJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
-        return $this->add('join', new Expr\Join(
-            Expr\Join::LEFT_JOIN, $join, $alias, $conditionType, $condition
+        $rootAlias = substr($join, 0, strpos($join, '.'));
+        
+        return $this->add('join', array(
+            $rootAlias => new Expr\Join(Expr\Join::LEFT_JOIN, $join, $alias, $conditionType, $condition, $indexBy)
         ), true);
     }
 
@@ -629,7 +663,7 @@ class QueryBuilder
      */
     public function where($predicates)
     {
-        if ( ! (func_num_args() == 1 && ($predicates instanceof Expr\Andx || $predicates instanceof Expr\Orx))) {
+        if ( ! (func_num_args() == 1 && $predicates instanceof Expr\Composite)) {
             $predicates = new Expr\Andx(func_get_args());
         }
         
@@ -865,14 +899,36 @@ class QueryBuilder
 
     private function _getDQLForSelect()
     {
-         return 'SELECT' 
-              . $this->_getReducedDQLQueryPart('select', array('pre' => ' ', 'separator' => ', '))
-              . $this->_getReducedDQLQueryPart('from', array('pre' => ' FROM ', 'separator' => ', '))
-              . $this->_getReducedDQLQueryPart('join', array('pre' => ' ', 'separator' => ' '))
+        $dql = 'SELECT' . $this->_getReducedDQLQueryPart('select', array('pre' => ' ', 'separator' => ', '));
+        
+        $fromParts   = $this->getDQLPart('from');
+        $joinParts   = $this->getDQLPart('join');
+        $fromClauses = array();
+        
+        // Loop through all FROM clauses
+        if ( ! empty($fromParts)) {
+            $dql .= ' FROM ';
+            
+            foreach ($fromParts as $from) {
+                $fromClause = (string) $from;
+
+                if (isset($joinParts[$from->getAlias()])) {
+                    foreach ($joinParts[$from->getAlias()] as $join) {
+                        $fromClause .= ' ' . ((string) $join);
+                    }
+                }
+
+                $fromClauses[] = $fromClause;
+            }
+        }
+        
+        $dql .= implode(', ', $fromClauses) 
               . $this->_getReducedDQLQueryPart('where', array('pre' => ' WHERE '))
               . $this->_getReducedDQLQueryPart('groupBy', array('pre' => ' GROUP BY ', 'separator' => ', '))
               . $this->_getReducedDQLQueryPart('having', array('pre' => ' HAVING '))
               . $this->_getReducedDQLQueryPart('orderBy', array('pre' => ' ORDER BY ', 'separator' => ', '));
+        
+        return $dql;
     }
 
     private function _getReducedDQLQueryPart($queryPartName, $options = array())

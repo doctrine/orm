@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\Tests\Models\CMS\CmsUser,
     Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -93,6 +94,23 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(2, count($users[0]->articles));
         $this->assertEquals('Doctrine 2', $users[0]->articles[0]->topic);
         $this->assertEquals('Symfony 2', $users[0]->articles[1]->topic);
+    }
+
+    public function testUsingZeroBasedQueryParameterShouldWork()
+    {
+        $user = new CmsUser;
+        $user->name = 'Jonathan';
+        $user->username = 'jwage';
+        $user->status = 'developer';
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = ?0');
+        $q->setParameter(0, 'jwage');
+        $user = $q->getSingleResult();
+        
+        $this->assertNotNull($user);
     }
 
     public function testUsingUnknownQueryParameterShouldThrowException()
@@ -437,5 +455,50 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery("select u.username from Doctrine\Tests\Models\CMS\CmsUser u where u.username = 'gblanco'");
         $this->assertNull($query->getOneOrNullResult(Query::HYDRATE_SCALAR));
+    }
+    
+    public function testDqlWithAutoInferOfParameters()
+    {
+        $user = new CmsUser;
+        $user->name = 'Benjamin';
+        $user->username = 'beberlei';
+        $user->status = 'developer';
+        $this->_em->persist($user);
+        
+        $user = new CmsUser;
+        $user->name = 'Roman';
+        $user->username = 'romanb';
+        $user->status = 'developer';
+        $this->_em->persist($user);
+        
+        $user = new CmsUser;
+        $user->name = 'Jonathan';
+        $user->username = 'jwage';
+        $user->status = 'developer';
+        $this->_em->persist($user);
+        
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        $query = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username IN (?0)");
+        $query->setParameter(0, array('beberlei', 'jwage'));
+        
+        $users = $query->execute();
+        
+        $this->assertEquals(2, count($users));
+    }
+    
+    public function testQueryBuilderWithStringWhereClauseContainingOrAndConditionalPrimary()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')
+           ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+           ->innerJoin('u.articles', 'a')
+           ->where('(u.id = 0) OR (u.id IS NULL)');
+        
+        $query = $qb->getQuery();
+        $users = $query->execute();
+        
+        $this->assertEquals(0, count($users));
     }
 }

@@ -92,7 +92,7 @@ EOT
             }
             $output->write('Database schema dropped successfully!' . PHP_EOL);
         } else {
-            $output->write('ATTENTION: This operation should not be executed in a production enviroment.' . PHP_EOL . PHP_EOL);
+            $output->write('ATTENTION: This operation should not be executed in a production environment.' . PHP_EOL . PHP_EOL);
 
             if ($isFullDatabaseDrop) {
                 $sqls = $schemaTool->getDropDatabaseSQL();

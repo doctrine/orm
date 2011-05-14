@@ -44,7 +44,7 @@ class SqlWalker implements TreeWalker
     private $_aliasCounter = 0;
     private $_tableAliasCounter = 0;
     private $_scalarResultCounter = 1;
-    private $_sqlParamIndex = 1;
+    private $_sqlParamIndex = 0;
 
     /**
      * @var ParserResult

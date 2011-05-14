@@ -183,7 +183,7 @@ public function <methodName>()
         }
 
         if ($this->_backupExisting && file_exists($path)) {
-            $backupPath = dirname($path) . DIRECTORY_SEPARATOR .  "~" . basename($path);
+            $backupPath = dirname($path) . DIRECTORY_SEPARATOR . basename($path) . "~";
             if (!copy($path, $backupPath)) {
                 throw new \RuntimeException("Attempt to backup overwritten entitiy file but copy operation failed.");
             }

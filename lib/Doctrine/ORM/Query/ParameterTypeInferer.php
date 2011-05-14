@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -19,49 +17,56 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Query\Expr;
+namespace Doctrine\ORM\Query;
+
+use Doctrine\DBAL\Connection,
+    Doctrine\DBAL\Types\Type;
 
 /**
- * Expression class for DQL from
+ * Provides an enclosed support for parameter infering.
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class Join
+class ParameterTypeInferer
 {
-    const INNER_JOIN = 'INNER';
-    const LEFT_JOIN  = 'LEFT';
-    
-    const ON   = 'ON';
-    const WITH = 'WITH';
-    
-    private $_joinType;
-    private $_join;
-    private $_alias;
-    private $_conditionType;
-    private $_condition;
-    private $_indexBy;
-
-    public function __construct($joinType, $join, $alias = null, $conditionType = null, $condition = null, $indexBy = null)
+    /**
+     * Infer type of a given value, returning a compatible constant:
+     * - Type (Doctrine\DBAL\Types\Type::*) 
+     * - Connection (Doctrine\DBAL\Connection::PARAM_*)
+     * 
+     * @param mixed $value Parameter value
+     * 
+     * @return mixed Parameter type constant
+     */
+    public static function inferType($value)
     {
-        $this->_joinType       = $joinType;
-        $this->_join           = $join;
-        $this->_alias          = $alias;
-        $this->_conditionType  = $conditionType;
-        $this->_condition      = $condition;
-        $this->_indexBy        = $indexBy;
-    }
+        switch (true) {
+            case is_integer($value):
+                return Type::INTEGER;
 
-    public function __toString()
-    {
-        return strtoupper($this->_joinType) . ' JOIN ' . $this->_join
-             . ($this->_alias ? ' ' . $this->_alias : '')
-             . ($this->_condition ? ' ' . strtoupper($this->_conditionType) . ' ' . $this->_condition : '')
-             . ($this->_indexBy ? ' INDEX BY ' . $this->_indexBy : '');
+            case ($value instanceof \DateTime):
+                return Type::DATETIME;
+
+            case is_array($value):
+                $key = key($value);
+
+                if (is_integer($value[$key])) {
+                    return Connection::PARAM_INT_ARRAY;
+                }
+
+                return Connection::PARAM_STR_ARRAY;
+
+            default:
+                // Do nothing
+                break;
+        }
+
+        return \PDO::PARAM_STR;
     }
 }
