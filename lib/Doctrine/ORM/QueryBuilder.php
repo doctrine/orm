@@ -410,6 +410,20 @@ class QueryBuilder
     public function add($dqlPartName, $dqlPart, $append = false)
     {
         $isMultiple = is_array($this->_dqlParts[$dqlPartName]);
+        
+        // This is introduced for backwards compatibility reasons.
+        // TODO: Remove for 3.0
+        if ($dqlPartName == 'join') {
+            $newDqlPart = array();
+            foreach ($dqlPart AS $k => $v) {
+                if (is_numeric($k)) {
+                    $newDqlPart[$this->getRootAlias()] = $v;
+                } else {
+                    $newDqlPart[$k] = $v;
+                }
+            }
+            $dqlPart = $newDqlPart;
+        }
     
         if ($append && $isMultiple) {
             if (is_array($dqlPart)) {
@@ -602,6 +616,9 @@ class QueryBuilder
     public function innerJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
         $rootAlias = substr($join, 0, strpos($join, '.'));
+        if (!in_array($rootAlias, $this->getRootAliases())) {
+            $rootAlias = $this->getRootAlias();
+        }
         
         return $this->add('join', array(
             $rootAlias => new Expr\Join(Expr\Join::INNER_JOIN, $join, $alias, $conditionType, $condition, $indexBy)
@@ -632,6 +649,9 @@ class QueryBuilder
     public function leftJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
         $rootAlias = substr($join, 0, strpos($join, '.'));
+        if (!in_array($rootAlias, $this->getRootAliases())) {
+            $rootAlias = $this->getRootAlias();
+        }
         
         return $this->add('join', array(
             $rootAlias => new Expr\Join(Expr\Join::LEFT_JOIN, $join, $alias, $conditionType, $condition, $indexBy)

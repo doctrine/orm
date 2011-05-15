@@ -662,4 +662,14 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(array('u', 'u2'), $qb->getRootAliases());
         $this->assertEquals('u', $qb->getRootAlias());
     }
+    
+    public function testBCAddJoinWithoutRootAlias()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->add('join', array('INNER JOIN u.groups g'), true);
+        
+        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.groups g', $qb->getDQL());
+    }
 }
