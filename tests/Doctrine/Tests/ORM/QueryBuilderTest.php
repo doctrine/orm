@@ -633,4 +633,33 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(2, $expr->count(), "Modifying the second query should affect the first one.");
     }
+    
+    public function testGetRootAlias()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        
+        $this->assertEquals('u', $qb->getRootAlias());
+    }
+    
+    public function testGetRootAliases()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        
+        $this->assertEquals(array('u'), $qb->getRootAliases());
+    }
+    
+    public function testGetSeveralRootAliases()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u2');
+        
+        $this->assertEquals(array('u', 'u2'), $qb->getRootAliases());
+        $this->assertEquals('u', $qb->getRootAlias());
+    }
 }

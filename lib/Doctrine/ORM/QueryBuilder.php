@@ -217,6 +217,27 @@ class QueryBuilder
                 ->setFirstResult($this->_firstResult)
                 ->setMaxResults($this->_maxResults);
     }
+    
+    /**
+     * Gets the FIRST root alias of the query. This is the first entity alias involved
+     * in the construction of the query.
+     *
+     * <code>
+     * $qb = $em->createQueryBuilder()
+     * ->select('u')
+     * ->from('User', 'u');
+     *
+     * echo $qb->getRootAlias(); // u
+     * </code>
+     *
+     * @deprecated Please use $qb->getRootAliases() instead.
+     * @return string $rootAlias
+     */
+    public function getRootAlias()
+    {
+        $aliases = $this->getRootAliases();
+        return $aliases[0];
+    }
 
     /**
      * Gets the root alias of the query. This is the first entity alias involved
