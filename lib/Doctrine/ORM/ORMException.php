@@ -115,4 +115,9 @@ class ORMException extends Exception
             "Unknown Entity namespace alias '$entityNamespaceAlias'."
         );
     }
+    
+    public static function notSubclassOf($baseClass)
+    {
+        return new self("Class must inherit from '$baseClass'.");
+    }
 }
