@@ -576,7 +576,7 @@ class SqlWalker implements TreeWalker
                                 $columnAlias = $this->getSQLColumnAlias($srcColumn);
                                 $sql .= ", $sqlTableAlias." . $srcColumn . ' AS ' . $columnAlias;
                                 $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
-                                $this->_rsm->addMetaResult($dqlAlias, $this->_platform->getSQLResultCasing($columnAlias), $srcColumn);
+                                $this->_rsm->addMetaResult($dqlAlias, $this->_platform->getSQLResultCasing($columnAlias), $srcColumn, (isset($assoc['id']) && $assoc['id'] === true));
                             }
                         }
                     }
@@ -591,7 +591,7 @@ class SqlWalker implements TreeWalker
                                 $columnAlias = $this->getSQLColumnAlias($srcColumn);
                                 $sql .= ', ' . $sqlTableAlias . '.' . $srcColumn . ' AS ' . $columnAlias;
                                 $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
-                                $this->_rsm->addMetaResult($dqlAlias, $this->_platform->getSQLResultCasing($columnAlias), $srcColumn);
+                                $this->_rsm->addMetaResult($dqlAlias, $this->_platform->getSQLResultCasing($columnAlias), $srcColumn, (isset($assoc['id']) && $assoc['id'] === true));
                             }
                         }
                     }
@@ -1019,29 +1019,6 @@ class SqlWalker implements TreeWalker
 
                 $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
                 $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
-            }
-
-            if ($class->containsForeignIdentifier) {
-                // Add double entry for association identifier columns to simplify hydrator code
-                foreach ($class->identifier AS $idField) {
-                    if (isset($class->associationMappings[$idField])) {
-                        if (isset($mapping['inherited'])) {
-                            $tableName = $this->_em->getClassMetadata($mapping['inherited'])->table['name'];
-                        } else {
-                            $tableName = $class->table['name'];
-                        }
-
-                        if ($beginning) $beginning = false; else $sql .= ', ';
-
-                        $joinColumnName = $class->associationMappings[$idField]['joinColumns'][0]['name'];
-                        $sqlTableAlias = $this->getSQLTableAlias($tableName, $dqlAlias);
-                        $columnAlias = $this->getSQLColumnAlias($joinColumnName);
-                        $sql .= $sqlTableAlias . '.' . $joinColumnName . ' AS ' . $columnAlias;
-
-                        $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
-                        $this->_rsm->addMetaResult($dqlAlias, $columnAlias, $idField);
-                    }
-                }
             }
 
             // Add any additional fields of subclasses (excluding inherited fields)

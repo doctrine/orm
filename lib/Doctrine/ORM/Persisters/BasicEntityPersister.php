@@ -989,7 +989,7 @@ class BasicEntityPersister
                 $columnAlias = $srcColumn . $this->_sqlAliasCounter++;
                 $columnList .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )  . ".$srcColumn AS $columnAlias";
                 $resultColumnName = $this->_platform->getSQLResultCasing($columnAlias);
-                $this->_rsm->addMetaResult($alias, $this->_platform->getSQLResultCasing($columnAlias), $srcColumn);
+                $this->_rsm->addMetaResult($alias, $this->_platform->getSQLResultCasing($columnAlias), $srcColumn, isset($assoc['id']) && $assoc['id'] === true);
             }
         }
         return $columnList;
