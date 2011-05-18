@@ -174,8 +174,8 @@ SQL\_NO\_CACHE query hint.
     <?php
     $dql = "SELECT p, c, a FROM BlogPost p JOIN p.category c JOIN p.author a WHERE ...";
     $query = $m->createQuery($dql);
-    $query->setQueryHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'DoctrineExtensions\Query\MysqlWalker');
-    $query->setQueryHint("mysqlWalker.sqlNoCache", true);
+    $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'DoctrineExtensions\Query\MysqlWalker');
+    $query->setHint("mysqlWalker.sqlNoCache", true);
     $results = $query->getResult();
 
 Our ``MysqlWalker`` will extend the default ``SqlWalker``. We will
@@ -214,5 +214,4 @@ understanding of the DQL Parser and Walkers, but may offer your
 huge benefits with using vendor specific features. This would still
 allow you write DQL queries instead of NativeQueries to make use of
 vendor specific features.
-
 
