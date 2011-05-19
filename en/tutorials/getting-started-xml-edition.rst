@@ -734,10 +734,9 @@ doctrine command. Its a fairly simple file:
 .. code-block:: php
 
     <?php
-    $helperSet = new \Symfony\Components\Console\Helper\HelperSet(array(
+    $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
         'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($entityManager)
     ));
-    $cli->setHelperSet($helperSet);
 
 You can then change into your project directory and call the
 Doctrine command-line tool:
