@@ -1,0 +1,6 @@
+This document details all the possible changes that you should investigate when updating
+your project from Doctrine 2.0.x to 2.1
+
+## Interface for EntityRepository
+
+The EntityRepository now has an interface Doctrine\Common\Persistence\ObjectRepository. This means that your classes that override EntityRepository and extend find(), findOneBy() or findBy() must be adjusted to follow this interface.
