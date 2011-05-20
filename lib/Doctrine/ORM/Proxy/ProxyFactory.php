@@ -209,6 +209,11 @@ class ProxyFactory
 
                 $methods .= $parameterString . ')';
                 $methods .= PHP_EOL . '    {' . PHP_EOL;
+                if ($this->isShortIdentifierGetter($method, $class)) {
+                    $methods .= '        if ($this->__isInitialized__ === false) {' . PHP_EOL;
+                    $methods .= '            return $this->_identifier["' . lcfirst(substr($method->getName(), 3)) . '"];' . PHP_EOL;
+                    $methods .= '        }' . PHP_EOL;
+                }
                 $methods .= '        $this->__load();' . PHP_EOL;
                 $methods .= '        return parent::' . $method->getName() . '(' . $argumentString . ');';
                 $methods .= PHP_EOL . '    }' . PHP_EOL;
@@ -216,6 +221,21 @@ class ProxyFactory
         }
 
         return $methods;
+    }
+
+    /**
+     * @param ReflectionMethod $method
+     * @param ClassMetadata $class
+     * @return bool
+     */
+    private function isShortIdentifierGetter($method, $class)
+    {
+        return (
+            $method->getNumberOfParameters() == 0 &&
+            substr($method->getName(), 0, 3) == "get" &&
+            in_array(lcfirst(substr($method->getName(), 3)), $class->identifier, true) &&
+            (($method->getEndLine() - $method->getStartLine()) <= 4)
+        );
     }
 
     /**
