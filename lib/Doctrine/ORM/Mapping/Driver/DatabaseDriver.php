@@ -88,7 +88,7 @@ class DatabaseDriver implements Driver
     {
         $this->tables = $this->manyToManyTables = $this->classToTableNames = array();
         foreach ($entityTables AS $table) {
-            $className = $this->_getClassNameForTable($table->getName());
+            $className = $this->getClassNameForTable($table->getName());
             $this->classToTableNames[$className] = $table->getName();
             $this->tables[$table->getName()] = $table;
         }
@@ -130,7 +130,7 @@ class DatabaseDriver implements Driver
             } else {
                 // lower-casing is necessary because of Oracle Uppercase Tablenames,
                 // assumption is lower-case + underscore separated.
-                $className = $this->_getClassNameForTable($tableName);
+                $className = $this->getClassNameForTable($tableName);
                 $this->tables[$tableName] = $table;
                 $this->classToTableNames[$className] = $tableName;
             }
@@ -182,7 +182,7 @@ class DatabaseDriver implements Driver
                 continue;
             }
 
-            $fieldMapping['fieldName'] = $this->_getFieldNameForColumn($tableName, $column->getName(), false);
+            $fieldMapping['fieldName'] = $this->getFieldNameForColumn($tableName, $column->getName(), false);
             $fieldMapping['columnName'] = $column->getName();
             $fieldMapping['type'] = strtolower((string) $column->getType());
 
@@ -236,10 +236,10 @@ class DatabaseDriver implements Driver
 
                     $localColumn = current($myFk->getColumns());
                     $associationMapping = array();
-                    $associationMapping['fieldName'] = $this->_getFieldNameForColumn($manyTable->getName(), current($otherFk->getColumns()), true);
-                    $associationMapping['targetEntity'] = $this->_getClassNameForTable($otherFk->getForeignTableName());
+                    $associationMapping['fieldName'] = $this->getFieldNameForColumn($manyTable->getName(), current($otherFk->getColumns()), true);
+                    $associationMapping['targetEntity'] = $this->getClassNameForTable($otherFk->getForeignTableName());
                     if (current($manyTable->getColumns())->getName() == $localColumn) {
-                        $associationMapping['inversedBy'] = $this->_getFieldNameForColumn($manyTable->getName(), current($myFk->getColumns()), true);
+                        $associationMapping['inversedBy'] = $this->getFieldNameForColumn($manyTable->getName(), current($myFk->getColumns()), true);
                         $associationMapping['joinTable'] = array(
                             'name' => strtolower($manyTable->getName()),
                             'joinColumns' => array(),
@@ -264,7 +264,7 @@ class DatabaseDriver implements Driver
                             );
                         }
                     } else {
-                        $associationMapping['mappedBy'] = $this->_getFieldNameForColumn($manyTable->getName(), current($myFk->getColumns()), true);
+                        $associationMapping['mappedBy'] = $this->getFieldNameForColumn($manyTable->getName(), current($myFk->getColumns()), true);
                     }
                     $metadata->mapManyToMany($associationMapping);
                     break;
@@ -279,8 +279,8 @@ class DatabaseDriver implements Driver
 
             $localColumn = current($cols);
             $associationMapping = array();
-            $associationMapping['fieldName'] = $this->_getFieldNameForColumn($tableName, $localColumn, true);
-            $associationMapping['targetEntity'] = $this->_getClassNameForTable($foreignTable);
+            $associationMapping['fieldName'] = $this->getFieldNameForColumn($tableName, $localColumn, true);
+            $associationMapping['targetEntity'] = $this->getClassNameForTable($foreignTable);
 
             for ($i = 0; $i < count($cols); $i++) {
                 $associationMapping['joinColumns'][] = array(
@@ -345,7 +345,7 @@ class DatabaseDriver implements Driver
      * @param string $tableName
      * @return string
      */
-    private function _getClassNameForTable($tableName)
+    private function getClassNameForTable($tableName)
     {
         if (isset($this->classNamesForTables[$tableName])) {
             return $this->classNamesForTables[$tableName];
@@ -362,7 +362,7 @@ class DatabaseDriver implements Driver
      * @param boolean $fk Whether the column is a foreignkey or not.
      * @return string
      */
-    private function _getFieldNameForColumn($tableName, $columnName, $fk = false)
+    private function getFieldNameForColumn($tableName, $columnName, $fk = false)
     {
         if (isset($this->fieldNamesForColumns[$tableName]) && isset($this->fieldNamesForColumns[$tableName][$columnName])) {
             return $this->fieldNamesForColumns[$tableName][$columnName];
