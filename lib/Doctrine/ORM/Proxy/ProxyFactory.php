@@ -178,14 +178,13 @@ class ProxyFactory
                 }
                 $methods .= $method->getName() . '(';
                 $firstParam = true;
-                $parameterString = $argumentString = '';
+                $parameterString = '';
 
                 foreach ($method->getParameters() as $param) {
                     if ($firstParam) {
                         $firstParam = false;
                     } else {
                         $parameterString .= ', ';
-                        $argumentString  .= ', ';
                     }
 
                     // We need to pick the type hint class too
@@ -200,7 +199,6 @@ class ProxyFactory
                     }
 
                     $parameterString .= '$' . $param->getName();
-                    $argumentString  .= '$' . $param->getName();
 
                     if ($param->isDefaultValueAvailable()) {
                         $parameterString .= ' = ' . var_export($param->getDefaultValue(), true);
@@ -210,7 +208,7 @@ class ProxyFactory
                 $methods .= $parameterString . ')';
                 $methods .= PHP_EOL . '    {' . PHP_EOL;
                 $methods .= '        $this->__load();' . PHP_EOL;
-                $methods .= '        return parent::' . $method->getName() . '(' . $argumentString . ');';
+                $methods .= '        return call_user_func_array(array(\'parent\', \'' . $method->getName() . '\'), func_get_args());';
                 $methods .= PHP_EOL . '    }' . PHP_EOL;
             }
         }
