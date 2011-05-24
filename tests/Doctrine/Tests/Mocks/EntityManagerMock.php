@@ -78,7 +78,7 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
             $config = new \Doctrine\ORM\Configuration();
             $config->setProxyDir(__DIR__ . '/../Proxies');
             $config->setProxyNamespace('Doctrine\Tests\Proxies');
-            $config->setMetadataDriverImpl(\Doctrine\ORM\Mapping\Driver\AnnotationDriver::create());
+            $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver());
         }
         if (is_null($eventManager)) {
             $eventManager = new \Doctrine\Common\EventManager();

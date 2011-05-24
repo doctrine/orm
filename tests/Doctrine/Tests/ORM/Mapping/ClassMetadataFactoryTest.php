@@ -67,10 +67,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     {
         require_once __DIR__."/../../Models/Global/GlobalNamespaceModel.php";
 
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache);
-        $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-        $metadataDriver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
-        $metadataDriver->addPaths(array(__DIR__ . '/../../Models/Global/'));
+        $metadataDriver = $this->createAnnotationDriver(array(__DIR__ . '/../../Models/Global/'));
 
         $entityManager = $this->_createEntityManager($metadataDriver);
 

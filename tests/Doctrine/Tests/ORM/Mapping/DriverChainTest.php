@@ -81,12 +81,9 @@ class DriverChainTest extends \Doctrine\Tests\OrmTestCase
      * @group DDC-706
      */
     public function testIsTransient()
-    {
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache());
-        $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-        
+    {        
         $chain = new DriverChain();
-        $chain->addDriver(new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader, array()), 'Doctrine\Tests\Models\CMS');
+        $chain->addDriver($this->createAnnotationDriver(), 'Doctrine\Tests\Models\CMS');
 
         $this->assertTrue($chain->isTransient('stdClass'), "stdClass isTransient");
         $this->assertFalse($chain->isTransient('Doctrine\Tests\Models\CMS\CmsUser'), "CmsUser is not Transient");

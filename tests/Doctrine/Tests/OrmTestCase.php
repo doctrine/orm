@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests;
 
+use Doctrine\Common\Cache\ArrayCache;
+
 /**
  * Base testcase class for all ORM testcases.
  */
@@ -12,6 +14,39 @@ abstract class OrmTestCase extends DoctrineTestCase
     /** The query cache that is shared between all ORM tests (except functional tests). */
     private static $_queryCacheImpl = null;
 
+    /**
+     * @param array $paths
+     * @return \Doctrine\Common\Annotations\AnnotationReader
+     */
+    protected function createAnnotationDriver($paths = array(), $alias = null)
+    {
+        if (version_compare(\Doctrine\Common\Version::VERSION, '3.0.0', '>=')) {
+            $reader = new \Doctrine\Common\Annotations\CachedReader(
+                new \Doctrine\Common\Annotations\AnnotationReader(), new ArrayCache()
+            );
+        } else if (version_compare(\Doctrine\Common\Version::VERSION, '2.1.0-BETA3-DEV', '>=')) {
+            $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+            $reader->setIgnoreNotImportedAnnotations(true);
+            $reader->setEnableParsePhpImports(false);
+            if ($alias) {
+                $reader->setAnnotationNamespaceAlias('Doctrine\ORM\Mapping\\', $alias);
+            } else {
+                $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
+            }
+            $reader = new \Doctrine\Common\Annotations\CachedReader(
+                new \Doctrine\Common\Annotations\IndexedReader($reader), new ArrayCache()
+            );
+        } else {
+            $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+            if ($alias) {
+                $reader->setAnnotationNamespaceAlias('Doctrine\ORM\Mapping\\', $alias);
+            } else {
+                $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
+            }
+        }
+        return new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader, (array)$paths);
+    }
+    
     /**
      * Creates an EntityManager for testing purposes.
      * 

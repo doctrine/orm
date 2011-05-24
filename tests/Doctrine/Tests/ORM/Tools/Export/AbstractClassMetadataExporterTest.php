@@ -78,7 +78,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
 
         $class = 'Doctrine\ORM\Mapping\Driver\\' . $driverName;
         if ($type === 'annotation') {
-            $driver = $class::create($path);
+            $driver = $this->createAnnotationDriver(array($path));
         } else {
             $driver = new $class($path);
         }
