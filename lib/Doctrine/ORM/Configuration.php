@@ -121,7 +121,10 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function newDefaultAnnotationDriver($paths = array())
     {
-        if (version_compare(\Doctrine\Common\Version::VERSION, '2.1.0-BETA3-DEV', '>=')) {
+        if (version_compare(\Doctrine\Common\Version::VERSION, '3.0.0-DEV', '>=')) {
+            $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+            $reader = new \Doctrine\Common\Annotations\CachedReader($reader, new ArrayCache());
+        } else if (version_compare(\Doctrine\Common\Version::VERSION, '2.1.0-BETA3-DEV', '>=')) {
             $reader = new \Doctrine\Common\Annotations\AnnotationReader();
             $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
             $reader->setIgnoreNotImportedAnnotations(true);
