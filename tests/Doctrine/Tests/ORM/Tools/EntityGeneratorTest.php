@@ -166,9 +166,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $book = $this->newInstance($metadata);
 
         $cm = new \Doctrine\ORM\Mapping\ClassMetadata($metadata->name);
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        $reader->setDefaultAnnotationNamespace("Doctrine\\ORM\\Mapping\\");
-        $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
+        $driver = $this->createAnnotationDriver();
         $driver->loadMetadataForClass($cm->name, $cm);
 
         $this->assertEquals($cm->columnNames, $metadata->columnNames);
@@ -188,9 +186,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $book = $this->newInstance($metadata);
 
         $cm = new \Doctrine\ORM\Mapping\ClassMetadata($metadata->name);
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        $reader->setAnnotationNamespaceAlias("Doctrine\\ORM\\Mapping\\", "orm");
-        $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
+        $driver = $this->createAnnotationDriver(array(), 'orm');
         $driver->loadMetadataForClass($cm->name, $cm);
 
         $this->assertEquals($cm->columnNames, $metadata->columnNames);

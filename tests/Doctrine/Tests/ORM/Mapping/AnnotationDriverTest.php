@@ -99,10 +99,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
     protected function _loadDriver()
     {
-        $cache = new \Doctrine\Common\Cache\ArrayCache();
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader($cache);
-        $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-        return new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
+        return $this->createAnnotationDriver();
     }
 
     protected function _ensureIsLoaded($entityClassName)
