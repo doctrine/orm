@@ -335,7 +335,6 @@ class ClassMetadataInfo implements ClassMetadata
      * uniqueConstraints => array
      *
      * @var array
-     * @todo Rename to just $table
      */
     public $table;
 
@@ -1887,5 +1886,47 @@ class ClassMetadataInfo implements ClassMetadata
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Gets the (possibly quoted) column name of a mapped field for safe use
+     * in an SQL statement.
+     * 
+     * @param string $field
+     * @param AbstractPlatform $platform
+     * @return string
+     */
+    public function getQuotedColumnName($field, $platform)
+    {
+        return isset($this->fieldMappings[$field]['quoted']) ?
+                $platform->quoteIdentifier($this->fieldMappings[$field]['columnName']) :
+                $this->fieldMappings[$field]['columnName'];
+    }
+    
+    /**
+     * Gets the (possibly quoted) primary table name of this class for safe use
+     * in an SQL statement.
+     * 
+     * @param AbstractPlatform $platform
+     * @return string
+     */
+    public function getQuotedTableName($platform)
+    {
+        return isset($this->table['quoted']) ?
+                $platform->quoteIdentifier($this->table['name']) :
+                $this->table['name'];
+    }
+
+    /**
+     * Gets the (possibly quoted) name of the join table.
+     *
+     * @param AbstractPlatform $platform
+     * @return string
+     */
+    public function getQuotedJoinTableName(array $assoc, $platform)
+    {
+        return isset($assoc['joinTable']['quoted'])
+            ? $platform->quoteIdentifier($assoc['joinTable']['name'])
+            : $assoc['joinTable']['name'];
     }
 }
