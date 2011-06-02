@@ -604,13 +604,13 @@ underlying ``UnitOfWork``:
 
     <?php
     switch ($em->getUnitOfWork()->getEntityState($entity)) {
-        case UnitOfWork::MANAGED:
+        case UnitOfWork::STATE_MANAGED:
             ...
-        case UnitOfWork::REMOVED:
+        case UnitOfWork::STATE_REMOVED:
             ...
-        case UnitOfWork::DETACHED:
+        case UnitOfWork::STATE_DETACHED:
             ...
-        case UnitOfWork::NEW:
+        case UnitOfWork::STATE_NEW:
             ...
     }
 
