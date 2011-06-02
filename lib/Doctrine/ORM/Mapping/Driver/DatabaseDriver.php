@@ -67,6 +67,13 @@ class DatabaseDriver implements Driver
     private $fieldNamesForColumns = array();
 
     /**
+     * The namespace for the generated entities.
+     *
+     * @var string
+     */
+    private $namespace;
+
+    /**
      * Initializes a new AnnotationDriver that uses the given AnnotationReader for reading
      * docblock annotations.
      * 
@@ -348,10 +355,10 @@ class DatabaseDriver implements Driver
     private function getClassNameForTable($tableName)
     {
         if (isset($this->classNamesForTables[$tableName])) {
-            return $this->classNamesForTables[$tableName];
+            return $this->namespace . $this->classNamesForTables[$tableName];
         }
 
-        return Inflector::classify(strtolower($tableName));
+        return $this->namespace . Inflector::classify(strtolower($tableName));
     }
 
     /**
@@ -375,5 +382,16 @@ class DatabaseDriver implements Driver
             $columnName = str_replace('_id', '', $columnName);
         }
         return Inflector::camelize($columnName);
+    }
+
+    /**
+     * Set the namespace for the generated entities.
+     *
+     * @param string $namespace
+     * @return void
+     */
+    public function setNamespace($namespace)
+    {
+        $this->namespace = $namespace;
     }
 }
