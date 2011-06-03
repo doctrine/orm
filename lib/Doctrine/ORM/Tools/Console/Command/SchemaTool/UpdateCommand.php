@@ -43,24 +43,31 @@ use Symfony\Component\Console\Input\InputArgument,
  */
 class UpdateCommand extends AbstractCommand
 {
+    protected $name = 'orm:schema-tool:update';
+
     /**
      * @see Console\Command\Command
      */
     protected function configure()
     {
         $this
-        ->setName('orm:schema-tool:update')
+        ->setName($this->name)
         ->setDescription(
             'Executes (or dumps) the SQL needed to update the database schema to match the current mapping metadata.'
         )
         ->setDefinition(array(
-            new InputArgument(
-                'action', InputArgument::OPTIONAL,
-                'Either "execute" (execute the SQL) or "dump-sql" (dump the SQL to the screen). If not specified, nothing is done.'
-            ),
             new InputOption(
                 'complete', null, InputOption::VALUE_NONE,
                 'If defined, all assets of the database which are not relevant to the current metadata will be dropped.'
+            ),
+
+            new InputOption(
+                'dump-sql', null, InputOption::VALUE_NONE,
+                'Dumps the generated SQL statements to the screen (does not execute them).'
+            ),
+            new InputOption(
+                'force', null, InputOption::VALUE_NONE,
+                'Causes the generated SQL statements to be physically executed against your database.'
             ),
         ));
 
@@ -73,11 +80,11 @@ default entity manager.
 For example, if you add metadata for a new column to an entity, this command
 would generate and output the SQL needed to add the new column to the database:
 
-<info>$fullName dump-sql</info>
+<info>$fullName --dump-sql</info>
 
 Alternatively, you can execute the generated queries:
 
-<info>$fullName execute</info>
+<info>$fullName --force</info>
 
 Finally, be aware that if the <info>--complete</info> option is passed, this
 task will drop all database assets (e.g. tables, etc) that are *not* described
@@ -100,26 +107,29 @@ EOT
             return;
         }
 
-        $action = $input->getArgument('action');
-        if ('execute' == $action) {
+        $dumpSql = (true === $input->getOption('dump-sql'));
+        $force = (true === $input->getOption('force'));
+        if ($dumpSql && $force) {
+            throw new \InvalidArgumentException('You can pass either the --dump-sql or the --force option (but not both simultaneously).');
+        }
+
+        if ($dumpSql) {
+            $output->writeln(implode(';' . PHP_EOL, $sqls));
+        } else if ($force) {
             $output->writeln('Updating database schema...');
             $schemaTool->updateSchema($metadatas, $saveMode);
             $output->writeln(sprintf('Database schema updated successfully! "<info>%s</info>" queries were executed', count($sqls)));
-        } else if ('dump-sql' == $action) {
-            $output->writeln(implode(';' . PHP_EOL, $sqls));
-        } else if (null === $action) {
+        } else {
             $output->writeln('<comment>ATTENTION</comment>: This operation should not be executed in a production environment.');
             $output->writeln('           Use the incremental update to detect changes during development and use');
             $output->writeln('           the SQL DDL provided to manually update your database in production.');
             $output->writeln('');
 
             $output->writeln(sprintf('The Schema-Tool would execute <info>"%s"</info> queries to update the database.', count($sqls)));
-            $output->writeln('Please run the operation by passing an argument to this command:');
+            $output->writeln('Please run the operation by passing one of the following options:');
             
-            $output->writeln(sprintf('    <info>%s execute</info> to execute the command', $this->getFullName()));
-            $output->writeln(sprintf('    <info>%s dump-sql</info> to dump the SQL statements to the screen', $this->getFullName()));
-        } else {
-            throw new \InvalidArgumentException(sprintf('The first argument - if specified - should be either "execute" or "dump-sql" ("%s" given).', $action));
+            $output->writeln(sprintf('    <info>%s --force</info> to execute the command', $this->getFullName()));
+            $output->writeln(sprintf('    <info>%s --dump-sql</info> to dump the SQL statements to the screen', $this->getFullName()));
         }
     }
 }
