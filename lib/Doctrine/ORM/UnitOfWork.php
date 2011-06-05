@@ -746,7 +746,7 @@ class UnitOfWork implements PropertyChangedListener
         $hasPostUpdateListeners = $this->evm->hasListeners(Events::postUpdate);
         
         foreach ($this->entityUpdates as $oid => $entity) {
-            if (get_class($entity) == $className || $entity instanceof Proxy && $entity instanceof $className) {
+            if (get_class($entity) == $className || $entity instanceof Proxy && get_parent_class($entity) == $className) {
                 
                 if ($hasPreUpdateLifecycleCallbacks) {
                     $class->invokeLifecycleCallbacks(Events::preUpdate, $entity);
@@ -788,7 +788,7 @@ class UnitOfWork implements PropertyChangedListener
         $hasListeners = $this->evm->hasListeners(Events::postRemove);
         
         foreach ($this->entityDeletions as $oid => $entity) {
-            if (get_class($entity) == $className || $entity instanceof Proxy && $entity instanceof $className) {
+            if (get_class($entity) == $className || $entity instanceof Proxy && get_parent_class($entity) == $className) {
                 $persister->delete($entity);
                 unset(
                     $this->entityDeletions[$oid],
