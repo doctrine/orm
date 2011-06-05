@@ -120,22 +120,30 @@ class PhpExporter extends AbstractExporter
                 
                 $associationMappingArray = array_merge($associationMappingArray, $oneToOneMappingArray);
             } else if ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_MANY) {
-                $method = 'mapOneToMany';
-                $oneToManyMappingArray = array(
-                    'mappedBy'      => $associationMapping['mappedBy'],
-                    'orphanRemoval' => $associationMapping['orphanRemoval'],
-                    'orderBy' => $associationMapping['orderBy']
+                $method = 'mapOneToMany';                
+                $potentialAssociationMappingIndexes = array(
+                    'mappedBy',
+                    'orphanRemoval',
+                    'orderBy',
                 );
-                
+                foreach ($potentialAssociationMappingIndexes as $index) {
+                    if (isset($associationMapping[$index])) {
+                        $oneToManyMappingArray[$index] = $associationMapping[$index];
+                    }
+                }
                 $associationMappingArray = array_merge($associationMappingArray, $oneToManyMappingArray);
             } else if ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
-                $method = 'mapManyToMany';
-                $manyToManyMappingArray = array(
-                    'mappedBy'  => $associationMapping['mappedBy'],
-                    'joinTable' => $associationMapping['joinTable'],
-                    'orderBy' => $associationMapping['orderBy']
+                $method = 'mapManyToMany';                
+                $potentialAssociationMappingIndexes = array(
+                    'mappedBy',
+                    'joinTable',
+                    'orderBy',
                 );
-                
+                foreach ($potentialAssociationMappingIndexes as $index) {
+                    if (isset($associationMapping[$index])) {
+                        $manyToManyMappingArray[$index] = $associationMapping[$index];
+                    }
+                }
                 $associationMappingArray = array_merge($associationMappingArray, $manyToManyMappingArray);
             }
             
