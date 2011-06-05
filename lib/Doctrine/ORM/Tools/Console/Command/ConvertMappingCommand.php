@@ -137,8 +137,7 @@ EOT
 
         $toType = strtolower($input->getArgument('to-type'));
 
-        $cme = new ClassMetadataExporter();
-        $exporter = $cme->getExporter($toType, $destPath);
+        $exporter = $this->getExporter($toType, $destPath);
         $exporter->setOverwriteExistingFiles( ($input->getOption('force') !== false) );
 
         if ($toType == 'annotation') {
@@ -166,5 +165,12 @@ EOT
         } else {
             $output->write('No Metadata Classes to process.' . PHP_EOL);
         }
+    }
+
+    protected function getExporter($toType, $destPath)
+    {
+        $cme = new ClassMetadataExporter();
+
+        return $cme->getExporter($toType, $destPath);
     }
 }
