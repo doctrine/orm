@@ -342,4 +342,19 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $this->assertEquals('Developers_New1', $user->groups[0]->name);
         $this->assertEquals('Developers_New2', $user->groups[1]->name);
     }
+    
+    /**
+     * @group DDC-733
+     */
+    public function testInitializePersistentCollection()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(2);
+        $this->_em->clear();
+        
+        $user = $this->_em->find(get_class($user), $user->id);
+        
+        $this->assertFalse($user->groups->isInitialized(), "Pre-condition: lazy collection");
+        $this->_em->getUnitOfWork()->initializeObject($user->groups);
+        $this->assertTrue($user->groups->isInitialized(), "Collection should be initialized after calling UnitOfWork::initializeObject()");
+    }
 }
