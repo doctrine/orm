@@ -1285,6 +1285,10 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $visited[$oid] = $entity; // mark visited
+        
+        // Cascade first, because scheduleForDelete() removes the entity from the identity map, which 
+        // can cause problems when a lazy proxy has to be initialized for the cascade operation.
+        $this->cascadeRemove($entity, $visited);
 
         $class = $this->em->getClassMetadata(get_class($entity));
         $entityState = $this->getEntityState($entity);
@@ -1308,7 +1312,6 @@ class UnitOfWork implements PropertyChangedListener
                 throw new UnexpectedValueException("Unexpected entity state: $entityState.");
         }
 
-        $this->cascadeRemove($entity, $visited);
     }
 
     /**
@@ -1669,6 +1672,11 @@ class UnitOfWork implements PropertyChangedListener
             if ( ! $assoc['isCascadePersist']) {
                 continue;
             }
+            
+            if ($entity instanceof Proxy && !$entity->__isInitialized__) {
+                $entity->__load();
+            }
+            
             $relatedEntities = $class->reflFields[$assoc['fieldName']]->getValue($entity);
             if (($relatedEntities instanceof Collection || is_array($relatedEntities))) {
                 if ($relatedEntities instanceof PersistentCollection) {
@@ -1697,7 +1705,11 @@ class UnitOfWork implements PropertyChangedListener
             if ( ! $assoc['isCascadeRemove']) {
                 continue;
             }
-            //TODO: If $entity instanceof Proxy => Initialize ?
+            
+            if ($entity instanceof Proxy) {
+                $entity->__load();
+            }
+            
             $relatedEntities = $class->reflFields[$assoc['fieldName']]->getValue($entity);
             if ($relatedEntities instanceof Collection || is_array($relatedEntities)) {
                 // If its a PersistentCollection initialization is intended! No unwrap!
@@ -1848,8 +1860,8 @@ class UnitOfWork implements PropertyChangedListener
             $idHash = $data[$class->identifier[0]];
             $id = array($class->identifier[0] => $idHash);
         }
-
-        if (isset($this->identityMap[$class->rootEntityName][$idHash])) {
+        
+        if (isset($this->identityMap[$class->rootEntityName][$idHash])) {            
             $entity = $this->identityMap[$class->rootEntityName][$idHash];
             $oid = spl_object_hash($entity);
             if ($entity instanceof Proxy && ! $entity->__isInitialized__) {

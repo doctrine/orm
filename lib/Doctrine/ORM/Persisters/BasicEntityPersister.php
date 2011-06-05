@@ -544,7 +544,7 @@ class BasicEntityPersister
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
     public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0)
-    {
+    {        
         $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, $lockMode);
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->_conn->executeQuery($sql, $params, $types);
