@@ -759,7 +759,9 @@ class UnitOfWork implements PropertyChangedListener
                     );
                 }
 
-                $persister->update($entity);
+                if ($this->entityChangeSets[$oid]) {
+                    $persister->update($entity);
+                }
                 unset($this->entityUpdates[$oid]);
                 
                 if ($hasPostUpdateLifecycleCallbacks) {
@@ -2263,7 +2265,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function clearEntityChangeSet($oid)
     {
-        unset($this->entityChangeSets[$oid]);
+        $this->entityChangeSets[$oid] = array();
     }
 
     /* PropertyChangedListener implementation */
