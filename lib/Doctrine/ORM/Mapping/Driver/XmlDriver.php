@@ -356,9 +356,6 @@ class XmlDriver extends AbstractFileDriver
                     $joinColumns[] = $this->_getJoinColumnMapping($manyToOneElement->{'join-column'});
                 } else if (isset($manyToOneElement->{'join-columns'})) {
                     foreach ($manyToOneElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
-                        if (!isset($joinColumnElement['name'])) {
-                            $joinColumnElement['name'] = $name;
-                        }
                         $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
                     }
                 }
