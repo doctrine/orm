@@ -1678,10 +1678,6 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
             
-            if ($entity instanceof Proxy && !$entity->__isInitialized__) {
-                $entity->__load();
-            }
-            
             $relatedEntities = $class->reflFields[$assoc['fieldName']]->getValue($entity);
             if (($relatedEntities instanceof Collection || is_array($relatedEntities))) {
                 if ($relatedEntities instanceof PersistentCollection) {
@@ -1711,7 +1707,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
             
-            if ($entity instanceof Proxy) {
+            if ($entity instanceof Proxy && !$entity->__isInitialized__) {
                 $entity->__load();
             }
             
