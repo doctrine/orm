@@ -21,7 +21,8 @@ namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\AssociationMapping,
-    Doctrine\Common\Util\Inflector;
+    Doctrine\Common\Util\Inflector,
+    Doctrine\ORM\Tools\Code\Writer;
 
 /**
  * Generic class used to generate PHP5 entity classes from ClassMetadataInfo instances
@@ -44,6 +45,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo,
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ * @author  Mykhailo Stadnyk <mikhus@gmail.com>
  */
 class EntityGenerator
 {
@@ -86,65 +88,32 @@ class EntityGenerator
     /** Whether or not to re-generate entity class if it exists already */
     private $_regenerateEntityIfExists = false;
 
-    private static $_classTemplate =
-'<?php
+    /**
+     * @var \Doctrine\ORM\Tools\Code\Writer
+     */
+    private $codeWriter = null;
 
-<namespace>
+    /**
+     * Sets the code writer implementation to use it within code generation process
+     * 
+     * @param \Doctrine\ORM\Tools\Code\Writer $cw
+     */
+    public function setCodeWriter(Writer $cw) {
+        $this->codeWriter = $cw;
+        return $this;
+    }
 
-<entityAnnotation>
-<entityClassName>
-{
-<entityBody>
-}';
-
-    private static $_getMethodTemplate =
-'/**
- * <description>
- *
- * @return <variableType>$<variableName>
- */
-public function <methodName>()
-{
-<spaces>return $this-><fieldName>;
-}';
-
-    private static $_setMethodTemplate =
-'/**
- * <description>
- *
- * @param <variableType>$<variableName>
- */
-public function <methodName>(<methodTypeHint>$<variableName>)
-{
-<spaces>$this-><fieldName> = $<variableName>;
-}';
-
-    private static $_addMethodTemplate =
-'/**
- * <description>
- *
- * @param <variableType>$<variableName>
- */
-public function <methodName>(<methodTypeHint>$<variableName>)
-{
-<spaces>$this-><fieldName>[] = $<variableName>;
-}';
-
-    private static $_lifecycleCallbackMethodTemplate =
-'/**
- * @<name>
- */
-public function <methodName>()
-{
-<spaces>// Add your code here
-}';
-
-    private static $_constructorMethodTemplate =
-'public function __construct()
-{
-<spaces><collections>
-}
-';
+    /**
+     * Returns the code writer implementation specified for this class
+     * 
+     * @return \Doctrine\ORM\Tools\Code\Writer
+     */
+    public function getCodeWriter() {
+        if ($this->codeWriter === null) {
+            $this->setCodeWriter(new Writer\Entity);
+        }
+        return $this->codeWriter;
+    }
 
     /**
      * Generate and write entity classes for the given array of ClassMetadataInfo instances
@@ -206,22 +175,15 @@ public function <methodName>()
      */
     public function generateEntityClass(ClassMetadataInfo $metadata)
     {
-        $placeHolders = array(
-            '<namespace>',
-            '<entityAnnotation>',
-            '<entityClassName>',
-            '<entityBody>'
-        );
-
         $replacements = array(
-            $this->_generateEntityNamespace($metadata),
-            $this->_generateEntityDocBlock($metadata),
-            $this->_generateEntityClassName($metadata),
-            $this->_generateEntityBody($metadata)
+            '<namespace>'        => $this->_generateEntityNamespace($metadata),
+            '<entityAnnotation>' => $this->_generateEntityDocBlock($metadata),
+            '<entityClassName>'  => $this->_generateEntityClassName($metadata),
+            '<entityBody>'       => $this->_generateEntityBody($metadata),
+            '<spaces>'           => $this->_spaces
         );
 
-        $code = str_replace($placeHolders, $replacements, self::$_classTemplate);
-        return str_replace('<spaces>', $this->_spaces, $code);
+        return $this->getCodeWriter()->renderTemplate('class', $replacements);
     }
 
     /**
@@ -392,9 +354,17 @@ public function <methodName>()
                 $collections[] = '$this->'.$mapping['fieldName'].' = new \Doctrine\Common\Collections\ArrayCollection();';
             }
         }
+
         if ($collections) {
-            return $this->_prefixCodeWithSpaces(str_replace("<collections>", implode("\n", $collections), self::$_constructorMethodTemplate));
+            $replacements = array(
+                '<collections>' => implode("\n", $collections)
+            );
+
+            $method = $this->getCodeWriter()->renderTemplate('constructorMethod', $replacements);
+
+            return $this->_prefixCodeWithSpaces( $method);
         }
+
         return '';
     }
 
@@ -680,8 +650,7 @@ public function <methodName>()
             return;
         }
 
-        $var = sprintf('_%sMethodTemplate', $type);
-        $template = self::$$var;
+        $templateName = sprintf('%sMethod', $type);
 
         $variableType = $typeHint ? $typeHint . ' ' : null;
 
@@ -689,19 +658,16 @@ public function <methodName>()
         $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : null;
 
         $replacements = array(
-          '<description>'       => ucfirst($type) . ' ' . $fieldName,
-          '<methodTypeHint>'    => $methodTypeHint,
-          '<variableType>'      => $variableType,
-          '<variableName>'      => Inflector::camelize($fieldName),
-          '<methodName>'        => $methodName,
-          '<fieldName>'         => $fieldName
+            '<description>'       => ucfirst($type) . ' ' . $fieldName,
+            '<methodTypeHint>'    => $methodTypeHint,
+            '<variableType>'      => $variableType,
+            '<variableName>'      => Inflector::camelize($fieldName),
+            '<methodName>'        => $methodName,
+            '<fieldName>'         => $fieldName,
+            '<entityClassName>'   => $this->_getNamespace($metadata) . '\\' . $this->_getClassName($metadata)
         );
 
-        $method = str_replace(
-            array_keys($replacements),
-            array_values($replacements),
-            $template
-        );
+        $method = $this->getCodeWriter()->renderTemplate($templateName, $replacements);
 
         return $this->_prefixCodeWithSpaces($method);
     }
@@ -713,15 +679,12 @@ public function <methodName>()
         }
 
         $replacements = array(
-            '<name>'        => $this->_annotationsPrefix . $name,
-            '<methodName>'  => $methodName,
+            '<name>'            => $this->_annotationsPrefix . $name,
+            '<methodName>'      => $methodName,
+            '<entityClassName>' => $this->_getNamespace($metadata) . '\\' . $this->_getClassName($metadata)
         );
 
-        $method = str_replace(
-            array_keys($replacements),
-            array_values($replacements),
-            self::$_lifecycleCallbackMethodTemplate
-        );
+        $method = $this->getCodeWriter()->renderTemplate('lifecycleCallbackMethod', $replacements);
 
         return $this->_prefixCodeWithSpaces($method);
     }

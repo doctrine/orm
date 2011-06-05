@@ -25,10 +25,16 @@ use Exception;
  * Base exception class for all ORM exceptions.
  *
  * @author Roman Borschel <roman@code-factory.org>
+ * @author Mykhailo Stadnyk <mikhus@gmail.com>
  * @since 2.0
  */
 class ORMException extends Exception
 {
+    public static function missingCodeWriterTemplate($writer, $tplName)
+    {
+        return new self(get_class($writer) . ": template '$tplName' is required but was not set!");
+    }
+
     public static function missingMappingDriverImpl()
     {
         return new self("It's a requirement to specify a Metadata Driver and pass it ".

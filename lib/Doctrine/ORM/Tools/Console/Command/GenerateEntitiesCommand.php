@@ -26,7 +26,8 @@ use Symfony\Component\Console\Input\InputArgument,
     Symfony\Component\Console,
     Doctrine\ORM\Tools\Console\MetadataFilter,
     Doctrine\ORM\Tools\EntityGenerator,
-    Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
+    Doctrine\ORM\Tools\DisconnectedClassMetadataFactory,
+    Doctrine\ORM\Tools\Code;
 
 /**
  * Command to generate entity classes and method stubs from your mapping information.
@@ -39,6 +40,7 @@ use Symfony\Component\Console\Input\InputArgument,
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ * @author  Mykhailo Stadnyk <mikhus@gmail.com>
  */
 class GenerateEntitiesCommand extends Console\Command\Command
 {
@@ -81,6 +83,11 @@ class GenerateEntitiesCommand extends Console\Command\Command
             new InputOption(
                 'num-spaces', null, InputOption::VALUE_OPTIONAL,
                 'Defines the number of indentation spaces', 4
+            ),
+            new InputOption(
+                'code-writer', null, InputOption::VALUE_OPTIONAL,
+                'Defines the code templates writer class which should be used on a generation process',
+				'Doctrine\ORM\Tools\Code\Writer\Entity'
             )
         ))
         ->setHelp(<<<EOT
@@ -135,6 +142,7 @@ EOT
             // Create EntityGenerator
             $entityGenerator = new EntityGenerator();
 
+            $entityGenerator->setCodeWriter(Code\Writer\Factory::create($input, 'entity'));
             $entityGenerator->setGenerateAnnotations($input->getOption('generate-annotations'));
             $entityGenerator->setGenerateStubMethods($input->getOption('generate-methods'));
             $entityGenerator->setRegenerateEntityIfExists($input->getOption('regenerate-entities'));

@@ -25,7 +25,8 @@ use Symfony\Component\Console\Input\InputArgument,
     Symfony\Component\Console\Input\InputOption,
     Symfony\Component\Console,
     Doctrine\ORM\Tools\Console\MetadataFilter,
-    Doctrine\ORM\Tools\EntityRepositoryGenerator;
+    Doctrine\ORM\Tools\EntityRepositoryGenerator,
+    Doctrine\ORM\Tools\Code;
 
 /**
  * Command to generate repository classes for mapping information.
@@ -38,6 +39,7 @@ use Symfony\Component\Console\Input\InputArgument,
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ * @author  Mykhailo Stadnyk <mikhus@gmail.com>
  */
 class GenerateRepositoriesCommand extends Console\Command\Command
 {
@@ -54,8 +56,17 @@ class GenerateRepositoriesCommand extends Console\Command\Command
                 'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'A string pattern used to match entities that should be processed.'
             ),
+            new InputOption(
+                'extend', null, InputOption::VALUE_OPTIONAL,
+                'Defines a base class to be extended by generated repositories classes.'
+            ),
             new InputArgument(
                 'dest-path', InputArgument::REQUIRED, 'The path to generate your repository classes.'
+            ),
+            new InputOption(
+                'code-writer', null, InputOption::VALUE_OPTIONAL,
+                'Defines the code templates writer class which should be used on a generation process',
+				'Doctrine\ORM\Tools\Code\Writer\Repository'
             )
         ))
         ->setHelp(<<<EOT
@@ -89,7 +100,14 @@ EOT
 
         if (count($metadatas)) {
             $numRepositories = 0;
+
             $generator = new EntityRepositoryGenerator();
+            $generator->setCodeWriter(Code\Writer\Factory::create($input, 'repository'));
+
+            $parentClassName = $input->getOption('extend');
+            if (!$parentClassName) {
+                $parentClassName = 'Doctrine\ORM\EntityRepository';
+            }
 
             foreach ($metadatas as $metadata) {
                 if ($metadata->customRepositoryClassName) {
@@ -97,7 +115,7 @@ EOT
                         sprintf('Processing repository "<info>%s</info>"', $metadata->customRepositoryClassName) . PHP_EOL
                     );
 
-                    $generator->writeEntityRepositoryClass($metadata->customRepositoryClassName, $destPath);
+                    $generator->writeEntityRepositoryClass($metadata->customRepositoryClassName, $destPath, $parentClassName);
 
                     $numRepositories++;
                 }
