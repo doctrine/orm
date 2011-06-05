@@ -34,10 +34,25 @@ class ORMException extends Exception
         return new self("It's a requirement to specify a Metadata Driver and pass it ".
             "to Doctrine\ORM\Configuration::setMetadataDriverImpl().");
     }
+    
+    public static function entityMissingForeignAssignedId($entity, $relatedEntity)
+    {
+        return new self(
+            "Entity of type " . get_class($entity) . " has identity through a foreign entity " . get_class($relatedEntityClass) . ", " .
+            "however this entity has no ientity itself. You have to call EntityManager#persist() on the related entity " .
+            "and make sure it an identifier was generated before trying to persist '" . get_class($entity) . "'. In case " .
+            "of Post Insert ID Generation (such as MySQL Auto-Increment or PostgreSQL SERIAL) this means you have to call " .
+            "EntityManager#flush() between both persist operations."
+        );
+    }
 
     public static function entityMissingAssignedId($entity)
     {
-        return new self("Entity of type " . get_class($entity) . " is missing an assigned ID.");
+        return new self("Entity of type " . get_class($entity) . " is missing an assigned ID. " .
+            "The identifier generation strategy for this entity requires the ID field to be populated before ".
+            "EntityManager#persist() is called. If you want automatically generated identifiers instead " . 
+            "you need to adjust the metadata mapping accordingly."
+        );
     }
 
     public static function unrecognizedField($field)
