@@ -97,4 +97,19 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($clone->isCloned);
         $this->assertFalse($entity->isCloned);
     }
+    
+    /**
+     * @group DDC-733
+     */
+    public function testInitializeProxy()
+    {
+        $id = $this->createProduct();
+
+        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
+        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+        
+        $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
+        $this->_em->getUnitOfWork()->initializeObject($entity);
+        $this->assertTrue($entity->__isInitialized__, "Should be initialized after called UnitOfWork::initializeObject()");
+    }
 }
