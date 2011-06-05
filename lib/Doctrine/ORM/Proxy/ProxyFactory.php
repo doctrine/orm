@@ -270,7 +270,7 @@ class <proxyClassName> extends \<className> implements \Doctrine\ORM\Proxy\Proxy
         $this->_identifier = $identifier;
     }
     /** @private */
-    public function __load()
+    public function _load()
     {
         if (!$this->__isInitialized__ && $this->_entityPersister) {
             $this->__isInitialized__ = true;
