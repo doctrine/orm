@@ -316,3 +316,8 @@ support all CRUD operations on views that semantically map to
 certain tables. You can create views for all your problematic
 tables and column names to avoid the legacy quoting nightmare.
 
+Microsoft SQL Server and Doctrine "datetime"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Doctrine assumes that you use DateTime2 data-types. If your legacy database contains DateTime
+datatypes then you have to add your own data-type (see Basic Mapping for an example).
