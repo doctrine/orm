@@ -1657,6 +1657,10 @@ class SqlWalker implements TreeWalker
             $sql .= $this->_conn->quote($class->discriminatorValue);
         } else {
             $discrMap = array_flip($class->discriminatorMap);
+            if (!isset($discrMap[$entityClassName])) {
+                throw QueryException::instanceOfUnrelatedClass($entityClassName, $class->rootEntityName);
+            }
+            
             $sql .= $this->_conn->quote($discrMap[$entityClassName]);
         }
 
