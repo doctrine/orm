@@ -213,7 +213,7 @@ class ProxyFactory
                 
                 // If we have no params we use call_user_func_array and pass along all args so it may be used in parent method 
                 if (empty($parameterString)) {
-                	$methods .= '        return call_user_func_array(array(\'parent\', \'' . $method->getName() . '\'), func_get_args());';
+                    $methods .= '        return call_user_func_array(array(\'parent\', \'' . $method->getName() . '\'), func_get_args());';
                 }
                 else {
                     $methods .= '        return parent::' . $method->getName() . '(' . $argumentString . ');';
