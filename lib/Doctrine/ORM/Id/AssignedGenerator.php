@@ -47,9 +47,13 @@ class AssignedGenerator extends AbstractIdGenerator
         if ($class->isIdentifierComposite) {
             $idFields = $class->getIdentifierFieldNames();
             foreach ($idFields as $idField) {
-                $value = $class->getReflectionProperty($idField)->getValue($entity);
+                $value = $class->reflFields[$idField]->getValue($entity);
                 if (isset($value)) {
                     if (is_object($value)) {
+                        if (!$em->getUnitOfWork()->isInIdentityMap($value)) {
+                            throw ORMException::entityMissingForeignAssignedId($entity, $value);
+                        }
+                        
                         // NOTE: Single Columns as associated identifiers only allowed - this constraint it is enforced.
                         $identifier[$idField] = current($em->getUnitOfWork()->getEntityIdentifier($value));
                     } else {
@@ -64,6 +68,10 @@ class AssignedGenerator extends AbstractIdGenerator
             $value = $class->reflFields[$idField]->getValue($entity);
             if (isset($value)) {
                 if (is_object($value)) {
+                    if (!$em->getUnitOfWork()->isInIdentityMap($value)) {
+                        throw ORMException::entityMissingForeignAssignedId($entity, $value);
+                    }
+                    
                     // NOTE: Single Columns as associated identifiers only allowed - this constraint it is enforced.
                     $identifier[$idField] = current($em->getUnitOfWork()->getEntityIdentifier($value));
                 } else {

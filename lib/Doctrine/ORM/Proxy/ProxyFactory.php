@@ -269,7 +269,8 @@ class <proxyClassName> extends \<className> implements \Doctrine\ORM\Proxy\Proxy
         $this->_entityPersister = $entityPersister;
         $this->_identifier = $identifier;
     }
-    private function __load()
+    /** @private */
+    public function __load()
     {
         if (!$this->__isInitialized__ && $this->_entityPersister) {
             $this->__isInitialized__ = true;
@@ -279,7 +280,7 @@ class <proxyClassName> extends \<className> implements \Doctrine\ORM\Proxy\Proxy
             unset($this->_entityPersister, $this->_identifier);
         }
     }
-
+    
     <methods>
 
     public function __sleep()
