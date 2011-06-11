@@ -1,12 +1,11 @@
 Getting Started
 ===============
 
-Doctrine 2 is a project that aims to handle the persistence of the
-domain model in a non-interfering way. The Data Mapper pattern is
-at the heart of this project, aiming for a complete separation of
+Doctrine 2 is an object-relational mapper (ORM) for PHP 5.3.0+ that provides transparent persistence for PHP objects.
+It uses the Data Mapper pattern at the heart of this project, aiming for a complete separation of
 the domain/business logic from the persistence in a relational
 database management system. The benefit of Doctrine for the
-programmer is the ability to focus solely on the business logic and
+programmer is the ability to focus solely on the object-oriented business logic and
 worry about persistence only as a secondary task. This doesn't mean
 persistence is not important to Doctrine 2, however it is our
 belief that there are considerable benefits for object-oriented
@@ -20,6 +19,9 @@ Entities are lightweight PHP Objects that don't need to extend any
 abstract base class or interface. An entity class must not be final
 or contain final methods. Additionally it must not implement
 **clone** nor **wakeup** or :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
+
+See the `architecture chapter <../reference/architecture>` for a full list of the restrictions
+that your entities need to comply with.
 
 An entity contains persistable properties. A persistable property
 is an instance variable of the entity that is saved into and retrieved from the database
