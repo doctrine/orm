@@ -91,6 +91,8 @@ class EntityGenerator
 
 <namespace>
 
+use Doctrine\ORM\Mapping as ORM;
+
 <entityAnnotation>
 <entityClassName>
 {
@@ -146,11 +148,18 @@ public function <methodName>()
 }
 ';
 
+    public function __construct()
+    {
+        if (version_compare(\Doctrine\Common\Version::VERSION, '3.0.0-DEV', '>=')) {
+            $this->_annotationsPrefix = 'ORM\\';
+        }
+    }
+
     /**
      * Generate and write entity classes for the given array of ClassMetadataInfo instances
      *
      * @param array $metadatas
-     * @param string $outputDirectory 
+     * @param string $outputDirectory
      * @return void
      */
     public function generate(array $metadatas, $outputDirectory)
@@ -164,7 +173,7 @@ public function <methodName>()
      * Generated and write entity class to disk for the given ClassMetadataInfo instance
      *
      * @param ClassMetadataInfo $metadata
-     * @param string $outputDirectory 
+     * @param string $outputDirectory
      * @return void
      */
     public function writeEntityClass(ClassMetadataInfo $metadata, $outputDirectory)
@@ -201,7 +210,7 @@ public function <methodName>()
     /**
      * Generate a PHP5 Doctrine 2 entity class from the given ClassMetadataInfo instance
      *
-     * @param ClassMetadataInfo $metadata 
+     * @param ClassMetadataInfo $metadata
      * @return string $code
      */
     public function generateEntityClass(ClassMetadataInfo $metadata)
@@ -227,8 +236,8 @@ public function <methodName>()
     /**
      * Generate the updated code for the given ClassMetadataInfo and entity at path
      *
-     * @param ClassMetadataInfo $metadata 
-     * @param string $path 
+     * @param ClassMetadataInfo $metadata
+     * @param string $path
      * @return string $code;
      */
     public function generateUpdatedEntityClass(ClassMetadataInfo $metadata, $path)
@@ -245,7 +254,7 @@ public function <methodName>()
     /**
      * Set the number of spaces the exported class should have
      *
-     * @param integer $numSpaces 
+     * @param integer $numSpaces
      * @return void
      */
     public function setNumSpaces($numSpaces)
@@ -257,7 +266,7 @@ public function <methodName>()
     /**
      * Set the extension to use when writing php files to disk
      *
-     * @param string $extension 
+     * @param string $extension
      * @return void
      */
     public function setExtension($extension)
@@ -278,7 +287,7 @@ public function <methodName>()
     /**
      * Set whether or not to generate annotations for the entity
      *
-     * @param bool $bool 
+     * @param bool $bool
      * @return void
      */
     public function setGenerateAnnotations($bool)
@@ -293,13 +302,16 @@ public function <methodName>()
      */
     public function setAnnotationPrefix($prefix)
     {
+        if (version_compare(\Doctrine\Common\Version::VERSION, '3.0.0-DEV', '>=')) {
+            return;
+        }
         $this->_annotationsPrefix = $prefix;
     }
 
     /**
      * Set whether or not to try and update the entity if it already exists
      *
-     * @param bool $bool 
+     * @param bool $bool
      * @return void
      */
     public function setUpdateEntityIfExists($bool)
@@ -407,7 +419,7 @@ public function <methodName>()
         $tokens = token_get_all($src);
         $lastSeenNamespace = "";
         $lastSeenClass = false;
-        
+
         $inNamespace = false;
         $inClass = false;
         for ($i = 0; $i < count($tokens); $i++) {
@@ -808,7 +820,7 @@ public function <methodName>()
                 if ($associationMapping['isCascadeMerge']) $cascades[] = '"merge"';
                 if ($associationMapping['isCascadeRefresh']) $cascades[] = '"refresh"';
 
-                $typeOptions[] = 'cascade={' . implode(',', $cascades) . '}';            
+                $typeOptions[] = 'cascade={' . implode(',', $cascades) . '}';
             }
 
             if (isset($associationMapping['orphanRemoval']) && $associationMapping['orphanRemoval']) {
@@ -862,7 +874,7 @@ public function <methodName>()
                 $lines[] = $this->_spaces . ' * @' . $this->_annotationsPrefix . 'OrderBy({';
 
                 foreach ($associationMapping['orderBy'] as $name => $direction) {
-                    $lines[] = $this->_spaces . ' *     "' . $name . '"="' . $direction . '",'; 
+                    $lines[] = $this->_spaces . ' *     "' . $name . '"="' . $direction . '",';
                 }
 
                 $lines[count($lines) - 1] = substr($lines[count($lines) - 1], 0, strlen($lines[count($lines) - 1]) - 1);
