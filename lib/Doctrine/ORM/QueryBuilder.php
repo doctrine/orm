@@ -240,7 +240,7 @@ class QueryBuilder
     }
 
     /**
-     * Gets the root alias of the query. This is the first entity alias involved
+     * Gets the root aliases of the query. This is the entity aliases involved
      * in the construction of the query.
      *
      * <code>
@@ -251,7 +251,7 @@ class QueryBuilder
      *     $qb->getRootAliases(); // array('u')
      * </code>
      *
-     * @return string $rootAlias
+     * @return array $rootAliases
      */
     public function getRootAliases()
     {
@@ -270,6 +270,39 @@ class QueryBuilder
         }
         
         return $aliases;
+    }
+
+    /**
+     * Gets the root entities of the query. This is the entity aliases involved
+     * in the construction of the query.
+     *
+     * <code>
+     *     $qb = $em->createQueryBuilder()
+     *         ->select('u')
+     *         ->from('User', 'u');
+     *
+     *     $qb->getRootEntities(); // array('User')
+     * </code>
+     *
+     * @return array $rootEntities
+     */
+    public function getRootEntities()
+    {
+        $entities = array();
+        
+        foreach ($this->_dqlParts['from'] as &$fromClause) {
+            if (is_string($fromClause)) {
+                $spacePos = strrpos($fromClause, ' ');
+                $from     = substr($fromClause, 0, $spacePos);
+                $alias    = substr($fromClause, $spacePos + 1);
+
+                $fromClause = new Query\Expr\From($from, $alias);
+            }
+            
+            $entities[] = $fromClause->getFrom();
+        }
+        
+        return $entities;
     }
 
     /**
