@@ -20,7 +20,7 @@ abstract base class or interface. An entity class must not be final
 or contain final methods. Additionally it must not implement
 **clone** nor **wakeup** or :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
 
-See the `architecture chapter <../reference/architecture>` for a full list of the restrictions
+See the :doc:`architecture chapter <../reference/architecture>` for a full list of the restrictions
 that your entities need to comply with.
 
 An entity contains persistable properties. A persistable property
