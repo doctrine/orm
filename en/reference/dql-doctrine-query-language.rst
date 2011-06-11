@@ -253,6 +253,9 @@ Using Aggregate Functions:
     $query = $em->createQuery('SELECT COUNT(u.id) FROM Entities\User u');
     $count = $query->getSingleScalarResult();
 
+    $query = $em->createQuery('SELECT u, count(g.id) FROM Entities\User u JOIN u.groups g GROUP BY u.id');
+    $result  $query->getResult();
+
 With WHERE Clause and Positional Parameter:
 
 .. code-block:: php
@@ -916,7 +919,7 @@ structure:
 
 .. code-block:: php
 
-    $dql = "SELECT u, 'some scalar string', count(u.groups) AS num FROM User u";
+    $dql = "SELECT u, 'some scalar string', count(u.groups) AS num FROM User u JOIN u.groups g GROUP BY u.id";
 
     array
         [0]

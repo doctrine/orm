@@ -690,6 +690,13 @@ methods on a repository as follows:
     // A single user by its nickname
     $user = $em->getRepository('MyProject\Domain\User')->findOneBy(array('nickname' => 'romanb'));
 
+You can also load by owning side associations through the repository:
+
+    $number = $em->find('MyProject\Domain\Phonenumber', 1234);
+    $user = $em->getRepository('MyProject\Domain\User')->findOneBy(array('phone' => $number->getId()));
+
+Take not that this only works by passing the ID of the associated entity, not yet by passing the associated entity itself.
+
 An EntityRepository also provides a mechanism for more concise
 calls through its use of ``__call``. Thus, the following two
 examples are equivalent:
