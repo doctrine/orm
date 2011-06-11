@@ -254,7 +254,7 @@ Using Aggregate Functions:
     $count = $query->getSingleScalarResult();
 
     $query = $em->createQuery('SELECT u, count(g.id) FROM Entities\User u JOIN u.groups g GROUP BY u.id');
-    $result  $query->getResult();
+    $result = $query->getResult();
 
 With WHERE Clause and Positional Parameter:
 
