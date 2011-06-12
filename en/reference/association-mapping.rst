@@ -915,35 +915,70 @@ Real many-to-many associations are less common. The following
 example shows a unidirectional association between User and Group
 entities:
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    /** @Entity */
-    class User
-    {
-        // ...
-    
-        /**
-         * @ManyToMany(targetEntity="Group")
-         * @JoinTable(name="users_groups",
-         *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-         *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
-         *      )
-         */
-        private $groups;
-    
-        // ...
-    
-        public function __construct() {
-            $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+    .. code-block:: php
+
+        <?php
+        /** @Entity */
+        class User
+        {
+            // ...
+
+            /**
+             * @ManyToMany(targetEntity="Group")
+             * @JoinTable(name="users_groups",
+             *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+             *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
+             *      )
+             */
+            private $groups;
+
+            // ...
+
+            public function __construct() {
+                $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+            }
         }
-    }
-    
-    /** @Entity */
-    class Group
-    {
-        // ...
-    }
+
+        /** @Entity */
+        class Group
+        {
+            // ...
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+            <entity name="User">
+                <many-to-many field="groups" target-entity="Group">
+                    <join-table name="users_groups">
+                        <join-columns>
+                            <join-column="user_id" referenced-column-name="id" />
+                        </join-columns>
+                        <inverse-join-columns>
+                            <join-column="group_id" referenced-column-name="id" />
+                        </inverse-join-columns>
+                    </join-table>
+                </many-to-many>
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        User:
+          type: entity
+          manyToMany:
+            groups:
+              targetEntity: Group
+              joinTable:
+                name: users_groups
+                joinColumns:
+                  user_id:
+                    referencedColumnName: id
+                inverseJoinColumns:
+                  group_id:
+                    referencedColumnName: id
 
 Generated MySQL Schema:
 
@@ -980,45 +1015,89 @@ Many-To-Many, Bidirectional
 Here is a similar many-to-many relationship as above except this
 one is bidirectional.
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    /** @Entity */
-    class User
-    {
-        // ...
-    
-        /**
-         * @ManyToMany(targetEntity="Group", inversedBy="users")
-         * @JoinTable(name="users_groups",
-         *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-         *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
-         *      )
-         */
-        private $groups;
-    
-        public function __construct() {
-            $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+    .. code-block:: php
+
+        <?php
+        /** @Entity */
+        class User
+        {
+            // ...
+
+            /**
+             * @ManyToMany(targetEntity="Group", inversedBy="users")
+             * @JoinTable(name="users_groups")
+             */
+            private $groups;
+
+            public function __construct() {
+                $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+            }
+
+            // ...
         }
-    
-        // ...
-    }
-    
-    /** @Entity */
-    class Group
-    {
-        // ...
-        /**
-         * @ManyToMany(targetEntity="User", mappedBy="groups")
-         */
-        private $users;
-    
-        public function __construct() {
-            $this->users = new \Doctrine\Common\Collections\ArrayCollection();
+
+        /** @Entity */
+        class Group
+        {
+            // ...
+            /**
+             * @ManyToMany(targetEntity="User", mappedBy="groups")
+             */
+            private $users;
+
+            public function __construct() {
+                $this->users = new \Doctrine\Common\Collections\ArrayCollection();
+            }
+
+            // ...
         }
-    
-        // ...
-    }
+
+    .. code-block::
+
+        <doctrine-mapping>
+            <entity name="User">
+                <many-to-many field="groups" inversed-by="users">
+                    <join-table name="users_groups">
+                        <join-columns>
+                            <join-column="user_id" referenced-column-name="id" />
+                        </join-columns>
+                        <inverse-join-columns>
+                            <join-column="group_id" referenced-column-name="id" />
+                        </inverse-join-columns>
+                    </join-table>
+                </many-to-many>
+            </entity>
+
+            <entity name="Group">
+                <many-to-many field="users" mapped-by="groups" />
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block::
+
+        User:
+          type: entity
+          manyToMany:
+            groups:
+              targetEntity: Group
+              inversedBy: users
+              joinTable:
+                name: users_groups
+                joinColumns:
+                  user_id:
+                    referencedColumnName: id
+                inverseJoinColumns:
+                  group_id:
+                    referencedColumnName: id
+
+        Group:
+          type: entity
+          manyToMany:
+            users:
+              targetEntity: User
+              mappedBy: groups
 
 The MySQL schema is exactly the same as for the Many-To-Many
 uni-directional case above.
