@@ -567,7 +567,7 @@ besides specifying the sequence's name:
             </id>
           </entity>
         </doctrine-mapping>
-
+ 
     .. code-block:: yaml
 
         MyPersistentClass:

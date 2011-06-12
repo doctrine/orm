@@ -601,35 +601,71 @@ the join columns enforces the one-to-many cardinality. The
 following example sets up such a unidirectional one-to-many
 association:
 
-.. code-block:: php
+.. code-configuration::
 
-    <?php
-    /** @Entity */
-    class User
-    {
-        // ...
-    
-        /**
-         * @ManyToMany(targetEntity="Phonenumber")
-         * @JoinTable(name="users_phonenumbers",
-         *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-         *      inverseJoinColumns={@JoinColumn(name="phonenumber_id", referencedColumnName="id", unique=true)}
-         *      )
-         */
-        private $phonenumbers;
-    
-        public function __construct() {
-            $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
+    .. code-block:: php
+
+        <?php
+        /** @Entity */
+        class User
+        {
+            // ...
+
+            /**
+             * @ManyToMany(targetEntity="Phonenumber")
+             * @JoinTable(name="users_phonenumbers",
+             *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+             *      inverseJoinColumns={@JoinColumn(name="phonenumber_id", referencedColumnName="id", unique=true)}
+             *      )
+             */
+            private $phonenumbers;
+
+            public function __construct() {
+                $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
+            }
+
+            // ...
         }
-    
-        // ...
-    }
-    
-    /** @Entity */
-    class Phonenumber
-    {
-        // ...
-    }
+
+        /** @Entity */
+        class Phonenumber
+        {
+            // ...
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+            <entity name="User">
+                <many-to-many field="phonenumbers" target-entity="Phonenumber">
+                    <join-table name="users_phonenumbers">
+                        <join-columns>
+                            <join-column name="user_id" referenced-column-name="id" />
+                        </join-columns>
+                        <inverse-join-columns>
+                            <join-column name="phonenumber_id" referenced-column-name="id" unique="true" />
+                        </inverse-join-columns>
+                    </join-table>
+                </many-to-many>
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        User:
+          type: entity
+          manyToMany:
+            phonenumbers:
+              targetEntity: Phonenumber
+              joinTable:
+                name: users_phonenumbers
+                joinColumns:
+                  user_id:
+                    referencedColumnName: id
+                inverseJoinColumns
+                  phonenumber_id:
+                    referencedColumnName: id
+                    unique: true
 
 .. note::
 
@@ -667,26 +703,45 @@ Many-To-One, Unidirectional
 You can easily implement a many-to-one unidirectional association
 with the following:
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    /** @Entity */
-    class User
-    {
-        // ...
-    
-        /**
-         * @ManyToOne(targetEntity="Address")
-         * @JoinColumn(name="address_id", referencedColumnName="id")
-         */
-        private $address;
-    }
-    
-    /** @Entity */
-    class Address
-    {
-        // ...
-    }
+    .. code-block:: php
+
+        <?php
+        /** @Entity */
+        class User
+        {
+            // ...
+
+            /**
+             * @ManyToOne(targetEntity="Address")
+             * @JoinColumn(name="address_id", referencedColumnName="id")
+             */
+            private $address;
+        }
+
+        /** @Entity */
+        class Address
+        {
+            // ...
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+            <entity name="User">
+                <many-to-one field="address" target-entity="Address" />
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        User:
+          type: entity
+          manyToOne:
+            address:
+              targetEntity: Address
+
 
 .. note::
 
@@ -719,35 +774,50 @@ Bidirectional one-to-many associations are very common. The
 following code shows an example with a Product and a Feature
 class:
 
-.. code-block:: php
+.. configuration-block:: 
 
-    <?php
-    /** @Entity */
-    class Product
-    {
-        // ...
-        /**
-         * @OneToMany(targetEntity="Feature", mappedBy="product")
-         */
-        private $features;
-        // ...
-    
-        public function __construct() {
-            $this->features = new \Doctrine\Common\Collections\ArrayCollection();
+    .. code-block:: php
+
+        <?php
+        /** @Entity */
+        class Product
+        {
+            // ...
+            /**
+             * @OneToMany(targetEntity="Feature", mappedBy="product")
+             */
+            private $features;
+            // ...
+
+            public function __construct() {
+                $this->features = new \Doctrine\Common\Collections\ArrayCollection();
+            }
         }
-    }
-    
-    /** @Entity */
-    class Feature
-    {
-        // ...
-        /**
-         * @ManyToOne(targetEntity="Product", inversedBy="features")
-         * @JoinColumn(name="product_id", referencedColumnName="id")
-         */
-        private $product;
-        // ...
-    }
+
+        /** @Entity */
+        class Feature
+        {
+            // ...
+            /**
+             * @ManyToOne(targetEntity="Product", inversedBy="features")
+             * @JoinColumn(name="product_id", referencedColumnName="id")
+             */
+            private $product;
+            // ...
+        }
+
+   .. code-block:: xml
+
+        <doctrine-mapping>
+            <entity name="Product">
+                <one-to-many field="features" target-entity="Feature" mapped-by="product" />
+            </entity>
+            <entity name="Feature">
+                <many-to-one field="product" target-entity="Product" inversed-by="features">
+                    <join-column name="product_id" referenced-column-name="id" />
+                </many-to-one>
+            </entity>
+        </doctrine-mapping>
 
 Note that the @JoinColumn is not really necessary in this example,
 as the defaults would be the same.
@@ -776,29 +846,53 @@ self-referencing. In this example we setup a hierarchy of
 This effectively models a hierarchy of categories and from the
 database perspective is known as an adjacency list approach.
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    /** @Entity */
-    class Category
-    {
-        // ...
-        /**
-         * @OneToMany(targetEntity="Category", mappedBy="parent")
-         */
-        private $children;
-    
-        /**
-         * @ManyToOne(targetEntity="Category", inversedBy="children")
-         * @JoinColumn(name="parent_id", referencedColumnName="id")
-         */
-        private $parent;
-        // ...
-    
-        public function __construct() {
-            $this->children = new \Doctrine\Common\Collections\ArrayCollection();
+    .. code-block:: php
+
+        <?php
+        /** @Entity */
+        class Category
+        {
+            // ...
+            /**
+             * @OneToMany(targetEntity="Category", mappedBy="parent")
+             */
+            private $children;
+
+            /**
+             * @ManyToOne(targetEntity="Category", inversedBy="children")
+             * @JoinColumn(name="parent_id", referencedColumnName="id")
+             */
+            private $parent;
+            // ...
+
+            public function __construct() {
+                $this->children = new \Doctrine\Common\Collections\ArrayCollection();
+            }
         }
-    }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+            <entity name="Category">
+                <one-to-many field="children" target-entity="Category" mapped-by="parent" />
+                <many-to-one field="parent" target-entity="Category" inversed-by="children" />
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        Category:
+          type: entity
+          oneToMany:
+            children
+              targetEntity: Category
+              mappedBy: parent
+          manyToOne:
+            parent:
+              targetEntity: Category
+              inversedBy: children
 
 Note that the @JoinColumn is not really necessary in this example,
 as the defaults would be the same.
