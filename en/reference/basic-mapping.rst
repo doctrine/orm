@@ -16,9 +16,11 @@ object-relational mapping metadata:
 -  XML
 -  YAML
 
-This manual usually uses docblock annotations in all the examples
-that are spread throughout all chapters. There are dedicated
-chapters for XML and YAML mapping, respectively.
+This manual usually mentions docblock annotations in all the examples
+that are spread throughout all chapters, however for many examples
+alternative YAML and XML examples are given aswell. There are dedicated
+reference chapters for XML and YAML mapping, respectively that explain them
+in more detail. There is also an Annotation reference chapter.
 
 .. note::
 
@@ -56,7 +58,9 @@ annotations support namespaces and nested annotations among other
 things. The Doctrine 2 ORM defines its own set of docblock
 annotations for supplying object-relational mapping metadata.
 
-    **NOTE** If you're not comfortable with the concept of docblock
+.. note::
+
+    If you're not comfortable with the concept of docblock
     annotations, don't worry, as mentioned earlier Doctrine 2 provides
     XML and YAML alternatives and you could easily implement your own
     favourite mechanism for defining ORM metadata.
@@ -69,30 +73,63 @@ In order to mark a class for object-relational persistence it needs
 to be designated as an entity. This can be done through the
 ``@Entity`` marker annotation.
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    /** @Entity */
-    class MyPersistentClass
-    {
-        //...
-    }
+    .. code-block:: php
+
+        <?php
+        /** @Entity */
+        class MyPersistentClass
+        {
+            //...
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+          <entity name="MyPersistentClass">
+              <!-- ... ->
+          </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        MyPersistentClass:
+          type: entity
+          # ...
 
 By default, the entity will be persisted to a table with the same
 name as the class name. In order to change that, you can use the
 ``@Table`` annotation as follows:
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    /**
-     * @Entity
-     * @Table(name="my_persistent_class")
-     */
-    class MyPersistentClass
-    {
-        //...
-    }
+    .. code-block:: php
+
+        <?php
+        /**
+         * @Entity
+         * @Table(name="my_persistent_class")
+         */
+        class MyPersistentClass
+        {
+            //...
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+          <entity name="MyPersistentClass" table="my_persistent_class">
+              <!-- ... ->
+          </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        MyPersistentClass:
+          type: entity
+          table: my_persistent_class
+          # ...
 
 Now instances of MyPersistentClass will be persisted into a table
 named ``my_persistent_class``.
@@ -172,18 +209,39 @@ since it is the most flexible.
 
 Example:
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    /** @Entity */
-    class MyPersistentClass
-    {
-        /** @Column(type="integer") */
-        private $id;
-        /** @Column(length=50) */
-        private $name; // type defaults to string
-        //...
-    }
+    .. code-block:: php
+
+        <?php
+        /** @Entity */
+        class MyPersistentClass
+        {
+            /** @Column(type="integer") */
+            private $id;
+            /** @Column(length=50) */
+            private $name; // type defaults to string
+            //...
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+          <entity name="MyPersistentClass">
+            <field name="id" type="integer" />
+            <field name="name" length="50" />
+          </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        MyPersistentClass:
+          type: entity
+          fields:
+            id:
+              type: integer
+            name:
+              length: 50
 
 In that example we mapped the field ``id`` to the column ``id``
 using the mapping type ``integer`` and the field ``name`` is mapped
@@ -193,11 +251,30 @@ as the field names. To specify a different name for the column, you
 can use the ``name`` attribute of the Column annotation as
 follows:
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    /** @Column(name="db_name") */
-    private $name;
+    .. code-block:: php
+
+        <?php
+        /** @Column(name="db_name") */
+        private $name;
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+          <entity name="MyPersistentClass">
+            <field name="name" column="db_name" />
+          </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        MyPersistentClass:
+          type: entity
+          fields:
+            name:
+              length: 50
+              column: db_name
 
 The Column annotation has some more attributes. Here is a complete
 list:
@@ -340,15 +417,37 @@ Every entity class needs an identifier/primary key. You designate
 the field that serves as the identifier with the ``@Id`` marker
 annotation. Here is an example:
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    class MyPersistentClass
-    {
-        /** @Id @Column(type="integer") */
-        private $id;
-        //...
-    }
+    .. code-block:: php
+
+        <?php
+        class MyPersistentClass
+        {
+            /** @Id @Column(type="integer") */
+            private $id;
+            //...
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+          <entity name="MyPersistentClass">
+            <id name="id" type="integer" />
+            <field name="name" length="50" />
+          </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        MyPersistentClass:
+          type: entity
+          id:
+            id:
+              type: integer
+          fields:
+            name:
+              length: 50
 
 Without doing anything else, the identifier is assumed to be
 manually assigned. That means your code would need to properly set
@@ -359,17 +458,43 @@ A common alternative strategy is to use a generated value as the
 identifier. To do this, you use the ``@GeneratedValue`` annotation
 like this:
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    class MyPersistentClass
-    {
-        /**
-         * @Id @Column(type="integer")
-         * @GeneratedValue
-         */
-        private $id;
-    }
+    .. code-block:: php
+
+        <?php
+        class MyPersistentClass
+        {
+            /**
+             * @Id @Column(type="integer")
+             * @GeneratedValue
+             */
+            private $id;
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+          <entity name="MyPersistentClass">
+            <id name="id" type="integer">
+                <generator strategy="AUTO" />
+            </id>
+            <field name="name" length="50" />
+          </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        MyPersistentClass:
+          type: entity
+          id:
+            id:
+              type: integer
+              generator:
+                strategy: AUTO
+          fields:
+            name:
+              length: 50
 
 This tells Doctrine to automatically generate a value for the
 identifier. How this value is generated is specified by the
@@ -417,17 +542,45 @@ The Sequence Generator can currently be used in conjunction with
 Oracle or Postgres and allows some additional configuration options
 besides specifying the sequence's name:
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    class User {
-        /**
-         * @Id
-         * @GeneratedValue(strategy="SEQUENCE")
-         * @SequenceGenerator(name="tablename_seq", initialValue=1, allocationSize=100)
-         */
-        protected $id = null;
-    }
+    .. code-block:: php
+
+        <?php
+        class User
+        {
+            /**
+             * @Id
+             * @GeneratedValue(strategy="SEQUENCE")
+             * @SequenceGenerator(name="tablename_seq", initialValue=1, allocationSize=100)
+             */
+            protected $id = null;
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+          <entity name="User">
+            <id name="id" type="integer">
+                <generator strategy="SEQUENCE" />
+                <sequence-generator sequence-name="tablename_seq" allocation-size="100" initial-value="1" />
+            </id>
+          </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        MyPersistentClass:
+          type: entity
+          id:
+            id:
+              type: integer
+              generator:
+                strategy: SEQUENCE
+              sequenceGenerator:
+                sequenceName: tablename_seq
+                allocationSize: 100
+                initialValue: 1
 
 The initial value specifies at which value the sequence should
 start.

@@ -133,57 +133,151 @@ follows:
 
 As an example, consider this mapping:
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    /** @OneToOne(targetEntity="Shipping") */
-    private $shipping;
+    .. code-block:: php
+
+        <?php
+        /** @OneToOne(targetEntity="Shipping") */
+        private $shipping;
+
+    .. code-block:: xml
+    
+        <doctrine-mapping>
+            <entity class="Product">
+                <one-to-one field="shipping" target-entity="Shipping" />
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        Product:
+          type: entity
+          oneToOne:
+            shipping:
+              targetEntity: Shipping
 
 This is essentially the same as the following, more verbose,
 mapping:
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    /**
-     * @OneToOne(targetEntity="Shipping")
-     * @JoinColumn(name="shipping_id", referencedColumnName="id")
-     */
-    private $shipping;
+    .. code-block:: php
+
+        <?php
+        /**
+         * @OneToOne(targetEntity="Shipping")
+         * @JoinColumn(name="shipping_id", referencedColumnName="id")
+         */
+        private $shipping;
+
+    .. code-block:: xml
+    
+        <doctrine-mapping>
+            <entity class="Product">
+                <one-to-one field="shipping" target-entity="Shipping">
+                    <join-column name="shipping_id" referenced-column-name="id" />
+                </one-to-one>
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        Product:
+          type: entity
+          oneToOne:
+            shipping:
+              targetEntity: Shipping
+              joinColumn:
+                name: shipping_id
+                referencedColumnName: id
 
 The @JoinTable definition used for many-to-many mappings has
 similar defaults. As an example, consider this mapping:
 
-.. code-block:: php
+.. code-configuration::
 
-    <?php
-    class User
-    {
-        //...
-        /** @ManyToMany(targetEntity="Group") */
-        private $groups;
-        //...
-    }
+    .. code-block:: php
+
+        <?php
+        class User
+        {
+            //...
+            /** @ManyToMany(targetEntity="Group") */
+            private $groups;
+            //...
+        }
+
+    .. code-block:: xml
+    
+        <doctrine-mapping>
+            <entity class="User">
+                <many-to-many field="groups" target-entity="Group" />
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        User:
+          type: entity
+          manyToMany:
+            groups:
+              targetEntity: Group
 
 This is essentially the same as the following, more verbose,
 mapping:
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    class User
-    {
-        //...
-        /**
-         * @ManyToMany(targetEntity="Group")
-         * @JoinTable(name="User_Group",
-         *      joinColumns={@JoinColumn(name="User_id", referencedColumnName="id")},
-         *      inverseJoinColumns={@JoinColumn(name="Group_id", referencedColumnName="id")}
-         *      )
-         */
-        private $groups;
-        //...
-    }
+    .. code-block:: php
+
+        <?php
+        class User
+        {
+            //...
+            /**
+             * @ManyToMany(targetEntity="Group")
+             * @JoinTable(name="User_Group",
+             *      joinColumns={@JoinColumn(name="User_id", referencedColumnName="id")},
+             *      inverseJoinColumns={@JoinColumn(name="Group_id", referencedColumnName="id")}
+             *      )
+             */
+            private $groups;
+            //...
+        }
+
+    .. code-block:: xml
+    
+        <doctrine-mapping>
+            <entity class="User">
+                <many-to-many field="groups" target-entity="Group">
+                    <join-table name="User_Group">
+                        <join-columns>
+                            <join-column id="User_id" referenced-column-name="id" />
+                        </join-columns>
+                        <inverse-join-columns>
+                            <join-column id="Group_id" referenced-column-name="id" />
+                        </inverse-join-columns>
+                    </join-table>
+                </many-to-many>
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        User:
+          type: entity
+          manyToMany:
+            groups:
+              targetEntity: Group
+              joinTable:
+                name: User_Group
+                joinColumns:
+                  User_id:
+                    referencedColumnName: id
+                inverseJoinColumns:
+                  Group_id
+                    referencedColumnName: id                  
 
 In that case, the name of the join table defaults to a combination
 of the simple, unqualified class names of the participating
@@ -276,6 +370,7 @@ Or you can trigger the validation manually:
 
 .. code-block:: php
 
+    <?php
     use Doctrine\ORM\Tools\SchemaValidator;
     
     $validator = new SchemaValidator($entityManager);
@@ -306,28 +401,51 @@ example of a ``Product`` that has one ``Shipping`` object
 associated to it. The ``Shipping`` side does not reference back to
 the ``Product`` so it is unidirectional.
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    /** @Entity */
-    class Product
-    {
-        // ...
+    .. code-block:: php
+
+        <?php
+        /** @Entity */
+        class Product
+        {
+            // ...
+
+            /**
+             * @OneToOne(targetEntity="Shipping")
+             * @JoinColumn(name="shipping_id", referencedColumnName="id")
+             */
+            private $shipping;
+
+            // ...
+        }
+
+        /** @Entity */
+        class Shipping
+        {
+            // ...
+        }
+
+    .. code-block:: xml
     
-        /**
-         * @OneToOne(targetEntity="Shipping")
-         * @JoinColumn(name="shipping_id", referencedColumnName="id")
-         */
-        private $shipping;
-    
-        // ...
-    }
-    
-    /** @Entity */
-    class Shipping
-    {
-        // ...
-    }
+        <doctrine-mapping>
+            <entity class="Product">
+                <one-to-one field="shipping" target-entity="Shipping">
+                    <join-column name="shipping_id" referenced-column-name="id" />
+                </one-to-one>
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        Product:
+          type: entity
+          oneToOne:
+            shipping:
+              targetEntity: Shipping
+              joinColumn:
+                name: shipping_id
+                referencedColumnName: id
 
 Note that the @JoinColumn is not really necessary in this example,
 as the defaults would be the same.
@@ -354,35 +472,66 @@ Here is a one-to-one relationship between a ``Customer`` and a
 ``Cart``. The ``Cart`` has a reference back to the ``Customer`` so
 it is bidirectional.
 
-.. code-block:: php
+.. configuration-block:: 
 
-    <?php
-    /** @Entity */
-    class Customer
-    {
-        // ...
-    
-        /**
-         * @OneToOne(targetEntity="Cart", mappedBy="customer")
-         */
-        private $cart;
-    
-        // ...
-    }
-    
-    /** @Entity */
-    class Cart
-    {
-        // ...
-    
-        /**
-         * @OneToOne(targetEntity="Customer", inversedBy="cart")
-         * @JoinColumn(name="customer_id", referencedColumnName="id")
-         */
-        private $customer;
-    
-        // ...
-    }
+    .. code-block:: php
+
+        <?php
+        /** @Entity */
+        class Customer
+        {
+            // ...
+
+            /**
+             * @OneToOne(targetEntity="Cart", mappedBy="customer")
+             */
+            private $cart;
+
+            // ...
+        }
+
+        /** @Entity */
+        class Cart
+        {
+            // ...
+
+            /**
+             * @OneToOne(targetEntity="Customer", inversedBy="cart")
+             * @JoinColumn(name="customer_id", referencedColumnName="id")
+             */
+            private $customer;
+
+            // ...
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+            <entity name="Customer">
+                <one-to-one field="cart" target-entity="Cart" mapped-by="customer" />
+            </entity>
+            <entity name="Cart">
+                <one-to-one field="customer" target-entity="Customer" inversed-by="cart">
+                    <join-column name="customer_id" referenced-column-name="id" />
+                </one-to-one>
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        Customer:
+          oneToOne:
+            cart:
+              targetEntity: Cart
+              mappedBy: customer
+        Cart:
+          oneToOne:
+            customer:
+              targetEntity Customer
+              inversedBy: cart
+              joinColumn:
+                customer_id:
+                   referencedColumnName: id
 
 Note that the @JoinColumn is not really necessary in this example,
 as the defaults would be the same.
