@@ -945,14 +945,6 @@ entities:
         // ...
     }
 
-    **NOTE** Why are many-to-many associations less common? Because
-    frequently you want to associate additional attributes with an
-    association, in which case you introduce an association class.
-    Consequently, the direct many-to-many association disappears and is
-    replaced by one-to-many/many-to-one associations between the 3
-    participating classes.
-
-
 Generated MySQL Schema:
 
 .. code-block:: sql
@@ -972,6 +964,15 @@ Generated MySQL Schema:
     ) ENGINE = InnoDB;
     ALTER TABLE users_groups ADD FOREIGN KEY (user_id) REFERENCES User(id);
     ALTER TABLE users_groups ADD FOREIGN KEY (group_id) REFERENCES Group(id);
+
+.. note::
+    
+    Why are many-to-many associations less common? Because
+    frequently you want to associate additional attributes with an
+    association, in which case you introduce an association class.
+    Consequently, the direct many-to-many association disappears and is
+    replaced by one-to-many/many-to-one associations between the 3
+    participating classes.
 
 Many-To-Many, Bidirectional
 ---------------------------
