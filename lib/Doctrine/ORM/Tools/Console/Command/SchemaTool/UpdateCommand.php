@@ -71,7 +71,7 @@ class UpdateCommand extends AbstractCommand
             ),
         ));
 
-        $fullName = $this->getFullName();
+        $fullName = $this->getName();
         $this->setHelp(<<<EOT
 The <info>$fullName</info> command generates the SQL needed to
 synchronize the database schema with the current mapping metadata of the
