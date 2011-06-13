@@ -652,6 +652,15 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(array('u'), $qb->getRootAliases());
     }
     
+    public function testGetRootEntities()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        
+        $this->assertEquals(array('Doctrine\Tests\Models\CMS\CmsUser'), $qb->getRootEntities());
+    }
+    
     public function testGetSeveralRootAliases()
     {
         $qb = $this->_em->createQueryBuilder()

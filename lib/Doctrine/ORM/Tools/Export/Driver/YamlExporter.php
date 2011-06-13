@@ -181,7 +181,7 @@ class YamlExporter extends AbstractExporter
                 $manyToManyMappingArray = array(
                     'mappedBy'   => $associationMapping['mappedBy'],
                     'inversedBy' => $associationMapping['inversedBy'],
-                    'joinTable'  => $associationMapping['joinTable'],
+                    'joinTable'  => isset($associationMapping['joinTable']) ? $associationMapping['joinTable'] : null,
                     'orderBy'    => isset($associationMapping['orderBy']) ? $associationMapping['orderBy'] : null
                 );
 
