@@ -212,7 +212,7 @@
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="optional"/>
-    <xs:attribute name="columns" type="xs:NMTOKENS" use="required"/>
+    <xs:attribute name="columns" type="xs:string" use="required"/>
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
   
