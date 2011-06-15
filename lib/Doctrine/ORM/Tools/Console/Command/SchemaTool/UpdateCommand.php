@@ -69,6 +69,10 @@ class UpdateCommand extends AbstractCommand
                 'force', null, InputOption::VALUE_NONE,
                 'Causes the generated SQL statements to be physically executed against your database.'
             ),
+            new InputOption(
+                'ignore', null, InputOption::VALUE_NONE,
+                "Ignore tables which contain unsupported column types."
+            ),
         ));
 
         $fullName = $this->getName();
@@ -100,7 +104,10 @@ EOT
         // Defining if update is complete or not (--complete not defined means $saveMode = true)
         $saveMode = ($input->getOption('complete') !== true);
 
-        $sqls = $schemaTool->getUpdateSchemaSql($metadatas, $saveMode);
+        // Do we want to ignore unsupported columns?
+        $ignoreUnsupported = ($input->getOption('ignore') === true);
+
+        $sqls = $schemaTool->getUpdateSchemaSql($metadatas, $saveMode, $ignoreUnsupported);
         if (0 == count($sqls)) {
             $output->writeln('Nothing to update - your database is already in sync with the current entity metadata.');
 
@@ -117,7 +124,7 @@ EOT
             $output->writeln(implode(';' . PHP_EOL, $sqls));
         } else if ($force) {
             $output->writeln('Updating database schema...');
-            $schemaTool->updateSchema($metadatas, $saveMode);
+            $schemaTool->updateSchema($metadatas, $saveMode, $ignoreUnsupported);
             $output->writeln(sprintf('Database schema updated successfully! "<info>%s</info>" queries were executed', count($sqls)));
         } else {
             $output->writeln('<comment>ATTENTION</comment>: This operation should not be executed in a production environment.');
