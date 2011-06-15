@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Tools\SchemaTool;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -66,6 +67,28 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(isset($class2->reflFields['mapped2']));
         $this->assertTrue(isset($class2->reflFields['mappedRelated1']));
     }
+    
+    /**
+     * @group DDC-1203
+     */
+    public function testUnmappedSuperclassInHierachy()
+    {
+        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierachyD');
+        
+        $this->assertTrue(isset($class->fieldMappings['id']));
+        $this->assertTrue(isset($class->fieldMappings['a']));
+        $this->assertTrue(isset($class->fieldMappings['d']));
+    }
+    
+    /**
+     * @group DDC-1204
+     */
+    public function testUnmappedEntityInHierachy()
+    {
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', "Entity 'Doctrine\Tests\ORM\Mapping\HierachyBEntity' has to be part of the descriminator map of 'Doctrine\Tests\ORM\Mapping\HierachyBase' to be properly mapped in the inheritance hierachy. If you want to avoid instantiation of this type mark it abstract.");
+        
+        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierachyE');
+    }
 }
 
 class TransientBaseClass {
@@ -102,4 +125,68 @@ class EntitySubClass2 extends MappedSuperclassBase {
     private $id;
     /** @Column(type="string") */
     private $name;
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorColumn(name="type", type="string", length=20)
+ * @DiscriminatorMap({
+ *     "c"   = "HierachyC",
+ *     "d"   = "HierachyD",
+ *     "e"   = "HierachyE"
+ * })
+ */
+abstract class HierachyBase
+{
+    /**
+     * @Column(type="integer") @Id @GeneratedValue
+     * @var int
+     */
+    public $id;
+}
+
+/**
+ * @MappedSuperclass
+ */
+abstract class HierachyASuperclass extends HierachyBase
+{
+    /** @Column(type="string") */
+    public $a;
+}
+
+/**
+ * @Entity
+ */
+abstract class HierachyBEntity extends HierachyBase
+{
+    /** @Column(type="string") */
+    public $b;
+}
+
+/**
+ * @Entity
+ */
+class HierachyC extends HierachyBase
+{
+    /** @Column(type="string") */
+    public $c;
+}
+
+/**
+ * @Entity
+ */
+class HierachyD extends HierachyASuperclass
+{
+    /** @Column(type="string") */
+    public $d;
+}
+
+/**
+ * @Entity
+ */
+class HierachyE extends HierachyBEntity
+{
+    /** @Column(type="string") */
+    public $e;
 }
