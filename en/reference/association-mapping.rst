@@ -195,7 +195,7 @@ mapping:
 The @JoinTable definition used for many-to-many mappings has
 similar defaults. As an example, consider this mapping:
 
-.. code-configuration::
+.. configuration-block::
 
     .. code-block:: php
 
