@@ -88,7 +88,7 @@ to be designated as an entity. This can be done through the
 
         <doctrine-mapping>
           <entity name="MyPersistentClass">
-              <!-- ... ->
+              <!-- ... -->
           </entity>
         </doctrine-mapping>
 
@@ -120,7 +120,7 @@ name as the class name. In order to change that, you can use the
 
         <doctrine-mapping>
           <entity name="MyPersistentClass" table="my_persistent_class">
-              <!-- ... ->
+              <!-- ... -->
           </entity>
         </doctrine-mapping>
 
