@@ -49,7 +49,7 @@ class AssignedGenerator extends AbstractIdGenerator
             foreach ($idFields as $idField) {
                 $value = $class->reflFields[$idField]->getValue($entity);
                 if (isset($value)) {
-                    if (is_object($value)) {
+                    if (isset($class->associationMappings[$idField])) {
                         if (!$em->getUnitOfWork()->isInIdentityMap($value)) {
                             throw ORMException::entityMissingForeignAssignedId($entity, $value);
                         }
@@ -67,7 +67,7 @@ class AssignedGenerator extends AbstractIdGenerator
             $idField = $class->identifier[0];
             $value = $class->reflFields[$idField]->getValue($entity);
             if (isset($value)) {
-                if (is_object($value)) {
+                if (isset($class->associationMappings[$idField])) {
                     if (!$em->getUnitOfWork()->isInIdentityMap($value)) {
                         throw ORMException::entityMissingForeignAssignedId($entity, $value);
                     }

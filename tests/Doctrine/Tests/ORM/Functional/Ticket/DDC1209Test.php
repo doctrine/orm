@@ -93,9 +93,9 @@ class DDC1209_2
     public function __construct(DDC1209_1 $future1)
     {
         $this->future1 = $future1;
-        $this->starting_datetime = new \DateTime();
-        $this->during_datetime = new \DateTime();
-        $this->ending_datetime = new \DateTime();
+        $this->starting_datetime = new DateTime2();
+        $this->during_datetime = new DateTime2();
+        $this->ending_datetime = new DateTime2();
     }
 }
 
@@ -120,6 +120,6 @@ class DateTime2 extends \DateTime
 {
     public function __toString()
     {
-        return $this->form('Y');
+        return $this->format('Y');
     }
 }
