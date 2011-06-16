@@ -819,6 +819,7 @@ class:
             </entity>
         </doctrine-mapping>
 
+
 Note that the @JoinColumn is not really necessary in this example,
 as the defaults would be the same.
 
@@ -1054,7 +1055,7 @@ one is bidirectional.
             // ...
         }
 
-    .. code-block::
+    .. code-block:: xml
 
         <doctrine-mapping>
             <entity name="User">
@@ -1075,7 +1076,7 @@ one is bidirectional.
             </entity>
         </doctrine-mapping>
 
-    .. code-block::
+    .. code-block:: yaml
 
         User:
           type: entity
