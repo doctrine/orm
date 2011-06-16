@@ -281,7 +281,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 throw MappingException::reflectionFailure($className, $e);
             }
 
-            if ($parent) {
+            if ($parent && ! $parent->isMappedSuperclass) {
                 if ($parent->isIdGeneratorSequence()) {
                     $class->setSequenceGeneratorDefinition($parent->sequenceGeneratorDefinition);
                 } else if ($parent->isIdGeneratorTable()) {

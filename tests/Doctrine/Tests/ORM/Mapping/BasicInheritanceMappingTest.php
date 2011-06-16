@@ -89,6 +89,17 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         
         $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierachyE');
     }
+    
+    /**
+     * @group DDC-1204
+     * @group DDC-1203
+     */
+    public function testMappedSuperclassWithId()
+    {
+        $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\SuperclassEntity');
+        
+        $this->assertTrue(isset($class->fieldMappings['id']));
+    }
 }
 
 class TransientBaseClass {
@@ -189,4 +200,24 @@ class HierachyE extends HierachyBEntity
 {
     /** @Column(type="string") */
     public $e;
+}
+
+/**
+ * @Entity
+ */
+class SuperclassEntity extends SuperclassBase
+{
+
+}
+
+/**
+ * @MappedSuperclass
+ */
+abstract class SuperclassBase
+{
+    /**
+     * @Column(type="integer") @Id @GeneratedValue
+     * @var int
+     */
+    public $id;
 }
