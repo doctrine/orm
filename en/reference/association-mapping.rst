@@ -601,7 +601,7 @@ the join columns enforces the one-to-many cardinality. The
 following example sets up such a unidirectional one-to-many
 association:
 
-..configuration-block::
+.. configuration-block::
 
     .. code-block:: php
 
