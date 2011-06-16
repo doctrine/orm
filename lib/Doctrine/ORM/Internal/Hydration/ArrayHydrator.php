@@ -104,7 +104,7 @@ class ArrayHydrator extends AbstractHydrator
                     unset($this->_resultPointers[$dqlAlias]); // Ticket #1228
                     continue;
                 }
-                
+
                 $relationAlias = $this->_rsm->relationMap[$dqlAlias];
                 $relation = $this->_getClassMetadata($this->_rsm->aliasMap[$parent])->associationMappings[$relationAlias];
 
@@ -115,11 +115,11 @@ class ArrayHydrator extends AbstractHydrator
                         if ( ! isset($baseElement[$relationAlias])) {
                             $baseElement[$relationAlias] = array();
                         }
-                        
+
                         $indexExists = isset($this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]]);
                         $index = $indexExists ? $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] : false;
                         $indexIsValid = $index !== false ? isset($baseElement[$relationAlias][$index]) : false;
-                        
+
                         if ( ! $indexExists || ! $indexIsValid) {
                             $element = $data;
                             if (isset($this->_rsm->indexByMap[$dqlAlias])) {
@@ -152,9 +152,9 @@ class ArrayHydrator extends AbstractHydrator
 
             } else {
                 // It's a root result element
-                
+
                 $this->_rootAliases[$dqlAlias] = true; // Mark as root
-                
+
                 // Check for an existing element
                 if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $rowData[$dqlAlias];
@@ -168,7 +168,7 @@ class ArrayHydrator extends AbstractHydrator
                         }
                     } else {
                         if ($this->_rsm->isMixed) {
-                            $result[] = array($element);
+                            $result[] = $element;
                             ++$this->_resultCounter;
                         } else {
                             $result[] = $element;
@@ -224,7 +224,7 @@ class ArrayHydrator extends AbstractHydrator
             }
         }
     }
-    
+
     private function _getClassMetadata($className)
     {
         if ( ! isset($this->_ce[$className])) {
