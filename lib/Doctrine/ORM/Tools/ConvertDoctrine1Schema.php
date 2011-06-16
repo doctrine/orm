@@ -70,10 +70,10 @@ class ConvertDoctrine1Schema
             if (is_dir($path)) {
                 $files = glob($path . '/*.yml');
                 foreach ($files as $file) {
-                    $schema = array_merge($schema, (array) \Symfony\Component\Yaml\Yaml::load($file));
+                    $schema = array_merge($schema, (array) \Symfony\Component\Yaml\Yaml::parse($file));
                 }
             } else {
-                $schema = array_merge($schema, (array) \Symfony\Component\Yaml\Yaml::load($path));
+                $schema = array_merge($schema, (array) \Symfony\Component\Yaml\Yaml::parse($path));
             }
         }
 
