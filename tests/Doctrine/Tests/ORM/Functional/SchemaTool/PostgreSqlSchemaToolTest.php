@@ -80,4 +80,25 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals("CREATE TABLE boolean_model (id INT NOT NULL, booleanField BOOLEAN NOT NULL, PRIMARY KEY(id))", $sql[0]);
         $this->assertEquals("CREATE SEQUENCE boolean_model_id_seq INCREMENT BY 1 MINVALUE 1 START 1", $sql[1]);
     }
+    
+    public function testGetDropSchemaSql()
+    {
+        $classes = array(
+            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
+            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
+            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
+        );
+
+        $tool = new SchemaTool($this->_em);
+        $sql = $tool->getDropSchemaSQL($classes);
+        
+        $this->assertEquals(13, count($sql));
+        $dropSequenceSQLs = 0;
+        foreach ($sql AS $stmt) {
+            if (strpos($stmt, "DROP SEQUENCE") === 0) {
+                $dropSequenceSQLs++;
+            }
+        }
+        $this->assertEquals(4, $dropSequenceSQLs, "Expect 4 sequences to be dropped.");
+    }
 }
