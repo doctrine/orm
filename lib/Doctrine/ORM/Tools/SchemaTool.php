@@ -577,12 +577,14 @@ class SchemaTool
             }
             foreach ($schema->getTables() AS $table) {
                 /* @var $sequence Table */
-                if ($table->hasPrimaryKey()) {
-                    $columns = $table->getPrimaryKey()->getColumns();
-                    if (count($columns) == 1) {
-                        $checkSequence = $table->getName() . "_" . $columns[0] . "_seq";
-                        if ($fullSchema->hasSequence($checkSequence)) {
-                            $visitor->acceptSequence($fullSchema->getSequence($checkSequence));
+                foreach ($table->getIndexes() AS $index) {
+                    if ($index->isPrimary()) {
+                        $columns = $index->getColumns();
+                        if (count($columns) == 1) {
+                            $checkSequence = $table->getName() . "_" . $columns[0] . "_seq";
+                            if ($fullSchema->hasSequence($checkSequence)) {
+                                $visitor->acceptSequence($fullSchema->getSequence($checkSequence));
+                            }
                         }
                     }
                 }
