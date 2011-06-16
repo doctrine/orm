@@ -619,6 +619,24 @@ class SchemaTool
                 }
             }
         }
+        
+        if ($this->_platform->supportsSequences()) {
+            foreach ($schema->getSequences() AS $sequence) {
+                $visitor->acceptSequence($sequence);
+            }
+            foreach ($schema->getTables() AS $table) {
+                /* @var $sequence Table */
+                if ($table->hasPrimaryKey()) {
+                    $columns = $table->getPrimaryKey()->getColumns();
+                    if (count($columns) == 1) {
+                        $checkSequence = $table->getName() . "_" . $columns[0] . "_seq";
+                        if ($fullSchema->hasSequence($checkSequence)) {
+                            $visitor->acceptSequence($fullSchema->getSequence($checkSequence));
+                        }
+                    }
+                }
+            }
+        }
 
         return $visitor->getQueries();
     }
