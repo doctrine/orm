@@ -906,6 +906,22 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT c0_.id AS id0, c0_.name AS name1, count(c1_.id) AS sclr2 FROM cms_groups c0_ INNER JOIN cms_users_groups c2_ ON c0_.id = c2_.group_id INNER JOIN cms_users c1_ ON c1_.id = c2_.user_id GROUP BY c0_.id'
         );
     }
+    
+    public function testCaseContainingNullIf()
+    {
+        $this->assertSqlGeneration(
+            "SELECT NULLIF(g.id, g.name) AS NullIfEqual FROM Doctrine\Tests\Models\CMS\CmsGroup g",
+            'SELECT NULLIF(c0_.id, c0_.name) AS sclr0 FROM cms_groups c0_'
+        );
+    }
+    
+    public function testCaseContainingCoalesce()
+    {
+        $this->assertSqlGeneration(
+            "SELECT COALESCE(NULLIF(u.name, ''), u.username) as Display FROM Doctrine\Tests\Models\CMS\CmsUser u",
+            "SELECT COALESCE(NULLIF(c0_.name, ''), c0_.username) AS sclr0 FROM cms_users c0_"
+        );
+    }
 }
 
 

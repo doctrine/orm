@@ -873,6 +873,60 @@ class SqlWalker implements TreeWalker
 
         return $sql;
     }
+    
+    /**
+     * Walks down a CoalesceExpression AST node and generates the corresponding SQL.
+     *
+     * @param CoalesceExpression $coalesceExpression
+     * @return string The SQL.
+     */
+    public function walkCoalesceExpression($coalesceExpression)
+    {
+        $sql = 'COALESCE(';
+        
+        $scalarExpressions = array();
+        
+        foreach ($coalesceExpression->scalarExpressions as $scalarExpression) {
+            $scalarExpressions[] = $this->walkSimpleArithmeticExpression($scalarExpression);
+        }
+        
+        $sql .= implode(', ', $scalarExpressions) . ')';
+        
+        return $sql;
+    }
+    
+    public function walkCaseExpression($expression)
+    {
+        switch (true) {
+            case ($expression instanceof AST\CoalesceExpression):
+                return $this->walkCoalesceExpression($expression);
+                
+            case ($expression instanceof AST\NullIfExpression):
+                return $this->walkNullIfExpression($expression);
+                
+            default:
+                return '';
+        }
+    }
+    
+    /**
+     * Walks down a NullIfExpression AST node and generates the corresponding SQL.
+     *
+     * @param NullIfExpression $nullIfExpression
+     * @return string The SQL.
+     */
+    public function walkNullIfExpression($nullIfExpression)
+    {
+        $firstExpression = is_string($nullIfExpression->firstExpression) 
+            ? $this->_conn->quote($nullIfExpression->firstExpression)
+            : $this->walkSimpleArithmeticExpression($nullIfExpression->firstExpression);
+        
+        $secondExpression = is_string($nullIfExpression->secondExpression) 
+            ? $this->_conn->quote($nullIfExpression->secondExpression)
+            : $this->walkSimpleArithmeticExpression($nullIfExpression->secondExpression);
+        
+        return 'NULLIF(' . $firstExpression . ', ' . $secondExpression . ')';
+    }
 
     /**
      * Walks down a SelectExpression AST node and generates the corresponding SQL.
@@ -956,8 +1010,7 @@ class SqlWalker implements TreeWalker
 
             $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
             $this->_rsm->addScalarResult($columnAlias, $resultAlias);
-        }
-        else if (
+        } else if (
             $expr instanceof AST\SimpleArithmeticExpression ||
             $expr instanceof AST\ArithmeticTerm ||
             $expr instanceof AST\ArithmeticFactor ||
@@ -971,11 +1024,32 @@ class SqlWalker implements TreeWalker
             }
 
             $columnAlias = 'sclr' . $this->_aliasCounter++;
+            
             if ($expr instanceof AST\Literal) {
                 $sql .= $this->walkLiteral($expr) . ' AS ' .$columnAlias;
             } else {
                 $sql .= $this->walkSimpleArithmeticExpression($expr) . ' AS ' . $columnAlias;
             }
+            
+            $this->_scalarResultAliasMap[$resultAlias] = $columnAlias;
+
+            $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
+            $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+        } else if (
+            $expr instanceof AST\NullIfExpression ||
+            $expr instanceof AST\CoalesceExpression ||
+            $expr instanceof AST\CaseExpression
+        ) {
+            if ( ! $selectExpression->fieldIdentificationVariable) {
+                $resultAlias = $this->_scalarResultCounter++;
+            } else {
+                $resultAlias = $selectExpression->fieldIdentificationVariable;
+            }
+
+            $columnAlias = 'sclr' . $this->_aliasCounter++;
+            
+            $sql .= $this->walkCaseExpression($expr) . ' AS ' . $columnAlias;
+            
             $this->_scalarResultAliasMap[$resultAlias] = $columnAlias;
 
             $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
