@@ -1644,6 +1644,10 @@ class Parser
             return $this->StateFieldPathExpression();
         } else if ($lookahead == Lexer::T_INTEGER || $lookahead == Lexer::T_FLOAT) {
             return $this->SimpleArithmeticExpression();
+        } else if ($lookahead == Lexer::T_CASE || $lookahead == Lexer::T_COALESCE || $lookahead == Lexer::T_NULLIF) {
+            // Since NULLIF and COALESCE can be identified as a function, 
+            // we need to check if before check for FunctionDeclaration
+            return $this->CaseExpression();
         } else if ($this->_isFunction() || $this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
             // We may be in an ArithmeticExpression (find the matching ")" and inspect for Math operator)
             $this->_lexer->peek(); // "("
@@ -1665,8 +1669,6 @@ class Parser
         } else if ($lookahead == Lexer::T_TRUE || $lookahead == Lexer::T_FALSE) {
             $this->match($lookahead);
             return new AST\Literal(AST\Literal::BOOLEAN, $this->_lexer->token['value']);
-        } else if ($lookahead == Lexer::T_CASE || $lookahead == Lexer::T_COALESCE || $lookahead == Lexer::T_NULLIF) {
-            return $this->CaseExpression();
         } else {
             $this->syntaxError();
         }
@@ -1674,11 +1676,66 @@ class Parser
 
     public function CaseExpression()
     {
+        $lookahead = $this->_lexer->lookahead['type'];
+        
         // if "CASE" "WHEN" => GeneralCaseExpression
         // else if "CASE" => SimpleCaseExpression
-        // else if "COALESCE" => CoalesceExpression
-        // else if "NULLIF" => NullifExpression
-        $this->semanticalError('CaseExpression not yet supported.');
+        // [DONE] else if "COALESCE" => CoalesceExpression
+        // [DONE] else if "NULLIF" => NullifExpression
+        switch ($lookahead) {
+            case Lexer::T_NULLIF:
+                return $this->NullIfExpression();
+                
+            case Lexer::T_COALESCE:
+                return $this->CoalesceExpression();
+                
+            default:
+                $this->semanticalError('CaseExpression not yet supported.');
+                return null;
+        }
+    }
+    
+    /**
+     * CoalesceExpression ::= "COALESCE" "(" ScalarExpression {"," ScalarExpression}* ")"
+     * 
+     * @return Doctrine\ORM\Query\AST\CoalesceExpression 
+     */
+    public function CoalesceExpression()
+    {
+        $this->match(Lexer::T_COALESCE);
+        $this->match(Lexer::T_OPEN_PARENTHESIS);
+        
+        // Process ScalarExpressions (1..N)
+        $scalarExpressions = array();
+        $scalarExpressions[] = $this->ScalarExpression();
+
+        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
+            $this->match(Lexer::T_COMMA);
+            $scalarExpressions[] = $this->ScalarExpression();
+        }
+        
+        $this->match(Lexer::T_CLOSE_PARENTHESIS);
+        
+        return new AST\CoalesceExpression($scalarExpressions);
+    }
+    
+    /**
+     * NullIfExpression ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
+     * 
+     * @return Doctrine\ORM\Query\AST\ExistsExpression 
+     */
+    public function NullIfExpression()
+    {
+        $this->match(Lexer::T_NULLIF);
+        $this->match(Lexer::T_OPEN_PARENTHESIS);
+        
+        $firstExpression = $this->ScalarExpression();
+        $this->match(Lexer::T_COMMA);
+        $secondExpression = $this->ScalarExpression();
+        
+        $this->match(Lexer::T_CLOSE_PARENTHESIS);
+
+        return new AST\NullIfExpression($firstExpression, $secondExpression);
     }
 
     /**
@@ -1717,12 +1774,16 @@ class Parser
             }
         } else if ($this->_isFunction()) {
             $this->_lexer->peek(); // "("
-            $beyond = $this->_peekBeyondClosingParenthesis();
-
+            
+            $lookaheadType = $this->_lexer->lookahead['type'];
+            $beyond        = $this->_peekBeyondClosingParenthesis();
+            
             if ($this->_isMathOperator($beyond)) {
                 $expression = $this->ScalarExpression();
             } else if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
                 $expression = $this->AggregateExpression();
+            } else if (in_array ($lookaheadType, array(Lexer::T_CASE, Lexer::T_COALESCE, Lexer::T_NULLIF))) {
+                $expression = $this->CaseExpression();
             } else {
                 // Shortcut: ScalarExpression => Function
                 $expression = $this->FunctionDeclaration();

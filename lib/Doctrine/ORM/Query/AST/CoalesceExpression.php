@@ -20,26 +20,28 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * FromClause ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}
+ * CoalesceExpression ::= "COALESCE" "(" ScalarExpression {"," ScalarExpression}* ")"
  *
+ * @since   2.1
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
- * @since   2.0
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class FromClause extends Node
+class CoalesceExpression extends Node
 {
-    public $identificationVariableDeclarations = array();
+    public $scalarExpressions = array();
+    
 
-    public function __construct(array $identificationVariableDeclarations)
+    public function __construct(array $scalarExpressions)
     {
-        $this->identificationVariableDeclarations = $identificationVariableDeclarations;
+        $this->scalarExpressions  = $scalarExpressions;
     }    
     
     public function dispatch($sqlWalker)
     {
-        return $sqlWalker->walkFromClause($this);
+        return $sqlWalker->walkCoalesceExpression($this);
     }
 }

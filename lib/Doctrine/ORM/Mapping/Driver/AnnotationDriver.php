@@ -495,18 +495,20 @@ class AnnotationDriver implements Driver
                 throw MappingException::fileMappingDriversRequireConfiguredDirectoryPath($path);
             }
 
-            $iterator = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($path),
-                \RecursiveIteratorIterator::LEAVES_ONLY
+            $iterator = new \RegexIterator(
+                new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS),
+                    \RecursiveIteratorIterator::LEAVES_ONLY
+                ),
+                '/^.+\\' . $this->_fileExtension . '$/i', 
+                \RecursiveRegexIterator::GET_MATCH
             );
-
+            
             foreach ($iterator as $file) {
-                if (($fileName = $file->getBasename($this->_fileExtension)) == $file->getBasename()) {
-                    continue;
-                }
-
-                $sourceFile = realpath($file->getPathName());
+                $sourceFile = realpath($file[0]);
+                
                 require_once $sourceFile;
+                
                 $includedFiles[] = $sourceFile;
             }
         }

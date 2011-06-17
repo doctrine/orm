@@ -20,26 +20,30 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * FromClause ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}
+ * NullIfExpression ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
  *
+ * @since   2.1
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
- * @since   2.0
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class FromClause extends Node
+class NullIfExpression extends Node
 {
-    public $identificationVariableDeclarations = array();
+    public $firstExpression;
+    
+    public $secondExpression;
 
-    public function __construct(array $identificationVariableDeclarations)
+    public function __construct($firstExpression, $secondExpression)
     {
-        $this->identificationVariableDeclarations = $identificationVariableDeclarations;
+        $this->firstExpression  = $firstExpression;
+        $this->secondExpression = $secondExpression;
     }    
     
     public function dispatch($sqlWalker)
     {
-        return $sqlWalker->walkFromClause($this);
+        return $sqlWalker->walkNullIfExpression($this);
     }
 }
