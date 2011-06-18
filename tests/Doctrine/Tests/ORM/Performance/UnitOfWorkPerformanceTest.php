@@ -10,6 +10,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
  * Description of InsertPerformanceTest
  *
  * @author robo
+ * @group performance
  */
 class UnitOfWorkPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
 {

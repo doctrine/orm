@@ -288,6 +288,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         
         $conn = static::$_sharedConn;
         $conn->getConfiguration()->setSQLLogger($this->_sqlLoggerStack);
+
+        // get rid of more global state
+        $evm = $conn->getEventManager();
+        foreach ($evm->getListeners() AS $event => $listeners) {
+            foreach ($listeners AS $listener) {
+                $evm->removeEventListener(array($event), $listener);
+            }
+        }
         
         return \Doctrine\ORM\EntityManager::create($conn, $config);
     }

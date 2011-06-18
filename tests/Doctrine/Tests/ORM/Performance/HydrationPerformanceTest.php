@@ -15,6 +15,7 @@ use Doctrine\Tests\Mocks\HydratorMockStatement,
  * seriously degrade performance.
  *
  * @author robo
+ * @group performance
  */
 class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
 {
