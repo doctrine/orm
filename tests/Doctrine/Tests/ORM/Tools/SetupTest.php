@@ -46,7 +46,28 @@ class SetupTest extends \Doctrine\Tests\OrmTestCase
     
     public function testAnnotationConfiguration()
     {
+        $config = Setup::createAnnotationMetadataConfiguration(array(), true);
         
+        $this->assertInstanceOf('Doctrine\ORM\Configuration', $config);
+        $this->assertEquals(sys_get_temp_dir(), $config->getProxyDir());
+        $this->assertEquals('DoctrineProxies', $config->getProxyNamespace());
+        $this->assertInstanceOf('Doctrine\ORM\Mapping\Driver\AnnotationDriver', $config->getMetadataDriverImpl());
+    }
+    
+    public function testXMLConfiguration()
+    {
+        $config = Setup::createXMLMetadataConfiguration(array(), true);
+        
+        $this->assertInstanceOf('Doctrine\ORM\Configuration', $config);
+        $this->assertInstanceOf('Doctrine\ORM\Mapping\Driver\XmlDriver', $config->getMetadataDriverImpl());
+    }
+    
+    public function testYAMLConfiguration()
+    {
+        $config = Setup::createYAMLMetadataConfiguration(array(), true);
+        
+        $this->assertInstanceOf('Doctrine\ORM\Configuration', $config);
+        $this->assertInstanceOf('Doctrine\ORM\Mapping\Driver\YamlDriver', $config->getMetadataDriverImpl());
     }
     
     public function tearDown()
