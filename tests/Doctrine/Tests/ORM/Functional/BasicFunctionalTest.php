@@ -827,36 +827,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(0, $this->_em->getConnection()->fetchColumn("select count(*) from cms_addresses where id=".$addressId.""));
     }
 
-    public function testClearingCollectionDoesNotInitialize()
-    {
-        $user = new CmsUser();
-        $user->username = "beberlei";
-        $user->name = "Benjamin E.";
-        $user->status = 'active';
-
-        $grp = new CmsGroup();
-        $grp->setName("The Dudes");
-
-        $grp->addUser($user);
-        $user->addGroup($grp);
-
-        $this->_em->persist($user);
-        $this->_em->persist($grp);
-        $this->_em->flush();
-        $this->_em->clear();
-
-        $this->assertEquals(1, $this->_em->getConnection()->fetchColumn("select count(*) from cms_users_groups"));
-
-        $user2 = $this->_em->find(get_class($user), $user->id);
-        $this->assertFalse($user2->groups->isInitialized());
-        $user2->groups->clear();
-        $this->assertFalse($user2->groups->isInitialized());
-        $this->_em->flush();
-        $this->assertFalse($user2->groups->isInitialized());
-        
-        $this->assertEquals(0, $this->_em->getConnection()->fetchColumn("select count(*) from cms_users_groups"));
-    }
-
     public function testGetPartialReferenceToUpdateObjectWithoutLoadingIt()
     {
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
