@@ -589,4 +589,32 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(2, $expr->count(), "Modifying the second query should affect the first one.");
     }
+
+    /**
+     * @group DDC-1211
+     */
+    public function testEmptyStringLiteral()
+    {
+        $expr = $this->_em->getExpressionBuilder();
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where($expr->eq('u.username', $expr->literal("")));
+        
+        $this->assertEquals("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = ''", $qb->getDQL());
+    }
+    
+    /**
+     * @group DDC-1211
+     */
+    public function testEmptyNumericLiteral()
+    {
+        $expr = $this->_em->getExpressionBuilder();
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where($expr->eq('u.username', $expr->literal(0)));
+        
+        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 0', $qb->getDQL());
+    }
 }
