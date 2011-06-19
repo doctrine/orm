@@ -572,6 +572,7 @@ final class PersistentCollection implements Collection
             }
         }
         $this->coll->clear();
+        $this->initialized = true; // direct call, {@link initialize()} is too expensive
         if ($this->association['isOwningSide']) {
             $this->changed();
             $this->em->getUnitOfWork()->scheduleCollectionDeletion($this);
