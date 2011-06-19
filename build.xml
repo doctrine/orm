@@ -100,6 +100,9 @@
         </copy>
         <exec command="sed 's/${version}-DEV/${version}/' ${build.dir}/doctrine-orm/Doctrine/ORM/Version.php > ${build.dir}/doctrine-orm/Doctrine/ORM/Version2.php" passthru="true" />
         <exec command="mv ${build.dir}/doctrine-orm/Doctrine/ORM/Version2.php ${build.dir}/doctrine-orm/Doctrine/ORM/Version.php" passthru="true" />
+	<delete dir="${build.dir}/doctrine-orm/Doctrine/Symfony/Component/Yaml/.git" includeemptydirs="true"/>
+        <delete dir="${build.dir}/doctrine-orm/Doctrine/Symfony/Component/Console/.git" includeemptydirs="true"/>
+
     </target>
 
     <target name="build" depends="test, build-orm"/>
@@ -166,7 +169,7 @@
            <dirroles key="bin">script</dirroles>
            <ignore>Doctrine/Common/</ignore>
            <ignore>Doctrine/DBAL/</ignore>
-           <ignore>Symfony/Component/Yaml/</ignore>
+	   <ignore>Symfony/Component/Yaml/</ignore>
            <ignore>Symfony/Component/Console/</ignore>
            <release>
                 <install as="doctrine" name="bin/doctrine" />
@@ -188,9 +191,12 @@
     </target>
 
     <target name="git-tag">
-        <exec command="grep '${version}' ${project.basedir}/lib/Doctrine/ORM/Version.php" checkreturn="true"/>
-        <exec command="git tag -a ${version}" passthru="true" />
-        <exec command="git push origin ${version}" passthru="true" />
+        <exec command="grep '${version}-DEV' ${project.basedir}/lib/Doctrine/ORM/Version.php" checkreturn="true"/>
+        <exec command="sed 's/${version}-DEV/${version}/' ${project.basedir}/lib/Doctrine/ORM/Version.php > ${project.basedir}/lib/Doctrine/ORM/Version2.php" passthru="true" />
+        <exec command="mv ${project.basedir}/lib/Doctrine/ORM/Version2.php ${project.basedir}/lib/Doctrine/ORM/Version.php" passthru="true" />
+        <exec command="git add ${project.basedir}/lib/Doctrine/ORM/Version.php" passthru="true" />
+        <exec command="git commit -m 'Release ${version}'" />
+        <exec command="git tag -m 'Tag ${version}' -a ${version}" passthru="true" />
     </target>
 
     <target name="pirum-release">
@@ -205,11 +211,10 @@
     <target name="update-dev-version">
         <exec command="grep '${version}' ${project.basedir}/lib/Doctrine/ORM/Version.php" checkreturn="true"/>
         <propertyprompt propertyName="next_version" defaultValue="${version}" promptText="Enter next version string (without -DEV)" />
-        <exec command="sed 's/${version}-DEV/${next_version}-DEV/' ${project.basedir}/lib/Doctrine/ORM/Version.php > ${project.basedir}/lib/Doctrine/ORM/Version2.php" passthru="true" />
+        <exec command="sed 's/${version}/${next_version}-DEV/' ${project.basedir}/lib/Doctrine/ORM/Version.php > ${project.basedir}/lib/Doctrine/ORM/Version2.php" passthru="true" />
         <exec command="mv ${project.basedir}/lib/Doctrine/ORM/Version2.php ${project.basedir}/lib/Doctrine/ORM/Version.php" passthru="true" />
         <exec command="git add ${project.basedir}/lib/Doctrine/ORM/Version.php" passthru="true" />
         <exec command="git commit -m 'Bump Dev Version to ${next_version}-DEV'" passthru="true" />
-        <exec command="git push origin master" passthru="true" />
     </target>
 
     <target name="release" depends="git-tag,build-packages,distribute-download,pirum-release,update-dev-version" />
@@ -232,7 +237,7 @@
                <php minimum_version="5.3.0" />
                <pear minimum_version="1.6.0" recommended_version="1.6.1" />
            </dependencies>
-           <ignore>bin</ignore>
+	   <ignore>bin/</ignore>
            <ignore>Doctrine/Common/</ignore>
            <ignore>Doctrine/DBAL/</ignore>
            <ignore>Doctrine/ORM/</ignore>
@@ -255,7 +260,7 @@
                <php minimum_version="5.3.0" />
                <pear minimum_version="1.6.0" recommended_version="1.6.1" />
            </dependencies>
-           <ignore>bin</ignore>
+	   <ignore>bin/</ignore>
            <ignore>Doctrine/Common/</ignore>
            <ignore>Doctrine/DBAL/</ignore>
            <ignore>Doctrine/ORM/</ignore>
@@ -269,3 +274,4 @@
         <exec command="sudo pirum build ${project.pirum_dir}" passthru="true" />
     </target>
 </project>
+
