@@ -110,6 +110,8 @@ class DatabaseDriver implements Driver
             return;
         }
 
+        $tables = array();
+                
         foreach ($this->_sm->listTableNames() as $tableName) {
             $tables[$tableName] = $this->_sm->listTableDetails($tableName);
         }
