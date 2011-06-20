@@ -832,7 +832,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         // Cascades
-        $cascades = isset($mapping['cascade']) ? $mapping['cascade'] : array();
+        $cascades = isset($mapping['cascade']) ? array_map('strtolower', $mapping['cascade']) : array();
         if (in_array('all', $cascades)) {
             $cascades = array(
                'remove',
