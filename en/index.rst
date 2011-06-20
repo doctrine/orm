@@ -11,6 +11,7 @@ Reference Guide
    reference/introduction
    reference/architecture
    reference/configuration
+   reference/faq
    reference/basic-mapping
    reference/association-mapping
    reference/inheritance-mapping
