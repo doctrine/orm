@@ -22,16 +22,17 @@
 namespace Doctrine\ORM\Event;
 
 /**
- * Provides event arguments for the onFlush event.
+ * Provides event arguments for the postFlush event.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
- * @since       2.0
+ * @since       2.1
  * @version     $Revision$
  * @author      Roman Borschel <roman@code-factory.de>
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
+ * @author      Christopher Hoult <choult@gmail.com>
  */
-class OnFlushEventArgs extends \Doctrine\Common\EventArgs
+class PostFlushEventArgs extends \Doctrine\Common\EventArgs
 {
     /**
      * @var EntityManager
