@@ -986,7 +986,7 @@ class QueryBuilder
             foreach ($fromParts as $from) {
                 $fromClause = (string) $from;
 
-                if (isset($joinParts[$from->getAlias()])) {
+                if ($from instanceof Expr\From && isset($joinParts[$from->getAlias()])) {
                     foreach ($joinParts[$from->getAlias()] as $join) {
                         $fromClause .= ' ' . ((string) $join);
                     }
