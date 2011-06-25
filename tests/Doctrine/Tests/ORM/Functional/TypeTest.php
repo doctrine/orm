@@ -8,7 +8,7 @@ use Doctrine\Tests\Models\Generic\DecimalModel;
 use Doctrine\Tests\Models\Generic\SerializationModel;
 
 use Doctrine\ORM\Mapping\AssociationMapping;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Type as DBALType;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -135,7 +135,7 @@ class TypeTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $dateTimeDb = $this->_em->createQuery('SELECT d FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime = ?1')
-                                ->setParameter(1, $date, Type::DATETIME)
+                                ->setParameter(1, $date, DBALType::DATETIME)
                                 ->getSingleResult();
     }
 
@@ -154,7 +154,7 @@ class TypeTest extends \Doctrine\Tests\OrmFunctionalTestCase
                                  ->select('d')
                                  ->from('Doctrine\Tests\Models\Generic\DateTimeModel', 'd')
                                  ->where('d.datetime = ?1')
-                                 ->setParameter(1, $date, Type::DATETIME)
+                                 ->setParameter(1, $date, DBALType::DATETIME)
                                  ->getQuery()->getSingleResult();
     }
 
