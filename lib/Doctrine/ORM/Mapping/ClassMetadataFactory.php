@@ -248,11 +248,13 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
         // Move down the hierarchy of parent classes, starting from the topmost class
         $parent = null;
+        $rootEntityFound = false;
         $visited = array();
         foreach ($parentClasses as $className) {
             if (isset($this->loadedMetadata[$className])) {
                 $parent = $this->loadedMetadata[$className];
                 if ( ! $parent->isMappedSuperclass) {
+                    $rootEntityFound = true;
                     array_unshift($visited, $className);
                 }
                 continue;
@@ -281,7 +283,10 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 throw MappingException::reflectionFailure($className, $e);
             }
 
-            if ($parent && ! $parent->isMappedSuperclass) {
+            // If this class has a parent the id generator strategy is inherited.
+            // However this is only true if the hierachy of parents contains the root entity,
+            // if it consinsts of mapped superclasses these don't necessarily include the id field.
+            if ($parent && $rootEntityFound) {
                 if ($parent->isIdGeneratorSequence()) {
                     $class->setSequenceGeneratorDefinition($parent->sequenceGeneratorDefinition);
                 } else if ($parent->isIdGeneratorTable()) {
@@ -336,6 +341,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             $parent = $class;
 
             if ( ! $class->isMappedSuperclass) {
+                $rootEntityFound = true;
                 array_unshift($visited, $className);
             }
 
