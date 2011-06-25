@@ -709,4 +709,16 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         
         $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 0', $qb->getDQL());
     }
+    
+    /**
+     * @group DDC-1227
+     */
+    public function testAddFromString()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->add('select', 'u')
+            ->add('from', 'Doctrine\Tests\Models\CMS\CmsUser u');
+        
+        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $qb->getDQL());
+    }
 }
