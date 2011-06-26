@@ -236,6 +236,17 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
         $cm->mapField(array('fieldName' => 'name', 'columnName' => 'name'));
     }
+    
+    /**
+     * @group DDC-1224
+     */
+    public function testGetTemporaryTableNameSchema()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->setTableName('foo.bar');
+        
+        $this->assertEquals('foo_bar_id_tmp', $cm->getTemporaryIdTableName());
+    }
 
     public function testDefaultTableName()
     {
