@@ -297,6 +297,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             }
         }
         
+        if (isset($GLOBALS['db_event_subscribers'])) {
+            foreach (explode(",", $GLOBALS['db_event_subscribers']) AS $subscriberClass) {
+                $subscriberInstance = new $subscriberClass();
+                $evm->addEventSubscriber($subscriberInstance);
+            }
+        }
+        
         return \Doctrine\ORM\EntityManager::create($conn, $config);
     }
 
