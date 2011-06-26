@@ -49,7 +49,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         $rootClass = $this->_em->getClassMetadata($this->_class->rootEntityName);
         $tableAlias = $this->_getSQLTableAlias($rootClass->name);
         $resultColumnName = $this->_platform->getSQLResultCasing($discrColumn);
-        $this->_rsm->setDiscriminatorColumn('r', $discrColumn);
+        $this->_rsm->setDiscriminatorColumn('r', $resultColumnName);
         $this->_rsm->addMetaResult('r', $resultColumnName, $discrColumn);
 
         // Append subclass columns

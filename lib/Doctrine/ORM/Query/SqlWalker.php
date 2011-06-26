@@ -558,7 +558,7 @@ class SqlWalker implements TreeWalker
 
                 $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
                 $this->_rsm->setDiscriminatorColumn($dqlAlias, $columnAlias);
-                $this->_rsm->addMetaResult($dqlAlias, $this->_platform->getSQLResultCasing($columnAlias), $discrColumn['fieldName']);
+                $this->_rsm->addMetaResult($dqlAlias, $columnAlias, $discrColumn['fieldName']);
 
                 // Add foreign key columns to SQL, if necessary
                 if ($addMetaColumns) {

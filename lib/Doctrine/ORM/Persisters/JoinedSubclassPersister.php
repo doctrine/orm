@@ -284,7 +284,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             }
 
             $resultColumnName = $this->_platform->getSQLResultCasing($discrColumn);
-            $this->_rsm->setDiscriminatorColumn('r', $discrColumn);
+            $this->_rsm->setDiscriminatorColumn('r', $resultColumnName);
             $this->_rsm->addMetaResult('r', $resultColumnName, $discrColumn);
         }
 
