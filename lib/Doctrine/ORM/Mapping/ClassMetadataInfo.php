@@ -1137,7 +1137,8 @@ class ClassMetadataInfo
      */
     public function getTemporaryIdTableName()
     {
-        return $this->table['name'] . '_id_tmp';
+        // replace dots with underscores because PostgreSQL creates temporary tables in a special schema
+        return str_replace('.', '_', $this->table['name'] . '_id_tmp');
     }
 
     /**
