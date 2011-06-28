@@ -30,7 +30,6 @@ Doctrine\Tests\ORM\Mapping\User:
         name: address_id
         referencedColumnName: id
         onDelete: CASCADE
-        onUpdate: CASCADE
       cascade: [ remove ]
   oneToMany:
     phonenumbers:
