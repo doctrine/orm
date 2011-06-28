@@ -103,7 +103,7 @@ use Doctrine\ORM\Mapping as ORM;
 '/**
  * <description>
  *
- * @return <variableType>$<variableName>
+ * @return <variableType>
  */
 public function <methodName>()
 {
