@@ -268,29 +268,6 @@ complete list of supported helper methods available:
     <?php
     class Expr
     {
-        /** Base objects **/
-    
-        // Example usage - $qb->expr()->select('u')
-        public function select($select = null); // Returns Expr\Select instance
-    
-        // Example - $qb->expr()->from('User', 'u')
-        public function from($from, $alias); // Returns Expr\From instance
-    
-        // Example - $qb->expr()->leftJoin('u.Phonenumbers', 'p', Expr\Join::ON, 'p.user_id = u.id AND p.country_code = 55');
-        // Example - $qb->expr()->leftJoin('u.Phonenumbers', 'p', 'ON', $qb->expr()->andx($qb->expr()->eq('p.user_id', 'u.id'), $qb->expr()->eq('p.country_code', '55'));
-        public function leftJoin($join, $alias, $conditionType = null, $condition = null); // Returns Expr\Join instance
-    
-        // Example - $qb->expr()->innerJoin('u.Group', 'g', Expr\Join::WITH, 'g.manager_level = 100');
-        // Example - $qb->expr()->innerJoin('u.Group', 'g', 'WITH', $qb->expr()->eq('g.manager_level', '100'));
-        public function innerJoin($join, $alias, $conditionType = null, $condition = null); // Returns Expr\Join instance
-    
-        // Example - $qb->expr()->orderBy('u.surname', 'ASC')->add('u.firstname', 'ASC')->...
-        public function orderBy($sort = null, $order = null); // Returns Expr\OrderBy instance
-    
-        // Example - $qb->expr()->groupBy()->add('u.id')->...
-        public function groupBy($groupBy = null); // Returns Expr\GroupBy instance
-    
-    
         /** Conditional objects **/        
     
         // Example - $qb->expr()->andx($cond1 [, $condN])->add(...)->...
