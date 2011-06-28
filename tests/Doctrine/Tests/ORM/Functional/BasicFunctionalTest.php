@@ -140,6 +140,40 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($user2->address instanceof \Doctrine\ORM\Proxy\Proxy);
     }
     
+    /**
+     * @group DDC-1230
+     */
+    public function testRemove()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user));
+        
+        $this->_em->persist($user);
+        
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user));
+        
+        $this->_em->remove($user);
+        
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user));
+        
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $id = $user->getId();
+        
+        $this->_em->remove($user);
+        
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_REMOVED, $this->_em->getUnitOfWork()->getEntityState($user));
+        $this->_em->flush();
+        
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user));
+        
+        $this->assertNull($this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $id));
+    }
+    
     public function testOneToManyOrphanRemoval()
     {
         $user = new CmsUser;
