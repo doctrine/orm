@@ -23,7 +23,6 @@ Doctrine\Tests\ORM\Tools\Export\User:
         name: address_id
         referencedColumnName: id
         onDelete: CASCADE
-        onUpdate: CASCADE
       cascade: [ remove ]
       inversedBy: user
   oneToMany:
