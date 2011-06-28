@@ -577,7 +577,7 @@ class UnitOfWork implements PropertyChangedListener
                             . $assoc['sourceEntity'] . "#" . $assoc['fieldName'] . "' that was not"
                             . " configured to cascade persist operations for entity: " . self::objToStr($entry) . "."
                             . " Explicitly persist the new entity or configure cascading persist operations"
-                            . " on the relationship. If you cannot find out which entity casues the problem"
+                            . " on the relationship. If you cannot find out which entity causes the problem"
                             . " implement '" . $assoc['targetEntity'] . "#__toString()' to get a clue.");
                 }
                 $this->persistNew($targetClass, $entry);
