@@ -309,19 +309,6 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
-     * @group DDC-1087
-     */
-    public function testIsNullCriteria()
-    {
-        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
-        $users = $repos->findBy(array('status' => null, 'username' => 'romanb'));
-
-        $params = $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['params'];
-        $this->assertEquals(1, count($params), "Should only execute with one parameter.");
-        $this->assertEquals(array('romanb'), $params);
-    }
-
-    /**
      * @group DDC-1094
      */
     public function testFindByLimitOffset()
