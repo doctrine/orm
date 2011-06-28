@@ -530,8 +530,8 @@ it is bidirectional.
               targetEntity Customer
               inversedBy: cart
               joinColumn:
-                customer_id:
-                   referencedColumnName: id
+                name: customer_id:
+                referencedColumnName: id
 
 Note that the @JoinColumn is not really necessary in this example,
 as the defaults would be the same.
