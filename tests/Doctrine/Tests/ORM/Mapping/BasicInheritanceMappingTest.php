@@ -85,7 +85,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testUnmappedEntityInHierachy()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', "Entity 'Doctrine\Tests\ORM\Mapping\HierachyBEntity' has to be part of the descriminator map of 'Doctrine\Tests\ORM\Mapping\HierachyBase' to be properly mapped in the inheritance hierachy. If you want to avoid instantiation of this type mark it abstract.");
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', "Entity 'Doctrine\Tests\ORM\Mapping\HierachyBEntity' has to be part of the descriminator map of 'Doctrine\Tests\ORM\Mapping\HierachyBase' to be properly mapped in the inheritance hierachy. Alternatively you can make 'Doctrine\Tests\ORM\Mapping\HierachyBEntity' an abstract class to avoid this exception from occuring.");
         
         $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierachyE');
     }
@@ -209,7 +209,7 @@ abstract class HierachyASuperclass extends HierachyBase
 /**
  * @Entity
  */
-abstract class HierachyBEntity extends HierachyBase
+class HierachyBEntity extends HierachyBase
 {
     /** @Column(type="string") */
     public $b;
