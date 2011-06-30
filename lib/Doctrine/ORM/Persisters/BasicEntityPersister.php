@@ -953,12 +953,17 @@ class BasicEntityPersister
                     }
                 }
                 $this->_selectJoinSql .= ' LEFT JOIN'; // TODO: Inner join when all join columns are NOT nullable.
+                $first = true;
                 if ($assoc['isOwningSide']) {
                     $this->_selectJoinSql .= ' ' . $eagerEntity->table['name'] . ' ' . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) .' ON ';
                     
                     foreach ($assoc['sourceToTargetKeyColumns'] AS $sourceCol => $targetCol) {
+                        if (!$first) {
+                            $this->_selectJoinSql .= ' AND ';
+                        }
                         $this->_selectJoinSql .= $this->_getSQLTableAlias($assoc['sourceEntity']) . '.'.$sourceCol.' = ' .
                                                  $this->_getSQLTableAlias($assoc['targetEntity'], $assocAlias) . '.'.$targetCol.' ';
+                        $first = false;
                     }
                 } else {
                     $eagerEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
@@ -967,8 +972,12 @@ class BasicEntityPersister
                     $this->_selectJoinSql .= ' ' . $eagerEntity->table['name'] . ' ' . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) .' ON ';
 
                     foreach ($owningAssoc['sourceToTargetKeyColumns'] AS $sourceCol => $targetCol) {
+                        if (!$first) {
+                            $this->_selectJoinSql .= ' AND ';
+                        }
                         $this->_selectJoinSql .= $this->_getSQLTableAlias($owningAssoc['sourceEntity'], $assocAlias) . '.'.$sourceCol.' = ' .
                                                  $this->_getSQLTableAlias($owningAssoc['targetEntity']) . '.' . $targetCol . ' ';
+                        $first = false;
                     }
                 }
             }
