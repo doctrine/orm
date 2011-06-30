@@ -327,7 +327,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                     if (!$class->discriminatorColumn) {
                         throw MappingException::missingDiscriminatorColumn($class->name);
                     }
-                } else if ($parent && !in_array($class->name, array_values($class->discriminatorMap))) {
+                } else if ($parent && !$class->reflClass->isAbstract() && !in_array($class->name, array_values($class->discriminatorMap))) {
                     // enforce discriminator map for all entities of an inheritance hierachy, otherwise problems will occur.
                     throw MappingException::mappedClassNotPartOfDiscriminatorMap($class->name, $class->rootEntityName);
                 }
