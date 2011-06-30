@@ -26,12 +26,12 @@
         </one-to-one>
         
         <one-to-many field="phonenumbers" target-entity="Doctrine\Tests\ORM\Tools\Export\Phonenumber" mapped-by="user">
-            <order-by>
-                <order-by-field name="number" direction="ASC" />
-            </order-by>
             <cascade>
                 <cascade-persist/>
             </cascade>
+            <order-by>
+                <order-by-field name="number" direction="ASC" />
+            </order-by>
         </one-to-many>
         
         <many-to-many field="groups" target-entity="Doctrine\Tests\ORM\Tools\Export\Group">
