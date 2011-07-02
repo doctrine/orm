@@ -21,10 +21,9 @@ namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Cache\ArrayCache,
     Doctrine\Common\Annotations\AnnotationReader,
+    Doctrine\Common\Annotations\AnnotationRegistry,
     Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\MappingException;
-
-require __DIR__ . '/DoctrineAnnotations.php';
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -73,6 +72,7 @@ class AnnotationDriver implements Driver
     public function __construct($reader, $paths = null)
     {
         $this->_reader = $reader;
+        AnnotationRegistry::registerFile(__DIR__ . '/DoctrineAnnotations.php');
         if ($paths) {
             $this->addPaths((array) $paths);
         }
