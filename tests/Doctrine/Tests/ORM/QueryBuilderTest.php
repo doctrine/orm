@@ -197,6 +197,17 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid');
     }
+    
+    public function testComplexAndWhere()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where('u.id = :uid OR u.id = :uid2 OR u.id = :uid3')
+            ->andWhere('u.name = :name');
+            
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid OR u.id = :uid2 OR u.id = :uid3) AND u.name = :name');
+    }
 
     public function testAndWhere()
     {
