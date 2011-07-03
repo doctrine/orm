@@ -43,11 +43,26 @@ class Composite extends Base
         $components = array();
         
         foreach ($this->_parts as $part) {
-            $components[] = (is_object($part) && $part instanceof self && $part->count() > 1)
-                ? $this->_preSeparator . ((string) $part) . $this->_postSeparator
-                : ((string) $part);
+            $components[] = $this->processQueryPart($part);
         }
         
         return implode($this->_separator, $components);
+    }
+    
+    
+    private function processQueryPart($part)
+    {
+        $queryPart = (string) $part;
+        
+        if (is_object($part) && $part instanceof self && $part->count() > 1) {
+            return $this->_preSeparator . $queryPart . $this->_postSeparator;
+        }
+        
+        // Fixes DDC-1237: User may have added a where item containing nested expression (with "OR" or "AND")
+        if (mb_stripos($queryPart, ' OR ') !== false || mb_stripos($queryPart, ' AND ') !== false) {
+            return $this->_preSeparator . $queryPart . $this->_postSeparator;
+        }
+        
+        return $queryPart;
     }
 }
