@@ -35,11 +35,17 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
         
-        $user = $this->_em->getReference(__NAMESPACE__ . '\\DDC1238User', $user->getId());
+        $userId = $user->getId();
         $this->_em->clear();
         
+        $user = $this->_em->getReference(__NAMESPACE__ . '\\DDC1238User', $userId);
+        $this->_em->clear();
+        #$user2 = $this->_em->getReference(__NAMESPACE__ . '\\DDC1238User', $userId);
+        
+        xdebug_start_trace("/tmp/doctrine");
         $userId = $user->getId();
         
+        $this->assertNotSame($user, $user2);
         $this->assertNull($userId, "This proxy is unitialized and was cleared from the identity map, so no loading possible.");
     }
 }
@@ -67,17 +73,9 @@ abstract class DDC1238UserSuperClass
 }
 
 /**
- * nothing
- */
-abstract class DDC1238UserBase extends DDC1238UserSuperClass
-{
-    
-}
-
-/**
  * @Entity
  */
-class DDC1238User extends DDC1238UserBase
+class DDC1238User extends DDC1238UserSuperClass
 {
     /** @Id @GeneratedValue @Column(type="integer") */
     private $id;
