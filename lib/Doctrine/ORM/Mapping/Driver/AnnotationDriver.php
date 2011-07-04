@@ -41,7 +41,7 @@ class AnnotationDriver implements Driver
      *
      * @var AnnotationReader
      */
-    private $_reader;
+    protected $_reader;
 
     /**
      * The paths where to look for mapping files.
