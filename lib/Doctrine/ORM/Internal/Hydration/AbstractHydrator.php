@@ -287,4 +287,25 @@ abstract class AbstractHydrator
 
         return $rowData;
     }
+    
+    protected function registerManaged($class, $entity, $data)
+    {
+        if ($class->isIdentifierComposite) {
+            $id = array();
+            foreach ($class->identifier as $fieldName) {
+                if (isset($class->associationMappings[$fieldName])) {
+                    $id[$fieldName] = $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']];
+                } else {
+                    $id[$fieldName] = $data[$fieldName];
+                }
+            }
+        } else {
+            if (isset($class->associationMappings[$class->identifier[0]])) {
+                $id = array($class->identifier[0] => $data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']]);
+            } else {
+                $id = array($class->identifier[0] => $data[$class->identifier[0]]);
+            }
+        }
+        $this->_em->getUnitOfWork()->registerManaged($entity, $id, $data);
+    }
 }

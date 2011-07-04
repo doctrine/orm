@@ -18,8 +18,6 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(array(
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1238User'),
-                #$this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1238UserBase'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1238UserSuperClass'),
             ));
         } catch(\PDOException $e) {
             
@@ -40,26 +38,50 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $user = $this->_em->getReference(__NAMESPACE__ . '\\DDC1238User', $userId);
         $this->_em->clear();
-        #$user2 = $this->_em->getReference(__NAMESPACE__ . '\\DDC1238User', $userId);
         
-        xdebug_start_trace("/tmp/doctrine");
+        $userId2 = $user->getId();
+        $this->assertEquals($userId, $userId2, "This proxy can still be initialized.");
+    }
+    
+    public function testIssueProxyClear()
+    {
+        $user = new DDC1238User;
+        $user->setName("test");
+        
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+        
         $userId = $user->getId();
+        $this->_em->clear();
         
-        $this->assertNotSame($user, $user2);
-        $this->assertNull($userId, "This proxy is unitialized and was cleared from the identity map, so no loading possible.");
+        $user = $this->_em->getReference(__NAMESPACE__ . '\\DDC1238User', $userId);
+        $this->_em->clear();
+        
+        $user2 = $this->_em->getReference(__NAMESPACE__ . '\\DDC1238User', $userId);
+        
+        $this->assertNull($user->getId(), "Now this is null, we already have a user instance of that type");
     }
 }
 
 /**
- * @MappedSuperclass
+ * @Entity
  */
-abstract class DDC1238UserSuperClass
+class DDC1238User
 {
+    /** @Id @GeneratedValue @Column(type="integer") */
+    private $id;
+    
     /**
      * @Column
      * @var string
      */
     private $name;
+    
+    public function getId()
+    {
+        return $this->id;
+    }
     
     public function getName()
     {
@@ -69,20 +91,6 @@ abstract class DDC1238UserSuperClass
     public function setName($name)
     {
         $this->name = $name;
-    }
-}
-
-/**
- * @Entity
- */
-class DDC1238User extends DDC1238UserSuperClass
-{
-    /** @Id @GeneratedValue @Column(type="integer") */
-    private $id;
-    
-    public function getId()
-    {
-        return $this->id;
     }
 }
 

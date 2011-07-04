@@ -1976,7 +1976,7 @@ class UnitOfWork implements PropertyChangedListener
                                         // a way to solve this with deferred eager loading, which means putting
                                         // an entity with subclasses at a *-to-one location is really bad! (performance-wise)
                                         $newValue = $this->getEntityPersister($assoc['targetEntity'])
-                                                ->loadOneToOneEntity($assoc, $entity, null, $associatedId);
+                                                ->loadOneToOneEntity($assoc, $entity, $associatedId);
                                     } else {
                                         // Deferred eager load only works for single identifier classes
 
@@ -2012,7 +2012,7 @@ class UnitOfWork implements PropertyChangedListener
                         } else {
                             // Inverse side of x-to-one can never be lazy
                             $class->reflFields[$field]->setValue($entity, $this->getEntityPersister($assoc['targetEntity'])
-                                    ->loadOneToOneEntity($assoc, $entity, null));
+                                    ->loadOneToOneEntity($assoc, $entity));
                         }
                     } else {
                         // Inject collection
@@ -2143,7 +2143,7 @@ class UnitOfWork implements PropertyChangedListener
      * @return array The identifier values.
      */
     public function getEntityIdentifier($entity)
-    {
+    {        
         return $this->entityIdentifiers[spl_object_hash($entity)];
     }
 
