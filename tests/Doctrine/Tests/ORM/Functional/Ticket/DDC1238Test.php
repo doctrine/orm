@@ -35,11 +35,12 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
         
-        for ($i = 0; $i < 5; $i++) {
-            $user = $this->_em->getReference(__NAMESPACE__ . '\\DDC1238User', $user->getId());
-        }
+        $user = $this->_em->getReference(__NAMESPACE__ . '\\DDC1238User', $user->getId());
+        $this->_em->clear();
         
-        $this->assertInstanceOf(__NAMESPACE__ . '\\DDC1238User', $user);
+        $userId = $user->getId();
+        
+        $this->assertNull($userId, "This proxy is unitialized and was cleared from the identity map, so no loading possible.");
     }
 }
 
