@@ -23,11 +23,10 @@ namespace Doctrine\ORM\Internal\Hydration;
 use \PDO;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Query;
 
 class SimpleObjectHydrator extends AbstractHydrator
 {
-    const REFRESH_ENTITY = 'doctrine_refresh_entity';
-
     /**
      * @var ClassMetadata
      */
@@ -123,17 +122,8 @@ class SimpleObjectHydrator extends AbstractHydrator
             }
         }
 
-        if (isset($this->_hints[self::REFRESH_ENTITY])) {
-            $this->_hints[Query::HINT_REFRESH] = true;
-            $id = array();
-            if ($this->_class->isIdentifierComposite) {
-                foreach ($this->_class->identifier as $fieldName) {
-                    $id[$fieldName] = $data[$fieldName];
-                }
-            } else {
-                $id = array($this->_class->identifier[0] => $data[$this->_class->identifier[0]]);
-            }
-            $this->_em->getUnitOfWork()->registerManaged($this->_hints[self::REFRESH_ENTITY], $id, $data);
+        if (isset($this->_hints[Query::HINT_REFRESH_ENTITY])) {
+            $this->registerManaged($this->class, $this->_hints[Query::HINT_REFRESH_ENTITY], $data);
         }
 
         $result[] = $this->_em->getUnitOfWork()->createEntity($entityName, $data, $this->_hints);
