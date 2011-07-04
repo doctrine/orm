@@ -72,7 +72,6 @@ class AnnotationDriver implements Driver
     public function __construct($reader, $paths = null)
     {
         $this->_reader = $reader;
-        AnnotationRegistry::registerFile(__DIR__ . '/DoctrineAnnotations.php');
         if ($paths) {
             $this->addPaths((array) $paths);
         }
