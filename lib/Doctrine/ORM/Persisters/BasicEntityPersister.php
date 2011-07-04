@@ -570,6 +570,7 @@ class BasicEntityPersister
         
         if ($entity !== null) {
             $hints[Query::HINT_REFRESH] = true;
+            $hints[Query::HINT_REFRESH_ENTITY] = $entity;
         }
 
         if ($this->_selectJoinSql) {
@@ -587,13 +588,12 @@ class BasicEntityPersister
      *
      * @param array $assoc The association to load.
      * @param object $sourceEntity The entity that owns the association (not necessarily the "owning side").
-     * @param object $targetEntity The existing ghost entity (proxy) to load, if any.
      * @param array $identifier The identifier of the entity to load. Must be provided if
      *                          the association to load represents the owning side, otherwise
      *                          the identifier is derived from the $sourceEntity.
      * @return object The loaded and managed entity instance or NULL if the entity can not be found.
      */
-    public function loadOneToOneEntity(array $assoc, $sourceEntity, $targetEntity, array $identifier = array())
+    public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = array())
     {
         if ($foundEntity = $this->_em->getUnitOfWork()->tryGetById($identifier, $assoc['targetEntity'])) {
             return $foundEntity;
@@ -621,7 +621,7 @@ class BasicEntityPersister
             }
             */
 
-            $targetEntity = $this->load($identifier, $targetEntity, $assoc, $hints);
+            $targetEntity = $this->load($identifier, null, $assoc, $hints);
 
             // Complete bidirectional association, if necessary
             if ($targetEntity !== null && $isInverseSingleValued) {
@@ -645,7 +645,7 @@ class BasicEntityPersister
                 }
             }
 
-            $targetEntity = $this->load($identifier, $targetEntity, $assoc);
+            $targetEntity = $this->load($identifier, null, $assoc);
 
             if ($targetEntity !== null) {
                 $targetClass->setFieldValue($targetEntity, $assoc['mappedBy'], $sourceEntity);

@@ -53,6 +53,15 @@ final class Query extends AbstractQuery
      * @var string
      */
     const HINT_REFRESH = 'doctrine.refresh';
+    
+    
+    /**
+     * Internal hint: is set to the proxy entity that is currently triggered for loading
+     * 
+     * @var string
+     */
+    const HINT_REFRESH_ENTITY = 'doctrine.refresh.entity';
+    
     /**
      * The forcePartialLoad query hint forces a particular query to return
      * partial objects.

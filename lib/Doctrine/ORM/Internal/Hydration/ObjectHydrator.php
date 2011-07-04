@@ -205,6 +205,12 @@ class ObjectHydrator extends AbstractHydrator
             $className = $this->_ce[$className]->discriminatorMap[$data[$discrColumn]];
             unset($data[$discrColumn]);
         }
+        
+        if (isset($this->_hints[Query::HINT_REFRESH_ENTITY]) && isset($this->_rootAliases[$dqlAlias])) {
+            $class = $this->_ce[$className];
+            $this->registerManaged($class, $this->_hints[Query::HINT_REFRESH_ENTITY], $data);
+        }
+        
         return $this->_uow->createEntity($className, $data, $this->_hints);
     }
 
