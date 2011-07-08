@@ -33,6 +33,14 @@ class DebugUnitOfWorkListener
     private $file;
     private $context;
 
+    /**
+     * Pass a stream and contet information for the debugging session.
+     *
+     * The stream can be php://output to print to the screen.
+     *
+     * @param string $file
+     * @param string $context
+     */
     public function __construct($file = 'php://output', $context = '')
     {
         $this->file = $file;
@@ -41,8 +49,17 @@ class DebugUnitOfWorkListener
 
     public function onFlush(OnFlushEventArgs $args)
     {
-        $em = $args->getEntityManager();
+        $this->dumpIdentityMap($args->getEntityManager());
+    }
 
+    /**
+     * Dump the contents of the identity map into a stream.
+     * 
+     * @param EntityManager $em
+     * @return void
+     */
+    public function dumpIdentityMap(EntityManager $em)
+    {
         $uow = $em->getUnitOfWork();
         $identityMap = $uow->getIdentityMap();
 
