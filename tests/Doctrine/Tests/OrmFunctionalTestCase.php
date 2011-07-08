@@ -303,6 +303,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
                 $evm->addEventSubscriber($subscriberInstance);
             }
         }
+
+        if (isset($GLOBALS['debug_uow_listener'])) {
+            $evm->addEventListener(array('onFlush'), new \Doctrine\ORM\Tools\DebugUnitOfWorkListener());
+        }
         
         return \Doctrine\ORM\EntityManager::create($conn, $config);
     }
