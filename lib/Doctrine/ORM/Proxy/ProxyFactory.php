@@ -273,11 +273,11 @@ class <proxyClassName> extends \<className> implements \Doctrine\ORM\Proxy\Proxy
     public function __load()
     {
         if (!$this->__isInitialized__ && $this->_entityPersister) {
-            $this->__isInitialized__ = true;
             if ($this->_entityPersister->load($this->_identifier, $this) === null) {
                 throw new \Doctrine\ORM\EntityNotFoundException();
             }
             unset($this->_entityPersister, $this->_identifier);
+            $this->__isInitialized__ = true;
         }
     }
     
