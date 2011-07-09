@@ -130,4 +130,21 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
         $this->assertEquals('Doctrine 2 Cookbook', $entity->getName());
     }
+
+    /**
+     * @group DDC-1022
+     */
+    public function testWakeupCalledOnProxy()
+    {
+        $id = $this->createProduct();
+
+        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
+        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+
+        $this->assertFalse($entity->wakeUp);
+
+        $entity->setName('Doctrine 2 Cookbook');
+
+        $this->assertTrue($entity->wakeUp, "Loading the proxy should call __wakeup().");
+    }
 }
