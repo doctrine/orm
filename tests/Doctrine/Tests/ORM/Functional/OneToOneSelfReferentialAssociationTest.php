@@ -49,6 +49,14 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         $this->assertForeignKeyIs(null);
     }
 
+    public function testFind()
+    {
+        $id = $this->_createFixture();
+
+        $customer = $this->_em->find('Doctrine\Tests\Models\ECommerce\ECommerceCustomer', $id);
+        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $customer->getMentor());
+    }
+
     public function testEagerLoadsAssociation()
     {
         $this->_createFixture();
@@ -127,6 +135,8 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         
         $this->_em->flush();
         $this->_em->clear();
+
+        return $customer->getId();
     }
 }
 

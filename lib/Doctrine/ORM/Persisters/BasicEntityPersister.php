@@ -633,7 +633,11 @@ class BasicEntityPersister
             // TRICKY: since the association is specular source and target are flipped
             foreach ($owningAssoc['targetToSourceKeyColumns'] as $sourceKeyColumn => $targetKeyColumn) {
                 if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
-                    $identifier[$targetKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
+                    // unset the old value and set the new sql aliased value here. By definition
+                    // unset($identifier[$targetKeyColumn] works here with how UnitOfWork::createEntity() calls this method.
+                    $identifier[$this->_getSQLTableAlias($targetClass->name) . "." . $targetKeyColumn] =
+                        $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
+                    unset($identifier[$targetKeyColumn]);
                 } else {
                     throw MappingException::joinColumnMustPointToMappedField(
                         $sourceClass->name, $sourceKeyColumn
@@ -1214,7 +1218,7 @@ class BasicEntityPersister
             } else if ($assoc !== null && strpos($field, " ") === false && strpos($field, "(") === false) {
                 // very careless developers could potentially open up this normally hidden api for userland attacks,
                 // therefore checking for spaces and function calls which are not allowed.
-                
+
                 // found a join column condition, not really a "field"
                 $conditionSql .= $field;
             } else {
