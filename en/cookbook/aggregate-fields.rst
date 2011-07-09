@@ -46,7 +46,7 @@ Our entities look like:
         private $no;
     
         /**
-         * @OneToMany(targetEntity="Entry", mappedBy="entries", cascade={"persist"})
+         * @OneToMany(targetEntity="Entry", mappedBy="account", cascade={"persist"})
          */
         private $entries;
     
