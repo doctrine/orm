@@ -56,6 +56,7 @@ class ECommerceProduct
     private $related;
 
     public $isCloned = false;
+    public $wakeUp = false;
 
     public function __construct()
     {
@@ -165,5 +166,13 @@ class ECommerceProduct
     public function __clone()
     {
         $this->isCloned = true;
+    }
+
+    /**
+     * Testing docblock contents here
+     */
+    public function __wakeup()
+    {
+        $this->wakeUp = true;
     }
 }
