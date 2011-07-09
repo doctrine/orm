@@ -691,6 +691,7 @@ public function <methodName>()
         if ($this->_hasMethod($methodName, $metadata)) {
             return;
         }
+        $this->_staticReflection[$metadata->name]['methods'][] = $methodName;
 
         $var = sprintf('_%sMethodTemplate', $type);
         $template = self::$$var;
@@ -723,6 +724,7 @@ public function <methodName>()
         if ($this->_hasMethod($methodName, $metadata)) {
             return;
         }
+        $this->_staticReflection[$metadata->name]['methods'][] = $methodName;
 
         $replacements = array(
             '<name>'        => $this->_annotationsPrefix . $name,
