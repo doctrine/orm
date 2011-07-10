@@ -13,7 +13,8 @@ Entity Classes
 I access a variable and its null, what is wrong?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Proxy, not use public. Private and protected variables instead.
+If this variable is a public variable then you are violating one of the criteria for entities.
+All properties have to be protected or private for the proxy object pattern to work.
 
 How can I add default values to a column?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -41,7 +42,18 @@ Mapping
 Why do I get exceptions about unique constraint failures during ``$em->flush()``?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--
+Doctrine does not check if you are re-adding entities with a primary key that already exists
+or adding entities to a collection twice. You have to check for both conditions yourself
+in the code before calling ``$em->flush()`` if you know that unique constraint failures
+can occur.
+
+In `Symfony 2<http://www.symfony.com>`_ for example there is a Unique Entity Validator
+to achieve this task.
+
+For collections you can check with ``$collection->contains($entity)`` if an entity is already
+part of this collection. For a FETCH=LAZY collection this will initialize the collection,
+however for FETCH=EXTRA_LAZY this method will use SQL to determine if this entity is already
+part of the collection.
 
 Associations
 ------------
@@ -49,32 +61,64 @@ Associations
 What is wrong when I get an InvalidArgumentException "A new entity was found through the relationship.."?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+This exception is thrown during ``EntityManager#flush()`` when there exists an object in the identity map
+that contains a reference to an object that Doctrine does not know about. Say for example you grab
+a "User"-entity from the database with a specific id and set a completly new object into one of the associations
+of the User object. If you then call ``EntityManager#flush()`` without letting Doctrine know about
+this new object using ``EntityManager#persist($newObject)`` you will see this exception.
+
+You can solve this exception by:
+
+* Calling ``EntityManager#persist($newObject)`` on the new object
+* Using cascade=persist on the association that contains the new object
 
 How can I filter an association?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Natively you can't in 2.0 and 2.1. You should use DQL queries to query for the filtered set of entities.
+Natively you can't filter associations in 2.0 and 2.1. You should use DQL queries to query for the filtered set of entities.
 
 I call clear() on a One-To-Many collection but the entities are not deleted
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.
+This is an expected behavior that has to do with the inverse/owning side handling of Doctrine.
+By definition a One-To-Many association is on the inverse side, that means changes to it
+will not be recognized by Doctrine.
+
+If you want to perform the equivalent of the clear operation you have to iterate the
+collection and set the owning side many-to-one reference to NULL aswell to detach all entities
+from the collection. This will trigger the appropriate UPDATE statements on the database.
 
 How can I add columns to a many-to-many table?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.
+The many-to-many association is only supporting foreign keys in the table definition
+To work with many-to-many tables containing extra columns you have to use the
+foreign keys as primary keys feature of Doctrine introduced in version 2.1.
+
+See :doc:`the tutorial on composite primary keys for more information<../tutorials/composite-primary-keys>`.
 
 
 How can i paginate fetch-joined collections?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.
+If you are issuing a DQL statement that fetches a collection as well you cannot easily iterate
+over this collection using a LIMIT statement (or vendor equivalent).
+
+Doctrine does not offer a solution for this out of the box but there are several extensions
+that do:
+
+* `DoctrineExtensions <http://github.com/beberlei/DoctrineExtensions>`_
+* `Pagerfanta <http://github.com/whiteoctober/pagerfanta>`_
 
 Why does pagination not work correctly with fetch joins?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.
+Pagination in Doctrine uses a LIMIT clause (or vendor equivalent) to restrict the results.
+However when fetch-joining this is not returning the correct number of results since joining
+with a one-to-many or many-to-many association muliplies the number of rows by the number
+of associated entities.
+
+See the previous question for a solution to this task.
 
 Inheritance
 -----------
@@ -82,7 +126,10 @@ Inheritance
 Can I use Inheritance with Doctrine 2?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  
-.
+Yes, you can use Single- or Joined-Table Inheritance in Doctrine 2.
+
+See the documentation chapter on :doc:`inheritance mapping <inheritance-mapping>`_ for
+the details.
 
 EntityGenerator
 ---------------
@@ -97,23 +144,36 @@ Why does the EntityGenerator not generate inheritance correctly?
 
 .
 
-
-
-.
-
 Performance
 -----------
 
 Why is an extra SQL query executed every time I fetch an entity with a one-to-one relation?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.
+If Doctrine detects that you are fetching an inverse side one-to-one association
+it has to execute an additional query to load this object, because it cannot know
+if there is no such object (setting null) or if it should set a proxy and which id this proxy has.
+
+To solve this problem currently a query has to be executed to find out this information.
 
 Doctrine Query Language
 -----------------------
 
-What is DQL and why does it have such a strange syntax?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+What is DQL?
+~~~~~~~~~~~~
+
+DQL stands for Doctrine Query Language, a query language that very much looks like SQL
+but has some important benefits when using Doctrine:
+
+* It uses class names and fields instead of tables and columns, separating concerns between backend and your object model.
+* It utilizes the metadata defined to offer a range of shortcuts when writing. For example you do not have to specify the ON clause of joins, since Doctrine already knows about them.
+* It adds some functionality that is related to object management and transforms them into SQL.
+
+It also has some drawbacks of course:
+
+* The syntax is slightly different to SQL so you have to learn and remember the differences.
+* To be vendor independent it can only implement a subset of all the existing SQL dialects. Vendor specific functionality and optimizations cannot be used through DQL unless implemented by you explicitly.
+* For some DQL constructs subselects are used which are known to be slow in MySQL.
 
 Can I sort by a function (for example ORDER BY RAND()) in DQL?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
