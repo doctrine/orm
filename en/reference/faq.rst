@@ -131,6 +131,13 @@ Yes, you can use Single- or Joined-Table Inheritance in Doctrine 2.
 See the documentation chapter on :doc:`inheritance mapping <inheritance-mapping>`_ for
 the details.
 
+Why does Doctrine not create proxy objects for my inheritance hierachy?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you set a many-to-one or one-to-one association target-entity to any parent class of
+an inheritance hierachy Doctrine does not know what PHP class the foreign is actually of.
+To find this out it has to execute an SQL query to look this information up in the database.
+
 EntityGenerator
 ---------------
 
