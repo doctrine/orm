@@ -198,14 +198,117 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
 Use-Case 2: Simple Derived Identity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO
+Sometimes you have the requirement that two objects are related by a One-To-One association
+and that the dependent class should re-use the primary key of the class it depends on.
+One good example for this is a user-address relationship:
+
+.. code-block:: php
+
+    <?php
+    /**
+     * @Entity
+     */
+    class User
+    {
+        /** @Id @Column(type="integer") @GeneratedValue */
+        private $id;
+    }
+
+    /**
+     * @Entity
+     */
+    class Address
+    {
+        /** @Id @OneToOne(targetEntity="User") */
+        private $user;
+    }
 
 Use-Case 3: Join-Table with Metadata
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO
+In the classic order product shop example there is the concept of the order item
+which contains references to order and product and additional data such as the amount
+of products purchased and maybe even the current price.
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\Common\Collections\ArrayCollection;
+
+    /** @Entity */
+    class Order
+    {
+        /** @Id @Column(type="integer") @GeneratedValue */
+        private $id;
+
+        /** @ManyToOne(targetEntity="Customer") */
+        private $customer;
+        /** @OneToMany(targetEntity="OrderItem", mappedBy="order") */
+        private $items;
+
+        /** @Column(type="boolean") */
+        private $payed = false;
+        /** @Column(type="boolean") */
+        private $shipped = false;
+        /** @Column(type="datetime") */
+        private $created;
+
+        public function __construct(Customer $customer)
+        {
+            $this->customer = $customer;
+            $this->items = new ArrayCollection();
+            $this->created = new \DateTime("now");
+        }
+    }
+
+    /** @Entity */
+    class Product
+    {
+        /** @Id @Column(type="integer") @GeneratedValue */
+        private $id;
+
+        /** @Column(type="string")
+        private $name;
+
+        /** @Column(type="decimal")
+        private $currentPrice;
+
+        public function getCurrentPrice()
+        {
+            return $this->currentPrice;
+        }
+    }
+
+    /** @Entity */
+    class OrderItem
+    {
+        /** @Id @ManyToOne(targetEntity="Order") */
+        private $order;
+
+        /** @Id @ManyToOne(targetEntity="Product") */
+        private $product;
+
+        /** @Column(type="integer") */
+        private $amount = 1;
+
+        /** @Column(type="decimal") */
+        private $offeredPrice;
+
+        public function __construct(Order $order, Product $product, $amount = 1)
+        {
+            $this->order = $order;
+            $this->product = $product;
+            $this->offeredPrice = $product->getCurrentPrice();
+        }
+    }
+
 
 Performance Considerations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO
+Using composite keys always comes with a performance hit compared to using entities with
+a simple surrogate key. This performance impact is mostly due to additional PHP code that is
+necessary to handle this kind of keys, most notably when using derived identifiers.
+
+On the SQL side there is not much overhead as no additional or unexpected queries have to be
+executed to manage entities with derived foreign keys.
