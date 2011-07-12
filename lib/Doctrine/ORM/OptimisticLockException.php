@@ -33,6 +33,7 @@ class OptimisticLockException extends ORMException
 
     public function __construct($msg, $entity)
     {
+        parent::__construct($msg);
         $this->entity = $entity;
     }
 
