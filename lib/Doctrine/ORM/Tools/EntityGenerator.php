@@ -438,7 +438,7 @@ public function <methodName>()
 
             if ($inClass) {
                 $inClass = false;
-                $lastSeenClass = $lastSeenNamespace . '\\' . $token[1];
+                $lastSeenClass = $lastSeenNamespace . ($lastSeenNamespace ? '\\' : '') . $token[1];
                 $this->_staticReflection[$lastSeenClass]['properties'] = array();
                 $this->_staticReflection[$lastSeenClass]['methods'] = array();
             }
