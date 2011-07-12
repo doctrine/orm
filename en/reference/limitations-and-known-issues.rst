@@ -17,94 +17,12 @@ solved in the future. Any of this limitations now stated has at
 least one ticket in the Tracker and is discussed for future
 releases.
 
-Foreign Keys as Identifiers
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Join-Columns with non-primary keys
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. note::
-
-    Foreign keys as identifiers are currently in master and will be included in Doctrine 2.1
-
-There are many use-cases where you would want to use an
-Entity-Attribute-Value approach to modelling and define a
-table-schema like the following:
-
-.. code-block:: sql
-
-    CREATE TABLE product (
-        id INTEGER,
-        name VARCHAR,
-        PRIMARY KEY(id)
-    );
-    
-    CREATE TABLE product_attributes (
-        product_id INTEGER,
-        attribute_name VARCHAR,
-        attribute_value VARCHAR,
-        PRIMARY KEY (product_id, attribute_name)
-    );
-
-This is currently *NOT* possible with Doctrine2. You have to define
-a surrogate key on the ``product_attributes`` table and use a
-unique-constraint for the ``product_id`` and ``attribute_name``.
-
-.. code-block:: sql
-
-    CREATE TABLE product_attributes (
-        attribute_id, INTEGER,
-        product_id INTEGER,
-        attribute_name VARCHAR,
-        attribute_value VARCHAR,
-        PRIMARY KEY (attribute_id),
-        UNIQUE (product_id, attribute_name)
-    );
-
-Although we state that we support composite primary keys that does
-not currently include foreign keys as primary key columns. To see
-the fundamental difference between the two different
-``product_attributes`` tables you should see how they translate
-into a Doctrine Mapping (Using Annotations):
-
-.. code-block:: php
-
-    <?php
-    /**
-     * Scenario 1: THIS IS NOT POSSIBLE CURRENTLY
-     * @Entity @Table(name="product_attributes")
-     */
-    class ProductAttribute
-    {
-        /** @Id @ManyToOne(targetEntity="Product") */
-        private $product;
-    
-        /** @Id @Column(type="string", name="attribute_name") */
-        private $name;
-    
-        /** @Column(type="string", name="attribute_value") */
-        private $value;
-    }
-    
-    /**
-     * Scenario 2: Using the surrogate key workaround
-     * @Entity
-     * @Table(name="product_attributes", uniqueConstraints={@UniqueConstraint(columns={"product_id", "attribute_name"})}))
-     */
-    class ProductAttribute
-    {
-        /** @Id @Column(type="integer") @GeneratedValue */
-        private $id;
-    
-        /** @ManyToOne(targetEntity="Product") */
-        private $product;
-    
-        /** @Column(type="string", name="attribute_name") */
-        private $name;
-    
-        /** @Column(type="string", name="attribute_value") */
-        private $value;
-    }
-
-The following Jira Issue
-`contains the feature request to allow @ManyToOne and @OneToOne annotations along the @Id annotation <http://www.doctrine-project.org/jira/browse/DDC-117>`_.
+It is not possible to use join columns pointing to non-primary keys. Doctrine will think these are the primary
+keys and create lazy-loading proxies with the data, which can lead to unexpected results. Doctrine can for performance
+reasons not validate the correctness of this settings at runtime but only through the Validate Schema command.
 
 Mapping Arrays to a Join Table
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -222,21 +140,6 @@ benefit from custom persister implementations:
 -  `Add Upsert Support <http://www.doctrine-project.org/jira/browse/DDC-668>`_
 -  `Evaluate possible ways in which stored-procedures can be used <http://www.doctrine-project.org/jira/browse/DDC-445>`_
 -  The previous Filter Rules Feature Request
-
-Paginating Associations
-~~~~~~~~~~~~~~~~~~~~~~~
-
-.. note::
-
-    Extra Lazy Collections are currently in master and will be included in Doctrine 2.1
-
-It is not possible to paginate only parts of an associations at the moment. You can always only
-load the whole association/collection into memory. This is rather problematic for large collections,
-but we already plan to add facilities to fix this for Doctrine 2.1
-
--  `DDC-546 New Fetch Mode EXTRA_LAZY <http://www.doctrine-project.org/jira/browse/DDC-546>`_
--  `Blog: Working with large collections (Workaround) <http://www.doctrine-project.org/blog/doctrine2-large-collections>`_
--  `LargeCollections Helper <http://github.com/beberlei/DoctrineExtensions>`_
 
 Persist Keys of Collections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
