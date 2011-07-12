@@ -438,7 +438,7 @@ public function <methodName>()
 
             if ($inClass) {
                 $inClass = false;
-                $lastSeenClass = $lastSeenNamespace . '\\' . $token[1];
+                $lastSeenClass = $lastSeenNamespace . ($lastSeenNamespace ? '\\' : '') . $token[1];
                 $this->_staticReflection[$lastSeenClass]['properties'] = array();
                 $this->_staticReflection[$lastSeenClass]['methods'] = array();
             }
@@ -686,7 +686,13 @@ public function <methodName>()
 
     private function _generateEntityStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null)
     {
-        $methodName = $type . Inflector::classify($fieldName);
+        if ($type == "add") {
+            $addMethod = explode("\\", $typeHint);
+            $addMethod = end($addMethod);
+            $methodName = $type . $addMethod;
+        } else {
+            $methodName = $type . Inflector::classify($fieldName);
+        }
 
         if ($this->_hasMethod($methodName, $metadata)) {
             return;

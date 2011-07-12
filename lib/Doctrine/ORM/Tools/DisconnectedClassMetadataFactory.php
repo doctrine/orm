@@ -53,6 +53,17 @@ class DisconnectedClassMetadataFactory extends ClassMetadataFactory
     }
 
     /**
+     * Validate runtime metadata is correctly defined.
+     *
+     * @param ClassMetadata $class
+     * @param ClassMetadata $parent
+     */
+    protected function validateRuntimeMetadata($class, $parent)
+    {
+        // validate nothing
+    }
+
+    /**
      * @override
      */
     protected function getParentClasses($name)
