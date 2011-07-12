@@ -686,7 +686,13 @@ public function <methodName>()
 
     private function _generateEntityStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null)
     {
-        $methodName = $type . Inflector::classify($fieldName);
+        if ($type == "add") {
+            $addMethod = explode("\\", $typeHint);
+            $addMethod = end($addMethod);
+            $methodName = $type . $addMethod;
+        } else {
+            $methodName = $type . Inflector::classify($fieldName);
+        }
 
         if ($this->_hasMethod($methodName, $metadata)) {
             return;
