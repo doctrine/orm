@@ -24,7 +24,7 @@ For each of this three methods the following semantics apply:
 Additionally even with Doctrine 2.0 the following methods do not trigger the collection load:
 
 -  ``Collection#add($entity)``
--  ``Collection#offsetSet($key, $entity)`` - ArrayAccess with no specific key ``$coll[] = $entity`, it does
+-  ``Collection#offsetSet($key, $entity)`` - ArrayAccess with no specific key ``$coll[] = $entity``, it does
    not work when setting specific keys like ``$coll[0] = $entity``.
 
 With extra lazy collections you can now not only add entities to large collections but also paginate them
