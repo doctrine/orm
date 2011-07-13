@@ -144,55 +144,92 @@ Use-Case 1: Dynamic Attributes
 
 We keep up the example of an Article with arbitrary attributes, the mapping looks like this:
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    namespace Application\Model;
+    .. code-block:: php
 
-    use Doctrine\Common\Collections\ArrayCollection;
+        <?php
+        namespace Application\Model;
 
-    /**
-     * @Entity
-     */
-    class Article
-    {
-        /** @Id @Column(type="integer") @GeneratedValue */
-        private $id;
-        /** @Column(type="string") */
-        private $title;
+        use Doctrine\Common\Collections\ArrayCollection;
 
         /**
-         * @OneToMany(targetEntity="ArticleAttribute", mappedBy="article", cascade={"ALL"}, indexBy="attribute")
+         * @Entity
          */
-        private $attributes;
-
-        public function addAttribute($name, $value)
+        class Article
         {
-            $this->attributes[$name] = new ArticleAttribute($name, $value, $this);
+            /** @Id @Column(type="integer") @GeneratedValue */
+            private $id;
+            /** @Column(type="string") */
+            private $title;
+
+            /**
+             * @OneToMany(targetEntity="ArticleAttribute", mappedBy="article", cascade={"ALL"}, indexBy="attribute")
+             */
+            private $attributes;
+
+            public function addAttribute($name, $value)
+            {
+                $this->attributes[$name] = new ArticleAttribute($name, $value, $this);
+            }
         }
-    }
 
-    /**
-     * @Entity
-     */
-    class ArticleAttribute
-    {
-        /** @Id @ManyToOne(targetEntity="Article", inversedBy="attributes") */
-        private $article;
-
-        /** @Id @Column(type="string") */
-        private $attribute;
-
-        /** @Column(type="string") */
-        private $value;
-
-        public function __construct($name, $value, $article)
+        /**
+         * @Entity
+         */
+        class ArticleAttribute
         {
-            $this->attribute = $name;
-            $this->value = $value;
-            $this->article = $article;
+            /** @Id @ManyToOne(targetEntity="Article", inversedBy="attributes") */
+            private $article;
+
+            /** @Id @Column(type="string") */
+            private $attribute;
+
+            /** @Column(type="string") */
+            private $value;
+
+            public function __construct($name, $value, $article)
+            {
+                $this->attribute = $name;
+                $this->value = $value;
+                $this->article = $article;
+            }
         }
-    }
+
+    .. code-block:: xml
+
+        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                            http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+             <entity name="Application\Model\ArticleAttribute">
+                <id name="article" association-key="true" />
+                <id name="attribute" type="string" />
+                
+                <field name="value" type="string" />
+
+                <many-to-one field="article" target-entity="Article" inversed-by="attributes" />
+             <entity>
+
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        Application\Model\ArticleAttribute:
+          type: entity
+          id:
+            article:
+              associationKey: true
+            attribute:
+              type: string
+          fields:
+            value:
+              type: string
+          manyToOne:
+            article:
+              targetEntity: Article
+              inversedBy: attributes
 
 
 Use-Case 2: Simple Derived Identity

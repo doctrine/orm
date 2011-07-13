@@ -7,6 +7,17 @@ Frequently Asked Questions
     what is often asked. If you stumble accross an unanswerd question please write a mail to the mailing-list or
     join the #doctrine channel on Freenode IRC.
 
+Database Schema
+---------------
+
+How do I set the charset and collation for MySQL tables?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can't set these values inside the annotations, yml or xml mapping files. To make a database
+work with the default charset and collation you should configure MySQL to use it as default charset,
+or create the database with charset and collation details. This way they get inherited to all newly
+created database tables and columns.
+
 Entity Classes
 --------------
 
@@ -23,7 +34,7 @@ Doctrine does not support to set the default values in columns through the "DEFA
 This is not necessary however, you can just use your class properties as default values. These are then used
 upon insert:
 
-.. code-block::
+.. code-block:: php
 
     class User
     {
@@ -47,7 +58,7 @@ or adding entities to a collection twice. You have to check for both conditions 
 in the code before calling ``$em->flush()`` if you know that unique constraint failures
 can occur.
 
-In `Symfony 2<http://www.symfony.com>`_ for example there is a Unique Entity Validator
+In `Symfony 2 <http://www.symfony.com>`_ for example there is a Unique Entity Validator
 to achieve this task.
 
 For collections you can check with ``$collection->contains($entity)`` if an entity is already
@@ -128,7 +139,7 @@ Can I use Inheritance with Doctrine 2?
  
 Yes, you can use Single- or Joined-Table Inheritance in Doctrine 2.
 
-See the documentation chapter on :doc:`inheritance mapping <inheritance-mapping>`_ for
+See the documentation chapter on :doc:`inheritance mapping <inheritance-mapping>` for
 the details.
 
 Why does Doctrine not create proxy objects for my inheritance hierachy?
@@ -144,12 +155,16 @@ EntityGenerator
 Why does the EntityGenerator not do X?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.
+The EntityGenerator is not a full fledged code-generator that solves all tasks. Code-Generation
+is not a first-class priority in Doctrine 2 anymore (compared to Doctrine 1). The EntityGenerator
+is supposed to kick-start you, but not towards 100%.
 
 Why does the EntityGenerator not generate inheritance correctly?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.
+Just from the details of the discriminator map the EntityGenerator cannot guess the inheritance hierachy.
+This is why the generation of inherited entities does not fully work. You have to adjust some additional
+code to get this one working correctly.
 
 Performance
 -----------

@@ -448,7 +448,7 @@ Optional attributes for owning One-to-One:
    field on the inverse entity that contains the back-reference.
 -  orphan-removal - If true, the inverse side entity is always
    deleted when the owning side entity is. Defaults to false.
--  fetch - Either LAZY or FETCH, defaults to LAZY. This attribute
+-  fetch - Either LAZY or EAGER, defaults to LAZY. This attribute
    makes only sense on the owning side, the inverse side *ALWAYS* has
    to use the ``FETCH`` strategy.
 
@@ -501,7 +501,7 @@ Optional attributes:
    always deleted when the owning side entity is and it is not
    connected to any other owning side entity anymore. Defaults to
    false.
--  fetch - Either LAZY or FETCH, defaults to LAZY.
+-  fetch - Either LAZY or EAGER, defaults to LAZY.
 
 This definition relies on a bunch of mapping defaults with regards
 to the naming of the join-column/foreign key. The explicitly
@@ -547,7 +547,8 @@ Required attributes:
 Optional attributes:
 
 
--  fetch - Either LAZY or FETCH, defaults to LAZY.
+-  fetch - Either LAZY, EXTRA_LAZY or EAGER, defaults to LAZY.
+-  index-by: Index the collection by a field on the target entity.
 
 Defining Many-To-Many Associations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -579,7 +580,8 @@ Optional attributes:
 -  inversed-by - If the association is bidirectional the
    inversed-by attribute has to be specified with the name of the
    field on the inverse entity that contains the back-reference.
--  fetch - Either LAZY or FETCH, defaults to LAZY.
+-  fetch - Either LAZY, EXTRA_LAZY or EAGER, defaults to LAZY.
+-  index-by: Index the collection by a field on the target entity.
 
 The mapping defaults would lead to a join-table with the name
 "User\_Group" being created that contains two columns "user\_id"
@@ -698,4 +700,26 @@ table you can use the ``<indexes />`` and
 You have to specify the column and not the entity-class field names
 in the index and unique-constraint definitions.
 
+Derived Entities ID syntax
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+If the primary key of an entity contains a foreign key to another entity we speak of a derived
+entity relationship. You can define this in XML with the "association-key" attribute in the ``<id>`` tag.
+
+.. code-block:: xml
+
+    <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+         <entity name="Application\Model\ArticleAttribute">
+            <id name="article" association-key="true" />
+            <id name="attribute" type="string" />
+
+            <field name="value" type="string" />
+
+            <many-to-one field="article" target-entity="Article" inversed-by="attributes" />
+         <entity>
+
+    </doctrine-mapping>

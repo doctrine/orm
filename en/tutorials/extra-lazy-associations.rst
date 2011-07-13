@@ -1,10 +1,6 @@
 Extra Lazy Associations
 =======================
 
-.. note::
-
-    This feature is scheduled for version 2.1 of Doctrine and not included in the 2.0.x series.
-
 In many cases associations between entities can get pretty large. Even in a simple scenario like a blog.
 where posts can be commented, you always have to assume that a post draws hundrets of comments.
 In Doctrine 2.0 if you accessed an association it would always get loaded completly into memory. This

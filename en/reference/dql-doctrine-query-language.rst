@@ -557,6 +557,9 @@ clauses:
 -  TRIM([LEADING \| TRAILING \| BOTH] ['trchar' FROM] str) - Trim
    the string by the given trim char, defaults to whitespaces.
 -  UPPER(str) - Return the upper-case of the given string.
+-  DATE_ADD(date, days) - Add the number of days to a given date.
+-  DATE_SUB(date, days) - Substract the number of days from a given date.
+-  DATE_DIFF(date1, date2) - Calculate the difference in days between date1-date2.
 
 Arithmetic operators
 ~~~~~~~~~~~~~~~~~~~~
@@ -1262,6 +1265,29 @@ number of results:
     rows, however in the case of fetch-joined collections one root
     entity might appear in many rows, effectively hydrating less than
     the specified number of results.
+
+.. _dql-temporarily-change-fetch-mode:
+
+Temporarily change fetch mode in DQL
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+While normally all your associations are marked as lazy or extra lazy you will have cases where you are using DQL and don't want to
+fetch join a second, third or fourth level of entities into your result, because of the increased cost of the SQL JOIN. You
+can mark a many-to-one or one-to-one association as fetched temporarily to batch fetch these entities using a WHERE .. IN query.
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery("SELECT u FROM MyProject\User u");
+    $query->setFetchMode("MyProject\User", "address", "EAGER");
+    $query->execute();
+
+Given that there are 10 users and corresponding addresses in the database the executed queries will look something like:
+
+.. code-block:: sql
+
+    SELECT * FROM users;
+    SELECT * FROM address WHERE id IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 
 EBNF
