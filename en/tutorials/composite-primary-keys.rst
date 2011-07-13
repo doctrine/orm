@@ -1,5 +1,5 @@
-Composite Primary Keys
-======================
+Composite and Foreign Keys as Primary Key
+=========================================
 
 Doctrine 2 supports composite primary keys natively. Composite keys are a very powerful relational database concept
 and we took good care to make sure Doctrine 2 supports as many of the composite primary key use-cases.

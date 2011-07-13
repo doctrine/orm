@@ -172,15 +172,15 @@ What is DQL?
 DQL stands for Doctrine Query Language, a query language that very much looks like SQL
 but has some important benefits when using Doctrine:
 
-* It uses class names and fields instead of tables and columns, separating concerns between backend and your object model.
-* It utilizes the metadata defined to offer a range of shortcuts when writing. For example you do not have to specify the ON clause of joins, since Doctrine already knows about them.
-* It adds some functionality that is related to object management and transforms them into SQL.
+-  It uses class names and fields instead of tables and columns, separating concerns between backend and your object model.
+-  It utilizes the metadata defined to offer a range of shortcuts when writing. For example you do not have to specify the ON clause of joins, since Doctrine already knows about them.
+-  It adds some functionality that is related to object management and transforms them into SQL.
 
 It also has some drawbacks of course:
 
-* The syntax is slightly different to SQL so you have to learn and remember the differences.
-* To be vendor independent it can only implement a subset of all the existing SQL dialects. Vendor specific functionality and optimizations cannot be used through DQL unless implemented by you explicitly.
-* For some DQL constructs subselects are used which are known to be slow in MySQL.
+-  The syntax is slightly different to SQL so you have to learn and remember the differences.
+-  To be vendor independent it can only implement a subset of all the existing SQL dialects. Vendor specific functionality and optimizations cannot be used through DQL unless implemented by you explicitly.
+-  For some DQL constructs subselects are used which are known to be slow in MySQL.
 
 Can I sort by a function (for example ORDER BY RAND()) in DQL?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
