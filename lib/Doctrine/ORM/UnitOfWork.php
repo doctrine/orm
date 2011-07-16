@@ -1897,11 +1897,13 @@ class UnitOfWork implements PropertyChangedListener
             }
         } else {
             $entity = $class->newInstance();
+            if (!empty($idHash)) {
+                $this->identityMap[$class->rootEntityName][$idHash] = $entity;
+            }
             $oid = spl_object_hash($entity);
             $this->entityIdentifiers[$oid] = $id;
             $this->entityStates[$oid] = self::STATE_MANAGED;
             $this->originalEntityData[$oid] = $data;
-            $this->identityMap[$class->rootEntityName][$idHash] = $entity;
             if ($entity instanceof NotifyPropertyChanged) {
                 $entity->addPropertyChangedListener($this);
             }
