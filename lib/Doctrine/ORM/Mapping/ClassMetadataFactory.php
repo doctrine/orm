@@ -340,7 +340,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     {
         // Verify & complete identifier mapping
         if ( ! $class->identifier && ! $class->isMappedSuperclass) {
-            throw MappingException::identifierRequired($className);
+            throw MappingException::identifierRequired($class->name);
         }
 
         // verify inheritance
