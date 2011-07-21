@@ -558,6 +558,7 @@ class BasicEntityPersister
      *        a new entity is created.
      * @param $assoc The association that connects the entity to load to another entity, if any.
      * @param array $hints Hints for entity creation.
+     * @param int $lockMode
      * @param int $limit Limit number of results
      * @return object The loaded and managed entity instance or NULL if the entity can not be found.
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
