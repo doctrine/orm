@@ -53,15 +53,6 @@ final class Query extends AbstractQuery
      * @var string
      */
     const HINT_REFRESH = 'doctrine.refresh';
-    
-    
-    /**
-     * Internal hint: is set to the proxy entity that is currently triggered for loading
-     * 
-     * @var string
-     */
-    const HINT_REFRESH_ENTITY = 'doctrine.refresh.entity';
-    
     /**
      * The forcePartialLoad query hint forces a particular query to return
      * partial objects.
@@ -227,7 +218,7 @@ final class Query extends AbstractQuery
     /**
      * {@inheritdoc}
      */
-    protected function _doExecute()
+    protected function _doExecute($executeDbCall = TRUE)
     {
         $executor = $this->_parse()->getSqlExecutor();
 
@@ -279,8 +270,11 @@ final class Query extends AbstractQuery
         if ($this->_resultSetMapping === null) {
             $this->_resultSetMapping = $this->_parserResult->getResultSetMapping();
         }
-
-        return $executor->execute($this->_em->getConnection(), $sqlParams, $types);
+        if($executeDbCall) {
+            return $executor->execute($this->_em->getConnection(), $sqlParams, $types);
+        }
+        
+        return FALSE;
     }
 
     /**
