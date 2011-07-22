@@ -62,5 +62,10 @@ abstract class SQLFilter
         return $this->conn->quote($this->parameters[$name]['value'], $this->parameters[$name]['type']);
     }
 
+    final function __toString()
+    {
+        return serialize($this->parameters);
+    }
+
     abstract function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias);
 }

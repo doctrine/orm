@@ -173,6 +173,25 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('', $filter->addFilterConstraint($targetEntity, 't1_'));
 
     }
+
+    public function testSQLFilterToString()
+    {
+        $filter = new MyLocaleFilter($this->getMockConnection());
+        $filter->setParameter('locale', 'en', TYPE::STRING);
+        $filter->setParameter('foo', 'bar', TYPE::STRING);
+
+        $filter2 = new MyLocaleFilter($this->getMockConnection());
+        $filter2->setParameter('foo', 'bar', TYPE::STRING);
+        $filter2->setParameter('locale', 'en', TYPE::STRING);
+
+        $parameters = array(
+            'foo' => array('value' => 'bar', 'type' => TYPE::STRING),
+            'locale' => array('value' => 'en', 'type' => TYPE::STRING),
+        );
+
+        $this->assertEquals(serialize($parameters), ''.$filter);
+        $this->assertEquals(''.$filter, ''.$filter2);
+    }
 }
 
 class MySoftDeleteFilter extends SQLFilter
