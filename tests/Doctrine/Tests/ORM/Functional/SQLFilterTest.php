@@ -4,7 +4,6 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Mapping\ClassMetaData;
-use Doctrine\DBAL\Types\Type;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -150,7 +149,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $filter = new MyLocaleFilter($conn);
 
-        $filter->setParameter('locale', 'en', Type::STRING);
+        $filter->setParameter('locale', 'en', \Doctrine\DBAL\Types\Type::STRING);
 
         $this->assertEquals("'en'", $filter->getParameter('locale'));
     }
@@ -177,16 +176,16 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testSQLFilterToString()
     {
         $filter = new MyLocaleFilter($this->getMockConnection());
-        $filter->setParameter('locale', 'en', TYPE::STRING);
-        $filter->setParameter('foo', 'bar', TYPE::STRING);
+        $filter->setParameter('locale', 'en', \Doctrine\DBAL\Types\Type::STRING);
+        $filter->setParameter('foo', 'bar', \Doctrine\DBAL\Types\Type::STRING);
 
         $filter2 = new MyLocaleFilter($this->getMockConnection());
-        $filter2->setParameter('foo', 'bar', TYPE::STRING);
-        $filter2->setParameter('locale', 'en', TYPE::STRING);
+        $filter2->setParameter('foo', 'bar', \Doctrine\DBAL\Types\Type::STRING);
+        $filter2->setParameter('locale', 'en', \Doctrine\DBAL\Types\Type::STRING);
 
         $parameters = array(
-            'foo' => array('value' => 'bar', 'type' => TYPE::STRING),
-            'locale' => array('value' => 'en', 'type' => TYPE::STRING),
+            'foo' => array('value' => 'bar', 'type' => \Doctrine\DBAL\Types\Type::STRING),
+            'locale' => array('value' => 'en', 'type' => \Doctrine\DBAL\Types\Type::STRING),
         );
 
         $this->assertEquals(serialize($parameters), ''.$filter);
