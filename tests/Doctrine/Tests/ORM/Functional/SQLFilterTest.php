@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Mapping\ClassMetaData;
+use Doctrine\DBAL\Types\Type;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -126,6 +127,51 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $config = $em->getConfiguration();
         $config->addFilter("locale", "\Doctrine\Tests\ORM\Functional\MyLocaleFilter");
         $config->addFilter("soft_delete", "\Doctrine\Tests\ORM\Functional\MySoftDeleteFilter");
+    }
+
+    protected function getMockConnection()
+    {
+        // Setup connection mock
+        $conn = $this->getMockBuilder('Doctrine\DBAL\Connection')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        return $conn;
+    }
+
+    public function testSQLFilterGetSetParameter()
+    {
+        // Setup mock connection
+        $conn = $this->getMockConnection();
+        $conn->expects($this->once())
+            ->method('convertToDatabaseValue')
+            ->with($this->equalTo('en'))
+            ->will($this->returnValue("'en'"));
+
+        $filter = new MyLocaleFilter($conn);
+
+        $filter->setParameter('locale', 'en', Type::STRING);
+
+        $this->assertEquals("'en'", $filter->getParameter('locale'));
+    }
+
+    public function testSQLFilterAddConstraint()
+    {
+        // Set up metadata mock
+        $targetEntity = $this->getMockBuilder('Doctrine\ORM\Mapping\ClassMetadata')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $filter = new MySoftDeleteFilter($this->getMockConnection());
+
+        // Test for an entity that gets extra filter data
+        $targetEntity->name = 'MyEntity\SoftDeleteNewsItem';
+        $this->assertEquals('t1_.deleted = 0', $filter->addFilterConstraint($targetEntity, 't1_'));
+
+        // Test for an entity that doesn't get extra filter data
+        $targetEntity->name = 'MyEntity\NoSoftDeleteNewsItem';
+        $this->assertEquals('', $filter->addFilterConstraint($targetEntity, 't1_'));
+
     }
 }
 

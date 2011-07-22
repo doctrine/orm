@@ -45,17 +45,19 @@ abstract class SQLFilter
     final function setParameter($name, $value, $type)
     {
         // @todo: check for a valid type?
-        $parameters[$name] = array('value' => $value, 'type' => $type);
+        $this->parameters[$name] = array('value' => $value, 'type' => $type);
+
+        return $this;
     }
 
     final function getParameter($name)
     {
-        if(!isset($parameters[$name])) {
-            throw new \InvalidArgumentException("Parameter '" . $name . "' is does not exist.");
+        if(!isset($this->parameters[$name])) {
+            throw new \InvalidArgumentException("Parameter '" . $name . "' does not exist.");
         }
 
         // @todo: espace the parameter
-        return $paramaters[$name]['value'];
+        return $this->conn->convertToDatabaseValue($this->parameters[$name]['value'], $this->parameters[$name]['type']);
     }
 
     abstract function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias);
