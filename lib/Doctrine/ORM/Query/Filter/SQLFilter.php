@@ -47,6 +47,9 @@ abstract class SQLFilter
         // @todo: check for a valid type?
         $this->parameters[$name] = array('value' => $value, 'type' => $type);
 
+        // Keep the parameters sorted for the hash
+        ksort($this->parameters);
+
         return $this;
     }
 

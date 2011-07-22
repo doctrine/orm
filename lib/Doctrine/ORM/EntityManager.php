@@ -763,6 +763,9 @@ class EntityManager implements ObjectManager
 
         if(!isset($this->enabledFilters[$name])) {
             $this->enabledFilters[$name] = new $filterClass($this->conn);
+
+            // Keep the enabled filters sorted for the hash
+            ksort($this->enabledFilters);
         }
 
         return $this->enabledFilters[$name];
