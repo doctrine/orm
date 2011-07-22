@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Mapping\ClassMetaData;
+use Doctrine\Common\Cache\ArrayCache;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -16,6 +17,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()
     {
+        $this->useModelSet('cms');
         parent::setUp();
     }
 
@@ -191,6 +193,28 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(serialize($parameters), ''.$filter);
         $this->assertEquals(''.$filter, ''.$filter2);
     }
+
+    public function testQueryCache_DependsOnFilters()
+    {
+        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+
+        $cache = new ArrayCache();
+        $query->setQueryCacheDriver($cache);
+
+        $query->getResult();
+        $this->assertEquals(1, count($cache->getIds()));
+
+        $conf = $this->_em->getConfiguration();
+        $conf->addFilter("locale", "\Doctrine\Tests\ORM\Functional\MyLocaleFilter");
+        $this->_em->enableFilter("locale");
+
+        $query->getResult();
+        $this->assertEquals(2, count($cache->getIds()));
+
+        return $query;
+    }
+
+
 }
 
 class MySoftDeleteFilter extends SQLFilter

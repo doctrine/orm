@@ -556,12 +556,30 @@ final class Query extends AbstractQuery
     {
         ksort($this->_hints);
 
+
         return md5(
             $this->getDql() . var_export($this->_hints, true) . 
-            var_export($this->_em->getEnabledFilters(), true) .
+            $this->getFilterHash() .
             '&firstResult=' . $this->_firstResult . '&maxResult=' . $this->_maxResults .
             '&hydrationMode='.$this->_hydrationMode.'DOCTRINE_QUERY_CACHE_SALT'
         );
+    }
+
+    /**
+     * Generates a string of currently enabled filters to use for the cache id.
+     *
+     * @return string
+     */
+    protected function getFilterHash()
+    {
+        $filterHash = '';
+
+        $filters = $this->_em->getEnabledFilters();
+        foreach($filters as $name => $filter) {
+            $filterHash .= $name . $filter;
+        }
+
+        return $filterHash;
     }
 
     /**
