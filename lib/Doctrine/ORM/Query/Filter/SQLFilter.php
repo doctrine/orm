@@ -59,8 +59,7 @@ abstract class SQLFilter
             throw new \InvalidArgumentException("Parameter '" . $name . "' does not exist.");
         }
 
-        // @todo: espace the parameter
-        return $this->conn->convertToDatabaseValue($this->parameters[$name]['value'], $this->parameters[$name]['type']);
+        return $this->conn->quote($this->parameters[$name]['value'], $this->parameters[$name]['type']);
     }
 
     abstract function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias);

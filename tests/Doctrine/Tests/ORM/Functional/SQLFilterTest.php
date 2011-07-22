@@ -144,7 +144,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // Setup mock connection
         $conn = $this->getMockConnection();
         $conn->expects($this->once())
-            ->method('convertToDatabaseValue')
+            ->method('quote')
             ->with($this->equalTo('en'))
             ->will($this->returnValue("'en'"));
 
