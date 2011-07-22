@@ -111,6 +111,13 @@ class EntityManager implements ObjectManager
     private $closed = false;
 
     /**
+     * Instances of enabled filters.
+     *
+     * @var array
+     */
+    private $enabledFilters;
+
+    /**
      * Creates a new EntityManager that operates on the given database connection
      * and uses the given Configuration and EventManager implementations.
      *
@@ -738,5 +745,47 @@ class EntityManager implements ObjectManager
         }
 
         return new EntityManager($conn, $config, $conn->getEventManager());
+    }
+
+    /** @return SQLFilter[] */
+    public function getEnabledFilters()
+    {
+        return $enabledFilters;
+    }
+
+    /** Throws exception if filter does not exist. No-op if the filter is alrady enabled.
+    * @return SQLFilter */
+    public function enableFilter($name)
+    {
+        if(null === $filterClass = $this->config->getFilter($name)) {
+            throw new \InvalidArgumentException("Filter '" . $name . "' is does not exist.");
+        }
+
+        if(!isset($this->enabledFilters[$name])) {
+            $this->enabledFilters[$name] = new $filterClass($this->conn);
+        }
+
+        return $this->enabledFilters[$name];
+    }
+
+    /** Disable the filter, looses the state */
+    public function disableFilter($name)
+    {
+        // Get the filter to return it
+        $filter = $this->getFilter($name);
+
+        unset($this->enabledFilters[$name]);
+
+        return $filter;
+    }
+
+    /** throws exception if not in enabled filters */
+    public function getFilter($name)
+    {
+        if(!isset($this->enabledFilters[$name])) {
+            throw new \InvalidArgumentException("Filter '" . $name . "' is not enabled.");
+        }
+
+        return $this->enabledFilters[$name];
     }
 }

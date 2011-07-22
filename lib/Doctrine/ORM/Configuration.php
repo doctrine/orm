@@ -515,4 +515,16 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
         return $this->_attributes['classMetadataFactoryName'];
     }
+
+    public function addFilter($name, $className)
+    {
+        $this->_attributes['filters'][strtolower($name)] = $className;
+    }
+
+    public function getFilterClassName($name)
+    {
+        $name = strtolower($name);
+        return isset($this->_attributes['filters'][$name]) ?
+                $this->_attributes['filters'][$name] : null;
+    }
 }
