@@ -558,6 +558,7 @@ final class Query extends AbstractQuery
 
         return md5(
             $this->getDql() . var_export($this->_hints, true) . 
+            var_export($this->_em->getEnabledFilters(), true) .
             '&firstResult=' . $this->_firstResult . '&maxResult=' . $this->_maxResults .
             '&hydrationMode='.$this->_hydrationMode.'DOCTRINE_QUERY_CACHE_SALT'
         );
