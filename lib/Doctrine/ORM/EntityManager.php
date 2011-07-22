@@ -115,7 +115,7 @@ class EntityManager implements ObjectManager
      *
      * @var array
      */
-    private $enabledFilters;
+    private $enabledFilters = array();
 
     /**
      * Creates a new EntityManager that operates on the given database connection
@@ -750,15 +750,15 @@ class EntityManager implements ObjectManager
     /** @return SQLFilter[] */
     public function getEnabledFilters()
     {
-        return $enabledFilters;
+        return $this->enabledFilters;
     }
 
     /** Throws exception if filter does not exist. No-op if the filter is alrady enabled.
     * @return SQLFilter */
     public function enableFilter($name)
     {
-        if(null === $filterClass = $this->config->getFilter($name)) {
-            throw new \InvalidArgumentException("Filter '" . $name . "' is does not exist.");
+        if(null === $filterClass = $this->config->getFilterClassName($name)) {
+            throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
         }
 
         if(!isset($this->enabledFilters[$name])) {

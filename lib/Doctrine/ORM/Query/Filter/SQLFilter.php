@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Query\Filter;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\ORM\Mapping\ClassMetaData;
 
 /**
  * The base class that user defined filters should extend.
