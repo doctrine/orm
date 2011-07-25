@@ -585,16 +585,14 @@ abstract class AbstractQuery
                 return $result;
             } else {
                 // Cache hit.
- 
-                    $this->_doExecute(FALSE/*do not execute the db call*/);
-                    $stmtMock = new PDOMock($cached[$key]);
+                $this->_doExecute(false/*do not execute the db call*/);
+                $stmtMock = new PDOMock($cached[$key]);
                     
-                    $result = $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
-                        $stmtMock, $this->_resultSetMapping, $this->_hints
-                    );
+                $result = $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
+                    $stmtMock, $this->_resultSetMapping, $this->_hints
+                );
                     
-                    return $result;
-                
+                return $result;
             }
         }
 

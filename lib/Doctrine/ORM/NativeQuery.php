@@ -55,7 +55,7 @@ final class NativeQuery extends AbstractQuery
     /**
      * {@inheritdoc}
      */
-    protected function _doExecute($executeDbCall = TRUE)
+    protected function _doExecute($executeDbCall = true)
     {
         $stmt = $this->_em->getConnection()->prepare($this->_sql);
         $params = $this->_params;
@@ -73,6 +73,6 @@ final class NativeQuery extends AbstractQuery
             return $stmt;
         }
         
-        return FALSE;
+        return false;
     }
 }
