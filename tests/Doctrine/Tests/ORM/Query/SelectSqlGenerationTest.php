@@ -922,6 +922,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT COALESCE(NULLIF(c0_.name, ''), c0_.username) AS sclr0 FROM cms_users c0_"
         );
     }
+
+    /**
+     * Test that the right discriminator data is inserted in a subquery.
+     */
+    public function testSubSelectDiscriminator()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name, (SELECT COUNT(cfc.id) total FROM Doctrine\Tests\Models\Company\CompanyFixContract cfc) as cfc_count FROM Doctrine\Tests\Models\CMS\CmsUser u",
+            "SELECT c0_.name AS name0, (SELECT COUNT(c1_.id) AS dctrn__total FROM company_contracts c1_ WHERE c1_.discr IN ('fix')) AS sclr1 FROM cms_users c0_"
+        );
+    }
 }
 
 
