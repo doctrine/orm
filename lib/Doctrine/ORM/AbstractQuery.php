@@ -20,7 +20,8 @@
 namespace Doctrine\ORM;
 
 use Doctrine\DBAL\Types\Type,
-    Doctrine\ORM\Query\QueryException;
+    Doctrine\ORM\Query\QueryException,
+    Doctrine\ORM\Internal\Hydration\PDOMock;
 
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
@@ -570,16 +571,28 @@ abstract class AbstractQuery
                 // Cache miss.
                 $stmt = $this->_doExecute();
 
+                //mock the PDO statement to save the db results into the cache
+                $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                $stmt->closeCursor();
+                $stmtMock = new PDOMock($data);
+                
                 $result = $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
-                    $stmt, $this->_resultSetMapping, $this->_hints
+                    $stmtMock, $this->_resultSetMapping, $this->_hints
                 );
 
-                $cacheDriver->save($hash, array($key => $result), $this->_resultCacheTTL);
+                $cacheDriver->save($hash, array($key => $stmtMock->fetchAll(null)), $this->_resultCacheTTL);
 
                 return $result;
             } else {
                 // Cache hit.
-                return $cached[$key];
+                $this->_doExecute(false/*do not execute the db call*/);
+                $stmtMock = new PDOMock($cached[$key]);
+                    
+                $result = $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
+                    $stmtMock, $this->_resultSetMapping, $this->_hints
+                );
+                    
+                return $result;
             }
         }
 
@@ -645,10 +658,10 @@ abstract class AbstractQuery
 
     /**
      * Executes the query and returns a the resulting Statement object.
-     *
+     * @param $executeDbCall Execute actual db call or not
      * @return Doctrine\DBAL\Driver\Statement The executed database statement that holds the results.
      */
-    abstract protected function _doExecute();
+    abstract protected function _doExecute($executeDbCall = TRUE);
 
     /**
      * Cleanup Query resource when clone is called.
