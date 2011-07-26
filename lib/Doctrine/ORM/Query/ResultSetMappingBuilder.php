@@ -67,6 +67,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
             }
             $this->addFieldResult($alias, $platform->getSQLResultCasing($columnName), $propertyName);
         }
+        $this->addAssocationMappings($alias, $classMetadata->getAssociationMappings());
     }
 
     /**
@@ -95,6 +96,24 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 throw new \InvalidArgumentException("The column '$columnName' conflicts with another column in the mapper.");
             }
             $this->addFieldResult($alias, $platform->getSQLResultCasing($columnName), $propertyName);
+        }
+        $this->addAssocationMappings($alias, $classMetadata->getAssociationMappings());
+    }
+
+    protected function addAssocationMappings($alias, $associationMappings)
+    {
+        $platform = $this->em->getConnection()->getDatabasePlatform();
+        foreach ($associationMappings AS $associationMapping) {
+            if (isset($associationMapping['joinColumns'])) {
+                foreach ($associationMapping['joinColumns'] AS $joinColumn) {
+                    $columnName = $joinColumn['name'];
+                    $renamedColumnName = isset($renamedColumns[$columnName]) ? $renamedColumns[$columnName] : $columnName;
+                    if (isset($this->metaMappings[$renamedColumnName])) {
+                        throw new \InvalidArgumentException("The column '$renamedColumnName' conflicts with another column in the mapper.");
+                    }
+                    $this->addMetaResult($alias, $platform->getSQLResultCasing($renamedColumnName), $platform->getSQLResultCasing($columnName));
+                }
+            }
         }
     }
 }
