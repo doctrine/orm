@@ -32,14 +32,14 @@ class DDC512Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $result = $q->getResult();
 
         $this->assertEquals(2, count($result));
-        $this->assertTrue($result[0] instanceof DDC512Customer);
-        $this->assertTrue($result[1] instanceof DDC512Customer);
+        $this->assertInstanceOf(__NAMESPACE__ . '\DDC512Customer', $result[0]);
+        $this->assertInstanceOf(__NAMESPACE__ . '\DDC512Customer', $result[1]);
         if ($result[0]->id == $customer1->id) {
-            $this->assertTrue($result[0]->item instanceof DDC512OfferItem);
+            $this->assertInstanceOf(__NAMESPACE__ . '\DDC512OfferItem', $result[0]->item);
             $this->assertEquals($item->id, $result[0]->item->id);
             $this->assertNull($result[1]->item);
         } else {
-            $this->assertTrue($result[1]->item instanceof DDC512OfferItem);
+            $this->assertInstanceOf(__NAMESPACE__ . '\DDC512OfferItem', $result[1]->item);
             $this->assertNull($result[0]->item);
         }
     }

@@ -46,7 +46,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->assertTrue($this->_em->contains($ph));
         $this->assertTrue($this->_em->contains($user));
-        //$this->assertTrue($user->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
+        //$this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $user->phonenumbers);
 
         // Update name
         $user->name = 'guilherme';
@@ -92,7 +92,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
 
-        //$this->assertTrue($user->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
+        //$this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $user->phonenumbers);
 
         // Remove the first element from the collection
         unset($user->phonenumbers[0]);

@@ -95,10 +95,10 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         $this->assertEquals(2, count($firstRelatedBy));
         $this->assertEquals(2, count($secondRelatedBy));
 
-        $this->assertTrue($firstRelatedBy[0] instanceof ECommerceProduct);
-        $this->assertTrue($firstRelatedBy[1] instanceof ECommerceProduct);
-        $this->assertTrue($secondRelatedBy[0] instanceof ECommerceProduct);
-        $this->assertTrue($secondRelatedBy[1] instanceof ECommerceProduct);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $firstRelatedBy[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $firstRelatedBy[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $secondRelatedBy[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $secondRelatedBy[1]);
         
         $this->assertCollectionEquals($firstRelatedBy, $secondRelatedBy);
     }
