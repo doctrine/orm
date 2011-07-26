@@ -359,13 +359,7 @@ class SqlWalker implements TreeWalker
     {
         $sql = $this->walkSelectClause($AST->selectClause);
         $sql .= $this->walkFromClause($AST->fromClause);
-
-        if (($whereClause = $AST->whereClause) !== null) {
-            $sql .= $this->walkWhereClause($whereClause);
-        } else if (($discSql = $this->_generateDiscriminatorColumnConditionSQL($this->_rootAliases)) !== '') {
-            $sql .= ' WHERE ' . $discSql;
-        }
-
+        $sql .= $this->walkWhereClause($AST->whereClause);
         $sql .= $AST->groupByClause ? $this->walkGroupByClause($AST->groupByClause) : '';
         $sql .= $AST->havingClause ? $this->walkHavingClause($AST->havingClause) : '';
 
@@ -407,12 +401,7 @@ class SqlWalker implements TreeWalker
     {
         $this->_useSqlTableAliases = false;
         $sql = $this->walkUpdateClause($AST->updateClause);
-
-        if (($whereClause = $AST->whereClause) !== null) {
-            $sql .= $this->walkWhereClause($whereClause);
-        } else if (($discSql = $this->_generateDiscriminatorColumnConditionSQL($this->_rootAliases)) !== '') {
-            $sql .= ' WHERE ' . $discSql;
-        }
+        $sql .= $this->walkWhereClause($AST->whereClause);
 
         return $sql;
     }
@@ -427,12 +416,7 @@ class SqlWalker implements TreeWalker
     {
         $this->_useSqlTableAliases = false;
         $sql = $this->walkDeleteClause($AST->deleteClause);
-
-        if (($whereClause = $AST->whereClause) !== null) {
-            $sql .= $this->walkWhereClause($whereClause);
-        } else if (($discSql = $this->_generateDiscriminatorColumnConditionSQL($this->_rootAliases)) !== '') {
-            $sql .= ' WHERE ' . $discSql;
-        }
+        $sql .= $this->walkWhereClause($AST->whereClause);
 
         return $sql;
     }
@@ -1158,15 +1142,19 @@ class SqlWalker implements TreeWalker
     public function walkSubselect($subselect)
     {
         $useAliasesBefore = $this->_useSqlTableAliases;
+        $rootAliasesBefore = $this->_rootAliases;
+
+        $this->_rootAliases = array(); // reset the rootAliases for the subselect
         $this->_useSqlTableAliases = true;
 
         $sql = $this->walkSimpleSelectClause($subselect->simpleSelectClause);
         $sql .= $this->walkSubselectFromClause($subselect->subselectFromClause);
-        $sql .= $subselect->whereClause ? $this->walkWhereClause($subselect->whereClause) : '';
+        $sql .= $this->walkWhereClause($subselect->whereClause);
         $sql .= $subselect->groupByClause ? $this->walkGroupByClause($subselect->groupByClause) : '';
         $sql .= $subselect->havingClause ? $this->walkHavingClause($subselect->havingClause) : '';
         $sql .= $subselect->orderByClause ? $this->walkOrderByClause($subselect->orderByClause) : '';
 
+        $this->_rootAliases = $rootAliasesBefore; // put the main aliases back
         $this->_useSqlTableAliases = $useAliasesBefore;
 
         return $sql;
@@ -1192,6 +1180,8 @@ class SqlWalker implements TreeWalker
             $class = $this->_em->getClassMetadata($rangeDecl->abstractSchemaName);
             $sql .= $class->getQuotedTableName($this->_platform) . ' '
                   . $this->getSQLTableAlias($class->table['name'], $dqlAlias);
+
+            $this->_rootAliases[] = $dqlAlias;
 
             if ($class->isInheritanceTypeJoined()) {
                 $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
@@ -1414,16 +1404,23 @@ class SqlWalker implements TreeWalker
 
     /**
      * Walks down a WhereClause AST node, thereby generating the appropriate SQL.
+     * WhereClause or not, the appropriate discriminator sql is added.
      *
      * @param WhereClause
      * @return string The SQL.
      */
     public function walkWhereClause($whereClause)
     {
+        $condSql = null !== $whereClause ? $this->walkConditionalExpression($whereClause->conditionalExpression) : '';
         $discrSql = $this->_generateDiscriminatorColumnConditionSql($this->_rootAliases);
-        $condSql = $this->walkConditionalExpression($whereClause->conditionalExpression);
 
-        return ' WHERE ' . (( ! $discrSql) ? $condSql : '(' . $condSql . ') AND ' . $discrSql);
+        if ($condSql) {
+            return ' WHERE ' . (( ! $discrSql) ? $condSql : '(' . $condSql . ') AND ' . $discrSql);
+        } else if ($discrSql) {
+            return ' WHERE ' . $discrSql;
+        }
+
+        return '';
     }
 
     /**
