@@ -204,6 +204,27 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(UnitOfWork::STATE_DETACHED, $this->_unitOfWork->getEntityState($ph2));
         $this->assertFalse($persister->isExistsCalled());
     }
+
+    /**
+    * Test cenario that a entity is create with identifier set to null. Ex: Native Query for import entities from other schema 
+    */
+    public function testCreateANotIdentifiedEntitySholdNotStoreInstance()
+    {
+        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Generic\BooleanModel"));
+        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Generic', $persister);
+        
+        $className = 'Doctrine\Tests\Models\Generic\BooleanModel';
+        $data = array('id'=>null,'booleanField'=>true);
+        
+        $entity = $this->_unitOfWork->createEntity($className,$data);
+        $this->assertInstanceOf($className, $entity);
+        $this->assertTrue($entity->booleanField);
+        $this->assertNull($entity->id);
+        
+        $identityMap = $this->_unitOfWork->getIdentityMap();
+        $this->assertEquals(0,count($identityMap));
+        
+    }
 }
 
 /**
