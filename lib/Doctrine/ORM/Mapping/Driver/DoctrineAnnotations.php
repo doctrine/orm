@@ -65,7 +65,6 @@ final class JoinColumn extends Annotation {
     public $unique = false;
     public $nullable = true;
     public $onDelete;
-    public $onUpdate;
     public $columnDefinition;
 }
 

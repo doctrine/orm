@@ -267,10 +267,9 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      * @depends testColumnDefinition
      * @param ClassMetadata $class
      */
-    public function testJoinColumnOnDeleteAndOnUpdate($class)
+    public function testJoinColumnOnDelete($class)
     {
         $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
-        $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onUpdate']);
 
         return $class;
     }
@@ -324,7 +323,7 @@ class User
 
     /**
      * @OneToOne(targetEntity="Address", cascade={"remove"}, inversedBy="user")
-     * @JoinColumn(onDelete="CASCADE", onUpdate="CASCADE")
+     * @JoinColumn(onDelete="CASCADE")
      */
     public $address;
 
@@ -412,7 +411,6 @@ class User
             'name' => 'address_id',
             'referencedColumnName' => 'id',
             'onDelete' => 'CASCADE',
-            'onUpdate' => 'CASCADE'
            ),
            ),
            'orphanRemoval' => false,
