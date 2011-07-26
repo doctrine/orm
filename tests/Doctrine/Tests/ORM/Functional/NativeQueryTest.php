@@ -49,7 +49,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $users = $query->getResult();
 
         $this->assertEquals(1, count($users));
-        $this->assertTrue($users[0] instanceof CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
         $this->assertEquals('Roman', $users[0]->name);
     }
     
@@ -83,9 +83,9 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $users = $query->getResult();
         $this->assertEquals(1, count($users));
-        $this->assertTrue($users[0] instanceof CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
         $this->assertEquals('Roman', $users[0]->name);
-        $this->assertTrue($users[0]->getPhonenumbers() instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $users[0]->getPhonenumbers());
         $this->assertTrue($users[0]->getPhonenumbers()->isInitialized());
         $this->assertEquals(1, count($users[0]->getPhonenumbers()));
         $phones = $users[0]->getPhonenumbers();
@@ -132,11 +132,11 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $users = $query->getResult();
         
         $this->assertEquals(1, count($users));
-        $this->assertTrue($users[0] instanceof CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
         $this->assertEquals('Roman', $users[0]->name);
-        $this->assertTrue($users[0]->getPhonenumbers() instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $users[0]->getPhonenumbers());
         $this->assertFalse($users[0]->getPhonenumbers()->isInitialized());
-        $this->assertTrue($users[0]->getAddress() instanceof CmsAddress);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress', $users[0]->getAddress());
         $this->assertTrue($users[0]->getAddress()->getUser() == $users[0]);
         $this->assertEquals('germany', $users[0]->getAddress()->getCountry());
         $this->assertEquals(10827, $users[0]->getAddress()->getZipCode());
@@ -185,9 +185,9 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $users = $query->getResult();
         $this->assertEquals(1, count($users));
-        $this->assertTrue($users[0] instanceof CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
         $this->assertEquals('Roman', $users[0]->name);
-        $this->assertTrue($users[0]->getPhonenumbers() instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $users[0]->getPhonenumbers());
         $this->assertTrue($users[0]->getPhonenumbers()->isInitialized());
         $this->assertEquals(1, count($users[0]->getPhonenumbers()));
         $phones = $users[0]->getPhonenumbers();
@@ -226,11 +226,11 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $users = $query->getResult();
 
         $this->assertEquals(1, count($users));
-        $this->assertTrue($users[0] instanceof CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
         $this->assertEquals('Roman', $users[0]->name);
-        $this->assertTrue($users[0]->getPhonenumbers() instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $users[0]->getPhonenumbers());
         $this->assertFalse($users[0]->getPhonenumbers()->isInitialized());
-        $this->assertTrue($users[0]->getAddress() instanceof CmsAddress);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress', $users[0]->getAddress());
         $this->assertTrue($users[0]->getAddress()->getUser() == $users[0]);
         $this->assertEquals('germany', $users[0]->getAddress()->getCountry());
         $this->assertEquals(10827, $users[0]->getAddress()->getZipCode());

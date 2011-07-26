@@ -50,8 +50,8 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $entities = $query->getResult();
 
         $this->assertEquals(2, count($entities));
-        $this->assertTrue($entities[0] instanceof CompanyPerson);
-        $this->assertTrue($entities[1] instanceof CompanyEmployee);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyPerson', $entities[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $entities[1]);
         $this->assertTrue(is_numeric($entities[0]->getId()));
         $this->assertTrue(is_numeric($entities[1]->getId()));
         $this->assertEquals('Roman S. Borschel', $entities[0]->getName());
@@ -65,7 +65,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $entities = $query->getResult();
 
         $this->assertEquals(1, count($entities));
-        $this->assertTrue($entities[0] instanceof CompanyEmployee);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $entities[0]);
         $this->assertTrue(is_numeric($entities[0]->getId()));
         $this->assertEquals('Guilherme Blanco', $entities[0]->getName());
         $this->assertEquals(100000, $entities[0]->getSalary());
@@ -73,7 +73,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
         
         $guilherme = $this->_em->getRepository(get_class($employee))->findOneBy(array('name' => 'Guilherme Blanco'));
-        $this->assertTrue($guilherme instanceof CompanyEmployee);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $guilherme);
         $this->assertEquals('Guilherme Blanco', $guilherme->getName());
 
         $this->_em->clear();
@@ -110,7 +110,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $manager = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $manager->getId());
         
-        $this->assertTrue($manager instanceof CompanyManager);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyManager', $manager);
         $this->assertEquals('Roman B.', $manager->getName());
         $this->assertEquals(119000, $manager->getSalary());
         $this->assertEquals('CEO', $manager->getTitle());
@@ -130,12 +130,12 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $person = $this->_em->find('Doctrine\Tests\Models\Company\CompanyPerson', $manager->getId());
         
-        $this->assertTrue($person instanceof CompanyManager);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyManager', $person);
         $this->assertEquals('Roman S. Borschel', $person->getName());
         $this->assertEquals(100000, $person->getSalary());
         $this->assertEquals('CTO', $person->getTitle());
         $this->assertTrue(is_numeric($person->getId()));
-        //$this->assertTrue($person->getCar() instanceof CompanyCar);
+        //$this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyCar', $person->getCar());
     }
     
     public function testSelfReferencingOneToOne() {
@@ -167,9 +167,9 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $result = $query->getResult();
         $this->assertEquals(1, count($result));
-        $this->assertTrue($result[0] instanceof CompanyPerson);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyPerson', $result[0]);
         $this->assertEquals('Mary Smith', $result[0]->getName());
-        $this->assertTrue($result[0]->getSpouse() instanceof CompanyEmployee);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $result[0]->getSpouse());
         $this->assertEquals('John Smith', $result[0]->getSpouse()->getName());
         $this->assertSame($result[0], $result[0]->getSpouse()->getSpouse());
     }
@@ -229,20 +229,20 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $result = $q->getResult();
         
         $this->assertEquals(1, count($result));
-        $this->assertTrue($result[0] instanceof CompanyOrganization);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyOrganization', $result[0]);
         $this->assertNull($result[0]->getMainEvent());
         
         $events = $result[0]->getEvents();
         
-        $this->assertTrue($events instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $events);
         $this->assertFalse($events->isInitialized());
         
         $this->assertEquals(2, count($events));
         if ($events[0] instanceof CompanyAuction) {
-            $this->assertTrue($events[1] instanceof CompanyRaffle);
+            $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyRaffle', $events[1]);
         } else {
-            $this->assertTrue($events[0] instanceof CompanyRaffle);
-            $this->assertTrue($events[1] instanceof CompanyAuction);
+            $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyRaffle', $events[0]);
+            $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyAuction', $events[1]);
         }
     }
 
@@ -263,7 +263,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $result = $q->getResult();
         $this->assertEquals(1, count($result));
-        $this->assertTrue($result[0] instanceof CompanyAuction, sprintf("Is of class %s",get_class($result[0])));
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyAuction', $result[0], sprintf("Is of class %s",get_class($result[0])));
 
         $this->_em->clear();
 
@@ -273,12 +273,12 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $result = $q->getResult();
 
         $this->assertEquals(1, count($result));
-        $this->assertTrue($result[0] instanceof CompanyOrganization);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyOrganization', $result[0]);
 
         $mainEvent = $result[0]->getMainEvent();
         // mainEvent should have been loaded because it can't be lazy
-        $this->assertTrue($mainEvent instanceof CompanyAuction);
-        $this->assertFalse($mainEvent instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyAuction', $mainEvent);
+        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $mainEvent);
     }
     
     /**

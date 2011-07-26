@@ -47,7 +47,7 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $result = $query->getResult();
 
         $this->assertEquals(2, $this->_em->getUnitOfWork()->size());
-        $this->assertTrue($result[0] instanceof CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
         $this->assertEquals('Guilherme', $result[0]->name);
         $this->assertEquals(1, $result[0]->getGroups()->count());
         $groups = $result[0]->getGroups();
@@ -56,8 +56,8 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($result[0]));
         $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($groups[0]));
 
-        $this->assertTrue($groups instanceof \Doctrine\ORM\PersistentCollection);
-        $this->assertTrue($groups[0]->getUsers() instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $groups);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $groups[0]->getUsers());
 
         $groups[0]->getUsers()->clear();
         $groups->clear();

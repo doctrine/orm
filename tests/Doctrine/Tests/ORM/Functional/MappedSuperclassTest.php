@@ -38,9 +38,9 @@ class MappedSuperclassTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $cleanFile = $this->_em->find(get_class($file), $file->getId());
 
-        $this->assertType('Doctrine\Tests\Models\DirectoryTree\Directory', $cleanFile->getParent());
+        $this->assertInstanceOf('Doctrine\Tests\Models\DirectoryTree\Directory', $cleanFile->getParent());
         $this->assertEquals($directory->getId(), $cleanFile->getParent()->getId());
-        $this->assertType('Doctrine\Tests\Models\DirectoryTree\Directory', $cleanFile->getParent()->getParent());
+        $this->assertInstanceOf('Doctrine\Tests\Models\DirectoryTree\Directory', $cleanFile->getParent()->getParent());
         $this->assertEquals($root->getId(), $cleanFile->getParent()->getParent()->getId());
     }
 }

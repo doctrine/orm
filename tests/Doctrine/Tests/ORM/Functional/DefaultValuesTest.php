@@ -50,7 +50,7 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
         
         $a2 = $this->_em->find(get_class($a), $a->id);
-        $this->assertTrue($a2->getUser() instanceof DefaultValueUser);
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\DefaultValueUser', $a2->getUser());
         $this->assertEquals($userId, $a2->getUser()->getId());
         $this->assertEquals('Poweruser', $a2->getUser()->type);
     }

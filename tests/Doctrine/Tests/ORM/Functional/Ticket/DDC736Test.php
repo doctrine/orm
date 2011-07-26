@@ -72,7 +72,7 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         /* @var $cart2 Doctrine\Tests\Models\ECommerce\ECommerceCart */
         $cart2 = $result[0][0];
-        $this->assertType('Doctrine\ORM\Proxy\Proxy', $cart2->getCustomer());
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $cart2->getCustomer());
     }
 }
 

@@ -104,8 +104,8 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         
         $entity2 = $this->_em->find(get_class($entity1), $entity1->getId());
         
-        $this->assertTrue($entity2->getOther1() instanceof MultiSelfReference);
-        $this->assertTrue($entity2->getOther2() instanceof MultiSelfReference);
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\MultiSelfReference', $entity2->getOther1());
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\MultiSelfReference', $entity2->getOther2());
         $this->assertNull($entity2->getOther1()->getOther1());
         $this->assertNull($entity2->getOther1()->getOther2());
         $this->assertNull($entity2->getOther2()->getOther1());
@@ -114,7 +114,7 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
 
     public function assertLoadingOfAssociation($customer)
     {
-        $this->assertTrue($customer->getMentor() instanceof ECommerceCustomer);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCustomer', $customer->getMentor());
         $this->assertEquals('Obi-wan Kenobi', $customer->getMentor()->getName());
     }
 

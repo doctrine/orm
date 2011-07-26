@@ -64,7 +64,7 @@ class StandardEntityPersisterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         
         $this->assertEquals(2, count($p->getFeatures()));
-        $this->assertTrue($p->getFeatures() instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $p->getFeatures());
 
         $q = $this->_em->createQuery(
             'SELECT p, f
@@ -75,7 +75,7 @@ class StandardEntityPersisterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $res = $q->getResult();
         
         $this->assertEquals(2, count($p->getFeatures()));
-        $this->assertTrue($p->getFeatures() instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $p->getFeatures());
         
         // Check that the features are the same instances still
         foreach ($p->getFeatures() as $feature) {
