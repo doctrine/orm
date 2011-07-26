@@ -24,6 +24,5 @@ Profile:
   relations:
     User:
       onDelete: CASCADE
-      onUpdate: CASCADE
       foreignType: one
       type: one

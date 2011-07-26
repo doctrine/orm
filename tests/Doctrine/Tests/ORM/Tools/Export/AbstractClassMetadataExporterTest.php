@@ -217,7 +217,6 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertEquals('address_id', $class->associationMappings['address']['joinColumns'][0]['name']);
         $this->assertEquals('id', $class->associationMappings['address']['joinColumns'][0]['referencedColumnName']);
         $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
-        $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onUpdate']);
 
         $this->assertTrue($class->associationMappings['address']['isCascadeRemove']);
         $this->assertFalse($class->associationMappings['address']['isCascadePersist']);

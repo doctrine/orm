@@ -24,7 +24,7 @@ class User
 
     /**
      * @OneToOne(targetEntity="Doctrine\Tests\ORM\Tools\Export\Address", cascade={"remove"}, inversedBy="user")
-     * @JoinColumn(name="address_id", onDelete="CASCADE", onUpdate="CASCADE")
+     * @JoinColumn(name="address_id", onDelete="CASCADE")
      */
     public $address;
 

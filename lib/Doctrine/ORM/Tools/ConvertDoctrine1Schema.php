@@ -248,7 +248,6 @@ class ConvertDoctrine1Schema
                             'name' => $relation['local'],
                             'referencedColumnName' => $relation['foreign'],
                             'onDelete' => isset($relation['onDelete']) ? $relation['onDelete'] : null,
-                            'onUpdate' => isset($relation['onUpdate']) ? $relation['onUpdate'] : null,
                         )
                     );
                 }
