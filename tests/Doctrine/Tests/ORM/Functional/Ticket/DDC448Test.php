@@ -42,7 +42,7 @@ class DDC448MainTable
 
     /**
      * @ManyToOne(targetEntity="DDC448ConnectedClass",  cascade={"all"}, fetch="EAGER")
-     * @JoinColumn(name="connectedClassId", referencedColumnName="id", onDelete="CASCADE", onUpdate="CASCADE", nullable=true)
+     * @JoinColumn(name="connectedClassId", referencedColumnName="id", onDelete="CASCADE", nullable=true)
      */
     private $connectedClassId;
 }

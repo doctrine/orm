@@ -243,7 +243,6 @@ class AnnotationDriver implements Driver
                     'unique' => $joinColumnAnnot->unique,
                     'nullable' => $joinColumnAnnot->nullable,
                     'onDelete' => $joinColumnAnnot->onDelete,
-                    'onUpdate' => $joinColumnAnnot->onUpdate,
                     'columnDefinition' => $joinColumnAnnot->columnDefinition,
                 );
             } else if ($joinColumnsAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinColumns')) {
@@ -254,7 +253,6 @@ class AnnotationDriver implements Driver
                         'unique' => $joinColumn->unique,
                         'nullable' => $joinColumn->nullable,
                         'onDelete' => $joinColumn->onDelete,
-                        'onUpdate' => $joinColumn->onUpdate,
                         'columnDefinition' => $joinColumn->columnDefinition,
                     );
                 }
@@ -362,7 +360,6 @@ class AnnotationDriver implements Driver
                             'unique' => $joinColumn->unique,
                             'nullable' => $joinColumn->nullable,
                             'onDelete' => $joinColumn->onDelete,
-                            'onUpdate' => $joinColumn->onUpdate,
                             'columnDefinition' => $joinColumn->columnDefinition,
                         );
                     }
@@ -374,7 +371,6 @@ class AnnotationDriver implements Driver
                             'unique' => $joinColumn->unique,
                             'nullable' => $joinColumn->nullable,
                             'onDelete' => $joinColumn->onDelete,
-                            'onUpdate' => $joinColumn->onUpdate,
                             'columnDefinition' => $joinColumn->columnDefinition,
                         );
                     }
