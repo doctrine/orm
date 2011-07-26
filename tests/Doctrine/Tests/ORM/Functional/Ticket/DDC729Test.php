@@ -36,11 +36,11 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $a = new DDC729A();
         $a->id = $aId;
 
-        $this->assertType('Doctrine\Common\Collections\ArrayCollection', $a->related);
+        $this->assertInstanceOf('Doctrine\Common\Collections\ArrayCollection', $a->related);
         
         $a = $this->_em->merge($a);
 
-        $this->assertType('Doctrine\ORM\PersistentCollection', $a->related);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $a->related);
 
         $this->assertFalse($a->related->isInitialized(), "Collection should not be marked initialized.");
         $this->assertFalse($a->related->isDirty(), "Collection should not be marked as dirty.");

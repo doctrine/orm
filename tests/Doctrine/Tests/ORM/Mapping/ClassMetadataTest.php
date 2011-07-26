@@ -16,7 +16,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         // Test initial state
         $this->assertTrue(count($cm->getReflectionProperties()) == 0);
-        $this->assertTrue($cm->reflClass instanceof \ReflectionClass);
+        $this->assertInstanceOf('ReflectionClass', $cm->reflClass);
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->name);
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->rootEntityName);
         $this->assertEquals(array(), $cm->subClasses);
@@ -40,7 +40,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         // Check state
         $this->assertTrue(count($cm->getReflectionProperties()) > 0);
         $this->assertEquals('Doctrine\Tests\Models\CMS', $cm->namespace);
-        $this->assertTrue($cm->reflClass instanceof \ReflectionClass);
+        $this->assertInstanceOf('ReflectionClass', $cm->reflClass);
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->name);
         $this->assertEquals('UserParent', $cm->rootEntityName);
         $this->assertEquals(array('Doctrine\Tests\Models\CMS\One', 'Doctrine\Tests\Models\CMS\Two', 'Doctrine\Tests\Models\CMS\Three'), $cm->subClasses);

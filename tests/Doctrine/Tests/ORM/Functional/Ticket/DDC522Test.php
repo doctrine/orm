@@ -48,9 +48,9 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $r = $this->_em->createQuery("select ca,c from ".get_class($cart)." ca join ca.customer c")
                 ->getResult();
         
-        $this->assertTrue($r[0] instanceof DDC522Cart);
-        $this->assertTrue($r[0]->customer instanceof DDC522Customer);
-        $this->assertFalse($r[0]->customer instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertInstanceOf(__NAMESPACE__ . '\DDC522Cart', $r[0]);
+        $this->assertInstanceOf(__NAMESPACE__ . '\DDC522Customer', $r[0]->customer);
+        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $r[0]->customer);
         $this->assertEquals('name', $r[0]->customer->name);
 
         $fkt = new DDC522ForeignKeyTest();
@@ -62,7 +62,7 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $fkt2 = $this->_em->find(get_class($fkt), $fkt->id);
         $this->assertEquals($fkt->cart->id, $fkt2->cartId);
-        $this->assertTrue($fkt2->cart instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $fkt2->cart);
         $this->assertFalse($fkt2->cart->__isInitialized__);
     }
 

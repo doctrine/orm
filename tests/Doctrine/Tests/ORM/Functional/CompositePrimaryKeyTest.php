@@ -45,7 +45,7 @@ class CompositePrimaryKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('lat' => 100, 'long' => 200));
 
-        $this->assertType('Doctrine\Tests\Models\Navigation\NavPointOfInterest', $poi);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Navigation\NavPointOfInterest', $poi);
         $this->assertEquals(100, $poi->getLat());
         $this->assertEquals(200, $poi->getLong());
         $this->assertEquals('Brandenburger Tor', $poi->getName());

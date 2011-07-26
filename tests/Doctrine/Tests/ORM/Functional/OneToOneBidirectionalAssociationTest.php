@@ -62,7 +62,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $result = $query->getResult();
         $customer = $result[0];
         
-        $this->assertTrue($customer->getCart() instanceof ECommerceCart);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCart', $customer->getCart());
         $this->assertEquals('paypal', $customer->getCart()->getPayment());
     }
     
@@ -75,7 +75,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $result = $query->getResult();
         $cart = $result[0];
         
-        $this->assertTrue($cart->getCustomer() instanceof ECommerceCustomer);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCustomer', $cart->getCustomer());
         $this->assertEquals('Giorgio', $cart->getCustomer()->getName());
     }
 
@@ -90,8 +90,8 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $customer = $result[0];
         
         $this->assertNull($customer->getMentor());
-        $this->assertTrue($customer->getCart() instanceof ECommerceCart);
-        $this->assertFalse($customer->getCart() instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertInstanceOF('Doctrine\Tests\Models\ECommerce\ECommerceCart', $customer->getCart());
+        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $customer->getCart());
         $this->assertEquals('paypal', $customer->getCart()->getPayment());
     }
     
@@ -107,7 +107,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $this->_em->flush();
         $this->_em->clear();
         
-        $this->assertTrue($cust->getCart() instanceof ECommerceCart);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCart', $cust->getCart());
         $this->assertEquals('Roman', $cust->getName());
         $this->assertSame($cust, $cart->getCustomer());
         
@@ -126,7 +126,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         
         $cart3 = $query2->getSingleResult();
         
-        $this->assertTrue($cart3->getCustomer() instanceof ECommerceCustomer);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCustomer', $cart3->getCustomer());
         $this->assertEquals('Roman', $cart3->getCustomer()->getName());
     }
 
