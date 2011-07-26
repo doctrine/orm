@@ -45,7 +45,7 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $z2 = $this->_em->createQuery('select z,y from ' . get_class($z) . ' z join z.y y where z.id = ?1')
                 ->setParameter(1, $z->id)
                 ->getSingleResult();
-       $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $x2->y);
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $z2->y);
         $this->assertTrue($z2->y->__isInitialized__);
         $this->assertEquals('Y', $z2->y->data);
         $this->assertEquals($y->id, $z2->y->id);
@@ -56,7 +56,7 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertNotSame($x, $x2);
         $this->assertNotSame($z, $z2);
         $this->assertSame($z2->y, $x2->y);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $x2->y);
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $z2->y);
         
     }
 }
