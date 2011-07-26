@@ -244,9 +244,6 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setParameter(1, $phone->phonenumber);
         $phone = $query->getSingleResult();
 
-//        \Doctrine\Common\Util\Debug::dump($phone);
-//        die();
-
         $this->assertNotNull($phone->getUser());
         $this->assertEquals($user->name, $phone->getUser()->getName());
     }
