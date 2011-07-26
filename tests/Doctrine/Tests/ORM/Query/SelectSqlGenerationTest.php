@@ -922,6 +922,49 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT COALESCE(NULLIF(c0_.name, ''), c0_.username) AS sclr0 FROM cms_users c0_"
         );
     }
+
+    /**
+     * Test that the right discriminator data is inserted in a subquery.
+     */
+    public function testSubSelectDiscriminator()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name, (SELECT COUNT(cfc.id) total FROM Doctrine\Tests\Models\Company\CompanyFixContract cfc) as cfc_count FROM Doctrine\Tests\Models\CMS\CmsUser u",
+            "SELECT c0_.name AS name0, (SELECT COUNT(c1_.id) AS dctrn__total FROM company_contracts c1_ WHERE c1_.discr IN ('fix')) AS sclr1 FROM cms_users c0_"
+        );
+    }
+
+    public function testIdVariableResultVariableReuse()
+    {
+        $exceptionThrown = false;
+        try {
+            $query = $this->_em->createQuery("SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IN (SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u)");
+
+            $query->getSql();
+            $query->free();
+        } catch (\Exception $e) {
+            $exceptionThrown = true;
+        }
+
+        $this->assertTrue($exceptionThrown);
+
+    }
+
+    public function testSubSelectAliasesFromOuterQuery()
+    {
+        $this->assertSqlGeneration(
+            "SELECT uo, (SELECT ui.name FROM Doctrine\Tests\Models\CMS\CmsUser ui WHERE ui.id = uo.id) AS bar FROM Doctrine\Tests\Models\CMS\CmsUser uo",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, (SELECT c1_.name FROM cms_users c1_ WHERE c1_.id = c0_.id) AS sclr4 FROM cms_users c0_"
+        );
+    }
+
+    public function testSubSelectAliasesFromOuterQueryWithSubquery()
+    {
+        $this->assertSqlGeneration(
+            "SELECT uo, (SELECT ui.name FROM Doctrine\Tests\Models\CMS\CmsUser ui WHERE ui.id = uo.id AND ui.name IN (SELECT uii.name FROM Doctrine\Tests\Models\CMS\CmsUser uii)) AS bar FROM Doctrine\Tests\Models\CMS\CmsUser uo",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, (SELECT c1_.name FROM cms_users c1_ WHERE c1_.id = c0_.id AND c1_.name IN (SELECT c2_.name FROM cms_users c2_)) AS sclr4 FROM cms_users c0_"
+        );
+    }
 }
 
 
