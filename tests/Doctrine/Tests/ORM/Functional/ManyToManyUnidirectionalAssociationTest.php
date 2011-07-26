@@ -69,8 +69,8 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $products = $firstCart->getProducts();
         $secondCart = $result[1];
         
-        $this->assertTrue($products[0] instanceof ECommerceProduct);
-        $this->assertTrue($products[1] instanceof ECommerceProduct);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $products[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $products[1]);
         $this->assertCollectionEquals($products, $secondCart->getProducts());
         //$this->assertEquals("Doctrine 1.x Manual", $products[0]->getName());
         //$this->assertEquals("Doctrine 2.x Manual", $products[1]->getName());
@@ -88,8 +88,8 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $products = $firstCart->getProducts();
         $secondCart = $result[1];
         
-        $this->assertTrue($products[0] instanceof ECommerceProduct);
-        $this->assertTrue($products[1] instanceof ECommerceProduct);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $products[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $products[1]);
         $this->assertCollectionEquals($products, $secondCart->getProducts());
     }
 
