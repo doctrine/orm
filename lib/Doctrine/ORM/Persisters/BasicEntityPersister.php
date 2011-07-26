@@ -559,12 +559,13 @@ class BasicEntityPersister
      * @param $assoc The association that connects the entity to load to another entity, if any.
      * @param array $hints Hints for entity creation.
      * @param int $lockMode
+     * @param int $limit Limit number of results
      * @return object The loaded and managed entity instance or NULL if the entity can not be found.
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
-    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0)
+    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0, $limit = null)
     {
-        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, $lockMode);
+        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, $lockMode, $limit);
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->_conn->executeQuery($sql, $params, $types);
         

@@ -178,7 +178,7 @@ class EntityRepository implements ObjectRepository
      */
     public function findOneBy(array $criteria)
     {
-        return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($criteria);
+        return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($criteria, null, null, array(), 0, 1);
     }
 
     /**
