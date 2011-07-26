@@ -355,5 +355,29 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertSame($usersAsc[0], $usersDesc[1]);
         $this->assertSame($usersAsc[1], $usersDesc[0]);
     }
+
+    /** group DDC-1150 */
+    public function testFindByAssociationInKey()
+    {
+        list($userId, $addressId) = $this->loadAssociatedFixture();
+
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
+        $addresses = $repos->findBy(array('user' => array($userId)));
+
+        $this->assertEquals(1, count($addresses));
+
+        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+    }
+
+    public function testFindOneByAssociationInKey()
+    {
+        list($userId, $addressId) = $this->loadAssociatedFixture();
+
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
+        $address = $repos->findOneBy(array('user' => array($userId)));
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress', $address);
+        $this->assertEquals($addressId, $address->id);
+    }
 }
 
