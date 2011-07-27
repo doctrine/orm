@@ -527,7 +527,7 @@ class SqlWalker implements TreeWalker
     public function walkSelectClause($selectClause)
     {
         $sql = 'SELECT ' . (($selectClause->isDistinct) ? 'DISTINCT ' : '') . implode(
-            ', ', array_map(array($this, 'walkSelectExpression'), $selectClause->selectExpressions)
+            ', ', array_filter(array_map(array($this, 'walkSelectExpression'), $selectClause->selectExpressions))
         );
 
         $addMetaColumns = ! $this->_query->getHint(Query::HINT_FORCE_PARTIAL_LOAD) &&

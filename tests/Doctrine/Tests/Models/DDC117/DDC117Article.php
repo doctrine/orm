@@ -27,6 +27,11 @@ class DDC117Article
      */
     private $translations;
 
+    /**
+     * @OneToMany(targetEntity="DDC117Link", mappedBy="source")
+     */
+    private $links;
+
     public function __construct($title)
     {
         $this->title = $title;
