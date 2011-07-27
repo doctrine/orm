@@ -38,7 +38,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $result = $query->getResult();
         
         $this->assertEquals(1, count($result));
-        $this->assertTrue($result[0][0] instanceof CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]);
         $this->assertEquals('Guilherme', $result[0][0]->name);
         $this->assertEquals('gblanco', $result[0][0]->username);
         $this->assertEquals('developer', $result[0][0]->status);
@@ -90,7 +90,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u join u.articles a");
         $users = $query->getResult();
         $this->assertEquals(1, count($users));
-        $this->assertTrue($users[0] instanceof CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
         $this->assertEquals(2, count($users[0]->articles));
         $this->assertEquals('Doctrine 2', $users[0]->articles[0]->topic);
         $this->assertEquals('Symfony 2', $users[0]->articles[1]->topic);
@@ -361,9 +361,9 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $result = $q->getResult();
         $this->assertEquals(1, count($result));
-        $this->assertTrue($result[0] instanceof CmsArticle);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[0]);
         $this->assertEquals("dr. dolittle", $result[0]->topic);
-        $this->assertTrue($result[0]->user instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[0]->user);
         $this->assertFalse($result[0]->user->__isInitialized__);
     }
     

@@ -51,7 +51,6 @@ $metadata->mapOneToOne(array(
     'name' => 'address_id',
     'referencedColumnName' => 'id',
     'onDelete' => 'CASCADE',
-    'onUpdate' => 'CASCADE'
    ),
    ),
    'orphanRemoval' => false,

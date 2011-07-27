@@ -56,7 +56,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $result = $query->getResult();
         $product = $result[0];
         
-        $this->assertTrue($product->getShipping() instanceof ECommerceShipping);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceShipping', $product->getShipping());
         $this->assertEquals(1, $product->getShipping()->getDays());
     }
     
@@ -69,7 +69,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $result = $query->getResult();
         $product = $result[0];
         
-        $this->assertTrue($product->getShipping() instanceof ECommerceShipping);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceShipping', $product->getShipping());
         $this->assertEquals(1, $product->getShipping()->getDays());
     }
 

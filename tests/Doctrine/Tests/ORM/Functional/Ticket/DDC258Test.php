@@ -44,7 +44,7 @@ class DDC258Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $e2 = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC258Super', $c2->id);
 
-        $this->assertType('Doctrine\Tests\ORM\Functional\Ticket\DDC258Class2', $e2);
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC258Class2', $e2);
         $this->assertEquals('Bar', $e2->title);
         $this->assertEquals('Bar', $e2->description);
         $this->assertEquals('Bar', $e2->text);

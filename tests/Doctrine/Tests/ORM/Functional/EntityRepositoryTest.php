@@ -47,7 +47,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
 
         $user = $repos->find($user1Id);
-        $this->assertTrue($user instanceof CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser',$user);
         $this->assertEquals('Roman', $user->name);
         $this->assertEquals('freak', $user->status);
     }
@@ -59,7 +59,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $users = $repos->findBy(array('status' => 'dev'));
         $this->assertEquals(1, count($users));
-        $this->assertTrue($users[0] instanceof CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser',$users[0]);
         $this->assertEquals('Guilherme', $users[0]->name);
         $this->assertEquals('dev', $users[0]->status);
     }
@@ -72,7 +72,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $users = $repos->findByStatus('dev');
         $this->assertEquals(1, count($users));
-        $this->assertTrue($users[0] instanceof CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser',$users[0]);
         $this->assertEquals('Guilherme', $users[0]->name);
         $this->assertEquals('dev', $users[0]->status);
     }
@@ -244,7 +244,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
         $address = $repos->findOneBy(array('user' => $userId));
 
-        $this->assertType('Doctrine\Tests\Models\CMS\CmsAddress', $address);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress', $address);
         $this->assertEquals($addressId, $address->id);
     }
 
@@ -285,7 +285,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
         $address = $repos->findOneByUser($userId);
 
-        $this->assertType('Doctrine\Tests\Models\CMS\CmsAddress', $address);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress', $address);
         $this->assertEquals($addressId, $address->id);
     }
 
@@ -295,7 +295,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $repos->createNamedQuery('all');
 
-        $this->assertType('Doctrine\ORM\Query', $query);
+        $this->assertInstanceOf('Doctrine\ORM\Query', $query);
         $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $query->getDQL());
     }
 

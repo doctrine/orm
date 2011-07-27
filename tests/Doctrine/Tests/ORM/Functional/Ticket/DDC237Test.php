@@ -37,7 +37,7 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
         
         $x2 = $this->_em->find(get_class($x), $x->id); // proxy injected for Y
-        $this->assertTrue($x2->y instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $x2->y);
         $this->assertFalse($x2->y->__isInitialized__);
         
         // proxy for Y is in identity map
@@ -45,7 +45,7 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $z2 = $this->_em->createQuery('select z,y from ' . get_class($z) . ' z join z.y y where z.id = ?1')
                 ->setParameter(1, $z->id)
                 ->getSingleResult();
-        $this->assertTrue($z2->y instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $z2->y);
         $this->assertTrue($z2->y->__isInitialized__);
         $this->assertEquals('Y', $z2->y->data);
         $this->assertEquals($y->id, $z2->y->id);
@@ -56,7 +56,7 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertNotSame($x, $x2);
         $this->assertNotSame($z, $z2);
         $this->assertSame($z2->y, $x2->y);
-        $this->assertTrue($z2->y instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $z2->y);
         
     }
 }

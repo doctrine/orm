@@ -34,10 +34,10 @@ class DDC949Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $true = $this->_em->getRepository('Doctrine\Tests\Models\Generic\BooleanModel')->findOneBy(array('booleanField' => true));
         $false = $this->_em->getRepository('Doctrine\Tests\Models\Generic\BooleanModel')->findOneBy(array('booleanField' => false));
 
-        $this->assertType('Doctrine\Tests\Models\Generic\BooleanModel', $true);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Generic\BooleanModel', $true);
         $this->assertTrue($true->booleanField, "True Boolean Model should be true.");
 
-        $this->assertType('Doctrine\Tests\Models\Generic\BooleanModel', $false);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Generic\BooleanModel', $false);
         $this->assertFalse($false->booleanField, "False Boolean Model should be false.");
     }
 }

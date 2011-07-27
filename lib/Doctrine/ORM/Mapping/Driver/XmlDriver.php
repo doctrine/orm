@@ -471,10 +471,6 @@ class XmlDriver extends AbstractFileDriver
             $joinColumn['onDelete'] = (string)$joinColumnElement['on-delete'];
         }
 
-        if (isset($joinColumnElement['on-update'])) {
-            $joinColumn['onUpdate'] = (string)$joinColumnElement['on-update'];
-        }
-
         if (isset($joinColumnElement['column-definition'])) {
             $joinColumn['columnDefinition'] = (string)$joinColumnElement['column-definition'];
         }

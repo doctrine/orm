@@ -43,9 +43,9 @@ class ClassTableInheritanceTest2 extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $related2 = $this->_em->find('Doctrine\Tests\ORM\Functional\CTIRelated', $relatedId);
         
-        $this->assertTrue($related2 instanceof CTIRelated);
-        $this->assertTrue($related2->getCTIParent() instanceof CTIChild);
-        $this->assertFalse($related2->getCTIParent() instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\CTIRelated', $related2);
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\CTIChild', $related2->getCTIParent());
+        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $related2->getCTIParent());
         $this->assertEquals('hello', $related2->getCTIParent()->getData());
         
         $this->assertSame($related2, $related2->getCTIParent()->getRelated());
@@ -69,7 +69,7 @@ class ClassTableInheritanceTest2 extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($mmrel2->getCTIChildren()->isInitialized());
         $this->assertEquals(1, count($mmrel2->getCTIChildren()));
         $this->assertTrue($mmrel2->getCTIChildren()->isInitialized());
-        $this->assertTrue($mmrel2->getCTIChildren()->get(0) instanceof CTIChild);
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\CTIChild', $mmrel2->getCTIChildren()->get(0));
     }
 }
 

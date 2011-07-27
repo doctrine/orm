@@ -1,0 +1,3 @@
+# Removed support for onUpdate in @JoinColumn
+
+The onUpdate foreign key handling makes absolutly no sense in an ORM. Additionally Oracle doesn't even support it. Support for it is removed.
