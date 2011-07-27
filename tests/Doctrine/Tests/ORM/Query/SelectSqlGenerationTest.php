@@ -922,6 +922,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT COALESCE(NULLIF(c0_.name, ''), c0_.username) AS sclr0 FROM cms_users c0_"
         );
     }
+
+    /**
+     * @group DDC-1298
+     */
+    public function testSelectForeignKeyPKWithoutFields()
+    {
+        $this->assertSqlGeneration(
+            "SELECT t, s, l FROM Doctrine\Tests\Models\DDC117\DDC117Link l INNER JOIN l.target t INNER JOIN l.source s",
+            "SELECT d0_.article_id AS article_id0, d0_.title AS title1, d1_.article_id AS article_id2, d1_.title AS title3 FROM DDC117Link d2_ INNER JOIN DDC117Article d0_ ON d2_.target_id = d0_.article_id INNER JOIN DDC117Article d1_ ON d2_.source_id = d1_.article_id"
+        );
+    }
 }
 
 
