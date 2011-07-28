@@ -10,56 +10,56 @@ class LegacyUserReference
 {
     /**
      * @Id
-     * @ManyToOne(targetEntity="LegacyUser", inversedBy="references")
+     * @ManyToOne(targetEntity="LegacyUser", inversedBy="_references")
      * @JoinColumn(name="iUserIdSource", referencedColumnName="iUserId")
      */
-    private $source;
+    private $_source;
 
     /**
      * @Id
-     * @ManyToOne(targetEntity="LegacyUser", inversedBy="references")
+     * @ManyToOne(targetEntity="LegacyUser", inversedBy="_references")
      * @JoinColumn(name="iUserIdTarget", referencedColumnName="iUserId")
      */
-    private $target;
+    private $_target;
 
     /**
      * @column(type="string")
      */
-    private $description;
+    private $_description;
 
     /**
      * @column(type="datetime")
      */
-    private $created;
+    private $_created;
 
     public function __construct($source, $target, $description)
     {
         $source->addReference($this);
         $target->addReference($this);
 
-        $this->source = $source;
-        $this->target = $target;
-        $this->description = $description;
-        $this->created = new \DateTime("now");
+        $this->_source = $source;
+        $this->_target = $target;
+        $this->_description = $description;
+        $this->_created = new \DateTime("now");
     }
 
     public function source()
     {
-        return $this->source;
+        return $this->_source;
     }
 
     public function target()
     {
-        return $this->target;
+        return $this->_target;
     }
 
     public function setDescription($desc)
     {
-        $this->description = $desc;
+        $this->_description = $desc;
     }
 
     public function getDescription()
     {
-        return $this->description;
+        return $this->_description;
     }
 }

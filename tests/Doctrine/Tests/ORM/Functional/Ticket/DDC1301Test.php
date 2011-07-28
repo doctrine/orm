@@ -19,9 +19,9 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\Legacy\LegacyUser');
-        $class->associationMappings['articles']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
-        $class->associationMappings['references']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
-        $class->associationMappings['cars']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
+        $class->associationMappings['_articles']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
+        $class->associationMappings['_references']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
+        $class->associationMappings['_cars']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
 
         $this->loadFixture();
     }
@@ -31,9 +31,9 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::tearDown();
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\Legacy\LegacyUser');
-        $class->associationMappings['articles']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
-        $class->associationMappings['references']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
-        $class->associationMappings['cars']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
+        $class->associationMappings['_articles']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
+        $class->associationMappings['_references']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
+        $class->associationMappings['_cars']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
     }
 
     public function testCountNotInitializesLegacyCollection()
@@ -41,11 +41,11 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = $this->_em->find('Doctrine\Tests\Models\Legacy\LegacyUser', $this->userId);
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($user->articles->isInitialized());
-        $this->assertEquals(2, count($user->articles));
-        $this->assertFalse($user->articles->isInitialized());
+        $this->assertFalse($user->_articles->isInitialized());
+        $this->assertEquals(2, count($user->_articles));
+        $this->assertFalse($user->_articles->isInitialized());
 
-        foreach ($user->articles AS $article) { }
+        foreach ($user->_articles AS $article) { }
 
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
     }
@@ -55,11 +55,11 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = $this->_em->find('Doctrine\Tests\Models\Legacy\LegacyUser', $this->userId);
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($user->references->isInitialized());
-        $this->assertEquals(2, count($user->references));
-        $this->assertFalse($user->references->isInitialized());
+        $this->assertFalse($user->_references->isInitialized());
+        $this->assertEquals(2, count($user->_references));
+        $this->assertFalse($user->_references->isInitialized());
 
-        foreach ($user->references AS $reference) { }
+        foreach ($user->_references AS $reference) { }
 
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
     }
@@ -69,11 +69,11 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = $this->_em->find('Doctrine\Tests\Models\Legacy\LegacyUser', $this->userId);
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($user->cars->isInitialized());
-        $this->assertEquals(3, count($user->cars));
-        $this->assertFalse($user->cars->isInitialized());
+        $this->assertFalse($user->_cars->isInitialized());
+        $this->assertEquals(3, count($user->_cars));
+        $this->assertFalse($user->_cars->isInitialized());
 
-        foreach ($user->cars AS $reference) { }
+        foreach ($user->_cars AS $reference) { }
 
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
     }
@@ -81,45 +81,45 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function loadFixture()
     {
         $user1 = new \Doctrine\Tests\Models\Legacy\LegacyUser();
-        $user1->username = "beberlei";
-        $user1->name = "Benjamin";
-        $user1->status = "active";
+        $user1->_username = "beberlei";
+        $user1->_name = "Benjamin";
+        $user1->_status = "active";
 
         $user2 = new \Doctrine\Tests\Models\Legacy\LegacyUser();
-        $user2->username = "jwage";
-        $user2->name = "Jonathan";
-        $user2->status = "active";
+        $user2->_username = "jwage";
+        $user2->_name = "Jonathan";
+        $user2->_status = "active";
 
         $user3 = new \Doctrine\Tests\Models\Legacy\LegacyUser();
-        $user3->username = "romanb";
-        $user3->name = "Roman";
-        $user3->status = "active";
+        $user3->_username = "romanb";
+        $user3->_name = "Roman";
+        $user3->_status = "active";
 
         $this->_em->persist($user1);
         $this->_em->persist($user2);
         $this->_em->persist($user3);
 
         $article1 = new \Doctrine\Tests\Models\Legacy\LegacyArticle();
-        $article1->topic = "Test";
-        $article1->text = "Test";
+        $article1->_topic = "Test";
+        $article1->_text = "Test";
         $article1->setAuthor($user1);
 
         $article2 = new \Doctrine\Tests\Models\Legacy\LegacyArticle();
-        $article2->topic = "Test";
-        $article2->text = "Test";
+        $article2->_topic = "Test";
+        $article2->_text = "Test";
         $article2->setAuthor($user1);
 
         $this->_em->persist($article1);
         $this->_em->persist($article2);
 
         $car1 = new \Doctrine\Tests\Models\Legacy\LegacyCar();
-        $car1->description = "Test1";
+        $car1->_description = "Test1";
 
         $car2 = new \Doctrine\Tests\Models\Legacy\LegacyCar();
-        $car2->description = "Test2";
+        $car2->_description = "Test2";
 
         $car3 = new \Doctrine\Tests\Models\Legacy\LegacyCar();
-        $car3->description = "Test3";
+        $car3->_description = "Test3";
 
         $user1->addCar($car1);
         $user1->addCar($car2);
