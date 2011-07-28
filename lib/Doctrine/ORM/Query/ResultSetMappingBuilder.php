@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * A ResultSetMappingBuilder uses the EntityManager to automatically populate entity fields
@@ -52,22 +53,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
     public function addRootEntityFromClassMetadata($class, $alias, $renamedColumns = array())
     {
         $this->addEntityResult($class, $alias);
-        $classMetadata = $this->em->getClassMetadata($class);
-        if ($classMetadata->isInheritanceTypeSingleTable() || $classMetadata->isInheritanceTypeJoined()) {
-            throw new \InvalidArgumentException('ResultSetMapping builder does not currently support inheritance.');
-        }
-        $platform = $this->em->getConnection()->getDatabasePlatform();
-        foreach ($classMetadata->getColumnNames() AS $columnName) {
-            $propertyName = $classMetadata->getFieldName($columnName);
-            if (isset($renamedColumns[$columnName])) {
-                $columnName = $renamedColumns[$columnName];
-            }
-            if (isset($this->fieldMappings[$columnName])) {
-                throw new \InvalidArgumentException("The column '$columnName' conflicts with another column in the mapper.");
-            }
-            $this->addFieldResult($alias, $platform->getSQLResultCasing($columnName), $propertyName);
-        }
-        $this->addAssocationMappings($alias, $classMetadata->getAssociationMappings());
+        $this->addAllClassFields($class, $alias, $renamedColumns);
     }
 
     /**
@@ -82,6 +68,14 @@ class ResultSetMappingBuilder extends ResultSetMapping
     public function addJoinedEntityFromClassMetadata($class, $alias, $parentAlias, $relation, $renamedColumns = array())
     {
         $this->addJoinedEntityResult($class, $alias, $parentAlias, $relation);
+        $this->addAllClassFields($class, $alias, $renamedColumns);
+    }
+
+    /**
+     * Adds all fields of the given class to the result set mapping (columns and meta fields)
+     */
+    protected function addAllClassFields($class, $alias, $renamedColumns = array())
+    {
         $classMetadata = $this->em->getClassMetadata($class);
         if ($classMetadata->isInheritanceTypeSingleTable() || $classMetadata->isInheritanceTypeJoined()) {
             throw new \InvalidArgumentException('ResultSetMapping builder does not currently support inheritance.');
@@ -97,14 +91,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
             }
             $this->addFieldResult($alias, $platform->getSQLResultCasing($columnName), $propertyName);
         }
-        $this->addAssocationMappings($alias, $classMetadata->getAssociationMappings());
-    }
-
-    protected function addAssocationMappings($alias, $associationMappings)
-    {
-        $platform = $this->em->getConnection()->getDatabasePlatform();
-        foreach ($associationMappings AS $associationMapping) {
-            if (isset($associationMapping['joinColumns'])) {
+        foreach ($classMetadata->associationMappings AS $associationMapping) {
+            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
                 foreach ($associationMapping['joinColumns'] AS $joinColumn) {
                     $columnName = $joinColumn['name'];
                     $renamedColumnName = isset($renamedColumns[$columnName]) ? $renamedColumns[$columnName] : $columnName;
