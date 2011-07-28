@@ -124,24 +124,26 @@ class OneToManyPersister extends AbstractCollectionPersister
     public function count(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
-        $class = $this->_em->getClassMetadata($mapping['targetEntity']);
+        $targetClass = $this->_em->getClassMetadata($mapping['targetEntity']);
+        $sourceClass = $this->_em->getClassMetadata($mapping['sourceEntity']);
+
         $params = array();
         $id = $this->_em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
 
         $where = '';
-        foreach ($class->associationMappings[$mapping['mappedBy']]['joinColumns'] AS $joinColumn) {
+        foreach ($targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'] AS $joinColumn) {
             if ($where != '') {
                 $where .= ' AND ';
             }
             $where .= $joinColumn['name'] . " = ?";
-            if ($class->containsForeignIdentifier) {
-                $params[] = $id[$class->getFieldForColumn($joinColumn['referencedColumnName'])];
+            if ($targetClass->containsForeignIdentifier) {
+                $params[] = $id[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])];
             } else {
-                $params[] = $id[$class->fieldNames[$joinColumn['referencedColumnName']]];
+                $params[] = $id[$sourceClass->fieldNames[$joinColumn['referencedColumnName']]];
             }
         }
 
-        $sql = "SELECT count(*) FROM " . $class->getQuotedTableName($this->_conn->getDatabasePlatform()) . " WHERE " . $where;
+        $sql = "SELECT count(*) FROM " . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) . " WHERE " . $where;
         return $this->_conn->fetchColumn($sql, $params);
     }
 
