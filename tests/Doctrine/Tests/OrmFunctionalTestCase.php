@@ -104,6 +104,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\StockExchange\Stock',
             'Doctrine\Tests\Models\StockExchange\Market',
         ),
+        'legacy' => array(
+            'Doctrine\Tests\Models\Legacy\LegacyUser',
+            'Doctrine\Tests\Models\Legacy\LegacyUserReference',
+            'Doctrine\Tests\Models\Legacy\LegacyArticle',
+            'Doctrine\Tests\Models\Legacy\LegacyCar',
+        ),
     );
 
     protected function useModelSet($setName)
@@ -201,6 +207,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM exchange_bonds');
             $conn->executeUpdate('DELETE FROM exchange_stocks');
             $conn->executeUpdate('DELETE FROM exchange_markets');
+        }
+        if (isset($this->_usedModelSets['legacy'])) {
+            $conn->executeUpdate('DELETE FROM legacy_articles');
+            $conn->executeUpdate('DELETE FROM legacy_cars');
+            $conn->executeUpdate('DELETE FROM legacy_users');
+            $conn->executeUpdate('DELETE FROM legacy_users_reference');
         }
 
         $this->_em->clear();
