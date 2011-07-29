@@ -67,6 +67,10 @@ class GenerateEntitiesCommand extends Console\Command\Command
                 'Flag to define if generator should generate stub methods on entities.', true
             ),
             new InputOption(
+                'cast-setters', null, InputOption::VALUE_OPTIONAL,
+                'Flag to define if cast should be put on setters.', false
+            ),
+            new InputOption(
                 'regenerate-entities', null, InputOption::VALUE_OPTIONAL,
                 'Flag to define if generator should regenerate entity if it exists.', false
             ),
@@ -137,6 +141,7 @@ EOT
 
             $entityGenerator->setGenerateAnnotations($input->getOption('generate-annotations'));
             $entityGenerator->setGenerateStubMethods($input->getOption('generate-methods'));
+            $entityGenerator->setAddCastToSetters($input->getOption('cast-setters'));
             $entityGenerator->setRegenerateEntityIfExists($input->getOption('regenerate-entities'));
             $entityGenerator->setUpdateEntityIfExists($input->getOption('update-entities'));
             $entityGenerator->setNumSpaces($input->getOption('num-spaces'));

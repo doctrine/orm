@@ -166,7 +166,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $book = $this->newInstance($metadata);
 
         $cm = new \Doctrine\ORM\Mapping\ClassMetadata($metadata->name);
-        $driver = $this->createAnnotationDriver();
+	$driver = $this->createAnnotationDriver();
         $driver->loadMetadataForClass($cm->name, $cm);
 
         $this->assertEquals($cm->columnNames, $metadata->columnNames);
@@ -175,6 +175,17 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($cm->identifier, $metadata->identifier);
         $this->assertEquals($cm->idGenerator, $metadata->idGenerator);
         $this->assertEquals($cm->customRepositoryClassName, $metadata->customRepositoryClassName);
+    }
+
+    public function testCastOnSetters()
+    {
+	$this->_generator->setAddCastToSetters(true);
+        $metadata = $this->generateBookEntityFixture();
+
+	$book = $this->newInstance($metadata);
+
+        $book->setName(1984);
+        $this->assertTrue(is_string($book->getName()), "Check for cast on setters");
     }
 
     public function testLoadPrefixedMetadata()

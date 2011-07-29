@@ -80,6 +80,9 @@ class EntityGenerator
     /** Whether or not to generated sub methods */
     private $_generateEntityStubMethods = false;
 
+    /** Wether or not to add cast on setters */
+    private $_addCastToSetters = false;
+
     /** Whether or not to update the entity class if it exists already */
     private $_updateEntityIfExists = false;
 
@@ -118,7 +121,7 @@ public function <methodName>()
  */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
-<spaces>$this-><fieldName> = $<variableName>;
+<spaces>$this-><fieldName> = <variableCast>$<variableName>;
 }';
 
     private static $_addMethodTemplate =
@@ -147,6 +150,21 @@ public function <methodName>()
 <spaces><collections>
 }
 ';
+
+    private static $_castTemplate =
+'(null === $<fieldName>) ? null : (<targetType>) ';
+
+    /**
+     * List of types to be casted associated to their  target PHP type
+     */
+    private static $_castTypes = array(
+        \Doctrine\DBAL\Types\Type::BOOLEAN => 'bool',
+        \Doctrine\DBAL\Types\Type::STRING => 'string',
+        \Doctrine\DBAL\Types\Type::TEXT => 'string',
+        \Doctrine\DBAL\Types\Type::INTEGER => 'int',
+        \Doctrine\DBAL\Types\Type::SMALLINT => 'int',
+        \Doctrine\DBAL\Types\Type::FLOAT => 'float',
+    );
 
     public function __construct()
     {
@@ -339,6 +357,17 @@ public function <methodName>()
     public function setGenerateStubMethods($bool)
     {
         $this->_generateEntityStubMethods = $bool;
+    }
+
+    /**
+     * Set wether or not to add cast on setters
+     *
+     * @param bool $bool
+     * @return void
+     */
+    public function setAddCastToSetters($bool)
+    {
+        $this->_addCastToSetters = $bool;
     }
 
     /**
@@ -723,13 +752,22 @@ public function <methodName>()
         $types = \Doctrine\DBAL\Types\Type::getTypesMap();
         $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : null;
 
+        $variableCast = null;
+
+        if ($this->_addCastToSetters && $typeHint && isset($types[$typeHint]) && isset(self::$_castTypes[$typeHint])) {
+            $targetType = self::$_castTypes[$typeHint];
+            $variableCast = str_replace('<targetType>', $targetType, self::$_castTemplate);
+            $variableCast = str_replace('<fieldName>', $fieldName, $variableCast);
+        }
+
         $replacements = array(
           '<description>'       => ucfirst($type) . ' ' . $fieldName,
           '<methodTypeHint>'    => $methodTypeHint,
           '<variableType>'      => $variableType,
           '<variableName>'      => Inflector::camelize($fieldName),
           '<methodName>'        => $methodName,
-          '<fieldName>'         => $fieldName
+          '<fieldName>'         => $fieldName,
+          '<variableCast>'	    => $variableCast
         );
 
         $method = str_replace(
