@@ -186,6 +186,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeMerge']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
 
         // Test Order By
         $this->assertEquals(array('number' => 'ASC'), $class->associationMappings['phonenumbers']['orderBy']);
@@ -328,7 +329,7 @@ class User
     public $address;
 
     /**
-     * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist"})
+     * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      * @OrderBy({"number"="ASC"})
      */
     public $phonenumbers;
@@ -423,7 +424,7 @@ class User
            1 => 'persist',
            ),
            'mappedBy' => 'user',
-           'orphanRemoval' => false,
+           'orphanRemoval' => true,
            'orderBy' => 
            array(
            'number' => 'ASC',

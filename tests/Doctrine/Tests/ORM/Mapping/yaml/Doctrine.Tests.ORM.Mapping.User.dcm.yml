@@ -34,6 +34,7 @@ Doctrine\Tests\ORM\Mapping\User:
   oneToMany:
     phonenumbers:
       targetEntity: Phonenumber
+      orphanRemoval: true
       mappedBy: user
       orderBy:
         number: ASC
