@@ -34,7 +34,7 @@ class LegacyUser
     public $_references;
     /**
      * @ManyToMany(targetEntity="LegacyCar", inversedBy="_users", cascade={"persist", "merge"})
-     * @JoinTable(name="legace_users_cars",
+     * @JoinTable(name="legacy_users_cars",
      *      joinColumns={@JoinColumn(name="iUserId", referencedColumnName="iUserId")},
      *      inverseJoinColumns={@JoinColumn(name="iCarId", referencedColumnName="iCarId")}
      *      )
