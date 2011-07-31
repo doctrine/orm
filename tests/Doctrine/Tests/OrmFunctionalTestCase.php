@@ -211,10 +211,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM exchange_markets');
         }
         if (isset($this->_usedModelSets['legacy'])) {
+            $conn->executeUpdate('DELETE FROM legacy_users_cars');
+            $conn->executeUpdate('DELETE FROM legacy_users_reference');
             $conn->executeUpdate('DELETE FROM legacy_articles');
             $conn->executeUpdate('DELETE FROM legacy_cars');
             $conn->executeUpdate('DELETE FROM legacy_users');
-            $conn->executeUpdate('DELETE FROM legacy_users_reference');
         }
 
         $this->_em->clear();
