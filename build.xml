@@ -107,6 +107,23 @@
 
     <target name="build" depends="test, build-orm"/>
 
+    <target name="package-phar" depends="build-orm">
+        <pharpackage basedir="${build.dir}/doctrine-orm/" destfile="${dist.dir}/doctrine-orm-${version}.phar" clistub="${build.dir}/doctrine-orm/bin/doctrine.php" signature="sha512">
+            <fileset dir="${build.dir}/doctrine-orm">
+                <include name="**/**" />
+            </fileset>
+            <metadata>
+                <element name="version" value="${version}" />
+                <element name="authors">
+                    <element name="Guilherme Blanco"><element name="e-mail" value="guilhermeblanco@gmail.com" /></element>
+                    <element name="Benjamin Eberlei"><element name="e-mail" value="kontakt@beberlei.de" /></element>
+                    <element name="Jonathan H. Wage"><element name="e-mail" value="jonwage@gmail.com" /></element>
+                    <element name="Roman Borschel"><element name="e-mail" value="roman@code-factory.org" /></element>
+                </element>
+            </metadata>
+        </pharpackage>
+    </target>
+
     <!--
         Runs the full test suite.
     -->
@@ -206,6 +223,7 @@
 
     <target name="distribute-download">
         <copy file="dist/DoctrineORM-${version}-full.tar.gz" todir="${project.download_dir}" />
+        <copy file="${dist.dir}/doctrine-orm-${version}.phar" todir="${project.download_dir}" />
     </target>
 
     <target name="update-dev-version">
@@ -217,7 +235,7 @@
         <exec command="git commit -m 'Bump Dev Version to ${next_version}-DEV'" passthru="true" />
     </target>
 
-    <target name="release" depends="git-tag,build-packages,distribute-download,pirum-release,update-dev-version" />
+    <target name="release" depends="git-tag,build-packages,package-phar,distribute-download,pirum-release,update-dev-version" />
     
     <!--
         Builds distributable PEAR packages for the Symfony Dependencies
