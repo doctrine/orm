@@ -49,7 +49,7 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_PLUS                = 17;
     const T_OPEN_CURLY_BRACE    = 18;
     const T_CLOSE_CURLY_BRACE   = 19;
-    
+
     // All tokens that are also identifiers should be >= 100
     const T_IDENTIFIER          = 100;
     const T_ALL                 = 101;
@@ -106,7 +106,10 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_WITH                = 153;
     const T_PARTIAL             = 154;
     const T_MOD                 = 155;
-   
+    const T_NULLS               = 156;
+    const T_FIRST               = 157;
+    const T_LAST                = 158;
+
     /**
      * Creates a new query scanner object.
      *
@@ -129,7 +132,7 @@ class Lexer extends \Doctrine\Common\Lexer
             '\?[0-9]*|:[a-z]{1}[a-z0-9_]{0,}'
         );
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -147,7 +150,7 @@ class Lexer extends \Doctrine\Common\Lexer
 
         // Recognizing numeric values
         if (is_numeric($value)) {
-            return (strpos($value, '.') !== false || stripos($value, 'e') !== false) 
+            return (strpos($value, '.') !== false || stripos($value, 'e') !== false)
                     ? self::T_FLOAT : self::T_INTEGER;
         }
 
@@ -160,7 +163,7 @@ class Lexer extends \Doctrine\Common\Lexer
 
             if (defined($name)) {
                 $type = constant($name);
-                
+
                 if ($type > 100) {
                     return $type;
                 }

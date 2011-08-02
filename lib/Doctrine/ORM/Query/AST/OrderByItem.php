@@ -22,7 +22,7 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * OrderByItem ::= (ResultVariable | StateFieldPathExpression) ["ASC" | "DESC"]
+ * OrderByItem ::= (ResultVariable | StateFieldPathExpression) ["ASC" | "DESC"] ["NULLS (FIRST|LAST)"]
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -36,7 +36,7 @@ class OrderByItem extends Node
 {
     public $expression;
     public $type;
-    
+
     public function __construct($expression)
     {
         $this->expression = $expression;
@@ -44,12 +44,12 @@ class OrderByItem extends Node
 
     public function isAsc()
     {
-        return strtoupper($this->type) == 'ASC';
+        return 'ASC' === substr(strtoupper($this->type), 0, 3);
     }
 
     public function isDesc()
     {
-        return strtoupper($this->type) == 'DESC';
+        return 'DESC' === substr(strtoupper($this->type), 0, 4);
     }
 
     public function dispatch($sqlWalker)
