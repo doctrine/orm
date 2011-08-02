@@ -126,8 +126,8 @@ or collections of all the relations that haven't been explicitly
 retrieved from the database yet.
 
 To be able to use lazyload with collections, simple PHP arrays have
-to be replaced by a generic collection interface Doctrine which
-tries to act as array as much as possible using ArrayAccess,
+to be replaced by a generic collection interface for Doctrine which
+tries to act as as much like an array as possible by using ArrayAccess,
 IteratorAggregate and Countable interfaces. The class is the most
 simple implementation of this interface.
 
