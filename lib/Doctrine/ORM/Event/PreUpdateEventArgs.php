@@ -80,8 +80,9 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      */
     public function setNewValue($field, $value)
     {
-        $this->_assertValidField($field);
-
+        if (!isset($this->_entityChangeSet[$field]))
+                $this->_entityChangeSet[$field][0] = null;
+        
         $this->_entityChangeSet[$field][1] = $value;
     }
 
