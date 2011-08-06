@@ -401,7 +401,6 @@ Optional attributes:
 -  **nullable**: Determine if the related entity is required, or if
    null is an allowed state for the relation. Defaults to true.
 -  **onDelete**: Cascade Action (Database-level)
--  **onUpdate**: Cascade Action (Database-level)
 -  **columnDefinition**: DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.
    This attribute allows to make use of advanced RMDBS features. Using

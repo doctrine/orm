@@ -240,10 +240,10 @@ To simplify some of these efforts, we introduce what we call as
 The Expr class
 ^^^^^^^^^^^^^^
 
-To workaround most of the issues that ``add()`` method may cause,
+To workaround some of the issues that ``add()`` method may cause,
 Doctrine created a class that can be considered as a helper for
-building queries. This class is called ``Expr``, which provides a
-set of useful static methods to help building queries:
+building expressions. This class is called ``Expr``, which provides a
+set of useful methods to help build expressions:
 
 .. code-block:: php
 
@@ -251,13 +251,13 @@ set of useful static methods to help building queries:
     // $qb instanceof QueryBuilder
     
     // example8: QueryBuilder port of: "SELECT u FROM User u WHERE u.id = ? OR u.nickname LIKE ? ORDER BY u.surname DESC" using Expr class
-    $qb->add('select', $qb->expr()->select('u'))
-       ->add('from', $qb->expr()->from('User', 'u'))
-       ->add('where', $qb->expr()->orx(
+    $qb->add('select', new Expr\Select(array('u')))
+       ->add('from', new Expr\From('User', 'u'))
+       ->add('where', $qb->expr()->orX(
            $qb->expr()->eq('u.id', '?1'),
            $qb->expr()->like('u.nickname', '?2')
        ))
-       ->add('orderBy', $qb->expr()->orderBy('u.surname', 'ASC'));
+       ->add('orderBy', new Expr\OrderBy('u.name', 'ASC'));
 
 Although it still sounds complex, the ability to programmatically
 create conditions are the main feature of ``Expr``. Here it is a
@@ -270,11 +270,11 @@ complete list of supported helper methods available:
     {
         /** Conditional objects **/        
     
-        // Example - $qb->expr()->andx($cond1 [, $condN])->add(...)->...
-        public function andx($x = null); // Returns Expr\Andx instance
+        // Example - $qb->expr()->andX($cond1 [, $condN])->add(...)->...
+        public function andX($x = null); // Returns Expr\AndX instance
     
-        // Example - $qb->expr()->orx($cond1 [, $condN])->add(...)->...
-        public function orx($x = null); // Returns Expr\Orx instance
+        // Example - $qb->expr()->orX($cond1 [, $condN])->add(...)->...
+        public function orX($x = null); // Returns Expr\OrX instance
     
     
         /** Comparison objects **/
@@ -296,6 +296,12 @@ complete list of supported helper methods available:
     
         // Example - $qb->expr()->gte('u.id', '?1') => u.id >= ?1
         public function gte($x, $y); // Returns Expr\Comparison instance
+
+        // Example - $qb->expr()->isNull('u.id') => u.id IS NULL
+        public function isNull($x); // Returns string
+
+        // Example - $qb->expr()->isNotNull('u.id') => u.id IS NOT NULL
+        public function isNotNull($x); // Returns string
     
     
         /** Arithmetic objects **/
@@ -425,7 +431,7 @@ suggested standard way to build queries:
     // example8: QueryBuilder port of: "SELECT u FROM User u WHERE u.id = ?1 OR u.nickname LIKE ?2 ORDER BY u.surname DESC" using QueryBuilder helper methods
     $qb->select(array('u')) // string 'u' is converted to array internally
        ->from('User', 'u')
-       ->where($qb->expr()->orx(
+       ->where($qb->expr()->orX(
            $qb->expr()->eq('u.id', '?1'),
            $qb->expr()->like('u.nickname', '?2')
        ))
@@ -469,11 +475,11 @@ Here is a complete list of helper methods available in
         // NOTE: ->where() overrides all previously set conditions
         //
         // Example - $qb->where('u.firstName = ?1', $qb->expr()->eq('u.surname', '?2'))
-        // Example - $qb->where($qb->expr()->andx($qb->expr()->eq('u.firstName', '?1'), $qb->expr()->eq('u.surname', '?2')))
+        // Example - $qb->where($qb->expr()->andX($qb->expr()->eq('u.firstName', '?1'), $qb->expr()->eq('u.surname', '?2')))
         // Example - $qb->where('u.firstName = ?1 AND u.surname = ?2')    
         public function where($where);
     
-        // Example - $qb->andWhere($qb->expr()->orx($qb->expr()->lte('u.age', 40), 'u.numChild = 0'))    
+        // Example - $qb->andWhere($qb->expr()->orX($qb->expr()->lte('u.age', 40), 'u.numChild = 0'))
         public function andWhere($where);
     
         // Example - $qb->orWhere($qb->expr()->between('u.id', 1, 10));
