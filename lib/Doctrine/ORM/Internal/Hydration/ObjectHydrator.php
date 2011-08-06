@@ -216,13 +216,21 @@ class ObjectHydrator extends AbstractHydrator
 
     private function _getEntityFromIdentityMap($className, array $data)
     {
+        // TODO: Abstract this code and UnitOfWork::createEntity() equivalent?
         $class = $this->_ce[$className];
+        /* @var $class ClassMetadata */
         if ($class->isIdentifierComposite) {
             $idHash = '';
             foreach ($class->identifier as $fieldName) {
-                $idHash .= $data[$fieldName] . ' ';
+                if (isset($class->associationMappings[$fieldName])) {
+                    $idHash .= $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']] . ' ';
+                } else {
+                    $idHash .= $data[$fieldName] . ' ';
+                }
             }
             return $this->_uow->tryGetByIdHash(rtrim($idHash), $class->rootEntityName);
+        } else if (isset($class->associationMappings[$class->identifier[0]])) {
+            return $this->_uow->tryGetByIdHash($data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']], $class->rootEntityName);
         } else {
             return $this->_uow->tryGetByIdHash($data[$class->identifier[0]], $class->rootEntityName);
         }
