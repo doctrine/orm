@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -19,26 +17,34 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Query\Expr;
+namespace Doctrine\ORM\Query\AST;
 
 /**
- * Expression class for building DQL OR clauses
+ * SimpleCaseExpression ::= "CASE" CaseOperand SimpleWhenClause {SimpleWhenClause}* "ELSE" ScalarExpression "END" 
  *
+ * @since   2.2
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
- * @since   2.0
- * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class Orx extends Composite
+class SimpleCaseExpression extends Node
 {
-    protected $_separator = ' OR ';
-    protected $_allowedClasses = array(
-        'Doctrine\ORM\Query\Expr\Comparison',
-        'Doctrine\ORM\Query\Expr\Func',
-        'Doctrine\ORM\Query\Expr\Andx',
-        'Doctrine\ORM\Query\Expr\Orx',
-    );
+    public $caseOperand = null;
+    public $simpleWhenClauses = array();
+    public $elseScalarExpression = null;
+
+    public function __construct($caseOperand, array $simpleWhenClauses, $elseScalarExpression)
+    {
+        $this->caseOperand = $caseOperand;
+        $this->simpleWhenClauses = $simpleWhenClauses;
+        $this->elseScalarExpression = $elseScalarExpression;
+    }    
+    
+    public function dispatch($sqlWalker)
+    {
+        return $sqlWalker->walkSimpleCaseExpression($this);
+    }
 }

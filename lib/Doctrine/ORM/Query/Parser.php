@@ -1624,7 +1624,7 @@ class Parser
     /**
      * ScalarExpression ::= SimpleArithmeticExpression | StringPrimary | DateTimePrimary |
      *                      StateFieldPathExpression | BooleanPrimary | CaseExpression |
-     *                      EntityTypeExpression
+     *                      InstanceOfExpression
      *
      * @return mixed One of the possible expressions or subexpressions.
      */
@@ -1659,9 +1659,9 @@ class Parser
 
             if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
                 return $this->AggregateExpression();
-            } else {
-                return $this->FunctionDeclaration();
             }
+            
+            return $this->FunctionDeclaration();
         } else if ($lookahead == Lexer::T_STRING) {
             return $this->StringPrimary();
         } else if ($lookahead == Lexer::T_INPUT_PARAMETER) {
@@ -1674,25 +1674,42 @@ class Parser
         }
     }
 
+    /**
+     * CaseExpression ::= GeneralCaseExpression | SimpleCaseExpression | CoalesceExpression | NullifExpression 
+     * GeneralCaseExpression ::= "CASE" WhenClause {WhenClause}* "ELSE" ScalarExpression "END" 
+     * WhenClause ::= "WHEN" ConditionalExpression "THEN" ScalarExpression 
+     * SimpleCaseExpression ::= "CASE" CaseOperand SimpleWhenClause {SimpleWhenClause}* "ELSE" ScalarExpression "END" 
+     * CaseOperand ::= StateFieldPathExpression | TypeDiscriminator 
+     * SimpleWhenClause ::= "WHEN" ScalarExpression "THEN" ScalarExpression 
+     * CoalesceExpression ::= "COALESCE" "(" ScalarExpression {"," ScalarExpression}* ")" 
+     * NullifExpression ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
+     * 
+     * @return mixed One of the possible expressions or subexpressions.
+     */
     public function CaseExpression()
     {
         $lookahead = $this->_lexer->lookahead['type'];
         
-        // if "CASE" "WHEN" => GeneralCaseExpression
-        // else if "CASE" => SimpleCaseExpression
-        // [DONE] else if "COALESCE" => CoalesceExpression
-        // [DONE] else if "NULLIF" => NullifExpression
         switch ($lookahead) {
             case Lexer::T_NULLIF:
                 return $this->NullIfExpression();
                 
             case Lexer::T_COALESCE:
                 return $this->CoalesceExpression();
+            
+            case Lexer::T_CASE:
+                $peek = $this->_lexer->peek();
+                
+                return ($peek['type'] === Lexer::T_WHEN)
+                    ? $this->GeneralCaseExpression() 
+                    : $this->SimpleCaseExpression();
                 
             default:
-                $this->semanticalError('CaseExpression not yet supported.');
-                return null;
+                // Do nothing
+                break;
         }
+        
+        $this->syntaxError();
     }
     
     /**
@@ -1722,7 +1739,7 @@ class Parser
     /**
      * NullIfExpression ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
      * 
-     * @return Doctrine\ORM\Query\AST\ExistsExpression 
+     * @return Doctrine\ORM\Query\AST\NullIfExpression 
      */
     public function NullIfExpression()
     {
@@ -1736,6 +1753,80 @@ class Parser
         $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
         return new AST\NullIfExpression($firstExpression, $secondExpression);
+    }
+    
+    /**
+     * GeneralCaseExpression ::= "CASE" WhenClause {WhenClause}* "ELSE" ScalarExpression "END" 
+     * 
+     * @return Doctrine\ORM\Query\AST\GeneralExpression 
+     */
+    public function GeneralCaseExpression()
+    {
+        $this->match(Lexer::T_CASE);
+        
+        // Process WhenClause (1..N)
+        $whenClauses = array();
+        
+        do {
+            $whenClauses[] = $this->WhenClause();
+        } while ($this->_lexer->isNextToken(Lexer::T_WHEN));
+        
+        $this->match(Lexer::T_ELSE);
+        $scalarExpression = $this->ScalarExpression();
+        $this->match(Lexer::T_END);
+        
+        return new AST\GeneralCaseExpression($whenClauses, $scalarExpression);
+    }
+    
+    /**
+     * SimpleCaseExpression ::= "CASE" CaseOperand SimpleWhenClause {SimpleWhenClause}* "ELSE" ScalarExpression "END" 
+     * CaseOperand ::= StateFieldPathExpression | TypeDiscriminator 
+     */
+    public function SimpleCaseExpression()
+    {
+        $this->match(Lexer::T_CASE);
+        $caseOperand = $this->StateFieldPathExpression();
+        
+        // Process SimpleWhenClause (1..N)
+        $simpleWhenClauses = array();
+        
+        do {
+            $simpleWhenClauses[] = $this->SimpleWhenClause();
+        } while ($this->_lexer->isNextToken(Lexer::T_WHEN));
+        
+        $this->match(Lexer::T_ELSE);
+        $scalarExpression = $this->ScalarExpression();
+        $this->match(Lexer::T_END);
+        
+        return new AST\SimpleCaseExpression($caseOperand, $simpleWhenClauses, $scalarExpression);
+    }
+    
+    /**
+     * WhenClause ::= "WHEN" ConditionalExpression "THEN" ScalarExpression 
+     * 
+     * @return Doctrine\ORM\Query\AST\WhenExpression
+     */
+    public function WhenClause()
+    {
+        $this->match(Lexer::T_WHEN);
+        $conditionalExpression = $this->ConditionalExpression();
+        $this->match(Lexer::T_THEN);
+        
+        return new AST\WhenClause($conditionalExpression, $this->ScalarExpression());
+    }
+    
+    /**
+     * SimpleWhenClause ::= "WHEN" ScalarExpression "THEN" ScalarExpression 
+     * 
+     * @return Doctrine\ORM\Query\AST\SimpleWhenExpression
+     */
+    public function SimpleWhenClause()
+    {
+        $this->match(Lexer::T_WHEN);
+        $conditionalExpression = $this->ScalarExpression();
+        $this->match(Lexer::T_THEN);
+        
+        return new AST\SimpleWhenClause($conditionalExpression, $this->ScalarExpression());
     }
 
     /**
@@ -1782,7 +1873,7 @@ class Parser
                 $expression = $this->ScalarExpression();
             } else if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
                 $expression = $this->AggregateExpression();
-            } else if (in_array ($lookaheadType, array(Lexer::T_CASE, Lexer::T_COALESCE, Lexer::T_NULLIF))) {
+            } else if (in_array($lookaheadType, array(Lexer::T_COALESCE, Lexer::T_NULLIF))) {
                 $expression = $this->CaseExpression();
             } else {
                 // Shortcut: ScalarExpression => Function
@@ -1797,10 +1888,13 @@ class Parser
                 $this->_lexer->lookahead['type'] == Lexer::T_STRING) {
             // Shortcut: ScalarExpression => SimpleArithmeticExpression
             $expression = $this->SimpleArithmeticExpression();
+        } else if ($this->_lexer->lookahead['type'] == Lexer::T_CASE) { 
+            $expression = $this->CaseExpression();
         } else {
-            $this->syntaxError('IdentificationVariable | StateFieldPathExpression'
-                    . ' | AggregateExpression | "(" Subselect ")" | ScalarExpression',
-                    $this->_lexer->lookahead);
+            $this->syntaxError(
+                'IdentificationVariable | StateFieldPathExpression | AggregateExpression | "(" Subselect ")" | ScalarExpression',
+                $this->_lexer->lookahead
+            );
         }
 
         if ($supportsAlias) {
@@ -2290,7 +2384,7 @@ class Parser
     /**
      * ArithmeticPrimary ::= SingleValuedPathExpression | Literal | "(" SimpleArithmeticExpression ")"
      *          | FunctionsReturningNumerics | AggregateExpression | FunctionsReturningStrings
-     *          | FunctionsReturningDatetime | IdentificationVariable
+     *          | FunctionsReturningDatetime | IdentificationVariable | CaseExpression
      */
     public function ArithmeticPrimary()
     {
@@ -2304,6 +2398,11 @@ class Parser
         }
 
         switch ($this->_lexer->lookahead['type']) {
+            case Lexer::T_COALESCE:
+            case Lexer::T_NULLIF:
+            case Lexer::T_CASE:
+                return $this->CaseExpression();
+            
             case Lexer::T_IDENTIFIER:
                 $peek = $this->_lexer->glimpse();
 
@@ -2359,7 +2458,7 @@ class Parser
     }
 
     /**
-     * StringPrimary ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression
+     * StringPrimary ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression | CaseExpression
      */
     public function StringPrimary()
     {
@@ -2382,6 +2481,8 @@ class Parser
             return $this->InputParameter();
         } else if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
             return $this->AggregateExpression();
+        } else if (in_array($this->_lexer->lookahead['type'], array(Lexer::T_CASE, Lexer::T_COALESCE, Lexer::T_NULLIF))) {
+            return $this->CaseExpression();
         }
 
         $this->syntaxError('StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression');

@@ -976,6 +976,38 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT d0_.article_id AS article_id0, d0_.title AS title1, d1_.article_id AS article_id2, d1_.title AS title3 FROM DDC117Link d2_ INNER JOIN DDC117Article d0_ ON d2_.target_id = d0_.article_id INNER JOIN DDC117Article d1_ ON d2_.source_id = d1_.article_id"
         );
     }
+    
+    public function testGeneralCaseWithSingleWhenClause()
+    {
+        $this->assertSqlGeneration(
+            "SELECT g.id, CASE WHEN ((g.id / 2) > 18) THEN 1 ELSE 0 END AS test FROM Doctrine\Tests\Models\CMS\CmsGroup g", 
+            "SELECT c0_.id AS id0, CASE WHEN (c0_.id / 2 > 18) THEN 1 ELSE 0 END AS sclr1 FROM cms_groups c0_"
+        );
+    }
+    
+    public function testGeneralCaseWithMultipleWhenClause()
+    {
+        $this->assertSqlGeneration(
+            "SELECT g.id, CASE WHEN (g.id / 2 < 10) THEN 2 WHEN ((g.id / 2) > 20) THEN 1 ELSE 0 END AS test FROM Doctrine\Tests\Models\CMS\CmsGroup g", 
+            "SELECT c0_.id AS id0, CASE WHEN (c0_.id / 2 < 10) THEN 2 WHEN (c0_.id / 2 > 20) THEN 1 ELSE 0 END AS sclr1 FROM cms_groups c0_"
+        );
+    }
+    
+    public function testSimpleCaseWithSingleWhenClause()
+    {
+        $this->assertSqlGeneration(
+            "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id = CASE g.name WHEN 'admin' THEN 1 ELSE 2 END", 
+            "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id = CASE c0_.name WHEN admin THEN 1 ELSE 2 END"
+        );
+    }
+    
+    public function testSimpleCaseWithMultipleWhenClause()
+    {
+        $this->assertSqlGeneration(
+            "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id = (CASE g.name WHEN 'admin' THEN 1 WHEN 'moderator' THEN 2 ELSE 3 END)", 
+            "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id = CASE c0_.name WHEN admin THEN 1 WHEN moderator THEN 2 ELSE 3 END"
+        );
+    }
 }
 
 
@@ -988,9 +1020,7 @@ class MyAbsFunction extends \Doctrine\ORM\Query\AST\Functions\FunctionNode
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        return 'ABS(' . $sqlWalker->walkSimpleArithmeticExpression(
-            $this->simpleArithmeticExpression
-        ) . ')';
+        return 'ABS(' . $sqlWalker->walkSimpleArithmeticExpression($this->simpleArithmeticExpression) . ')';
     }
 
     /**

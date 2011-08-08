@@ -859,6 +859,32 @@ class SqlWalker implements TreeWalker
     }
     
     /**
+     * Walks down a CaseExpression AST node and generates the corresponding SQL.
+     *
+     * @param CoalesceExpression|NullIfExpression|GeneralCaseExpression|SimpleCaseExpression $expression
+     * @return string The SQL.
+     */
+    public function walkCaseExpression($expression)
+    {
+        switch (true) {
+            case ($expression instanceof AST\CoalesceExpression):
+                return $this->walkCoalesceExpression($expression);
+                
+            case ($expression instanceof AST\NullIfExpression):
+                return $this->walkNullIfExpression($expression);
+                
+            case ($expression instanceof AST\GeneralCaseExpression):
+                return $this->walkGeneralCaseExpression($expression);
+                
+            case ($expression instanceof AST\SimpleCaseExpression):
+                return $this->walkSimpleCaseExpression($expression);
+                
+            default:
+                return '';
+        }
+    }
+    
+    /**
      * Walks down a CoalesceExpression AST node and generates the corresponding SQL.
      *
      * @param CoalesceExpression $coalesceExpression
@@ -879,20 +905,6 @@ class SqlWalker implements TreeWalker
         return $sql;
     }
     
-    public function walkCaseExpression($expression)
-    {
-        switch (true) {
-            case ($expression instanceof AST\CoalesceExpression):
-                return $this->walkCoalesceExpression($expression);
-                
-            case ($expression instanceof AST\NullIfExpression):
-                return $this->walkNullIfExpression($expression);
-                
-            default:
-                return '';
-        }
-    }
-    
     /**
      * Walks down a NullIfExpression AST node and generates the corresponding SQL.
      *
@@ -911,6 +923,46 @@ class SqlWalker implements TreeWalker
         
         return 'NULLIF(' . $firstExpression . ', ' . $secondExpression . ')';
     }
+    
+    /**
+     * Walks down a GeneralCaseExpression AST node and generates the corresponding SQL.
+     *
+     * @param GeneralCaseExpression $generalCaseExpression
+     * @return string The SQL.
+     */
+    public function walkGeneralCaseExpression(AST\GeneralCaseExpression $generalCaseExpression)
+    {
+        $sql = 'CASE';
+        
+        foreach ($generalCaseExpression->whenClauses as $whenClause) {
+            $sql .= ' WHEN ' . $this->walkConditionalExpression($whenClause->caseConditionExpression);
+            $sql .= ' THEN ' . $this->walkSimpleArithmeticExpression($whenClause->thenScalarExpression);
+        }
+        
+        $sql .= ' ELSE ' . $this->walkSimpleArithmeticExpression($generalCaseExpression->elseScalarExpression) . ' END';
+        
+        return $sql;
+    }
+    
+    /**
+     * Walks down a SimpleCaseExpression AST node and generates the corresponding SQL.
+     *
+     * @param SimpleCaseExpression $simpleCaseExpression
+     * @return string The SQL.
+     */
+    public function walkSimpleCaseExpression($simpleCaseExpression)
+    {
+        $sql = 'CASE ' . $this->walkStateFieldPathExpression($simpleCaseExpression->caseOperand);
+        
+        foreach ($simpleCaseExpression->simpleWhenClauses as $simpleWhenClause) {
+            $sql .= ' WHEN ' . $this->walkSimpleArithmeticExpression($simpleWhenClause->caseScalarExpression);
+            $sql .= ' THEN ' . $this->walkSimpleArithmeticExpression($simpleWhenClause->thenScalarExpression);
+        }
+        
+        $sql .= ' ELSE ' . $this->walkSimpleArithmeticExpression($simpleCaseExpression->elseScalarExpression) . ' END';
+        
+        return $sql;
+    }
 
     /**
      * Walks down a SelectExpression AST node and generates the corresponding SQL.
@@ -924,36 +976,35 @@ class SqlWalker implements TreeWalker
         $expr = $selectExpression->expression;
 
         if ($expr instanceof AST\PathExpression) {
-            if ($expr->type == AST\PathExpression::TYPE_STATE_FIELD) {
-                $fieldName = $expr->field;
-                $dqlAlias = $expr->identificationVariable;
-                $qComp = $this->_queryComponents[$dqlAlias];
-                $class = $qComp['metadata'];
-
-                if ( ! $selectExpression->fieldIdentificationVariable) {
-                    $resultAlias = $fieldName;
-                } else {
-                    $resultAlias = $selectExpression->fieldIdentificationVariable;
-                }
-
-                if ($class->isInheritanceTypeJoined()) {
-                    $tableName = $this->_em->getUnitOfWork()->getEntityPersister($class->name)->getOwningTable($fieldName);
-                } else {
-                    $tableName = $class->getTableName();
-                }
-
-                $sqlTableAlias = $this->getSQLTableAlias($tableName, $dqlAlias);
-                $columnName = $class->getQuotedColumnName($fieldName, $this->_platform);
-
-                $columnAlias = $this->getSQLColumnAlias($columnName);
-                $sql .= $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
-                $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
-                $this->_rsm->addScalarResult($columnAlias, $resultAlias);
-            } else {
+            if ($expr->type !== AST\PathExpression::TYPE_STATE_FIELD) {
                 throw QueryException::invalidPathExpression($expr->type);
             }
-        }
-        else if ($expr instanceof AST\AggregateExpression) {
+            
+            $fieldName = $expr->field;
+            $dqlAlias = $expr->identificationVariable;
+            $qComp = $this->_queryComponents[$dqlAlias];
+            $class = $qComp['metadata'];
+
+            if ( ! $selectExpression->fieldIdentificationVariable) {
+                $resultAlias = $fieldName;
+            } else {
+                $resultAlias = $selectExpression->fieldIdentificationVariable;
+            }
+
+            if ($class->isInheritanceTypeJoined()) {
+                $tableName = $this->_em->getUnitOfWork()->getEntityPersister($class->name)->getOwningTable($fieldName);
+            } else {
+                $tableName = $class->getTableName();
+            }
+
+            $sqlTableAlias = $this->getSQLTableAlias($tableName, $dqlAlias);
+            $columnName = $class->getQuotedColumnName($fieldName, $this->_platform);
+
+            $columnAlias = $this->getSQLColumnAlias($columnName);
+            $sql .= $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
+            $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
+            $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+        } else if ($expr instanceof AST\AggregateExpression) {
             if ( ! $selectExpression->fieldIdentificationVariable) {
                 $resultAlias = $this->_scalarResultCounter++;
             } else {
@@ -966,8 +1017,7 @@ class SqlWalker implements TreeWalker
 
             $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
             $this->_rsm->addScalarResult($columnAlias, $resultAlias);
-        }
-        else if ($expr instanceof AST\Subselect) {
+        } else if ($expr instanceof AST\Subselect) {
             if ( ! $selectExpression->fieldIdentificationVariable) {
                 $resultAlias = $this->_scalarResultCounter++;
             } else {
@@ -980,8 +1030,7 @@ class SqlWalker implements TreeWalker
 
             $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
             $this->_rsm->addScalarResult($columnAlias, $resultAlias);
-        }
-        else if ($expr instanceof AST\Functions\FunctionNode) {
+        } else if ($expr instanceof AST\Functions\FunctionNode) {
             if ( ! $selectExpression->fieldIdentificationVariable) {
                 $resultAlias = $this->_scalarResultCounter++;
             } else {
@@ -1022,7 +1071,8 @@ class SqlWalker implements TreeWalker
         } else if (
             $expr instanceof AST\NullIfExpression ||
             $expr instanceof AST\CoalesceExpression ||
-            $expr instanceof AST\CaseExpression
+            $expr instanceof AST\GeneralCaseExpression ||
+            $expr instanceof AST\SimpleCaseExpression
         ) {
             if ( ! $selectExpression->fieldIdentificationVariable) {
                 $resultAlias = $this->_scalarResultCounter++;
