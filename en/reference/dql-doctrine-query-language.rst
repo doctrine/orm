@@ -1469,6 +1469,7 @@ Conditional Expressions
                                     InExpression | NullComparisonExpression | ExistsExpression |
                                     EmptyCollectionComparisonExpression | CollectionMemberExpression
 
+
 Collection Expressions
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1505,7 +1506,7 @@ Arithmetic Expressions
     ArithmeticFactor           ::= [("+" | "-")] ArithmeticPrimary
     ArithmeticPrimary          ::= SingleValuedPathExpression | Literal | "(" SimpleArithmeticExpression ")"
                                    | FunctionsReturningNumerics | AggregateExpression | FunctionsReturningStrings
-                                   | FunctionsReturningDatetime | IdentificationVariable | InputParameter
+                                   | FunctionsReturningDatetime | IdentificationVariable | InputParameter | CaseExpression
 
 Scalar and Type Expressions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1513,9 +1514,9 @@ Scalar and Type Expressions
 .. code-block:: php
 
     ScalarExpression       ::= SimpleArithmeticExpression | StringPrimary | DateTimePrimary | StateFieldPathExpression
-                               BooleanPrimary | EntityTypeExpression
+                               BooleanPrimary | EntityTypeExpression | CaseExpression
     StringExpression       ::= StringPrimary | "(" Subselect ")"
-    StringPrimary          ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression
+    StringPrimary          ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression | CaseExpression
     BooleanExpression      ::= BooleanPrimary | "(" Subselect ")"
     BooleanPrimary         ::= StateFieldPathExpression | boolean | InputParameter
     EntityExpression       ::= SingleValuedAssociationPathExpression | SimpleEntityExpression
@@ -1534,6 +1535,20 @@ Aggregate Expressions
 
     AggregateExpression ::= ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] StateFieldPathExpression ")" |
                             "COUNT" "(" ["DISTINCT"] (IdentificationVariable | SingleValuedPathExpression) ")"
+
+Case Expressions
+~~~~~~~~~~~~~~~~
+
+.. code-block:: php
+
+    CaseExpression        ::= GeneralCaseExpression | SimpleCaseExpression | CoalesceExpression | NullifExpression 
+    GeneralCaseExpression ::= "CASE" WhenClause {WhenClause}* "ELSE" ScalarExpression "END" 
+    WhenClause            ::= "WHEN" ConditionalExpression "THEN" ScalarExpression 
+    SimpleCaseExpression  ::= "CASE" CaseOperand SimpleWhenClause {SimpleWhenClause}* "ELSE" ScalarExpression "END" 
+    CaseOperand           ::= StateFieldPathExpression | TypeDiscriminator 
+    SimpleWhenClause      ::= "WHEN" ScalarExpression "THEN" ScalarExpression 
+    CoalesceExpression    ::= "COALESCE" "(" ScalarExpression {"," ScalarExpression}* ")" 
+    NullifExpression      ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
 
 Other Expressions
 ~~~~~~~~~~~~~~~~~
