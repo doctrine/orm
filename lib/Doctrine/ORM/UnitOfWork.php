@@ -1791,7 +1791,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Clears the UnitOfWork.
      *
-     * @param strin $entityName if given, only entities of this type will get detached
+     * @param string $entityName if given, only entities of this type will get detached
      */
     public function clear($entityName = null)
     {
