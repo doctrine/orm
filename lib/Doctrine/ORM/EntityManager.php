@@ -421,16 +421,11 @@ class EntityManager implements ObjectManager
      * Clears the EntityManager. All entities that are currently managed
      * by this EntityManager become detached.
      *
-     * @param string $entityName
+     * @param string $entityName if given, only entities of this type will get detached
      */
     public function clear($entityName = null)
     {
-        if ($entityName === null) {
-            $this->unitOfWork->clear();
-        } else {
-            //TODO
-            throw new ORMException("EntityManager#clear(\$entityName) not yet implemented.");
-        }
+        $this->unitOfWork->clear($entityName);
     }
 
     /**

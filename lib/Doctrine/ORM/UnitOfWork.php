@@ -1790,28 +1790,41 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Clears the UnitOfWork.
+     *
+     * @param string $entityName if given, only entities of this type will get detached
      */
-    public function clear()
+    public function clear($entityName = null)
     {
-        $this->identityMap =
-        $this->entityIdentifiers =
-        $this->originalEntityData =
-        $this->entityChangeSets =
-        $this->entityStates =
-        $this->scheduledForDirtyCheck =
-        $this->entityInsertions =
-        $this->entityUpdates =
-        $this->entityDeletions =
-        $this->collectionDeletions =
-        $this->collectionUpdates =
-        $this->extraUpdates =
-        $this->orphanRemovals = array();
-        if ($this->commitOrderCalculator !== null) {
-            $this->commitOrderCalculator->clear();
-        }
+        if ($entityName === null) {
+            $this->identityMap =
+            $this->entityIdentifiers =
+            $this->originalEntityData =
+            $this->entityChangeSets =
+            $this->entityStates =
+            $this->scheduledForDirtyCheck =
+            $this->entityInsertions =
+            $this->entityUpdates =
+            $this->entityDeletions =
+            $this->collectionDeletions =
+            $this->collectionUpdates =
+            $this->extraUpdates =
+            $this->orphanRemovals = array();
+            if ($this->commitOrderCalculator !== null) {
+                $this->commitOrderCalculator->clear();
+            }
 
-        if ($this->evm->hasListeners(Events::onClear)) {
-            $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->em));
+            if ($this->evm->hasListeners(Events::onClear)) {
+                $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->em));
+            }
+        } else {
+            $visited = array();
+            foreach ($this->identityMap as $className => $entities) {
+                if ($className === $entityName) {
+                    foreach ($entities as $entity) {
+                        $this->doDetach($entity, $visited);
+                    }
+                }
+            }
         }
     }
     
