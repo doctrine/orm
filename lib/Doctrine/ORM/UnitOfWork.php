@@ -1515,8 +1515,9 @@ class UnitOfWork implements PropertyChangedListener
      * 
      * @param object $entity
      * @param array $visited
+     * @param string $entityName detach only entities of this type when given
      */
-    private function doDetach($entity, array &$visited)
+    private function doDetach($entity, array &$visited, $entityName = null)
     {
         $oid = spl_object_hash($entity);
         if (isset($visited[$oid])) {
@@ -1539,7 +1540,7 @@ class UnitOfWork implements PropertyChangedListener
                 return;
         }
         
-        $this->cascadeDetach($entity, $visited);
+        $this->cascadeDetach($entity, $visited, $entityName);
     }
     
     /**
@@ -1617,8 +1618,9 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      * @param array $visited
+     * @param string $entityName detach only entities of this type when given
      */
-    private function cascadeDetach($entity, array &$visited)
+    private function cascadeDetach($entity, array &$visited, $entityName = null)
     {
         $class = $this->em->getClassMetadata(get_class($entity));
         foreach ($class->associationMappings as $assoc) {
@@ -1632,10 +1634,14 @@ class UnitOfWork implements PropertyChangedListener
                     $relatedEntities = $relatedEntities->unwrap();
                 }
                 foreach ($relatedEntities as $relatedEntity) {
-                    $this->doDetach($relatedEntity, $visited);
+                    if ($entityName === null || get_class($relatedEntity) == $entityName) {
+                        $this->doDetach($relatedEntity, $visited, $entityName);
+                    }
                 }
             } else if ($relatedEntities !== null) {
-                $this->doDetach($relatedEntities, $visited);
+                if ($entityName === null || get_class($relatedEntities) == $entityName) {
+                    $this->doDetach($relatedEntities, $visited, $entityName);
+                }
             }
         }
     }
@@ -1790,24 +1796,37 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Clears the UnitOfWork.
+     *
+     * @param string $entityName if given, only entities of this type will get detached
      */
-    public function clear()
+    public function clear($entityName = null)
     {
-        $this->identityMap =
-        $this->entityIdentifiers =
-        $this->originalEntityData =
-        $this->entityChangeSets =
-        $this->entityStates =
-        $this->scheduledForDirtyCheck =
-        $this->entityInsertions =
-        $this->entityUpdates =
-        $this->entityDeletions =
-        $this->collectionDeletions =
-        $this->collectionUpdates =
-        $this->extraUpdates =
-        $this->orphanRemovals = array();
-        if ($this->commitOrderCalculator !== null) {
-            $this->commitOrderCalculator->clear();
+        if ($entityName === null) {
+            $this->identityMap =
+            $this->entityIdentifiers =
+            $this->originalEntityData =
+            $this->entityChangeSets =
+            $this->entityStates =
+            $this->scheduledForDirtyCheck =
+            $this->entityInsertions =
+            $this->entityUpdates =
+            $this->entityDeletions =
+            $this->collectionDeletions =
+            $this->collectionUpdates =
+            $this->extraUpdates =
+            $this->orphanRemovals = array();
+            if ($this->commitOrderCalculator !== null) {
+                $this->commitOrderCalculator->clear();
+            }
+        } else {
+            $visited = array();
+            foreach ($this->identityMap as $className => $entities) {
+                if ($className === $entityName) {
+                    foreach ($entities as $entity) {
+                        $this->doDetach($entity, $visited, $entityName);
+                    }
+                }
+            }
         }
 
         if ($this->evm->hasListeners(Events::onClear)) {
