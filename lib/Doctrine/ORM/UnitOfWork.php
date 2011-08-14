@@ -1515,9 +1515,9 @@ class UnitOfWork implements PropertyChangedListener
      * 
      * @param object $entity
      * @param array $visited
-     * @param string $entityName detach only entities of this type when given
+     * @param boolean $noCascade if true, don't cascade detach operation
      */
-    private function doDetach($entity, array &$visited, $entityName = null)
+    private function doDetach($entity, array &$visited, $noCascade = false)
     {
         $oid = spl_object_hash($entity);
         if (isset($visited[$oid])) {
@@ -1539,8 +1539,10 @@ class UnitOfWork implements PropertyChangedListener
             case self::STATE_DETACHED:
                 return;
         }
-        
-        $this->cascadeDetach($entity, $visited, $entityName);
+
+        if (!$noCascade) {
+            $this->cascadeDetach($entity, $visited);
+        }
     }
     
     /**
@@ -1618,9 +1620,8 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      * @param array $visited
-     * @param string $entityName detach only entities of this type when given
      */
-    private function cascadeDetach($entity, array &$visited, $entityName = null)
+    private function cascadeDetach($entity, array &$visited)
     {
         $class = $this->em->getClassMetadata(get_class($entity));
         foreach ($class->associationMappings as $assoc) {
@@ -1634,14 +1635,10 @@ class UnitOfWork implements PropertyChangedListener
                     $relatedEntities = $relatedEntities->unwrap();
                 }
                 foreach ($relatedEntities as $relatedEntity) {
-                    if ($entityName === null || get_class($relatedEntity) == $entityName) {
-                        $this->doDetach($relatedEntity, $visited, $entityName);
-                    }
+                    $this->doDetach($relatedEntity, $visited);
                 }
             } else if ($relatedEntities !== null) {
-                if ($entityName === null || get_class($relatedEntities) == $entityName) {
-                    $this->doDetach($relatedEntities, $visited, $entityName);
-                }
+                $this->doDetach($relatedEntities, $visited);
             }
         }
     }
@@ -1823,7 +1820,7 @@ class UnitOfWork implements PropertyChangedListener
             foreach ($this->identityMap as $className => $entities) {
                 if ($className === $entityName) {
                     foreach ($entities as $entity) {
-                        $this->doDetach($entity, $visited, $entityName);
+                        $this->doDetach($entity, $visited, true);
                     }
                 }
             }

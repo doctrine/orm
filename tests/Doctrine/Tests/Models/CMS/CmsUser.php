@@ -35,7 +35,7 @@ class CmsUser
      */
     public $phonenumbers;
     /**
-     * @OneToMany(targetEntity="CmsArticle", mappedBy="user")
+     * @OneToMany(targetEntity="CmsArticle", mappedBy="user", cascade={"detach"})
      */
     public $articles;
     /**
@@ -43,7 +43,7 @@ class CmsUser
      */
     public $address;
     /**
-     * @ManyToMany(targetEntity="CmsGroup", inversedBy="users", cascade={"persist", "merge"})
+     * @ManyToMany(targetEntity="CmsGroup", inversedBy="users", cascade={"persist", "merge", "detach"})
      * @JoinTable(name="cms_users_groups",
      *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
