@@ -26,6 +26,7 @@ use PDO,
     Doctrine\ORM\ORMException,
     Doctrine\ORM\OptimisticLockException,
     Doctrine\ORM\EntityManager,
+    Doctrine\ORM\UnitOfWork,
     Doctrine\ORM\Query,
     Doctrine\ORM\PersistentCollection,
     Doctrine\ORM\Mapping\MappingException,
@@ -1213,7 +1214,7 @@ class BasicEntityPersister
                 } else {
                     $conditionSql .= $this->_getSQLTableAlias($this->_class->name) . '.';
                 }
-
+                
                 $conditionSql .= $this->_class->associationMappings[$field]['joinColumns'][0]['name'];
             } else if ($assoc !== null && strpos($field, " ") === false && strpos($field, "(") === false) {
                 // very careless developers could potentially open up this normally hidden api for userland attacks,
@@ -1224,6 +1225,7 @@ class BasicEntityPersister
             } else {
                 throw ORMException::unrecognizedField($field);
             }
+            
             $conditionSql .= (is_array($value)) ? ' IN (?)' : (($value === null) ? ' IS NULL' : ' = ?');
         }
         return $conditionSql;
@@ -1313,18 +1315,96 @@ class BasicEntityPersister
                 continue; // skip null values.
             }
 
-            $type = null;
-            if (isset($this->_class->fieldMappings[$field])) {
+            $types[]  = $this->getType($field, $value);
+            $params[] = $this->getValue($value);
+        }
+        
+        return array($params, $types);
+    }
+    
+    /**
+     * Infer field type to be used by parameter type casting.
+     * 
+     * @param string $field
+     * @param mixed $value
+     * @return integer
+     */
+    private function getType($field, $value)
+    {
+        switch (true) {
+            case (isset($this->_class->fieldMappings[$field])):
                 $type = Type::getType($this->_class->fieldMappings[$field]['type'])->getBindingType();
-            }
-            if (is_array($value)) {
-                $type += Connection::ARRAY_PARAM_OFFSET;
+                break;
+
+            case (isset($this->_class->associationMappings[$field])):
+                $assoc = $this->_class->associationMappings[$field];
+                
+                if (count($assoc['sourceToTargetKeyColumns']) > 1) {
+                    throw Query\QueryException::associationPathCompositeKeyNotSupported();
+                }
+                
+                $targetClass  = $this->_em->getClassMetadata($assoc['targetEntity']);
+                $targetColumn = $assoc['joinColumns'][0]['referencedColumnName'];
+                $type         = null;
+
+                if (isset($targetClass->fieldNames[$targetColumn])) {
+                    $type = Type::getType($targetClass->fieldMappings[$targetClass->fieldNames[$targetColumn]]['type'])->getBindingType();
+                }
+
+                break;
+
+            default:
+                $type = null;
+        }
+
+        if (is_array($value)) {
+            $type += Connection::ARRAY_PARAM_OFFSET;
+        }
+        
+        return $type;
+    }
+    
+    /**
+     * Retrieve parameter value
+     * 
+     * @param mixed $value
+     * @return mixed 
+     */
+    private function getValue($value)
+    {
+        if (is_array($value)) {
+            $newValue = array();
+            
+            foreach ($value as $itemValue) {
+                $newValue[] = $this->getIndividualValue($itemValue);
             }
             
-            $params[] = $value;
-            $types[] = $type;
+            return $newValue;
         }
-        return array($params, $types);
+        
+        return $this->getIndividualValue($value);
+    }
+    
+    /**
+     * Retrieve an invidiual parameter value
+     * 
+     * @param mixed $value
+     * @return mixed 
+     */
+    private function getIndividualValue($value)
+    {
+        if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(get_class($value))) {
+            if ($this->_em->getUnitOfWork()->getEntityState($value) === UnitOfWork::STATE_MANAGED) {
+                $idValues = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
+            } else {
+                $class = $this->_em->getClassMetadata(get_class($value));
+                $idValues = $class->getIdentifierValues($value);
+            }
+            
+            $value = $idValues[key($idValues)];
+        }
+        
+        return $value;    
     }
 
     /**

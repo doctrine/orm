@@ -98,6 +98,16 @@ class AnnotationDriver implements Driver
     }
 
     /**
+     * Retrieve the current annotation reader
+     * 
+     * @return AnnotationReader
+     */
+    public function getReader()
+    {
+        return $this->_reader;
+    }
+
+    /**
      * Get the file extension used to look for mapping files under
      *
      * @return void
