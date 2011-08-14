@@ -302,7 +302,7 @@ public function <methodName>()
      */
     public function setAnnotationPrefix($prefix)
     {
-        if (version_compare(\Doctrine\Common\Version::VERSION, '3.0.0-DEV', '>=')) {
+        if (version_compare(\Doctrine\Common\Version::VERSION, '2.2.0-DEV', '>=')) {
             return;
         }
         $this->_annotationsPrefix = $prefix;
