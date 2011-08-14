@@ -833,15 +833,11 @@ class ClassMetadataInfo implements ClassMetadata
 
         // Cascades
         $cascades = isset($mapping['cascade']) ? array_map('strtolower', $mapping['cascade']) : array();
+        
         if (in_array('all', $cascades)) {
-            $cascades = array(
-               'remove',
-               'persist',
-               'refresh',
-               'merge',
-               'detach'
-            );
+            $cascades = array('remove', 'persist', 'refresh', 'merge', 'detach');
         }
+        
         $mapping['cascade'] = $cascades;
         $mapping['isCascadeRemove'] = in_array('remove',  $cascades);
         $mapping['isCascadePersist'] = in_array('persist',  $cascades);
