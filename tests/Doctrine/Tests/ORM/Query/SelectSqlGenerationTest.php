@@ -39,7 +39,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
                 $query->setHint($name, $value);
             }
 
-            parent::assertEquals($sqlToBeConfirmed, $query->getSql());
+            parent::assertEquals($sqlToBeConfirmed, $query->getSQL());
             $query->free();
         } catch (\Exception $e) {
             $this->fail($e->getMessage() ."\n".$e->getTraceAsString());
@@ -677,6 +677,23 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "select u, size(u.articles) as numArticles from Doctrine\Tests\Models\CMS\CmsUser u order by numArticles",
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, (SELECT COUNT(*) FROM cms_articles c1_ WHERE c1_.user_id = c0_.id) AS sclr4 FROM cms_users c0_ ORDER BY sclr4 ASC"
         );
+    }
+    
+    public function testOrderBySupportsSingleValuedPathExpressionOwningSide()
+    {
+        $this->assertSqlGeneration(
+            "select a from Doctrine\Tests\Models\CMS\CmsArticle a order by a.user",
+            "SELECT c0_.id AS id0, c0_.topic AS topic1, c0_.text AS text2, c0_.version AS version3 FROM cms_articles c0_ ORDER BY c0_.user_id ASC"
+        );
+    }
+    
+    /**
+     * @expectedException Doctrine\ORM\Query\QueryException
+     */
+    public function testOrderBySupportsSingleValuedPathExpressionInverseSide()
+    {
+        $q = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u order by u.address");
+        $q->getSQL();
     }
 
     public function testBooleanLiteralInWhereOnSqlite()

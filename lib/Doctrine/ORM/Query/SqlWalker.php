@@ -479,20 +479,20 @@ class SqlWalker implements TreeWalker
 
                 $assoc = $class->associationMappings[$fieldName];
 
-                if ($assoc['isOwningSide']) {
-                    // COMPOSITE KEYS NOT (YET?) SUPPORTED
-                    if (count($assoc['sourceToTargetKeyColumns']) > 1) {
-                        throw QueryException::associationPathCompositeKeyNotSupported();
-                    }
-
-                    if ($this->_useSqlTableAliases) {
-                        $sql .= $this->getSQLTableAlias($class->table['name'], $dqlAlias) . '.';
-                    }
-
-                    $sql .= reset($assoc['targetToSourceKeyColumns']);
-                } else {
+                if ( ! $assoc['isOwningSide']) {
                     throw QueryException::associationPathInverseSideNotSupported();
                 }
+                
+                // COMPOSITE KEYS NOT (YET?) SUPPORTED
+                if (count($assoc['sourceToTargetKeyColumns']) > 1) {
+                    throw QueryException::associationPathCompositeKeyNotSupported();
+                }
+
+                if ($this->_useSqlTableAliases) {
+                    $sql .= $this->getSQLTableAlias($class->table['name'], $dqlAlias) . '.';
+                }
+
+                $sql .= reset($assoc['targetToSourceKeyColumns']);
                 break;
                 
             default:

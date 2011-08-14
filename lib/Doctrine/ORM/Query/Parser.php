@@ -1342,10 +1342,7 @@ class Parser
     }
 
     /**
-     * OrderByItem ::= (ResultVariable | StateFieldPathExpression) ["ASC" | "DESC"]
-     *
-     * @todo Post 2.0 release. Support general SingleValuedPathExpression instead
-     * of only StateFieldPathExpression.
+     * OrderByItem ::= (ResultVariable | SingleValuedPathExpression) ["ASC" | "DESC"]
      *
      * @return \Doctrine\ORM\Query\AST\OrderByItem
      */
@@ -1360,7 +1357,7 @@ class Parser
             $token = $this->_lexer->lookahead;
             $expr = $this->ResultVariable();
         } else {
-            $expr = $this->StateFieldPathExpression();
+            $expr = $this->SingleValuedPathExpression();
         }
 
         $item = new AST\OrderByItem($expr);
