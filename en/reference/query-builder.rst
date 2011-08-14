@@ -163,7 +163,7 @@ mentioned syntax with "getParameter()" or "getParameters()":
     // $qb instanceof QueryBuilder
     
     // See example above
-    $params = qb->getParameters(array(1, 2));
+    $params = $qb->getParameters(array(1, 2));
     // Equivalent to
     $param  = array($qb->getParameter(1), $qb->getParameter(2));
 
