@@ -510,9 +510,8 @@ class SqlWalker implements TreeWalker
      */
     public function walkSelectClause($selectClause)
     {
-        $sql = 'SELECT ' . (($selectClause->isDistinct) ? 'DISTINCT ' : '') . implode(
-            ', ', array_filter(array_map(array($this, 'walkSelectExpression'), $selectClause->selectExpressions))
-        );
+        $sql = 'SELECT ' . (($selectClause->isDistinct) ? 'DISTINCT ' : '');
+        $sqlSelectExpressions = array_filter(array_map(array($this, 'walkSelectExpression'), $selectClause->selectExpressions));
 
         $addMetaColumns = ! $this->_query->getHint(Query::HINT_FORCE_PARTIAL_LOAD) &&
                 $this->_query->getHydrationMode() == Query::HYDRATE_OBJECT
@@ -538,7 +537,8 @@ class SqlWalker implements TreeWalker
                 $tblAlias = $this->getSQLTableAlias($rootClass->table['name'], $dqlAlias);
                 $discrColumn = $rootClass->discriminatorColumn;
                 $columnAlias = $this->getSQLColumnAlias($discrColumn['name']);
-                $sql .= ", $tblAlias." . $discrColumn['name'] . ' AS ' . $columnAlias;
+                
+                $sqlSelectExpressions[] = $tblAlias . '.' . $discrColumn['name'] . ' AS ' . $columnAlias;
 
                 $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
                 $this->_rsm->setDiscriminatorColumn($dqlAlias, $columnAlias);
@@ -558,7 +558,9 @@ class SqlWalker implements TreeWalker
                             
                             foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
                                 $columnAlias = $this->getSQLColumnAlias($srcColumn);
-                                $sql .= ", $sqlTableAlias." . $srcColumn . ' AS ' . $columnAlias;
+                                
+                                $sqlSelectExpressions[] = $sqlTableAlias . '.' . $srcColumn . ' AS ' . $columnAlias;
+                                
                                 $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
                                 $this->_rsm->addMetaResult($dqlAlias, $this->_platform->getSQLResultCasing($columnAlias), $srcColumn, (isset($assoc['id']) && $assoc['id'] === true));
                             }
@@ -573,7 +575,9 @@ class SqlWalker implements TreeWalker
                         if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
                             foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
                                 $columnAlias = $this->getSQLColumnAlias($srcColumn);
-                                $sql .= ', ' . $sqlTableAlias . '.' . $srcColumn . ' AS ' . $columnAlias;
+                                
+                                $sqlSelectExpressions[] = $sqlTableAlias . '.' . $srcColumn . ' AS ' . $columnAlias;
+                                
                                 $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
                                 $this->_rsm->addMetaResult($dqlAlias, $this->_platform->getSQLResultCasing($columnAlias), $srcColumn, (isset($assoc['id']) && $assoc['id'] === true));
                             }
@@ -582,6 +586,8 @@ class SqlWalker implements TreeWalker
                 }
             }
         }
+        
+        $sql .= implode(', ', $sqlSelectExpressions);
 
         return $sql;
     }
