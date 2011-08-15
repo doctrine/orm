@@ -105,7 +105,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         ));
         
         $assoc = $cm->associationMappings['groups'];
-        //$this->assertTrue($assoc instanceof \Doctrine\ORM\Mapping\ManyToManyMapping);
+        //$this->assertInstanceOf('Doctrine\ORM\Mapping\ManyToManyMapping', $assoc);
         $this->assertEquals(array(
             'name' => 'cmsuser_cmsgroup',
             'joinColumns' => array(array('name' => 'cmsuser_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE')),
