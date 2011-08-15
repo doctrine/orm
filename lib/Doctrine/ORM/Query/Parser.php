@@ -2676,7 +2676,7 @@ class Parser
     }
 
     /**
-     * InstanceOfExpression ::= IdentificationVariable ["NOT"] "INSTANCE" ["OF"] (AbstractSchemaName | InputParameter)
+     * InstanceOfExpression ::= IdentificationVariable ["NOT"] "INSTANCE" ["OF"] (InstanceOfParameter | "(" InstanceOfParameter {"," InstanceOfParameter}* ")")
      *
      * @return \Doctrine\ORM\Query\AST\InstanceOfExpression
      */
@@ -2690,21 +2690,49 @@ class Parser
         }
 
         $this->match(Lexer::T_INSTANCE);
+        $this->match(Lexer::T_OF);
+        
+        $exprValues = array();
+            
+        if ($this->_lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)) {
+            $this->match(Lexer::T_OPEN_PARENTHESIS);
+            
+            $exprValues[] = $this->InstanceOfParameter();
 
-        if ($this->_lexer->isNextToken(Lexer::T_OF)) {
-            $this->match(Lexer::T_OF);
+            while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
+                $this->match(Lexer::T_COMMA);
+                
+                $exprValues[] = $this->InstanceOfParameter();
+            }
+            
+            $this->match(Lexer::T_CLOSE_PARENTHESIS);
+            
+            $instanceOfExpression->value = $exprValues;
+        
+            return $instanceOfExpression;
         }
 
-        if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
-            $this->match(Lexer::T_INPUT_PARAMETER);
-            $exprValue = new AST\InputParameter($this->_lexer->token['value']);
-        } else {
-            $exprValue = $this->AliasIdentificationVariable();
-        }
+        $exprValues[] = $this->InstanceOfParameter();
 
-        $instanceOfExpression->value = $exprValue;
+        $instanceOfExpression->value = $exprValues;
         
         return $instanceOfExpression;
+    }
+    
+    /**
+     * InstanceOfParameter ::= AbstractSchemaName | InputParameter
+     * 
+     * @return mixed
+     */
+    public function InstanceOfParameter()
+    {
+        if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
+            $this->match(Lexer::T_INPUT_PARAMETER);
+            
+            return new AST\InputParameter($this->_lexer->token['value']);
+        }
+        
+        return $this->AliasIdentificationVariable();
     }
 
     /**

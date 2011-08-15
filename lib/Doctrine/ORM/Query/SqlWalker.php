@@ -1756,34 +1756,41 @@ class SqlWalker implements TreeWalker
         if ($this->_useSqlTableAliases) {
             $sql .= $this->getSQLTableAlias($discrClass->table['name'], $dqlAlias) . '.';
         }
+        
+        $sql .= $class->discriminatorColumn['name'] . ($instanceOfExpr->not ? ' NOT IN ' : ' IN ');
+        
+        $sqlParameterList = array();
+        
+        foreach ($instanceOfExpr->value as $parameter) {
+            if ($parameter instanceof AST\InputParameter) {
+                // We need to modify the parameter value to be its correspondent mapped value
+                $dqlParamKey = $parameter->name;
+                $paramValue  = $this->_query->getParameter($dqlParamKey);
 
-        $sql .= $class->discriminatorColumn['name'] . ($instanceOfExpr->not ? ' <> ' : ' = ');
+                if ( ! ($paramValue instanceof \Doctrine\ORM\Mapping\ClassMetadata)) {
+                    throw QueryException::invalidParameterType('ClassMetadata', get_class($paramValue));
+                }
 
-        if ($instanceOfExpr->value instanceof AST\InputParameter) {
-            // We need to modify the parameter value to be its correspondent mapped value
-            $dqlParamKey = $instanceOfExpr->value->name;
-            $paramValue  = $this->_query->getParameter($dqlParamKey);
-            
-            if ( ! ($paramValue instanceof \Doctrine\ORM\Mapping\ClassMetadata)) {
-                throw QueryException::invalidParameterType('ClassMetadata', get_class($paramValue));
+                $entityClassName = $paramValue->name;
+            } else {
+                // Get name from ClassMetadata to resolve aliases.
+                $entityClassName = $this->_em->getClassMetadata($parameter)->name;
             }
-            
-            $entityClassName = $paramValue->name;
-        } else {
-            // Get name from ClassMetadata to resolve aliases.
-            $entityClassName = $this->_em->getClassMetadata($instanceOfExpr->value)->name;
-        }
 
-        if ($entityClassName == $class->name) {
-            $sql .= $this->_conn->quote($class->discriminatorValue);
-        } else {
-            $discrMap = array_flip($class->discriminatorMap);
-            if (!isset($discrMap[$entityClassName])) {
-                throw QueryException::instanceOfUnrelatedClass($entityClassName, $class->rootEntityName);
+            if ($entityClassName == $class->name) {
+                $sqlParameterList[] = $this->_conn->quote($class->discriminatorValue);
+            } else {
+                $discrMap = array_flip($class->discriminatorMap);
+                
+                if (!isset($discrMap[$entityClassName])) {
+                    throw QueryException::instanceOfUnrelatedClass($entityClassName, $class->rootEntityName);
+                }
+
+                $sqlParameterList[] = $this->_conn->quote($discrMap[$entityClassName]);
             }
-            
-            $sql .= $this->_conn->quote($discrMap[$entityClassName]);
         }
+        
+        $sql .= '(' . implode(', ', $sqlParameterList) . ')';
 
         return $sql;
     }
