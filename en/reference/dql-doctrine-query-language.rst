@@ -1428,7 +1428,7 @@ Items
 .. code-block:: php
 
     UpdateItem  ::= IdentificationVariable "." (StateField | SingleValuedAssociationField) "=" NewValue
-    OrderByItem ::= (ResultVariable | StateFieldPathExpression) ["ASC" | "DESC"]
+    OrderByItem ::= (ResultVariable | SingleValuedPathExpression) ["ASC" | "DESC"]
     GroupByItem ::= IdentificationVariable | SingleValuedPathExpression
     NewValue    ::= ScalarExpression | SimpleEntityExpression | "NULL"
 
@@ -1450,11 +1450,11 @@ Select Expressions
 
 .. code-block:: php
 
-    SelectExpression       ::= IdentificationVariable | PartialObjectExpression | (AggregateExpression | "(" Subselect ")"  | FunctionDeclaration | ScalarExpression) [["AS"] AliasResultVariable]
-    SimpleSelectExpression ::= ScalarExpression | IdentificationVariable |
-                               (AggregateExpression [["AS"] AliasResultVariable])
+    SelectExpression        ::= IdentificationVariable | PartialObjectExpression | (AggregateExpression | "(" Subselect ")"  | FunctionDeclaration | ScalarExpression) [["AS"] AliasResultVariable]
+    SimpleSelectExpression  ::= ScalarExpression | IdentificationVariable |
+                                (AggregateExpression [["AS"] AliasResultVariable])
     PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
-    PartialFieldSet ::= "{" SimpleStateField {"," SimpleStateField}* "}"
+    PartialFieldSet         ::= "{" SimpleStateField {"," SimpleStateField}* "}"
 
 Conditional Expressions
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -1467,7 +1467,8 @@ Conditional Expressions
     ConditionalPrimary          ::= SimpleConditionalExpression | "(" ConditionalExpression ")"
     SimpleConditionalExpression ::= ComparisonExpression | BetweenExpression | LikeExpression |
                                     InExpression | NullComparisonExpression | ExistsExpression |
-                                    EmptyCollectionComparisonExpression | CollectionMemberExpression
+                                    EmptyCollectionComparisonExpression | CollectionMemberExpression |
+                                    InstanceOfExpression
 
 
 Collection Expressions
@@ -1561,6 +1562,8 @@ QUANTIFIED/BETWEEN/COMPARISON/LIKE/NULL/EXISTS
     BetweenExpression        ::= ArithmeticExpression ["NOT"] "BETWEEN" ArithmeticExpression "AND" ArithmeticExpression
     ComparisonExpression     ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression )
     InExpression             ::= StateFieldPathExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
+    InstanceOfExpression     ::= IdentificationVariable ["NOT"] "INSTANCE" ["OF"] (InstanceOfParameter | "(" InstanceOfParameter {"," InstanceOfParameter}* ")")
+    InstanceOfParameter      ::= AbstractSchemaName | InputParameter
     LikeExpression           ::= StringExpression ["NOT"] "LIKE" string ["ESCAPE" char]
     NullComparisonExpression ::= (SingleValuedPathExpression | InputParameter) "IS" ["NOT"] "NULL"
     ExistsExpression         ::= ["NOT"] "EXISTS" "(" Subselect ")"
