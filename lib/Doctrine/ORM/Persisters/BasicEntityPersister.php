@@ -861,9 +861,17 @@ class BasicEntityPersister
             $lockSql = ' ' . $this->_platform->getWriteLockSql();
         }
 
+        $alias = $this->_getSQLTableAlias($this->_class->name);
+
+        $filterSql = $this->generateFilterConditionSQL($this->_class, $alias);
+        if('' !== $filterSql) {
+            if($conditionSql) $conditionSql .= ' AND ';
+            $conditionSql .= $filterSql;
+        }
+
         return $this->_platform->modifyLimitQuery('SELECT ' . $this->_getSelectColumnListSQL()
              . $this->_platform->appendLockHint(' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' '
-             . $this->_getSQLTableAlias($this->_class->name), $lockMode)
+             . $alias, $lockMode)
              . $this->_selectJoinSql . $joinSql
              . ($conditionSql ? ' WHERE ' . $conditionSql : '')
              . $orderBySql, $limit, $offset)
@@ -1340,10 +1348,33 @@ class BasicEntityPersister
             $criteria = array_merge($criteria, $extraConditions);
         }
 
+        $alias = $this->_getSQLTableAlias($this->_class->name);
+
+
         $sql = 'SELECT 1 FROM ' . $this->_class->getQuotedTableName($this->_platform)
-                . ' ' . $this->_getSQLTableAlias($this->_class->name)
+                . ' ' . $alias
                 . ' WHERE ' . $this->_getSelectConditionSQL($criteria);
 
+        $filterSql = $this->generateFilterConditionSQL($this->_class, $alias);
+        if('' !== $filterSql) {
+            $sql .= ' AND ' . $filterSql;
+        }
+
         return (bool) $this->_conn->fetchColumn($sql, array_values($criteria));
+    }
+
+    private function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    {
+        $filterSql = '';
+
+        $first =  true;
+        foreach($this->_em->getEnabledFilters() as $filter) {
+            if("" !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+                if ( ! $first) $sql .= ' AND '; else $first = false;
+                $filterSql .= '(' . $filterExpr . ')';
+            }
+        }
+
+        return $filterSql;
     }
 }

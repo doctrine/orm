@@ -208,7 +208,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 if ($whereClause !== '') {
                     $whereClause .= ' AND ';
                 }
-                $whereClause .= "$joinTableColumn = ?";
+                $whereClause .= "t.$joinTableColumn = ?";
 
                 if ($class->containsForeignIdentifier) {
                     $params[] = $id[$class->getFieldForColumn($joinColumns[$joinTableColumn])];
@@ -217,7 +217,14 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 }
             }
         }
-        $sql = 'SELECT count(*) FROM ' . $joinTable['name'] . ' WHERE ' . $whereClause;
+
+        list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($mapping);
+
+        $sql = 'SELECT count(*)'
+            . ' FROM ' . $joinTable['name'] . ' t'
+            . $joinTargetEntitySQL
+            . ' WHERE ' . $whereClause
+            . $filterSql;
 
         return $this->_conn->fetchColumn($sql, $params);
     }
@@ -293,8 +300,44 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 }
             }
         }
-        $sql = 'SELECT 1 FROM ' . $joinTable['name'] . ' WHERE ' . $whereClause;
+
+        list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($mapping);
+
+        $sql = 'SELECT 1'
+           . ' FROM ' . $joinTable['name'] . ' t'
+            . $joinTargetEntitySQL
+           . ' WHERE ' . $whereClause
+           . $filterSql;
 
         return (bool)$this->_conn->fetchColumn($sql, $params);
+    }
+
+    public function getFilterSql($mapping)
+    {
+        $targetClass = $this->_em->getClassMetadata($mapping['targetEntity']);
+
+        // Get the SQL for the filters
+        $filterSql = '';
+        foreach($this->_em->getEnabledFilters() as $filter) {
+            if("" !== $filterExpr = $filter->addFilterConstraint($targetClass, 'te')) {
+                $filterSql .= ' AND (' . $filterExpr . ')';
+            }
+        }
+
+        // A join is needed if there is filtering on the target entity
+        $joinTargetEntitySQL = '';
+        if('' !== $filterSql) {
+            $joinTargetEntitySQL = ' JOIN '
+                . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) . ' te'
+                . ' ON';
+
+            $first = true;
+            foreach($mapping['relationToTargetKeyColumns'] as $joinTableColumn => $targetTableColumn) {
+                if(!$first) $joinTargetEntitySQL .= ' AND '; else $first = false;
+                $joinTargetEntitySQL .= ' t.' . $joinTableColumn . ' = ' . 'te.' . $targetTableColumn;
+            }
+        }
+
+        return array($joinTargetEntitySQL, $filterSql);
     }
 }

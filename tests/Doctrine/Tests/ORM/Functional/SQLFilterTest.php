@@ -25,11 +25,21 @@ require_once __DIR__ . '/../../TestInit.php';
 class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     private $userId, $userId2, $articleId, $articleId2;
+    private $groupId, $groupId2;
 
     public function setUp()
     {
         $this->useModelSet('cms');
         parent::setUp();
+    }
+
+    public function tearDown()
+    {
+        parent::tearDown();
+
+        $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $class->associationMappings['groups']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
+        $class->associationMappings['articles']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
     }
 
     public function testConfigureFilter()
@@ -307,6 +317,109 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
 
+    private function loadLazyFixtureData()
+    {
+        $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $class->associationMappings['articles']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
+        $class->associationMappings['groups']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
+        $this->loadFixtureData();
+    }
+
+    private function useCMSArticleTopicFilter()
+    {
+        $conf = $this->_em->getConfiguration();
+        $conf->addFilter("article_topic", "\Doctrine\Tests\ORM\Functional\CMSArticleTopicFilter");
+        $this->_em->enableFilter("article_topic")->setParameter("topic", "Test1", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
+    }
+
+    public function testOneToMany_ExtraLazyCountWithFilter()
+    {
+        $this->loadLazyFixtureData();
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+
+        $this->assertFalse($user->articles->isInitialized());
+        $this->assertEquals(2, count($user->articles));
+
+        $this->useCMSArticleTopicFilter();
+
+        $this->assertEquals(1, count($user->articles));
+    }
+
+    public function testOneToMany_ExtraLazyContainsWithFilter()
+    {
+        $this->loadLazyFixtureData();
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        $filteredArticle = $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId2);
+
+        $this->assertFalse($user->articles->isInitialized());
+        $this->assertTrue($user->articles->contains($filteredArticle));
+
+        $this->useCMSArticleTopicFilter();
+
+        $this->assertFalse($user->articles->contains($filteredArticle));
+    }
+
+    public function testOneToMany_ExtraLazySliceWithFilter()
+    {
+        $this->loadLazyFixtureData();
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+
+        $this->assertFalse($user->articles->isInitialized());
+        $this->assertEquals(2, count($user->articles->slice(0,10)));
+
+        $this->useCMSArticleTopicFilter();
+
+        $this->assertEquals(1, count($user->articles->slice(0,10)));
+    }
+
+    private function useCMSGroupPrefixFilter()
+    {
+        $conf = $this->_em->getConfiguration();
+        $conf->addFilter("group_prefix", "\Doctrine\Tests\ORM\Functional\CMSGroupPrefixFilter");
+        $this->_em->enableFilter("group_prefix")->setParameter("prefix", "foo%", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
+    }
+
+    public function testManyToMany_ExtraLazyCountWithFilter()
+    {
+        $this->loadLazyFixtureData();
+
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId2);
+
+        $this->assertFalse($user->groups->isInitialized());
+        $this->assertEquals(2, count($user->groups));
+
+        $this->useCMSGroupPrefixFilter();
+
+        $this->assertEquals(1, count($user->groups));
+    }
+
+    public function testManyToMany_ExtraLazyContainsWithFilter()
+    {
+        $this->loadLazyFixtureData();
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId2);
+        $filteredArticle = $this->_em->find('Doctrine\Tests\Models\CMS\CmsGroup', $this->groupId2);
+
+        $this->assertFalse($user->groups->isInitialized());
+        $this->assertTrue($user->groups->contains($filteredArticle));
+
+        $this->useCMSGroupPrefixFilter();
+
+        $this->assertFalse($user->groups->contains($filteredArticle));
+    }
+
+    public function testManyToMany_ExtraLazySliceWithFilter()
+    {
+        $this->loadLazyFixtureData();
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId2);
+
+        $this->assertFalse($user->groups->isInitialized());
+        $this->assertEquals(2, count($user->groups->slice(0,10)));
+
+        $this->useCMSGroupPrefixFilter();
+
+        $this->assertEquals(1, count($user->groups->slice(0,10)));
+    }
+
     private function loadFixtureData()
     {
         $user = new CmsUser;
@@ -367,6 +480,8 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->userId2 = $user2->getId();
         $this->articleId = $article1->id;
         $this->articleId2 = $article2->id;
+        $this->groupId = $group->id;
+        $this->groupId2 = $group2->id;
     }
 }
 
