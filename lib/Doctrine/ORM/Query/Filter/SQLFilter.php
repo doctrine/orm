@@ -19,8 +19,8 @@
 
 namespace Doctrine\ORM\Query\Filter;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Mapping\ClassMetaData;
+use Doctrine\ORM\EntityManager;
 
 /**
  * The base class that user defined filters should extend.
@@ -33,13 +33,13 @@ use Doctrine\ORM\Mapping\ClassMetaData;
  */
 abstract class SQLFilter
 {
-    private $conn;
+    private $em;
 
     private $parameters;
 
-    final public function __construct(Connection $conn)
+    final public function __construct(EntityManager $em)
     {
-        $this->conn = $conn;
+        $this->em = $em;
     }
 
     final function setParameter($name, $value, $type)
@@ -50,6 +50,9 @@ abstract class SQLFilter
         // Keep the parameters sorted for the hash
         ksort($this->parameters);
 
+        // The filter collection of the EM is now dirty
+        $this->em->setFiltersStateDirty();
+
         return $this;
     }
 
@@ -59,7 +62,7 @@ abstract class SQLFilter
             throw new \InvalidArgumentException("Parameter '" . $name . "' does not exist.");
         }
 
-        return $this->conn->quote($this->parameters[$name]['value'], $this->parameters[$name]['type']);
+        return $this->em->getConnection()->quote($this->parameters[$name]['value'], $this->parameters[$name]['type']);
     }
 
     final function __toString()

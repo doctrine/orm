@@ -151,6 +151,16 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         return $conn;
     }
 
+    protected function getMockEntityManager()
+    {
+        // Setup connection mock
+        $em = $this->getMockBuilder('Doctrine\ORM\EntityManager')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        return $em;
+    }
+
     public function testSQLFilterGetSetParameter()
     {
         // Setup mock connection
@@ -160,7 +170,12 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
             ->with($this->equalTo('en'))
             ->will($this->returnValue("'en'"));
 
-        $filter = new MyLocaleFilter($conn);
+        $em = $this->getMockEntityManager($conn);
+        $em->expects($this->once())
+            ->method('getConnection')
+            ->will($this->returnValue($conn));
+
+        $filter = new MyLocaleFilter($em);
 
         $filter->setParameter('locale', 'en', \Doctrine\DBAL\Types\Type::STRING);
 
@@ -174,7 +189,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $filter = new MySoftDeleteFilter($this->getMockConnection());
+        $filter = new MySoftDeleteFilter($this->getMockEntityManager());
 
         // Test for an entity that gets extra filter data
         $targetEntity->name = 'MyEntity\SoftDeleteNewsItem';
@@ -188,11 +203,11 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testSQLFilterToString()
     {
-        $filter = new MyLocaleFilter($this->getMockConnection());
+        $filter = new MyLocaleFilter($this->getMockEntityManager());
         $filter->setParameter('locale', 'en', \Doctrine\DBAL\Types\Type::STRING);
         $filter->setParameter('foo', 'bar', \Doctrine\DBAL\Types\Type::STRING);
 
-        $filter2 = new MyLocaleFilter($this->getMockConnection());
+        $filter2 = new MyLocaleFilter($this->getMockEntityManager());
         $filter2->setParameter('foo', 'bar', \Doctrine\DBAL\Types\Type::STRING);
         $filter2->setParameter('locale', 'en', \Doctrine\DBAL\Types\Type::STRING);
 
@@ -225,6 +240,19 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // Another time doesn't add another cache entry
         $query->getResult();
         $this->assertEquals(2, count($cache->getIds()));
+    }
+
+    public function testQueryGeneration_DependsOnFilters()
+    {
+        $query = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsAddress a');
+        $firstSQLQuery = $query->getSQL();
+
+        $conf = $this->_em->getConfiguration();
+        $conf->addFilter("country", "\Doctrine\Tests\ORM\Functional\CMSCountryFilter");
+        $this->_em->enableFilter("country")
+            ->setParameter("country", "en", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
+
+        $this->assertNotEquals($firstSQLQuery, $query->getSQL());
     }
 
     public function testToOneFilter()

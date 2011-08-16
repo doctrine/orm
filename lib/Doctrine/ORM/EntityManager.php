@@ -110,12 +110,36 @@ class EntityManager implements ObjectManager
      */
     private $closed = false;
 
+    /* Filters data */
     /**
      * Instances of enabled filters.
      *
      * @var array
      */
     private $enabledFilters = array();
+
+    /**
+     * @var string The filter hash from the last time the query was parsed.
+     */
+    private $filterHash;
+
+    /* Filter STATES */
+    /**
+     * A filter object is in CLEAN state when it has no changed parameters.
+     */
+    const FILTERS_STATE_CLEAN  = 1;
+
+    /**
+     * A filter object is in DIRTY state when it has changed parameters.
+     */
+    const FILTERS_STATE_DIRTY = 2;
+
+    /**
+     * @var integer $state   The current state of this filter
+     */
+    private $filtersState = self::FILTERS_STATE_CLEAN;
+
+    /* End filters data */
 
     /**
      * Creates a new EntityManager that operates on the given database connection
@@ -762,10 +786,13 @@ class EntityManager implements ObjectManager
         }
 
         if(!isset($this->enabledFilters[$name])) {
-            $this->enabledFilters[$name] = new $filterClass($this->conn);
+            $this->enabledFilters[$name] = new $filterClass($this);
 
             // Keep the enabled filters sorted for the hash
             ksort($this->enabledFilters);
+
+            // Now the filter collection is dirty
+            $this->filtersState = self::FILTERS_STATE_DIRTY;
         }
 
         return $this->enabledFilters[$name];
@@ -779,6 +806,9 @@ class EntityManager implements ObjectManager
 
         unset($this->enabledFilters[$name]);
 
+        // Now the filter collection is dirty
+        $this->filtersState = self::FILTERS_STATE_DIRTY;
+
         return $filter;
     }
 
@@ -790,5 +820,38 @@ class EntityManager implements ObjectManager
         }
 
         return $this->enabledFilters[$name];
+    }
+
+    /**
+     * @return boolean True, if the filter collection is clean.
+     */
+    public function isFiltersStateClean()
+    {
+        return self::FILTERS_STATE_CLEAN === $this->filtersState;
+    }
+
+    public function setFiltersStateDirty()
+    {
+        $this->filtersState = self::FILTERS_STATE_DIRTY;
+    }
+
+    /**
+     * Generates a string of currently enabled filters to use for the cache id.
+     *
+     * @return string
+     */
+    public function getFilterHash()
+    {
+        // If there are only clean filters, the previous hash can be returned
+        if(self::FILTERS_STATE_CLEAN === $this->filtersState) {
+            return $this->filterHash;
+        }
+
+        $filterHash = '';
+        foreach($this->enabledFilters as $name => $filter) {
+            $filterHash .= $name . $filter;
+        }
+
+        return $filterHash;
     }
 }
