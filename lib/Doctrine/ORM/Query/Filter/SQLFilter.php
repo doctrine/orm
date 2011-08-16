@@ -67,5 +67,8 @@ abstract class SQLFilter
         return serialize($this->parameters);
     }
 
+    /**
+     * @return string The contstraint if there is one, empty string otherwise
+     */
     abstract function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias);
 }

@@ -350,6 +350,20 @@ class SqlWalker implements TreeWalker
         return ($encapsulate) ? '(' . $sql . ')' : $sql;
     }
 
+    private function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    {
+        $filterSql = '';
+
+        $first =  true;
+        foreach($this->_em->getEnabledFilters() as $filter) {
+            if("" !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+                if ( ! $first) $sql .= ' AND '; else $first = false;
+                $filterSql .= '(' . $filterExpr . ')';
+            }
+        }
+
+        return $filterSql;
+    }
     /**
      * Walks down a SelectStatement AST node, thereby generating the appropriate SQL.
      *
@@ -771,6 +785,12 @@ class SqlWalker implements TreeWalker
                     $sql .= $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $targetTableAlias . '.' . $sourceColumn;
                 }
             }
+
+            // Apply the filters
+            if("" !== $filterExpr = $this->generateFilterConditionSQL($targetClass, $targetTableAlias)) {
+                if ( ! $first) $sql .= ' AND '; else $first = false;
+                $sql .= $filterExpr;
+            }
         } else if ($assoc['type'] == ClassMetadata::MANY_TO_MANY) {
             // Join relation table
             $joinTable = $assoc['joinTable'];
@@ -834,6 +854,12 @@ class SqlWalker implements TreeWalker
 
                     $sql .= $targetTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableAlias . '.' . $relationColumn;
                 }
+            }
+
+            // Apply the filters
+            if("" !== $filterExpr = $this->generateFilterConditionSQL($targetClass, $targetTableAlias)) {
+                if ( ! $first) $sql .= ' AND '; else $first = false;
+                $sql .= $filterExpr;
             }
         }
 
@@ -1413,6 +1439,26 @@ class SqlWalker implements TreeWalker
     {
         $condSql = null !== $whereClause ? $this->walkConditionalExpression($whereClause->conditionalExpression) : '';
         $discrSql = $this->_generateDiscriminatorColumnConditionSql($this->_rootAliases);
+
+        $filterSql = '';
+
+        // Apply the filters for all entities in FROM
+        $first = true;
+        foreach ($this->_rootAliases as $dqlAlias) {
+            $class = $this->_queryComponents[$dqlAlias]['metadata'];
+            $tableAlias = $this->getSQLTableAlias($class->table['name'], $dqlAlias);
+
+            if("" !== $filterExpr = $this->generateFilterConditionSQL($class, $tableAlias)) {
+                if ( ! $first) $filterSql .= ' AND '; else $first = false;
+                $filterSql .= $filterExpr;
+            }
+        }
+
+        if ('' !== $filterSql) {
+            if($condSql) $condSql .= ' AND ';
+
+            $condSql .= $filterSql;
+        }
 
         if ($condSql) {
             return ' WHERE ' . (( ! $discrSql) ? $condSql : '(' . $condSql . ') AND ' . $discrSql);
