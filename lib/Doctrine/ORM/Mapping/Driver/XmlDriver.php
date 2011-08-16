@@ -322,8 +322,8 @@ class XmlDriver extends AbstractFileDriver
                     $mapping['orderBy'] = $orderBy;
                 }
 
-                if (isset($oneToManyElement->{'index-by'})) {
-                    $mapping['indexBy'] = (string)$oneToManyElement->{'index-by'};
+                if (isset($oneToManyElement['index-by'])) {
+                    $mapping['indexBy'] = (string)$oneToManyElement['index-by'];
                 }
 
                 $metadata->mapOneToMany($mapping);
