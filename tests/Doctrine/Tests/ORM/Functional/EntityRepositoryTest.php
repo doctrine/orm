@@ -3,8 +3,8 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -16,6 +16,12 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp() {
         $this->useModelSet('cms');
         parent::setUp();
+    }
+
+    public function tearDown()
+    {
+        $this->_em->getConfiguration()->setEntityNamespaces(array());
+        parent::tearDown();
     }
 
     public function loadFixture()
@@ -33,12 +39,65 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($user2);
 
         $this->_em->flush();
+        
         $user1Id = $user->getId();
+        
         unset($user);
         unset($user2);
+        
         $this->_em->clear();
 
         return $user1Id;
+    }
+    
+    public function loadAssociatedFixture()
+    {
+        $address = new CmsAddress();
+        $address->city = "Berlin";
+        $address->country = "Germany";
+        $address->street = "Foostreet";
+        $address->zip = "12345";
+
+        $user = new CmsUser();
+        $user->name = 'Roman';
+        $user->username = 'romanb';
+        $user->status = 'freak';
+        $user->setAddress($address);
+
+        $this->_em->persist($user);
+        $this->_em->persist($address);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        return array($user->id, $address->id);
+    }
+    
+    public function buildUser($name, $username, $status, $address)
+    {
+        $user = new CmsUser();
+        $user->name     = $name;
+        $user->username = $username;
+        $user->status   = $status;
+        $user->setAddress($address);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+        
+        return $user;
+    }
+    
+    public function buildAddress($country, $city, $street, $zip)
+    {
+        $address = new CmsAddress();
+        $address->country = $country;
+        $address->city    = $city;
+        $address->street  = $street;
+        $address->zip     = $zip;
+
+        $this->_em->persist($address);
+        $this->_em->flush();
+        
+        return $address;
     }
 
     public function testBasicFind()
@@ -47,7 +106,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
 
         $user = $repos->find($user1Id);
-        $this->assertTrue($user instanceof CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser',$user);
         $this->assertEquals('Roman', $user->name);
         $this->assertEquals('freak', $user->status);
     }
@@ -59,11 +118,58 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $users = $repos->findBy(array('status' => 'dev'));
         $this->assertEquals(1, count($users));
-        $this->assertTrue($users[0] instanceof CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser',$users[0]);
         $this->assertEquals('Guilherme', $users[0]->name);
         $this->assertEquals('dev', $users[0]->status);
     }
 
+    public function testFindByAssociationWithIntegerAsParameter()
+    {
+        $address1 = $this->buildAddress('Germany', 'Berlim', 'Foo st.', '123456');
+        $user1    = $this->buildUser('Benjamin', 'beberlei', 'dev', $address1);
+        
+        $address2 = $this->buildAddress('Brazil', 'São Paulo', 'Bar st.', '654321');
+        $user2    = $this->buildUser('Guilherme', 'guilhermeblanco', 'freak', $address2);
+        
+        $address3 = $this->buildAddress('USA', 'Nashville', 'Woo st.', '321654');
+        $user3    = $this->buildUser('Jonathan', 'jwage', 'dev', $address3);
+        
+        unset($address1);
+        unset($address2);
+        unset($address3);
+        
+        $this->_em->clear();
+        
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
+        $addresses  = $repository->findBy(array('user' => array($user1->getId(), $user2->getId())));
+        
+        $this->assertEquals(2, count($addresses));
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress',$addresses[0]);
+    }
+
+    public function testFindByAssociationWithObjectAsParameter()
+    {
+        $address1 = $this->buildAddress('Germany', 'Berlim', 'Foo st.', '123456');
+        $user1    = $this->buildUser('Benjamin', 'beberlei', 'dev', $address1);
+        
+        $address2 = $this->buildAddress('Brazil', 'São Paulo', 'Bar st.', '654321');
+        $user2    = $this->buildUser('Guilherme', 'guilhermeblanco', 'freak', $address2);
+        
+        $address3 = $this->buildAddress('USA', 'Nashville', 'Woo st.', '321654');
+        $user3    = $this->buildUser('Jonathan', 'jwage', 'dev', $address3);
+        
+        unset($address1);
+        unset($address2);
+        unset($address3);
+        
+        $this->_em->clear();
+        
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
+        $addresses  = $repository->findBy(array('user' => array($user1, $user2)));
+        
+        $this->assertEquals(2, count($addresses));
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress',$addresses[0]);
+    }
 
     public function testFindFieldByMagicCall()
     {
@@ -72,7 +178,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $users = $repos->findByStatus('dev');
         $this->assertEquals(1, count($users));
-        $this->assertTrue($users[0] instanceof CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser',$users[0]);
         $this->assertEquals('Guilherme', $users[0]->name);
         $this->assertEquals('dev', $users[0]->status);
     }
@@ -97,12 +203,6 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $users = $repos->findAll();
         $this->assertEquals(2, count($users));
-    }
-
-    public function tearDown()
-    {
-        $this->_em->getConfiguration()->setEntityNamespaces(array());
-        parent::tearDown();
     }
 
     /**
@@ -201,28 +301,6 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $repos->foo();
     }
 
-    public function loadAssociatedFixture()
-    {
-        $address = new CmsAddress();
-        $address->city = "Berlin";
-        $address->country = "Germany";
-        $address->street = "Foostreet";
-        $address->zip = "12345";
-
-        $user = new CmsUser();
-        $user->name = 'Roman';
-        $user->username = 'romanb';
-        $user->status = 'freak';
-        $user->setAddress($address);
-
-        $this->_em->persist($user);
-        $this->_em->persist($address);
-        $this->_em->flush();
-        $this->_em->clear();
-
-        return array($user->id, $address->id);
-    }
-
     /**
      * @group DDC-817
      */
@@ -244,7 +322,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
         $address = $repos->findOneBy(array('user' => $userId));
 
-        $this->assertType('Doctrine\Tests\Models\CMS\CmsAddress', $address);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress', $address);
         $this->assertEquals($addressId, $address->id);
     }
 
@@ -285,7 +363,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
         $address = $repos->findOneByUser($userId);
 
-        $this->assertType('Doctrine\Tests\Models\CMS\CmsAddress', $address);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress', $address);
         $this->assertEquals($addressId, $address->id);
     }
 
@@ -295,7 +373,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $repos->createNamedQuery('all');
 
-        $this->assertType('Doctrine\ORM\Query', $query);
+        $this->assertInstanceOf('Doctrine\ORM\Query', $query);
         $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $query->getDQL());
     }
 

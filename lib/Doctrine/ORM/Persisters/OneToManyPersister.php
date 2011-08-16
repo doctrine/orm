@@ -124,28 +124,30 @@ class OneToManyPersister extends AbstractCollectionPersister
     public function count(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
-        $class = $this->_em->getClassMetadata($mapping['targetEntity']);
+        $targetClass = $this->_em->getClassMetadata($mapping['targetEntity']);
+        $sourceClass = $this->_em->getClassMetadata($mapping['sourceEntity']);
+
         $params = array();
         $id = $this->_em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
 
         $where = '';
-        foreach ($class->associationMappings[$mapping['mappedBy']]['joinColumns'] AS $joinColumn) {
+        foreach ($targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'] AS $joinColumn) {
             if ($where != '') {
                 $where .= ' AND ';
             }
-            $where .= 't.' . $joinColumn['name'] . " = ?";
-            if ($class->containsForeignIdentifier) {
-                $params[] = $id[$class->getFieldForColumn($joinColumn['referencedColumnName'])];
+            $where .= "t." . $joinColumn['name'] . " = ?";
+            if ($targetClass->containsForeignIdentifier) {
+                $params[] = $id[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])];
             } else {
-                $params[] = $id[$class->fieldNames[$joinColumn['referencedColumnName']]];
+                $params[] = $id[$sourceClass->fieldNames[$joinColumn['referencedColumnName']]];
             }
         }
 
-        $sql = "SELECT count(*) FROM " . $class->getQuotedTableName($this->_conn->getDatabasePlatform()) . " t WHERE " . $where;
+        $sql = "SELECT count(*) FROM " . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) . " t WHERE " . $where;
 
         // Apply the filters
         foreach($this->_em->getEnabledFilters() as $filter) {
-            if("" !== $filterExpr = $filter->addFilterConstraint($class, 't')) {
+            if("" !== $filterExpr = $filter->addFilterConstraint($targetClass, 't')) {
                 $sql .= ' AND (' . $filterExpr . ')';
             }
         }

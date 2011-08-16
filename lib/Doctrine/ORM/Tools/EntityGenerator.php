@@ -302,7 +302,7 @@ public function <methodName>()
      */
     public function setAnnotationPrefix($prefix)
     {
-        if (version_compare(\Doctrine\Common\Version::VERSION, '3.0.0-DEV', '>=')) {
+        if (version_compare(\Doctrine\Common\Version::VERSION, '2.2.0-DEV', '>=')) {
             return;
         }
         $this->_annotationsPrefix = $prefix;
@@ -462,6 +462,14 @@ public function <methodName>()
 
     private function _hasProperty($property, ClassMetadataInfo $metadata)
     {
+        if ($this->_extendsClass()) {
+            // don't generate property if its already on the base class.
+            $reflClass = new \ReflectionClass($this->_getClassToExtend());
+            if ($reflClass->hasProperty($property)) {
+                return true;
+            }
+        }
+
         return (
             isset($this->_staticReflection[$metadata->name]) &&
             in_array($property, $this->_staticReflection[$metadata->name]['properties'])
@@ -470,6 +478,14 @@ public function <methodName>()
 
     private function _hasMethod($method, ClassMetadataInfo $metadata)
     {
+        if ($this->_extendsClass()) {
+            // don't generate method if its already on the base class.
+            $reflClass = new \ReflectionClass($this->_getClassToExtend());
+            if ($reflClass->hasMethod($method)) {
+                return true;
+            }
+        }
+
         return (
             isset($this->_staticReflection[$metadata->name]) &&
             in_array($method, $this->_staticReflection[$metadata->name]['methods'])
@@ -768,10 +784,6 @@ public function <methodName>()
 
         if (isset($joinColumn['onDelete'])) {
             $joinColumnAnnot[] = 'onDelete=' . ($joinColumn['onDelete'] ? 'true' : 'false');
-        }
-
-        if (isset($joinColumn['onUpdate'])) {
-            $joinColumnAnnot[] = 'onUpdate=' . ($joinColumn['onUpdate'] ? 'true' : 'false');
         }
 
         if (isset($joinColumn['columnDefinition'])) {

@@ -323,6 +323,8 @@ class QueryBuilder
      */
     public function setParameter($key, $value, $type = null)
     {
+        $key = trim($key, ':');
+        
         if ($type === null) {
             $type = Query\ParameterTypeInferer::inferType($value);
         }

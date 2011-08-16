@@ -285,8 +285,8 @@ class XmlDriver extends AbstractFileDriver
                     $mapping['cascade'] = $this->_getCascadeMappings($oneToOneElement->cascade);
                 }
 
-                if (isset($oneToOneElement->{'orphan-removal'})) {
-                    $mapping['orphanRemoval'] = (bool)$oneToOneElement->{'orphan-removal'};
+                if (isset($oneToOneElement['orphan-removal'])) {
+                    $mapping['orphanRemoval'] = (bool)$oneToOneElement['orphan-removal'];
                 }
 
                 $metadata->mapOneToOne($mapping);
@@ -310,8 +310,8 @@ class XmlDriver extends AbstractFileDriver
                     $mapping['cascade'] = $this->_getCascadeMappings($oneToManyElement->cascade);
                 }
 
-                if (isset($oneToManyElement->{'orphan-removal'})) {
-                    $mapping['orphanRemoval'] = (bool)$oneToManyElement->{'orphan-removal'};
+                if (isset($oneToManyElement['orphan-removal'])) {
+                    $mapping['orphanRemoval'] = (bool)$oneToManyElement['orphan-removal'];
                 }
 
                 if (isset($oneToManyElement->{'order-by'})) {
@@ -322,8 +322,8 @@ class XmlDriver extends AbstractFileDriver
                     $mapping['orderBy'] = $orderBy;
                 }
 
-                if (isset($oneToManyElement->{'index-by'})) {
-                    $mapping['indexBy'] = (string)$oneToManyElement->{'index-by'};
+                if (isset($oneToManyElement['index-by'])) {
+                    $mapping['indexBy'] = (string)$oneToManyElement['index-by'];
                 }
 
                 $metadata->mapOneToMany($mapping);
@@ -469,10 +469,6 @@ class XmlDriver extends AbstractFileDriver
 
         if (isset($joinColumnElement['on-delete'])) {
             $joinColumn['onDelete'] = (string)$joinColumnElement['on-delete'];
-        }
-
-        if (isset($joinColumnElement['on-update'])) {
-            $joinColumn['onUpdate'] = (string)$joinColumnElement['on-update'];
         }
 
         if (isset($joinColumnElement['column-definition'])) {

@@ -41,7 +41,7 @@ class DDC371Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->getResult();
                 
         $this->assertEquals(1, count($children));
-        $this->assertFalse($children[0]->parent instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $children[0]->parent);
         $this->assertFalse($children[0]->parent->children->isInitialized());
         $this->assertEquals(0, $children[0]->parent->children->unwrap()->count());
     }

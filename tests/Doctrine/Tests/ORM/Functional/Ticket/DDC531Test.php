@@ -29,8 +29,8 @@ class DDC531Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $item3 = $this->_em->find(__NAMESPACE__ . '\DDC531Item', $item2->id); // Load child item first (id 2)
         // parent will already be loaded, cannot be lazy because it has mapped subclasses and we would not
         // know which proxy type to put in.
-        $this->assertTrue($item3->parent instanceof DDC531Item);
-        $this->assertFalse($item3->parent instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertInstanceOf(__NAMESPACE__ . '\DDC531Item', $item3->parent);
+        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $item3->parent);
         $item4 = $this->_em->find(__NAMESPACE__ . '\DDC531Item', $item1->id); // Load parent item (id 1)
         $this->assertNull($item4->parent);
         $this->assertNotNull($item4->getChildren());

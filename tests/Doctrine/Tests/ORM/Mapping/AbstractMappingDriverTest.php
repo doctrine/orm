@@ -186,6 +186,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeMerge']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
 
         // Test Order By
         $this->assertEquals(array('number' => 'ASC'), $class->associationMappings['phonenumbers']['orderBy']);
@@ -267,10 +268,9 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      * @depends testColumnDefinition
      * @param ClassMetadata $class
      */
-    public function testJoinColumnOnDeleteAndOnUpdate($class)
+    public function testJoinColumnOnDelete($class)
     {
         $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
-        $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onUpdate']);
 
         return $class;
     }
@@ -324,12 +324,12 @@ class User
 
     /**
      * @OneToOne(targetEntity="Address", cascade={"remove"}, inversedBy="user")
-     * @JoinColumn(onDelete="CASCADE", onUpdate="CASCADE")
+     * @JoinColumn(onDelete="CASCADE")
      */
     public $address;
 
     /**
-     * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist"})
+     * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      * @OrderBy({"number"="ASC"})
      */
     public $phonenumbers;
@@ -412,7 +412,6 @@ class User
             'name' => 'address_id',
             'referencedColumnName' => 'id',
             'onDelete' => 'CASCADE',
-            'onUpdate' => 'CASCADE'
            ),
            ),
            'orphanRemoval' => false,
@@ -425,7 +424,7 @@ class User
            1 => 'persist',
            ),
            'mappedBy' => 'user',
-           'orphanRemoval' => false,
+           'orphanRemoval' => true,
            'orderBy' => 
            array(
            'number' => 'ASC',
