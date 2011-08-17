@@ -266,6 +266,10 @@ class YamlDriver extends AbstractFileDriver
                     $mapping['cascade'] = $oneToOneElement['cascade'];
                 }
 
+                if (isset($oneToOneElement['orphanRemoval'])) {
+                    $mapping['orphanRemoval'] = (bool)$oneToOneElement['orphanRemoval'];
+                }
+
                 $metadata->mapOneToOne($mapping);
             }
         }
@@ -281,6 +285,10 @@ class YamlDriver extends AbstractFileDriver
 
                 if (isset($oneToManyElement['fetch'])) {
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $oneToManyElement['fetch']);
+                }
+
+                if (isset($oneToManyElement['orphanRemoval'])) {
+                    $mapping['orphanRemoval'] = (bool)$oneToManyElement['orphanRemoval'];
                 }
 
                 if (isset($oneToManyElement['cascade'])) {
