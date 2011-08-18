@@ -1518,6 +1518,10 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
+        if ($repositoryClassName !== null && strpos($repositoryClassName, '\\') === false 
+                && strlen($this->namespace) > 0) {
+            $repositoryClassName = $this->namespace . '\\' . $repositoryClassName;
+        }
         $this->customRepositoryClassName = $repositoryClassName;
     }
 
