@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\ORM\UnitOfWork;
 
 require_once __DIR__ . '/../../TestInit.php';
@@ -191,6 +192,27 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertFalse($this->_em->contains($user));
         $this->assertFalse($this->_em->getUnitOfWork()->isInIdentityMap($user));
+    }
+
+    /**
+     * @group DDC-1340
+     */
+    public function testMergeArticleWrongVersion()
+    {
+        $article = new CmsArticle();
+        $article->topic = "test";
+        $article->text = "test";
+
+        $this->_em->persist($article);
+        $this->_em->flush();
+
+        $this->_em->detach($article);
+
+        $sql = "UPDATE cms_articles SET version = version+1 WHERE id = " . $article->id;
+        $this->_em->getConnection()->executeUpdate($sql);
+
+        $this->setExpectedException('Doctrine\ORM\OptimisticLockException', 'The optimistic lock failed, version 1 was expected, but is actually 2');
+        $this->_em->merge($article);
     }
 }
 
