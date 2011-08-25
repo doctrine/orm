@@ -625,7 +625,7 @@ classes have to implement the base class :
     <?php
     namespace MyProject\Query\AST;
     
-    use \Doctrine\ORM\Query\AST\Functions\FunctionsNode;
+    use \Doctrine\ORM\Query\AST\Functions\FunctionNode;
     
     class MysqlFloor extends FunctionNode
     {
