@@ -44,10 +44,10 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals("CREATE INDEX IDX_F21F790FA76ED395 ON cms_phonenumbers (user_id)", $sql[8]);
         $this->assertEquals("CREATE SEQUENCE cms_addresses_id_seq INCREMENT BY 1 MINVALUE 1 START 1", $sql[9]);
         $this->assertEquals("CREATE SEQUENCE cms_users_id_seq INCREMENT BY 1 MINVALUE 1 START 1", $sql[10]);
-        $this->assertEquals("ALTER TABLE cms_addresses ADD FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[11]);
-        $this->assertEquals("ALTER TABLE cms_users_groups ADD FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[12]);
-        $this->assertEquals("ALTER TABLE cms_users_groups ADD FOREIGN KEY (group_id) REFERENCES cms_groups(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[13]);
-        $this->assertEquals("ALTER TABLE cms_phonenumbers ADD FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[14]);
+        $this->assertEquals("ALTER TABLE cms_addresses ADD CONSTRAINT FK_ACAC157BA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[11]);
+        $this->assertEquals("ALTER TABLE cms_users_groups ADD CONSTRAINT FK_7EA9409AA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[12]);
+        $this->assertEquals("ALTER TABLE cms_users_groups ADD CONSTRAINT FK_7EA9409AFE54D947 FOREIGN KEY (group_id) REFERENCES cms_groups(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[13]);
+        $this->assertEquals("ALTER TABLE cms_phonenumbers ADD CONSTRAINT FK_F21F790FA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[14]);
         
         $this->assertEquals(count($sql), 15);
     }
@@ -90,9 +90,14 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         );
 
         $tool = new SchemaTool($this->_em);
+        try {
+            $tool->createSchema($classes);
+        } catch(\Exception $e) {
+
+        }
         $sql = $tool->getDropSchemaSQL($classes);
         
-        $this->assertEquals(13, count($sql));
+        $this->assertEquals(10, count($sql));
         $dropSequenceSQLs = 0;
         foreach ($sql AS $stmt) {
             if (strpos($stmt, "DROP SEQUENCE") === 0) {
