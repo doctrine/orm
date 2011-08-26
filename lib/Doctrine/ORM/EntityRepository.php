@@ -203,9 +203,8 @@ class EntityRepository implements ObjectRepository
                 "either findBy or findOneBy!"
             );
         }
-        
 
-        if (count($arguments) === 0) {
+        if (empty($arguments)) {
             throw ORMException::findByRequiresParameter($method.$by);
         }
 
