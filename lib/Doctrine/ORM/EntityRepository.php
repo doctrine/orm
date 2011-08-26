@@ -203,6 +203,11 @@ class EntityRepository implements ObjectRepository
                 "either findBy or findOneBy!"
             );
         }
+        
+
+        if (count($arguments) === 0) {
+            throw ORMException::findByRequiresParameter($method.$by);
+        }
 
         $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
 
