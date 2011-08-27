@@ -136,9 +136,9 @@ the ``ClassLoader`` with the following code.
 .. code-block:: php
 
     <?php
-    require 'Doctrine/Common/ClassLoader.php';
-    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
-    $classLoader->register();
+    require 'Doctrine/ORM/Tools/Setup.php';
+
+    Doctrine\ORM\Tools\Setup\registerAutoloadPEAR();
 
 The packages are installed in to your shared PEAR PHP code folder
 in a folder named ``Doctrine``. You also get a nice command line

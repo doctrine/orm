@@ -43,17 +43,29 @@ different types of Doctrine Installations:
     the following code in. Something like a ``test.php`` file.
 
 
-PEAR or Tarball Download
-^^^^^^^^^^^^^^^^^^^^^^^^
+PEAR
+^^^^
 
 .. code-block:: php
 
     <?php
     // test.php
     
-    require '/path/to/libraries/Doctrine/Common/ClassLoader.php';
-    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine', '/path/to/libraries');
-    $classLoader->register(); // register on SPL autoload stack
+    require 'Doctrine/ORM/Tools/Setup.php';
+
+    Doctrine\ORM\Tools\Setup::registerAutoloadPEAR();
+
+Tarball Download
+^^^^^^^^^^^^^^^^
+
+.. code-block:: php
+
+    <?php
+    // test.php
+    require 'Doctrine/ORM/Tools/Setup.php';
+
+    $lib = "/path/to/doctrine2-orm/lib";
+    Doctrine\ORM\Tools\Setup::registerAutoloadDirectory($lib);
 
 Git
 ^^^
@@ -65,41 +77,18 @@ packages through ``git submodule update --init``
 
     <?php
     // test.php
+    require 'Doctrine/ORM/Tools/Setup.php';
     
-    $lib = '/path/to/doctrine2-orm/lib/';
-    require $lib . 'vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
-    
-    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Common', $lib . 'vendor/doctrine-common/lib');
-    $classLoader->register();
-    
-    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\DBAL', $lib . 'vendor/doctrine-dbal/lib');
-    $classLoader->register();
-    
-    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\ORM', $lib);
-    $classLoader->register();
+    $lib = '/path/to/doctrine2-orm-root';
+    Doctrine\ORM\Tools\Setup::registerAutoloadGit($lib);
+
 
 Additional Symfony Components
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you don't use Doctrine2 in combination with Symfony2 you have to
-register an additional namespace to be able to use the Doctrine-CLI
-Tool or the YAML Mapping driver:
-
-.. code-block:: php
-
-    <?php
-    // PEAR or Tarball setup
-    $classloader = new \Doctrine\Common\ClassLoader('Symfony', '/path/to/libraries/Doctrine');
-    $classloader->register();
-    
-    // Git Setup
-    $classloader = new \Doctrine\Common\ClassLoader('Symfony', $lib . 'vendor/');
-    $classloader->register();
-
-For best class loading performance it is recommended that you keep
-your include\_path short, ideally it should only contain the path
-to the PEAR libraries, and any other class libraries should be
-registered with their full base path.
+All three autoloading setups described above also take care of
+the autoloading of the Symfony Console and YAML component,
+which are optional dependencies for Doctrine 2.
 
 Obtaining an EntityManager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -108,9 +97,10 @@ Once you have prepared the class loading, you acquire an
 *EntityManager* instance. The EntityManager class is the primary
 access point to ORM functionality provided by Doctrine.
 
-A simple configuration of the EntityManager requires a
+The configuration of the EntityManager requires a
 ``Doctrine\ORM\Configuration`` instance as well as some database
-connection parameters:
+connection parameters. This example shows all the potential
+steps of configuration.
 
 .. code-block:: php
 
@@ -161,6 +151,35 @@ connection parameters:
     fast in-memory cache storage that you can use for the metadata and
     query caches as seen in the previous code snippet.
 
+Configuration Shortcuts
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The above example is a complete setup of the required options for Doctrine.
+You can have this step of your code much simpler and use one of the predefined
+setup methods:
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ORM\Tools\Setup;
+    use Doctrine\ORM\EntityManager;
+
+    $paths = array("/path/to/entities-or-mapping-files");
+    $isDevMode = false;
+
+    $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
+    $em = EntityManager::create($dbParams, $config);
+
+    // or if you prefer yaml or xml
+    $config = Setup::createXMLMetadataConfiguration($paths, $isDevMode);
+    $config = Setup::createYAMLMetadataConfiguration($paths, $isDevMode);
+
+These setup commands make several assumptions:
+
+-  If `$devMode` is true always use an ``ArrayCache`` and set ``setAutoGenerateProxyClasses(true)``.
+-  If `$devMode` is false, check for Caches in the order APC, Xcache, Memcache (127.0.0.1:11211) unless `$cache` is passed as fourth argument.
+-  If `$devMode` is false, set ``setAutoGenerateProxyClasses(false)``
+-  If third argument `$proxyDir` is not set, use the systems temporary directory.
 
 Configuration Options
 ---------------------

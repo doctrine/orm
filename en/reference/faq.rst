@@ -23,7 +23,7 @@ Doctrine does not support to set the default values in columns through the "DEFA
 This is not necessary however, you can just use your class properties as default values. These are then used
 upon insert:
 
-.. code-block::
+.. code-block:: php
 
     class User
     {
@@ -47,7 +47,7 @@ or adding entities to a collection twice. You have to check for both conditions 
 in the code before calling ``$em->flush()`` if you know that unique constraint failures
 can occur.
 
-In `Symfony 2<http://www.symfony.com>`_ for example there is a Unique Entity Validator
+In `Symfony 2 <http://www.symfony.com>`_ for example there is a Unique Entity Validator
 to achieve this task.
 
 For collections you can check with ``$collection->contains($entity)`` if an entity is already
@@ -128,7 +128,7 @@ Can I use Inheritance with Doctrine 2?
  
 Yes, you can use Single- or Joined-Table Inheritance in Doctrine 2.
 
-See the documentation chapter on :doc:`inheritance mapping <inheritance-mapping>`_ for
+See the documentation chapter on :doc:`inheritance mapping <inheritance-mapping>` for
 the details.
 
 Why does Doctrine not create proxy objects for my inheritance hierachy?
