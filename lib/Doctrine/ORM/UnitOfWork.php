@@ -834,6 +834,8 @@ class UnitOfWork implements PropertyChangedListener
         
         // See if there are any new classes in the changeset, that are not in the
         // commit order graph yet (dont have a node).
+
+        // TODO: Can we know the know the possible $newNodes based on something more efficient? IdentityMap?
         $newNodes = array();
         foreach ($entityChangeSet as $oid => $entity) {
             $className = get_class($entity);         
@@ -845,7 +847,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Calculate dependencies for new nodes
-        foreach ($newNodes as $class) {
+        while ($class = array_pop($newNodes)) {
             foreach ($class->associationMappings as $assoc) {
                 if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
                     $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
@@ -860,6 +862,7 @@ class UnitOfWork implements PropertyChangedListener
                             $targetSubClass = $this->em->getClassMetadata($subClassName);
                             if ( ! $calc->hasClass($subClassName)) {
                                 $calc->addClass($targetSubClass);
+                                $newNodes[] = $targetSubClass;
                             }
                             $calc->addDependency($targetSubClass, $class);
                         }
