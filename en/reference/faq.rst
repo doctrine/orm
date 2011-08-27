@@ -7,6 +7,17 @@ Frequently Asked Questions
     what is often asked. If you stumble accross an unanswerd question please write a mail to the mailing-list or
     join the #doctrine channel on Freenode IRC.
 
+Database Schema
+---------------
+
+How do I set the charset and collation for MySQL tables?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can't set these values inside the annotations, yml or xml mapping files. To make a database
+work with the default charset and collation you should configure MySQL to use it as default charset,
+or create the database with charset and collation details. This way they get inherited to all newly
+created database tables and columns.
+
 Entity Classes
 --------------
 
@@ -144,12 +155,16 @@ EntityGenerator
 Why does the EntityGenerator not do X?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.
+The EntityGenerator is not a full fledged code-generator that solves all tasks. Code-Generation
+is not a first-class priority in Doctrine 2 anymore (compared to Doctrine 1). The EntityGenerator
+is supposed to kick-start you, but not towards 100%.
 
 Why does the EntityGenerator not generate inheritance correctly?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.
+Just from the details of the discriminator map the EntityGenerator cannot guess the inheritance hierachy.
+This is why the generation of inherited entities does not fully work. You have to adjust some additional
+code to get this one working correctly.
 
 Performance
 -----------
@@ -172,15 +187,15 @@ What is DQL?
 DQL stands for Doctrine Query Language, a query language that very much looks like SQL
 but has some important benefits when using Doctrine:
 
-* It uses class names and fields instead of tables and columns, separating concerns between backend and your object model.
-* It utilizes the metadata defined to offer a range of shortcuts when writing. For example you do not have to specify the ON clause of joins, since Doctrine already knows about them.
-* It adds some functionality that is related to object management and transforms them into SQL.
+-  It uses class names and fields instead of tables and columns, separating concerns between backend and your object model.
+-  It utilizes the metadata defined to offer a range of shortcuts when writing. For example you do not have to specify the ON clause of joins, since Doctrine already knows about them.
+-  It adds some functionality that is related to object management and transforms them into SQL.
 
 It also has some drawbacks of course:
 
-* The syntax is slightly different to SQL so you have to learn and remember the differences.
-* To be vendor independent it can only implement a subset of all the existing SQL dialects. Vendor specific functionality and optimizations cannot be used through DQL unless implemented by you explicitly.
-* For some DQL constructs subselects are used which are known to be slow in MySQL.
+-  The syntax is slightly different to SQL so you have to learn and remember the differences.
+-  To be vendor independent it can only implement a subset of all the existing SQL dialects. Vendor specific functionality and optimizations cannot be used through DQL unless implemented by you explicitly.
+-  For some DQL constructs subselects are used which are known to be slow in MySQL.
 
 Can I sort by a function (for example ORDER BY RAND()) in DQL?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

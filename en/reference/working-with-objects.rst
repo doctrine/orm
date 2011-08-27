@@ -692,10 +692,28 @@ methods on a repository as follows:
 
 You can also load by owning side associations through the repository:
 
+.. code-block:: php
+
+    <?php
     $number = $em->find('MyProject\Domain\Phonenumber', 1234);
     $user = $em->getRepository('MyProject\Domain\User')->findOneBy(array('phone' => $number->getId()));
 
-Take not that this only works by passing the ID of the associated entity, not yet by passing the associated entity itself.
+Be careful that this only works by passing the ID of the associated entity, not yet by passing the associated entity itself.
+
+The ``EntityRepository#findBy()`` method additionally accepts orderings, limit and offset as second to fourth parameters:
+
+.. code-block:: php
+
+    <?php
+    $tenUsers = $em->getRepository('MyProject\Domain\User')-findBy(array('age' => 20), array('name' => 'ASC'), 10, 0);
+
+If you pass an array of values Doctrine will convert the query into a WHERE field IN (..) query automatically:
+
+.. code-block:: php
+
+    <?php
+    $users = $em->getRepository('MyProject\Domain\User')-findBy(array('age' => array(20, 30, 40)));
+    // translates roughly to: SELECT * FROM users WHERE age IN (20, 30, 40)
 
 An EntityRepository also provides a mechanism for more concise
 calls through its use of ``__call``. Thus, the following two

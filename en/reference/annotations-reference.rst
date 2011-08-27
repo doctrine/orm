@@ -401,7 +401,6 @@ Optional attributes:
 -  **nullable**: Determine if the related entity is required, or if
    null is an allowed state for the relation. Defaults to true.
 -  **onDelete**: Cascade Action (Database-level)
--  **onUpdate**: Cascade Action (Database-level)
 -  **columnDefinition**: DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.
    This attribute allows to make use of advanced RMDBS features. Using
@@ -528,13 +527,15 @@ Optional attributes:
 -  **inversedBy**: The inversedBy attribute designates the ﬁeld in the
    entity that is the inverse side of the relationship.
 -  **cascade**: Cascade Option
--  **fetch**: One of LAZY or EAGER
+-  **fetch**: One of LAZY, EXTRA_LAZY or EAGER
+-  **indexBy**: Index the collection by a field on the target entity.
 
-    **NOTE** For ManyToMany bidirectional relationships either side may
+.. note::
+
+    For ManyToMany bidirectional relationships either side may
     be the owning side (the side that defines the @JoinTable and/or
     does not make use of the mappedBy attribute, thus using a default
     join table).
-
 
 Example:
 
@@ -635,6 +636,8 @@ Optional attributes:
 -  **mappedBy**: This option specifies the property name on the
    targetEntity that is the owning side of this relation. Its a
    required attribute for the inverse side of a relationship.
+-  **fetch**: One of LAZY, EXTRA_LAZY or EAGER.
+-  **indexBy**: Index the collection by a field on the target entity.
 
 Example:
 

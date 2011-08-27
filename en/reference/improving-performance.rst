@@ -42,6 +42,19 @@ for updates, which means when you call flush on the EntityManager these entities
 even if properties changed. Read-Only allows to persist new entities of a kind and remove existing
 ones, they are just not considered for updates.
 
+Extra-Lazy Collections
+----------------------
+
+If entities hold references to large collections you will get performance and memory problems initializing them.
+To solve this issue you can use the EXTRA_LAZY fetch-mode feature for collections. See the :doc:`tutorial <../tutorials/extra-lazy-associations>`
+for more information on how this fetch mode works.
+
+Temporarily change fetch mode in DQL
+------------------------------------
+
+See :ref:`Doctrine Query Language chapter <dql-temporarily-change-fetch-mode>`
+
+
 Apply Best Practices
 --------------------
 

@@ -176,7 +176,12 @@ built-in mapping types:
     types! They are mapping types between 2 types.
     Additionally Mapping types are *case-sensitive*. For example, using
     a DateTime column will NOT match the datetime type that ships with
-    Doctrine 2.    
+    Doctrine 2.
+
+.. note::
+
+    DateTime and Object types are compared by reference, not by value. Doctrine updates this values
+    if the reference changes and therefore behaves as if these objects are immutable value objects.
 
 .. warning::
 

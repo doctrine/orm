@@ -570,7 +570,9 @@ postUpdate, postRemove, postPersist
 
 The three post events are called inside ``EntityManager#flush()``.
 Changes in here are not relevant to the persistence in the
-database, but you can use this events to
+database, but you can use these events to alter non-persistable items,
+like non-mapped fields, logging or even associated classes that are
+directly mapped by Doctrine.
 
 postLoad
 ~~~~~~~~

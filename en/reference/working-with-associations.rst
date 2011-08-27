@@ -246,8 +246,8 @@ the database permanently.
 
 Notice how both sides of the bidirectional association are always
 updated. Unidirectional associations are consequently simpler to
-handle. Also note that if you type-hint your methods, i.e.
-``setAddress(Address $address)``, then PHP does only allows null
+handle. Also note that if you use type-hinting in your methods, i.e.
+``setAddress(Address $address)``, PHP will only allow null
 values if ``null`` is set as default value. Otherwise
 setAddress(null) will fail for removing the association. If you
 insist on type-hinting a typical way to deal with this is to
@@ -279,8 +279,9 @@ entities that have been re-added to the collection.
 
 Say you clear a collection of tags by calling
 ``$post->getTags()->clear();`` and then call
-``$post->getTags()->add($tag)``. This will not recognize tag being
-already added before and issue two database calls.
+``$post->getTags()->add($tag)``. This will not recognize the tag having 
+already been added previously and will consequently issue two separate database 
+calls.
 
 Association Management Methods
 ------------------------------
@@ -380,9 +381,9 @@ as your preferences.
 Synchronizing Bidirectional Collections
 ---------------------------------------
 
-In the case of Many-To-Many associations you as the developer are
-responsible to keep the collections on the owning and inverse side
-up in sync, when you apply changes to them. Doctrine can only
+In the case of Many-To-Many associations you as the developer have the 
+responsibility of keeping the collections on the owning and inverse side
+ in sync when you apply changes to them. Doctrine can only
 guarantee a consistent state for the hydration, not for your client
 code.
 
@@ -468,7 +469,7 @@ code would fail if you removed the call to
 cascade the persist operation to all nested entities that are new
 as well.
 
-More complicated is the deletion of all a users comments when he is
+More complicated is the deletion of all of a user's comments when he is
 removed from the system:
 
 .. code-block:: php
@@ -590,7 +591,7 @@ and StandingData:
         }
     }
 
-Now two examples what happens when you remove the references:
+Now two examples of what happens when you remove the references:
 
 .. code-block:: php
 
@@ -602,7 +603,8 @@ Now two examples what happens when you remove the references:
 
     $em->flush();
 
-In this case you have only changed the ``Contact`` entity but you removed
-the references for standing data and one address reference. When flush is called
-not only are the references removed but both the old standing data and the one
-address entity are also deleted from the database.
+In this case you have not only changed the ``Contact`` entity itself but 
+you have also removed the references for standing data and as well as one 
+address reference. When flush is called not only are the references removed 
+but both the old standing data and the one address entity are also deleted 
+from the database.

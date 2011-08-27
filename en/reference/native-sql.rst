@@ -229,7 +229,6 @@ which meta-column is the discriminator column of this tree.
      * @param string $alias The alias of the entity result or joined entity result the discriminator
      *                      column should be used for.
      * @param string $discrColumn The name of the discriminator column in the SQL result set.
-     * @todo Rename: addDiscriminatorColumn
      */
     public function setDiscriminatorColumn($alias, $discrColumn)
 
@@ -363,4 +362,28 @@ are actually a subtype of User. When using DQL, Doctrine
 automatically includes the necessary joins for this mapping
 strategy but with native SQL it is your responsibility.
 
+ResultSetMappingBuilder
+-----------------------
 
+There are some downsides with Native SQL queries. The primary one is that you have to adjust all result set mapping
+definitions if names of columns change. In DQL this is detected dynamically when the Query is regenerated with
+the current metadata.
+
+To avoid this hassle you can use the ``ResultSetMappingBuilder`` class. It allows to add all columns of an entity
+to a result set mapping. To avoid clashes you can optionally rename specific columns when you are doing the same
+in your sQL statement:
+
+.. code-block:: php
+
+    <?php
+
+    $sql = "SELECT u.id, u.name, a.id AS address_id, a.street, a.city " . 
+           "FROM users u INNER JOIN address a ON u.address_id = a.id";
+
+    $rsm = new ResultSetMappingBuilder;
+    $rsm->addRootEntityFromClassMetadata('MyProject\User', 'u');
+    $rsm->addJoinedEntityFromClassMetadata('MyProject\Address', 'a', array('id' => 'address_id'));
+
+For entites with more columns the builder is very convenient to use. It extends the ``ResultSetMapping`` class
+and as such has all the functionality of it as well. Currently the ``ResultSetMappingBuilder`` does not support
+entities with inheritance.

@@ -1,12 +1,8 @@
 Extra Lazy Associations
 =======================
 
-.. note::
-
-    This feature is scheduled for version 2.1 of Doctrine and not included in the 2.0.x series.
-
 In many cases associations between entities can get pretty large. Even in a simple scenario like a blog.
-where posts can be commented, you always have to assume that a post draws hundrets of comments.
+where posts can be commented, you always have to assume that a post draws hundreds of comments.
 In Doctrine 2.0 if you accessed an association it would always get loaded completly into memory. This
 can lead to pretty serious performance problems, if your associations contain several hundrets or thousands
 of entities.
@@ -28,7 +24,7 @@ For each of this three methods the following semantics apply:
 Additionally even with Doctrine 2.0 the following methods do not trigger the collection load:
 
 -  ``Collection#add($entity)``
--  ``Collection#offsetSet($key, $entity)`` - ArrayAccess with no specific key ``$coll[] = $entity`, it does
+-  ``Collection#offsetSet($key, $entity)`` - ArrayAccess with no specific key ``$coll[] = $entity``, it does
    not work when setting specific keys like ``$coll[0] = $entity``.
 
 With extra lazy collections you can now not only add entities to large collections but also paginate them
