@@ -834,6 +834,8 @@ class UnitOfWork implements PropertyChangedListener
         
         // See if there are any new classes in the changeset, that are not in the
         // commit order graph yet (dont have a node).
+
+        // TODO: Can we know the know the possible $newNodes based on something more efficient? IdentityMap?
         $newNodes = array();
         foreach ($entityChangeSet as $oid => $entity) {
             $className = get_class($entity);         
@@ -845,7 +847,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Calculate dependencies for new nodes
-        foreach ($newNodes as $class) {
+        while ($class = array_pop($newNodes)) {
             foreach ($class->associationMappings as $assoc) {
                 if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
                     $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
@@ -860,6 +862,7 @@ class UnitOfWork implements PropertyChangedListener
                             $targetSubClass = $this->em->getClassMetadata($subClassName);
                             if ( ! $calc->hasClass($subClassName)) {
                                 $calc->addClass($targetSubClass);
+                                $newNodes[] = $targetSubClass;
                             }
                             $calc->addDependency($targetSubClass, $class);
                         }
@@ -1100,6 +1103,22 @@ class UnitOfWork implements PropertyChangedListener
                             } else {
                                 return self::STATE_NEW;
                             }
+                        }
+                    }
+                } else if (!$class->idGenerator->isPostInsertGenerator()) {
+                    // if we have a pre insert generator we can't be sure that having an id
+                    // really means that the entity exists. We have to verify this through
+                    // the last resort: a db lookup
+
+                    // Last try before db lookup: check the identity map.
+                    if ($this->tryGetById($id, $class->rootEntityName)) {
+                        return self::STATE_DETACHED;
+                    } else {
+                        // db lookup
+                        if ($this->getEntityPersister(get_class($entity))->exists($entity)) {
+                            return self::STATE_DETACHED;
+                        } else {
+                            return self::STATE_NEW;
                         }
                     }
                 } else {
@@ -1742,7 +1761,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function lock($entity, $lockMode, $lockVersion = null)
     {
-        if ($this->getEntityState($entity) != self::STATE_MANAGED) {
+        if ($this->getEntityState($entity, self::STATE_DETACHED) != self::STATE_MANAGED) {
             throw new InvalidArgumentException("Entity is not MANAGED.");
         }
         
