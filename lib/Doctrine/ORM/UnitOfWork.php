@@ -1105,6 +1105,22 @@ class UnitOfWork implements PropertyChangedListener
                             }
                         }
                     }
+                } else if (!$class->idGenerator->isPostInsertGenerator()) {
+                    // if we have a pre insert generator we can't be sure that having an id
+                    // really means that the entity exists. We have to verify this through
+                    // the last resort: a db lookup
+
+                    // Last try before db lookup: check the identity map.
+                    if ($this->tryGetById($id, $class->rootEntityName)) {
+                        return self::STATE_DETACHED;
+                    } else {
+                        // db lookup
+                        if ($this->getEntityPersister(get_class($entity))->exists($entity)) {
+                            return self::STATE_DETACHED;
+                        } else {
+                            return self::STATE_NEW;
+                        }
+                    }
                 } else {
                     return self::STATE_DETACHED;
                 }
@@ -1745,7 +1761,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function lock($entity, $lockMode, $lockVersion = null)
     {
-        if ($this->getEntityState($entity) != self::STATE_MANAGED) {
+        if ($this->getEntityState($entity, self::STATE_DETACHED) != self::STATE_MANAGED) {
             throw new InvalidArgumentException("Entity is not MANAGED.");
         }
         
