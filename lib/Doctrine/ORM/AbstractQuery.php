@@ -162,6 +162,16 @@ abstract class AbstractQuery
     {
         return $this->_params;
     }
+    
+    /**
+     * Get all defined parameter types.
+     *
+     * @return array The defined query parameter types.
+     */
+    public function getParameterTypes()
+    {
+        return $this->_paramTypes;
+    }
 
     /**
      * Gets a query parameter.
@@ -172,6 +182,17 @@ abstract class AbstractQuery
     public function getParameter($key)
     {
         return isset($this->_params[$key]) ? $this->_params[$key] : null;
+    }
+
+    /**
+     * Gets a query parameter type.
+     *
+     * @param mixed $key The key (index or name) of the bound parameter.
+     * @return mixed The parameter type of the bound parameter.
+     */
+    public function getParameterType($key)
+    {
+        return isset($this->_paramTypes[$key]) ? $this->_paramTypes[$key] : null;
     }
 
     /**
