@@ -291,8 +291,21 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertTrue(count($this->_em->createQuery(
             'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1')
-            ->getResult()) > 0);
+            ->getResult()) > 0);   
+    }
+    
+    /**
+     * @group DDC-1341
+     */
+    public function testBulkUpdateNonScalarParameterDDC1341()
+    {
+        $dql   = 'UPDATE Doctrine\Tests\Models\Company\CompanyEmployee AS p SET p.startDate = ?0 WHERE p.department = ?1';
+        $query = $this->_em->createQuery($dql)
+            ->setParameter(0, new \DateTime())
+            ->setParameter(1, 'IT');
         
+        $result = $query->execute();
+
     }
 
     /**
