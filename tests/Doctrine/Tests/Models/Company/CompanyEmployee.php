@@ -17,6 +17,11 @@ class CompanyEmployee extends CompanyPerson
      * @Column(type="string", length=255)
      */
     private $department;
+    
+    /**
+     * @Column(type="datetime", nullable=true)
+     */
+    private $startDate;
 
     public function getSalary() {
         return $this->salary;
@@ -32,5 +37,13 @@ class CompanyEmployee extends CompanyPerson
 
     public function setDepartment($dep) {
         $this->department = $dep;
+    }
+
+    public function getStartDate() {
+        return $this->startDate;
+    }
+
+    public function setStartDate($date) {
+        $this->startDate = $date;
     }
 }
