@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\ORM\Tools\Setup;
+use Doctrine\Common\Cache\ArrayCache;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -68,6 +69,28 @@ class SetupTest extends \Doctrine\Tests\OrmTestCase
         
         $this->assertInstanceOf('Doctrine\ORM\Configuration', $config);
         $this->assertInstanceOf('Doctrine\ORM\Mapping\Driver\YamlDriver', $config->getMetadataDriverImpl());
+    }
+
+    /**
+     * @group DDC-1350
+     */
+    public function testConfigureProxyDir()
+    {
+        $config = Setup::createAnnotationMetadataConfiguration(array(), true, "/foo");
+        $this->assertEquals('/foo', $config->getProxyDir());
+    }
+
+    /**
+     * @group DDC-1350
+     */
+    public function testConfigureCache()
+    {
+        $cache = new ArrayCache();
+        $config = Setup::createAnnotationMetadataConfiguration(array(), true, null, $cache);
+        
+        $this->assertSame($cache, $config->getResultCacheImpl());
+        $this->assertSame($cache, $config->getMetadataCacheImpl());
+        $this->assertSame($cache, $config->getQueryCacheImpl());
     }
     
     public function tearDown()
