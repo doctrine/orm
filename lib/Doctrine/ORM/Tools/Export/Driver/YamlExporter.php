@@ -81,6 +81,10 @@ class YamlExporter extends AbstractExporter
             $array['indexes'] = $metadata->table['indexes'];
         }
 
+        if ($metadata->customRepositoryClassName) {
+            $array['repositoryClass'] = $metadata->customRepositoryClassName;
+        }
+
         if (isset($metadata->table['uniqueConstraints'])) {
             $array['uniqueConstraints'] = $metadata->table['uniqueConstraints'];
         }
