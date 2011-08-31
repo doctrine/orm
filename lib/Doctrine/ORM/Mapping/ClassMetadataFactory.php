@@ -308,6 +308,10 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             if ($parent && $parent->isInheritanceTypeSingleTable()) {
                 $class->setPrimaryTable($parent->table);
             }
+            
+            if ($parent && $parent->containsForeignIdentifier) {
+                $class->containsForeignIdentifier = true;
+            }
 
             $class->setParentClasses($visited);
 
