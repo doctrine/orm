@@ -20,13 +20,13 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Cache\ArrayCache,
-Doctrine\Common\Annotations\AnnotationReader,
-Doctrine\DBAL\Schema\AbstractSchemaManager,
-Doctrine\DBAL\Schema\SchemaException,
-Doctrine\ORM\Mapping\ClassMetadataInfo,
-Doctrine\ORM\Mapping\MappingException,
-Doctrine\Common\Util\Inflector,
-Doctrine\DBAL\Types\Type;
+    Doctrine\Common\Annotations\AnnotationReader,
+    Doctrine\DBAL\Schema\AbstractSchemaManager,
+    Doctrine\DBAL\Schema\SchemaException,
+    Doctrine\ORM\Mapping\ClassMetadataInfo,
+    Doctrine\ORM\Mapping\MappingException,
+    Doctrine\Common\Util\Inflector,
+    Doctrine\DBAL\Types\Type;
 
 /**
  * The DatabaseDriver reverse engineers the mapping metadata from a database.
@@ -212,7 +212,7 @@ class DatabaseDriver implements Driver
         }
 
         if ($ids) {
-            if (count($ids) == 1 && in_array($ids[0]['type'], array(Type::INTEGER, Type::SMALLINT,Type::BIGINT))) {
+            if (count($ids) == 1 && in_array($ids[0]['type'], array(Type::INTEGER, Type::SMALLINT, Type::BIGINT))) {
                 $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
             }
 
@@ -315,7 +315,7 @@ class DatabaseDriver implements Driver
                      
                     $fkCols = $foreignKey->getForeignColumns();
                     $cols = $foreignKey->getColumns();
-                     
+
                     $localColumn = current($cols);
 
                     $associationMapping = array();
@@ -330,7 +330,6 @@ class DatabaseDriver implements Driver
                             $associationMapping['indexBy'] = $indexColumn;
                         }
                     } catch(SchemaException $e) {
-                         
                     }
 
                     $metadata->mapOneToMany($associationMapping);
