@@ -791,7 +791,7 @@ class BasicEntityPersister
                     $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
                     if (isset($sourceClass->associationMappings[$field])) {
                         $value = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
-                        $value = $value[$this->_em->getClassMetadata($assoc['targetEntity'])->identifier[0]];
+                        $value = $value[$this->_em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity'])->identifier[0]];
                     }
 
                     $criteria[$quotedJoinTable . "." . $relationKeyColumn] = $value;
@@ -813,7 +813,7 @@ class BasicEntityPersister
                     $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
                     if (isset($sourceClass->associationMappings[$field])) {
                         $value = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
-                        $value = $value[$this->_em->getClassMetadata($assoc['targetEntity'])->identifier[0]];
+                        $value = $value[$this->_em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity'])->identifier[0]];
                     }
                     $criteria[$quotedJoinTable . "." . $relationKeyColumn] = $value;
                 } else if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
@@ -1284,7 +1284,7 @@ class BasicEntityPersister
                 $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
                 if (isset($sourceClass->associationMappings[$field])) {
                     $value = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
-                    $value = $value[$this->_em->getClassMetadata($assoc['targetEntity'])->identifier[0]];
+                    $value = $value[$this->_em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity'])->identifier[0]];
                 }
                 $criteria[$tableAlias . "." . $targetKeyColumn] = $value;
             } else {
