@@ -25,7 +25,8 @@ use Doctrine\Common\Cache\ArrayCache,
     Doctrine\DBAL\Schema\SchemaException,
     Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\MappingException,
-    Doctrine\Common\Util\Inflector;
+    Doctrine\Common\Util\Inflector,
+    Doctrine\DBAL\Types\Type;
 
 /**
  * The DatabaseDriver reverse engineers the mapping metadata from a database.
@@ -211,7 +212,7 @@ class DatabaseDriver implements Driver
         }
 
         if ($ids) {
-            if (count($ids) == 1) {
+            if (count($ids) == 1 && in_array($ids[0]['type'], array(Type::INTEGER, Type::SMALLINT,Type::BIGINT))) {
                 $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
             }
 
@@ -298,6 +299,44 @@ class DatabaseDriver implements Driver
                 );
             }
             $metadata->mapManyToOne($associationMapping);
+        }
+        
+        foreach ($this->tables as $tableCandidate){
+	        if ($this->_sm->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+	            $foreignKeysCandidate = $tableCandidate->getForeignKeys();
+	        } else {
+	        	$foreignKeysCandidate = array();
+        	}
+        	
+        	foreach ($foreignKeysCandidate as $foreignKey){
+        		$foreignTable = $foreignKey->getForeignTableName();
+
+        		if($foreignTable == $tableName && !isset($this->manyToManyTables[$tableCandidate->getName()])){
+        			
+        			$fkCols = $foreignKey->getForeignColumns();
+	        		$cols = $foreignKey->getColumns();
+	        		
+	        		
+	        		$localColumn = current($cols);
+	        		 
+        			$associationMapping = array();
+            		$associationMapping['fieldName'] = $this->getFieldNameForColumn($tableCandidate->getName(), $tableCandidate->getName(), true);
+            		$associationMapping['targetEntity'] = $this->getClassNameForTable($tableCandidate->getName());
+            		$associationMapping['mappedBy'] = $this->getFieldNameForColumn($tableCandidate->getName(), $localColumn, true);
+            		
+            		try {
+			            $primaryKeyColumns = $tableCandidate->getPrimaryKey()->getColumns();
+	            		if(count($primaryKeyColumns)==1){
+	            			$indexColumn = current($primaryKeyColumns);
+	            			$associationMapping['indexBy'] = $indexColumn;
+	            		}
+			        } catch(SchemaException $e) {
+			            
+			        }
+           	
+	        		$metadata->mapOneToMany($associationMapping);
+        		}
+        	}
         }
     }
 
