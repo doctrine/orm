@@ -774,9 +774,13 @@ class ClassMetadataInfo implements ClassMetadata
         // If targetEntity is unqualified, assume it is in the same namespace as
         // the sourceEntity.
         $mapping['sourceEntity'] = $this->name;
-        if (isset($mapping['targetEntity']) && strpos($mapping['targetEntity'], '\\') === false
-                && strlen($this->namespace) > 0) {
-            $mapping['targetEntity'] = $this->namespace . '\\' . $mapping['targetEntity'];
+        
+        if (isset($mapping['targetEntity'])) {
+            if (strlen($this->namespace) > 0 && strpos($mapping['targetEntity'], '\\') === false) {
+                $mapping['targetEntity'] = $this->namespace . '\\' . $mapping['targetEntity'];
+            }
+            
+            $mapping['targetEntity'] = ltrim($mapping['targetEntity'], '\\');
         }
 
         // Complete id mapping
@@ -1625,11 +1629,13 @@ class ClassMetadataInfo implements ClassMetadata
     public function setDiscriminatorMap(array $map)
     {
         foreach ($map as $value => $className) {
-            if (strpos($className, '\\') === false && strlen($this->namespace)) {
+            if (strlen($this->namespace) > 0 && strpos($className, '\\') === false) {
                 $className = $this->namespace . '\\' . $className;
             }
+            
             $className = ltrim($className, '\\');
             $this->discriminatorMap[$value] = $className;
+            
             if ($this->name == $className) {
                 $this->discriminatorValue = $value;
             } else {
