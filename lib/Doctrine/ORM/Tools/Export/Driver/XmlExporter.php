@@ -41,7 +41,7 @@ class XmlExporter extends AbstractExporter
      * Converts a single ClassMetadata instance to the exported format
      * and returns it
      *
-     * @param ClassMetadataInfo $metadata 
+     * @param ClassMetadataInfo $metadata
      * @return mixed $exported
      */
     public function exportClassMetadata(ClassMetadataInfo $metadata)
@@ -52,8 +52,8 @@ class XmlExporter extends AbstractExporter
             "xsi:schemaLocation=\"http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd\" />");
 
         /*$xml->addAttribute('xmlns', 'http://doctrine-project.org/schemas/orm/doctrine-mapping');
-        $xml->addAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
-        $xml->addAttribute('xsi:schemaLocation', 'http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd');*/
+         $xml->addAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+         $xml->addAttribute('xsi:schemaLocation', 'http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd');*/
 
         if ($metadata->isMappedSuperclass) {
             $root = $xml->addChild('mapped-superclass');
@@ -99,7 +99,7 @@ class XmlExporter extends AbstractExporter
 
         if (isset($metadata->table['indexes'])) {
             $indexesXml = $root->addChild('indexes');
-            
+
             foreach ($metadata->table['indexes'] as $name => $index) {
                 $indexXml = $indexesXml->addChild('index');
                 $indexXml->addAttribute('name', $name);
@@ -109,7 +109,7 @@ class XmlExporter extends AbstractExporter
 
         if (isset($metadata->table['uniqueConstraints'])) {
             $uniqueConstraintsXml = $root->addChild('unique-constraints');
-            
+
             foreach ($metadata->table['uniqueConstraints'] as $unique) {
                 $uniqueConstraintXml = $uniqueConstraintsXml->addChild('unique-constraint');
                 $uniqueConstraintXml->addAttribute('name', $unique['name']);
@@ -117,8 +117,19 @@ class XmlExporter extends AbstractExporter
             }
         }
 
+        if (isset($metadata->lifecycleCallbacks) && count($metadata->lifecycleCallbacks)) {
+            $lifecycleCallbacksXml = $root->addChild('lifecycle-callbacks');
+            foreach ($metadata->lifecycleCallbacks as $name => $methods) {
+                foreach ($methods as $method) {
+                    $lifecycleCallbackXml = $lifecycleCallbacksXml->addChild('lifecycle-callback');
+                    $lifecycleCallbackXml->addAttribute('type', $name);
+                    $lifecycleCallbackXml->addAttribute('method', $method);
+                }
+            }
+        }
+
         $fields = $metadata->fieldMappings;
-        
+
         $id = array();
         foreach ($fields as $name => $field) {
             if (isset($field['id']) && $field['id']) {
@@ -180,6 +191,17 @@ class XmlExporter extends AbstractExporter
                 }
             }
         }
+        $orderMap = array(
+            ClassMetadataInfo::ONE_TO_ONE,
+            ClassMetadataInfo::ONE_TO_MANY,
+            ClassMetadataInfo::MANY_TO_ONE,
+            ClassMetadataInfo::MANY_TO_MANY,
+        );
+        uasort($metadata->associationMappings, function($m1, $m2)use(&$orderMap){
+            $a1 = array_search($m1['type'],$orderMap);
+            $a2 = array_search($m2['type'],$orderMap);
+            return strcmp($a1, $a2);
+        });
 
         foreach ($metadata->associationMappings as $name => $associationMapping) {
             if ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_ONE) {
@@ -201,7 +223,10 @@ class XmlExporter extends AbstractExporter
             if (isset($associationMapping['inversedBy'])) {
                 $associationMappingXml->addAttribute('inversed-by', $associationMapping['inversedBy']);
             }
-            if (isset($associationMapping['orphanRemoval'])) {
+            if (isset($associationMapping['indexBy'])) {
+                $associationMappingXml->addAttribute('index-by', $associationMapping['indexBy']);
+            }
+            if (isset($associationMapping['orphanRemoval']) && strlen($associationMapping['orphanRemoval'])) {
                 $associationMappingXml->addAttribute('orphan-removal', $associationMapping['orphanRemoval']);
             }
             if (isset($associationMapping['joinTable']) && $associationMapping['joinTable']) {
@@ -283,18 +308,7 @@ class XmlExporter extends AbstractExporter
                 }
             }
         }
-
-        if (isset($metadata->lifecycleCallbacks)) {
-            $lifecycleCallbacksXml = $root->addChild('lifecycle-callbacks');
-            foreach ($metadata->lifecycleCallbacks as $name => $methods) {
-                foreach ($methods as $method) {
-                    $lifecycleCallbackXml = $lifecycleCallbacksXml->addChild('lifecycle-callback');
-                    $lifecycleCallbackXml->addAttribute('type', $name);
-                    $lifecycleCallbackXml->addAttribute('method', $method);
-                }
-            }
-        }
-
+         
         return $this->_asXml($xml);
     }
 
