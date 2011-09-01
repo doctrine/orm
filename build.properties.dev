@@ -8,6 +8,7 @@ report.dir=reports
 log.archive.dir=logs
 project.pirum_dir=
 project.download_dir=
+project.xsd_dir=
 test.phpunit_configuration_file=
 test.phpunit_generate_coverage=0
 test.pmd_reports=0

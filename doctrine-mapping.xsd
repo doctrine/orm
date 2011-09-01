@@ -92,7 +92,7 @@
       <xs:element name="discriminator-map" type="orm:discriminator-map" minOccurs="0"/>
       <xs:element name="lifecycle-callbacks" type="orm:lifecycle-callbacks" minOccurs="0" maxOccurs="1" />
       <xs:element name="named-queries" type="orm:named-queries" minOccurs="0" maxOccurs="1" />
-      <xs:element name="id" type="orm:id" minOccurs="0" maxOccurs="1" />
+      <xs:element name="id" type="orm:id" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="field" type="orm:field" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="one-to-one" type="orm:one-to-one" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="one-to-many" type="orm:one-to-many" minOccurs="0" maxOccurs="unbounded" />
