@@ -304,3 +304,9 @@ final class PostRemove extends Annotation {}
  * @Target("METHOD")
  */
 final class PostLoad extends Annotation {}
+
+/**
+ * @Annotation
+ * @Target("METHOD")
+ */
+final class OnClear extends Annotation {}
