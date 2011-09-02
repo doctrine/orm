@@ -274,9 +274,9 @@ class DatabaseDriver implements Driver
                             );
                         }
                         // default indexes for relations with one fk column
-						if(count($cols) == 1){
-							$associationMapping["indexBy"]=current($cols);
-						}
+                        if(count($cols) == 1){
+                            $associationMapping["indexBy"]=current($cols);
+                        }
                     } else {
                         $associationMapping['mappedBy'] = $this->getFieldNameForColumn($manyTable->getName(), current($myFk->getColumns()), true);
                     }
