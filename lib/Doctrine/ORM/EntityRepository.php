@@ -212,7 +212,16 @@ class EntityRepository implements ObjectRepository
         $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
 
         if ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName)) {
-            return $this->$method(array($fieldName => $arguments[0]));
+            $argumentSize = sizeof($arguments);
+            if ($argumentSize == 1) {
+                return $this->$method(array($fieldName => $arguments[0]));
+            } else if ($argumentSize == 2) {
+                return $this->$method(array($fieldName => $arguments[0]), $arguments[1]);
+            } else if ($argumentSize == 3) {
+                return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2]);
+            } else if ($argumentSize == 4) {
+                return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2], $arguments[3]);
+        	}
         } else {
             throw ORMException::invalidFindByCall($this->_entityName, $fieldName, $method.$by);
         }
