@@ -293,28 +293,29 @@ final class Query extends AbstractQuery
      */
     private function processParameterValue($value)
     {
-        if (is_array($value)) {
-            for ($i = 0, $l = count($value); $i < $l; $i++) {
-                $paramValue = $this->processParameterValue($value[$i]);
+        switch (true) {
+            case is_array($value):
+                for ($i = 0, $l = count($value); $i < $l; $i++) {
+                    $paramValue = $this->processParameterValue($value[$i]);
+
+                    // TODO: What about Entities that have composite primary key?
+                    $value[$i] = is_array($paramValue) ? $paramValue[key($paramValue)] : $paramValue;
+                }
+
+                return array($value);
                 
-                // TODO: What about Entities that have composite primary key?
-                $value[$i] = is_array($paramValue) ? $paramValue[key($paramValue)] : $paramValue;
-            }
-            
-            return array($value);
+            case is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(get_class($value)):
+                if ($this->_em->getUnitOfWork()->getEntityState($value) === UnitOfWork::STATE_MANAGED) {
+                    return array_values($this->_em->getUnitOfWork()->getEntityIdentifier($value));
+                }
+
+                $class = $this->_em->getClassMetadata(get_class($value));
+
+                return array_values($class->getIdentifierValues($value));
+                
+            default:
+                return array($value);
         }
-        
-        if ( ! (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(get_class($value)))) {
-            return array($value);
-        }
-        
-        if ($this->_em->getUnitOfWork()->getEntityState($value) === UnitOfWork::STATE_MANAGED) {
-            return array_values($this->_em->getUnitOfWork()->getEntityIdentifier($value));
-        }
-        
-        $class = $this->_em->getClassMetadata(get_class($value));
-        
-        return array_values($class->getIdentifierValues($value));
     }
 
     /**
