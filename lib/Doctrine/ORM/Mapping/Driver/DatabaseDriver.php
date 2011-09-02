@@ -307,12 +307,12 @@ class DatabaseDriver implements Driver
             } else {
                 $foreignKeysCandidate = array();
             }
-             
+
             foreach ($foreignKeysCandidate as $foreignKey){
                 $foreignTable = $foreignKey->getForeignTableName();
 
                 if($foreignTable == $tableName && !isset($this->manyToManyTables[$tableCandidate->getName()])){
-                     
+
                     $fkCols = $foreignKey->getForeignColumns();
                     $cols = $foreignKey->getColumns();
 

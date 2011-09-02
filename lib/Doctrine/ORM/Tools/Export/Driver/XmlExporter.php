@@ -308,7 +308,7 @@ class XmlExporter extends AbstractExporter
                 }
             }
         }
-         
+
         return $this->_asXml($xml);
     }
 
