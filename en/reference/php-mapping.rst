@@ -109,6 +109,63 @@ Now you just need to define a static function named
         }
     }
 
+ClassMetadataBuilder
+--------------------
+
+To ease the use of the ClassMetadata API (which is very raw) there is a ``ClassMetadataBuilder`` that you can use.
+
+.. code-block:: php
+
+    <?php
+    namespace Entities;
+
+    use Doctrine\ORM\Mapping\ClassMetadata;
+    use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
+
+    class User
+    {
+        // ...
+
+        public static function loadMetadata(ClassMetadata $metadata)
+        {
+            $builder = new ClassMetadataBuilder($metadata);
+            $builder->createField('id', 'integer')->isPrimaryKey()->generatedValue()->build();
+            $builder->addField('username', 'string');
+        }
+    }
+
+The API of the ClassMetadataBuilder has the following methods with a fluent interface:
+
+-   ``addField($name, $type, array $mapping)``
+-   ``setMappedSuperclass()``
+-   ``setReadOnly()``
+-   ``setCustomRepositoryClass($className)``
+-   ``setTable($name)``
+-   ``addIndex(array $columns, $indexName)``
+-   ``addUniqueConstraint(array $columns, $constraintName)``
+-   ``addNamedQuery($name, $dqlQuery)``
+-   ``setJoinedTableInheritance()``
+-   ``setSingleTableInheritance()``
+-   ``setDiscriminatorColumn($name, $type = 'string', $length = 255)``
+-   ``addDiscriminatorMapClass($name, $class)``
+-   ``setChangeTrackingPolicyDeferredExplicit()``
+-   ``setChangeTrackingPolicyNotify()``
+-   ``addLifecycleEvent($methodName, $event)``
+-   ``addManyToOne($name, $targetEntity, $inversedBy = null)``
+-   ``addInverseOneToOne($name, $targetEntity, $mappedBy)``
+-   ``addOwningOneToOne($name, $targetEntity, $inversedBy = null)``
+-   ``addOwningManyToMany($name, $targetEntity, $inversedBy = null)``
+-   ``addInverseManyToMany($name, $targetEntity, $mappedBy)``
+-   ``addOneToMany($name, $targetEntity, $mappedBy)``
+
+It also has several methods that create builders (which are necessary for advanced mappings):
+
+-   ``createField($name, $type)`` returns a ``FieldBuilder`` instance
+-   ``createManyToOne($name, $targetEntity)`` returns an ``AssocationBuilder`` instance
+-   ``createOneToOne($name, $targetEntity)`` returns an ``AssocationBuilder`` instance
+-   ``createManyToMany($name, $targetEntity)`` returns an ``ManyToManyAssocationBuilder`` instance
+-   ``createOneToMany($name, $targetEntity)`` returns an ``OneToManyAssocationBuilder`` instance
+
 ClassMetadataInfo API
 ---------------------
 
