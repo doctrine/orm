@@ -293,4 +293,9 @@ class MappingException extends \Doctrine\ORM\ORMException
             "to avoid this exception from occuring."
         );
     }
+
+    public static function lifecycleCallbackMethodNotFound($className, $methodName)
+    {
+        return new self("Entity '" . $className . "' has no method '" . $methodName . "' to be registered as lifecycle callback.");
+    }
 }
