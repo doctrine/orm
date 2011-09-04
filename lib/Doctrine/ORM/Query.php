@@ -238,49 +238,83 @@ final class Query extends AbstractQuery
             throw QueryException::invalidParameterNumber();
         }
 
-        $sqlParams = $types = array();
-
-        foreach ($this->_params as $key => $value) {
-            if ( ! isset($paramMappings[$key])) {
-                throw QueryException::unknownParameter($key);
-            }
-            if (isset($this->_paramTypes[$key])) {
-                foreach ($paramMappings[$key] as $position) {
-                    $types[$position] = $this->_paramTypes[$key];
-                }
-            }
-
-            if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(get_class($value))) {
-                if ($this->_em->getUnitOfWork()->getEntityState($value) == UnitOfWork::STATE_MANAGED) {
-                    $idValues = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
-                } else {
-                    $class = $this->_em->getClassMetadata(get_class($value));
-                    $idValues = $class->getIdentifierValues($value);
-                }
-                $sqlPositions = $paramMappings[$key];
-                $cSqlPos = count($sqlPositions);
-                $cIdValues = count($idValues);
-                $idValues = array_values($idValues);
-                for ($i = 0; $i < $cSqlPos; $i++) {
-                    $sqlParams[$sqlPositions[$i]] = $idValues[ ($i % $cIdValues) ];
-                }
-            } else {
-                foreach ($paramMappings[$key] as $position) {
-                    $sqlParams[$position] = $value;
-                }
-            }
-        }
-
-        if ($sqlParams) {
-            ksort($sqlParams);
-            $sqlParams = array_values($sqlParams);
-        }
-
+        list($sqlParams, $types) = $this->processParameterMappings($paramMappings);
+        
         if ($this->_resultSetMapping === null) {
             $this->_resultSetMapping = $this->_parserResult->getResultSetMapping();
         }
 
         return $executor->execute($this->_em->getConnection(), $sqlParams, $types);
+    }
+    
+    /**
+     * Processes query parameter mappings
+     * 
+     * @param array $paramMappings
+     * @return array
+     */
+    private function processParameterMappings($paramMappings)
+    {
+        $sqlParams = $types = array();
+        
+        foreach ($this->_params as $key => $value) {
+            if ( ! isset($paramMappings[$key])) {
+                throw QueryException::unknownParameter($key);
+            }
+            
+            if (isset($this->_paramTypes[$key])) {
+                foreach ($paramMappings[$key] as $position) {
+                    $types[$position] = $this->_paramTypes[$key];
+                }
+            }
+            
+            $sqlPositions = $paramMappings[$key];
+            $value = array_values($this->processParameterValue($value));
+            $countValue = count($value);
+            
+            for ($i = 0, $l = count($sqlPositions); $i < $l; $i++) {
+                $sqlParams[$sqlPositions[$i]] = $value[($i % $countValue)];
+            }
+        }
+        
+        if ($sqlParams) {
+            ksort($sqlParams);
+            $sqlParams = array_values($sqlParams);
+        }
+
+        return array($sqlParams, $types);
+    }
+    
+    /**
+     * Process an individual parameter value
+     * 
+     * @param mixed $value
+     * @return array
+     */
+    private function processParameterValue($value)
+    {
+        if (is_array($value)) {
+            for ($i = 0, $l = count($value); $i < $l; $i++) {
+                $paramValue = $this->processParameterValue($value[$i]);
+                
+                // TODO: What about Entities that have composite primary key?
+                $value[$i] = is_array($paramValue) ? $paramValue[key($paramValue)] : $paramValue;
+            }
+            
+            return array($value);
+        }
+        
+        if ( ! (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(get_class($value)))) {
+            return array($value);
+        }
+        
+        if ($this->_em->getUnitOfWork()->getEntityState($value) === UnitOfWork::STATE_MANAGED) {
+            return array_values($this->_em->getUnitOfWork()->getEntityIdentifier($value));
+        }
+        
+        $class = $this->_em->getClassMetadata(get_class($value));
+        
+        return array_values($class->getIdentifierValues($value));
     }
 
     /**
