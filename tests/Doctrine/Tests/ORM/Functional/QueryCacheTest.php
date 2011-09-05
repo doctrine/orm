@@ -100,7 +100,7 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testQueryCache_NoHitSaveParserResult()
     {
-        $this->markTestSkipped("Needs to be migrated to common 2.2");
+        $this->markTestIncomplete("Needs to be migrated to common 2.2");
         
         $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
 

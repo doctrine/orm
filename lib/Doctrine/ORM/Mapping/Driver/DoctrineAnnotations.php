@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Mapping;
 
-abstract class Annotation {}
+interface Annotation {}
 
 
 /* Annotations */
@@ -28,7 +28,7 @@ abstract class Annotation {}
  * @Annotation 
  * @Target("CLASS")
  */
-final class Entity extends Annotation {
+final class Entity implements Annotation {
     /** @var string */
     public $repositoryClass;
     /** @var boolean */
@@ -39,7 +39,7 @@ final class Entity extends Annotation {
  * @Annotation 
  * @Target("CLASS")
  */
-final class MappedSuperclass extends Annotation {
+final class MappedSuperclass implements Annotation {
    
 }
 
@@ -47,7 +47,7 @@ final class MappedSuperclass extends Annotation {
  * @Annotation 
  * @Target("CLASS")
  */
-final class InheritanceType extends Annotation {
+final class InheritanceType implements Annotation {
     /** @var string */
     public $value;
 }
@@ -56,7 +56,7 @@ final class InheritanceType extends Annotation {
  * @Annotation 
  * @Target("CLASS")
  */
-final class DiscriminatorColumn extends Annotation {
+final class DiscriminatorColumn implements Annotation {
     /** @var string */
     public $name;
     /** @var string */
@@ -71,7 +71,7 @@ final class DiscriminatorColumn extends Annotation {
  * @Annotation 
  * @Target("CLASS")
  */
-final class DiscriminatorMap extends Annotation {
+final class DiscriminatorMap implements Annotation {
     /** @var array<string> */
     public $value;
 }
@@ -80,13 +80,13 @@ final class DiscriminatorMap extends Annotation {
  * @Annotation 
  * @Target("PROPERTY")
  */
-final class Id extends Annotation {}
+final class Id implements Annotation {}
 
 /** 
  * @Annotation 
  * @Target("PROPERTY")
  */
-final class GeneratedValue extends Annotation {
+final class GeneratedValue implements Annotation {
      /** @var string */
     public $strategy = 'AUTO';
 }
@@ -95,13 +95,13 @@ final class GeneratedValue extends Annotation {
  * @Annotation 
  * @Target("PROPERTY")
  */
-final class Version extends Annotation {}
+final class Version implements Annotation {}
 
 /** 
  * @Annotation 
  * @Target({"PROPERTY","ANNOTATION"})
  */
-final class JoinColumn extends Annotation {
+final class JoinColumn implements Annotation {
     /** @var string */
     public $name;
     /** @var string */
@@ -122,7 +122,7 @@ final class JoinColumn extends Annotation {
  * @Annotation 
  * @Target("PROPERTY")
  */
-final class JoinColumns extends Annotation {
+final class JoinColumns implements Annotation {
     /** @var array<Doctrine\ORM\Mapping\JoinColumn> */
     public $value;
 }
@@ -131,7 +131,7 @@ final class JoinColumns extends Annotation {
  * @Annotation 
  * @Target("PROPERTY")
  */
-final class Column extends Annotation {
+final class Column implements Annotation {
     /** @var string */
     public $name;
     /** @var mixed */
@@ -156,7 +156,7 @@ final class Column extends Annotation {
  * @Annotation 
  * @Target("PROPERTY")
  */
-final class OneToOne extends Annotation {
+final class OneToOne implements Annotation {
     /** @var string */
     public $targetEntity;
     /** @var string */
@@ -175,7 +175,7 @@ final class OneToOne extends Annotation {
  * @Annotation 
  * @Target("PROPERTY")
  */
-final class OneToMany extends Annotation {
+final class OneToMany implements Annotation {
     /** @var string */
     public $mappedBy;
     /** @var string */
@@ -194,7 +194,7 @@ final class OneToMany extends Annotation {
  * @Annotation 
  * @Target("PROPERTY")
  */
-final class ManyToOne extends Annotation {
+final class ManyToOne implements Annotation {
     /** @var string */
     public $targetEntity;
     /** @var array<string> */
@@ -209,7 +209,7 @@ final class ManyToOne extends Annotation {
  * @Annotation 
  * @Target("PROPERTY")
  */
-final class ManyToMany extends Annotation {
+final class ManyToMany implements Annotation {
     /** @var string */
     public $targetEntity;
     /** @var string */
@@ -229,7 +229,7 @@ final class ManyToMany extends Annotation {
  * @Target("ALL")
  * @todo check available targets
  */
-final class ElementCollection extends Annotation {
+final class ElementCollection implements Annotation {
     /** @var string */
     public $tableName;
 }
@@ -238,7 +238,7 @@ final class ElementCollection extends Annotation {
  * @Annotation 
  * @Target("CLASS")
  */
-final class Table extends Annotation {
+final class Table implements Annotation {
     /** @var string */
     public $name;
     /** @var string */
@@ -253,7 +253,7 @@ final class Table extends Annotation {
  * @Annotation 
  * @Target("ANNOTATION")
  */
-final class UniqueConstraint extends Annotation {
+final class UniqueConstraint implements Annotation {
     /** @var string */
     public $name;
     /** @var array<string> */
@@ -264,7 +264,7 @@ final class UniqueConstraint extends Annotation {
  * @Annotation 
  * @Target("ANNOTATION")
  */
-final class Index extends Annotation {
+final class Index implements Annotation {
     /** @var string */
     public $name;
     /** @var array<string> */
@@ -275,7 +275,7 @@ final class Index extends Annotation {
  * @Annotation 
  * @Target("PROPERTY")
  */
-final class JoinTable extends Annotation {
+final class JoinTable implements Annotation {
     /** @var string */
     public $name;
     /** @var string */
@@ -290,7 +290,7 @@ final class JoinTable extends Annotation {
  * @Annotation 
  * @Target("PROPERTY")
  */
-final class SequenceGenerator extends Annotation {
+final class SequenceGenerator implements Annotation {
     /** @var string */
     public $sequenceName;
     /** @var integer */
@@ -303,7 +303,7 @@ final class SequenceGenerator extends Annotation {
  * @Annotation 
  * @Target("CLASS")
  */
-final class ChangeTrackingPolicy extends Annotation {
+final class ChangeTrackingPolicy implements Annotation {
     /** @var string */
     public $value;
 }
@@ -312,7 +312,7 @@ final class ChangeTrackingPolicy extends Annotation {
  * @Annotation 
  * @Target("PROPERTY")
  */
-final class OrderBy extends Annotation {
+final class OrderBy implements Annotation {
     /** @var array<string> */
     public $value;
 }
@@ -321,7 +321,7 @@ final class OrderBy extends Annotation {
  * @Annotation 
  * @Target("CLASS")
  */
-final class NamedQueries extends Annotation {
+final class NamedQueries implements Annotation {
     /** @var array<Doctrine\ORM\Mapping\NamedQuery> */
     public $value;
 }
@@ -330,7 +330,7 @@ final class NamedQueries extends Annotation {
  * @Annotation 
  * @Target("ANNOTATION")
  */
-final class NamedQuery extends Annotation {
+final class NamedQuery implements Annotation {
     /** @var string */
     public $name;
     /** @var string */
@@ -343,46 +343,46 @@ final class NamedQuery extends Annotation {
  * @Annotation 
  * @Target("CLASS")
  */
-final class HasLifecycleCallbacks extends Annotation {}
+final class HasLifecycleCallbacks implements Annotation {}
 
 /** 
  * @Annotation 
  * @Target("METHOD")
  */
-final class PrePersist extends Annotation {}
+final class PrePersist implements Annotation {}
 
 /** 
  * @Annotation 
  * @Target("METHOD")
  */
-final class PostPersist extends Annotation {}
+final class PostPersist implements Annotation {}
 
 /** 
  * @Annotation 
  * @Target("METHOD")
  */
-final class PreUpdate extends Annotation {}
+final class PreUpdate implements Annotation {}
 
 /** 
  * @Annotation 
  * @Target("METHOD")
  */
-final class PostUpdate extends Annotation {}
+final class PostUpdate implements Annotation {}
 
 /** 
  * @Annotation 
  * @Target("METHOD")
  */
-final class PreRemove extends Annotation {}
+final class PreRemove implements Annotation {}
 
 /** 
  * @Annotation 
  * @Target("METHOD")
  */
-final class PostRemove extends Annotation {}
+final class PostRemove implements Annotation {}
 
 /** 
  * @Annotation 
  * @Target("METHOD")
  */
-final class PostLoad extends Annotation {}
+final class PostLoad implements Annotation {}
