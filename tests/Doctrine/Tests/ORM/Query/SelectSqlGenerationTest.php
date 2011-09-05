@@ -987,6 +987,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
     
+    public function testSubSelectAliasesFromOuterQueryReuseInWhereClause()
+    {
+        $this->assertSqlGeneration(
+            "SELECT uo, (SELECT ui.name FROM Doctrine\Tests\Models\CMS\CmsUser ui WHERE ui.id = uo.id) AS bar FROM Doctrine\Tests\Models\CMS\CmsUser uo WHERE bar = ?0",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, (SELECT c1_.name FROM cms_users c1_ WHERE c1_.id = c0_.id) AS sclr4 FROM cms_users c0_ WHERE sclr4 = ?"
+        );
+    }
+
     /**
      * @group DDC-1389
      */
