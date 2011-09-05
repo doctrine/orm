@@ -471,4 +471,15 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $cm = new ClassMetadata('DOCTRINE\TESTS\MODELS\CMS\CMSUSER');
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->name);
     }
+
+    /**
+     * @group DDC-659
+     */
+    public function testLifecycleCallbackNotFound()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $this->setExpectedException("Doctrine\ORM\Mapping\MappingException", "Entity 'Doctrine\Tests\Models\CMS\CmsUser' has no method 'notfound' to be registered as lifecycle callback.");
+        $cm->addLifecycleCallback('notfound', 'postLoad');
+    }
 }
