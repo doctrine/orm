@@ -38,7 +38,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             foreach ($queryHints AS $name => $value) {
                 $query->setHint($name, $value);
             }
-
+            
             parent::assertEquals($sqlToBeConfirmed, $query->getSQL());
             $query->free();
         } catch (\Exception $e) {
@@ -988,6 +988,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             "SELECT uo, (SELECT ui.name FROM Doctrine\Tests\Models\CMS\CmsUser ui WHERE ui.id = uo.id AND ui.name IN (SELECT uii.name FROM Doctrine\Tests\Models\CMS\CmsUser uii)) AS bar FROM Doctrine\Tests\Models\CMS\CmsUser uo",
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, (SELECT c1_.name FROM cms_users c1_ WHERE c1_.id = c0_.id AND c1_.name IN (SELECT c2_.name FROM cms_users c2_)) AS sclr4 FROM cms_users c0_"
+        );
+    }
+
+    public function testSubSelectAliasesFromOuterQueryReuseInWhereClause()
+    {
+        $this->assertSqlGeneration(
+            "SELECT uo, (SELECT ui.name FROM Doctrine\Tests\Models\CMS\CmsUser ui WHERE ui.id = uo.id) AS bar FROM Doctrine\Tests\Models\CMS\CmsUser uo WHERE bar = ?0",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, (SELECT c1_.name FROM cms_users c1_ WHERE c1_.id = c0_.id) AS sclr4 FROM cms_users c0_ WHERE sclr4 = ?"
         );
     }
 

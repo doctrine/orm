@@ -1971,6 +1971,12 @@ class SqlWalker implements TreeWalker
     public function walkArithmeticTerm($term)
     {
         if (is_string($term)) {
+            if (isset($this->_queryComponents[$term])) {
+                $columnName = $this->_queryComponents[$term]['token']['value'];
+                
+                return $this->_scalarResultAliasMap[$columnName];
+            }
+            
             return $term;
         }
 
