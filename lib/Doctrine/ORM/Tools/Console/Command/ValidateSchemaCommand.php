@@ -46,7 +46,7 @@ class ValidateSchemaCommand extends Console\Command\Command
     {
         $this
         ->setName('orm:validate-schema')
-        ->setDescription('Validate that the mapping files.')
+        ->setDescription('Validate the mapping files.')
         ->setHelp(<<<EOT
 'Validate that the mapping files are correct and in sync with the database.'
 EOT
