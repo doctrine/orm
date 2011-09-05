@@ -39,9 +39,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function _getDeleteRowSQL(PersistentCollection $coll)
     {
-        $mapping = $coll->getMapping();
+        $mapping   = $coll->getMapping();
         $joinTable = $mapping['joinTable'];
-        $columns = $mapping['joinTableColumns'];
+        $columns   = $mapping['joinTableColumns'];
+        
         return 'DELETE FROM ' . $joinTable['name'] . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
     }
 

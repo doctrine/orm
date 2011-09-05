@@ -228,6 +228,7 @@ class BasicEntityPersister
 
             if (isset($insertData[$tableName])) {
                 $paramIndex = 1;
+                
                 foreach ($insertData[$tableName] as $column => $value) {
                     $stmt->bindValue($paramIndex++, $value, $this->_columnTypes[$column]);
                 }
