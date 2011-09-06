@@ -290,6 +290,7 @@ class DatabaseDriver implements Driver
             $foreignTable = $foreignKey->getForeignTableName();
             $cols = $foreignKey->getColumns();
             $fkCols = $foreignKey->getForeignColumns();
+            $pkCols = $this->tables[$foreignTable]->getPrimaryKey()->getColumns();
 
             $localColumn = current($cols);
             $associationMapping = array();
@@ -302,7 +303,12 @@ class DatabaseDriver implements Driver
                     'referencedColumnName' => $fkCols[$i],
                 );
             }
-            $metadata->mapManyToOne($associationMapping);
+
+            if(!count(array_diff($fkCols, $pkCols)) && !count(array_diff($cols, $primaryKeyColumns)) ){ // if FKs cols equal to PKs cols then is an one-to-one mapping
+                $metadata->mapOneToOne($associationMapping);
+            }else{
+               $metadata->mapManyToOne($associationMapping);
+            }
         }
 
         foreach ($this->tables as $tableCandidate){
