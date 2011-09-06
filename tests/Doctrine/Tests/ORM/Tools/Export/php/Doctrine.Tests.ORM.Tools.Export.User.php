@@ -37,7 +37,7 @@ $metadata->mapOneToOne(array(
    'inversedBy' => 'user',
    'cascade' => 
    array(
-   0 => 'remove',
+   0 => 'persist',
    ),
    'mappedBy' => NULL,
    'joinColumns' => 
@@ -50,7 +50,7 @@ $metadata->mapOneToOne(array(
     'onUpdate' => 'CASCADE'
    ),
    ),
-   'orphanRemoval' => false,
+   'orphanRemoval' => true,
   ));
 $metadata->mapOneToMany(array(
    'fieldName' => 'phonenumbers',
@@ -58,9 +58,10 @@ $metadata->mapOneToMany(array(
    'cascade' => 
    array(
    1 => 'persist',
+   2 => 'merge',
    ),
    'mappedBy' => 'user',
-   'orphanRemoval' => false,
+   'orphanRemoval' => true,
    'orderBy' => 
    array(
    'number' => 'ASC',

@@ -182,7 +182,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(isset($class->associationMappings['phonenumbers']));
         $this->assertFalse($class->associationMappings['phonenumbers']['isOwningSide']);
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRemove']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeMerge']);
