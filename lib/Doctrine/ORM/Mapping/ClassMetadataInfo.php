@@ -908,9 +908,8 @@ class ClassMetadataInfo implements ClassMetadata
             $mapping['targetToSourceKeyColumns'] = array_flip($mapping['sourceToTargetKeyColumns']);
         }
 
-        //TODO: if orphanRemoval, cascade=remove is implicit!
-        $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) ?
-                (bool) $mapping['orphanRemoval'] : false;
+        $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) ? (bool) $mapping['orphanRemoval'] : false;
+        $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] ? true : $mapping['isCascadeRemove'];
 
         if (isset($mapping['id']) && $mapping['id'] === true && !$mapping['isOwningSide']) {
             throw MappingException::illegalInverseIdentifierAssocation($this->name, $mapping['fieldName']);
@@ -935,9 +934,8 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
         }
         
-        //TODO: if orphanRemoval, cascade=remove is implicit!
-        $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) ?
-                (bool) $mapping['orphanRemoval'] : false;
+        $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) ? (bool) $mapping['orphanRemoval'] : false;
+        $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] ? true : $mapping['isCascadeRemove'];
 
         if (isset($mapping['orderBy'])) {
             if ( ! is_array($mapping['orderBy'])) {

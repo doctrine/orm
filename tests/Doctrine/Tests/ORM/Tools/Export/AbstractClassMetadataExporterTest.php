@@ -219,10 +219,11 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
 
         $this->assertTrue($class->associationMappings['address']['isCascadeRemove']);
-        $this->assertFalse($class->associationMappings['address']['isCascadePersist']);
+        $this->assertTrue($class->associationMappings['address']['isCascadePersist']);
         $this->assertFalse($class->associationMappings['address']['isCascadeRefresh']);
         $this->assertFalse($class->associationMappings['address']['isCascadeMerge']);
         $this->assertFalse($class->associationMappings['address']['isCascadeDetach']);
+        $this->assertTrue($class->associationMappings['address']['orphanRemoval']);
 
         return $class;
     }
@@ -239,11 +240,12 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertEquals('user', $class->associationMappings['phonenumbers']['mappedBy']);
         $this->assertEquals(array('number' => 'ASC'), $class->associationMappings['phonenumbers']['orderBy']);
 
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRemove']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeMerge']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
         
         return $class;
     }
@@ -300,9 +302,11 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     public function testCascadeIsExported($class)
     {
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeMerge']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRemove']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
+        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
 
         return $class;
     }
