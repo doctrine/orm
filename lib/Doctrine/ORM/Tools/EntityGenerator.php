@@ -405,7 +405,7 @@ public function <methodName>()
             }
         }
         if ($collections) {
-            return $this->_prefixCodeWithSpaces(str_replace("<collections>", implode("\n", $collections), self::$_constructorMethodTemplate));
+            return $this->_prefixCodeWithSpaces(str_replace("<collections>", implode("\n".$this->_spaces, $collections), self::$_constructorMethodTemplate));
         }
         return '';
     }
@@ -797,7 +797,12 @@ public function <methodName>()
     {
         $lines = array();
         $lines[] = $this->_spaces . '/**';
-        $lines[] = $this->_spaces . ' * @var ' . $associationMapping['targetEntity'];
+
+        if ($associationMapping['type'] & ClassMetadataInfo::TO_MANY) {
+            $lines[] = $this->_spaces . ' * @var \Doctrine\Common\Collections\ArrayCollection';
+        }else{
+            $lines[] = $this->_spaces . ' * @var ' . $associationMapping['targetEntity'];
+        }
 
         if ($this->_generateAnnotations) {
             $lines[] = $this->_spaces . ' *';
