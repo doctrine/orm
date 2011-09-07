@@ -1270,7 +1270,7 @@ class ClassMetadataInfo implements ClassMetadata
     public function getTemporaryIdTableName()
     {
         // replace dots with underscores because PostgreSQL creates temporary tables in a special schema
-        return str_replace('.', '_', $this->table['name'] . '_id_tmp');
+        return str_replace('.', '_', $this->getTableName() . '_id_tmp');
     }
 
     /**
@@ -1369,9 +1369,11 @@ class ClassMetadataInfo implements ClassMetadata
                 $this->table['name'] = $table['name'];
             }
         }
+        
         if (isset($table['indexes'])) {
             $this->table['indexes'] = $table['indexes'];
         }
+        
         if (isset($table['uniqueConstraints'])) {
             $this->table['uniqueConstraints'] = $table['uniqueConstraints'];
         }
@@ -1885,9 +1887,10 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getAssociationTargetClass($assocName)
     {
-        if (!isset($this->associationMappings[$assocName])) {
+        if ( ! isset($this->associationMappings[$assocName])) {
             throw new \InvalidArgumentException("Association name expected, '" . $assocName ."' is not an association.");
         }
+        
         return $this->associationMappings[$assocName]['targetEntity'];
     }
     
@@ -1911,9 +1914,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getQuotedColumnName($field, $platform)
     {
-        return isset($this->fieldMappings[$field]['quoted']) ?
-                $platform->quoteIdentifier($this->fieldMappings[$field]['columnName']) :
-                $this->fieldMappings[$field]['columnName'];
+        return isset($this->fieldMappings[$field]['quoted']) ? $platform->quoteIdentifier($this->fieldMappings[$field]['columnName']) : $this->fieldMappings[$field]['columnName'];
     }
     
     /**
@@ -1925,9 +1926,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getQuotedTableName($platform)
     {
-        return isset($this->table['quoted']) ?
-                $platform->quoteIdentifier($this->table['name']) :
-                $this->table['name'];
+        return isset($this->table['quoted']) ? $platform->quoteIdentifier($this->table['name']) : $this->table['name'];
     }
 
     /**
@@ -1938,8 +1937,6 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getQuotedJoinTableName(array $assoc, $platform)
     {
-        return isset($assoc['joinTable']['quoted'])
-            ? $platform->quoteIdentifier($assoc['joinTable']['name'])
-            : $assoc['joinTable']['name'];
+        return isset($assoc['joinTable']['quoted']) ? $platform->quoteIdentifier($assoc['joinTable']['name']) : $assoc['joinTable']['name'];
     }
 }

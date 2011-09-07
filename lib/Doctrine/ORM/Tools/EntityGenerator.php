@@ -570,7 +570,12 @@ public function <methodName>()
     private function _generateTableAnnotation($metadata)
     {
         $table = array();
-        if ($metadata->table['name']) {
+
+        if (isset($metadata->table['schema'])) {
+            $table[] = 'schema="' . $metadata->table['schema'] . '"';
+        }
+        
+        if (isset($metadata->table['name'])) {
             $table[] = 'name="' . $metadata->table['name'] . '"';
         }
 

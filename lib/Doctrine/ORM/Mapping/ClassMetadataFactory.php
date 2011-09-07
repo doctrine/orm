@@ -448,7 +448,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 // <table>_<column>_seq in PostgreSQL for SERIAL columns.
                 // Not pretty but necessary and the simplest solution that currently works.
                 $seqName = $this->targetPlatform instanceof Platforms\PostgreSQLPlatform ?
-                        $class->table['name'] . '_' . $class->columnNames[$class->identifier[0]] . '_seq' :
+                        $class->getTableName() . '_' . $class->columnNames[$class->identifier[0]] . '_seq' :
                         null;
                 $class->setIdGenerator(new \Doctrine\ORM\Id\IdentityGenerator($seqName));
                 break;
