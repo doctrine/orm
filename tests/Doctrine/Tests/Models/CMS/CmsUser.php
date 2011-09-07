@@ -43,6 +43,11 @@ class CmsUser
      */
     public $address;
     /**
+     * @OneToOne(targetEntity="CmsEmail", inversedBy="user", cascade={"persist"}, orphanRemoval=true)
+     * @JoinColumn(referencedColumnName="id", nullable=true)
+     */
+    public $email;
+    /**
      * @ManyToMany(targetEntity="CmsGroup", inversedBy="users", cascade={"persist", "merge"})
      * @JoinTable(name="cms_users_groups",
      *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
@@ -117,6 +122,18 @@ class CmsUser
         if ($this->address !== $address) {
             $this->address = $address;
             $address->setUser($this);
+        }
+    }
+    
+    public function getEmail() { return $this->email; }
+    
+    public function setEmail(CmsEmail $email = null) {
+        if ($this->email !== $email) {
+            $this->email = $email;
+            
+            if ($email) {
+                $email->setUser($this);
+            }
         }
     }
 }
