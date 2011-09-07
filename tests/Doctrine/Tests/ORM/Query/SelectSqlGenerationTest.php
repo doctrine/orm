@@ -614,7 +614,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             ->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
             ->setMaxResults(10);
 
-        $this->assertEquals('SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ LIMIT 10', $q->getSql());
+        $this->assertEquals('SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.email_id AS email_id4 FROM cms_users c0_ LIMIT 10', $q->getSql());
     }
 
     public function testLimitAndOffsetFromQueryClass()
@@ -624,7 +624,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             ->setMaxResults(10)
             ->setFirstResult(0);
 
-        $this->assertEquals('SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ LIMIT 10 OFFSET 0', $q->getSql());
+        $this->assertEquals('SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.email_id AS email_id4 FROM cms_users c0_ LIMIT 10 OFFSET 0', $q->getSql());
     }
 
     public function testSizeFunction()
