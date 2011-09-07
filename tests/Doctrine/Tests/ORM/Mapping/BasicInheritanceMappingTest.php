@@ -59,22 +59,30 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         
         $this->assertTrue(empty($class->subClasses));
         $this->assertTrue(empty($class->parentClasses));
-        
-        $this->assertTrue(isset($class->fieldMappings['id']));
-        $this->assertTrue(isset($class->fieldMappings['name']));
-        
         $this->assertEquals($class->customRepositoryClassName, "App\Reposotories\SuperRepository");
         
         
         $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\SubclassWithRepository');
         
         $this->assertTrue(empty($class->subClasses));
-        $this->assertTrue(empty($class->parentClasses));
+        $this->assertTrue(isset($class->fieldMappings['name']));
+        $this->assertEquals($class->customRepositoryClassName, "App\Reposotories\SubRepository");
+        
+        
+        $class = $this->_factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment');
         
         $this->assertTrue(isset($class->fieldMappings['id']));
-        $this->assertTrue(isset($class->fieldMappings['name']));
+        $this->assertTrue(isset($class->fieldMappings['value']));
+        $this->assertTrue(isset($class->fieldMappings['creditCardNumber']));
+        $this->assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
         
-        $this->assertEquals($class->customRepositoryClassName, "App\Reposotories\SubRepository");
+        
+        $class = $this->_factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869ChequePayment');
+        
+        $this->assertTrue(isset($class->fieldMappings['id']));
+        $this->assertTrue(isset($class->fieldMappings['value']));
+        $this->assertTrue(isset($class->fieldMappings['serialNumber']));
+        $this->assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
     }
 
     /**
