@@ -36,7 +36,9 @@ final class Entity extends Annotation {
  * @Annotation 
  * @Target("CLASS")
  */
-final class MappedSuperclass extends Annotation {}
+final class MappedSuperclass extends Annotation {
+    public $repositoryClass;
+}
 
 /** 
  * @Annotation 

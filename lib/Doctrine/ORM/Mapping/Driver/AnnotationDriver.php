@@ -147,12 +147,16 @@ class AnnotationDriver implements Driver
         // Evaluate Entity annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\Entity'])) {
             $entityAnnot = $classAnnotations['Doctrine\ORM\Mapping\Entity'];
-            $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
+            if($entityAnnot->repositoryClass !== null) {
+                $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
+            }
 
             if ($entityAnnot->readOnly) {
                 $metadata->markReadOnly();
             }
         } else if (isset($classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'])) {
+            $mappedSuperclassAnnot = $classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'];
+            $metadata->setCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
             $metadata->isMappedSuperclass = true;
         } else {
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);

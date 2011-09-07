@@ -274,6 +274,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 $class->setDiscriminatorMap($parent->discriminatorMap);
                 $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
                 $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
+                $class->setCustomRepositoryClass($parent->customRepositoryClassName);
             }
 
             // Invoke driver
