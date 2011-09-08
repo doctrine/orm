@@ -291,6 +291,46 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
             $class->discriminatorColumn
         );
     }
+    
+    /**
+     * @group DDC-869
+     */
+    public function testSuperclassWithRepository()
+    {
+        if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
+            $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
+        }
+        
+        $driver     = $this->_loadDriver();
+        $em         = $this->_getTestEntityManager();
+        $factory    = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        
+        $em->getConfiguration()->setMetadataDriverImpl($driver);
+        $factory->setEntityManager($em);
+        
+        
+        $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment');
+        
+        $this->assertTrue(isset($class->fieldMappings['id']));
+        $this->assertTrue(isset($class->fieldMappings['value']));
+        $this->assertTrue(isset($class->fieldMappings['creditCardNumber']));
+        $this->assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
+        $this->assertInstanceOf("Doctrine\Tests\Models\DDC869\DDC869PaymentRepository", 
+             $em->getRepository("Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment"));
+        $this->assertTrue($em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment")->isTrue());
+        
+        
+        
+        $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869ChequePayment');
+        
+        $this->assertTrue(isset($class->fieldMappings['id']));
+        $this->assertTrue(isset($class->fieldMappings['value']));
+        $this->assertTrue(isset($class->fieldMappings['serialNumber']));
+        $this->assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
+        $this->assertInstanceOf("Doctrine\Tests\Models\DDC869\DDC869PaymentRepository", 
+             $em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment"));
+        $this->assertTrue($em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment")->isTrue());
+    }
 }
 
 /**

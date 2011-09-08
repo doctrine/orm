@@ -4,7 +4,7 @@
       xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                           http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
          
-    <entity name="Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment">
+    <entity name="Doctrine\Tests\Models\DDC869\DDC869ChequePayment">
         <field name="serialNumber" column="serialNumber" type="string"/>
     </entity>
         
