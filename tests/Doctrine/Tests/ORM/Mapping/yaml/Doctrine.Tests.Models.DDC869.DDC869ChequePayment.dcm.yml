@@ -1,0 +1,5 @@
+Doctrine\Tests\Models\DDC869\DDC869ChequePayment:
+  type: entity
+  fields:
+    serialNumber:
+      type: string
