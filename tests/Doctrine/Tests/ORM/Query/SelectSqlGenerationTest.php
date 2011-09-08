@@ -1041,6 +1041,28 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id = CASE c0_.name WHEN admin THEN 1 WHEN moderator THEN 2 ELSE 3 END"
         );
     }
+    
+    /**
+     * @group DDC-1339
+     */
+    public function testIdentityFunctionInSelectClause()
+    {
+        $this->assertSqlGeneration(
+            "SELECT IDENTITY(u.email) as email_id FROM Doctrine\Tests\Models\CMS\CmsUser u", 
+            "SELECT c0_.email_id AS sclr0 FROM cms_users c0_"
+        );
+    }
+    
+    /**
+     * @group DDC-1339
+     */
+    public function testIdentityFunctionDoesNotAcceptStateField()
+    {
+        $this->assertInvalidSqlGeneration(
+            "SELECT IDENTITY(u.name) as name FROM Doctrine\Tests\Models\CMS\CmsUser u", 
+            "Doctrine\ORM\Query\QueryException"
+        );
+    }
 }
 
 
