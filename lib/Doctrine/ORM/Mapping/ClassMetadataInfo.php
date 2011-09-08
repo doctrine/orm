@@ -1519,12 +1519,17 @@ class ClassMetadataInfo implements ClassMetadata
      * Registers a custom repository class for the entity class.
      *
      * @param string $mapperClassName  The class name of the custom mapper.
+     * @throws MappingException If not implements Doctrine\Common\Persistence\ObjectRepository
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
         if ($repositoryClassName !== null && strpos($repositoryClassName, '\\') === false 
                 && strlen($this->namespace) > 0) {
             $repositoryClassName = $this->namespace . '\\' . $repositoryClassName;
+            
+            if (!is_subclass_of($repositoryClassName, 'Doctrine\Common\Persistence\ObjectRepository')) {
+                throw MappingException::invalidObjectRepository($repositoryClassName);
+            }
         }
         $this->customRepositoryClassName = $repositoryClassName;
     }

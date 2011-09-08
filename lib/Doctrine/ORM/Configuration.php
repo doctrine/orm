@@ -516,4 +516,31 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
         return $this->_attributes['classMetadataFactoryName'];
     }
+    
+    /**
+     * Set default repository class.
+     * 
+     * @since 2.2
+     * @param string $className
+     * @throws ORMException If not implements Doctrine\Common\Persistence\ObjectRepository
+     */
+    public function setDefaultRepositoryClassName($className)
+    {
+        if (!is_subclass_of($className, 'Doctrine\Common\Persistence\ObjectRepository')) {
+            throw ORMException::invalidObjectRepository($className);
+        }
+        $this->_attributes['defaultRepositoryClassName'] = $className;
+    }
+
+    /**
+     * Get default repository class.
+     * 
+     * @since 2.2
+     * @return string
+     */
+    public function getDefaultRepositoryClassName()
+    {
+        return isset($this->_attributes['defaultRepositoryClassName']) ?
+                $this->_attributes['defaultRepositoryClassName'] : 'Doctrine\ORM\EntityRepository';
+    }
 }
