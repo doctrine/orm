@@ -121,7 +121,7 @@ class Setup
     }
     
     /**
-     * Create a configuration with an annotation metadata driver.
+     * Create a configuration with a xml metadata driver.
      * 
      * @param array $paths
      * @param boolean $isDevMode
@@ -137,7 +137,7 @@ class Setup
     }
     
     /**
-     * Create a configuration with an annotation metadata driver.
+     * Create a configuration with a yaml metadata driver.
      * 
      * @param array $paths
      * @param boolean $isDevMode
