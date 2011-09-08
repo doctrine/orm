@@ -433,5 +433,58 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertSame($usersAsc[0], $usersDesc[1]);
         $this->assertSame($usersAsc[1], $usersDesc[0]);
     }
+    
+    
+    /**
+     * @group DDC-753
+     */
+    public function testDefaultRepositoryClassName()
+    {
+        $this->assertEquals($this->_em->getConfiguration()->getDefaultRepositoryClassName(), "Doctrine\ORM\EntityRepository");
+        $this->_em->getConfiguration()->setDefaultRepositoryClassName("Doctrine\Tests\Models\DDC753\DDC753DefaultRepository");
+        $this->assertEquals($this->_em->getConfiguration()->getDefaultRepositoryClassName(), "Doctrine\Tests\Models\DDC753\DDC753DefaultRepository");
+
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\DDC753\DDC753EntityWithDefaultCustomRepository');
+        $this->assertInstanceOf("Doctrine\Tests\Models\DDC753\DDC753DefaultRepository", $repos);
+        $this->assertTrue($repos->isDefaultRepository());
+        
+        
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\DDC753\DDC753EntityWithCustomRepository');
+        $this->assertInstanceOf("Doctrine\Tests\Models\DDC753\DDC753CustomRepository", $repos);
+        $this->assertTrue($repos->isCustomRepository());
+        
+        $this->assertEquals($this->_em->getConfiguration()->getDefaultRepositoryClassName(), "Doctrine\Tests\Models\DDC753\DDC753DefaultRepository");
+        $this->_em->getConfiguration()->setDefaultRepositoryClassName("Doctrine\ORM\EntityRepository");
+        $this->assertEquals($this->_em->getConfiguration()->getDefaultRepositoryClassName(), "Doctrine\ORM\EntityRepository");
+
+    }
+    
+    
+    /**
+     * @group DDC-753
+     * @expectedException Doctrine\ORM\ORMException
+     * @expectedExceptionMessage Invalid repository class 'Doctrine\Tests\Models\DDC753\DDC753InvalidRepository'. it must implement Doctrine\Common\Persistence\ObjectRepository.
+     */
+    public function testSetDefaultRepositoryInvalidClassError()
+    {
+        $this->assertEquals($this->_em->getConfiguration()->getDefaultRepositoryClassName(), "Doctrine\ORM\EntityRepository");
+        $this->_em->getConfiguration()->setDefaultRepositoryClassName("Doctrine\Tests\Models\DDC753\DDC753InvalidRepository");
+    }
+    
+    
+    /**
+     * @group DDC-753
+     * @todo    check it is necessary throws exception when a repository is not a Doctrine\Common\Persistence\ObjectRepository
+     *          ClassMetadataInfo#setCustomRepositoryClass
+     */
+    public function testEntityWithInvalidRepositoryError()
+    {
+        $this->assertEquals($this->_em->getConfiguration()->getDefaultRepositoryClassName(), "Doctrine\ORM\EntityRepository");
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\DDC753\DDC753EntityWithInvalidRepository');
+        
+        $this->assertInstanceOf("\stdClass", $repos);
+        
+        $this->markTestIncomplete();
+    }
 }
 

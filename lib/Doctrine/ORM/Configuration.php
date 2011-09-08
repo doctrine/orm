@@ -526,7 +526,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setDefaultRepositoryClassName($className)
     {
-        if (!is_subclass_of($className, 'Doctrine\Common\Persistence\ObjectRepository')) {
+        $class = new \ReflectionClass($className);
+        if (!$class->implementsInterface('Doctrine\Common\Persistence\ObjectRepository')) {
             throw ORMException::invalidObjectRepository($className);
         }
         $this->_attributes['defaultRepositoryClassName'] = $className;
