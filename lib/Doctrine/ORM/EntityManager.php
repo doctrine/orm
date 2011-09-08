@@ -576,7 +576,8 @@ class EntityManager implements ObjectManager
         if ($customRepositoryClassName !== null) {
             $repository = new $customRepositoryClassName($this, $metadata);
         } else {
-            $repository = new EntityRepository($this, $metadata);
+            $repositoryClass = $this->config->getDefaultRepositoryClassName();
+            $repository      = new $repositoryClass($this, $metadata);
         }
 
         $this->repositories[$entityName] = $repository;
