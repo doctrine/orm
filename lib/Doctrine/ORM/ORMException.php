@@ -130,4 +130,10 @@ class ORMException extends Exception
             "Unknown Entity namespace alias '$entityNamespaceAlias'."
         );
     }
+    
+    public static function invalidEntityRepository($className) 
+    {
+        return new self("Invalid repository class '".$className."'. ".
+                "it must be a Doctrine\ORM\EntityRepository.");
+    }
 }
