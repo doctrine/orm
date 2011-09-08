@@ -295,7 +295,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-869
      */
-    public function testSuperclassWithRepository()
+    public function testMappedSuperclassWithRepository()
     {
         if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
             $this->markTestSkipped('PHP Mapping Drivers have no defaults.');

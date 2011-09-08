@@ -53,22 +53,11 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(isset($class->associationMappings['mappedRelated1']));
     }
     
+    /**
+     * @group DDC-869
+     */
     public function testGetMetadataForSubclassWithMappedSuperclassWhithRepository()
     {
-        $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\SubclassWithoutRepository');
-        
-        $this->assertTrue(empty($class->subClasses));
-        $this->assertTrue(empty($class->parentClasses));
-        $this->assertEquals($class->customRepositoryClassName, "App\Reposotories\SuperRepository");
-        
-        
-        $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\SubclassWithRepository');
-        
-        $this->assertTrue(empty($class->subClasses));
-        $this->assertTrue(isset($class->fieldMappings['name']));
-        $this->assertEquals($class->customRepositoryClassName, "App\Reposotories\SubRepository");
-        
-        
         $class = $this->_factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment');
         
         $this->assertTrue(isset($class->fieldMappings['id']));
@@ -83,6 +72,14 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(isset($class->fieldMappings['value']));
         $this->assertTrue(isset($class->fieldMappings['serialNumber']));
         $this->assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
+        
+        
+        // override repositoryClass
+        $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\SubclassWithRepository');
+        
+        $this->assertTrue(isset($class->fieldMappings['id']));
+        $this->assertTrue(isset($class->fieldMappings['value']));
+        $this->assertEquals($class->customRepositoryClassName, "Doctrine\ORM\EntityRepository");
     }
 
     /**
@@ -312,27 +309,9 @@ class MediumSuperclassEntity extends MediumSuperclassBase
 }
 
 /**
- * @MappedSuperclass(repositoryClass = "App\Reposotories\SuperRepository")
+ * @Entity(repositoryClass = "Doctrine\ORM\EntityRepository")
  */
-abstract class SuperclassBaseWithRepository
-{
-    /** @Id @Column(type="integer") */
-    public $id;
-    /** @Column(type="string") */
-    public $name;
-}
-
-/**
- * @Entity
- */
-class SubclassWithoutRepository extends SuperclassBaseWithRepository
-{
-    
-}
-/**
- * @Entity(repositoryClass = "App\Reposotories\SubRepository")
- */
-class SubclassWithRepository extends SuperclassBaseWithRepository
+class SubclassWithRepository extends \Doctrine\Tests\Models\DDC869\DDC869Payment
 {
     
 }

@@ -31,7 +31,7 @@ class DDC869Payment
      * @Column(type="integer") 
      * @GeneratedValue
      */
-    private $id;
+    protected $id;
 
     /** @column(type="float") */
     protected $value;
