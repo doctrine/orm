@@ -46,13 +46,16 @@ class YamlDriver extends AbstractFileDriver
         $element = $this->getElement($className);
 
         if ($element['type'] == 'entity') {
-            $metadata->setCustomRepositoryClass(
-                isset($element['repositoryClass']) ? $element['repositoryClass'] : null
-            );
+            if (isset($element['repositoryClass'])) {
+                $metadata->setCustomRepositoryClass($element['repositoryClass']);  
+            }
             if (isset($element['readOnly']) && $element['readOnly'] == true) {
                 $metadata->markReadOnly();
             }
         } else if ($element['type'] == 'mappedSuperclass') {
+            $metadata->setCustomRepositoryClass(
+                isset($element['repositoryClass']) ? $element['repositoryClass'] : null
+            );
             $metadata->isMappedSuperclass = true;
         } else {
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+                              
+    <mapped-superclass name="Doctrine\Tests\Models\DDC869\DDC869Payment" repository-class="Doctrine\Tests\Models\DDC869\DDC869PaymentRepository">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+        
+        <field name="value" column="value" type="float"/>
+    </mapped-superclass>
+        
+</doctrine-mapping>

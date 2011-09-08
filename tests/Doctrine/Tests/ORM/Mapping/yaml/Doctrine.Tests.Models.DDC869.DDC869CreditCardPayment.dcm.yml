@@ -1,0 +1,5 @@
+Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment:
+  type: entity
+  fields:
+    creditCardNumber:
+      type: string
