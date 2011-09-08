@@ -297,10 +297,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testMappedSuperclassWithRepository()
     {
-        if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
-            $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
-        }
-        
         $driver     = $this->_loadDriver();
         $em         = $this->_getTestEntityManager();
         $factory    = new \Doctrine\ORM\Mapping\ClassMetadataFactory();

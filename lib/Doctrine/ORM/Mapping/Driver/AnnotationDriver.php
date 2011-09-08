@@ -147,10 +147,9 @@ class AnnotationDriver implements Driver
         // Evaluate Entity annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\Entity'])) {
             $entityAnnot = $classAnnotations['Doctrine\ORM\Mapping\Entity'];
-            if($entityAnnot->repositoryClass !== null) {
+            if ($entityAnnot->repositoryClass !== null) {
                 $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
             }
-
             if ($entityAnnot->readOnly) {
                 $metadata->markReadOnly();
             }
