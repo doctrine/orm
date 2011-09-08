@@ -1,0 +1,12 @@
+Doctrine\Tests\Models\DDC869\DDC869Payment:
+  type: mappedSuperclass
+  repositoryClass : Doctrine\Tests\Models\DDC869\DDC869PaymentRepository
+  id:
+    id: 
+      type: integer
+      unsigned: true
+      generator:
+        strategy: AUTO
+  fields:
+    value:
+      type: float
