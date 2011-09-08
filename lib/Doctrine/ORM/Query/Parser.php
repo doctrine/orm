@@ -40,7 +40,8 @@ class Parser
         'substring' => 'Doctrine\ORM\Query\AST\Functions\SubstringFunction',
         'trim'      => 'Doctrine\ORM\Query\AST\Functions\TrimFunction',
         'lower'     => 'Doctrine\ORM\Query\AST\Functions\LowerFunction',
-        'upper'     => 'Doctrine\ORM\Query\AST\Functions\UpperFunction'
+        'upper'     => 'Doctrine\ORM\Query\AST\Functions\UpperFunction',
+        'identity'  => 'Doctrine\ORM\Query\AST\Functions\IdentityFunction',
     );
 
     /** READ-ONLY: Maps BUILT-IN numeric function names to AST class names. */
