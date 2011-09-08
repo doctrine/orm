@@ -15,7 +15,7 @@ class CompanyCar
     private $id;
     
     /**
-     * @Column(type="string", length="50")
+     * @Column(type="string", length=50)
      */
     private $brand;
 
