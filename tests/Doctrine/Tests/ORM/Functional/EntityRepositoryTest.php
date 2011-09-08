@@ -463,7 +463,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-753
      * @expectedException Doctrine\ORM\ORMException
-     * @expectedExceptionMessage Invalid repository class 'Doctrine\Tests\Models\DDC753\DDC753InvalidRepository'. it must implement Doctrine\Common\Persistence\ObjectRepository.
+     * @expectedExceptionMessage Invalid repository class 'Doctrine\Tests\Models\DDC753\DDC753InvalidRepository'. it must be a Doctrine\ORM\EntityRepository.
      */
     public function testSetDefaultRepositoryInvalidClassError()
     {
@@ -471,20 +471,5 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->getConfiguration()->setDefaultRepositoryClassName("Doctrine\Tests\Models\DDC753\DDC753InvalidRepository");
     }
     
-    
-    /**
-     * @group DDC-753
-     * @todo    check it is necessary throws exception when a repository is not a Doctrine\Common\Persistence\ObjectRepository
-     *          ClassMetadataInfo#setCustomRepositoryClass
-     */
-    public function testEntityWithInvalidRepositoryError()
-    {
-        $this->assertEquals($this->_em->getConfiguration()->getDefaultRepositoryClassName(), "Doctrine\ORM\EntityRepository");
-        $repos = $this->_em->getRepository('Doctrine\Tests\Models\DDC753\DDC753EntityWithInvalidRepository');
-        
-        $this->assertInstanceOf("\stdClass", $repos);
-        
-        $this->markTestIncomplete();
-    }
 }
 

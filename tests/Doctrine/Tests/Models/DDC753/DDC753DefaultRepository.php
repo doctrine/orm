@@ -22,55 +22,8 @@ namespace Doctrine\Tests\Models\DDC753;
 
 use Doctrine\ORM\EntityRepository;
 
-class DDC753DefaultRepository implements \Doctrine\Common\Persistence\ObjectRepository
+class DDC753DefaultRepository extends EntityRepository
 {
-
-    /**
-     * @var Doctrine\ORM\EntityRepository
-     */
-    private $repository;
-    
-    /**
-     * @param EntityManager $em
-     * @param ClassMetadata $classMetadata
-     */
-    public function __construct($em, $class)
-    {
-        $this->repository = new EntityRepository($em, $class);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function find($id)
-    {
-        return $this->repository->find($id);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function findAll()
-    {
-        return $this->repository->findAll;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
-    {
-        return $this->repository->findBy($criteria, $orderBy, $limit, $offset);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function findOneBy(array $criteria)
-    {
-        return $this->repository->findOneBy($criteria);
-    }
-    
     /**
      * @return bool 
      */

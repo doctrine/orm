@@ -522,13 +522,13 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * 
      * @since 2.2
      * @param string $className
-     * @throws ORMException If not implements Doctrine\Common\Persistence\ObjectRepository
+     * @throws ORMException If not is a Doctrine\ORM\EntityRepository
      */
     public function setDefaultRepositoryClassName($className)
     {
-        $class = new \ReflectionClass($className);
-        if (!$class->implementsInterface('Doctrine\Common\Persistence\ObjectRepository')) {
-            throw ORMException::invalidObjectRepository($className);
+        if ($className != "Doctrine\ORM\EntityRepository" && 
+           !is_subclass_of($className, 'Doctrine\ORM\EntityRepository')){
+            throw ORMException::invalidEntityRepository($className);
         }
         $this->_attributes['defaultRepositoryClassName'] = $className;
     }

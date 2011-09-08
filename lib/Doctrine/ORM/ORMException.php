@@ -131,8 +131,9 @@ class ORMException extends Exception
         );
     }
     
-    public static function invalidObjectRepository($className) {
+    public static function invalidEntityRepository($className) 
+    {
         return new self("Invalid repository class '".$className."'. ".
-                "it must implement Doctrine\Common\Persistence\ObjectRepository.");
+                "it must be a Doctrine\ORM\EntityRepository.");
     }
 }
