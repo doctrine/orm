@@ -776,11 +776,15 @@ class ClassMetadataInfo implements ClassMetadata
         $mapping['sourceEntity'] = $this->name;
         
         if (isset($mapping['targetEntity'])) {
-            if (strlen($this->namespace) > 0 && strpos($mapping['targetEntity'], '\\') === false) {
-                $mapping['targetEntity'] = $this->namespace . '\\' . $mapping['targetEntity'];
+            if ($mapping['targetEntity'] === 'self') {
+                $mapping['targetEntity'] = $this->name;
+            } else {
+                if (strlen($this->namespace) > 0 && strpos($mapping['targetEntity'], '\\') === false) {
+                    $mapping['targetEntity'] = $this->namespace . '\\' . $mapping['targetEntity'];
+                }
+
+                $mapping['targetEntity'] = ltrim($mapping['targetEntity'], '\\');                
             }
-            
-            $mapping['targetEntity'] = ltrim($mapping['targetEntity'], '\\');
         }
 
         // Complete id mapping
