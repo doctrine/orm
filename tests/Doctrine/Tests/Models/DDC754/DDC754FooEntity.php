@@ -22,9 +22,14 @@ namespace Doctrine\Tests\Models\DDC754;
 
 /**
  * @Entity
- * @Table(name = "ddc754_tree")
- * @property DDC754FooEntity|NULL $parent 
  */ 
 class DDC754FooEntity extends DDC754BaseTreeEntity
 {
+    /**
+     * @return bool
+     */
+    public function isFoo()
+    {
+        return true;
+    }
 }

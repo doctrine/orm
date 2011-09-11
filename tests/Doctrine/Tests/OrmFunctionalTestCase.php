@@ -112,6 +112,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Legacy\LegacyArticle',
             'Doctrine\Tests\Models\Legacy\LegacyCar',
         ),
+        'ddc754' => array(
+            'Doctrine\Tests\Models\DDC754\DDC754BarEntity',
+            'Doctrine\Tests\Models\DDC754\DDC754FooEntity',
+            'Doctrine\Tests\Models\DDC754\DDC754BaseTreeEntity',
+        ),
     );
 
     protected function useModelSet($setName)
@@ -218,7 +223,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM legacy_cars');
             $conn->executeUpdate('DELETE FROM legacy_users');
         }
-
+        if (isset($this->_usedModelSets['ddc754'])) {
+            $conn->executeUpdate('DELETE FROM ddc754_tree');
+        }
+        
         $this->_em->clear();
     }
 

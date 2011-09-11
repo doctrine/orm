@@ -22,9 +22,16 @@ namespace Doctrine\Tests\Models\DDC754;
 
 /**
  * @Entity
- * @Table(name = "ddc754_tree")
- * @property DDC754BarEntity|NULL $parent 
- */ 
+ */
 class DDC754BarEntity extends DDC754BaseTreeEntity
 {
+
+    /**
+     * @return bool
+     */
+    public function isBar()
+    {
+        return true;
+    }
+
 }

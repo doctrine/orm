@@ -20,9 +20,18 @@
 
 namespace Doctrine\Tests\Models\DDC754;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 /**
- * @MappedSuperclass()
- * @Table(name = "ddc754_tree")
+ * @Entity
+ * @Table(name="ddc754_tree")
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorColumn(name="discr", type="string")
+ * @DiscriminatorMap({
+ *      "foo" = "DDC754FooEntity",
+ *      "bar" = "DDC754BarEntity",
+ *      "base"= "DDC754BaseTreeEntity"
+ * })
  */
 class DDC754BaseTreeEntity
 {
@@ -36,11 +45,52 @@ class DDC754BaseTreeEntity
     protected $id;
 
     /**
-     * @ManyToOne(targetEntity="self", cascade={"persist"})
+     * @Column(type = "string")
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * @ManyToOne(targetEntity="self", inversedBy="children", fetch="EAGER")
      * @JoinColumn(name="parent_id", referencedColumnName="id")
      * @var BaseTreeEntity|NULL	 
      */
     protected $parent;
+
+    /**
+     * @OneToMany(targetEntity="self", mappedBy="parent", cascade={"persist"})
+     */
+    private $children;
+
+    public function __construct($name = null)
+    {
+        $this->children = new ArrayCollection();
+        $this->name     = $name;
+    }
+
+    /**
+     * @return int 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name 
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 
     /**
      * @param DDC754BaseTreeEntity $parent 
@@ -58,4 +108,34 @@ class DDC754BaseTreeEntity
         return $this->parent;
     }
 
+    /**
+     * @return Doctrine\Common\Collections\ArrayCollection 
+     */
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    /**
+     * @param ArrayCollection $children 
+     */
+    public function setChildren(ArrayCollection $children)
+    {
+        $this->children = $children;
+    }
+
+    /**
+     * @param DDC754BaseTreeEntity $child 
+     */
+    public function addChildren(DDC754BaseTreeEntity $child)
+    {
+        $child->setParent($this);
+        $this->children->add($child);
+    }
+    
+    
+    public function __toString()
+    {
+        return "{id:{$this->id},name:{$this->name}}";
+    }
 }

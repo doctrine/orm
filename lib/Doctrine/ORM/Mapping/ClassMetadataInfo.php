@@ -777,7 +777,8 @@ class ClassMetadataInfo implements ClassMetadata
         
         if (isset($mapping['targetEntity'])) {
             if ($mapping['targetEntity'] === 'self') {
-                $mapping['targetEntity'] = $this->name;
+                $mapping['targetEntity']        = $this->name;
+                $mapping['isSelfReferential']   = true;
             } else {
                 if (strlen($this->namespace) > 0 && strpos($mapping['targetEntity'], '\\') === false) {
                     $mapping['targetEntity'] = $this->namespace . '\\' . $mapping['targetEntity'];
@@ -1422,6 +1423,9 @@ class ClassMetadataInfo implements ClassMetadata
     {
         if (isset($this->associationMappings[$mapping['fieldName']])) {
             throw MappingException::duplicateAssociationMapping($this->name, $mapping['fieldName']);
+        }
+        if (isset($mapping['isSelfReferential']) && $mapping['isSelfReferential'] === true) {
+            $mapping['targetEntity'] = $this->name;
         }
         $this->associationMappings[$mapping['fieldName']] = $mapping;
     }
