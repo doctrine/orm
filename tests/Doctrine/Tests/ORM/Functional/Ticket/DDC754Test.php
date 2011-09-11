@@ -18,8 +18,30 @@ class DDC754Test extends AbstractManyToManyAssociationTestCase
     protected $_secondField = 'parent_id';
     protected $_table       = 'ddc754_tree';
     
+    /**
+     * @var DDC754BaseTreeEntity
+     */
+    protected $parent;
+    /**
+     * @var DDC754BaseTreeEntity
+     */
+    protected $base;
+    /**
+     * @var DDC754FooEntity
+     */
+    protected $foo;
+    /**
+     * @var DDC754BarEntity
+     */
+    protected $bar;
+    
     protected function setUp()
     {
+       $this->parent = new DDC754BaseTreeEntity("0 tree root");
+       $this->base   = new DDC754BaseTreeEntity("1 children base");
+       $this->foo    = new DDC754FooEntity("2 children foo");
+       $this->bar    = new DDC754BarEntity("3 children bar");
+       
        $this->useModelSet('ddc754');
        parent::setUp();
     }
@@ -58,112 +80,97 @@ class DDC754Test extends AbstractManyToManyAssociationTestCase
         $this->assertEquals($this->className('DDC754BarEntity'),$class->associationMappings['parent']['targetEntity']);
     }
     
-    public function testSavesSelfAssociationParent()
+    /**
+     * @group DDC-754
+     */
+    public function testSavesSelfManyToOne()
     {
-        $base   = new DDC754BaseTreeEntity("tree root");
-        $foo    = new DDC754FooEntity("children foo");
-        $bar    = new DDC754BarEntity("children bar");
-        
-        $this->_em->persist($base);
-        $this->_em->flush();
-        
-        $this->_em->persist($foo);
-        $this->_em->flush();
-        
-        $this->_em->persist($bar);
-        $this->_em->flush();
-        
-        $this->_em->clear();
-        
-        $base   = $this->_em->find($this->className('DDC754BaseTreeEntity'), $base->getId());
-        $foo    = $this->_em->find($this->className('DDC754FooEntity'), $foo->getId());
-        $bar    = $this->_em->find($this->className('DDC754BarEntity'), $bar->getId());
-        
-        
-        $foo->setParent($base);
-        $bar->setParent($base);
-        
-        $this->_em->merge($foo);
-        $this->_em->merge($foo);
+        $this->_em->persist($this->parent);
+        $this->_em->persist($this->base);
+        $this->_em->persist($this->foo);
+        $this->_em->persist($this->bar);
         
         $this->_em->flush();
         $this->_em->clear();
         
         
-        $base   = $this->_em->find($this->className('DDC754BaseTreeEntity'), $base->getId());
-        $foo    = $this->_em->find($this->className('DDC754FooEntity'), $foo->getId());
-        $bar    = $this->_em->find($this->className('DDC754BarEntity'), $bar->getId());
-        $list   = $this->_em->getRepository($this->className('DDC754BaseTreeEntity'))->findAll();
+        $parent = $this->_em->find($this->className('DDC754BaseTreeEntity'),    $this->parent->getId());
+        $base   = $this->_em->find($this->className('DDC754BaseTreeEntity'),    $this->base->getId());
+        $foo    = $this->_em->find($this->className('DDC754FooEntity'),         $this->foo->getId());
+        $bar    = $this->_em->find($this->className('DDC754BarEntity'),         $this->bar->getId());
         
         
-        $this->assertEquals($base->getId(),$foo->getParent()->getId());
-        $this->assertEquals($base->getId(),$bar->getParent()->getId());
+        $foo->setParent($parent);
+        $bar->setParent($parent);
+        $base->setParent($parent);
         
         
-        $this->assertEquals(sizeof($list), 3);
-        $this->assertInstanceOf($this->className('DDC754BaseTreeEntity'), $list[0]);
-        $this->assertInstanceOf($this->className('DDC754FooEntity'), $list[1]);
-        $this->assertInstanceOf($this->className('DDC754BarEntity'), $list[2]);
+        $this->_em->merge($foo);
+        $this->_em->merge($bar);
+        $this->_em->merge($base);
         
-        $this->assertForeignKeysContain($foo->getId(),$base->getId());
-        $this->assertForeignKeysContain($bar->getId(),$base->getId());
+        $this->_em->flush();
+        
+        $this->assertTree($parent, $foo, $bar, $base);
    }
     
     
-    public function testSavesSelfAssociationChildren()
+    public function testSavesSelfOneToMany()
     {
-        $base   = new DDC754BaseTreeEntity("tree root");
-        $foo    = new DDC754FooEntity("children foo");
-        $bar    = new DDC754BarEntity("children bar");
-        
-        $this->_em->persist($base);
+        $this->_em->persist($this->parent);
         $this->_em->flush();
         $this->_em->clear();
         
-        
-        $base   = $this->_em->find($this->className('DDC754BaseTreeEntity'), $base->getId());
+        $parent = $this->_em->find($this->className('DDC754BaseTreeEntity'),    $this->parent->getId());
 
-        $base->addChildren($foo);
-        $base->addChildren($bar);
+        $parent->addChild($this->foo);
+        $parent->addChild($this->bar);
+        $parent->addChild($this->base);
         
-        $this->_em->persist($base);
+        $this->_em->persist($parent);
         $this->_em->flush();
-        $this->_em->clear();
         
-        
-        $base   = $this->_em->find($this->className('DDC754BaseTreeEntity'), $base->getId());
-        $foo    = $this->_em->find($this->className('DDC754FooEntity'), $foo->getId());
-        $bar    = $this->_em->find($this->className('DDC754BarEntity'), $bar->getId());
-        $list   = $this->_em->getRepository($this->className('DDC754BaseTreeEntity'))->findAll();
-        
-        
-        $this->assertEquals($base->getId(),$foo->getParent()->getId());
-        $this->assertEquals($base->getId(),$bar->getParent()->getId());
-        
-        
-        $this->assertEquals(sizeof($list), 3);
-        $this->assertInstanceOf($this->className('DDC754BaseTreeEntity'), $list[0]);
-        $this->assertInstanceOf($this->className('DDC754BarEntity'), $list[1]);
-        $this->assertInstanceOf($this->className('DDC754FooEntity'), $list[2]);
-        
-        $this->assertForeignKeysContain($foo->getId(),$base->getId());
-        $this->assertForeignKeysContain($bar->getId(),$base->getId());
+        $base   = $this->_em->find($this->className('DDC754BaseTreeEntity'),    $this->base->getId());
+        $foo    = $this->_em->find($this->className('DDC754FooEntity'),         $this->foo->getId());
+        $bar    = $this->_em->find($this->className('DDC754BarEntity'),         $this->bar->getId());
+
+        $this->assertTree($parent, $foo, $bar, $base);
     }
     
-    
-    private function _showAll()
+    private function assertTree(DDC754BaseTreeEntity $parent,DDC754FooEntity $foo, 
+                                DDC754BarEntity $bar, DDC754BaseTreeEntity $base)
     {
-        $rs = $this->_em->getConnection()->executeQuery("SELECT * FROM {$this->_table}")->fetchAll(\PDO::FETCH_OBJ);
         
-        echo PHP_EOL;
-        foreach ($rs as $value) {
-            echo "---------------------------------------".PHP_EOL;
-            echo "id        : {$value->id}".PHP_EOL;
-            echo "name      : {$value->name}".PHP_EOL;
-            echo "parent    : {$value->parent_id}".PHP_EOL;
-        }
+        $this->_em->clear();
         
-        echo "---------------------------------------".PHP_EOL;
+        $this->assertForeignKeysContain($foo->getId(),$parent->getId());
+        $this->assertForeignKeysContain($bar->getId(),$parent->getId());
+        $this->assertForeignKeysContain($base->getId(),$parent->getId());
+        
+        $this->assertEquals($parent->getId(),$foo->getParent()->getId());
+        $this->assertEquals($parent->getId(),$bar->getParent()->getId());
+        $this->assertEquals($parent->getId(),$base->getParent()->getId());
+        
+        
+        $parent = $this->_em->find($this->className('DDC754BaseTreeEntity'), $parent->getId());
+        $foo    = $this->_em->find($this->className('DDC754FooEntity'), $foo->getId());
+        $bar    = $this->_em->find($this->className('DDC754BarEntity'), $bar->getId());
+        $base   = $this->_em->find($this->className('DDC754BaseTreeEntity'), $base->getId());
+        $list   = $this->_em->getRepository($this->className('DDC754BaseTreeEntity'))
+                            ->createNamedQuery("ddc754_all")->execute();
+        
+        
+        $this->assertEquals(sizeof($list), 4);
+        $this->assertInstanceOf($this->className('DDC754BaseTreeEntity'),   $list[0]);
+        $this->assertInstanceOf($this->className('DDC754BaseTreeEntity'),   $list[1]);
+        $this->assertInstanceOf($this->className('DDC754FooEntity'),        $list[2]);
+        $this->assertInstanceOf($this->className('DDC754BarEntity'),        $list[3]);
+        
+        
+        $this->assertEquals(sizeof($parent->getChildren()), 3);
+        $this->assertInstanceOf($this->className('DDC754BaseTreeEntity'),$parent->getChildren()->get(0));
+        $this->assertInstanceOf($this->className('DDC754FooEntity'),$parent->getChildren()->get(1));
+        $this->assertInstanceOf($this->className('DDC754BarEntity'),$parent->getChildren()->get(2));
     }
 
 }

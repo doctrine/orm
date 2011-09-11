@@ -32,6 +32,9 @@ use Doctrine\Common\Collections\ArrayCollection;
  *      "bar" = "DDC754BarEntity",
  *      "base"= "DDC754BaseTreeEntity"
  * })
+ * @NamedQueries({
+ *     @NamedQuery(name="ddc754_all", query="SELECT u FROM __CLASS__ u ORDER BY u.name ASC")
+ * })
  */
 class DDC754BaseTreeEntity
 {
@@ -58,14 +61,16 @@ class DDC754BaseTreeEntity
     protected $parent;
 
     /**
+     * @OrderBy({"name" = "ASC"})
      * @OneToMany(targetEntity="self", mappedBy="parent", cascade={"persist"})
+     * @var ArrayCollection
      */
     private $children;
 
     public function __construct($name = null)
     {
         $this->children = new ArrayCollection();
-        $this->name     = $name;
+        $this->name = $name;
     }
 
     /**
@@ -127,15 +132,18 @@ class DDC754BaseTreeEntity
     /**
      * @param DDC754BaseTreeEntity $child 
      */
-    public function addChildren(DDC754BaseTreeEntity $child)
+    public function addChild(DDC754BaseTreeEntity $child)
     {
         $child->setParent($this);
         $this->children->add($child);
     }
     
-    
+    /**
+     * @return string 
+     */
     public function __toString()
     {
         return "{id:{$this->id},name:{$this->name}}";
     }
+
 }
