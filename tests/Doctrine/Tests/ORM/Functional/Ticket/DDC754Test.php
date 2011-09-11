@@ -114,7 +114,9 @@ class DDC754Test extends AbstractManyToManyAssociationTestCase
         $this->assertTree($parent, $foo, $bar, $base);
    }
     
-    
+    /**
+     * @group DDC-754
+     */
     public function testSavesSelfOneToMany()
     {
         $this->_em->persist($this->parent);
