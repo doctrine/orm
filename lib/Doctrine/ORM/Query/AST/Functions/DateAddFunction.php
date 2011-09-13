@@ -23,6 +23,7 @@ use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Query\AST\Literal;
 
 /**
  * "DATE_ADD(date1, interval, unit)"
@@ -40,7 +41,11 @@ class DateAddFunction extends FunctionNode
 
     public function getSql(SqlWalker $sqlWalker)
     {
-        $unit = strtolower($this->unit);
+        if(!$this->unit instanceof Literal) {
+           throw QueryException::semanticalError('DATE_ADD() only supports hardcoded units'); 
+        }
+        
+        $unit = strtolower($this->unit->value);
         if ($unit == "day") {
             return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddDaysExpression(
                 $this->firstDateExpression->dispatch($sqlWalker),

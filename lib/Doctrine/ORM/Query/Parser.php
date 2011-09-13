@@ -2561,7 +2561,7 @@ class Parser
             case Lexer::T_STRING:
                 $this->match(Lexer::T_STRING);
 
-                return $this->_lexer->token['value'];
+                return new AST\Literal(AST\Literal::STRING, $this->_lexer->token['value']);
 
             case Lexer::T_INPUT_PARAMETER:
                 return $this->InputParameter();
