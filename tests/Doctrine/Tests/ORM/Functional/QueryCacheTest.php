@@ -100,14 +100,11 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testQueryCache_NoHitSaveParserResult()
     {
-        $this->markTestSkipped("Needs to be migrated to common 2.2");
-        
         $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
         
-        $cache = $this->getMock('Doctrine\Common\Cache\CacheProvider', 
-                array('doFetch', 'doContains', 'doSave', 'doDelete', 'doFlush'));
+        $cache = $this->getMock('Doctrine\Common\Cache\ArrayCache', array('doFetch', 'doSave'));
         $cache->expects($this->at(0))
               ->method('doFetch')
               ->with($this->isType('string'))

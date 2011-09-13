@@ -204,8 +204,9 @@ final class Query extends AbstractQuery
         
         // Check query cache.
         if ($this->_useQueryCache && ($queryCache = $this->getQueryCacheDriver())) {
-            $hash = $this->_getQueryCacheId();
+            $hash   = $this->_getQueryCacheId();
             $cached = $this->_expireQueryCache ? false : $queryCache->fetch($hash);
+            
             if ($cached === false) {
                 // Cache miss.
                 $parser = new Parser($this);
@@ -219,6 +220,7 @@ final class Query extends AbstractQuery
             $parser = new Parser($this);
             $this->_parserResult = $parser->parse();
         }
+        
         $this->_state = self::STATE_CLEAN;
         
         return $this->_parserResult;
