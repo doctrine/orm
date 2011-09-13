@@ -111,12 +111,12 @@ abstract class DDC837Super
 class DDC837Class1 extends DDC837Super
 {
     /**
-     * @Column(name="title", type="string", length="150")
+     * @Column(name="title", type="string", length=150)
      */
     public $title;
 
     /**
-     * @Column(name="content", type="string", length="500")
+     * @Column(name="content", type="string", length=500)
      */
     public $description;
 
@@ -132,12 +132,12 @@ class DDC837Class1 extends DDC837Super
 class DDC837Class2 extends DDC837Super
 {
     /**
-     * @Column(name="title", type="string", length="150")
+     * @Column(name="title", type="string", length=150)
      */
     public $title;
 
     /**
-     * @Column(name="content", type="string", length="500")
+     * @Column(name="content", type="string", length=500)
      */
     public $description;
 
@@ -160,12 +160,12 @@ class DDC837Class2 extends DDC837Super
 class DDC837Class3 extends DDC837Super
 {
     /**
-     * @Column(name="title", type="string", length="150")
+     * @Column(name="title", type="string", length=150)
      */
     public $apples;
 
     /**
-     * @Column(name="content", type="string", length="500")
+     * @Column(name="content", type="string", length=500)
      */
     public $bananas;
 }

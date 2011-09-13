@@ -220,7 +220,7 @@ abstract class HierachyBase
 {
     /**
      * @Column(type="integer") @Id @GeneratedValue(strategy="SEQUENCE")
-     * @SequenceGenerator(sequenceName="foo", initialValue="10")
+     * @SequenceGenerator(sequenceName="foo", initialValue=10)
      * @var int
      */
     public $id;
@@ -286,7 +286,7 @@ abstract class SuperclassBase
 {
     /**
      * @Column(type="integer") @Id @GeneratedValue(strategy="SEQUENCE") 
-     * @SequenceGenerator(sequenceName="foo", initialValue="10")
+     * @SequenceGenerator(sequenceName="foo", initialValue=10)
      * @var int
      */
     public $id;

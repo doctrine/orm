@@ -111,7 +111,7 @@ class DDC522Cart {
 class DDC522ForeignKeyTest {
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
-    /** @Column(type="integer", name="cart_id", nullable="true") */
+    /** @Column(type="integer", name="cart_id", nullable=true) */
     public $cartId;
     /**
      * @OneToOne(targetEntity="DDC522Cart")
