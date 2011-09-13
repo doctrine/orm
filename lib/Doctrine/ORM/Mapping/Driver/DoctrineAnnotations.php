@@ -19,7 +19,8 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\Annotations\Annotation;
+abstract class Annotation {}
+
 
 /* Annotations */
 
@@ -28,7 +29,9 @@ use Doctrine\Common\Annotations\Annotation;
  * @Target("CLASS")
  */
 final class Entity extends Annotation {
+    /** @var string */
     public $repositoryClass;
+    /** @var boolean */
     public $readOnly = false;
 }
 
@@ -37,6 +40,7 @@ final class Entity extends Annotation {
  * @Target("CLASS")
  */
 final class MappedSuperclass extends Annotation {
+    /** @var string */
     public $repositoryClass;
 }
 
@@ -44,24 +48,34 @@ final class MappedSuperclass extends Annotation {
  * @Annotation 
  * @Target("CLASS")
  */
-final class InheritanceType extends Annotation {}
-
-/** 
- * @Annotation 
- * @Target("CLASS")
- */
-final class DiscriminatorColumn extends Annotation {
-    public $name;
-    public $fieldName; // field name used in non-object hydration (array/scalar)
-    public $type;
-    public $length;
+final class InheritanceType extends Annotation {
+    /** @var string */
+    public $value;
 }
 
 /** 
  * @Annotation 
  * @Target("CLASS")
  */
-final class DiscriminatorMap extends Annotation {}
+final class DiscriminatorColumn extends Annotation {
+    /** @var string */
+    public $name;
+    /** @var string */
+    public $type;
+    /** @var integer */
+    public $length;
+    /** @var mixed */
+    public $fieldName; // field name used in non-object hydration (array/scalar)
+}
+
+/** 
+ * @Annotation 
+ * @Target("CLASS")
+ */
+final class DiscriminatorMap extends Annotation {
+    /** @var array<string> */
+    public $value;
+}
 
 /** 
  * @Annotation 
@@ -74,6 +88,7 @@ final class Id extends Annotation {}
  * @Target("PROPERTY")
  */
 final class GeneratedValue extends Annotation {
+     /** @var string */
     public $strategy = 'AUTO';
 }
 
@@ -88,36 +103,53 @@ final class Version extends Annotation {}
  * @Target({"PROPERTY","ANNOTATION"})
  */
 final class JoinColumn extends Annotation {
+    /** @var string */
     public $name;
-    public $fieldName; // field name used in non-object hydration (array/scalar)
+    /** @var string */
     public $referencedColumnName = 'id';
+    /** @var boolean */
     public $unique = false;
+    /** @var boolean */
     public $nullable = true;
+    /** @var mixed */
     public $onDelete;
+    /** @var string */
     public $columnDefinition;
+    /** @var string */
+    public $fieldName; // field name used in non-object hydration (array/scalar)
 }
 
 /** 
  * @Annotation 
  * @Target("PROPERTY")
  */
-final class JoinColumns extends Annotation {}
+final class JoinColumns extends Annotation {
+    /** @var array<Doctrine\ORM\Mapping\JoinColumn> */
+    public $value;
+}
 
 /** 
  * @Annotation 
  * @Target("PROPERTY")
  */
 final class Column extends Annotation {
-    public $type = 'string';
-    public $length;
-    // The precision for a decimal (exact numeric) column (Applies only for decimal column)
-    public $precision = 0;
-    // The scale for a decimal (exact numeric) column (Applies only for decimal column)
-    public $scale = 0;
-    public $unique = false;
-    public $nullable = false;
+    /** @var string */
     public $name;
+    /** @var mixed */
+    public $type = 'string';
+    /** @var integer */
+    public $length;
+    /** @var integer */
+    public $precision = 0; // The precision for a decimal (exact numeric) column (Applies only for decimal column)
+    /** @var integer */
+    public $scale = 0; // The scale for a decimal (exact numeric) column (Applies only for decimal column)
+    /** @var boolean */
+    public $unique = false;
+    /** @var boolean */
+    public $nullable = false;
+    /** @var array */
     public $options = array();
+    /** @var string */
     public $columnDefinition;
 }
 
@@ -126,11 +158,17 @@ final class Column extends Annotation {
  * @Target("PROPERTY")
  */
 final class OneToOne extends Annotation {
+    /** @var string */
     public $targetEntity;
+    /** @var string */
     public $mappedBy;
+    /** @var string */
     public $inversedBy;
+    /** @var array<string> */
     public $cascade;
+    /** @var string */
     public $fetch = 'LAZY';
+    /** @var boolean */
     public $orphanRemoval = false;
 }
 
@@ -139,11 +177,17 @@ final class OneToOne extends Annotation {
  * @Target("PROPERTY")
  */
 final class OneToMany extends Annotation {
+    /** @var string */
     public $mappedBy;
+    /** @var string */
     public $targetEntity;
+    /** @var array<string> */
     public $cascade;
+    /** @var string */
     public $fetch = 'LAZY';
+    /** @var boolean */
     public $orphanRemoval = false;
+    /** @var string */
     public $indexBy;
 }
 
@@ -152,9 +196,13 @@ final class OneToMany extends Annotation {
  * @Target("PROPERTY")
  */
 final class ManyToOne extends Annotation {
+    /** @var string */
     public $targetEntity;
+    /** @var array<string> */
     public $cascade;
+    /** @var string */
     public $fetch = 'LAZY';
+    /** @var string */
     public $inversedBy;
 }
 
@@ -163,11 +211,17 @@ final class ManyToOne extends Annotation {
  * @Target("PROPERTY")
  */
 final class ManyToMany extends Annotation {
+    /** @var string */
     public $targetEntity;
+    /** @var string */
     public $mappedBy;
+    /** @var string */
     public $inversedBy;
+    /** @var array<string> */
     public $cascade;
+    /** @var string */
     public $fetch = 'LAZY';
+    /** @var string */
     public $indexBy;
 }
 
@@ -177,6 +231,7 @@ final class ManyToMany extends Annotation {
  * @todo check available targets
  */
 final class ElementCollection extends Annotation {
+    /** @var string */
     public $tableName;
 }
 
@@ -185,9 +240,13 @@ final class ElementCollection extends Annotation {
  * @Target("CLASS")
  */
 final class Table extends Annotation {
+    /** @var string */
     public $name;
+    /** @var string */
     public $schema;
+    /** @var array<Doctrine\ORM\Mapping\Index> */
     public $indexes;
+    /** @var array<Doctrine\ORM\Mapping\UniqueConstraint> */
     public $uniqueConstraints;
 }
 
@@ -196,7 +255,9 @@ final class Table extends Annotation {
  * @Target("ANNOTATION")
  */
 final class UniqueConstraint extends Annotation {
+    /** @var string */
     public $name;
+    /** @var array<string> */
     public $columns;
 }
 
@@ -205,7 +266,9 @@ final class UniqueConstraint extends Annotation {
  * @Target("ANNOTATION")
  */
 final class Index extends Annotation {
+    /** @var string */
     public $name;
+    /** @var array<string> */
     public $columns;
 }
 
@@ -214,9 +277,13 @@ final class Index extends Annotation {
  * @Target("PROPERTY")
  */
 final class JoinTable extends Annotation {
+    /** @var string */
     public $name;
+    /** @var string */
     public $schema;
+    /** @var array<Doctrine\ORM\Mapping\JoinColumn> */
     public $joinColumns = array();
+    /** @var array<Doctrine\ORM\Mapping\JoinColumn> */
     public $inverseJoinColumns = array();
 }
 
@@ -225,8 +292,11 @@ final class JoinTable extends Annotation {
  * @Target("PROPERTY")
  */
 final class SequenceGenerator extends Annotation {
+    /** @var string */
     public $sequenceName;
+    /** @var integer */
     public $allocationSize = 1;
+    /** @var integer */
     public $initialValue = 1;
 }
 
@@ -234,26 +304,37 @@ final class SequenceGenerator extends Annotation {
  * @Annotation 
  * @Target("CLASS")
  */
-final class ChangeTrackingPolicy extends Annotation {}
+final class ChangeTrackingPolicy extends Annotation {
+    /** @var string */
+    public $value;
+}
 
 /** 
  * @Annotation 
  * @Target("PROPERTY")
  */
-final class OrderBy extends Annotation {}
+final class OrderBy extends Annotation {
+    /** @var array<string> */
+    public $value;
+}
 
 /** 
  * @Annotation 
  * @Target("CLASS")
  */
-final class NamedQueries extends Annotation {}
+final class NamedQueries extends Annotation {
+    /** @var array<Doctrine\ORM\Mapping\NamedQuery> */
+    public $value;
+}
 
 /** 
  * @Annotation 
  * @Target("ANNOTATION")
  */
 final class NamedQuery extends Annotation {
+    /** @var string */
     public $name;
+    /** @var string */
     public $query;
 }
 
