@@ -557,7 +557,7 @@ besides specifying the sequence's name:
             /**
              * @Id
              * @GeneratedValue(strategy="SEQUENCE")
-             * @SequenceGenerator(name="tablename_seq", initialValue=1, allocationSize=100)
+             * @SequenceGenerator(sequenceName="tablename_seq", initialValue=1, allocationSize=100)
              */
             protected $id = null;
         }
