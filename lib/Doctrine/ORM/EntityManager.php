@@ -27,7 +27,8 @@ use Closure, Exception,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\ClassMetadataFactory,
     Doctrine\ORM\Query\ResultSetMapping,
-    Doctrine\ORM\Proxy\ProxyFactory;
+    Doctrine\ORM\Proxy\ProxyFactory,
+    Doctrine\ORM\Query\FilterCollection;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -110,36 +111,12 @@ class EntityManager implements ObjectManager
      */
     private $closed = false;
 
-    /* Filters data */
     /**
-     * Instances of enabled filters.
+     * Collection of query filters.
      *
-     * @var array
+     * @var Doctrine\ORM\Query\FilterCollection
      */
-    private $enabledFilters = array();
-
-    /**
-     * @var string The filter hash from the last time the query was parsed.
-     */
-    private $filterHash;
-
-    /* Filter STATES */
-    /**
-     * A filter object is in CLEAN state when it has no changed parameters.
-     */
-    const FILTERS_STATE_CLEAN  = 1;
-
-    /**
-     * A filter object is in DIRTY state when it has changed parameters.
-     */
-    const FILTERS_STATE_DIRTY = 2;
-
-    /**
-     * @var integer $state   The current state of this filter
-     */
-    private $filtersState = self::FILTERS_STATE_CLEAN;
-
-    /* End filters data */
+    private $filterCollection;
 
     /**
      * Creates a new EntityManager that operates on the given database connection
@@ -771,55 +748,13 @@ class EntityManager implements ObjectManager
         return new EntityManager($conn, $config, $conn->getEventManager());
     }
 
-    /** @return SQLFilter[] */
-    public function getEnabledFilters()
+    public function getFilters()
     {
-        return $this->enabledFilters;
-    }
-
-    /** Throws exception if filter does not exist. No-op if the filter is alrady enabled.
-    * @return SQLFilter */
-    public function enableFilter($name)
-    {
-        if(null === $filterClass = $this->config->getFilterClassName($name)) {
-            throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
+        if(null === $this->filterCollection) {
+            $this->filterCollection = new FilterCollection($this);
         }
 
-        if(!isset($this->enabledFilters[$name])) {
-            $this->enabledFilters[$name] = new $filterClass($this);
-
-            // Keep the enabled filters sorted for the hash
-            ksort($this->enabledFilters);
-
-            // Now the filter collection is dirty
-            $this->filtersState = self::FILTERS_STATE_DIRTY;
-        }
-
-        return $this->enabledFilters[$name];
-    }
-
-    /** Disable the filter, looses the state */
-    public function disableFilter($name)
-    {
-        // Get the filter to return it
-        $filter = $this->getFilter($name);
-
-        unset($this->enabledFilters[$name]);
-
-        // Now the filter collection is dirty
-        $this->filtersState = self::FILTERS_STATE_DIRTY;
-
-        return $filter;
-    }
-
-    /** throws exception if not in enabled filters */
-    public function getFilter($name)
-    {
-        if(!isset($this->enabledFilters[$name])) {
-            throw new \InvalidArgumentException("Filter '" . $name . "' is not enabled.");
-        }
-
-        return $this->enabledFilters[$name];
+        return $this->filterCollection;
     }
 
     /**
@@ -827,31 +762,12 @@ class EntityManager implements ObjectManager
      */
     public function isFiltersStateClean()
     {
-        return self::FILTERS_STATE_CLEAN === $this->filtersState;
+        return null === $this->filterCollection
+           || $this->filterCollection->setFiltersStateDirty();
     }
 
-    public function setFiltersStateDirty()
+    public function hasFilters()
     {
-        $this->filtersState = self::FILTERS_STATE_DIRTY;
-    }
-
-    /**
-     * Generates a string of currently enabled filters to use for the cache id.
-     *
-     * @return string
-     */
-    public function getFilterHash()
-    {
-        // If there are only clean filters, the previous hash can be returned
-        if(self::FILTERS_STATE_CLEAN === $this->filtersState) {
-            return $this->filterHash;
-        }
-
-        $filterHash = '';
-        foreach($this->enabledFilters as $name => $filter) {
-            $filterHash .= $name . $filter;
-        }
-
-        return $filterHash;
+        return null !== $this->filterCollection;
     }
 }

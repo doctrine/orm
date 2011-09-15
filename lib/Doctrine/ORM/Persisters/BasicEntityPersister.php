@@ -1448,7 +1448,7 @@ class BasicEntityPersister
         $filterSql = '';
 
         $first =  true;
-        foreach($this->_em->getEnabledFilters() as $filter) {
+        foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
             if("" !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
                 if ( ! $first) $sql .= ' AND '; else $first = false;
                 $filterSql .= '(' . $filterExpr . ')';

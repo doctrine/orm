@@ -58,17 +58,17 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->configureFilters($em);
 
         // Enable an existing filter
-        $filter = $em->enableFilter("locale");
+        $filter = $em->getFilters()->enable("locale");
         $this->assertTrue($filter instanceof \Doctrine\Tests\ORM\Functional\MyLocaleFilter);
 
         // Enable the filter again
-        $filter2 = $em->enableFilter("locale");
+        $filter2 = $em->getFilters()->enable("locale");
         $this->assertEquals($filter, $filter2);
 
         // Enable a non-existing filter
         $exceptionThrown = false;
         try {
-            $filter = $em->enableFilter("foo");
+            $filter = $em->getFilters()->enable("foo");
         } catch (\InvalidArgumentException $e) {
             $exceptionThrown = true;
         }
@@ -80,14 +80,14 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $em = $this->_getEntityManager();
 
         // No enabled filters
-        $this->assertEquals(array(), $em->getEnabledFilters());
+        $this->assertEquals(array(), $em->getFilters()->getEnabledFilters());
 
         $this->configureFilters($em);
-        $filter = $em->enableFilter("locale");
-        $filter = $em->enableFilter("soft_delete");
+        $filter = $em->getFilters()->enable("locale");
+        $filter = $em->getFilters()->enable("soft_delete");
 
         // Two enabled filters
-        $this->assertEquals(2, count($em->getEnabledFilters()));
+        $this->assertEquals(2, count($em->getFilters()->getEnabledFilters()));
 
     }
 
@@ -97,16 +97,16 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->configureFilters($em);
 
         // Enable the filter
-        $filter = $em->enableFilter("locale");
+        $filter = $em->getFilters()->enable("locale");
 
         // Disable it
-        $this->assertEquals($filter, $em->disableFilter("locale"));
-        $this->assertEquals(0, count($em->getEnabledFilters()));
+        $this->assertEquals($filter, $em->getFilters()->disable("locale"));
+        $this->assertEquals(0, count($em->getFilters()->getEnabledFilters()));
 
         // Disable a non-existing filter
         $exceptionThrown = false;
         try {
-            $filter = $em->disableFilter("foo");
+            $filter = $em->getFilters()->disable("foo");
         } catch (\InvalidArgumentException $e) {
             $exceptionThrown = true;
         }
@@ -115,7 +115,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // Disable a non-enabled filter
         $exceptionThrown = false;
         try {
-            $filter = $em->disableFilter("locale");
+            $filter = $em->getFilters()->disable("locale");
         } catch (\InvalidArgumentException $e) {
             $exceptionThrown = true;
         }
@@ -128,15 +128,15 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->configureFilters($em);
 
         // Enable the filter
-        $filter = $em->enableFilter("locale");
+        $filter = $em->getFilters()->enable("locale");
 
         // Get the filter
-        $this->assertEquals($filter, $em->getFilter("locale"));
+        $this->assertEquals($filter, $em->getFilters()->getFilter("locale"));
 
         // Get a non-enabled filter
         $exceptionThrown = false;
         try {
-            $filter = $em->getFilter("soft_delete");
+            $filter = $em->getFilters()->getFilter("soft_delete");
         } catch (\InvalidArgumentException $e) {
             $exceptionThrown = true;
         }
@@ -171,6 +171,19 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         return $em;
     }
 
+    protected function addMockFilterCollection($em)
+    {
+        $filterCollection = $this->getMockBuilder('Doctrine\ORM\Query\FilterCollection')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $em->expects($this->any())
+            ->method('getFilters')
+            ->will($this->returnValue($filterCollection));
+
+        return $filterCollection;
+    }
+
     public function testSQLFilterGetSetParameter()
     {
         // Setup mock connection
@@ -184,6 +197,11 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $em->expects($this->once())
             ->method('getConnection')
             ->will($this->returnValue($conn));
+
+        $filterCollection = $this->addMockFilterCollection($em);
+        $filterCollection
+            ->expects($this->once())
+            ->method('setFiltersStateDirty');
 
         $filter = new MyLocaleFilter($em);
 
@@ -213,11 +231,14 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testSQLFilterToString()
     {
-        $filter = new MyLocaleFilter($this->getMockEntityManager());
+        $em = $this->getMockEntityManager();
+        $filterCollection = $this->addMockFilterCollection($em);
+
+        $filter = new MyLocaleFilter($em);
         $filter->setParameter('locale', 'en', \Doctrine\DBAL\Types\Type::STRING);
         $filter->setParameter('foo', 'bar', \Doctrine\DBAL\Types\Type::STRING);
 
-        $filter2 = new MyLocaleFilter($this->getMockEntityManager());
+        $filter2 = new MyLocaleFilter($em);
         $filter2->setParameter('foo', 'bar', \Doctrine\DBAL\Types\Type::STRING);
         $filter2->setParameter('locale', 'en', \Doctrine\DBAL\Types\Type::STRING);
 
@@ -242,7 +263,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $conf = $this->_em->getConfiguration();
         $conf->addFilter("locale", "\Doctrine\Tests\ORM\Functional\MyLocaleFilter");
-        $this->_em->enableFilter("locale");
+        $this->_em->getFilters()->enable("locale");
 
         $query->getResult();
         $this->assertEquals(2, count($cache->getIds()));
@@ -259,7 +280,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $conf = $this->_em->getConfiguration();
         $conf->addFilter("country", "\Doctrine\Tests\ORM\Functional\CMSCountryFilter");
-        $this->_em->enableFilter("country")
+        $this->_em->getFilters()->enable("country")
             ->setParameter("country", "en", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
 
         $this->assertNotEquals($firstSQLQuery, $query->getSQL());
@@ -277,7 +298,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $conf = $this->_em->getConfiguration();
         $conf->addFilter("country", "\Doctrine\Tests\ORM\Functional\CMSCountryFilter");
-        $this->_em->enableFilter("country")->setParameter("country", "Germany", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
+        $this->_em->getFilters()->enable("country")->setParameter("country", "Germany", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
 
         // We get one user after enabling the filter
         $this->assertEquals(1, count($query->getResult()));
@@ -293,7 +314,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $conf = $this->_em->getConfiguration();
         $conf->addFilter("group_prefix", "\Doctrine\Tests\ORM\Functional\CMSGroupPrefixFilter");
-        $this->_em->enableFilter("group_prefix")->setParameter("prefix", "bar_%", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
+        $this->_em->getFilters()->enable("group_prefix")->setParameter("prefix", "bar_%", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
 
         // We get one user after enabling the filter
         $this->assertEquals(1, count($query->getResult()));
@@ -310,7 +331,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $conf = $this->_em->getConfiguration();
         $conf->addFilter("group_prefix", "\Doctrine\Tests\ORM\Functional\CMSGroupPrefixFilter");
-        $this->_em->enableFilter("group_prefix")->setParameter("prefix", "bar_%", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
+        $this->_em->getFilters()->enable("group_prefix")->setParameter("prefix", "bar_%", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
 
         // We get one user after enabling the filter
         $this->assertEquals(1, count($query->getResult()));
@@ -329,7 +350,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $conf = $this->_em->getConfiguration();
         $conf->addFilter("article_topic", "\Doctrine\Tests\ORM\Functional\CMSArticleTopicFilter");
-        $this->_em->enableFilter("article_topic")->setParameter("topic", "Test1", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
+        $this->_em->getFilters()->enable("article_topic")->setParameter("topic", "Test1", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
     }
 
     public function testOneToMany_ExtraLazyCountWithFilter()
@@ -376,7 +397,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $conf = $this->_em->getConfiguration();
         $conf->addFilter("group_prefix", "\Doctrine\Tests\ORM\Functional\CMSGroupPrefixFilter");
-        $this->_em->enableFilter("group_prefix")->setParameter("prefix", "foo%", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
+        $this->_em->getFilters()->enable("group_prefix")->setParameter("prefix", "foo%", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
     }
 
     public function testManyToMany_ExtraLazyCountWithFilter()

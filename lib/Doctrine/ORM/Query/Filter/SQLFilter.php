@@ -51,7 +51,7 @@ abstract class SQLFilter
         ksort($this->parameters);
 
         // The filter collection of the EM is now dirty
-        $this->em->setFiltersStateDirty();
+        $this->em->getFilters()->setFiltersStateDirty();
 
         return $this;
     }

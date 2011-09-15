@@ -318,7 +318,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         // Get the SQL for the filters
         $filterSql = '';
-        foreach($this->_em->getEnabledFilters() as $filter) {
+        foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
             if("" !== $filterExpr = $filter->addFilterConstraint($targetClass, 'te')) {
                 $filterSql .= ' AND (' . $filterExpr . ')';
             }

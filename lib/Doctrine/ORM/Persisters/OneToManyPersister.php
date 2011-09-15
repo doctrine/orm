@@ -146,7 +146,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $sql = "SELECT count(*) FROM " . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) . " t WHERE " . $where;
 
         // Apply the filters
-        foreach($this->_em->getEnabledFilters() as $filter) {
+        foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
             if("" !== $filterExpr = $filter->addFilterConstraint($targetClass, 't')) {
                 $sql .= ' AND (' . $filterExpr . ')';
             }

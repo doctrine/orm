@@ -354,11 +354,13 @@ class SqlWalker implements TreeWalker
     {
         $filterSql = '';
 
-        $first =  true;
-        foreach($this->_em->getEnabledFilters() as $filter) {
-            if("" !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
-                if ( ! $first) $sql .= ' AND '; else $first = false;
-                $filterSql .= '(' . $filterExpr . ')';
+        if($this->_em->hasFilters()) {
+            $first =  true;
+            foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
+                if("" !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+                    if ( ! $first) $sql .= ' AND '; else $first = false;
+                    $filterSql .= '(' . $filterExpr . ')';
+                }
             }
         }
 
