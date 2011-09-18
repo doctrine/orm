@@ -54,6 +54,7 @@ Cookbook
    :maxdepth: 1
 
    cookbook/aggregate-fields
+   cookbook/decorator-pattern
    cookbook/dql-custom-walkers
    cookbook/dql-user-defined-functions
    cookbook/implementing-arrayaccess-for-domain-objects
