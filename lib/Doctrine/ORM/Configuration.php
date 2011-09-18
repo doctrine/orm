@@ -84,27 +84,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Gets the namespace where proxy classes reside.
-     *
-     * @return string
-     */
-    public function getProxyNamespace()
-    {
-        return isset($this->_attributes['proxyNamespace']) ?
-                $this->_attributes['proxyNamespace'] : null;
-    }
-
-    /**
-     * Sets the namespace where proxy classes reside.
-     *
-     * @param string $ns
-     */
-    public function setProxyNamespace($ns)
-    {
-        $this->_attributes['proxyNamespace'] = $ns;
-    }
-
-    /**
      * Sets the cache driver implementation that is used for metadata caching.
      *
      * @param Driver $driverImpl
@@ -516,17 +495,17 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
         return $this->_attributes['classMetadataFactoryName'];
     }
-    
+
     /**
      * Set default repository class.
-     * 
+     *
      * @since 2.2
      * @param string $className
      * @throws ORMException If not is a Doctrine\ORM\EntityRepository
      */
     public function setDefaultRepositoryClassName($className)
     {
-        if ($className != "Doctrine\ORM\EntityRepository" && 
+        if ($className != "Doctrine\ORM\EntityRepository" &&
            !is_subclass_of($className, 'Doctrine\ORM\EntityRepository')){
             throw ORMException::invalidEntityRepository($className);
         }
@@ -535,7 +514,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /**
      * Get default repository class.
-     * 
+     *
      * @since 2.2
      * @return string
      */

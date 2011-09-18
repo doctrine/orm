@@ -36,8 +36,6 @@ class ProxyFactory
     private $_em;
     /** Whether to automatically (re)generate proxy classes. */
     private $_autoGenerate;
-    /** The namespace that contains all proxy classes. */
-    private $_proxyNamespace;
     /** The directory that contains all proxy classes. */
     private $_proxyDir;
 
@@ -47,21 +45,16 @@ class ProxyFactory
      *
      * @param EntityManager $em The EntityManager the new factory works for.
      * @param string $proxyDir The directory to use for the proxy classes. It must exist.
-     * @param string $proxyNs The namespace to use for the proxy classes.
      * @param boolean $autoGenerate Whether to automatically generate proxy classes.
      */
-    public function __construct(EntityManager $em, $proxyDir, $proxyNs, $autoGenerate = false)
+    public function __construct(EntityManager $em, $proxyDir, $autoGenerate = false)
     {
         if ( ! $proxyDir) {
             throw ProxyException::proxyDirectoryRequired();
         }
-        if ( ! $proxyNs) {
-            throw ProxyException::proxyNamespaceRequired();
-        }
         $this->_em = $em;
         $this->_proxyDir = $proxyDir;
         $this->_autoGenerate = $autoGenerate;
-        $this->_proxyNamespace = $proxyNs;
     }
 
     /**
@@ -74,24 +67,23 @@ class ProxyFactory
      */
     public function getProxy($className, $identifier)
     {
-        $proxyClassName = str_replace('\\', '', $className) . 'Proxy';
-        $fqn = $this->_proxyNamespace . '\\' . $proxyClassName;
+        $proxyClassName = $className.'__CG__Doctrine2_ORM_Proxy';
 
-        if (! class_exists($fqn, false)) {
-            $fileName = $this->_proxyDir . DIRECTORY_SEPARATOR . $proxyClassName . '.php';
+        if (!class_exists($proxyClassName, false)) {
+            $fileName = $this->_proxyDir . DIRECTORY_SEPARATOR . str_replace('\\', '-', $className) . '.php';
             if ($this->_autoGenerate) {
                 $this->_generateProxyClass($this->_em->getClassMetadata($className), $proxyClassName, $fileName, self::$_proxyClassTemplate);
             }
             require $fileName;
         }
 
-        if ( ! $this->_em->getMetadataFactory()->hasMetadataFor($fqn)) {
-            $this->_em->getMetadataFactory()->setMetadataFor($fqn, $this->_em->getClassMetadata($className));
+        if ( ! $this->_em->getMetadataFactory()->hasMetadataFor($proxyClassName)) {
+            $this->_em->getMetadataFactory()->setMetadataFor($proxyClassName, $this->_em->getClassMetadata($className));
         }
 
         $entityPersister = $this->_em->getUnitOfWork()->getEntityPersister($className);
 
-        return new $fqn($entityPersister, $identifier);
+        return new $proxyClassName($entityPersister, $identifier);
     }
 
     /**
@@ -112,8 +104,8 @@ class ProxyFactory
                 continue;
             }
 
-            $proxyClassName = str_replace('\\', '', $class->name) . 'Proxy';
-            $proxyFileName = $proxyDir . $proxyClassName . '.php';
+            $proxyClassName = $class->name.'__CG__Doctrine2_ORM_Proxy';
+            $proxyFileName = $proxyDir . str_replace('\\', '-', $class->name) . '.php';
             $this->_generateProxyClass($class, $proxyClassName, $proxyFileName, self::$_proxyClassTemplate);
         }
     }
@@ -138,14 +130,20 @@ class ProxyFactory
             '<methods>', '<sleepImpl>', '<cloneImpl>'
         );
 
-        if(substr($class->name, 0, 1) == "\\") {
-            $className = substr($class->name, 1);
+        $className = $class->name;
+        if ('\\' === $className[0]) {
+            $className = substr($className, 1);
+        }
+
+        if (false !== $pos = strrpos($proxyClassName, '\\')) {
+            $proxyNamespace = substr($proxyClassName, 0, $pos);
+            $proxyClassName = substr($proxyClassName, $pos + 1);
         } else {
-            $className = $class->name;
+            $proxyNamespace = '';
         }
 
         $replacements = array(
-            $this->_proxyNamespace,
+            $proxyNamespace,
             $proxyClassName, $className,
             $methods, $sleepImpl, $cloneImpl
         );
@@ -288,7 +286,7 @@ class <proxyClassName> extends \<className> implements \Doctrine\ORM\Proxy\Proxy
             unset($this->_entityPersister, $this->_identifier);
         }
     }
-    
+
     <methods>
 
     public function __sleep()
