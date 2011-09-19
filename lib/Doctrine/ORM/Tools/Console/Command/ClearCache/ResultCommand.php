@@ -24,7 +24,7 @@ use Symfony\Component\Console\Input\InputArgument,
     Symfony\Component\Console;
 
 /**
- * Command to clear the query cache of the various cache drivers.
+ * Command to clear the result cache of the various cache drivers.
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -42,7 +42,7 @@ class ResultCommand extends Console\Command\Command
     protected function configure()
     {
         $this
-        ->setName('orm:clear-cache:query')
+        ->setName('orm:clear-cache:result')
         ->setDescription('Clear all result cache of the various cache drivers.')
         ->setDefinition(array(
             new InputOption(
