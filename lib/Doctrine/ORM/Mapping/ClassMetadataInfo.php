@@ -94,6 +94,11 @@ class ClassMetadataInfo implements ClassMetadata
      */
     const GENERATOR_TYPE_NONE = 5;
     /**
+     * UUID means that a UUID/GUID expression is used for id generation. Full
+     * portability is currently not guaranteed.
+     */
+    const GENERATOR_TYPE_UUID = 6;
+    /**
      * DEFERRED_IMPLICIT means that changes of entities are calculated at commit-time
      * by doing a property-by-property comparison with the original data. This will
      * be done for all entities that are in MANAGED state at commit-time.
@@ -1228,6 +1233,16 @@ class ClassMetadataInfo implements ClassMetadata
     public function isIdentifierNatural()
     {
         return $this->generatorType == self::GENERATOR_TYPE_NONE;
+    }
+    
+    /**
+     * Checks whether the class use a UUID for id generation
+     *
+     * @return boolean
+     */
+    public function isIdentifierUuid()
+    {
+        return $this->generatorType == self::GENERATOR_TYPE_UUID;
     }
 
     /**
