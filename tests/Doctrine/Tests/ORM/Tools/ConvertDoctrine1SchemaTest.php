@@ -50,7 +50,6 @@ class ConvertDoctrine1SchemaTest extends \Doctrine\Tests\OrmTestCase
         $driverMock = new DriverMock();
         $config = new \Doctrine\ORM\Configuration();
         $config->setProxyDir(__DIR__ . '/../../Proxies');
-        $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $eventManager = new EventManager();
         $conn = new ConnectionMock(array(), $driverMock, $config, $eventManager);
         $mockDriver = new MetadataDriverMock();

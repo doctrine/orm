@@ -56,7 +56,6 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $driverMock = new DriverMock();
         $config = new \Doctrine\ORM\Configuration();
         $config->setProxyDir(__DIR__ . '/../../Proxies');
-        $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $eventManager = new EventManager();
         $conn = new ConnectionMock(array(), $driverMock, $config, $eventManager);
         $mockDriver = new MetadataDriverMock();
@@ -133,14 +132,14 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     public function testExportedMetadataCanBeReadBackIn()
     {
         $type = $this->_getType();
-        
+
         $metadataDriver = $this->_createMetadataDriver($type, __DIR__ . '/export/' . $type);
         $em = $this->_createEntityManager($metadataDriver);
         $cmf = $this->_createClassMetadataFactory($em, $type);
         $metadata = $cmf->getAllMetadata();
 
         $class = current($metadata);
-    
+
         $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\ExportedUser', $class->name);
 
         return $class;
@@ -246,7 +245,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
         $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
-        
+
         return $class;
     }
 

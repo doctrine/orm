@@ -53,10 +53,10 @@ abstract class OrmTestCase extends DoctrineTestCase
         }
         return new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader, (array)$paths);
     }
-    
+
     /**
      * Creates an EntityManager for testing purposes.
-     * 
+     *
      * NOTE: The created EntityManager will have its dependant DBAL parts completely
      * mocked out using a DriverMock, ConnectionMock, etc. These mocks can then
      * be configured in the tests to simulate the DBAL behavior that is desired
@@ -77,7 +77,6 @@ abstract class OrmTestCase extends DoctrineTestCase
 
         $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
         $config->setProxyDir(__DIR__ . '/Proxies');
-        $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $eventManager = new \Doctrine\Common\EventManager();
         if ($conn === null) {
             $conn = array(
@@ -100,7 +99,7 @@ abstract class OrmTestCase extends DoctrineTestCase
         }
         return self::$_metadataCacheImpl;
     }
-    
+
     private static function getSharedQueryCacheImpl()
     {
         if (self::$_queryCacheImpl === null) {
