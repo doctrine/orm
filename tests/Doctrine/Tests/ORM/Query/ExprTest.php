@@ -114,6 +114,17 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('1 = 1 AND 2 = 2', (string) $this->_expr->andx((string) $this->_expr->eq(1, 1), (string) $this->_expr->eq(2, 2)));
     }
 
+    public function testNestedAndExpr()
+    {
+        $this->assertEquals(
+        	'(1 = 1 AND 2 = 2) AND 3 = 3',
+        	(string) $this->_expr->andx(
+        		$this->_expr->andx($this->_expr->eq(1, 1), $this->_expr->eq(2, 2)),
+        		$this->_expr->eq(3, 3)
+        	)
+        );
+    }
+
     public function testIntelligentParenthesisPreventionAndExpr()
     {
         $this->assertEquals(
@@ -125,6 +136,17 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     public function testOrExpr()
     {
         $this->assertEquals('1 = 1 OR 2 = 2', (string) $this->_expr->orx((string) $this->_expr->eq(1, 1), (string) $this->_expr->eq(2, 2)));
+    }
+
+    public function testNestedOrExpr()
+    {
+    	$this->assertEquals(
+            '(1 = 1 OR 2 = 2) OR 3 = 3',
+    		(string) $this->_expr->orx(
+    			$this->_expr->orx($this->_expr->eq(1, 1), $this->_expr->eq(2, 2)),
+    			$this->_expr->eq(3, 3)
+    		)
+    	);
     }
 
     public function testAbsExpr()
