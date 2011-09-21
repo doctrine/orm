@@ -1696,6 +1696,7 @@ class Parser
                 return $this->CoalesceExpression();
             
             case Lexer::T_CASE:
+                $this->_lexer->resetPeek();
                 $peek = $this->_lexer->peek();
                 
                 return ($peek['type'] === Lexer::T_WHEN)

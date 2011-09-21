@@ -1316,6 +1316,25 @@ class SqlWalker implements TreeWalker
             $columnAlias = 'sclr' . $this->_aliasCounter++;
             $sql .= $this->walkSimpleArithmeticExpression($expr) . ' AS ' . $columnAlias;
             $this->_scalarResultAliasMap[$alias] = $columnAlias;
+        } else if (
+            $expr instanceof AST\NullIfExpression ||
+            $expr instanceof AST\CoalesceExpression ||
+            $expr instanceof AST\GeneralCaseExpression ||
+            $expr instanceof AST\SimpleCaseExpression
+        ) {
+            if ( ! $simpleSelectExpression->fieldIdentificationVariable) {
+                $alias = $this->_scalarResultCounter++;
+            } else {
+                $alias = $simpleSelectExpression->fieldIdentificationVariable;
+            }
+
+            $columnAlias = 'sclr' . $this->_aliasCounter++;
+            $sql .= $this->walkCaseExpression($expr) . ' AS ' . $columnAlias;
+            
+            $this->_scalarResultAliasMap[$alias] = $columnAlias;
+
+            $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
+            $this->_rsm->addScalarResult($columnAlias, $alias);
         } else {
             // IdentificationVariable
             $class = $this->_queryComponents[$expr]['metadata'];

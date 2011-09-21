@@ -1042,6 +1042,38 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
     
+    public function testGeneralCaseWithSingleWhenClauseInSubselect()
+    {
+        $this->assertSqlGeneration(
+            "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id IN (SELECT CASE WHEN ((g2.id / 2) > 18) THEN 2 ELSE 1 END FROM Doctrine\Tests\Models\CMS\CmsGroup g2)", 
+            "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id IN (SELECT CASE WHEN (c1_.id / 2 > 18) THEN 2 ELSE 1 END AS sclr2 FROM cms_groups c1_)"
+        );
+    }
+    
+    public function testGeneralCaseWithMultipleWhenClauseInSubselect()
+    {
+        $this->assertSqlGeneration(
+            "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id IN (SELECT CASE WHEN (g.id / 2 < 10) THEN 3 WHEN ((g.id / 2) > 20) THEN 2 ELSE 1 END FROM Doctrine\Tests\Models\CMS\CmsGroup g2)", 
+            "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id IN (SELECT CASE WHEN (c0_.id / 2 < 10) THEN 3 WHEN (c0_.id / 2 > 20) THEN 2 ELSE 1 END AS sclr2 FROM cms_groups c1_)"
+        );
+    }
+    
+    public function testSimpleCaseWithSingleWhenClauseInSubselect()
+    {
+        $this->assertSqlGeneration(
+            "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id IN (SELECT CASE g2.name WHEN 'admin' THEN 1 ELSE 2 END FROM Doctrine\Tests\Models\CMS\CmsGroup g2)", 
+            "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id IN (SELECT CASE c1_.name WHEN admin THEN 1 ELSE 2 END AS sclr2 FROM cms_groups c1_)"
+        );
+    }
+    
+    public function testSimpleCaseWithMultipleWhenClauseInSubselect()
+    {
+        $this->assertSqlGeneration(
+            "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id IN (SELECT CASE g2.name WHEN 'admin' THEN 1 WHEN 'moderator' THEN 2 ELSE 3 END FROM Doctrine\Tests\Models\CMS\CmsGroup g2)", 
+            "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id IN (SELECT CASE c1_.name WHEN admin THEN 1 WHEN moderator THEN 2 ELSE 3 END AS sclr2 FROM cms_groups c1_)"
+        );
+    }
+    
     /**
      * @group DDC-1339
      */
