@@ -1332,9 +1332,6 @@ class SqlWalker implements TreeWalker
             $sql .= $this->walkCaseExpression($expr) . ' AS ' . $columnAlias;
             
             $this->_scalarResultAliasMap[$alias] = $columnAlias;
-
-            $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
-            $this->_rsm->addScalarResult($columnAlias, $alias);
         } else {
             // IdentificationVariable
             $class = $this->_queryComponents[$expr]['metadata'];
