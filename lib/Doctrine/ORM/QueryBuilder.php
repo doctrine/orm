@@ -595,9 +595,10 @@ class QueryBuilder
      *
      * @param string $from   The class name.
      * @param string $alias  The alias of the class.
+     * @param string $indexBy The index for the from.
      * @return QueryBuilder This QueryBuilder instance.
      */
-    public function from($from, $alias)
+    public function from($from, $alias,$indexBy = null)
     {
         return $this->add('from', new Expr\From($from, $alias), true);
     }
