@@ -6,6 +6,9 @@ use DateTime;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
+/**
+ * @group DDC-1135
+ */
 class DDC1135Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
