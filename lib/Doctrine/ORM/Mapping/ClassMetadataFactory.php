@@ -50,7 +50,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     private $targetPlatform;
 
     /**
-     * @var Driver\Driver
+     * @var \Doctrine\ORM\Mapping\Driver\Driver
      */
     private $driver;
 
@@ -480,5 +480,16 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             default:
                 throw new ORMException("Unknown generator type: " . $class->generatorType);
         }
+    }
+
+    /**
+     * Check if this class is mapped by this EntityManager + ClassMetadata configuration
+     *
+     * @param $class
+     * @return bool
+     */
+    public function isTransient($class)
+    {
+        return $this->driver->isTransient($class);
     }
 }
