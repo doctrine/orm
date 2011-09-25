@@ -280,10 +280,11 @@ final class Query extends AbstractQuery
         }
         
         if ($sqlParams) {
+            ksort($types);
             ksort($sqlParams);
-            $sqlParams = array_values($sqlParams);
+            $types      = array_values($types);
+            $sqlParams  = array_values($sqlParams);
         }
-
         return array($sqlParams, $types);
     }
     
