@@ -38,8 +38,8 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             foreach ($queryHints AS $name => $value) {
                 $query->setHint($name, $value);
             }
-
-            parent::assertEquals($sqlToBeConfirmed, $query->getSql());
+            
+            parent::assertEquals($sqlToBeConfirmed, $query->getSQL());
             $query->free();
         } catch (\Exception $e) {
             $this->fail($e->getMessage() ."\n".$e->getTraceAsString());
