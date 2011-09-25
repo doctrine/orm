@@ -98,7 +98,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         }
         $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
                 . $platform->getColumnDeclarationListSQL($columnDefinitions) . ')';
-        $this->_dropTempTableSql = 'DROP TABLE ' . $tempTable;
+        $this->_dropTempTableSql = $platform->getDropTemporaryTableSQL($tempTable);
     }
 
     /**
