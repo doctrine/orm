@@ -14,23 +14,14 @@ class DDC1135Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        
-        $classes = array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1135User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1135Phone'),
-        );
-                
         try {
-            $this->_schemaTool->dropSchema($classes);
-            $this->_schemaTool->createSchema($classes);
+            $this->_schemaTool->createSchema(array(
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1135User'),
+                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1135Phone'),
+            ));
+            $this->loadFixture();
         } catch(\Exception $e) {
-            try {
-                $this->_schemaTool->createSchema($classes);
-            } catch (Exception $exc) {
-                $this->fail($exc->getMessage());  
-            }
         }
-        $this->loadFixture();
     }
     
    
@@ -44,7 +35,6 @@ class DDC1135Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertArrayHasKey(1, $result);
         $this->assertArrayHasKey(2, $result);
         $this->assertArrayHasKey(3, $result);
-        
         
         $dql      = 'SELECT u, p FROM '.__NAMESPACE__ . '\DDC1135User u INDEX BY u.email INNER JOIN u.phones p INDEX BY p.id';
         $query    = $this->_em->createQuery($dql);
@@ -84,7 +74,7 @@ class DDC1135Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertArrayHasKey(1, $result);
         $this->assertArrayHasKey(2, $result);
         $this->assertArrayHasKey(3, $result);
-        $this->assertEquals('SELECT u FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1135User u INDEX BY u.id', $dql);
+        $this->assertEquals('SELECT u FROM ' . __NAMESPACE__ . '\DDC1135User u INDEX BY u.id', $dql);
     }
     
     public function testIndexByUnique()
@@ -99,7 +89,7 @@ class DDC1135Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertArrayHasKey('foo@foo.com', $result);
         $this->assertArrayHasKey('bar@bar.com', $result);
         $this->assertArrayHasKey('foobar@foobar.com', $result);
-        $this->assertEquals('SELECT u FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1135User u INDEX BY u.email', $dql);
+        $this->assertEquals('SELECT u FROM ' . __NAMESPACE__ . '\DDC1135User u INDEX BY u.email', $dql);
     }
     
     public function  testIndexWithJoin()
@@ -108,7 +98,6 @@ class DDC1135Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $builder->select('u','p')
                 ->from(__NAMESPACE__ . '\DDC1135User', 'u', 'u.email')
                 ->join('u.phones', 'p', null, null, 'p.id');
-
         
         $dql    = $builder->getQuery()->getDQL();
         $result = $builder->getQuery()->getResult();
@@ -182,7 +171,7 @@ class DDC1135User
      */
     public $phones;
     
-    public function __construct($email, $name,array $numbers)
+    public function __construct($email, $name, array $numbers = array())
     {
         $this->name   = $name;
         $this->email  = $email;

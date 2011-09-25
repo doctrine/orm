@@ -82,6 +82,7 @@ class From
      */
     public function __toString()
     {
-        return $this->_from . ' ' . $this->_alias . ($this->_indexBy ? ' INDEX BY ' . $this->_indexBy : '');
+        return $this->_from . ' ' . $this->_alias . 
+                ($this->_indexBy ? ' INDEX BY ' . $this->_indexBy : '');
     }
 }
