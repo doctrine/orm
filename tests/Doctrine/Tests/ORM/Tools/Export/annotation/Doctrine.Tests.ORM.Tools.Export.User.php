@@ -23,14 +23,14 @@ class User
     public $email;
 
     /**
-     * @OneToOne(targetEntity="Doctrine\Tests\ORM\Tools\Export\Address", cascade={"remove"}, inversedBy="user")
+     * @OneToOne(targetEntity="Doctrine\Tests\ORM\Tools\Export\Address", cascade={"remove", "persist"}, inversedBy="user", orphanRemoval=true)
      * @JoinColumn(name="address_id", onDelete="CASCADE", onUpdate="CASCADE")
      */
     public $address;
 
     /**
      *
-     * @OneToMany(targetEntity="Doctrine\Tests\ORM\Tools\Export\Phonenumber", mappedBy="user", cascade={"persist"})
+     * @OneToMany(targetEntity="Doctrine\Tests\ORM\Tools\Export\Phonenumber", mappedBy="user", cascade={"persist", "merge"}, orphanRemoval=true)
      * @OrderBy({"number"="ASC"})
      */
     public $phonenumbers;
