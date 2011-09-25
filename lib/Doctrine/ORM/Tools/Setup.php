@@ -97,7 +97,7 @@ class Setup
             require_once $directory . "/Doctrine/Common/ClassLoader.php";
         }
         
-        $loader = new ClassLoader("Doctrine");
+        $loader = new ClassLoader("Doctrine", $directory);
         $loader->register();
         
         $loader = new ClassLoader("Symfony\Component", $directory . "/Doctrine");
