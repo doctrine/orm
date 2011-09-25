@@ -1387,6 +1387,10 @@ class UnitOfWork implements PropertyChangedListener
         if ($this->getEntityState($entity, self::STATE_DETACHED) == self::STATE_MANAGED) {
             $managedCopy = $entity;
         } else {
+            if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
+                $entity->__load();
+            }
+
             // Try to look the entity up in the identity map.
             $id = $class->getIdentifierValues($entity);
 
