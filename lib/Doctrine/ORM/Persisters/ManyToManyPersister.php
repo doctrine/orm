@@ -107,36 +107,38 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $params      = array();
         $mapping     = $coll->getMapping();
-        $isComposite = count($mapping['joinTableColumns']) > 2;
 
         $identifier1 = $this->_uow->getEntityIdentifier($coll->getOwner());
         $identifier2 = $this->_uow->getEntityIdentifier($element);
 
-        if ($isComposite) {
-            $class1 = $this->_em->getClassMetadata(get_class($coll->getOwner()));
-            $class2 = $coll->getTypeClass();
-        }
-
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
             if (isset($mapping['relationToSourceKeyColumns'][$joinTableColumn])) {
-                if ($isComposite) {
+                if (1 === count($identifier1)) {
+                    $params[] = current($identifier1);
+                } else {
+                    if (!isset($class1)) {
+                        $class1 = $this->_em->getClassMetadata(get_class($coll->getOwner()));
+                    }
+
                     if ($class1->containsForeignIdentifier) {
                         $params[] = $identifier1[$class1->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])];
                     } else {
                         $params[] = $identifier1[$class1->fieldNames[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]];
                     }
-                } else {
-                    $params[] = array_pop($identifier1);
                 }
             } else {
-                if ($isComposite) {
+                if (1 === count($identifier2)) {
+                    $params[] = current($identifier2);
+                } else {
+                    if (!isset($class2)) {
+                        $class2 = $coll->getTypeClass();
+                    }
+
                     if ($class2->containsForeignIdentifier) {
                         $params[] = $identifier2[$class2->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])];
                     } else {
                         $params[] = $identifier2[$class2->fieldNames[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]];
                     }
-                } else {
-                    $params[] = array_pop($identifier2);
                 }
             }
         }
