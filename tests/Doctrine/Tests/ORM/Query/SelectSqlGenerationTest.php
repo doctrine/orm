@@ -778,11 +778,11 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
         $this->assertSqlGeneration(
             "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE LOWER(u.name) LIKE :str",
-            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE LOWER(c0_.name) LIKE ?"
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE LOWER(c0_.name) LIKE :str"
         );
         $this->assertSqlGeneration(
             "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(UPPER(u.name), '_moo') LIKE :str",
-            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE UPPER(c0_.name) || '_moo' LIKE ?"
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE UPPER(c0_.name) || '_moo' LIKE :str"
         );
     }
 

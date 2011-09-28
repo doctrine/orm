@@ -1870,7 +1870,7 @@ class SqlWalker implements TreeWalker
             $inputParam = $likeExpr->stringPattern;
             $dqlParamKey = $inputParam->name;
             $this->_parserResult->addParameterMapping($dqlParamKey, $this->_sqlParamIndex++);
-            $sql .= '?';
+            $sql .= $inputParam->isNamed ? ':' . $inputParam->name : '?';
         } else {
             $sql .= $this->_conn->quote($likeExpr->stringPattern);
         }
