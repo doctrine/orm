@@ -1932,7 +1932,7 @@ class SqlWalker implements TreeWalker
     {
         $this->_parserResult->addParameterMapping($inputParam->name, $this->_sqlParamIndex++);
 
-        return '?';
+        return $inputParam->isNamed ? ':' . $inputParam->name : '?';
     }
 
     /**
