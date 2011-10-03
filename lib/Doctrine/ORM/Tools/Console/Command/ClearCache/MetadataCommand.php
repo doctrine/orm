@@ -21,7 +21,8 @@ namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
 use Symfony\Component\Console\Input\InputArgument,
     Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console;
+    Symfony\Component\Console,
+    Doctrine\Common\Cache;
 
 /**
  * Command to clear the metadata cache of the various cache drivers.
@@ -82,6 +83,10 @@ EOT
 
         if ( ! $cacheDriver) {
             throw new \InvalidArgumentException('No Metadata cache driver is configured on given EntityManager.');
+        }
+        
+        if ($cacheDriver instanceof Cache\ApcCache) {
+            throw new \LogicException("Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.");
         }
 
         $output->write('Clearing ALL Metadata cache entries' . PHP_EOL);
