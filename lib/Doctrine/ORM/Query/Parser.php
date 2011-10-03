@@ -1831,7 +1831,7 @@ class Parser
     /**
      * SelectExpression ::=
      *      IdentificationVariable | StateFieldPathExpression |
-     *      (AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable]
+     *      (AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] ["HIDDEN"] AliasResultVariable]
      *
      * @return Doctrine\ORM\Query\AST\SelectExpression
      */
@@ -1839,6 +1839,7 @@ class Parser
     {
         $expression = null;
         $identVariable = null;
+        $hiddenAliasResultVariable = false;
         $fieldAliasIdentificationVariable = null;
         $peek = $this->_lexer->glimpse();
 
@@ -1900,6 +1901,12 @@ class Parser
             if ($this->_lexer->isNextToken(Lexer::T_AS)) {
                 $this->match(Lexer::T_AS);
             }
+            
+            if ($this->_lexer->isNextToken(Lexer::T_HIDDEN)) {
+                $this->match(Lexer::T_HIDDEN);
+                
+                $hiddenAliasResultVariable = true;
+            }
 
             if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
                 $token = $this->_lexer->lookahead;
@@ -1914,10 +1921,12 @@ class Parser
             }
         }
 
-        $expr = new AST\SelectExpression($expression, $fieldAliasIdentificationVariable);
-        if (!$supportsAlias) {
+        $expr = new AST\SelectExpression($expression, $hiddenAliasResultVariable, $fieldAliasIdentificationVariable);
+        
+        if ( ! $supportsAlias) {
             $this->_identVariableExpressions[$identVariable] = $expr;
         }
+        
         return $expr;
     }
 

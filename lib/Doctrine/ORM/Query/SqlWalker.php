@@ -975,8 +975,9 @@ class SqlWalker implements TreeWalker
      */
     public function walkSelectExpression($selectExpression)
     {
-        $sql = '';
-        $expr = $selectExpression->expression;
+        $sql    = '';
+        $expr   = $selectExpression->expression;
+        $hidden = $selectExpression->hiddenAliasResultVariable;
 
         if ($expr instanceof AST\PathExpression) {
             if ($expr->type !== AST\PathExpression::TYPE_STATE_FIELD) {
@@ -1006,7 +1007,10 @@ class SqlWalker implements TreeWalker
             $columnAlias = $this->getSQLColumnAlias($columnName);
             $sql .= $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
             $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
-            $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+            
+            if ( ! $hidden) {
+                $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+            }
         } else if ($expr instanceof AST\AggregateExpression) {
             if ( ! $selectExpression->fieldIdentificationVariable) {
                 $resultAlias = $this->_scalarResultCounter++;
@@ -1019,7 +1023,10 @@ class SqlWalker implements TreeWalker
             $this->_scalarResultAliasMap[$resultAlias] = $columnAlias;
 
             $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
-            $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+
+            if ( ! $hidden) {
+                $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+            }
         } else if ($expr instanceof AST\Subselect) {
             if ( ! $selectExpression->fieldIdentificationVariable) {
                 $resultAlias = $this->_scalarResultCounter++;
@@ -1032,7 +1039,10 @@ class SqlWalker implements TreeWalker
             $this->_scalarResultAliasMap[$resultAlias] = $columnAlias;
 
             $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
-            $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+            
+            if ( ! $hidden) {
+                $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+            }
         } else if ($expr instanceof AST\Functions\FunctionNode) {
             if ( ! $selectExpression->fieldIdentificationVariable) {
                 $resultAlias = $this->_scalarResultCounter++;
@@ -1045,7 +1055,10 @@ class SqlWalker implements TreeWalker
             $this->_scalarResultAliasMap[$resultAlias] = $columnAlias;
 
             $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
-            $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+            
+            if ( ! $hidden) {
+                $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+            }
         } else if (
             $expr instanceof AST\SimpleArithmeticExpression ||
             $expr instanceof AST\ArithmeticTerm ||
@@ -1070,7 +1083,10 @@ class SqlWalker implements TreeWalker
             $this->_scalarResultAliasMap[$resultAlias] = $columnAlias;
 
             $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
-            $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+            
+            if ( ! $hidden) {
+                $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+            }
         } else if (
             $expr instanceof AST\NullIfExpression ||
             $expr instanceof AST\CoalesceExpression ||
@@ -1090,7 +1106,10 @@ class SqlWalker implements TreeWalker
             $this->_scalarResultAliasMap[$resultAlias] = $columnAlias;
 
             $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
-            $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+            
+            if ( ! $hidden) {
+                $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+            }
         } else {
             // IdentificationVariable or PartialObjectExpression
             if ($expr instanceof AST\PartialObjectExpression) {
