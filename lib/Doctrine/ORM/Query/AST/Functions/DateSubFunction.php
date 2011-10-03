@@ -40,7 +40,7 @@ class DateSubFunction extends DateAddFunction
 
     public function getSql(SqlWalker $sqlWalker)
     {
-        return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubExpression(
+        return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubIntervalExpression(
             $this->firstDateExpression->dispatch($sqlWalker),
             $this->intervalExpression->dispatch($sqlWalker),
             $this->unit->dispatch($sqlWalker)

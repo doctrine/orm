@@ -40,7 +40,7 @@ class DateAddFunction extends FunctionNode
 
     public function getSql(SqlWalker $sqlWalker)
     {
-        return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddExpression(
+        return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddIntervalExpression(
             $this->firstDateExpression->dispatch($sqlWalker),
             $this->intervalExpression->dispatch($sqlWalker),
             $this->unit->dispatch($sqlWalker)
