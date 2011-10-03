@@ -78,13 +78,13 @@ EOT
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
     {
         $em = $this->getHelper('em')->getEntityManager();
-        $cacheDriver = $em->getConfiguration()->getQueryCacheImpl();
+        $cacheDriver = $em->getConfiguration()->getResultCacheImpl();
 
         if ( ! $cacheDriver) {
             throw new \InvalidArgumentException('No Result cache driver is configured on given EntityManager.');
         }
 
-        $output->write('Clearing ALL Query cache entries' . PHP_EOL);
+        $output->write('Clearing ALL Result cache entries' . PHP_EOL);
 
         $result  = $cacheDriver->deleteAll();
         $message = ($result) ? 'Successfully deleted cache entries.' : 'No cache entries were deleted.';
