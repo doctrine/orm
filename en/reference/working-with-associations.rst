@@ -413,7 +413,7 @@ Transitive persistence / Cascade Operations
 -------------------------------------------
 
 Persisting, removing, detaching and merging individual entities can
-become pretty cumbersome, especially when a highly interveawed object graph
+become pretty cumbersome, especially when a highly interweaved object graph
 is involved. Therefore Doctrine 2 provides a
 mechanism for transitive persistence through cascading of these
 operations. Each association to another entity or a collection of
