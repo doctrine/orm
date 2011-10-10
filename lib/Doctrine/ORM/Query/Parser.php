@@ -1921,7 +1921,7 @@ class Parser
             }
         }
 
-        $expr = new AST\SelectExpression($expression, $hiddenAliasResultVariable, $fieldAliasIdentificationVariable);
+        $expr = new AST\SelectExpression($expression, $fieldAliasIdentificationVariable, $hiddenAliasResultVariable);
         
         if ( ! $supportsAlias) {
             $this->_identVariableExpressions[$identVariable] = $expr;
