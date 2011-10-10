@@ -635,7 +635,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param object $entity The entity for which to (re)calculate the change set.
      * @throws InvalidArgumentException If the passed entity is not MANAGED.
      */
-    public function recomputeSingleEntityChangeSet($class, $entity)
+    public function recomputeSingleEntityChangeSet(ClassMetadata $class, $entity)
     {
         $oid = spl_object_hash($entity);
         
