@@ -41,6 +41,10 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     /** {@inheritdoc} */
     protected function _getSelectColumnListSQL()
     {
+        if ($this->_selectColumnListSql !== null) {
+            return $this->_selectColumnListSql;
+        }
+
         $columnList = parent::_getSelectColumnListSQL();
 
         // Append discriminator column
@@ -74,7 +78,8 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
             }
         }
 
-        return $columnList;
+        $this->_selectColumnListSql = $columnList;
+        return $this->_selectColumnListSql;
     }
 
     /** {@inheritdoc} */
