@@ -369,7 +369,7 @@ Implementing Event Listeners
 This section explains what is and what is not allowed during
 specific lifecycle events of the UnitOfWork. Although you get
 passed the EntityManager in all of these events, you have to follow
-this restrictions very carefully since operations in the wrong
+these restrictions very carefully since operations in the wrong
 event may produce lots of different errors, such as inconsistent
 data and lost updates/persists/removes.
 
