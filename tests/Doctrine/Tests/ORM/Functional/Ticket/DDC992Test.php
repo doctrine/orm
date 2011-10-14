@@ -124,7 +124,7 @@ class DDC992Role
      */
     public $roleID;
     /**
-     * @Column (name="name", type="string", length="45")
+     * @Column (name="name", type="string", length=45)
      */
     public $name;
     /**

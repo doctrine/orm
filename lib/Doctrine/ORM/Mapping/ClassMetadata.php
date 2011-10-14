@@ -343,4 +343,17 @@ class ClassMetadata extends ClassMetadataInfo
         }
         return clone $this->_prototype;
     }
+
+    /**
+     * @param string $callback
+     * @param string $event
+     */
+    public function addLifecycleCallback($callback, $event)
+    {
+        if ( !$this->reflClass->hasMethod($callback) ||
+             ($this->reflClass->getMethod($callback)->getModifiers() & \ReflectionMethod::IS_PUBLIC) == 0) {
+            throw MappingException::lifecycleCallbackMethodNotFound($this->name, $callback);
+        }
+        return parent::addLifecycleCallback($callback, $event);
+    }
 }

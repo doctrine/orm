@@ -97,7 +97,7 @@ class Setup
             require_once $directory . "/Doctrine/Common/ClassLoader.php";
         }
         
-        $loader = new ClassLoader("Doctrine");
+        $loader = new ClassLoader("Doctrine", $directory);
         $loader->register();
         
         $loader = new ClassLoader("Symfony\Component", $directory . "/Doctrine");
@@ -115,13 +115,13 @@ class Setup
      */
     static public function createAnnotationMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
     {
-        $config = self::createConfiguration($isDevMode, $cache, $proxyDir);
+        $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver($paths));
         return $config;
     }
     
     /**
-     * Create a configuration with an annotation metadata driver.
+     * Create a configuration with a xml metadata driver.
      * 
      * @param array $paths
      * @param boolean $isDevMode
@@ -131,13 +131,13 @@ class Setup
      */
     static public function createXMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
     {
-        $config = self::createConfiguration($isDevMode, $cache, $proxyDir);
+        $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(new XmlDriver($paths));
         return $config;
     }
     
     /**
-     * Create a configuration with an annotation metadata driver.
+     * Create a configuration with a yaml metadata driver.
      * 
      * @param array $paths
      * @param boolean $isDevMode
@@ -147,7 +147,7 @@ class Setup
      */
     static public function createYAMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
     {
-        $config = self::createConfiguration($isDevMode, $cache, $proxyDir);
+        $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(new YamlDriver($paths));
         return $config;
     }
@@ -162,6 +162,7 @@ class Setup
      */
     static public function createConfiguration($isDevMode = false, $proxyDir = null, Cache $cache = null)
     {
+        $proxyDir = $proxyDir ?: sys_get_temp_dir();
         if ($isDevMode === false && $cache === null) {
             if (extension_loaded('apc')) {
                 $cache = new \Doctrine\Common\Cache\ApcCache;
@@ -175,16 +176,16 @@ class Setup
             } else {
                 $cache = new ArrayCache;
             }
-            $cache->setNamespace("dc2_"); // to avoid collisions
         } else if ($cache === null) {
             $cache = new ArrayCache;
         }
+        $cache->setNamespace("dc2_" . md5($proxyDir) . "_"); // to avoid collisions
         
         $config = new Configuration();
         $config->setMetadataCacheImpl($cache);
         $config->setQueryCacheImpl($cache);
         $config->setResultCacheImpl($cache);
-        $config->setProxyDir( $proxyDir ?: sys_get_temp_dir() );
+        $config->setProxyDir( $proxyDir );
         $config->setProxyNamespace('DoctrineProxies');
         $config->setAutoGenerateProxyClasses($isDevMode);
         

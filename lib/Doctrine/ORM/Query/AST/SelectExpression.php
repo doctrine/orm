@@ -23,7 +23,7 @@ namespace Doctrine\ORM\Query\AST;
 
 /**
  * SelectExpression ::= IdentificationVariable ["." "*"] | StateFieldPathExpression |
- *	                    (AggregateExpression | "(" Subselect ")") [["AS"] FieldAliasIdentificationVariable]
+ *	                    (AggregateExpression | "(" Subselect ")") [["AS"] ["HIDDEN"] FieldAliasIdentificationVariable]
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -37,11 +37,13 @@ class SelectExpression extends Node
 {
     public $expression;
     public $fieldIdentificationVariable;
+    public $hiddenAliasResultVariable;
 
-    public function __construct($expression, $fieldIdentificationVariable)
+    public function __construct($expression, $fieldIdentificationVariable, $hiddenAliasResultVariable = false)
     {
         $this->expression = $expression;
         $this->fieldIdentificationVariable = $fieldIdentificationVariable;
+        $this->hiddenAliasResultVariable = $hiddenAliasResultVariable;
     }    
     
     public function dispatch($sqlWalker)

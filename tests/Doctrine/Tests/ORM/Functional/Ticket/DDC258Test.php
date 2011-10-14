@@ -92,12 +92,12 @@ abstract class DDC258Super
 class DDC258Class1 extends DDC258Super
 {
     /**
-     * @Column(name="title", type="string", length="150")
+     * @Column(name="title", type="string", length=150)
      */
     public $title;
 
     /**
-     * @Column(name="content", type="string", length="500")
+     * @Column(name="content", type="string", length=500)
      */
     public $description;
 }
@@ -108,12 +108,12 @@ class DDC258Class1 extends DDC258Super
 class DDC258Class2 extends DDC258Super
 {
     /**
-     * @Column(name="title", type="string", length="150")
+     * @Column(name="title", type="string", length=150)
      */
     public $title;
 
     /**
-     * @Column(name="content", type="string", length="500")
+     * @Column(name="content", type="string", length=500)
      */
     public $description;
 
@@ -131,12 +131,12 @@ class DDC258Class2 extends DDC258Super
 class DDC258Class3 extends DDC258Super
 {
     /**
-     * @Column(name="title", type="string", length="150")
+     * @Column(name="title", type="string", length=150)
      */
     public $apples;
 
     /**
-     * @Column(name="content", type="string", length="500")
+     * @Column(name="content", type="string", length=500)
      */
     public $bananas;
 }

@@ -182,7 +182,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(isset($class->associationMappings['phonenumbers']));
         $this->assertFalse($class->associationMappings['phonenumbers']['isOwningSide']);
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRemove']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeMerge']);
@@ -290,6 +290,42 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
             array('name' => 'dtype', 'type' => 'string', 'length' => 255, 'fieldName' => 'dtype'),
             $class->discriminatorColumn
         );
+    }
+    
+    /**
+     * @group DDC-869
+     */
+    public function testMappedSuperclassWithRepository()
+    {
+        $driver     = $this->_loadDriver();
+        $em         = $this->_getTestEntityManager();
+        $factory    = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        
+        $em->getConfiguration()->setMetadataDriverImpl($driver);
+        $factory->setEntityManager($em);
+        
+        
+        $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment');
+        
+        $this->assertTrue(isset($class->fieldMappings['id']));
+        $this->assertTrue(isset($class->fieldMappings['value']));
+        $this->assertTrue(isset($class->fieldMappings['creditCardNumber']));
+        $this->assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
+        $this->assertInstanceOf("Doctrine\Tests\Models\DDC869\DDC869PaymentRepository", 
+             $em->getRepository("Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment"));
+        $this->assertTrue($em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment")->isTrue());
+        
+        
+        
+        $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869ChequePayment');
+        
+        $this->assertTrue(isset($class->fieldMappings['id']));
+        $this->assertTrue(isset($class->fieldMappings['value']));
+        $this->assertTrue(isset($class->fieldMappings['serialNumber']));
+        $this->assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
+        $this->assertInstanceOf("Doctrine\Tests\Models\DDC869\DDC869PaymentRepository", 
+             $em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment"));
+        $this->assertTrue($em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment")->isTrue());
     }
 }
 

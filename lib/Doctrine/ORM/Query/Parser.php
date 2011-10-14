@@ -40,7 +40,8 @@ class Parser
         'substring' => 'Doctrine\ORM\Query\AST\Functions\SubstringFunction',
         'trim'      => 'Doctrine\ORM\Query\AST\Functions\TrimFunction',
         'lower'     => 'Doctrine\ORM\Query\AST\Functions\LowerFunction',
-        'upper'     => 'Doctrine\ORM\Query\AST\Functions\UpperFunction'
+        'upper'     => 'Doctrine\ORM\Query\AST\Functions\UpperFunction',
+        'identity'  => 'Doctrine\ORM\Query\AST\Functions\IdentityFunction',
     );
 
     /** READ-ONLY: Maps BUILT-IN numeric function names to AST class names. */
@@ -1695,6 +1696,7 @@ class Parser
                 return $this->CoalesceExpression();
             
             case Lexer::T_CASE:
+                $this->_lexer->resetPeek();
                 $peek = $this->_lexer->peek();
                 
                 return ($peek['type'] === Lexer::T_WHEN)
@@ -1829,7 +1831,7 @@ class Parser
     /**
      * SelectExpression ::=
      *      IdentificationVariable | StateFieldPathExpression |
-     *      (AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable]
+     *      (AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] ["HIDDEN"] AliasResultVariable]
      *
      * @return Doctrine\ORM\Query\AST\SelectExpression
      */
@@ -1837,6 +1839,7 @@ class Parser
     {
         $expression = null;
         $identVariable = null;
+        $hiddenAliasResultVariable = false;
         $fieldAliasIdentificationVariable = null;
         $peek = $this->_lexer->glimpse();
 
@@ -1898,6 +1901,12 @@ class Parser
             if ($this->_lexer->isNextToken(Lexer::T_AS)) {
                 $this->match(Lexer::T_AS);
             }
+            
+            if ($this->_lexer->isNextToken(Lexer::T_HIDDEN)) {
+                $this->match(Lexer::T_HIDDEN);
+                
+                $hiddenAliasResultVariable = true;
+            }
 
             if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
                 $token = $this->_lexer->lookahead;
@@ -1912,10 +1921,12 @@ class Parser
             }
         }
 
-        $expr = new AST\SelectExpression($expression, $fieldAliasIdentificationVariable);
-        if (!$supportsAlias) {
+        $expr = new AST\SelectExpression($expression, $fieldAliasIdentificationVariable, $hiddenAliasResultVariable);
+        
+        if ( ! $supportsAlias) {
             $this->_identVariableExpressions[$identVariable] = $expr;
         }
+        
         return $expr;
     }
 
@@ -2381,7 +2392,7 @@ class Parser
     /**
      * ArithmeticPrimary ::= SingleValuedPathExpression | Literal | "(" SimpleArithmeticExpression ")"
      *          | FunctionsReturningNumerics | AggregateExpression | FunctionsReturningStrings
-     *          | FunctionsReturningDatetime | IdentificationVariable | CaseExpression
+     *          | FunctionsReturningDatetime | IdentificationVariable | ResultVariable | CaseExpression
      */
     public function ArithmeticPrimary()
     {
@@ -2410,7 +2421,11 @@ class Parser
                 if ($peek['value'] == '.') {
                     return $this->SingleValuedPathExpression();
                 }
-
+                
+                if (isset($this->_queryComponents[$this->_lexer->lookahead['value']]['resultVariable'])) {
+                    return $this->ResultVariable();
+                }
+                
                 return $this->StateFieldPathExpression();
 
             case Lexer::T_INPUT_PARAMETER:

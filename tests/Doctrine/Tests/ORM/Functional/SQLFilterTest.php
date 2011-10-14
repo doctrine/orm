@@ -253,24 +253,27 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testQueryCache_DependsOnFilters()
     {
+        $cacheDataReflection = new \ReflectionProperty("Doctrine\Common\Cache\ArrayCache", "data");
+        $cacheDataReflection->setAccessible(true);
+
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $cache = new ArrayCache();
         $query->setQueryCacheDriver($cache);
 
         $query->getResult();
-        $this->assertEquals(1, count($cache->getIds()));
+        $this->assertEquals(1, sizeof($cacheDataReflection->getValue($cache)));
 
         $conf = $this->_em->getConfiguration();
         $conf->addFilter("locale", "\Doctrine\Tests\ORM\Functional\MyLocaleFilter");
         $this->_em->getFilters()->enable("locale");
 
         $query->getResult();
-        $this->assertEquals(2, count($cache->getIds()));
+        $this->assertEquals(2, sizeof($cacheDataReflection->getValue($cache)));
 
         // Another time doesn't add another cache entry
         $query->getResult();
-        $this->assertEquals(2, count($cache->getIds()));
+        $this->assertEquals(2, sizeof($cacheDataReflection->getValue($cache)));
     }
 
     public function testQueryGeneration_DependsOnFilters()
