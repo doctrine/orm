@@ -177,6 +177,17 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($cm->customRepositoryClassName, $metadata->customRepositoryClassName);
     }
 
+    public function testCastOnSetters()
+    {
+	$this->_generator->setAddCastToSetters(true);
+        $metadata = $this->generateBookEntityFixture();
+
+	$book = $this->newInstance($metadata);
+
+        $book->setName(1984);
+        $this->assertTrue(is_string($book->getName()), "Check for cast on setters");
+    }
+
     public function testLoadPrefixedMetadata()
     {
         $this->_generator->setAnnotationPrefix('orm:');
