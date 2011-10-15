@@ -1471,11 +1471,17 @@ class UnitOfWork implements PropertyChangedListener
                             if ($this->getEntityState($other, self::STATE_DETACHED) == self::STATE_MANAGED) {
                                 $prop->setValue($managedCopy, $other);
                             } else {
+
                                 $targetClass = $this->em->getClassMetadata($assoc2['targetEntity']);
-                                $id = $targetClass->getIdentifierValues($other);
-                                $proxy = $this->em->getProxyFactory()->getProxy($assoc2['targetEntity'], $id);
-                                $prop->setValue($managedCopy, $proxy);
-                                $this->registerManaged($proxy, $id, array());
+                                $relatedId = $targetClass->getIdentifierValues($other);
+
+                                if ($targetClass->subClasses) {
+                                    $entity = $this->em->find($targetClass->name, $relatedId);
+                                } else {
+                                    $proxy = $this->em->getProxyFactory()->getProxy($assoc2['targetEntity'], $relatedId);
+                                    $prop->setValue($managedCopy, $proxy);
+                                    $this->registerManaged($proxy, $relatedId, array());
+                                }
                             }
                         }
                     } else {
