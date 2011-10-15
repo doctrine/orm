@@ -308,7 +308,7 @@ class <proxyClassName> extends \<className> implements \Doctrine\ORM\Proxy\Proxy
             unset($this->_entityPersister, $this->_identifier);
         }
     }
-    
+
     <methods>
 
     public function __sleep()
