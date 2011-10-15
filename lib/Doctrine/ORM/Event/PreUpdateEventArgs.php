@@ -90,7 +90,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     	if (!isset($this->_entityChangeSet[$field])) {
             throw new \InvalidArgumentException(
                 "Field '".$field."' is not a valid field of the entity ".
-                "'".get_class($this->getEntity())."' in PreInsertUpdateEventArgs."
+                "'".get_class($this->getEntity())."' in PreUpdateEventArgs."
             );
         }
     }

@@ -150,7 +150,7 @@ public function <methodName>()
 
     public function __construct()
     {
-        if (version_compare(\Doctrine\Common\Version::VERSION, '3.0.0-DEV', '>=')) {
+        if (version_compare(\Doctrine\Common\Version::VERSION, '2.2.0-DEV', '>=')) {
             $this->_annotationsPrefix = 'ORM\\';
         }
     }
@@ -399,14 +399,17 @@ public function <methodName>()
         }
 
         $collections = array();
+
         foreach ($metadata->associationMappings AS $mapping) {
             if ($mapping['type'] & ClassMetadataInfo::TO_MANY) {
                 $collections[] = '$this->'.$mapping['fieldName'].' = new \Doctrine\Common\Collections\ArrayCollection();';
             }
         }
+        
         if ($collections) {
             return $this->_prefixCodeWithSpaces(str_replace("<collections>", implode("\n", $collections), self::$_constructorMethodTemplate));
         }
+        
         return '';
     }
 
@@ -788,7 +791,7 @@ public function <methodName>()
         }
 
         if (isset($joinColumn['onDelete'])) {
-            $joinColumnAnnot[] = 'onDelete=' . ($joinColumn['onDelete'] ? 'true' : 'false');
+            $joinColumnAnnot[] = 'onDelete="' . ($joinColumn['onDelete'] . '"');
         }
 
         if (isset($joinColumn['columnDefinition'])) {
