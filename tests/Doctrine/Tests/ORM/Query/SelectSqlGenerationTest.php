@@ -54,7 +54,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
      * @param array $queryHints
      * @param array $queryParams
      */
-    public function assertInvalidSqlGeneration($dqlToBeTested, $expectedException, array $queryHints = array(Query::HINT_FORCE_PARTIAL_LOAD => true), array $queryParams = array())
+    public function assertInvalidSqlGeneration($dqlToBeTested, $expectedException, array $queryHints = array(), array $queryParams = array())
     {
         $this->setExpectedException($expectedException);
 
