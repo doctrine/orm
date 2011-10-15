@@ -15,6 +15,14 @@ of Doctrine2 to this problem is.
     ``Query#getScalarResult()``, ``Query#getSingleScalarResult()``,
     etc.
 
+.. warning::
+
+    Use of partial objects is tricky. Fields that are not retrieved
+    from the database will not be updated by the UnitOfWork even if they
+    get changed in your objects. You can only promote a partial object
+    to a fully-loaded object by calling ``EntityManager#refresh()``
+    or a DQL query with the refresh flag.
+
 
 What is the problem?
 --------------------
@@ -59,6 +67,18 @@ keyword as follows:
 
     <?php
     $q = $em->createQuery("select partial u.{id,name} from MyApp\Domain\User u");
+
+You can also get a partial reference instead of a proxy reference by
+calling:
+
+.. code-block:: php
+
+    <?php
+    $reference = $em->getPartialReference('MyApp\Domain\User', 1);
+
+Partial references are objects with only the identifiers set as they
+are passed to the second argument of the ``getPartialReference()`` method.
+All other fields are null.
 
 When should I force partial objects?
 ------------------------------------
