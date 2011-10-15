@@ -78,9 +78,6 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $reference = $this->_em->getReference('Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity', $id);
         $this->assertFalse($reference->postLoadCallbackInvoked);
 
-        $reference->getId(); // doesn't trigger proxy load
-        $this->assertFalse($reference->postLoadCallbackInvoked);
-
         $reference->getValue(); // trigger proxy load
         $this->assertTrue($reference->postLoadCallbackInvoked);
     }
