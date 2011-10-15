@@ -21,6 +21,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->_tmpDir = \sys_get_temp_dir();
         \mkdir($this->_tmpDir . \DIRECTORY_SEPARATOR . $this->_namespace);
         $this->_generator = new EntityGenerator();
+        $this->_generator->setAnnotationPrefix("");
         $this->_generator->setGenerateAnnotations(true);
         $this->_generator->setGenerateStubMethods(true);
         $this->_generator->setRegenerateEntityIfExists(false);
@@ -179,14 +180,15 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
     public function testLoadPrefixedMetadata()
     {
-        $this->_generator->setAnnotationPrefix('orm:');
+        $this->_generator->setAnnotationPrefix('ORM\\');
         $metadata = $this->generateBookEntityFixture();
 
+        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+        $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader, array());
 
         $book = $this->newInstance($metadata);
 
         $cm = new \Doctrine\ORM\Mapping\ClassMetadata($metadata->name);
-        $driver = $this->createAnnotationDriver(array(), 'orm');
         $driver->loadMetadataForClass($cm->name, $cm);
 
         $this->assertEquals($cm->columnNames, $metadata->columnNames);
