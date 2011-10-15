@@ -34,7 +34,7 @@ class ORMException extends Exception
         return new self("It's a requirement to specify a Metadata Driver and pass it ".
             "to Doctrine\ORM\Configuration::setMetadataDriverImpl().");
     }
-    
+
     public static function entityMissingForeignAssignedId($entity, $relatedEntity)
     {
         return new self(
@@ -46,15 +46,14 @@ class ORMException extends Exception
         );
     }
 
-    public static function entityMissingAssignedId($entity)
+    public static function entityMissingAssignedIdForField($entity, $field)
     {
-        return new self("Entity of type " . get_class($entity) . " is missing an assigned ID. " .
+        return new self("Entity of type " . get_class($entity) . " is missing an assigned ID for field  '" . $field . "'. " .
             "The identifier generation strategy for this entity requires the ID field to be populated before ".
-            "EntityManager#persist() is called. If you want automatically generated identifiers instead " . 
+            "EntityManager#persist() is called. If you want automatically generated identifiers instead " .
             "you need to adjust the metadata mapping accordingly."
         );
     }
-
     public static function unrecognizedField($field)
     {
         return new self("Unrecognized field: $field");
@@ -130,8 +129,8 @@ class ORMException extends Exception
             "Unknown Entity namespace alias '$entityNamespaceAlias'."
         );
     }
-    
-    public static function invalidEntityRepository($className) 
+
+    public static function invalidEntityRepository($className)
     {
         return new self("Invalid repository class '".$className."'. ".
                 "it must be a Doctrine\ORM\EntityRepository.");
