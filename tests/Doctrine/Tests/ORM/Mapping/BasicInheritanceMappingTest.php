@@ -197,6 +197,7 @@ class MappedSuperclassBase {
     private $mappedRelated1;
     private $transient;
 }
+class MappedSuperclassRelated1 {}
 
 /** @Entity */
 class EntitySubClass2 extends MappedSuperclassBase {

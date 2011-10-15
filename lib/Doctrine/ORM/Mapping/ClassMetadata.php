@@ -123,6 +123,25 @@ class ClassMetadata extends ClassMetadataInfo
     }
 
     /**
+     * Validates & completes the basic mapping information that is common to all
+     * association mappings (one-to-one, many-ot-one, one-to-many, many-to-many).
+     *
+     * @param array $mapping The mapping.
+     * @return array The updated mapping.
+     * @throws MappingException If something is wrong with the mapping.
+     */
+    protected function _validateAndCompleteAssociationMapping(array $mapping)
+    {
+        $mapping = parent::_validateAndCompleteAssociationMapping($mapping);
+
+        if ( ! class_exists($mapping['targetEntity']) ) {
+            #throw MappingException::invalidTargetEntityClass($mapping['targetEntity'], $this->name, $mapping['fieldName']);
+        }
+
+        return $mapping;
+    }
+
+    /**
      * Extracts the identifier values of an entity of this class.
      * 
      * For composite identifiers, the identifier values are returned as an array

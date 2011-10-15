@@ -98,6 +98,8 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
 
     public function testExportDirectoryAndFilesAreCreated()
     {
+        $this->_deleteDirectory(__DIR__ . '/export/'.$this->_getType());
+
         $type = $this->_getType();
         $metadataDriver = $this->_createMetadataDriver($type, __DIR__ . '/' . $type);
         $em = $this->_createEntityManager($metadataDriver);
@@ -320,12 +322,6 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertEquals('user', $class->associationMappings['address']['inversedBy']);
     }
 
-    public function __destruct()
-    {
-        $type = $this->_getType();
-        $this->_deleteDirectory(__DIR__ . '/export/'.$this->_getType());
-    }
-
     protected function _deleteDirectory($path)
     {
         if (is_file($path)) {
@@ -338,4 +334,17 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
             return rmdir($path);
         }
     }
+}
+
+class Address
+{
+
+}
+class Phonenumber
+{
+
+}
+class Group
+{
+    
 }

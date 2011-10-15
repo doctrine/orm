@@ -594,8 +594,8 @@ class UnitOfWork implements PropertyChangedListener
                     throw new InvalidArgumentException("A new entity was found through the relationship '"
                             . $assoc['sourceEntity'] . "#" . $assoc['fieldName'] . "' that was not"
                             . " configured to cascade persist operations for entity: " . self::objToStr($entry) . "."
-                            . " Explicitly persist the new entity or configure cascading persist operations"
-                            . " on the relationship. If you cannot find out which entity causes the problem"
+                            . " Explicitly call EntityManager#persist() on this entity or configure to cascade persist "
+                            . " the association. If you cannot find out which entity causes the problem"
                             . " implement '" . $assoc['targetEntity'] . "#__toString()' to get a clue.");
                 }
                 $this->persistNew($targetClass, $entry);

@@ -298,4 +298,9 @@ class MappingException extends \Doctrine\ORM\ORMException
     {
         return new self("Entity '" . $className . "' has no method '" . $methodName . "' to be registered as lifecycle callback.");
     }
+
+    public static function invalidTargetEntityClass($targetEntity, $sourceEntity, $associationName)
+    {
+        return new self("The target-entity " . $targetEntity . " cannot be found in '" . $sourceEntity."#".$associationName."'.");
+    }
 }
