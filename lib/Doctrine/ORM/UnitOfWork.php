@@ -468,7 +468,6 @@ class UnitOfWork implements PropertyChangedListener
             $changeSet = ($isChangeTrackingNotify && isset($this->entityChangeSets[$oid])) ? $this->entityChangeSets[$oid] : array();
 
             foreach ($actualData as $propName => $actualValue) {
-                $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
                 if (isset($originalData[$propName])) {
                     $orgValue = $originalData[$propName];
                 } else if (array_key_exists($propName, $originalData)) {
