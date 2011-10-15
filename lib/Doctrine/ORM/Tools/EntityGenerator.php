@@ -791,7 +791,7 @@ public function <methodName>()
         }
 
         if (isset($joinColumn['onDelete'])) {
-            $joinColumnAnnot[] = 'onDelete=' . ($joinColumn['onDelete'] ? 'true' : 'false');
+            $joinColumnAnnot[] = 'onDelete="' . ($joinColumn['onDelete'] . '"');
         }
 
         if (isset($joinColumn['columnDefinition'])) {
