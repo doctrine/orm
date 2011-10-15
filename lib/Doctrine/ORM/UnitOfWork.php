@@ -871,6 +871,7 @@ class UnitOfWork implements PropertyChangedListener
                     $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
                     if ( ! $calc->hasClass($targetClass->name)) {
                         $calc->addClass($targetClass);
+                        $newNodes[] = $targetClass;
                     }
                     $calc->addDependency($targetClass, $class);
                     // If the target class has mapped subclasses,
