@@ -471,16 +471,14 @@ mentioned sets. See this example:
 The following restrictions apply to the onFlush event:
 
 
--  Calling ``EntityManager#persist()`` does not suffice to trigger
-   a persist on an entity. You have to execute an additional call to
+-  If you create and persist a new entity in "onFlush", then
+   calling ``EntityManager#persist()`` is not enough.
+   You have to execute an additional call to
    ``$unitOfWork->computeChangeSet($classMetadata, $entity)``.
 -  Changing primitive fields or associations requires you to
    explicitly trigger a re-computation of the changeset of the
    affected entity. This can be done by either calling
-   ``$unitOfWork->computeChangeSet($classMetadata, $entity)`` or
    ``$unitOfWork->recomputeSingleEntityChangeSet($classMetadata, $entity)``.
-   The second method has lower overhead, but only re-computes
-   primitive fields, never associations.
 
 preUpdate
 ~~~~~~~~~
