@@ -64,6 +64,28 @@ of the constructor, like this:
     $driver = new \Doctrine\ORM\Mapping\Driver\XmlDriver(array('/path/to/files1', '/path/to/files2'));
     $config->setMetadataDriverImpl($driver);
 
+Simplified XML Driver
+~~~~~~~~~~~~~~~~~~~~~
+
+The Symfony project sponsored a driver that simplifies usage of the XML Driver.
+The changes between the original driver are:
+
+1. File Extension is .orm.xml
+2. Filenames are shortened, "MyProject\Entities\User" will become User.orm.xml
+3. You can add a global file and add multiple entities in this file.
+
+Configuration of this client works a little bit different:
+
+.. code-block:: php
+
+    <?php
+    $namespaces = array(
+        'MyProject\Entities' => '/path/to/files1',
+        'OtherProject\Entities' => '/path/to/files2'
+    );
+    $driver = new \Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver($namespaces);
+    $driver->setGlobalBasename('global'); // global.orm.xml
+
 Example
 -------
 
