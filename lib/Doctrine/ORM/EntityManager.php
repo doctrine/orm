@@ -764,7 +764,7 @@ class EntityManager implements ObjectManager
     public function isFiltersStateClean()
     {
         return null === $this->filterCollection
-           || $this->filterCollection->setFiltersStateDirty();
+           || $this->filterCollection->isClean();
     }
 
     public function hasFilters()
