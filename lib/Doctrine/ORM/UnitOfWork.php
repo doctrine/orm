@@ -215,8 +215,13 @@ class UnitOfWork implements PropertyChangedListener
      * @var array
      */
     private $orphanRemovals = array();
-    
-    //private $_readOnlyObjects = array();
+
+    /**
+     * Read-Only objects are never evaluated
+     *
+     * @var array
+     */
+    private $readOnlyObjects = array();
 
     /**
      * Map of Entity Class-Names and corresponding IDs that should eager loaded when requested.
@@ -403,6 +408,11 @@ class UnitOfWork implements PropertyChangedListener
         }
         
         $oid = spl_object_hash($entity);
+
+        if (isset($this->readOnlyObjects[$oid])) {
+            return;
+        }
+
         $actualData = array();
         foreach ($class->reflFields as $name => $refProp) {
             $value = $refProp->getValue($entity);
@@ -459,6 +469,15 @@ class UnitOfWork implements PropertyChangedListener
 
             foreach ($actualData as $propName => $actualValue) {
                 $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
+                if (isset($originalData[$propName])) {
+                    $orgValue = $originalData[$propName];
+                } else if (array_key_exists($propName, $originalData)) {
+                    $orgValue = null;
+                } else {
+                    // skip field, its a partially omitted one!
+                    continue;
+                }
+
                 if (isset($class->associationMappings[$propName])) {
                     $assoc = $class->associationMappings[$propName];
                     if ($assoc['type'] & ClassMetadata::TO_ONE && $orgValue !== $actualValue) {
@@ -528,7 +547,7 @@ class UnitOfWork implements PropertyChangedListener
 
             foreach ($entitiesToProcess as $entity) {
                 // Ignore uninitialized proxy objects
-                if (/* $entity is readOnly || */ $entity instanceof Proxy && ! $entity->__isInitialized__) {
+                if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
                     continue;
                 }
                 // Only MANAGED entities that are NOT SCHEDULED FOR INSERTION are processed here.
@@ -2404,5 +2423,38 @@ class UnitOfWork implements PropertyChangedListener
     private static function objToStr($obj)
     {
         return method_exists($obj, '__toString') ? (string)$obj : get_class($obj).'@'.spl_object_hash($obj);
+    }
+
+    /**
+     * Marks an entity as read-only so that it will not be considered for updates during UnitOfWork#commit().
+     *
+     * This operation cannot be undone as some parts of the UnitOfWork now keep gathering information
+     * on this object that might be necessary to perform a correct udpate.
+     *
+     * @throws \InvalidArgumentException
+     * @param $object
+     * @return void
+     */
+    public function markReadOnly($object)
+    {
+        if ( ! is_object($object) || ! $this->isInIdentityMap($object)) {
+            throw new InvalidArgumentException("Managed entity required");
+        }
+        $this->readOnlyObjects[spl_object_hash($object)] = true;
+    }
+
+    /**
+     * Is this entity read only?
+     *
+     * @throws \InvalidArgumentException
+     * @param $object
+     * @return void
+     */
+    public function isReadOnly($object)
+    {
+        if ( ! is_object($object) ) {
+            throw new InvalidArgumentException("Managed entity required");
+        }
+        return $this->readOnlyObjects[spl_object_hash($object)];
     }
 }
