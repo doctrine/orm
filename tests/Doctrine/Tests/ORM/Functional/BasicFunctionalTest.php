@@ -863,7 +863,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testGetPartialReferenceToUpdateObjectWithoutLoadingIt()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $user = new CmsUser();
         $user->username = "beberlei";
         $user->name = "Benjamin E.";
@@ -882,7 +881,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertEquals('Stephan', $this->_em->find(get_class($user), $userId)->name);
+        $this->assertEquals('Benjamin E.', $this->_em->find(get_class($user), $userId)->name);
     }
 
     public function testMergePersistsNewEntities()
