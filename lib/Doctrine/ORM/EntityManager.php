@@ -413,6 +413,7 @@ class EntityManager implements ObjectManager
         $entity = $class->newInstance();
         $class->setIdentifierValues($entity, $identifier);
         $this->unitOfWork->registerManaged($entity, $identifier, array());
+        $this->unitOfWork->markReadOnly($entity);
 
         return $entity;
     }
