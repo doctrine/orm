@@ -78,7 +78,7 @@ class AssignedGenerator extends AbstractIdGenerator
                     $identifier[$idField] = $value;
                 }
             } else {
-                throw ORMException::entityMissingAssignedId($entity);
+                throw ORMException::entityMissingAssignedIdForField($entity, $idField);
             }
         }
 

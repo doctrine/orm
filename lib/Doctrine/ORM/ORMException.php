@@ -46,14 +46,6 @@ class ORMException extends Exception
         );
     }
 
-    public static function entityMissingAssignedId($entity)
-    {
-        return new self("Entity of type " . get_class($entity) . " is missing an assigned ID. " .
-            "The identifier generation strategy for this entity requires the ID field to be populated before ".
-            "EntityManager#persist() is called. If you want automatically generated identifiers instead " .
-            "you need to adjust the metadata mapping accordingly."
-        );
-    }
     public static function entityMissingAssignedIdForField($entity, $field)
     {
         return new self("Entity of type " . get_class($entity) . " is missing an assigned ID for field  '" . $field . "'. " .
