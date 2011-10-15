@@ -150,7 +150,7 @@
     <xs:restriction base="xs:token"> 
       <xs:enumeration value="CASCADE"/> 
       <xs:enumeration value="RESTRICT"/> 
-      <xs:enumeration value="SET_NULL"/>
+      <xs:enumeration value="SET NULL"/>
     </xs:restriction> 
   </xs:simpleType>
   
