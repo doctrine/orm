@@ -58,7 +58,7 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals("bar", $theEmployee->getDepartment());
         $this->assertEquals("Foo", $theEmployee->getName());
         $this->assertEquals(1000, $theEmployee->getSalary());
-        $this->assertTrue($theEmployee instanceof CompanyEmployee);
-        $this->assertTrue($theEmployee->getSpouse() instanceof CompanyEmployee);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $theEmployee);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $theEmployee->getSpouse());
     }
 }

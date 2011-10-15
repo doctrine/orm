@@ -215,9 +215,6 @@ class XmlExporter extends AbstractExporter
                     if (isset($joinColumn['onDelete'])) {
                         $joinColumnXml->addAttribute('on-delete', $joinColumn['onDelete']);
                     }
-                    if (isset($joinColumn['onUpdate'])) {
-                        $joinColumnXml->addAttribute('on-update', $joinColumn['onUpdate']);
-                    }
                 }
                 $inverseJoinColumnsXml = $joinTableXml->addChild('inverse-join-columns');
                 foreach ($associationMapping['joinTable']['inverseJoinColumns'] as $inverseJoinColumn) {
@@ -226,9 +223,6 @@ class XmlExporter extends AbstractExporter
                     $inverseJoinColumnXml->addAttribute('referenced-column-name', $inverseJoinColumn['referencedColumnName']);
                     if (isset($inverseJoinColumn['onDelete'])) {
                         $inverseJoinColumnXml->addAttribute('on-delete', $inverseJoinColumn['onDelete']);
-                    }
-                    if (isset($inverseJoinColumn['onUpdate'])) {
-                        $inverseJoinColumnXml->addAttribute('on-update', $inverseJoinColumn['onUpdate']);
                     }
                     if (isset($inverseJoinColumn['columnDefinition'])) {
                         $inverseJoinColumnXml->addAttribute('column-definition', $inverseJoinColumn['columnDefinition']);
@@ -249,9 +243,6 @@ class XmlExporter extends AbstractExporter
                     $joinColumnXml->addAttribute('referenced-column-name', $joinColumn['referencedColumnName']);
                     if (isset($joinColumn['onDelete'])) {
                         $joinColumnXml->addAttribute('on-delete', $joinColumn['onDelete']);
-                    }
-                    if (isset($joinColumn['onUpdate'])) {
-                        $joinColumnXml->addAttribute('on-update', $joinColumn['onUpdate']);
                     }
                     if (isset($joinColumn['columnDefinition'])) {
                         $joinColumnXml->addAttribute('column-definition', $joinColumn['columnDefinition']);

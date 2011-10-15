@@ -16,7 +16,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         // Test initial state
         $this->assertTrue(count($cm->getReflectionProperties()) == 0);
-        $this->assertTrue($cm->reflClass instanceof \ReflectionClass);
+        $this->assertInstanceOf('ReflectionClass', $cm->reflClass);
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->name);
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->rootEntityName);
         $this->assertEquals(array(), $cm->subClasses);
@@ -40,12 +40,12 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         // Check state
         $this->assertTrue(count($cm->getReflectionProperties()) > 0);
         $this->assertEquals('Doctrine\Tests\Models\CMS', $cm->namespace);
-        $this->assertTrue($cm->reflClass instanceof \ReflectionClass);
+        $this->assertInstanceOf('ReflectionClass', $cm->reflClass);
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->name);
         $this->assertEquals('UserParent', $cm->rootEntityName);
         $this->assertEquals(array('Doctrine\Tests\Models\CMS\One', 'Doctrine\Tests\Models\CMS\Two', 'Doctrine\Tests\Models\CMS\Three'), $cm->subClasses);
         $this->assertEquals(array('UserParent'), $cm->parentClasses);
-        $this->assertEquals('UserRepository', $cm->customRepositoryClassName);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\UserRepository', $cm->customRepositoryClassName);
         $this->assertEquals(array('name' => 'disc', 'type' => 'integer', 'fieldName' => 'disc'), $cm->discriminatorColumn);
         $this->assertTrue($cm->associationMappings['phonenumbers']['type'] == ClassMetadata::ONE_TO_ONE);
         $this->assertEquals(1, count($cm->associationMappings));
@@ -105,7 +105,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         ));
         
         $assoc = $cm->associationMappings['groups'];
-        //$this->assertTrue($assoc instanceof \Doctrine\ORM\Mapping\ManyToManyMapping);
+        //$this->assertInstanceOf('Doctrine\ORM\Mapping\ManyToManyMapping', $assoc);
         $this->assertEquals(array(
             'name' => 'cmsuser_cmsgroup',
             'joinColumns' => array(array('name' => 'cmsuser_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE')),
@@ -235,6 +235,17 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
         $cm->mapField(array('fieldName' => 'name', 'columnName' => 'name'));
+    }
+    
+    /**
+     * @group DDC-1224
+     */
+    public function testGetTemporaryTableNameSchema()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->setTableName('foo.bar');
+        
+        $this->assertEquals('foo_bar_id_tmp', $cm->getTemporaryIdTableName());
     }
 
     public function testDefaultTableName()
@@ -459,5 +470,16 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $user = new \Doctrine\Tests\Models\CMS\CmsUser();
         $cm = new ClassMetadata('DOCTRINE\TESTS\MODELS\CMS\CMSUSER');
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $cm->name);
+    }
+
+    /**
+     * @group DDC-659
+     */
+    public function testLifecycleCallbackNotFound()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $this->setExpectedException("Doctrine\ORM\Mapping\MappingException", "Entity 'Doctrine\Tests\Models\CMS\CmsUser' has no method 'notfound' to be registered as lifecycle callback.");
+        $cm->addLifecycleCallback('notfound', 'postLoad');
     }
 }

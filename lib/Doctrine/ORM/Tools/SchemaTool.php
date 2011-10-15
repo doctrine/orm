@@ -523,10 +523,6 @@ class SchemaTool
                 $uniqueConstraints[] = array('columns' => array($columnName));
             }
 
-            if (isset($joinColumn['onUpdate'])) {
-                $fkOptions['onUpdate'] = $joinColumn['onUpdate'];
-            }
-
             if (isset($joinColumn['onDelete'])) {
                 $fkOptions['onDelete'] = $joinColumn['onDelete'];
             }
@@ -616,6 +612,24 @@ class SchemaTool
                 $visitor->acceptTable($table);
                 foreach ($table->getForeignKeys() AS $foreignKey) {
                     $visitor->acceptForeignKey($table, $foreignKey);
+                }
+            }
+        }
+        
+        if ($this->_platform->supportsSequences()) {
+            foreach ($schema->getSequences() AS $sequence) {
+                $visitor->acceptSequence($sequence);
+            }
+            foreach ($schema->getTables() AS $table) {
+                /* @var $sequence Table */
+                if ($table->hasPrimaryKey()) {
+                    $columns = $table->getPrimaryKey()->getColumns();
+                    if (count($columns) == 1) {
+                        $checkSequence = $table->getName() . "_" . $columns[0] . "_seq";
+                        if ($fullSchema->hasSequence($checkSequence)) {
+                            $visitor->acceptSequence($fullSchema->getSequence($checkSequence));
+                        }
+                    }
                 }
             }
         }

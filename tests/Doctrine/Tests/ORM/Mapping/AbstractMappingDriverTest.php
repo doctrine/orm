@@ -182,10 +182,11 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(isset($class->associationMappings['phonenumbers']));
         $this->assertFalse($class->associationMappings['phonenumbers']['isOwningSide']);
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRemove']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeMerge']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
 
         // Test Order By
         $this->assertEquals(array('number' => 'ASC'), $class->associationMappings['phonenumbers']['orderBy']);
@@ -267,10 +268,9 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      * @depends testColumnDefinition
      * @param ClassMetadata $class
      */
-    public function testJoinColumnOnDeleteAndOnUpdate($class)
+    public function testJoinColumnOnDelete($class)
     {
         $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
-        $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onUpdate']);
 
         return $class;
     }
@@ -290,6 +290,42 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
             array('name' => 'dtype', 'type' => 'string', 'length' => 255, 'fieldName' => 'dtype'),
             $class->discriminatorColumn
         );
+    }
+    
+    /**
+     * @group DDC-869
+     */
+    public function testMappedSuperclassWithRepository()
+    {
+        $driver     = $this->_loadDriver();
+        $em         = $this->_getTestEntityManager();
+        $factory    = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        
+        $em->getConfiguration()->setMetadataDriverImpl($driver);
+        $factory->setEntityManager($em);
+        
+        
+        $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment');
+        
+        $this->assertTrue(isset($class->fieldMappings['id']));
+        $this->assertTrue(isset($class->fieldMappings['value']));
+        $this->assertTrue(isset($class->fieldMappings['creditCardNumber']));
+        $this->assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
+        $this->assertInstanceOf("Doctrine\Tests\Models\DDC869\DDC869PaymentRepository", 
+             $em->getRepository("Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment"));
+        $this->assertTrue($em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment")->isTrue());
+        
+        
+        
+        $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869ChequePayment');
+        
+        $this->assertTrue(isset($class->fieldMappings['id']));
+        $this->assertTrue(isset($class->fieldMappings['value']));
+        $this->assertTrue(isset($class->fieldMappings['serialNumber']));
+        $this->assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
+        $this->assertInstanceOf("Doctrine\Tests\Models\DDC869\DDC869PaymentRepository", 
+             $em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment"));
+        $this->assertTrue($em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment")->isTrue());
     }
 }
 
@@ -324,12 +360,12 @@ class User
 
     /**
      * @OneToOne(targetEntity="Address", cascade={"remove"}, inversedBy="user")
-     * @JoinColumn(onDelete="CASCADE", onUpdate="CASCADE")
+     * @JoinColumn(onDelete="CASCADE")
      */
     public $address;
 
     /**
-     * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist"})
+     * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      * @OrderBy({"number"="ASC"})
      */
     public $phonenumbers;
@@ -412,7 +448,6 @@ class User
             'name' => 'address_id',
             'referencedColumnName' => 'id',
             'onDelete' => 'CASCADE',
-            'onUpdate' => 'CASCADE'
            ),
            ),
            'orphanRemoval' => false,
@@ -425,7 +460,7 @@ class User
            1 => 'persist',
            ),
            'mappedBy' => 'user',
-           'orphanRemoval' => false,
+           'orphanRemoval' => true,
            'orderBy' => 
            array(
            'number' => 'ASC',

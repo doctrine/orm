@@ -78,7 +78,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
 
         $class = 'Doctrine\ORM\Mapping\Driver\\' . $driverName;
         if ($type === 'annotation') {
-            $driver = $class::create($path);
+            $driver = $this->createAnnotationDriver(array($path));
         } else {
             $driver = new $class($path);
         }
@@ -212,18 +212,18 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     public function testOneToOneAssociationsAreExported($class)
     {
         $this->assertTrue(isset($class->associationMappings['address']));
-        //$this->assertTrue($class->associationMappings['address'] instanceof \Doctrine\ORM\Mapping\OneToOneMapping);
+        //$this->assertInstanceOf('Doctrine\ORM\Mapping\OneToOneMapping', $class->associationMappings['address']);
         $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\Address', $class->associationMappings['address']['targetEntity']);
         $this->assertEquals('address_id', $class->associationMappings['address']['joinColumns'][0]['name']);
         $this->assertEquals('id', $class->associationMappings['address']['joinColumns'][0]['referencedColumnName']);
         $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
-        $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onUpdate']);
 
         $this->assertTrue($class->associationMappings['address']['isCascadeRemove']);
-        $this->assertFalse($class->associationMappings['address']['isCascadePersist']);
+        $this->assertTrue($class->associationMappings['address']['isCascadePersist']);
         $this->assertFalse($class->associationMappings['address']['isCascadeRefresh']);
         $this->assertFalse($class->associationMappings['address']['isCascadeMerge']);
         $this->assertFalse($class->associationMappings['address']['isCascadeDetach']);
+        $this->assertTrue($class->associationMappings['address']['orphanRemoval']);
 
         return $class;
     }
@@ -235,16 +235,17 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     public function testOneToManyAssociationsAreExported($class)
     {
         $this->assertTrue(isset($class->associationMappings['phonenumbers']));
-        //$this->assertTrue($class->associationMappings['phonenumbers'] instanceof \Doctrine\ORM\Mapping\OneToManyMapping);
+        //$this->assertInstanceOf('Doctrine\ORM\Mapping\OneToManyMapping', $class->associationMappings['phonenumbers']);
         $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\Phonenumber', $class->associationMappings['phonenumbers']['targetEntity']);
         $this->assertEquals('user', $class->associationMappings['phonenumbers']['mappedBy']);
         $this->assertEquals(array('number' => 'ASC'), $class->associationMappings['phonenumbers']['orderBy']);
 
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRemove']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeMerge']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
         
         return $class;
     }
@@ -256,7 +257,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     public function testManyToManyAssociationsAreExported($class)
     {
         $this->assertTrue(isset($class->associationMappings['groups']));
-        //$this->assertTrue($class->associationMappings['groups'] instanceof \Doctrine\ORM\Mapping\ManyToManyMapping);
+        //$this->assertInstanceOf('Doctrine\ORM\Mapping\ManyToManyMapping', $class->associationMappings['groups']);
         $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\Group', $class->associationMappings['groups']['targetEntity']);
         $this->assertEquals('cms_users_groups', $class->associationMappings['groups']['joinTable']['name']);
 
@@ -301,9 +302,11 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     public function testCascadeIsExported($class)
     {
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeMerge']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRemove']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
+        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
 
         return $class;
     }

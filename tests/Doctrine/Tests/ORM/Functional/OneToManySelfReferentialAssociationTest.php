@@ -79,10 +79,10 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $parent = $result[0];
         $children = $parent->getChildren();
         
-        $this->assertTrue($children[0] instanceof ECommerceCategory);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $children[0]);
         $this->assertSame($parent, $children[0]->getParent());
         $this->assertEquals(' books', strstr($children[0]->getName(), ' books'));
-        $this->assertTrue($children[1] instanceof ECommerceCategory);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $children[1]);
         $this->assertSame($parent, $children[1]->getParent());
         $this->assertEquals(' books', strstr($children[1]->getName(), ' books'));
     }
@@ -98,10 +98,10 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $parent = $result[0];
         $children = $parent->getChildren();
         
-        $this->assertTrue($children[0] instanceof ECommerceCategory);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $children[0]);
         $this->assertSame($parent, $children[0]->getParent());
         $this->assertEquals(' books', strstr($children[0]->getName(), ' books'));
-        $this->assertTrue($children[1] instanceof ECommerceCategory);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $children[1]);
         $this->assertSame($parent, $children[1]->getParent());
         $this->assertEquals(' books', strstr($children[1]->getName(), ' books'));
     }

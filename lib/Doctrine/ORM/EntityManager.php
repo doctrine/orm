@@ -413,6 +413,7 @@ class EntityManager implements ObjectManager
         $entity = $class->newInstance();
         $class->setIdentifierValues($entity, $identifier);
         $this->unitOfWork->registerManaged($entity, $identifier, array());
+        $this->unitOfWork->markReadOnly($entity);
 
         return $entity;
     }
@@ -576,7 +577,8 @@ class EntityManager implements ObjectManager
         if ($customRepositoryClassName !== null) {
             $repository = new $customRepositoryClassName($this, $metadata);
         } else {
-            $repository = new EntityRepository($this, $metadata);
+            $repositoryClass = $this->config->getDefaultRepositoryClassName();
+            $repository      = new $repositoryClass($this, $metadata);
         }
 
         $this->repositories[$entityName] = $repository;

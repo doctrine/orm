@@ -46,13 +46,16 @@ class YamlDriver extends AbstractFileDriver
         $element = $this->getElement($className);
 
         if ($element['type'] == 'entity') {
-            $metadata->setCustomRepositoryClass(
-                isset($element['repositoryClass']) ? $element['repositoryClass'] : null
-            );
+            if (isset($element['repositoryClass'])) {
+                $metadata->setCustomRepositoryClass($element['repositoryClass']);  
+            }
             if (isset($element['readOnly']) && $element['readOnly'] == true) {
                 $metadata->markReadOnly();
             }
         } else if ($element['type'] == 'mappedSuperclass') {
+            $metadata->setCustomRepositoryClass(
+                isset($element['repositoryClass']) ? $element['repositoryClass'] : null
+            );
             $metadata->isMappedSuperclass = true;
         } else {
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
@@ -435,7 +438,7 @@ class YamlDriver extends AbstractFileDriver
                 }
 
                 if (isset($manyToManyElement['orphanRemoval'])) {
-                    $mapping['orphanRemoval'] = (bool)$manyToManyElement['orphan-removal'];
+                    $mapping['orphanRemoval'] = (bool)$manyToManyElement['orphanRemoval'];
                 }
 
                 if (isset($manyToManyElement['orderBy'])) {
@@ -490,10 +493,6 @@ class YamlDriver extends AbstractFileDriver
             $joinColumn['onDelete'] = $joinColumnElement['onDelete'];
         }
 
-        if (isset($joinColumnElement['onUpdate'])) {
-            $joinColumn['onUpdate'] = $joinColumnElement['onUpdate'];
-        }
-
         if (isset($joinColumnElement['columnDefinition'])) {
             $joinColumn['columnDefinition'] = $joinColumnElement['columnDefinition'];
         }
@@ -506,6 +505,6 @@ class YamlDriver extends AbstractFileDriver
      */
     protected function _loadMappingFile($file)
     {
-        return \Symfony\Component\Yaml\Yaml::load($file);
+        return \Symfony\Component\Yaml\Yaml::parse($file);
     }
 }

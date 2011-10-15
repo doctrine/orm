@@ -51,7 +51,6 @@ $metadata->mapOneToOne(array(
     'name' => 'address_id',
     'referencedColumnName' => 'id',
     'onDelete' => 'CASCADE',
-    'onUpdate' => 'CASCADE'
    ),
    ),
    'orphanRemoval' => false,
@@ -64,7 +63,7 @@ $metadata->mapOneToMany(array(
    1 => 'persist',
    ),
    'mappedBy' => 'user',
-   'orphanRemoval' => false,
+   'orphanRemoval' => true,
    'orderBy' => 
    array(
    'number' => 'ASC',

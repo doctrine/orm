@@ -22,7 +22,10 @@ if (isset($GLOBALS['DOCTRINE_DBAL_PATH'])) {
 }
 $classLoader->register();
 
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
+$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\ORM', __DIR__ . '/../../../lib');
+$classLoader->register();
+
+$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Tests', __DIR__ . '/../../');
 $classLoader->register();
 
 $classLoader = new \Doctrine\Common\ClassLoader('Symfony', __DIR__ . "/../../../lib/vendor");
@@ -38,9 +41,3 @@ if (!file_exists(__DIR__."/ORM/Proxy/generated")) {
         throw new Exception("Could not create " . __DIR__."/ORM/Proxy/generated Folder.");
     }
 }
-
-set_include_path(
-    __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'lib'
-    . PATH_SEPARATOR .
-    get_include_path() 
-);

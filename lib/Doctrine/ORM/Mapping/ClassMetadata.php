@@ -206,48 +206,6 @@ class ClassMetadata extends ClassMetadataInfo
     }
 
     /**
-     * Gets the (possibly quoted) column name of a mapped field for safe use
-     * in an SQL statement.
-     * 
-     * @param string $field
-     * @param AbstractPlatform $platform
-     * @return string
-     */
-    public function getQuotedColumnName($field, $platform)
-    {
-        return isset($this->fieldMappings[$field]['quoted']) ?
-                $platform->quoteIdentifier($this->fieldMappings[$field]['columnName']) :
-                $this->fieldMappings[$field]['columnName'];
-    }
-    
-    /**
-     * Gets the (possibly quoted) primary table name of this class for safe use
-     * in an SQL statement.
-     * 
-     * @param AbstractPlatform $platform
-     * @return string
-     */
-    public function getQuotedTableName($platform)
-    {
-        return isset($this->table['quoted']) ?
-                $platform->quoteIdentifier($this->table['name']) :
-                $this->table['name'];
-    }
-
-    /**
-     * Gets the (possibly quoted) name of the join table.
-     *
-     * @param AbstractPlatform $platform
-     * @return string
-     */
-    public function getQuotedJoinTableName(array $assoc, $platform)
-    {
-        return isset($assoc['joinTable']['quoted'])
-            ? $platform->quoteIdentifier($assoc['joinTable']['name'])
-            : $assoc['joinTable']['name'];
-    }
-
-    /**
      * Creates a string representation of this instance.
      *
      * @return string The string representation of this instance.
@@ -384,5 +342,18 @@ class ClassMetadata extends ClassMetadataInfo
             $this->_prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
         }
         return clone $this->_prototype;
+    }
+
+    /**
+     * @param string $callback
+     * @param string $event
+     */
+    public function addLifecycleCallback($callback, $event)
+    {
+        if ( !$this->reflClass->hasMethod($callback) ||
+             ($this->reflClass->getMethod($callback)->getModifiers() & \ReflectionMethod::IS_PUBLIC) == 0) {
+            throw MappingException::lifecycleCallbackMethodNotFound($this->name, $callback);
+        }
+        return parent::addLifecycleCallback($callback, $event);
     }
 }

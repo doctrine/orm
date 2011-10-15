@@ -1,0 +1,25 @@
+This document details all the possible changes that you should investigate when updating
+your project from Doctrine 2.0.x to 2.1
+
+## Interface for EntityRepository
+
+The EntityRepository now has an interface Doctrine\Common\Persistence\ObjectRepository. This means that your classes that override EntityRepository and extend find(), findOneBy() or findBy() must be adjusted to follow this interface.
+
+## AnnotationReader changes
+
+The annotation reader was heavily refactored between 2.0 and 2.1-RC1. In theory the operation of the new reader should be backwards compatible, but it has to be setup differently to work that way:
+
+    // new call to the AnnotationRegistry
+    \Doctrine\Common\Annotations\AnnotationRegistry::registerFile('/doctrine-src/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
+
+    $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+    $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
+    // new code necessary starting here
+    $reader->setIgnoreNotImportedAnnotations(true);
+    $reader->setEnableParsePhpImports(false);
+    $reader = new \Doctrine\Common\Annotations\CachedReader(
+        new \Doctrine\Common\Annotations\IndexedReader($reader), new ArrayCache()
+    );
+
+This is already done inside the ``$config->newDefaultAnnotationDriver``, so everything should automatically work if you are using this method. You can verify if everything still works by executing a console command such as schema-validate that loads all metadata into memory.
+

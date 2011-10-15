@@ -274,10 +274,15 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testDateDiff()
     {
-        $arg = $this->_em->createQuery("SELECT DATE_DIFF(CURRENT_TIMESTAMP(), '2011-01-01') AS diff FROM Doctrine\Tests\Models\Company\CompanyManager m")
-                ->getARrayResult();
-
-        $this->assertTrue($arg[0]['diff'] > 0);
+        $query = $this->_em->createQuery("SELECT DATE_DIFF(CURRENT_TIMESTAMP(), DATE_ADD(CURRENT_TIMESTAMP(), 10, 'day')) AS diff FROM Doctrine\Tests\Models\Company\CompanyManager m");
+        $arg = $query->getArrayResult();
+        
+        $this->assertEquals(-10, $arg[0]['diff'], "Should be roughly -10 (or -9)", 1);
+        
+        $query = $this->_em->createQuery("SELECT DATE_DIFF(DATE_ADD(CURRENT_TIMESTAMP(), 10, 'day'), CURRENT_TIMESTAMP()) AS diff FROM Doctrine\Tests\Models\Company\CompanyManager m");
+        $arg = $query->getArrayResult();
+        
+        $this->assertEquals(10, $arg[0]['diff'], "Should be roughly 10 (or 9)", 1);
     }
 
     /**

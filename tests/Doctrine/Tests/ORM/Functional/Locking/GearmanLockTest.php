@@ -9,6 +9,9 @@ use Doctrine\Tests\Models\CMS\CmsArticle,
 
 require_once __DIR__ . '/../../../TestInit.php';
 
+/**
+ * @group locking_functional
+ */
 class GearmanLockTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     private $gearman = null;

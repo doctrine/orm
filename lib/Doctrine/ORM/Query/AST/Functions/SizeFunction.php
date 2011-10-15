@@ -53,8 +53,8 @@ class SizeFunction extends FunctionNode
 
         if ($assoc['type'] == \Doctrine\ORM\Mapping\ClassMetadata::ONE_TO_MANY) {
             $targetClass = $sqlWalker->getEntityManager()->getClassMetadata($assoc['targetEntity']);
-            $targetTableAlias = $sqlWalker->getSQLTableAlias($targetClass->table['name']);
-            $sourceTableAlias = $sqlWalker->getSQLTableAlias($class->table['name'], $dqlAlias);
+            $targetTableAlias = $sqlWalker->getSQLTableAlias($targetClass->getTableName());
+            $sourceTableAlias = $sqlWalker->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
             $sql .= $targetClass->getQuotedTableName($platform) . ' ' . $targetTableAlias . ' WHERE ';
 
@@ -77,7 +77,7 @@ class SizeFunction extends FunctionNode
 
             // SQL table aliases
             $joinTableAlias = $sqlWalker->getSQLTableAlias($joinTable['name']);
-            $sourceTableAlias = $sqlWalker->getSQLTableAlias($class->table['name'], $dqlAlias);
+            $sourceTableAlias = $sqlWalker->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
             // join to target table
             $sql .= $targetClass->getQuotedJoinTableName($owningAssoc, $platform) . ' ' . $joinTableAlias . ' WHERE ';

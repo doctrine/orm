@@ -13,6 +13,9 @@ use Doctrine\Tests\Models\CMS\CmsComment;
 
 require_once __DIR__ . '/../../TestInit.php';
 
+/**
+ * @group performance
+ */
 class PersisterPerformanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()

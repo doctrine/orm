@@ -70,10 +70,10 @@ class ConvertDoctrine1Schema
             if (is_dir($path)) {
                 $files = glob($path . '/*.yml');
                 foreach ($files as $file) {
-                    $schema = array_merge($schema, (array) \Symfony\Component\Yaml\Yaml::load($file));
+                    $schema = array_merge($schema, (array) \Symfony\Component\Yaml\Yaml::parse($file));
                 }
             } else {
-                $schema = array_merge($schema, (array) \Symfony\Component\Yaml\Yaml::load($path));
+                $schema = array_merge($schema, (array) \Symfony\Component\Yaml\Yaml::parse($path));
             }
         }
 
@@ -101,6 +101,7 @@ class ConvertDoctrine1Schema
     {
         if (isset($model['tableName']) && $model['tableName']) {
             $e = explode('.', $model['tableName']);
+            
             if (count($e) > 1) {
                 $metadata->table['schema'] = $e[0];
                 $metadata->table['name'] = $e[1];
@@ -248,7 +249,6 @@ class ConvertDoctrine1Schema
                             'name' => $relation['local'],
                             'referencedColumnName' => $relation['foreign'],
                             'onDelete' => isset($relation['onDelete']) ? $relation['onDelete'] : null,
-                            'onUpdate' => isset($relation['onUpdate']) ? $relation['onUpdate'] : null,
                         )
                     );
                 }

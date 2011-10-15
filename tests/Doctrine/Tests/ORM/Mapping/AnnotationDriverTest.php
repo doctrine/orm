@@ -99,10 +99,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
     protected function _loadDriver()
     {
-        $cache = new \Doctrine\Common\Cache\ArrayCache();
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader($cache);
-        $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-        return new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
+        return $this->createAnnotationDriver();
     }
 
     protected function _ensureIsLoaded($entityClassName)
@@ -187,6 +184,21 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\AnnotationParent');
         $this->assertEquals(array("postLoad" => array("postLoad"), "preUpdate" => array("preUpdate")), $cm->lifecycleCallbacks);
     }
+    
+    /**
+     * @group DDC-1156
+     */
+    public function testMappedSuperclassInMiddleOfInheritanceHierachy()
+    {
+        $annotationDriver = $this->_loadDriver();
+        
+        $em = $this->_getTestEntityManager();
+        $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
+        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory->setEntityManager($em);
+        
+        $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\ChildEntity');
+    }
 }
 
 /**
@@ -267,4 +279,35 @@ class AnnotationParent
 class AnnotationChild extends AnnotationParent
 {
     
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorMap({"s"="SuperEntity", "c"="ChildEntity"})
+ */
+class SuperEntity
+{
+    /** @Id @Column(type="string") */
+    private $id;
+}
+
+/**
+ * @MappedSuperclass
+ */
+class MiddleMappedSuperclass extends SuperEntity
+{
+    /** @Column(type="string") */
+    private $name;
+}
+
+/**
+ * @Entity
+ */
+class ChildEntity extends MiddleMappedSuperclass
+{
+    /**
+     * @Column(type="string")
+     */
+    private $text;
 }

@@ -23,16 +23,17 @@ Doctrine\Tests\ORM\Tools\Export\User:
         name: address_id
         referencedColumnName: id
         onDelete: CASCADE
-        onUpdate: CASCADE
-      cascade: [ remove ]
+      cascade: [ persist ]
       inversedBy: user
+      orphanRemoval: true
   oneToMany:
     phonenumbers:
       targetEntity: Doctrine\Tests\ORM\Tools\Export\Phonenumber
       mappedBy: user
       orderBy:
         number: ASC
-      cascade: [ persist ]
+      cascade: [ persist, merge ]
+      orphanRemoval: true
   manyToMany:
     groups:
       targetEntity: Doctrine\Tests\ORM\Tools\Export\Group

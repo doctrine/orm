@@ -335,7 +335,6 @@ class ClassMetadataInfo implements ClassMetadata
      * uniqueConstraints => array
      *
      * @var array
-     * @todo Rename to just $table
      */
     public $table;
 
@@ -775,9 +774,13 @@ class ClassMetadataInfo implements ClassMetadata
         // If targetEntity is unqualified, assume it is in the same namespace as
         // the sourceEntity.
         $mapping['sourceEntity'] = $this->name;
-        if (isset($mapping['targetEntity']) && strpos($mapping['targetEntity'], '\\') === false
-                && strlen($this->namespace) > 0) {
-            $mapping['targetEntity'] = $this->namespace . '\\' . $mapping['targetEntity'];
+        
+        if (isset($mapping['targetEntity'])) {
+            if (strlen($this->namespace) > 0 && strpos($mapping['targetEntity'], '\\') === false) {
+                $mapping['targetEntity'] = $this->namespace . '\\' . $mapping['targetEntity'];
+            }
+            
+            $mapping['targetEntity'] = ltrim($mapping['targetEntity'], '\\');
         }
 
         // Complete id mapping
@@ -833,16 +836,12 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         // Cascades
-        $cascades = isset($mapping['cascade']) ? $mapping['cascade'] : array();
+        $cascades = isset($mapping['cascade']) ? array_map('strtolower', $mapping['cascade']) : array();
+        
         if (in_array('all', $cascades)) {
-            $cascades = array(
-               'remove',
-               'persist',
-               'refresh',
-               'merge',
-               'detach'
-            );
+            $cascades = array('remove', 'persist', 'refresh', 'merge', 'detach');
         }
+        
         $mapping['cascade'] = $cascades;
         $mapping['isCascadeRemove'] = in_array('remove',  $cascades);
         $mapping['isCascadePersist'] = in_array('persist',  $cascades);
@@ -909,9 +908,8 @@ class ClassMetadataInfo implements ClassMetadata
             $mapping['targetToSourceKeyColumns'] = array_flip($mapping['sourceToTargetKeyColumns']);
         }
 
-        //TODO: if orphanRemoval, cascade=remove is implicit!
-        $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) ?
-                (bool) $mapping['orphanRemoval'] : false;
+        $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) ? (bool) $mapping['orphanRemoval'] : false;
+        $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] ? true : $mapping['isCascadeRemove'];
 
         if (isset($mapping['id']) && $mapping['id'] === true && !$mapping['isOwningSide']) {
             throw MappingException::illegalInverseIdentifierAssocation($this->name, $mapping['fieldName']);
@@ -936,9 +934,8 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
         }
         
-        //TODO: if orphanRemoval, cascade=remove is implicit!
-        $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) ?
-                (bool) $mapping['orphanRemoval'] : false;
+        $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) ? (bool) $mapping['orphanRemoval'] : false;
+        $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] ? true : $mapping['isCascadeRemove'];
 
         if (isset($mapping['orderBy'])) {
             if ( ! is_array($mapping['orderBy'])) {
@@ -1272,7 +1269,8 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getTemporaryIdTableName()
     {
-        return $this->table['name'] . '_id_tmp';
+        // replace dots with underscores because PostgreSQL creates temporary tables in a special schema
+        return str_replace('.', '_', $this->getTableName() . '_id_tmp');
     }
 
     /**
@@ -1371,9 +1369,11 @@ class ClassMetadataInfo implements ClassMetadata
                 $this->table['name'] = $table['name'];
             }
         }
+        
         if (isset($table['indexes'])) {
             $this->table['indexes'] = $table['indexes'];
         }
+        
         if (isset($table['uniqueConstraints'])) {
             $this->table['uniqueConstraints'] = $table['uniqueConstraints'];
         }
@@ -1522,6 +1522,10 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
+        if ($repositoryClassName !== null && strpos($repositoryClassName, '\\') === false 
+                && strlen($this->namespace) > 0) {
+            $repositoryClassName = $this->namespace . '\\' . $repositoryClassName;
+        }
         $this->customRepositoryClassName = $repositoryClassName;
     }
 
@@ -1563,9 +1567,6 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * Adds a lifecycle callback for entities of this class.
-     *
-     * Note: If the same callback is registered more than once, the old one
-     * will be overridden.
      *
      * @param string $callback
      * @param string $event
@@ -1625,20 +1626,33 @@ class ClassMetadataInfo implements ClassMetadata
     public function setDiscriminatorMap(array $map)
     {
         foreach ($map as $value => $className) {
-            if (strpos($className, '\\') === false && strlen($this->namespace)) {
-                $className = $this->namespace . '\\' . $className;
+            $this->addDiscriminatorMapClass($value, $className);
+        }
+    }
+
+    /**
+     * Add one entry of the discriminator map with a new class and corresponding name.
+     *
+     * @param string $name
+     * @param string $className
+     */
+    public function addDiscriminatorMapClass($name, $className)
+    {
+        if (strlen($this->namespace) > 0 && strpos($className, '\\') === false) {
+            $className = $this->namespace . '\\' . $className;
+        }
+
+        $className = ltrim($className, '\\');
+        $this->discriminatorMap[$name] = $className;
+
+        if ($this->name == $className) {
+            $this->discriminatorValue = $name;
+        } else {
+            if ( ! class_exists($className)) {
+                throw MappingException::invalidClassInDiscriminatorMap($className, $this->name);
             }
-            $className = ltrim($className, '\\');
-            $this->discriminatorMap[$value] = $className;
-            if ($this->name == $className) {
-                $this->discriminatorValue = $value;
-            } else {
-                if ( ! class_exists($className)) {
-                    throw MappingException::invalidClassInDiscriminatorMap($className, $this->name);
-                }
-                if (is_subclass_of($className, $this->name)) {
-                    $this->subClasses[] = $className;
-                }
+            if (is_subclass_of($className, $this->name)) {
+                $this->subClasses[] = $className;
             }
         }
     }
@@ -1800,7 +1814,7 @@ class ClassMetadataInfo implements ClassMetadata
         $this->versionField = $mapping['fieldName'];
 
         if ( ! isset($mapping['default'])) {
-            if ($mapping['type'] == 'integer') {
+            if (in_array($mapping['type'], array('integer', 'bigint', 'smallint'))) {
                 $mapping['default'] = 1;
             } else if ($mapping['type'] == 'datetime') {
                 $mapping['default'] = 'CURRENT_TIMESTAMP';
@@ -1873,9 +1887,10 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getAssociationTargetClass($assocName)
     {
-        if (!isset($this->associationMappings[$assocName])) {
+        if ( ! isset($this->associationMappings[$assocName])) {
             throw new \InvalidArgumentException("Association name expected, '" . $assocName ."' is not an association.");
         }
+        
         return $this->associationMappings[$assocName]['targetEntity'];
     }
     
@@ -1887,5 +1902,41 @@ class ClassMetadataInfo implements ClassMetadata
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Gets the (possibly quoted) column name of a mapped field for safe use
+     * in an SQL statement.
+     * 
+     * @param string $field
+     * @param AbstractPlatform $platform
+     * @return string
+     */
+    public function getQuotedColumnName($field, $platform)
+    {
+        return isset($this->fieldMappings[$field]['quoted']) ? $platform->quoteIdentifier($this->fieldMappings[$field]['columnName']) : $this->fieldMappings[$field]['columnName'];
+    }
+    
+    /**
+     * Gets the (possibly quoted) primary table name of this class for safe use
+     * in an SQL statement.
+     * 
+     * @param AbstractPlatform $platform
+     * @return string
+     */
+    public function getQuotedTableName($platform)
+    {
+        return isset($this->table['quoted']) ? $platform->quoteIdentifier($this->table['name']) : $this->table['name'];
+    }
+
+    /**
+     * Gets the (possibly quoted) name of the join table.
+     *
+     * @param AbstractPlatform $platform
+     * @return string
+     */
+    public function getQuotedJoinTableName(array $assoc, $platform)
+    {
+        return isset($assoc['joinTable']['quoted']) ? $platform->quoteIdentifier($assoc['joinTable']['name']) : $assoc['joinTable']['name'];
     }
 }

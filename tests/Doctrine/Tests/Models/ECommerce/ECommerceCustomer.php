@@ -34,7 +34,7 @@ class ECommerceCustomer
      * only one customer at the time, while a customer can choose only one
      * mentor. Not properly appropriate but it works.
      * 
-     * @OneToOne(targetEntity="ECommerceCustomer", cascade={"persist"})
+     * @OneToOne(targetEntity="ECommerceCustomer", cascade={"persist"}, fetch="EAGER")
      * @JoinColumn(name="mentor_id", referencedColumnName="id")
      */
     private $mentor;

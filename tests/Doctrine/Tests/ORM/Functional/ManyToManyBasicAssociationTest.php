@@ -47,7 +47,7 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $result = $query->getResult();
 
         $this->assertEquals(2, $this->_em->getUnitOfWork()->size());
-        $this->assertTrue($result[0] instanceof CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
         $this->assertEquals('Guilherme', $result[0]->name);
         $this->assertEquals(1, $result[0]->getGroups()->count());
         $groups = $result[0]->getGroups();
@@ -56,8 +56,8 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($result[0]));
         $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($groups[0]));
 
-        $this->assertTrue($groups instanceof \Doctrine\ORM\PersistentCollection);
-        $this->assertTrue($groups[0]->getUsers() instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $groups);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $groups[0]->getUsers());
 
         $groups[0]->getUsers()->clear();
         $groups->clear();
@@ -341,5 +341,40 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $this->assertEquals(2, count($user->groups));
         $this->assertEquals('Developers_New1', $user->groups[0]->name);
         $this->assertEquals('Developers_New2', $user->groups[1]->name);
+    }
+    
+    /**
+     * @group DDC-733
+     */
+    public function testInitializePersistentCollection()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(2);
+        $this->_em->clear();
+        
+        $user = $this->_em->find(get_class($user), $user->id);
+        
+        $this->assertFalse($user->groups->isInitialized(), "Pre-condition: lazy collection");
+        $this->_em->getUnitOfWork()->initializeObject($user->groups);
+        $this->assertTrue($user->groups->isInitialized(), "Collection should be initialized after calling UnitOfWork::initializeObject()");
+    }
+    
+    /**
+     * @group DDC-1189
+     * @group DDC-956
+     */
+    public function testClearBeforeLazyLoad()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(4);
+        
+        $this->_em->clear();
+        
+        $user = $this->_em->find(get_class($user), $user->id);
+        $user->groups->clear(); 
+        $this->assertEquals(0, count($user->groups));
+        
+        $this->_em->flush();
+        
+        $user = $this->_em->find(get_class($user), $user->id);
+        $this->assertEquals(0, count($user->groups));
     }
 }

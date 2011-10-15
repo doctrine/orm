@@ -52,20 +52,20 @@ class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // Test Class1
         $e1 = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC837Super', $c1->id);
 
-        $this->assertType('Doctrine\Tests\ORM\Functional\Ticket\DDC837Class1', $e1);
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC837Class1', $e1);
         $this->assertEquals('Foo', $e1->title);
         $this->assertEquals('Foo', $e1->description);
-        $this->assertType(__NAMESPACE__ . '\DDC837Aggregate', $e1->aggregate);
+        $this->assertInstanceOf(__NAMESPACE__ . '\DDC837Aggregate', $e1->aggregate);
         $this->assertEquals('test1', $e1->aggregate->getSysname());
 
         // Test Class 2
         $e2 = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC837Super', $c2->id);
 
-        $this->assertType('Doctrine\Tests\ORM\Functional\Ticket\DDC837Class2', $e2);
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC837Class2', $e2);
         $this->assertEquals('Bar', $e2->title);
         $this->assertEquals('Bar', $e2->description);
         $this->assertEquals('Bar', $e2->text);
-        $this->assertType(__NAMESPACE__ . '\DDC837Aggregate', $e2->aggregate);
+        $this->assertInstanceOf(__NAMESPACE__ . '\DDC837Aggregate', $e2->aggregate);
         $this->assertEquals('test2', $e2->aggregate->getSysname());
 
         $all = $this->_em->getRepository(__NAMESPACE__.'\DDC837Super')->findAll();
@@ -111,12 +111,12 @@ abstract class DDC837Super
 class DDC837Class1 extends DDC837Super
 {
     /**
-     * @Column(name="title", type="string", length="150")
+     * @Column(name="title", type="string", length=150)
      */
     public $title;
 
     /**
-     * @Column(name="content", type="string", length="500")
+     * @Column(name="content", type="string", length=500)
      */
     public $description;
 
@@ -132,12 +132,12 @@ class DDC837Class1 extends DDC837Super
 class DDC837Class2 extends DDC837Super
 {
     /**
-     * @Column(name="title", type="string", length="150")
+     * @Column(name="title", type="string", length=150)
      */
     public $title;
 
     /**
-     * @Column(name="content", type="string", length="500")
+     * @Column(name="content", type="string", length=500)
      */
     public $description;
 
@@ -160,12 +160,12 @@ class DDC837Class2 extends DDC837Super
 class DDC837Class3 extends DDC837Super
 {
     /**
-     * @Column(name="title", type="string", length="150")
+     * @Column(name="title", type="string", length=150)
      */
     public $apples;
 
     /**
-     * @Column(name="content", type="string", length="500")
+     * @Column(name="content", type="string", length=500)
      */
     public $bananas;
 }

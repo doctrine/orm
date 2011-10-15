@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\ORM\UnitOfWork;
 
 require_once __DIR__ . '/../../TestInit.php';
@@ -137,14 +138,14 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $address2 = $this->_em->find(get_class($address), $address->id);
-        $this->assertTrue($address2->user instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $address2->user);
         $this->assertFalse($address2->user->__isInitialized__);
         $detachedAddress2 = unserialize(serialize($address2));
-        $this->assertTrue($detachedAddress2->user instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $detachedAddress2->user);
         $this->assertFalse($detachedAddress2->user->__isInitialized__);
 
         $managedAddress2 = $this->_em->merge($detachedAddress2);
-        $this->assertTrue($managedAddress2->user instanceof \Doctrine\ORM\Proxy\Proxy);
+        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $managedAddress2->user);
         $this->assertFalse($managedAddress2->user === $detachedAddress2->user);
         $this->assertFalse($managedAddress2->user->__isInitialized__);
     }
@@ -191,6 +192,27 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertFalse($this->_em->contains($user));
         $this->assertFalse($this->_em->getUnitOfWork()->isInIdentityMap($user));
+    }
+
+    /**
+     * @group DDC-1340
+     */
+    public function testMergeArticleWrongVersion()
+    {
+        $article = new CmsArticle();
+        $article->topic = "test";
+        $article->text = "test";
+
+        $this->_em->persist($article);
+        $this->_em->flush();
+
+        $this->_em->detach($article);
+
+        $sql = "UPDATE cms_articles SET version = version+1 WHERE id = " . $article->id;
+        $this->_em->getConnection()->executeUpdate($sql);
+
+        $this->setExpectedException('Doctrine\ORM\OptimisticLockException', 'The optimistic lock failed, version 1 was expected, but is actually 2');
+        $this->_em->merge($article);
     }
 }
 

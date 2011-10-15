@@ -40,11 +40,11 @@ class DDC199Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $result = $query->getResult();
         
         $this->assertEquals(1, count($result));
-        $this->assertTrue($result[0] instanceof DDC199ChildClass);
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC199ParentClass', $result[0]);
         $this->assertTrue($result[0]->relatedEntities->isInitialized());
         $this->assertEquals(2, $result[0]->relatedEntities->count());
-        $this->assertTrue($result[0]->relatedEntities[0] instanceof DDC199RelatedClass);
-        $this->assertTrue($result[0]->relatedEntities[1] instanceof DDC199RelatedClass);
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC199RelatedClass', $result[0]->relatedEntities[0]);
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC199RelatedClass', $result[0]->relatedEntities[1]);
     }
 }
 

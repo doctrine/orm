@@ -39,10 +39,12 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     protected function _prepareInsertData($entity)
     {
         $data = parent::_prepareInsertData($entity);
+        
         // Populate the discriminator column
         $discColumn = $this->_class->discriminatorColumn;
         $this->_columnTypes[$discColumn['name']] = $discColumn['type'];
         $data[$this->_getDiscriminatorColumnTableName()][$discColumn['name']] = $this->_class->discriminatorValue;
+        
         return $data;
     }
 
@@ -63,7 +65,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
         $columnAlias = $this->_platform->getSQLResultCasing($columnName . $this->_sqlAliasCounter++);
         $this->_rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
 
-        return "$sql AS $columnAlias";
+        return $sql . ' AS ' . $columnAlias;
     }
 
     protected function getSelectJoinColumnSQL($tableAlias, $joinColumnName, $className)
@@ -72,6 +74,6 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
         $resultColumnName = $this->_platform->getSQLResultCasing($columnAlias);
         $this->_rsm->addMetaResult('r', $resultColumnName, $joinColumnName);
         
-        return $tableAlias . ".$joinColumnName AS $columnAlias";
+        return $tableAlias . '.' . $joinColumnName . ' AS ' . $columnAlias;
     }
 }

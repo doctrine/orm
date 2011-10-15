@@ -197,6 +197,17 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid');
     }
+    
+    public function testComplexAndWhere()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where('u.id = :uid OR u.id = :uid2 OR u.id = :uid3')
+            ->andWhere('u.name = :name');
+            
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid OR u.id = :uid2 OR u.id = :uid3) AND u.name = :name');
+    }
 
     public function testAndWhere()
     {
@@ -652,6 +663,15 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(array('u'), $qb->getRootAliases());
     }
     
+    public function testGetRootEntities()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        
+        $this->assertEquals(array('Doctrine\Tests\Models\CMS\CmsUser'), $qb->getRootEntities());
+    }
+    
     public function testGetSeveralRootAliases()
     {
         $qb = $this->_em->createQueryBuilder()
@@ -671,5 +691,45 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->add('join', array('INNER JOIN u.groups g'), true);
         
         $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.groups g', $qb->getDQL());
+    }
+    
+    /**
+     * @group DDC-1211
+     */
+    public function testEmptyStringLiteral()
+    {
+        $expr = $this->_em->getExpressionBuilder();
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where($expr->eq('u.username', $expr->literal("")));
+        
+        $this->assertEquals("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = ''", $qb->getDQL());
+    }
+    
+    /**
+     * @group DDC-1211
+     */
+    public function testEmptyNumericLiteral()
+    {
+        $expr = $this->_em->getExpressionBuilder();
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where($expr->eq('u.username', $expr->literal(0)));
+        
+        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 0', $qb->getDQL());
+    }
+    
+    /**
+     * @group DDC-1227
+     */
+    public function testAddFromString()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->add('select', 'u')
+            ->add('from', 'Doctrine\Tests\Models\CMS\CmsUser u');
+        
+        $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $qb->getDQL());
     }
 }

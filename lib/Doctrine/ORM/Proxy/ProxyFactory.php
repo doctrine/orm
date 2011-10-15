@@ -172,7 +172,7 @@ class ProxyFactory
             }
 
             if ($method->isPublic() && ! $method->isFinal() && ! $method->isStatic()) {
-                $methods .= PHP_EOL . '    public function ';
+                $methods .= "\n" . '    public function ';
                 if ($method->returnsReference()) {
                     $methods .= '&';
                 }
@@ -208,15 +208,15 @@ class ProxyFactory
                 }
 
                 $methods .= $parameterString . ')';
-                $methods .= PHP_EOL . '    {' . PHP_EOL;
+                $methods .= "\n" . '    {' . "\n";
                 if ($this->isShortIdentifierGetter($method, $class)) {
-                    $methods .= '        if ($this->__isInitialized__ === false) {' . PHP_EOL;
-                    $methods .= '            return $this->_identifier["' . lcfirst(substr($method->getName(), 3)) . '"];' . PHP_EOL;
-                    $methods .= '        }' . PHP_EOL;
+                    $methods .= '        if ($this->__isInitialized__ === false) {' . "\n";
+                    $methods .= '            return $this->_identifier["' . lcfirst(substr($method->getName(), 3)) . '"];' . "\n";
+                    $methods .= '        }' . "\n";
                 }
-                $methods .= '        $this->__load();' . PHP_EOL;
+                $methods .= '        $this->__load();' . "\n";
                 $methods .= '        return parent::' . $method->getName() . '(' . $argumentString . ');';
-                $methods .= PHP_EOL . '    }' . PHP_EOL;
+                $methods .= "\n" . '    }' . "\n";
             }
         }
 
@@ -289,17 +289,26 @@ class <proxyClassName> extends \<className> implements \Doctrine\ORM\Proxy\Proxy
         $this->_entityPersister = $entityPersister;
         $this->_identifier = $identifier;
     }
-    private function __load()
+    /** @private */
+    public function __load()
     {
         if (!$this->__isInitialized__ && $this->_entityPersister) {
             $this->__isInitialized__ = true;
+
+            if (method_exists($this, "__wakeup")) {
+                // call this after __isInitialized__to avoid infinite recursion
+                // but before loading to emulate what ClassMetadata::newInstance()
+                // provides.
+                $this->__wakeup();
+            }
+
             if ($this->_entityPersister->load($this->_identifier, $this) === null) {
                 throw new \Doctrine\ORM\EntityNotFoundException();
             }
             unset($this->_entityPersister, $this->_identifier);
         }
     }
-
+    
     <methods>
 
     public function __sleep()

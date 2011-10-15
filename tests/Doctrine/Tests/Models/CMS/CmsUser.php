@@ -31,7 +31,7 @@ class CmsUser
      */
     public $name;
     /**
-     * @OneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
+     * @OneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"persist", "merge"}, orphanRemoval=true)
      */
     public $phonenumbers;
     /**
@@ -42,6 +42,11 @@ class CmsUser
      * @OneToOne(targetEntity="CmsAddress", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      */
     public $address;
+    /**
+     * @OneToOne(targetEntity="CmsEmail", inversedBy="user", cascade={"persist"}, orphanRemoval=true)
+     * @JoinColumn(referencedColumnName="id", nullable=true)
+     */
+    public $email;
     /**
      * @ManyToMany(targetEntity="CmsGroup", inversedBy="users", cascade={"persist", "merge"})
      * @JoinTable(name="cms_users_groups",
@@ -117,6 +122,18 @@ class CmsUser
         if ($this->address !== $address) {
             $this->address = $address;
             $address->setUser($this);
+        }
+    }
+    
+    public function getEmail() { return $this->email; }
+    
+    public function setEmail(CmsEmail $email = null) {
+        if ($this->email !== $email) {
+            $this->email = $email;
+            
+            if ($email) {
+                $email->setUser($this);
+            }
         }
     }
 }

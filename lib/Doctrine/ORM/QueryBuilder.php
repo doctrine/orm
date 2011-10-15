@@ -240,7 +240,7 @@ class QueryBuilder
     }
 
     /**
-     * Gets the root alias of the query. This is the first entity alias involved
+     * Gets the root aliases of the query. This is the entity aliases involved
      * in the construction of the query.
      *
      * <code>
@@ -251,7 +251,7 @@ class QueryBuilder
      *     $qb->getRootAliases(); // array('u')
      * </code>
      *
-     * @return string $rootAlias
+     * @return array $rootAliases
      */
     public function getRootAliases()
     {
@@ -273,6 +273,39 @@ class QueryBuilder
     }
 
     /**
+     * Gets the root entities of the query. This is the entity aliases involved
+     * in the construction of the query.
+     *
+     * <code>
+     *     $qb = $em->createQueryBuilder()
+     *         ->select('u')
+     *         ->from('User', 'u');
+     *
+     *     $qb->getRootEntities(); // array('User')
+     * </code>
+     *
+     * @return array $rootEntities
+     */
+    public function getRootEntities()
+    {
+        $entities = array();
+        
+        foreach ($this->_dqlParts['from'] as &$fromClause) {
+            if (is_string($fromClause)) {
+                $spacePos = strrpos($fromClause, ' ');
+                $from     = substr($fromClause, 0, $spacePos);
+                $alias    = substr($fromClause, $spacePos + 1);
+
+                $fromClause = new Query\Expr\From($from, $alias);
+            }
+            
+            $entities[] = $fromClause->getFrom();
+        }
+        
+        return $entities;
+    }
+
+    /**
      * Sets a query parameter for the query being constructed.
      *
      * <code>
@@ -290,6 +323,8 @@ class QueryBuilder
      */
     public function setParameter($key, $value, $type = null)
     {
+        $key = trim($key, ':');
+        
         if ($type === null) {
             $type = Query\ParameterTypeInferer::inferType($value);
         }
@@ -560,11 +595,12 @@ class QueryBuilder
      *
      * @param string $from   The class name.
      * @param string $alias  The alias of the class.
+     * @param string $indexBy The index for the from.
      * @return QueryBuilder This QueryBuilder instance.
      */
-    public function from($from, $alias)
+    public function from($from, $alias, $indexBy = null)
     {
-        return $this->add('from', new Expr\From($from, $alias), true);
+        return $this->add('from', new Expr\From($from, $alias, $indexBy), true);
     }
 
     /**
@@ -953,7 +989,7 @@ class QueryBuilder
             foreach ($fromParts as $from) {
                 $fromClause = (string) $from;
 
-                if (isset($joinParts[$from->getAlias()])) {
+                if ($from instanceof Expr\From && isset($joinParts[$from->getAlias()])) {
                     foreach ($joinParts[$from->getAlias()] as $join) {
                         $fromClause .= ' ' . ((string) $join);
                     }

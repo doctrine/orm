@@ -49,6 +49,14 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         $this->assertForeignKeyIs(null);
     }
 
+    public function testFind()
+    {
+        $id = $this->_createFixture();
+
+        $customer = $this->_em->find('Doctrine\Tests\Models\ECommerce\ECommerceCustomer', $id);
+        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $customer->getMentor());
+    }
+
     public function testEagerLoadsAssociation()
     {
         $this->_createFixture();
@@ -96,8 +104,8 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         
         $entity2 = $this->_em->find(get_class($entity1), $entity1->getId());
         
-        $this->assertTrue($entity2->getOther1() instanceof MultiSelfReference);
-        $this->assertTrue($entity2->getOther2() instanceof MultiSelfReference);
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\MultiSelfReference', $entity2->getOther1());
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\MultiSelfReference', $entity2->getOther2());
         $this->assertNull($entity2->getOther1()->getOther1());
         $this->assertNull($entity2->getOther1()->getOther2());
         $this->assertNull($entity2->getOther2()->getOther1());
@@ -106,7 +114,7 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
 
     public function assertLoadingOfAssociation($customer)
     {
-        $this->assertTrue($customer->getMentor() instanceof ECommerceCustomer);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCustomer', $customer->getMentor());
         $this->assertEquals('Obi-wan Kenobi', $customer->getMentor()->getName());
     }
 
@@ -127,6 +135,8 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         
         $this->_em->flush();
         $this->_em->clear();
+
+        return $customer->getId();
     }
 }
 

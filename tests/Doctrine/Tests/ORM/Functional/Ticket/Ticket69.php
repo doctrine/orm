@@ -85,11 +85,11 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $lemma = $res[0];
 
         $this->assertEquals('foo', $lemma->getLemma());
-        $this->assertTrue($lemma instanceof Lemma);
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\Lemma', $lemma);
         $relations = $lemma->getRelations();
 
         foreach($relations as $relation) {
-            $this->assertTrue($relation instanceof Relation);
+            $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\Relation', $relation);
             $this->assertTrue($relation->getType()->getType() != '');
         }
 

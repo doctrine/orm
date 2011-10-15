@@ -44,6 +44,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\CMS\CmsUser',
             'Doctrine\Tests\Models\CMS\CmsPhonenumber',
             'Doctrine\Tests\Models\CMS\CmsAddress',
+            'Doctrine\Tests\Models\CMS\CmsEmail',
             'Doctrine\Tests\Models\CMS\CmsGroup',
             'Doctrine\Tests\Models\CMS\CmsArticle',
             'Doctrine\Tests\Models\CMS\CmsComment',
@@ -98,11 +99,18 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\DDC117\DDC117ArticleDetails',
             'Doctrine\Tests\Models\DDC117\DDC117ApproveChanges',
             'Doctrine\Tests\Models\DDC117\DDC117Editor',
+            'Doctrine\Tests\Models\DDC117\DDC117Link',
         ),
         'stockexchange' => array(
             'Doctrine\Tests\Models\StockExchange\Bond',
             'Doctrine\Tests\Models\StockExchange\Stock',
             'Doctrine\Tests\Models\StockExchange\Market',
+        ),
+        'legacy' => array(
+            'Doctrine\Tests\Models\Legacy\LegacyUser',
+            'Doctrine\Tests\Models\Legacy\LegacyUserReference',
+            'Doctrine\Tests\Models\Legacy\LegacyArticle',
+            'Doctrine\Tests\Models\Legacy\LegacyCar',
         ),
     );
 
@@ -191,6 +199,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM ddc117editor_ddc117translation');
             $conn->executeUpdate('DELETE FROM DDC117Editor');
             $conn->executeUpdate('DELETE FROM DDC117ApproveChanges');
+            $conn->executeUpdate('DELETE FROM DDC117Link');
             $conn->executeUpdate('DELETE FROM DDC117Reference');
             $conn->executeUpdate('DELETE FROM DDC117ArticleDetails');
             $conn->executeUpdate('DELETE FROM DDC117Translation');
@@ -201,6 +210,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM exchange_bonds');
             $conn->executeUpdate('DELETE FROM exchange_stocks');
             $conn->executeUpdate('DELETE FROM exchange_markets');
+        }
+        if (isset($this->_usedModelSets['legacy'])) {
+            $conn->executeUpdate('DELETE FROM legacy_users_cars');
+            $conn->executeUpdate('DELETE FROM legacy_users_reference');
+            $conn->executeUpdate('DELETE FROM legacy_articles');
+            $conn->executeUpdate('DELETE FROM legacy_cars');
+            $conn->executeUpdate('DELETE FROM legacy_users');
         }
 
         $this->_em->clear();
@@ -288,6 +304,25 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         
         $conn = static::$_sharedConn;
         $conn->getConfiguration()->setSQLLogger($this->_sqlLoggerStack);
+
+        // get rid of more global state
+        $evm = $conn->getEventManager();
+        foreach ($evm->getListeners() AS $event => $listeners) {
+            foreach ($listeners AS $listener) {
+                $evm->removeEventListener(array($event), $listener);
+            }
+        }
+        
+        if (isset($GLOBALS['db_event_subscribers'])) {
+            foreach (explode(",", $GLOBALS['db_event_subscribers']) AS $subscriberClass) {
+                $subscriberInstance = new $subscriberClass();
+                $evm->addEventSubscriber($subscriberInstance);
+            }
+        }
+
+        if (isset($GLOBALS['debug_uow_listener'])) {
+            $evm->addEventListener(array('onFlush'), new \Doctrine\ORM\Tools\DebugUnitOfWorkListener());
+        }
         
         return \Doctrine\ORM\EntityManager::create($conn, $config);
     }

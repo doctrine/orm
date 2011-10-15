@@ -65,9 +65,11 @@ abstract class AbstractCollectionPersister
     public function delete(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
+        
         if ( ! $mapping['isOwningSide']) {
             return; // ignore inverse side
         }
+        
         $sql = $this->_getDeleteSQL($coll);
         $this->_conn->executeUpdate($sql, $this->_getDeleteSQLParameters($coll));
     }
@@ -96,9 +98,11 @@ abstract class AbstractCollectionPersister
     public function update(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
+        
         if ( ! $mapping['isOwningSide']) {
             return; // ignore inverse side
         }
+        
         $this->deleteRows($coll);
         //$this->updateRows($coll);
         $this->insertRows($coll);
@@ -108,6 +112,7 @@ abstract class AbstractCollectionPersister
     {        
         $deleteDiff = $coll->getDeleteDiff();
         $sql = $this->_getDeleteRowSQL($coll);
+        
         foreach ($deleteDiff as $element) {
             $this->_conn->executeUpdate($sql, $this->_getDeleteRowSQLParameters($coll, $element));
         }
@@ -120,6 +125,7 @@ abstract class AbstractCollectionPersister
     {
         $insertDiff = $coll->getInsertDiff();
         $sql = $this->_getInsertRowSQL($coll);
+        
         foreach ($insertDiff as $element) {
             $this->_conn->executeUpdate($sql, $this->_getInsertRowSQLParameters($coll, $element));
         }

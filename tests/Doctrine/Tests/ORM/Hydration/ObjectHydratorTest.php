@@ -44,8 +44,8 @@ class ObjectHydratorTest extends HydrationTestCase
         $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
 
         $this->assertEquals(2, count($result));
-        $this->assertTrue($result[0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
-        $this->assertTrue($result[1] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1]);
         $this->assertEquals(1, $result[0]->id);
         $this->assertEquals('romanb', $result[0]->name);
         $this->assertEquals(2, $result[1]->id);
@@ -116,10 +116,10 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(4, count($result));
         
-        $this->assertTrue($result[0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
-        $this->assertTrue($result[1] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
-        $this->assertTrue($result[2] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
-        $this->assertTrue($result[3] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[2]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[3]);
 
         $this->assertEquals(1, $result[0]->id);
         $this->assertEquals('romanb', $result[0]->name);
@@ -173,7 +173,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $result = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(1, count($result));
-        $this->assertTrue($result[0] instanceof \Doctrine\Tests\Models\ECommerce\ECommerceProduct);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $result[0]);
     }
 
     /**
@@ -231,12 +231,12 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertTrue(is_array($result[0]));
         $this->assertTrue(is_array($result[1]));
 
-        $this->assertTrue($result[0][0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
-        $this->assertTrue($result[0][0]->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
-        $this->assertTrue($result[0][0]->phonenumbers[0] instanceof \Doctrine\Tests\Models\CMS\CmsPhonenumber);
-        $this->assertTrue($result[0][0]->phonenumbers[1] instanceof \Doctrine\Tests\Models\CMS\CmsPhonenumber);
-        $this->assertTrue($result[1][0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
-        $this->assertTrue($result[1][0]->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0][0]->phonenumbers);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $result[0][0]->phonenumbers[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $result[0][0]->phonenumbers[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][0]);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[1][0]->phonenumbers);
 
         // first user => 2 phonenumbers
         $this->assertEquals(2, count($result[0][0]->phonenumbers));
@@ -293,8 +293,8 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertEquals(2, $result[0]['numPhones']);
         // second user => 1 phonenumber
         $this->assertEquals(1, $result[1]['numPhones']);
-        $this->assertTrue($result[0][0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
-        $this->assertTrue($result[1][0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][0]);
     }
 
     /**
@@ -359,9 +359,9 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertEquals('ROMANB', $result[0]['nameUpper']);
         $this->assertEquals('JWAGE', $result[1]['nameUpper']);
 
-        $this->assertTrue($result[0]['1'] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
-        $this->assertTrue($result[1]['2'] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
-        $this->assertTrue($result[0]['1']->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]['1']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1]['2']);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0]['1']->phonenumbers);
         // first user => 2 phonenumbers. notice the custom indexing by user id
         $this->assertEquals(2, count($result[0]['1']->phonenumbers));
         // second user => 1 phonenumber. notice the custom indexing by user id
@@ -469,18 +469,18 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertTrue(is_array($result[0]));
         $this->assertTrue(is_array($result[1]));
 
-        $this->assertTrue($result[0][0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
-        $this->assertTrue($result[0][0]->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
-        $this->assertTrue($result[0][0]->phonenumbers[0] instanceof \Doctrine\Tests\Models\CMS\CmsPhonenumber);
-        $this->assertTrue($result[0][0]->phonenumbers[1] instanceof \Doctrine\Tests\Models\CMS\CmsPhonenumber);
-        $this->assertTrue($result[0][0]->articles instanceof \Doctrine\ORM\PersistentCollection);
-        $this->assertTrue($result[0][0]->articles[0] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
-        $this->assertTrue($result[0][0]->articles[1] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
-        $this->assertTrue($result[1][0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
-        $this->assertTrue($result[1][0]->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
-        $this->assertTrue($result[1][0]->phonenumbers[0] instanceof \Doctrine\Tests\Models\CMS\CmsPhonenumber);
-        $this->assertTrue($result[1][0]->articles[0] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
-        $this->assertTrue($result[1][0]->articles[1] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0][0]->phonenumbers);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $result[0][0]->phonenumbers[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $result[0][0]->phonenumbers[1]);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0][0]->articles);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[0][0]->articles[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[0][0]->articles[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][0]);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[1][0]->phonenumbers);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $result[1][0]->phonenumbers[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[1][0]->articles[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[1][0]->articles[1]);
     }
 
     /**
@@ -604,29 +604,29 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertTrue(is_array($result[0]));
         $this->assertTrue(is_array($result[1]));
 
-        $this->assertTrue($result[0][0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
-        $this->assertTrue($result[1][0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][0]);
         // phonenumbers
-        $this->assertTrue($result[0][0]->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
-        $this->assertTrue($result[0][0]->phonenumbers[0] instanceof \Doctrine\Tests\Models\CMS\CmsPhonenumber);
-        $this->assertTrue($result[0][0]->phonenumbers[1] instanceof \Doctrine\Tests\Models\CMS\CmsPhonenumber);
-        $this->assertTrue($result[1][0]->phonenumbers instanceof \Doctrine\ORM\PersistentCollection);
-        $this->assertTrue($result[1][0]->phonenumbers[0] instanceof \Doctrine\Tests\Models\CMS\CmsPhonenumber);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0][0]->phonenumbers);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $result[0][0]->phonenumbers[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $result[0][0]->phonenumbers[1]);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[1][0]->phonenumbers);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $result[1][0]->phonenumbers[0]);
         // articles
-        $this->assertTrue($result[0][0]->articles instanceof \Doctrine\ORM\PersistentCollection);
-        $this->assertTrue($result[0][0]->articles[0] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
-        $this->assertTrue($result[0][0]->articles[1] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
-        $this->assertTrue($result[1][0]->articles[0] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
-        $this->assertTrue($result[1][0]->articles[1] instanceof \Doctrine\Tests\Models\CMS\CmsArticle);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0][0]->articles);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[0][0]->articles[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[0][0]->articles[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[1][0]->articles[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[1][0]->articles[1]);
         // article comments
-        $this->assertTrue($result[0][0]->articles[0]->comments instanceof \Doctrine\ORM\PersistentCollection);
-        $this->assertTrue($result[0][0]->articles[0]->comments[0] instanceof \Doctrine\Tests\Models\CMS\CmsComment);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0][0]->articles[0]->comments);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsComment', $result[0][0]->articles[0]->comments[0]);
         // empty comment collections
-        $this->assertTrue($result[0][0]->articles[1]->comments instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0][0]->articles[1]->comments);
         $this->assertEquals(0, count($result[0][0]->articles[1]->comments));
-        $this->assertTrue($result[1][0]->articles[0]->comments instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[1][0]->articles[0]->comments);
         $this->assertEquals(0, count($result[1][0]->articles[0]->comments));
-        $this->assertTrue($result[1][0]->articles[1]->comments instanceof \Doctrine\ORM\PersistentCollection);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[1][0]->articles[1]->comments);
         $this->assertEquals(0, count($result[1][0]->articles[1]->comments));
     }
 
@@ -706,8 +706,8 @@ class ObjectHydratorTest extends HydrationTestCase
         $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
 
         $this->assertEquals(2, count($result));
-        $this->assertTrue($result[0] instanceof \Doctrine\Tests\Models\Forum\ForumCategory);
-        $this->assertTrue($result[1] instanceof \Doctrine\Tests\Models\Forum\ForumCategory);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Forum\ForumCategory', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Forum\ForumCategory', $result[1]);
         $this->assertTrue($result[0] !== $result[1]);
         $this->assertEquals(1, $result[0]->getId());
         $this->assertEquals(2, $result[1]->getId());
@@ -768,8 +768,8 @@ class ObjectHydratorTest extends HydrationTestCase
         $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
 
         $this->assertEquals(2, count($result));
-        $this->assertTrue($result[0] instanceof CmsUser);
-        $this->assertTrue($result[1] instanceof CmsUser);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1]);
         $this->assertEquals(0, $result[0]->articles->count());
         $this->assertEquals(0, $result[1]->articles->count());
     }
@@ -826,19 +826,19 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(3, count($result));
         
-        $this->assertTrue($result[0][0] instanceof CmsUser); // User object
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]); // User object
         $this->assertEquals(1, $result[0]['id']);
         $this->assertEquals('The First', $result[0]['topic']);
         $this->assertEquals(1, $result[0]['cid']);
         $this->assertEquals('First Comment', $result[0]['ctopic']);
         
-        $this->assertTrue($result[1][0] instanceof CmsUser); // Same User object
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][0]); // Same User object
         $this->assertEquals(1, $result[1]['id']); // duplicated
         $this->assertEquals('The First', $result[1]['topic']); // duplicated
         $this->assertEquals(2, $result[1]['cid']);
         $this->assertEquals('Second Comment', $result[1]['ctopic']);
         
-        $this->assertTrue($result[2][0] instanceof CmsUser); // Same User object
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[2][0]); // Same User object
         $this->assertEquals(42, $result[2]['id']);
         $this->assertEquals('The Answer', $result[2]['topic']);
         $this->assertNull($result[2]['cid']);
@@ -877,7 +877,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $rowNum = 0;
         while (($row = $iterableResult->next()) !== false) {
             $this->assertEquals(1, count($row));
-            $this->assertTrue($row[0] instanceof \Doctrine\Tests\Models\CMS\CmsUser);
+            $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $row[0]);
             if ($rowNum == 0) {
                 $this->assertEquals(1, $row[0]->id);
                 $this->assertEquals('romanb', $row[0]->name);
