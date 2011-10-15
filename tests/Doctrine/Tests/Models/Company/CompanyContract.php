@@ -7,7 +7,11 @@ namespace Doctrine\Tests\Models\Company;
  * @Table(name="company_contracts")
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"fix" = "CompanyFixContract", "flexible" = "CompanyFlexContract", "flexultra" = "CompanyFlexUltraContract"})
+ * @DiscriminatorMap({
+ *     "fix"       = "CompanyFixContract", 
+ *     "flexible"  = "CompanyFlexContract", 
+ *     "flexultra" = "CompanyFlexUltraContract"
+ * })
  */
 abstract class CompanyContract
 {
