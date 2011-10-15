@@ -152,6 +152,17 @@ class SchemaValidator
                                         "has to be a primary key column.";
                             }
                         }
+
+                        if (count($targetClass->identifier) != count($assoc['joinTable']['inverseJoinColumns'])) {
+                            $ce[] = "The inverse join columns of the many-to-many table '" . $assoc['joinTable']['name'] . "' " .
+                                    "have to match to ALL identifier columns of the target entity '". $targetClass->name . "'";
+                        }
+
+                        if (count($class->identifier) != count($assoc['joinTable']['joinColumns'])) {
+                            $ce[] = "The join columns of the many-to-many table '" . $assoc['joinTable']['name'] . "' " .
+                                    "have to match to ALL identifier columns of the source entity '". $class->name . "'";
+                        }
+
                     } else if ($assoc['type'] & ClassMetadataInfo::TO_ONE) {
                         foreach ($assoc['joinColumns'] AS $joinColumn) {
                             $targetClass = $cmf->getMetadataFor($assoc['targetEntity']);
@@ -166,6 +177,11 @@ class SchemaValidator
                                 $ce[] = "The referenced column name '" . $joinColumn['referencedColumnName'] . "' " .
                                         "has to be a primary key column.";
                             }
+                        }
+
+                        if (count($class->identifier) != count($assoc['joinColumns'])) {
+                            $ce[] = "The join columns of the association '" . $assoc['fieldName'] . "' " .
+                                    "have to match to ALL identifier columns of the source entity '". $class->name . "'";
                         }
                     }
                 }
