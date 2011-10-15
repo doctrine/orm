@@ -2454,6 +2454,6 @@ class UnitOfWork implements PropertyChangedListener
         if ( ! is_object($object) ) {
             throw new InvalidArgumentException("Managed entity required");
         }
-        return $this->readOnlyObjects[spl_object_hash($object)];
+        return isset($this->readOnlyObjects[spl_object_hash($object)]);
     }
 }
