@@ -646,9 +646,9 @@ class SchemaTool
      * @param boolean $saveMode
      * @return void
      */
-    public function updateSchema(array $classes, $saveMode=false)
+    public function updateSchema(array $classes, $saveMode=false, $ignoreUnsupportedTables=false)
     {
-        $updateSchemaSql = $this->getUpdateSchemaSql($classes, $saveMode);
+        $updateSchemaSql = $this->getUpdateSchemaSql($classes, $saveMode, $ignoreUnsupportedTables);
         $conn = $this->_em->getConnection();
 
         foreach ($updateSchemaSql as $sql) {
@@ -666,11 +666,17 @@ class SchemaTool
      * @param boolean $saveMode True for writing to DB, false for SQL string
      * @return array The sequence of SQL statements.
      */
-    public function getUpdateSchemaSql(array $classes, $saveMode=false)
+    public function getUpdateSchemaSql(array $classes, $saveMode=false, $ignoreUnsupportedTables=false)
     {
         $sm = $this->_em->getConnection()->getSchemaManager();
 
-        $fromSchema = $sm->createSchema();
+        if($ignoreUnsupportedTables) {
+            $fromSchema = $sm->createSchemaFromSupportedTables();
+        }
+        else {
+            $fromSchema = $sm->createSchema();
+        }
+
         $toSchema = $this->getSchemaFromMetadata($classes);
 
         $comparator = new \Doctrine\DBAL\Schema\Comparator();
