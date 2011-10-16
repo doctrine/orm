@@ -1567,8 +1567,9 @@ class UnitOfWork implements PropertyChangedListener
      * 
      * @param object $entity
      * @param array $visited
+     * @param boolean $noCascade if true, don't cascade detach operation
      */
-    private function doDetach($entity, array &$visited)
+    private function doDetach($entity, array &$visited, $noCascade = false)
     {
         $oid = spl_object_hash($entity);
         if (isset($visited[$oid])) {
@@ -1590,8 +1591,10 @@ class UnitOfWork implements PropertyChangedListener
             case self::STATE_DETACHED:
                 return;
         }
-        
-        $this->cascadeDetach($entity, $visited);
+
+        if (!$noCascade) {
+            $this->cascadeDetach($entity, $visited);
+        }
     }
     
     /**
@@ -1842,28 +1845,41 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Clears the UnitOfWork.
+     *
+     * @param string $entityName if given, only entities of this type will get detached
      */
-    public function clear()
+    public function clear($entityName = null)
     {
-        $this->identityMap =
-        $this->entityIdentifiers =
-        $this->originalEntityData =
-        $this->entityChangeSets =
-        $this->entityStates =
-        $this->scheduledForDirtyCheck =
-        $this->entityInsertions =
-        $this->entityUpdates =
-        $this->entityDeletions =
-        $this->collectionDeletions =
-        $this->collectionUpdates =
-        $this->extraUpdates =
-        $this->orphanRemovals = array();
-        if ($this->commitOrderCalculator !== null) {
-            $this->commitOrderCalculator->clear();
+        if ($entityName === null) {
+            $this->identityMap =
+            $this->entityIdentifiers =
+            $this->originalEntityData =
+            $this->entityChangeSets =
+            $this->entityStates =
+            $this->scheduledForDirtyCheck =
+            $this->entityInsertions =
+            $this->entityUpdates =
+            $this->entityDeletions =
+            $this->collectionDeletions =
+            $this->collectionUpdates =
+            $this->extraUpdates =
+            $this->orphanRemovals = array();
+            if ($this->commitOrderCalculator !== null) {
+                $this->commitOrderCalculator->clear();
+            }
+        } else {
+            $visited = array();
+            foreach ($this->identityMap as $className => $entities) {
+                if ($className === $entityName) {
+                    foreach ($entities as $entity) {
+                        $this->doDetach($entity, $visited, true);
+                    }
+                }
+            }
         }
 
         if ($this->evm->hasListeners(Events::onClear)) {
-            $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->em));
+            $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->em, $entityName));
         }
     }
     

@@ -980,4 +980,54 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($article->user->__isInitialized__, "...but its initialized!");
         $this->assertEquals($qc+2, $this->getCurrentQueryCount());
     }
+
+    /**
+     * @group DDC-1278
+     */
+    public function testClearWithEntityName()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+
+        $address = new CmsAddress();
+        $address->city = "Springfield";
+        $address->zip = "12354";
+        $address->country = "Germany";
+        $address->street = "Foo Street";
+        $address->user = $user;
+        $user->address = $address;
+
+        $article1 = new CmsArticle();
+        $article1->topic = 'Foo';
+        $article1->text = 'Foo Text';
+
+        $article2 = new CmsArticle();
+        $article2->topic = 'Bar';
+        $article2->text = 'Bar Text';
+
+        $user->addArticle($article1);
+        $user->addArticle($article2);
+
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+        $this->_em->persist($address);
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $unitOfWork = $this->_em->getUnitOfWork();
+
+        $this->_em->clear('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($user));
+
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $unitOfWork->getEntityState($address));
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $unitOfWork->getEntityState($article1));
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $unitOfWork->getEntityState($article2));
+
+        $this->_em->clear();
+
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($address));
+    }
 }
