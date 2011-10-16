@@ -164,6 +164,11 @@ abstract class AbstractHydrator
      * field names during this procedure as well as any necessary conversions on
      * the values applied.
      *
+     * @param array $data SQL Result Row
+     * @param array &$cache Cache for column to field result information
+     * @param array &$id Dql-Alias => ID-Hash
+     * @param array &$nonemptyComponents Does this DQL-Alias has at least one non NULL value?
+     *
      * @return array  An array with all the fields (name => value) of the data row,
      *                grouped by their component alias.
      */
