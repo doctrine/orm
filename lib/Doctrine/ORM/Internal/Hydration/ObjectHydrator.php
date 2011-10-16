@@ -430,19 +430,16 @@ class ObjectHydrator extends AbstractHydrator
                     $element = $this->_getEntity($rowData[$dqlAlias], $dqlAlias);
                     if (isset($this->_rsm->indexByMap[$dqlAlias])) {
                         $field = $this->_rsm->indexByMap[$dqlAlias];
-                        $key = $this->_ce[$entityName]->reflFields[$field]->getValue($element);
+                        $resultKey = $this->_ce[$entityName]->reflFields[$field]->getValue($element);
                         if ($this->_rsm->isMixed) {
-                            $element = array($key => $element);
-                            $result[] = $element;
-                            $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $this->_resultCounter;
-                            ++$this->_resultCounter;
-                        } else {
-                            $result[$key] = $element;
-                            $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $key;
+                            $element = array(0 => $element);
                         }
 
+                        $result[$resultKey] = $element;
+                        $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $resultKey;
+
                         if (isset($this->_hints['collection'])) {
-                            $this->_hints['collection']->hydrateSet($key, $element);
+                            $this->_hints['collection']->hydrateSet($resultKey, $element);
                         }
                     } else {
                         if ($this->_rsm->isMixed) {
@@ -464,6 +461,7 @@ class ObjectHydrator extends AbstractHydrator
                     // Update result pointer
                     $index = $this->_identifierMap[$dqlAlias][$id[$dqlAlias]];
                     $this->_resultPointers[$dqlAlias] = $result[$index];
+                    $resultKey = $index;
                     /*if ($this->_rsm->isMixed) {
                         $result[] = $result[$index];
                         ++$this->_resultCounter;
@@ -474,8 +472,12 @@ class ObjectHydrator extends AbstractHydrator
 
         // Append scalar values to mixed result sets
         if (isset($scalars)) {
+            if ( ! isset($resultKey) ) {
+                $resultKey = $this->_resultCounter - 1;
+            }
+
             foreach ($scalars as $name => $value) {
-                $result[$this->_resultCounter - 1][$name] = $value;
+                $result[$resultKey][$name] = $value;
             }
         }
     }
