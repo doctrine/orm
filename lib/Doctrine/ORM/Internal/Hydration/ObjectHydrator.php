@@ -428,31 +428,31 @@ class ObjectHydrator extends AbstractHydrator
                 // check for existing result from the iterations before
                 if ( ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $this->_getEntity($rowData[$dqlAlias], $dqlAlias);
+                    if ($this->_rsm->isMixed) {
+                        $element = array(0 => $element);
+                    }
+
                     if (isset($this->_rsm->indexByMap[$dqlAlias])) {
                         $field = $this->_rsm->indexByMap[$dqlAlias];
-                        $resultKey = $this->_ce[$entityName]->reflFields[$field]->getValue($element);
-                        if ($this->_rsm->isMixed) {
-                            $element = array(0 => $element);
-                        }
-
-                        $result[$resultKey] = $element;
-                        $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $resultKey;
+                        $resultKey = $rowData[$dqlAlias][$field];
 
                         if (isset($this->_hints['collection'])) {
                             $this->_hints['collection']->hydrateSet($resultKey, $element);
                         }
+
+                        $result[$resultKey] = $element;
                     } else {
-                        if ($this->_rsm->isMixed) {
-                            $element = array(0 => $element);
-                        }
-                        $result[] = $element;
-                        $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $this->_resultCounter;
+                        $resultKey = $this->_resultCounter;
                         ++$this->_resultCounter;
 
                         if (isset($this->_hints['collection'])) {
                             $this->_hints['collection']->hydrateAdd($element);
                         }
+
+                        $result[] = $element;
                     }
+
+                    $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $resultKey;
 
                     // Update result pointer
                     $this->_resultPointers[$dqlAlias] = $element;
