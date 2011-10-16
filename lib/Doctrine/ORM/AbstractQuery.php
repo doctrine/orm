@@ -605,6 +605,8 @@ abstract class AbstractQuery
 
                 $cacheDriver->save($hash, array($key => $result), $this->_resultCacheTTL);
 
+				$this->registerToTags($hash);
+				
                 return $result;
             } else {
                 // Cache hit.
