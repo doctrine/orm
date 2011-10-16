@@ -71,6 +71,13 @@ class SqlWalker implements TreeWalker
     /** Map from result variable names to their SQL column alias names. */
     private $_scalarResultAliasMap = array();
 
+    /**
+     * Map from DQL-Alias + Field-Name to SQL Column Alias
+     *
+     * @var array
+     */
+    private $_scalarFields = array();
+
     /** Map of all components/classes that appear in the DQL query. */
     private $_queryComponents;
 
@@ -381,7 +388,7 @@ class SqlWalker implements TreeWalker
             } else if ($lockMode == LockMode::OPTIMISTIC) {
                 foreach ($this->_selectedClasses AS $class) {
                     if ( ! $class->isVersioned) {
-                        throw \Doctrine\ORM\OptimisticLockException::lockFailed();
+                        throw \Doctrine\ORM\OptimisticLockException::lockFailed($class->name);
                     }
                 }
             }
@@ -619,10 +626,17 @@ class SqlWalker implements TreeWalker
             }
 
             if ($identificationVariableDecl->indexBy) {
-                $this->_rsm->addIndexBy(
-                    $identificationVariableDecl->indexBy->simpleStateFieldPathExpression->identificationVariable,
-                    $identificationVariableDecl->indexBy->simpleStateFieldPathExpression->field
-                );
+                $alias = $identificationVariableDecl->indexBy->simpleStateFieldPathExpression->identificationVariable;
+                $field = $identificationVariableDecl->indexBy->simpleStateFieldPathExpression->field;
+
+                if (isset($this->_scalarFields[$alias][$field])) {
+                    $this->_rsm->addIndexByScalar($this->_scalarFields[$alias][$field]);
+                } else {
+                    $this->_rsm->addIndexBy(
+                        $identificationVariableDecl->indexBy->simpleStateFieldPathExpression->identificationVariable,
+                        $identificationVariableDecl->indexBy->simpleStateFieldPathExpression->field
+                    );
+                }
             }
 
             $sqlParts[] = $this->_platform->appendLockHint($sql, $this->_query->getHint(Query::HINT_LOCK_MODE));
@@ -1010,6 +1024,7 @@ class SqlWalker implements TreeWalker
             
             if ( ! $hidden) {
                 $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+                $this->_scalarFields[$dqlAlias][$fieldName] = $columnAlias;
             }
         } else if ($expr instanceof AST\AggregateExpression) {
             if ( ! $selectExpression->fieldIdentificationVariable) {

@@ -1208,4 +1208,32 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertTrue(isset($result[2]));
         $this->assertEquals(2, $result[2][0]->id);
     }
+
+    /**
+     * @group DDC-1385
+     */
+    public function testIndexByScalarsOnly()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addScalarResult('sclr0', 'nameUpper');
+        $rsm->addIndexByScalar('sclr0');
+
+                // Faked result set
+        $resultSet = array(
+            //row1
+            array(
+                'sclr0' => 'ROMANB',
+                ),
+            array(
+                'sclr0' => 'JWAGE',
+                ),
+            );
+
+        $stmt = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+
+        $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+
+        $this->assertEquals(array('ROMANB' => array('nameUpper' => 'ROMANB'), 'JWAGE' => array('nameUpper' => 'JWAGE')), $result);
+    }
 }

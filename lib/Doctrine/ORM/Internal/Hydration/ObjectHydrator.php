@@ -273,13 +273,13 @@ class ObjectHydrator extends AbstractHydrator
      * @param array $cache The cache to use.
      * @param array $result The result array to fill.
      */
-    protected function _hydrateRow(array $data, array &$cache, array &$result)
+    protected function _hydrateRow(array $row, array &$cache, array &$result)
     {
         // Initialize
         $id = $this->_idTemplate; // initialize the id-memory
         $nonemptyComponents = array();
         // Split the row data into chunks of class data.
-        $rowData = $this->_gatherRowData($data, $cache, $id, $nonemptyComponents);
+        $rowData = $this->_gatherRowData($row, $cache, $id, $nonemptyComponents);
 
         // Extract scalar values. They're appended at the end.
         if (isset($rowData['scalars'])) {
@@ -352,8 +352,7 @@ class ObjectHydrator extends AbstractHydrator
                                 $element = $this->_getEntity($data, $dqlAlias);
 
                                 if (isset($this->_rsm->indexByMap[$dqlAlias])) {
-                                    $field = $this->_rsm->indexByMap[$dqlAlias];
-                                    $indexValue = $this->_ce[$entityName]->reflFields[$field]->getValue($element);
+                                    $indexValue = $row[$this->_rsm->indexByMap[$dqlAlias]];
                                     $reflFieldValue->hydrateSet($indexValue, $element);
                                     $this->_identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $indexValue;
                                 } else {
@@ -421,6 +420,7 @@ class ObjectHydrator extends AbstractHydrator
                     } else {
                         $result[] = null;
                     }
+                    $resultKey = $this->_resultCounter;
                     ++$this->_resultCounter;
                     continue;
                 }
@@ -433,8 +433,7 @@ class ObjectHydrator extends AbstractHydrator
                     }
 
                     if (isset($this->_rsm->indexByMap[$dqlAlias])) {
-                        $field = $this->_rsm->indexByMap[$dqlAlias];
-                        $resultKey = $rowData[$dqlAlias][$field];
+                        $resultKey = $row[$this->_rsm->indexByMap[$dqlAlias]];
 
                         if (isset($this->_hints['collection'])) {
                             $this->_hints['collection']->hydrateSet($resultKey, $element);
@@ -473,7 +472,11 @@ class ObjectHydrator extends AbstractHydrator
         // Append scalar values to mixed result sets
         if (isset($scalars)) {
             if ( ! isset($resultKey) ) {
-                $resultKey = $this->_resultCounter - 1;
+                if (isset($this->_rsm->indexByMap['scalars'])) {
+                    $resultKey = $row[$this->_rsm->indexByMap['scalars']];
+                } else {
+                    $resultKey = $this->_resultCounter - 1;
+                }
             }
 
             foreach ($scalars as $name => $value) {
