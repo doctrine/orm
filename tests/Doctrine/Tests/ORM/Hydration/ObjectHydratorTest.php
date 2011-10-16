@@ -1208,12 +1208,4 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertTrue(isset($result[2]));
         $this->assertEquals(2, $result[2][0]->id);
     }
-
-    /**
-     * @group DDC-1385
-     */
-    public function testIndexByAndScalarResult()
-    {
-        $rsm = new ResultSetMapping;
-    }
 }

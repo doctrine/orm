@@ -174,26 +174,24 @@ class ArrayHydrator extends AbstractHydrator
                 // Check for an existing element
                 if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $rowData[$dqlAlias];
+                    if ($this->_rsm->isMixed) {
+                        $element = array(0 => $element);
+                    }
+
                     if (isset($this->_rsm->indexByMap[$dqlAlias])) {
                         $field = $this->_rsm->indexByMap[$dqlAlias];
-                        if ($this->_rsm->isMixed) {
-                            $result[] = array($element[$field] => $element);
-                            ++$this->_resultCounter;
-                        } else {
-                            $result[$element[$field]] = $element;
-                        }
+                        $resultKey = $rowData[$dqlAlias][$field];
+                        $result[$resultKey] = $element;
                     } else {
-                        if ($this->_rsm->isMixed) {
-                            $result[] = array($element);
-                            ++$this->_resultCounter;
-                        } else {
-                            $result[] = $element;
-                        }
+                        $resultKey = $this->_resultCounter;
+                        $result[] = $element;
+                        ++$this->_resultCounter;
                     }
-                    end($result);
-                    $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = key($result);
+
+                    $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $resultKey;
                 } else {
                     $index = $this->_identifierMap[$dqlAlias][$id[$dqlAlias]];
+                    $resultKey = $index;
                     /*if ($this->_rsm->isMixed) {
                         $result[] =& $result[$index];
                         ++$this->_resultCounter;
@@ -205,8 +203,12 @@ class ArrayHydrator extends AbstractHydrator
 
         // Append scalar values to mixed result sets
         if (isset($scalars)) {
+            if ( ! isset($resultKey) ) {
+                $resultKey = $this->_resultCounter - 1;
+            }
+
             foreach ($scalars as $name => $value) {
-                $result[$this->_resultCounter - 1][$name] = $value;
+                $result[$resultKey][$name] = $value;
             }
         }
     }
