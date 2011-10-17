@@ -52,13 +52,16 @@ class XmlDriver extends AbstractFileDriver
         $xmlRoot = $this->getElement($className);
 
         if ($xmlRoot->getName() == 'entity') {
-            $metadata->setCustomRepositoryClass(
-                isset($xmlRoot['repository-class']) ? (string)$xmlRoot['repository-class'] : null
-            );
+            if (isset($xmlRoot['repository-class'])) {
+                $metadata->setCustomRepositoryClass((string)$xmlRoot['repository-class']);
+            }
             if (isset($xmlRoot['read-only']) && $xmlRoot['read-only'] == "true") {
                 $metadata->markReadOnly();
             }
         } else if ($xmlRoot->getName() == 'mapped-superclass') {
+            $metadata->setCustomRepositoryClass(
+                isset($xmlRoot['repository-class']) ? (string)$xmlRoot['repository-class'] : null
+            );
             $metadata->isMappedSuperclass = true;
         } else {
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);

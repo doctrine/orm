@@ -31,11 +31,11 @@ class CmsUser
      */
     public $name;
     /**
-     * @OneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
+     * @OneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"persist", "merge"}, orphanRemoval=true)
      */
     public $phonenumbers;
     /**
-     * @OneToMany(targetEntity="CmsArticle", mappedBy="user")
+     * @OneToMany(targetEntity="CmsArticle", mappedBy="user", cascade={"detach"})
      */
     public $articles;
     /**
@@ -43,7 +43,12 @@ class CmsUser
      */
     public $address;
     /**
-     * @ManyToMany(targetEntity="CmsGroup", inversedBy="users", cascade={"persist", "merge"})
+     * @OneToOne(targetEntity="CmsEmail", inversedBy="user", cascade={"persist"}, orphanRemoval=true)
+     * @JoinColumn(referencedColumnName="id", nullable=true)
+     */
+    public $email;
+    /**
+     * @ManyToMany(targetEntity="CmsGroup", inversedBy="users", cascade={"persist", "merge", "detach"})
      * @JoinTable(name="cms_users_groups",
      *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
@@ -117,6 +122,18 @@ class CmsUser
         if ($this->address !== $address) {
             $this->address = $address;
             $address->setUser($this);
+        }
+    }
+    
+    public function getEmail() { return $this->email; }
+    
+    public function setEmail(CmsEmail $email = null) {
+        if ($this->email !== $email) {
+            $this->email = $email;
+            
+            if ($email) {
+                $email->setUser($this);
+            }
         }
     }
 }

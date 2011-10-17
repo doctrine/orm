@@ -37,11 +37,17 @@ class OnClearEventArgs extends \Doctrine\Common\EventArgs
     private $em;
 
     /**
+     * @var string
+     */
+    private $entityClass;
+
+    /**
      * @param \Doctrine\ORM\EntityManager $em
      */
-    public function __construct($em)
+    public function __construct($em, $entityClass = null)
     {
         $this->em = $em;
+        $this->entityClass = $entityClass;
     }
 
     /**
@@ -50,5 +56,25 @@ class OnClearEventArgs extends \Doctrine\Common\EventArgs
     public function getEntityManager()
     {
         return $this->em;
+    }
+
+    /**
+     * Name of the entity class that is cleared, or empty if all are cleared.
+     *
+     * @return string
+     */
+    public function getEntityClass()
+    {
+        return $this->entityClass;
+    }
+
+    /**
+     * Check if event clears all entities.
+     *
+     * @return bool
+     */
+    public function clearsAllEntities()
+    {
+        return $this->entityClass === null;
     }
 }

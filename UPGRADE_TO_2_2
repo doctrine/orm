@@ -1,3 +1,30 @@
+# EntityManager#getPartialReference() creates read-only entity
+
+Entities returned from EntityManager#getPartialReference() are now marked as read-only if they
+haven't been in the identity map before. This means objects of this kind never lead to changes
+in the UnitOfWork.
+
+# Fields omitted in a partial DQL query or a native query are never updated
+
+Fields of an entity that are not returned from a partial DQL Query or native SQL query
+will never be updated through an UPDATE statement.
+
 # Removed support for onUpdate in @JoinColumn
 
 The onUpdate foreign key handling makes absolutly no sense in an ORM. Additionally Oracle doesn't even support it. Support for it is removed.
+
+# Changes in Annotation Handling
+
+There have been some changes to the annotation handling in Common 2.2 again, that affect how people with old configurations
+from 2.0 have to configure the annotation driver if they don't use `Configuration::newDefaultAnnotationDriver()`:
+
+    // Register the ORM Annotations in the AnnotationRegistry
+    AnnotationRegistry::registerFile('path/to/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
+
+    $reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
+    $reader->addNamespace('Doctrine\ORM\Mapping');
+    $reader = new \Doctrine\Common\Annotations\CachedReader($reader, new ArrayCache());
+
+    $driver = new AnnotationDriver($reader, (array)$paths);
+
+    $config->setMetadataDriverImpl($driver);

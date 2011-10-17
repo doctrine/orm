@@ -50,7 +50,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     private $targetPlatform;
 
     /**
-     * @var Driver\Driver
+     * @var \Doctrine\ORM\Mapping\Driver\Driver
      */
     private $driver;
 
@@ -274,6 +274,9 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 $class->setDiscriminatorMap($parent->discriminatorMap);
                 $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
                 $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
+                if ($parent->isMappedSuperclass) {
+                    $class->setCustomRepositoryClass($parent->customRepositoryClassName);
+                }
             }
 
             // Invoke driver
@@ -304,6 +307,10 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
             if ($parent && $parent->isInheritanceTypeSingleTable()) {
                 $class->setPrimaryTable($parent->table);
+            }
+            
+            if ($parent && $parent->containsForeignIdentifier) {
+                $class->containsForeignIdentifier = true;
             }
 
             $class->setParentClasses($visited);
@@ -448,7 +455,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 // <table>_<column>_seq in PostgreSQL for SERIAL columns.
                 // Not pretty but necessary and the simplest solution that currently works.
                 $seqName = $this->targetPlatform instanceof Platforms\PostgreSQLPlatform ?
-                        $class->table['name'] . '_' . $class->columnNames[$class->identifier[0]] . '_seq' :
+                        $class->getTableName() . '_' . $class->columnNames[$class->identifier[0]] . '_seq' :
                         null;
                 $class->setIdGenerator(new \Doctrine\ORM\Id\IdentityGenerator($seqName));
                 break;
@@ -477,5 +484,16 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             default:
                 throw new ORMException("Unknown generator type: " . $class->generatorType);
         }
+    }
+
+    /**
+     * Check if this class is mapped by this EntityManager + ClassMetadata configuration
+     *
+     * @param $class
+     * @return bool
+     */
+    public function isTransient($class)
+    {
+        return $this->driver->isTransient($class);
     }
 }

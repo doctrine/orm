@@ -22,7 +22,7 @@ class ECommerceProduct
     private $id;
 
     /**
-     * @Column(type="string", length=50, nullable="true")
+     * @Column(type="string", length=50, nullable=true)
      */
     private $name;
 

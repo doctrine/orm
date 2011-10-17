@@ -33,12 +33,12 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             }
 
             $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true)
-                    ->useQueryCache(false);
+                  ->useQueryCache(false);
             
             foreach ($queryHints AS $name => $value) {
                 $query->setHint($name, $value);
             }
-
+            
             parent::assertEquals($sqlToBeConfirmed, $query->getSQL());
             $query->free();
         } catch (\Exception $e) {
@@ -65,7 +65,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         }
 
         $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true)
-                ->useQueryCache(false);
+              ->useQueryCache(false);
 
         foreach ($queryHints AS $name => $value) {
             $query->setHint($name, $value);
@@ -418,7 +418,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\Company\CompanyEmployee u WHERE u INSTANCE OF Doctrine\Tests\Models\Company\CompanyManager",
-            "SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c0_.discr AS discr4 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id WHERE c0_.discr IN ('manager')"
+            "SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c0_.discr AS discr5 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id WHERE c0_.discr IN ('manager')"
         );
     }
 
@@ -426,7 +426,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\Company\CompanyManager u WHERE u INSTANCE OF Doctrine\Tests\Models\Company\CompanyManager",
-            "SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c2_.title AS title4, c0_.discr AS discr5 FROM company_managers c2_ INNER JOIN company_employees c1_ ON c2_.id = c1_.id INNER JOIN company_persons c0_ ON c2_.id = c0_.id WHERE c0_.discr IN ('manager')"
+            "SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c2_.title AS title5, c0_.discr AS discr6 FROM company_managers c2_ INNER JOIN company_employees c1_ ON c2_.id = c1_.id INNER JOIN company_persons c0_ ON c2_.id = c0_.id WHERE c0_.discr IN ('manager')"
         );
     }
 
@@ -563,7 +563,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->_em->getClassMetadata(get_class($person))->setIdentifierValues($person, array('id' => 101));
         $q3->setParameter('param', $person);
         $this->assertEquals(
-            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.title AS title2, c1_.car_id AS car_id3, c2_.salary AS salary4, c2_.department AS department5, c0_.discr AS discr6, c0_.spouse_id AS spouse_id7 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id WHERE EXISTS (SELECT 1 FROM company_persons_friends c3_ INNER JOIN company_persons c4_ ON c3_.friend_id = c4_.id WHERE c3_.person_id = c0_.id AND c4_.id = ?)',
+            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.title AS title2, c1_.car_id AS car_id3, c2_.salary AS salary4, c2_.department AS department5, c2_.startDate AS startDate6, c0_.discr AS discr7, c0_.spouse_id AS spouse_id8 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id WHERE EXISTS (SELECT 1 FROM company_persons_friends c3_ INNER JOIN company_persons c4_ ON c3_.friend_id = c4_.id WHERE c3_.person_id = c0_.id AND c4_.id = ?)',
             $q3->getSql()
         );
     }
@@ -614,7 +614,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             ->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
             ->setMaxResults(10);
 
-        $this->assertEquals('SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ LIMIT 10', $q->getSql());
+        $this->assertEquals('SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.email_id AS email_id4 FROM cms_users c0_ LIMIT 10', $q->getSql());
     }
 
     public function testLimitAndOffsetFromQueryClass()
@@ -624,7 +624,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             ->setMaxResults(10)
             ->setFirstResult(0);
 
-        $this->assertEquals('SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ LIMIT 10 OFFSET 0', $q->getSql());
+        $this->assertEquals('SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.email_id AS email_id4 FROM cms_users c0_ LIMIT 10 OFFSET 0', $q->getSql());
     }
 
     public function testSizeFunction()
@@ -729,12 +729,12 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertSqlGeneration(
             "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true",
-            "SELECT b0_.id AS id0, b0_.booleanField AS booleanField1 FROM boolean_model b0_ WHERE b0_.booleanField = 'true'"
+            "SELECT b0_.id AS id0, b0_.booleanField AS booleanField1 FROM boolean_model b0_ WHERE b0_.booleanField = true"
         );
 
         $this->assertSqlGeneration(
             "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = false",
-            "SELECT b0_.id AS id0, b0_.booleanField AS booleanField1 FROM boolean_model b0_ WHERE b0_.booleanField = 'false'"
+            "SELECT b0_.id AS id0, b0_.booleanField AS booleanField1 FROM boolean_model b0_ WHERE b0_.booleanField = false"
         );
 
         $this->_em->getConnection()->setDatabasePlatform($oldPlat);
@@ -991,6 +991,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    public function testSubSelectAliasesFromOuterQueryReuseInWhereClause()
+    {
+        $this->assertSqlGeneration(
+            "SELECT uo, (SELECT ui.name FROM Doctrine\Tests\Models\CMS\CmsUser ui WHERE ui.id = uo.id) AS bar FROM Doctrine\Tests\Models\CMS\CmsUser uo WHERE bar = ?0",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, (SELECT c1_.name FROM cms_users c1_ WHERE c1_.id = c0_.id) AS sclr4 FROM cms_users c0_ WHERE sclr4 = ?"
+        );
+    }
+
     /**
      * @group DDC-1298
      */
@@ -1031,6 +1039,216 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id = (CASE g.name WHEN 'admin' THEN 1 WHEN 'moderator' THEN 2 ELSE 3 END)", 
             "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id = CASE c0_.name WHEN admin THEN 1 WHEN moderator THEN 2 ELSE 3 END"
+        );
+    }
+    
+    public function testGeneralCaseWithSingleWhenClauseInSubselect()
+    {
+        $this->assertSqlGeneration(
+            "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id IN (SELECT CASE WHEN ((g2.id / 2) > 18) THEN 2 ELSE 1 END FROM Doctrine\Tests\Models\CMS\CmsGroup g2)", 
+            "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id IN (SELECT CASE WHEN (c1_.id / 2 > 18) THEN 2 ELSE 1 END AS sclr2 FROM cms_groups c1_)"
+        );
+    }
+    
+    public function testGeneralCaseWithMultipleWhenClauseInSubselect()
+    {
+        $this->assertSqlGeneration(
+            "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id IN (SELECT CASE WHEN (g.id / 2 < 10) THEN 3 WHEN ((g.id / 2) > 20) THEN 2 ELSE 1 END FROM Doctrine\Tests\Models\CMS\CmsGroup g2)", 
+            "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id IN (SELECT CASE WHEN (c0_.id / 2 < 10) THEN 3 WHEN (c0_.id / 2 > 20) THEN 2 ELSE 1 END AS sclr2 FROM cms_groups c1_)"
+        );
+    }
+    
+    public function testSimpleCaseWithSingleWhenClauseInSubselect()
+    {
+        $this->assertSqlGeneration(
+            "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id IN (SELECT CASE g2.name WHEN 'admin' THEN 1 ELSE 2 END FROM Doctrine\Tests\Models\CMS\CmsGroup g2)", 
+            "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id IN (SELECT CASE c1_.name WHEN admin THEN 1 ELSE 2 END AS sclr2 FROM cms_groups c1_)"
+        );
+    }
+    
+    public function testSimpleCaseWithMultipleWhenClauseInSubselect()
+    {
+        $this->assertSqlGeneration(
+            "SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id IN (SELECT CASE g2.name WHEN 'admin' THEN 1 WHEN 'moderator' THEN 2 ELSE 3 END FROM Doctrine\Tests\Models\CMS\CmsGroup g2)", 
+            "SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_groups c0_ WHERE c0_.id IN (SELECT CASE c1_.name WHEN admin THEN 1 WHEN moderator THEN 2 ELSE 3 END AS sclr2 FROM cms_groups c1_)"
+        );
+    }
+    
+    /**
+     * @group DDC-1339
+     */
+    public function testIdentityFunctionInSelectClause()
+    {
+        $this->assertSqlGeneration(
+            "SELECT IDENTITY(u.email) as email_id FROM Doctrine\Tests\Models\CMS\CmsUser u", 
+            "SELECT c0_.email_id AS sclr0 FROM cms_users c0_"
+        );
+    }
+    
+    /**
+     * @group DDC-1339
+     */
+    public function testIdentityFunctionDoesNotAcceptStateField()
+    {
+        $this->assertInvalidSqlGeneration(
+            "SELECT IDENTITY(u.name) as name FROM Doctrine\Tests\Models\CMS\CmsUser u", 
+            "Doctrine\ORM\Query\QueryException"
+        );
+    }
+    
+    /**
+     * @group DDC-1389
+     */
+    public function testInheritanceTypeJoinInRootClassWithDisabledForcePartialLoad()
+    {
+        $this->assertSqlGeneration(
+            'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p', 
+            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.title AS title2, c1_.car_id AS car_id3, c2_.salary AS salary4, c2_.department AS department5, c2_.startDate AS startDate6, c0_.discr AS discr7, c0_.spouse_id AS spouse_id8 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id',
+            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+        );
+    }
+    
+    /**
+     * @group DDC-1389
+     */
+    public function testInheritanceTypeJoinInRootClassWithEnabledForcePartialLoad()
+    {
+        $this->assertSqlGeneration(
+            'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p', 
+            'SELECT c0_.id AS id0, c0_.name AS name1, c0_.discr AS discr2 FROM company_persons c0_',
+            array(Query::HINT_FORCE_PARTIAL_LOAD => true)
+        );
+    }
+    
+    /**
+     * @group DDC-1389
+     */
+    public function testInheritanceTypeJoinInChildClassWithDisabledForcePartialLoad()
+    {
+        $this->assertSqlGeneration(
+            'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e', 
+            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c2_.title AS title5, c2_.car_id AS car_id6, c0_.discr AS discr7, c0_.spouse_id AS spouse_id8 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id LEFT JOIN company_managers c2_ ON c1_.id = c2_.id',
+            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+        );
+    }
+    
+    /**
+     * @group DDC-1389
+     */
+    public function testInheritanceTypeJoinInChildClassWithEnabledForcePartialLoad()
+    {
+        $this->assertSqlGeneration(
+            'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e', 
+            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c0_.discr AS discr5 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id',
+            array(Query::HINT_FORCE_PARTIAL_LOAD => true)
+        );
+    }
+    
+    /**
+     * @group DDC-1389
+     */
+    public function testInheritanceTypeJoinInLeafClassWithDisabledForcePartialLoad()
+    {
+        $this->assertSqlGeneration(
+            'SELECT m FROM Doctrine\Tests\Models\Company\CompanyManager m', 
+            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c2_.title AS title5, c0_.discr AS discr6, c0_.spouse_id AS spouse_id7, c2_.car_id AS car_id8 FROM company_managers c2_ INNER JOIN company_employees c1_ ON c2_.id = c1_.id INNER JOIN company_persons c0_ ON c2_.id = c0_.id',
+            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+        );
+    }
+    
+    /**
+     * @group DDC-1389
+     */
+    public function testInheritanceTypeJoinInLeafClassWithEnabledForcePartialLoad()
+    {
+        $this->assertSqlGeneration(
+            'SELECT m FROM Doctrine\Tests\Models\Company\CompanyManager m', 
+            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c2_.title AS title5, c0_.discr AS discr6 FROM company_managers c2_ INNER JOIN company_employees c1_ ON c2_.id = c1_.id INNER JOIN company_persons c0_ ON c2_.id = c0_.id',
+            array(Query::HINT_FORCE_PARTIAL_LOAD => true)
+        );
+    }
+    
+    /**
+     * @group DDC-1389
+     */
+    public function testInheritanceTypeSingleTableInRootClassWithDisabledForcePartialLoad()
+    {
+        $this->assertSqlGeneration(
+            'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c', 
+            "SELECT c0_.id AS id0, c0_.completed AS completed1, c0_.fixPrice AS fixPrice2, c0_.hoursWorked AS hoursWorked3, c0_.pricePerHour AS pricePerHour4, c0_.maxPrice AS maxPrice5, c0_.discr AS discr6, c0_.salesPerson_id AS salesPerson_id7 FROM company_contracts c0_ WHERE c0_.discr IN ('fix', 'flexible', 'flexultra')",
+            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+        );
+    }
+    
+    /**
+     * @group DDC-1389
+     */
+    public function testInheritanceTypeSingleTableInRootClassWithEnabledForcePartialLoad()
+    {
+        $this->assertSqlGeneration(
+            'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c', 
+            "SELECT c0_.id AS id0, c0_.completed AS completed1, c0_.fixPrice AS fixPrice2, c0_.hoursWorked AS hoursWorked3, c0_.pricePerHour AS pricePerHour4, c0_.maxPrice AS maxPrice5, c0_.discr AS discr6 FROM company_contracts c0_ WHERE c0_.discr IN ('fix', 'flexible', 'flexultra')",
+            array(Query::HINT_FORCE_PARTIAL_LOAD => true)
+        );
+    }
+    
+    /**
+     * @group DDC-1389
+     */
+    public function testInheritanceTypeSingleTableInChildClassWithDisabledForcePartialLoad()
+    {
+        $this->assertSqlGeneration(
+            'SELECT fc FROM Doctrine\Tests\Models\Company\CompanyFlexContract fc', 
+            "SELECT c0_.id AS id0, c0_.completed AS completed1, c0_.hoursWorked AS hoursWorked2, c0_.pricePerHour AS pricePerHour3, c0_.maxPrice AS maxPrice4, c0_.discr AS discr5, c0_.salesPerson_id AS salesPerson_id6 FROM company_contracts c0_ WHERE c0_.discr IN ('flexible', 'flexultra')",
+            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+        );
+    }
+    
+    /**
+     * @group DDC-1389
+     */
+    public function testInheritanceTypeSingleTableInChildClassWithEnabledForcePartialLoad()
+    {
+        $this->assertSqlGeneration(
+            'SELECT fc FROM Doctrine\Tests\Models\Company\CompanyFlexContract fc', 
+            "SELECT c0_.id AS id0, c0_.completed AS completed1, c0_.hoursWorked AS hoursWorked2, c0_.pricePerHour AS pricePerHour3, c0_.maxPrice AS maxPrice4, c0_.discr AS discr5 FROM company_contracts c0_ WHERE c0_.discr IN ('flexible', 'flexultra')",
+            array(Query::HINT_FORCE_PARTIAL_LOAD => true)
+        );
+    }
+    
+    /**
+     * @group DDC-1389
+     */
+    public function testInheritanceTypeSingleTableInLeafClassWithDisabledForcePartialLoad()
+    {
+        $this->assertSqlGeneration(
+            'SELECT fuc FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract fuc', 
+            "SELECT c0_.id AS id0, c0_.completed AS completed1, c0_.hoursWorked AS hoursWorked2, c0_.pricePerHour AS pricePerHour3, c0_.maxPrice AS maxPrice4, c0_.discr AS discr5, c0_.salesPerson_id AS salesPerson_id6 FROM company_contracts c0_ WHERE c0_.discr IN ('flexultra')",
+            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+        );
+    }
+    
+    /**
+     * @group DDC-1389
+     */
+    public function testInheritanceTypeSingleTableInLeafClassWithEnabledForcePartialLoad()
+    {
+        $this->assertSqlGeneration(
+            'SELECT fuc FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract fuc', 
+            "SELECT c0_.id AS id0, c0_.completed AS completed1, c0_.hoursWorked AS hoursWorked2, c0_.pricePerHour AS pricePerHour3, c0_.maxPrice AS maxPrice4, c0_.discr AS discr5 FROM company_contracts c0_ WHERE c0_.discr IN ('flexultra')",
+            array(Query::HINT_FORCE_PARTIAL_LOAD => true)
+        );
+    }
+    
+    /**
+     * @group DDC-1161
+     */
+    public function testSelfReferenceWithOneToOneDoesNotDuplicateAlias()
+    {
+        $this->assertSqlGeneration(
+            'SELECT p, pp FROM Doctrine\Tests\Models\Company\CompanyPerson p JOIN p.spouse pp', 
+            "SELECT c0_.id AS id0, c0_.name AS name1, c1_.title AS title2, c1_.car_id AS car_id3, c2_.salary AS salary4, c2_.department AS department5, c2_.startDate AS startDate6, c3_.id AS id7, c3_.name AS name8, c4_.title AS title9, c4_.car_id AS car_id10, c5_.salary AS salary11, c5_.department AS department12, c5_.startDate AS startDate13, c0_.discr AS discr14, c0_.spouse_id AS spouse_id15, c3_.discr AS discr16, c3_.spouse_id AS spouse_id17 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id INNER JOIN company_persons c3_ ON c0_.spouse_id = c3_.id LEFT JOIN company_managers c4_ ON c3_.id = c4_.id LEFT JOIN company_employees c5_ ON c3_.id = c5_.id",
+            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
         );
     }
 }

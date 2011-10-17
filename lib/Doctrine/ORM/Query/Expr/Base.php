@@ -45,12 +45,14 @@ abstract class Base
     {
         $this->addMultiple($args);
     }
-    
+
     public function addMultiple($args = array())
     {
         foreach ((array) $args as $arg) {
             $this->add($arg);
         }
+
+        return $this;
     }
 
     public function add($arg)
@@ -67,6 +69,8 @@ abstract class Base
 
             $this->_parts[] = $arg;
         }
+
+        return $this;
     }
 
     public function count()
@@ -79,7 +83,7 @@ abstract class Base
         if ($this->count() == 1) {
             return (string) $this->_parts[0];
         }
-        
+
         return $this->_preSeparator . implode($this->_separator, $this->_parts) . $this->_postSeparator;
     }
 }

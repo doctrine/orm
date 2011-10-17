@@ -49,14 +49,14 @@ class DDC698Role
 	protected $roleID;
 
 	/**
-	 * @Column(name="name", type="string", length="45")
+	 * @Column(name="name", type="string", length=45)
 	 *
 	 *
 	 */
 	protected $name;
 
 	/**
-	 * @Column(name="shortName", type="string", length="45")
+	 * @Column(name="shortName", type="string", length=45)
 	 *
 	 *
 	 */
@@ -91,7 +91,7 @@ class DDC698Privilege
 	protected $privilegeID;
 
 	/**
-	 * @Column(name="name", type="string", length="45")
+	 * @Column(name="name", type="string", length=45)
 	 *
 	 *
 	 */

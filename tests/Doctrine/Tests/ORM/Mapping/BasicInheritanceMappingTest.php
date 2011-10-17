@@ -52,6 +52,35 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         
         $this->assertTrue(isset($class->associationMappings['mappedRelated1']));
     }
+    
+    /**
+     * @group DDC-869
+     */
+    public function testGetMetadataForSubclassWithMappedSuperclassWhithRepository()
+    {
+        $class = $this->_factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment');
+        
+        $this->assertTrue(isset($class->fieldMappings['id']));
+        $this->assertTrue(isset($class->fieldMappings['value']));
+        $this->assertTrue(isset($class->fieldMappings['creditCardNumber']));
+        $this->assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
+        
+        
+        $class = $this->_factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869ChequePayment');
+        
+        $this->assertTrue(isset($class->fieldMappings['id']));
+        $this->assertTrue(isset($class->fieldMappings['value']));
+        $this->assertTrue(isset($class->fieldMappings['serialNumber']));
+        $this->assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
+        
+        
+        // override repositoryClass
+        $class = $this->_factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\SubclassWithRepository');
+        
+        $this->assertTrue(isset($class->fieldMappings['id']));
+        $this->assertTrue(isset($class->fieldMappings['value']));
+        $this->assertEquals($class->customRepositoryClassName, "Doctrine\ORM\EntityRepository");
+    }
 
     /**
      * @group DDC-388
@@ -191,7 +220,7 @@ abstract class HierachyBase
 {
     /**
      * @Column(type="integer") @Id @GeneratedValue(strategy="SEQUENCE")
-     * @SequenceGenerator(sequenceName="foo", initialValue="10")
+     * @SequenceGenerator(sequenceName="foo", initialValue=10)
      * @var int
      */
     public $id;
@@ -257,7 +286,7 @@ abstract class SuperclassBase
 {
     /**
      * @Column(type="integer") @Id @GeneratedValue(strategy="SEQUENCE") 
-     * @SequenceGenerator(sequenceName="foo", initialValue="10")
+     * @SequenceGenerator(sequenceName="foo", initialValue=10)
      * @var int
      */
     public $id;
@@ -275,6 +304,14 @@ abstract class MediumSuperclassBase extends SuperclassBase
  * @Entity
  */
 class MediumSuperclassEntity extends MediumSuperclassBase
+{
+    
+}
+
+/**
+ * @Entity(repositoryClass = "Doctrine\ORM\EntityRepository")
+ */
+class SubclassWithRepository extends \Doctrine\Tests\Models\DDC869\DDC869Payment
 {
     
 }

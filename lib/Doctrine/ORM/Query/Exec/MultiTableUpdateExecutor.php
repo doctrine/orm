@@ -64,7 +64,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         $idColumnList = implode(', ', $idColumnNames);
 
         // 1. Create an INSERT INTO temptable ... SELECT identifiers WHERE $AST->getWhereClause()
-        $sqlWalker->setSQLTableAlias($primaryClass->table['name'], 't0', $updateClause->aliasIdentificationVariable);
+        $sqlWalker->setSQLTableAlias($primaryClass->getTableName(), 't0', $updateClause->aliasIdentificationVariable);
 
         $this->_insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ')'
                 . ' SELECT t0.' . implode(', t0.', $idColumnNames);
@@ -106,7 +106,8 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
                     //FIXME (URGENT): With query cache the parameter is out of date. Move to execute() stage.
                     if ($newValue instanceof AST\InputParameter) {
                         $paramKey = $newValue->name;
-                        $this->_sqlParameters[$i][] = $sqlWalker->getQuery()->getParameter($paramKey);
+                        $this->_sqlParameters[$i]['parameters'][] = $sqlWalker->getQuery()->getParameter($paramKey);
+                        $this->_sqlParameters[$i]['types'][] = $sqlWalker->getQuery()->getParameterType($paramKey);
                         
                         ++$this->_numParametersInUpdateClause;
                     }
@@ -136,7 +137,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
                 . $platform->getColumnDeclarationListSQL($columnDefinitions) . ')';
         
-        $this->_dropTempTableSql = 'DROP TABLE ' . $tempTable;
+        $this->_dropTempTableSql = $platform->getDropTemporaryTableSQL($tempTable);
     }
 
     /**
@@ -154,11 +155,23 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         $conn->executeUpdate($this->_createTempTableSql);
 
         // Insert identifiers. Parameters from the update clause are cut off.
-        $numUpdated = $conn->executeUpdate($this->_insertSql, array_slice($params, $this->_numParametersInUpdateClause), $types);
+        $numUpdated = $conn->executeUpdate(
+            $this->_insertSql, 
+            array_slice($params, $this->_numParametersInUpdateClause), 
+            array_slice($types, $this->_numParametersInUpdateClause)
+        );
 
         // Execute UPDATE statements
         for ($i=0, $count=count($this->_sqlStatements); $i<$count; ++$i) {
-            $conn->executeUpdate($this->_sqlStatements[$i], isset($this->_sqlParameters[$i]) ? $this->_sqlParameters[$i] : array());
+            $parameters = array();
+            $types      = array();
+            
+            if (isset($this->_sqlParameters[$i])) {
+                $parameters = isset($this->_sqlParameters[$i]['parameters']) ? $this->_sqlParameters[$i]['parameters'] : array();
+                $types = isset($this->_sqlParameters[$i]['types']) ? $this->_sqlParameters[$i]['types'] : array();
+            }
+            
+            $conn->executeUpdate($this->_sqlStatements[$i], $parameters, $types);
         }
 
         // Drop temporary table

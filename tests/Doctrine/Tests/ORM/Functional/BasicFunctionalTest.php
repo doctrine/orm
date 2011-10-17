@@ -150,15 +150,15 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->username = 'gblanco';
         $user->status = 'developer';
 
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user));
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_NEW");
         
         $this->_em->persist($user);
         
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user));
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_MANAGED");
         
         $this->_em->remove($user);
-        
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user));
+
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_NEW");
         
         $this->_em->persist($user);
         $this->_em->flush();
@@ -166,10 +166,10 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $this->_em->remove($user);
         
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_REMOVED, $this->_em->getUnitOfWork()->getEntityState($user));
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_REMOVED, $this->_em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_REMOVED");
         $this->_em->flush();
         
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user));
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_NEW");
         
         $this->assertNull($this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $id));
     }
@@ -863,7 +863,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testGetPartialReferenceToUpdateObjectWithoutLoadingIt()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $user = new CmsUser();
         $user->username = "beberlei";
         $user->name = "Benjamin E.";
@@ -882,7 +881,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertEquals('Stephan', $this->_em->find(get_class($user), $userId)->name);
+        $this->assertEquals('Benjamin E.', $this->_em->find(get_class($user), $userId)->name);
     }
 
     public function testMergePersistsNewEntities()
@@ -980,5 +979,55 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $article->user, "It IS a proxy, ...");
         $this->assertTrue($article->user->__isInitialized__, "...but its initialized!");
         $this->assertEquals($qc+2, $this->getCurrentQueryCount());
+    }
+
+    /**
+     * @group DDC-1278
+     */
+    public function testClearWithEntityName()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+
+        $address = new CmsAddress();
+        $address->city = "Springfield";
+        $address->zip = "12354";
+        $address->country = "Germany";
+        $address->street = "Foo Street";
+        $address->user = $user;
+        $user->address = $address;
+
+        $article1 = new CmsArticle();
+        $article1->topic = 'Foo';
+        $article1->text = 'Foo Text';
+
+        $article2 = new CmsArticle();
+        $article2->topic = 'Bar';
+        $article2->text = 'Bar Text';
+
+        $user->addArticle($article1);
+        $user->addArticle($article2);
+
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+        $this->_em->persist($address);
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $unitOfWork = $this->_em->getUnitOfWork();
+
+        $this->_em->clear('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($user));
+
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $unitOfWork->getEntityState($address));
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $unitOfWork->getEntityState($article1));
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $unitOfWork->getEntityState($article2));
+
+        $this->_em->clear();
+
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($address));
     }
 }

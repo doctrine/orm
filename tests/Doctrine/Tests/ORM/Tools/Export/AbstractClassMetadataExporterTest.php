@@ -98,6 +98,8 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
 
     public function testExportDirectoryAndFilesAreCreated()
     {
+        $this->_deleteDirectory(__DIR__ . '/export/'.$this->_getType());
+
         $type = $this->_getType();
         $metadataDriver = $this->_createMetadataDriver($type, __DIR__ . '/' . $type);
         $em = $this->_createEntityManager($metadataDriver);
@@ -113,6 +115,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $exporter = $cme->getExporter($type, __DIR__ . '/export/' . $type);
         if ($type === 'annotation') {
             $entityGenerator = new EntityGenerator();
+            $entityGenerator->setAnnotationPrefix("");
             $exporter->setEntityGenerator($entityGenerator);
         }
         $this->_extension = $exporter->getExtension();
@@ -138,6 +141,8 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $em = $this->_createEntityManager($metadataDriver);
         $cmf = $this->_createClassMetadataFactory($em, $type);
         $metadata = $cmf->getAllMetadata();
+
+        $this->assertEquals(1, count($metadata));
 
         $class = current($metadata);
     
@@ -219,10 +224,11 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
 
         $this->assertTrue($class->associationMappings['address']['isCascadeRemove']);
-        $this->assertFalse($class->associationMappings['address']['isCascadePersist']);
+        $this->assertTrue($class->associationMappings['address']['isCascadePersist']);
         $this->assertFalse($class->associationMappings['address']['isCascadeRefresh']);
         $this->assertFalse($class->associationMappings['address']['isCascadeMerge']);
         $this->assertFalse($class->associationMappings['address']['isCascadeDetach']);
+        $this->assertTrue($class->associationMappings['address']['orphanRemoval']);
 
         return $class;
     }
@@ -239,11 +245,12 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertEquals('user', $class->associationMappings['phonenumbers']['mappedBy']);
         $this->assertEquals(array('number' => 'ASC'), $class->associationMappings['phonenumbers']['orderBy']);
 
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRemove']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeMerge']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
         
         return $class;
     }
@@ -300,9 +307,11 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     public function testCascadeIsExported($class)
     {
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeMerge']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRemove']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
+        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
+        $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
 
         return $class;
     }
@@ -318,8 +327,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
 
     public function __destruct()
     {
-        $type = $this->_getType();
-        $this->_deleteDirectory(__DIR__ . '/export/'.$this->_getType());
+#        $this->_deleteDirectory(__DIR__ . '/export/'.$this->_getType());
     }
 
     protected function _deleteDirectory($path)

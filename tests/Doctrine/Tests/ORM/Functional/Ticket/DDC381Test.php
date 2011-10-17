@@ -31,8 +31,8 @@ class DDC381Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $entity = $this->_em->getReference('Doctrine\Tests\ORM\Functional\Ticket\DDC381Entity', $persistedId);
 
-        // explicitly load proxy
-        $id = $entity->getId();
+        // explicitly load proxy (getId() does not trigger reload of proxy)
+        $id = $entity->getOtherMethod();
 
         $data = serialize($entity);
         $entity = unserialize($data);
@@ -54,5 +54,10 @@ class DDC381Entity
     public function getId()
     {
         return $this->id;
+    }
+    
+    public function getOtherMethod()
+    {
+        
     }
 }

@@ -763,4 +763,58 @@ class ArrayHydratorTest extends HydrationTestCase
 
         $this->assertEquals(1, count($result));
     }
+
+    /**
+     * @group DDC-1358
+     */
+    public function testMissingIdForRootEntity()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__status', 'status');
+        $rsm->addScalarResult('sclr0', 'nameUpper');
+
+        // Faked result set
+        $resultSet = array(
+            //row1
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'sclr0' => 'ROMANB',
+                ),
+            array(
+                'u__id' => null,
+                'u__status' => null,
+                'sclr0' => 'ROMANB',
+                ),
+            array(
+                'u__id' => '2',
+                'u__status' => 'developer',
+                'sclr0' => 'JWAGE',
+                ),
+            array(
+                'u__id' => null,
+                'u__status' => null,
+                'sclr0' => 'JWAGE',
+                ),
+            );
+
+        $stmt = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+
+        $result = $hydrator->hydrateAll($stmt, $rsm);
+
+        $this->assertEquals(4, count($result), "Should hydrate four results.");
+
+        $this->assertEquals('ROMANB', $result[0]['nameUpper']);
+        $this->assertEquals('ROMANB', $result[1]['nameUpper']);
+        $this->assertEquals('JWAGE', $result[2]['nameUpper']);
+        $this->assertEquals('JWAGE', $result[3]['nameUpper']);
+
+        $this->assertEquals(array('id' => 1, 'status' => 'developer'), $result[0][0]);
+        $this->assertNull($result[1][0]);
+        $this->assertEquals(array('id' => 2, 'status' => 'developer'), $result[2][0]);
+        $this->assertNull($result[3][0]);
+    }
 }
