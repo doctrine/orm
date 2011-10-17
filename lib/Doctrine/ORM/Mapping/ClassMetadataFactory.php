@@ -494,6 +494,10 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      */
     public function isTransient($class)
     {
+        if ( ! $this->initialized) {
+            $this->initialize();
+        }
+        
         return $this->driver->isTransient($class);
     }
 }
