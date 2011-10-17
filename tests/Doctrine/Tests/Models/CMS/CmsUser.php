@@ -19,7 +19,7 @@ class CmsUser
      */
     public $id;
     /**
-     * @Column(type="string", length=50)
+     * @Column(type="string", length=50, nullable=true)
      */
     public $status;
     /**
