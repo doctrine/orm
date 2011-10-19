@@ -737,7 +737,7 @@ public function <methodName>()
           '<variableName>'      => Inflector::camelize($fieldName),
           '<methodName>'        => $methodName,
           '<fieldName>'         => $fieldName,
-		  '<variableDefault>'   => ($defaultValue!==null?('='.$defaultValue):''),
+          '<variableDefault>'   => ($defaultValue!==null?('='.$defaultValue):''),
           '<entity>'            => $this->_getClassName($metadata)
         );
 
