@@ -808,7 +808,7 @@ public function <methodName>()
         $lines[] = $this->_spaces . '/**';
         
         if ($associationMapping['type'] & ClassMetadataInfo::TO_MANY) {
-            $lines[] = $this->_spaces . ' * @var \Doctrine\Common\Collections\ArrayCollection';
+            $lines[] = $this->_spaces . ' * @var \Doctrine\Common\Collections\Collection';
         }else{
             $lines[] = $this->_spaces . ' * @var ' . $associationMapping['targetEntity'];
         }
