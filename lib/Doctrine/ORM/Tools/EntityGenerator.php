@@ -406,7 +406,7 @@ public function <methodName>()
         }
         
         if ($collections) {
-            return $this->_prefixCodeWithSpaces(str_replace("<collections>", implode("\n", $collections), self::$_constructorMethodTemplate));
+            return $this->_prefixCodeWithSpaces(str_replace("<collections>", implode("\n".$this->_spaces, $collections), self::$_constructorMethodTemplate));
         }
         
         return '';
