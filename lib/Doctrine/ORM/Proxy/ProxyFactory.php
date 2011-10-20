@@ -152,6 +152,11 @@ class ProxyFactory
 
         $file = str_replace($placeholders, $replacements, $file);
 
+        $parentDirectory = dirname($fileName);
+        if (! file_exists($parentDirectory)) {
+            mkdir($parentDirectory, 0, true);
+        }
+
         file_put_contents($fileName, $file, LOCK_EX);
     }
 
