@@ -369,10 +369,7 @@ class ObjectHydrator extends AbstractHydrator
                             $this->_resultPointers[$dqlAlias] = $reflFieldValue[$index];
                         }
                     } else if ( ! $reflField->getValue($parentObject)) {
-                        $coll = new PersistentCollection($this->_em, $this->_ce[$entityName], new ArrayCollection);
-                        $coll->setOwner($parentObject, $relation);
-                        $reflField->setValue($parentObject, $coll);
-                        $this->_uow->setOriginalEntityProperty($oid, $relationField, $coll);
+                        $reflFieldValue = $this->_initRelatedCollection($parentObject, $parentClass, $relationField);
                     }
                 } else {
                     // PATH B: Single-valued association
