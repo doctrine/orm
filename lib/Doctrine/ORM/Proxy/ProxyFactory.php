@@ -153,7 +153,7 @@ class ProxyFactory
         $file = str_replace($placeholders, $replacements, $file);
 
         $parentDirectory = dirname($fileName);
-        if (! file_exists($parentDirectory)) {
+        if (! is_dir($parentDirectory)) {
             mkdir($parentDirectory, 0, true);
         }
 
