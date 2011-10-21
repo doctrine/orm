@@ -52,6 +52,8 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
         
+        // force proxy load, getId() doesn't work anymore
+        $user->getName();
         $userId = $user->getId();
         $this->_em->clear();
         
@@ -60,6 +62,8 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $user2 = $this->_em->getReference(__NAMESPACE__ . '\\DDC1238User', $userId);
         
+        // force proxy load, getId() doesn't work anymore
+        $user->getName();
         $this->assertNull($user->getId(), "Now this is null, we already have a user instance of that type");
     }
 }

@@ -37,6 +37,10 @@ class TypeTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(0.1515, $decimal->highScale);
     }
 
+    /**
+     * @group DDC-1394
+     * @return void
+     */
     public function testBoolean()
     {
         $bool = new BooleanModel();
@@ -46,7 +50,7 @@ class TypeTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $dql = "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b";
+        $dql = "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true";
         $bool = $this->_em->createQuery($dql)->getSingleResult();
 
         $this->assertTrue($bool->booleanField);
@@ -56,7 +60,7 @@ class TypeTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $dql = "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b";
+        $dql = "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = false";
         $bool = $this->_em->createQuery($dql)->getSingleResult();
 
         $this->assertFalse($bool->booleanField);

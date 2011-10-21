@@ -54,7 +54,30 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($userId, $a2->getUser()->getId());
         $this->assertEquals('Poweruser', $a2->getUser()->type);
     }
-    
+
+    /**
+     * @group DDC-1386
+     */
+    public function testGetPartialReferenceWithDefaultValueNotEvalutedInFlush()
+    {
+        $user = new DefaultValueUser;
+        $user->name = 'romanb';
+        $user->type = 'Normaluser';
+        
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $user = $this->_em->getPartialReference('Doctrine\Tests\ORM\Functional\DefaultValueUser', $user->id);
+        $this->assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $user = $this->_em->find('Doctrine\Tests\ORM\Functional\DefaultValueUser', $user->id);
+
+        $this->assertEquals('Normaluser', $user->type);
+    }
 }
 
 

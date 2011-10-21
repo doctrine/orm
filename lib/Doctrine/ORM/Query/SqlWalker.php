@@ -1154,8 +1154,9 @@ class SqlWalker implements TreeWalker
             if ( ! isset($this->_selectedClasses[$dqlAlias])) {
                 $this->_selectedClasses[$dqlAlias] = $class;
             }
-
+            
             $beginning = true;
+            
             // Select all fields from the queried class
             foreach ($class->fieldMappings as $fieldName => $mapping) {
                 if ($partialFieldSet && !in_array($fieldName, $partialFieldSet)) {
@@ -1174,6 +1175,7 @@ class SqlWalker implements TreeWalker
                       . ' AS ' . $columnAlias;
 
                 $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
+                
                 $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
             }
 
@@ -1185,6 +1187,7 @@ class SqlWalker implements TreeWalker
                 foreach ($class->subClasses as $subClassName) {
                     $subClass = $this->_em->getClassMetadata($subClassName);
                     $sqlTableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
+                    
                     foreach ($subClass->fieldMappings as $fieldName => $mapping) {
                         if (isset($mapping['inherited']) || $partialFieldSet && !in_array($fieldName, $partialFieldSet)) {
                             continue;
@@ -1206,8 +1209,10 @@ class SqlWalker implements TreeWalker
                         if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE && ! isset($assoc['inherited'])) {
                             foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
                                 if ($beginning) $beginning = false; else $sql .= ', ';
+                                
                                 $columnAlias = $this->getSQLColumnAlias($srcColumn);
                                 $sql .= $sqlTableAlias . '.' . $srcColumn . ' AS ' . $columnAlias;
+                                
                                 $this->_rsm->addMetaResult($dqlAlias, $this->_platform->getSQLResultCasing($columnAlias), $srcColumn);
                             }
                         }
@@ -1893,12 +1898,16 @@ class SqlWalker implements TreeWalker
         switch ($literal->type) {
             case AST\Literal::STRING:
                 return $this->_conn->quote($literal->value);
+                
             case AST\Literal::BOOLEAN:
                 $bool = strtolower($literal->value) == 'true' ? true : false;
                 $boolVal = $this->_conn->getDatabasePlatform()->convertBooleans($bool);
-                return is_string($boolVal) ? $this->_conn->quote($boolVal) : $boolVal;
+                
+                return $boolVal;
+                
             case AST\Literal::NUMERIC:
                 return $literal->value;
+                
             default:
                 throw QueryException::invalidLiteral($literal);
         }

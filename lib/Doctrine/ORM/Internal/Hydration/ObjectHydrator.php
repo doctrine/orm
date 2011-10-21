@@ -302,6 +302,12 @@ class ObjectHydrator extends AbstractHydrator
                 // seen for this parent-child relationship
                 $path = $parentAlias . '.' . $dqlAlias;
 
+                // We have a RIGHT JOIN result here. Doctrine cannot hydrate RIGHT JOIN Object-Graphs
+                if (!isset($nonemptyComponents[$parentAlias])) {
+                    // TODO: Add special case code where we hydrate the right join objects into identity map at least
+                    continue;
+                }
+
                 // Get a reference to the parent object to which the joined element belongs.
                 if ($this->_rsm->isMixed && isset($this->_rootAliases[$parentAlias])) {
                     $first = reset($this->_resultPointers);
@@ -408,6 +414,18 @@ class ObjectHydrator extends AbstractHydrator
                 // PATH C: Its a root result element
                 $this->_rootAliases[$dqlAlias] = true; // Mark as root alias
 
+                // if this row has a NULL value for the root result id then make it a null result.
+                if ( ! isset($nonemptyComponents[$dqlAlias]) ) {
+                    if ($this->_rsm->isMixed) {
+                        $result[] = array(0 => null);
+                    } else {
+                        $result[] = null;
+                    }
+                    ++$this->_resultCounter;
+                    continue;
+                }
+
+                // check for existing result from the iterations before
                 if ( ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $this->_getEntity($rowData[$dqlAlias], $dqlAlias);
                     if (isset($this->_rsm->indexByMap[$dqlAlias])) {
