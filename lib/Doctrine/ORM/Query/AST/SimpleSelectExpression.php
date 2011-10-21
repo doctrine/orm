@@ -37,6 +37,7 @@ class SimpleSelectExpression extends Node
 {
     public $expression;
     public $fieldIdentificationVariable;
+    public $hiddenAliasResultVariable;
 
     public function __construct($expression)
     {
