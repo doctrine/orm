@@ -634,7 +634,7 @@ public function <methodName>()
 
         foreach ($metadata->associationMappings as $associationMapping) {
             if ($associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
-                $nullable = $this->_associationIsNullable($associationMapping);
+                $nullable = $this->_isAssociationIsNullable($associationMapping);
                 if ($code = $this->_generateEntityStubMethod($metadata, 'set', $associationMapping['fieldName'], $associationMapping['targetEntity'], ($nullable?'null':null))) {
                     $methods[] = $code;
                 }
@@ -654,7 +654,7 @@ public function <methodName>()
         return implode("\n\n", $methods);
     }
 
-    private function _associationIsNullable($associationMapping)
+    private function _isAssociationIsNullable($associationMapping)
     {
         if(isset($associationMapping['joinColumns'])){
             $joinColumns = $associationMapping['joinColumns'];
@@ -665,7 +665,7 @@ public function <methodName>()
             $joinColumns = array();
         }
         foreach ($joinColumns as $joinColumn) {
-            if(!isset($joinColumn['nullable']) || !$joinColumn['nullable']){
+            if(isset($joinColumn['nullable']) && !$joinColumn['nullable']){
                 return false;
             }
         }
