@@ -634,7 +634,8 @@ public function <methodName>()
 
         foreach ($metadata->associationMappings as $associationMapping) {
             if ($associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
-                if ($code = $this->_generateEntityStubMethod($metadata, 'set', $associationMapping['fieldName'], $associationMapping['targetEntity'], 'null')) {
+                $nullable = $this->_associationIsNullable($associationMapping);
+                if ($code = $this->_generateEntityStubMethod($metadata, 'set', $associationMapping['fieldName'], $associationMapping['targetEntity'], ($nullable?'null':null))) {
                     $methods[] = $code;
                 }
                 if ($code = $this->_generateEntityStubMethod($metadata, 'get', $associationMapping['fieldName'], $associationMapping['targetEntity'])) {
@@ -651,6 +652,24 @@ public function <methodName>()
         }
 
         return implode("\n\n", $methods);
+    }
+
+    private function _associationIsNullable($associationMapping)
+    {
+        if(isset($associationMapping['joinColumns'])){
+            $joinColumns = $associationMapping['joinColumns'];
+        }else{
+            //@todo thereis no way to retreive targetEntity metadata
+            //$targetMetadata = $this->getClassMetadata($associationMapping['targetEntity']);
+            //$joinColumns = $targetMetadata->associationMappings[$associationMapping["mappedBy"]]['joinColumns'];
+            $joinColumns = array();
+        }
+        foreach ($joinColumns as $joinColumn) {
+            if(!isset($joinColumn['nullable']) || !$joinColumn['nullable']){
+                return false;
+            }
+        }
+        return true;
     }
 
     private function _generateEntityLifecycleCallbackMethods(ClassMetadataInfo $metadata)
@@ -808,7 +827,7 @@ public function <methodName>()
         $lines[] = $this->_spaces . '/**';
         
         if ($associationMapping['type'] & ClassMetadataInfo::TO_MANY) {
-            $lines[] = $this->_spaces . ' * @var \Doctrine\Common\Collections\Collection';
+            $lines[] = $this->_spaces . ' * @var \Doctrine\Common\Collections\ArrayCollection';
         }else{
             $lines[] = $this->_spaces . ' * @var ' . $associationMapping['targetEntity'];
         }
