@@ -1170,4 +1170,33 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($this->_em->contains($otherUser), "Other user is contained in EntityManager");
         $this->assertTrue($otherUser->id > 0, "other user has an id");
     }
+
+    /**
+     * @group DDC-720
+     */
+    public function testFlushSingleSaveOnlySingle()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+        $this->_em->persist($user);
+
+        $user2 = new CmsUser;
+        $user2->name = 'Dominik';
+        $user2->username = 'domnikl2';
+        $user2->status = 'developer';
+        $this->_em->persist($user2);
+
+        $this->_em->flush();
+
+        $user->status = 'admin';
+        $user2->status = 'admin';
+
+        $this->_em->flush($user);
+        $this->_em->clear();
+
+        $user2 = $this->_em->find(get_class($user2), $user2->id);
+        $this->assertEquals('developer', $user2->status);
+    }
 }
