@@ -729,12 +729,12 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertSqlGeneration(
             "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true",
-            "SELECT b0_.id AS id0, b0_.booleanField AS booleanField1 FROM boolean_model b0_ WHERE b0_.booleanField = true"
+            "SELECT b0_.id AS id0, b0_.booleanField AS booleanfield1 FROM boolean_model b0_ WHERE b0_.booleanField = true"
         );
 
         $this->assertSqlGeneration(
             "SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = false",
-            "SELECT b0_.id AS id0, b0_.booleanField AS booleanField1 FROM boolean_model b0_ WHERE b0_.booleanField = false"
+            "SELECT b0_.id AS id0, b0_.booleanField AS booleanfield1 FROM boolean_model b0_ WHERE b0_.booleanField = false"
         );
 
         $this->_em->getConnection()->setDatabasePlatform($oldPlat);
@@ -877,7 +877,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
-            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 ".
+            "SELECT c0_.id AS ID0, c0_.status AS STATUS1, c0_.username AS USERNAME2, c0_.name AS NAME3 ".
             "FROM cms_users c0_ WHERE c0_.username = 'gblanco' FOR UPDATE",
             array(Query::HINT_LOCK_MODE => \Doctrine\DBAL\LockMode::PESSIMISTIC_READ)
         );
@@ -1251,6 +1251,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             array(Query::HINT_FORCE_PARTIAL_LOAD => false)
         );
     }
+
+    /**
+     * @group DDC-1384
+     */
+    function testAliasDoesNotExceedPlatformDefinedLength()
+    {
+        $this->assertSqlGeneration(
+            'SELECT m FROM ' . __NAMESPACE__ .  '\\DDC1384Model m',
+            "SELECT d0_.aVeryLongIdentifierThatShouldBeShortenedByTheSQLWalker_fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo AS fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo0 FROM DDC1384Model d0_"
+        );
+    }
 }
 
 
@@ -1280,4 +1291,16 @@ class MyAbsFunction extends \Doctrine\ORM\Query\AST\Functions\FunctionNode
         
         $parser->match(\Doctrine\ORM\Query\Lexer::T_CLOSE_PARENTHESIS);
     }
+}
+/**
+ * @Entity
+ */
+class DDC1384Model
+{
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
+    protected $aVeryLongIdentifierThatShouldBeShortenedByTheSQLWalker_fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo;
 }
