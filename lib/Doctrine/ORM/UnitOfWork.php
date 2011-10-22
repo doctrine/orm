@@ -595,25 +595,16 @@ class UnitOfWork implements PropertyChangedListener
             $oid = spl_object_hash($entry);
             if ($state == self::STATE_NEW) {
                 if ( ! $assoc['isCascadePersist']) {
-                    throw new InvalidArgumentException("A new entity was found through the relationship '"
-                            . $assoc['sourceEntity'] . "#" . $assoc['fieldName'] . "' that was not"
-                            . " configured to cascade persist operations for entity: " . self::objToStr($entry) . "."
-                            . " Explicitly call EntityManager#persist() on this entity or configure to cascade persist "
-                            . " the association. If you cannot find out which entity causes the problem"
-                            . " implement '" . $assoc['targetEntity'] . "#__toString()' to get a clue.");
+                    throw ORMInvalidArgumentException::newEntityFoundThroughRelationship($assoc, $entry);
                 }
                 $this->persistNew($targetClass, $entry);
                 $this->computeChangeSet($targetClass, $entry);
-            } else if ($state == self::STATE_REMOVED) {
-                return new InvalidArgumentException("Removed entity detected during flush: "
-                        . self::objToStr($entry).". Remove deleted entities from associations.");
             } else if ($state == self::STATE_DETACHED) {
                 // Can actually not happen right now as we assume STATE_NEW,
                 // so the exception will be raised from the DBAL layer (constraint violation).
-                throw new InvalidArgumentException("A detached entity was found through a "
-                        . "relationship during cascading a persist operation.");
+                throw ORMInvalidArgumentException::detachedEntityFoundThroughRelationship($assoc, $entry);
             }
-            // MANAGED associated entities are already taken into account
+            // MANAGED and REMOVED associated entities are already taken into account
             // during changeset calculation anyway, since they are in the identity map.
         }
     }
@@ -662,7 +653,7 @@ class UnitOfWork implements PropertyChangedListener
         $oid = spl_object_hash($entity);
         
         if ( ! isset($this->entityStates[$oid]) || $this->entityStates[$oid] != self::STATE_MANAGED) {
-            throw new InvalidArgumentException('Entity must be managed.');
+            throw new InvalidArgumentException("Entity of type '" . $class->name . "' must be managed.");
         }
         
         /* TODO: Just return if changetracking policy is NOTIFY?
@@ -907,14 +898,14 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($entity);
 
-        if (isset($this->entityUpdates[$oid])) {
-            throw new InvalidArgumentException("Dirty entity can not be scheduled for insertion.");
-        }
         if (isset($this->entityDeletions[$oid])) {
-            throw new InvalidArgumentException("Removed entity can not be scheduled for insertion.");
+            throw ORMInvalidArgumentException::scheduleInsertForRemovedEntity($entity);
+        }
+        if (isset($this->originalEntityData[$oid]) && ! isset($this->entityInsertions[$oid])) {
+            throw ORMInvalidArgumentException::scheduleInsertForManagedEntity($entity);
         }
         if (isset($this->entityInsertions[$oid])) {
-            throw new InvalidArgumentException("Entity can not be scheduled for insertion twice.");
+            throw ORMInvalidArgumentException::scheduleInsertTwice($entity);
         }
 
         $this->entityInsertions[$oid] = $entity;
@@ -1071,7 +1062,7 @@ class UnitOfWork implements PropertyChangedListener
         $classMetadata = $this->em->getClassMetadata(get_class($entity));
         $idHash = implode(' ', $this->entityIdentifiers[spl_object_hash($entity)]);
         if ($idHash === '') {
-            throw new InvalidArgumentException("The given entity has no identity.");
+            throw ORMInvalidArgumentException::entityWithoutIdentity($classMetadata->name, $entity);
         }
         $className = $classMetadata->rootEntityName;
         if (isset($this->identityMap[$className][$idHash])) {
@@ -2466,7 +2457,7 @@ class UnitOfWork implements PropertyChangedListener
     public function markReadOnly($object)
     {
         if ( ! is_object($object) || ! $this->isInIdentityMap($object)) {
-            throw new InvalidArgumentException("Managed entity required");
+            throw ORMInvalidArgumentException::readOnlyRequiresManagedEntity($object);
         }
         $this->readOnlyObjects[spl_object_hash($object)] = true;
     }
@@ -2481,7 +2472,7 @@ class UnitOfWork implements PropertyChangedListener
     public function isReadOnly($object)
     {
         if ( ! is_object($object) ) {
-            throw new InvalidArgumentException("Managed entity required");
+            throw ORMInvalidArgumentException::readOnlyRequiresManagedEntity($object);
         }
         return isset($this->readOnlyObjects[spl_object_hash($object)]);
     }
