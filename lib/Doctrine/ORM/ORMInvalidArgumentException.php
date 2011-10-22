@@ -68,6 +68,12 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
                         . "during cascading a persist operation.");
     }
 
+    static public function entityNotManaged($entity)
+    {
+        throw new self("Entity " . self::objToStr($entity) . " is not managed. An entity is managed if its fetched " .
+                "from the database or registered as new through EntityManager#persist");
+    }
+
     /**
      * Helper method to show an object as string.
      *
