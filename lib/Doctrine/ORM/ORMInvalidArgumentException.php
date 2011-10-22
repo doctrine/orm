@@ -19,6 +19,11 @@
 
 namespace Doctrine\ORM;
 
+/**
+ * Contains exception messages for all invalid lifecycle state exceptions inside UnitOfWork
+ *
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
+ */
 class ORMInvalidArgumentException extends \InvalidArgumentException
 {
     static public function scheduleInsertForManagedEntity($entity)
@@ -72,6 +77,21 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     {
         throw new self("Entity " . self::objToStr($entity) . " is not managed. An entity is managed if its fetched " .
                 "from the database or registered as new through EntityManager#persist");
+    }
+
+    static public function entityHasNoIdentity($entity, $operation)
+    {
+        throw new self("Entity has no identity, therefore " . $operation ." cannot be performed. " . self::objToStr($entity));
+    }
+
+    static public function entityIsRemoved($entity, $operation)
+    {
+        throw new self("Entity is removed, therefore " . $operation ." cannot be performed. " . self::objToStr($entity));
+    }
+
+    static public function detachedEntityCannot($entity, $operation)
+    {
+        throw new self("A detached entity was found during " . $operation . " " . self::objToStr($entity));
     }
 
     /**

@@ -935,10 +935,10 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($entity);
         if ( ! isset($this->entityIdentifiers[$oid])) {
-            throw new InvalidArgumentException("Entity has no identity." . self::objToStr($entity));
+            throw ORMInvalidArgumentException::entityHasNoIdentity($entity, "scheduling for update");
         }
         if (isset($this->entityDeletions[$oid])) {
-            throw new InvalidArgumentException("Entity is removed." . self::objToStr($entity));
+            throw ORMInvalidArgumentException::entityIsRemoved($entity, "schedule for update");
         }
 
         if ( ! isset($this->entityUpdates[$oid]) && ! isset($this->entityInsertions[$oid])) {
@@ -1160,7 +1160,7 @@ class UnitOfWork implements PropertyChangedListener
         $classMetadata = $this->em->getClassMetadata(get_class($entity));
         $idHash = implode(' ', $this->entityIdentifiers[$oid]);
         if ($idHash === '') {
-            throw new InvalidArgumentException("The given entity has no identity." . self::objToStr($entity));
+            throw ORMInvalidArgumentException::entityHasNoIdentity($entity, "remove from identity map");
         }
         $className = $classMetadata->rootEntityName;
         if (isset($this->identityMap[$className][$idHash])) {
@@ -1291,7 +1291,7 @@ class UnitOfWork implements PropertyChangedListener
                 break;
             case self::STATE_DETACHED:
                 // Can actually not happen right now since we assume STATE_NEW.
-                throw new InvalidArgumentException("Detached entity passed to persist()." . self::objToStr($entity));
+                throw ORMInvalidArgumentException::detachedEntityCannot($entity, "persisted");
             default:
                 throw new UnexpectedValueException("Unexpected entity state: $entityState." . self::objToStr($entity));
         }
@@ -1350,7 +1350,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->scheduleForDelete($entity);
                 break;
             case self::STATE_DETACHED:
-                throw new InvalidArgumentException("A detached entity can not be removed." . self::objToStr($entity));
+                throw ORMInvalidArgumentException::detachedEntityCannot($entity, "removed");
             default:
                 throw new UnexpectedValueException("Unexpected entity state: $entityState." . self::objToStr($entity));
         }
@@ -1417,9 +1417,7 @@ class UnitOfWork implements PropertyChangedListener
                 if ($managedCopy) {
                     // We have the entity in-memory already, just make sure its not removed.
                     if ($this->getEntityState($managedCopy) == self::STATE_REMOVED) {
-                        throw new InvalidArgumentException(
-                                'Removed entity ' . self::objToStr($managedCopy) . ' detected during merge.'
-                                . ' Can not merge with a removed entity.');
+                        throw ORMInvalidArgumentException::entityIsRemoved($managedCopy, "merge");
                     }
                 } else {
                     // We need to fetch the managed copy in order to merge.
