@@ -328,15 +328,15 @@ class UnitOfWork implements PropertyChangedListener
             $conn->rollback();
             throw $e;
         }
-
-        // Raise postFlush
-        if ($this->evm->hasListeners(Events::postFlush)) {
-            $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->em));
-        }
         
         // Take new snapshots from visited collections
         foreach ($this->visitedCollections as $coll) {
             $coll->takeSnapshot();
+        }
+
+        // Raise postFlush
+        if ($this->evm->hasListeners(Events::postFlush)) {
+            $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->em));
         }
 
         // Clear up
