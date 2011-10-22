@@ -328,10 +328,10 @@ class EntityManager implements ObjectManager
      * @throws Doctrine\ORM\OptimisticLockException If a version check on an entity that
      *         makes use of optimistic locking fails.
      */
-    public function flush()
+    public function flush($entity = null)
     {
         $this->errorIfClosed();
-        $this->unitOfWork->commit();
+        $this->unitOfWork->commit($entity);
     }
 
     /**
