@@ -398,6 +398,8 @@ class UnitOfWork implements PropertyChangedListener
      * If a PersistentCollection has been de-referenced in a fully MANAGED entity,
      * then this collection is marked for deletion.
      *
+     * @ignore
+     * @internal Don't call from the outside.
      * @param ClassMetadata $class The class descriptor of the entity.
      * @param object $entity The entity for which to compute the changes.
      */
@@ -488,8 +490,9 @@ class UnitOfWork implements PropertyChangedListener
                         }
                     } else if ($orgValue instanceof PersistentCollection && $orgValue !== $actualValue) {
                         // A PersistentCollection was de-referenced, so delete it.
-                        if  ( ! in_array($orgValue, $this->collectionDeletions, true)) {
-                            $this->collectionDeletions[] = $orgValue;
+                        $coid = spl_object_hash($orgValue);
+                        if ( ! isset($this->collectionDeletions[$coid]) ) {
+                            $this->collectionDeletions[$coid] = $orgValue;
                             $changeSet[$propName] = $orgValue; // Signal changeset, to-many assocs will be ignored.
                         }
                     }
@@ -567,10 +570,11 @@ class UnitOfWork implements PropertyChangedListener
     private function computeAssociationChanges($assoc, $value)
     {
         if ($value instanceof PersistentCollection && $value->isDirty()) {
+            $coid = spl_object_hash($value);
             if ($assoc['isOwningSide']) {
-                $this->collectionUpdates[] = $value;
+                $this->collectionUpdates[$coid] = $value;
             }
-            $this->visitedCollections[] = $value;
+            $this->visitedCollections[$coid] = $value;
         }
 
         // Look through the entities, and in any of their associations, for transient (new)
@@ -653,7 +657,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param object $entity The entity for which to (re)calculate the change set.
      * @throws InvalidArgumentException If the passed entity is not MANAGED.
      */
-    public function recomputeSingleEntityChangeSet($class, $entity)
+    public function recomputeSingleEntityChangeSet(ClassMetadata $class, $entity)
     {
         $oid = spl_object_hash($entity);
         
@@ -871,6 +875,7 @@ class UnitOfWork implements PropertyChangedListener
                     $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
                     if ( ! $calc->hasClass($targetClass->name)) {
                         $calc->addClass($targetClass);
+                        $newNodes[] = $targetClass;
                     }
                     $calc->addDependency($targetClass, $class);
                     // If the target class has mapped subclasses,
@@ -1470,11 +1475,17 @@ class UnitOfWork implements PropertyChangedListener
                             if ($this->getEntityState($other, self::STATE_DETACHED) == self::STATE_MANAGED) {
                                 $prop->setValue($managedCopy, $other);
                             } else {
+
                                 $targetClass = $this->em->getClassMetadata($assoc2['targetEntity']);
-                                $id = $targetClass->getIdentifierValues($other);
-                                $proxy = $this->em->getProxyFactory()->getProxy($assoc2['targetEntity'], $id);
-                                $prop->setValue($managedCopy, $proxy);
-                                $this->registerManaged($proxy, $id, array());
+                                $relatedId = $targetClass->getIdentifierValues($other);
+
+                                if ($targetClass->subClasses) {
+                                    $entity = $this->em->find($targetClass->name, $relatedId);
+                                } else {
+                                    $proxy = $this->em->getProxyFactory()->getProxy($assoc2['targetEntity'], $relatedId);
+                                    $prop->setValue($managedCopy, $proxy);
+                                    $this->registerManaged($proxy, $relatedId, array());
+                                }
                             }
                         }
                     } else {
@@ -1556,8 +1567,9 @@ class UnitOfWork implements PropertyChangedListener
      * 
      * @param object $entity
      * @param array $visited
+     * @param boolean $noCascade if true, don't cascade detach operation
      */
-    private function doDetach($entity, array &$visited)
+    private function doDetach($entity, array &$visited, $noCascade = false)
     {
         $oid = spl_object_hash($entity);
         if (isset($visited[$oid])) {
@@ -1579,8 +1591,10 @@ class UnitOfWork implements PropertyChangedListener
             case self::STATE_DETACHED:
                 return;
         }
-        
-        $this->cascadeDetach($entity, $visited);
+
+        if (!$noCascade) {
+            $this->cascadeDetach($entity, $visited);
+        }
     }
     
     /**
@@ -1831,28 +1845,41 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Clears the UnitOfWork.
+     *
+     * @param string $entityName if given, only entities of this type will get detached
      */
-    public function clear()
+    public function clear($entityName = null)
     {
-        $this->identityMap =
-        $this->entityIdentifiers =
-        $this->originalEntityData =
-        $this->entityChangeSets =
-        $this->entityStates =
-        $this->scheduledForDirtyCheck =
-        $this->entityInsertions =
-        $this->entityUpdates =
-        $this->entityDeletions =
-        $this->collectionDeletions =
-        $this->collectionUpdates =
-        $this->extraUpdates =
-        $this->orphanRemovals = array();
-        if ($this->commitOrderCalculator !== null) {
-            $this->commitOrderCalculator->clear();
+        if ($entityName === null) {
+            $this->identityMap =
+            $this->entityIdentifiers =
+            $this->originalEntityData =
+            $this->entityChangeSets =
+            $this->entityStates =
+            $this->scheduledForDirtyCheck =
+            $this->entityInsertions =
+            $this->entityUpdates =
+            $this->entityDeletions =
+            $this->collectionDeletions =
+            $this->collectionUpdates =
+            $this->extraUpdates =
+            $this->orphanRemovals = array();
+            if ($this->commitOrderCalculator !== null) {
+                $this->commitOrderCalculator->clear();
+            }
+        } else {
+            $visited = array();
+            foreach ($this->identityMap as $className => $entities) {
+                if ($className === $entityName) {
+                    foreach ($entities as $entity) {
+                        $this->doDetach($entity, $visited, true);
+                    }
+                }
+            }
         }
 
         if ($this->evm->hasListeners(Events::onClear)) {
-            $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->em));
+            $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->em, $entityName));
         }
     }
     
@@ -1880,12 +1907,12 @@ class UnitOfWork implements PropertyChangedListener
     {
         //TODO: if $coll is already scheduled for recreation ... what to do?
         // Just remove $coll from the scheduled recreations?
-        $this->collectionDeletions[] = $coll;
+        $this->collectionDeletions[spl_object_hash($coll)] = $coll;
     }
 
     public function isCollectionScheduledForDeletion(PersistentCollection $coll)
     {
-        return in_array($coll, $this->collectionsDeletions, true);
+        return isset( $this->collectionsDeletions[spl_object_hash($coll)] );
     }
 
     /**

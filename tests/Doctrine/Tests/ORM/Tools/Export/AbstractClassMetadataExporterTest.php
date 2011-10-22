@@ -115,6 +115,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $exporter = $cme->getExporter($type, __DIR__ . '/export/' . $type);
         if ($type === 'annotation') {
             $entityGenerator = new EntityGenerator();
+            $entityGenerator->setAnnotationPrefix("");
             $exporter->setEntityGenerator($entityGenerator);
         }
         $this->_extension = $exporter->getExtension();
@@ -140,6 +141,8 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $em = $this->_createEntityManager($metadataDriver);
         $cmf = $this->_createClassMetadataFactory($em, $type);
         $metadata = $cmf->getAllMetadata();
+
+        $this->assertEquals(1, count($metadata));
 
         $class = current($metadata);
     
@@ -320,6 +323,11 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     public function testInversedByIsExported($class)
     {
         $this->assertEquals('user', $class->associationMappings['address']['inversedBy']);
+    }
+
+    public function __destruct()
+    {
+#        $this->_deleteDirectory(__DIR__ . '/export/'.$this->_getType());
     }
 
     protected function _deleteDirectory($path)

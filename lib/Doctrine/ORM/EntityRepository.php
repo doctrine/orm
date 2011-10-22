@@ -178,7 +178,7 @@ class EntityRepository implements ObjectRepository
      */
     public function findOneBy(array $criteria)
     {
-        return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($criteria);
+        return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($criteria, null, null, array(), 0, 1);
     }
 
     /**
@@ -204,8 +204,7 @@ class EntityRepository implements ObjectRepository
             );
         }
 
-        if ( !isset($arguments[0])) {
-            // we dont even want to allow null at this point, because we cannot (yet) transform it into IS NULL.
+        if (empty($arguments)) {
             throw ORMException::findByRequiresParameter($method.$by);
         }
 

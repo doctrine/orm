@@ -92,6 +92,11 @@ class ArrayHydrator extends AbstractHydrator
                 $parent = $this->_rsm->parentAliasMap[$dqlAlias];
                 $path = $parent . '.' . $dqlAlias;
 
+                // missing parent data, skipping as RIGHT JOIN hydration is not supported.
+                if ( ! isset($nonemptyComponents[$parent]) ) {
+                    continue;
+                }
+
                 // Get a reference to the right element in the result tree.
                 // This element will get the associated element attached.
                 if ($this->_rsm->isMixed && isset($this->_rootAliases[$parent])) {
@@ -154,6 +159,17 @@ class ArrayHydrator extends AbstractHydrator
                 // It's a root result element
                 
                 $this->_rootAliases[$dqlAlias] = true; // Mark as root
+
+                // if this row has a NULL value for the root result id then make it a null result.
+                if ( ! isset($nonemptyComponents[$dqlAlias]) ) {
+                    if ($this->_rsm->isMixed) {
+                        $result[] = array(0 => null);
+                    } else {
+                        $result[] = null;
+                    }
+                    ++$this->_resultCounter;
+                    continue;
+                }
                 
                 // Check for an existing element
                 if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {

@@ -1239,6 +1239,18 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             array(Query::HINT_FORCE_PARTIAL_LOAD => true)
         );
     }
+    
+    /**
+     * @group DDC-1161
+     */
+    public function testSelfReferenceWithOneToOneDoesNotDuplicateAlias()
+    {
+        $this->assertSqlGeneration(
+            'SELECT p, pp FROM Doctrine\Tests\Models\Company\CompanyPerson p JOIN p.spouse pp', 
+            "SELECT c0_.id AS id0, c0_.name AS name1, c1_.title AS title2, c1_.car_id AS car_id3, c2_.salary AS salary4, c2_.department AS department5, c2_.startDate AS startDate6, c3_.id AS id7, c3_.name AS name8, c4_.title AS title9, c4_.car_id AS car_id10, c5_.salary AS salary11, c5_.department AS department12, c5_.startDate AS startDate13, c0_.discr AS discr14, c0_.spouse_id AS spouse_id15, c3_.discr AS discr16, c3_.spouse_id AS spouse_id17 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id INNER JOIN company_persons c3_ ON c0_.spouse_id = c3_.id LEFT JOIN company_managers c4_ ON c3_.id = c4_.id LEFT JOIN company_employees c5_ ON c3_.id = c5_.id",
+            array(Query::HINT_FORCE_PARTIAL_LOAD => false)
+        );
+    }
 }
 
 
