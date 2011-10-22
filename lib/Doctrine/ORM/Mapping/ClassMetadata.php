@@ -134,8 +134,8 @@ class ClassMetadata extends ClassMetadataInfo
     {
         $mapping = parent::_validateAndCompleteAssociationMapping($mapping);
 
-        if ( ! class_exists($mapping['targetEntity']) ) {
-            #throw MappingException::invalidTargetEntityClass($mapping['targetEntity'], $this->name, $mapping['fieldName']);
+        if ( ! \Doctrine\Common\ClassLoader::classExists($mapping['targetEntity']) ) {
+            throw MappingException::invalidTargetEntityClass($mapping['targetEntity'], $this->name, $mapping['fieldName']);
         }
 
         return $mapping;
