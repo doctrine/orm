@@ -73,12 +73,13 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $persister = $this->_getMockPersister();
         $this->_uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
         $proxy = $this->_proxyFactory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $identifier);
+
         $persister->expects($this->atLeastOnce())
                   ->method('load')
                   ->with($this->equalTo($identifier), $this->isInstanceOf($proxyClass))
                   ->will($this->returnValue(new \stdClass())); // fake return of entity instance
-        $proxy->getId();
         $proxy->getDescription();
+        $proxy->getProduct();
     }
 
     public function testReferenceProxyRespectsMethodsParametersTypeHinting()

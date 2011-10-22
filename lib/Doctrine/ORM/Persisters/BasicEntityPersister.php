@@ -580,12 +580,13 @@ class BasicEntityPersister
      * @param $assoc The association that connects the entity to load to another entity, if any.
      * @param array $hints Hints for entity creation.
      * @param int $lockMode
+     * @param int $limit Limit number of results
      * @return object The loaded and managed entity instance or NULL if the entity can not be found.
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
-    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0)
+    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0, $limit = null)
     {
-        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, $lockMode);
+        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, $lockMode, $limit);
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->_conn->executeQuery($sql, $params, $types);
         
@@ -823,7 +824,7 @@ class BasicEntityPersister
                     
                     if (isset($sourceClass->associationMappings[$field])) {
                         $value = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
-                        $value = $value[$this->_em->getClassMetadata($assoc['targetEntity'])->identifier[0]];
+                        $value = $value[$this->_em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity'])->identifier[0]];
                     }
 
                     $criteria[$quotedJoinTable . "." . $relationKeyColumn] = $value;
@@ -847,7 +848,7 @@ class BasicEntityPersister
                     
                     if (isset($sourceClass->associationMappings[$field])) {
                         $value = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
-                        $value = $value[$this->_em->getClassMetadata($assoc['targetEntity'])->identifier[0]];
+                        $value = $value[$this->_em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity'])->identifier[0]];
                     }
                     
                     $criteria[$quotedJoinTable . "." . $relationKeyColumn] = $value;
@@ -1060,10 +1061,10 @@ class BasicEntityPersister
                 if ($columnList) $columnList .= ', ';
 
                 $columnAlias = $srcColumn . $this->_sqlAliasCounter++;
-                $columnList .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )  
-                             . '.' . $srcColumn . ' AS ' . $columnAlias;
                 $resultColumnName = $this->_platform->getSQLResultCasing($columnAlias);
-                $this->_rsm->addMetaResult($alias, $this->_platform->getSQLResultCasing($columnAlias), $srcColumn, isset($assoc['id']) && $assoc['id'] === true);
+                $columnList .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )  
+                             . '.' . $srcColumn . ' AS ' . $resultColumnName;
+                $this->_rsm->addMetaResult($alias, $resultColumnName, $srcColumn, isset($assoc['id']) && $assoc['id'] === true);
             }
         }
         
@@ -1355,7 +1356,7 @@ class BasicEntityPersister
                 
                 if (isset($sourceClass->associationMappings[$field])) {
                     $value = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
-                    $value = $value[$this->_em->getClassMetadata($assoc['targetEntity'])->identifier[0]];
+                    $value = $value[$this->_em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity'])->identifier[0]];
                 }
                 
                 $criteria[$tableAlias . "." . $targetKeyColumn] = $value;

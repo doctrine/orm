@@ -1328,18 +1328,18 @@ class Parser
         // We need to check if we are in a IdentificationVariable or SingleValuedPathExpression
         $glimpse = $this->_lexer->glimpse();
 
-        if ($glimpse['type'] != Lexer::T_DOT) {
-            $token = $this->_lexer->lookahead;
-            $identVariable = $this->IdentificationVariable();
+        if ($glimpse['type'] == Lexer::T_DOT) {
+            return $this->SingleValuedPathExpression();
+        }
+        
+        $token = $this->_lexer->lookahead;
+        $identVariable = $this->IdentificationVariable();
 
-            if (!isset($this->_queryComponents[$identVariable])) {
-                $this->semanticalError('Cannot group by undefined identification variable.');
-            }
-
-            return $identVariable;
+        if (!isset($this->_queryComponents[$identVariable])) {
+            $this->semanticalError('Cannot group by undefined identification variable.');
         }
 
-        return $this->SingleValuedPathExpression();
+        return $identVariable;
     }
 
     /**
@@ -1354,12 +1354,9 @@ class Parser
         // We need to check if we are in a ResultVariable or StateFieldPathExpression
         $glimpse = $this->_lexer->glimpse();
 
-        if ($glimpse['type'] != Lexer::T_DOT) {
-            $token = $this->_lexer->lookahead;
-            $expr = $this->ResultVariable();
-        } else {
-            $expr = $this->SingleValuedPathExpression();
-        }
+        $expr = ($glimpse['type'] != Lexer::T_DOT) 
+            ? $this->ResultVariable()
+            : $this->SingleValuedPathExpression();
 
         $item = new AST\OrderByItem($expr);
 

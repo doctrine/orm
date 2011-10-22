@@ -128,7 +128,7 @@ class EntityManager implements ObjectManager
         $this->metadataFactory = new $metadataFactoryClassName;
         $this->metadataFactory->setEntityManager($this);
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
-        
+
         $this->unitOfWork = new UnitOfWork($this);
         $this->proxyFactory = new ProxyFactory($this,
                 $config->getProxyDir(),
@@ -203,18 +203,18 @@ class EntityManager implements ObjectManager
     public function transactional(Closure $func)
     {
         $this->conn->beginTransaction();
-        
+
         try {
             $return = $func($this);
-            
+
             $this->flush();
             $this->conn->commit();
-            
+
             return $return ?: true;
         } catch (Exception $e) {
             $this->close();
             $this->conn->rollback();
-            
+
             throw $e;
         }
     }
@@ -244,7 +244,7 @@ class EntityManager implements ObjectManager
      *
      * The class name must be the fully-qualified class name without a leading backslash
      * (as it is returned by get_class($obj)) or an aliased class name.
-     * 
+     *
      * Examples:
      * MyProject\Domain\User
      * sales:PriceRequest
@@ -413,6 +413,7 @@ class EntityManager implements ObjectManager
         $entity = $class->newInstance();
         $class->setIdentifierValues($entity, $identifier);
         $this->unitOfWork->registerManaged($entity, $identifier, array());
+        $this->unitOfWork->markReadOnly($entity);
 
         return $entity;
     }
@@ -421,16 +422,11 @@ class EntityManager implements ObjectManager
      * Clears the EntityManager. All entities that are currently managed
      * by this EntityManager become detached.
      *
-     * @param string $entityName
+     * @param string $entityName if given, only entities of this type will get detached
      */
     public function clear($entityName = null)
     {
-        if ($entityName === null) {
-            $this->unitOfWork->clear();
-        } else {
-            //TODO
-            throw new ORMException("EntityManager#clear(\$entityName) not yet implemented.");
-        }
+        $this->unitOfWork->clear($entityName);
     }
 
     /**
@@ -449,7 +445,7 @@ class EntityManager implements ObjectManager
      *
      * The entity will be entered into the database at or before transaction
      * commit or as a result of the flush operation.
-     * 
+     *
      * NOTE: The persist operation always considers entities that are not yet known to
      * this EntityManager as NEW. Do not pass detached entities to the persist operation.
      *
@@ -632,7 +628,7 @@ class EntityManager implements ObjectManager
 
     /**
      * Check if the Entity manager is open or closed.
-     * 
+     *
      * @return bool
      */
     public function isOpen()
@@ -711,6 +707,18 @@ class EntityManager implements ObjectManager
     public function getProxyFactory()
     {
         return $this->proxyFactory;
+    }
+
+    /**
+     * Helper method to initialize a lazy loading proxy or persistent collection.
+     *
+     * This method is a no-op for other objects
+     *
+     * @param object $obj
+     */
+    public function initializeObject($obj)
+    {
+        $this->unitOfWork->initializeObject($obj);
     }
 
     /**

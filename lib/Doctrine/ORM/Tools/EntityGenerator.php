@@ -115,10 +115,12 @@ public function <methodName>()
  * <description>
  *
  * @param <variableType>$<variableName>
+ * @return <entity>
  */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
 <spaces>$this-><fieldName> = $<variableName>;
+<spaces>return $this;
 }';
 
     private static $_addMethodTemplate =
@@ -150,7 +152,7 @@ public function <methodName>()
 
     public function __construct()
     {
-        if (version_compare(\Doctrine\Common\Version::VERSION, '3.0.0-DEV', '>=')) {
+        if (version_compare(\Doctrine\Common\Version::VERSION, '2.2.0-DEV', '>=')) {
             $this->_annotationsPrefix = 'ORM\\';
         }
     }
@@ -302,9 +304,6 @@ public function <methodName>()
      */
     public function setAnnotationPrefix($prefix)
     {
-        if (version_compare(\Doctrine\Common\Version::VERSION, '2.2.0-DEV', '>=')) {
-            return;
-        }
         $this->_annotationsPrefix = $prefix;
     }
 
@@ -737,7 +736,8 @@ public function <methodName>()
           '<variableType>'      => $variableType,
           '<variableName>'      => Inflector::camelize($fieldName),
           '<methodName>'        => $methodName,
-          '<fieldName>'         => $fieldName
+          '<fieldName>'         => $fieldName,
+          '<entity>'            => $this->_getClassName($metadata)
         );
 
         $method = str_replace(
@@ -791,7 +791,7 @@ public function <methodName>()
         }
 
         if (isset($joinColumn['onDelete'])) {
-            $joinColumnAnnot[] = 'onDelete=' . ($joinColumn['onDelete'] ? 'true' : 'false');
+            $joinColumnAnnot[] = 'onDelete="' . ($joinColumn['onDelete'] . '"');
         }
 
         if (isset($joinColumn['columnDefinition'])) {

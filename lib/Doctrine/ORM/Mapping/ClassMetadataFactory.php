@@ -308,6 +308,10 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             if ($parent && $parent->isInheritanceTypeSingleTable()) {
                 $class->setPrimaryTable($parent->table);
             }
+            
+            if ($parent && $parent->containsForeignIdentifier) {
+                $class->containsForeignIdentifier = true;
+            }
 
             $class->setParentClasses($visited);
 
@@ -490,6 +494,10 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      */
     public function isTransient($class)
     {
+        if ( ! $this->initialized) {
+            $this->initialize();
+        }
+        
         return $this->driver->isTransient($class);
     }
 }
