@@ -329,6 +329,11 @@ class UnitOfWork implements PropertyChangedListener
             throw $e;
         }
 
+        // Raise postFlush
+        if ($this->evm->hasListeners(Events::postFlush)) {
+            $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->em));
+        }
+        
         // Take new snapshots from visited collections
         foreach ($this->visitedCollections as $coll) {
             $coll->takeSnapshot();
