@@ -121,6 +121,17 @@ final class Events
     const onFlush = 'onFlush';
 
     /**
+     * The postFlush event occurs when the EntityManager#flush() operation is invoked and
+     * after all actual database operations are executed successfully. The event is only raised if there is
+     * actually something to do for the underlying UnitOfWork. If nothing needs to be done,
+     * the postFlush event is not raised. The event won't be raised if an error occurs during the
+     * flush operation.
+     * 
+     * @var string
+     */
+    const postFlush = 'postFlush';
+    
+    /**
      * The onClear event occurs when the EntityManager#clear() operation is invoked,
      * after all references to entities have been removed from the unit of work.
      *
