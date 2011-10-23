@@ -38,9 +38,6 @@ class PreFlushEventArgs extends \Doctrine\Common\EventArgs
      */
     private $_em;
 
-    //private $_entitiesToPersist = array();
-    //private $_entitiesToRemove = array();
-
     public function __construct($em)
     {
         $this->_em = $em;
