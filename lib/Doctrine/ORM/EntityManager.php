@@ -325,13 +325,17 @@ class EntityManager implements ObjectManager
      * This effectively synchronizes the in-memory state of managed objects with the
      * database.
      *
+     * If an entity is explicitly passed to this method only this entity and
+     * the cascade-persist semantics + scheduled inserts/removals are synchronized.
+     *
+     * @param object $entity
      * @throws Doctrine\ORM\OptimisticLockException If a version check on an entity that
      *         makes use of optimistic locking fails.
      */
-    public function flush()
+    public function flush($entity = null)
     {
         $this->errorIfClosed();
-        $this->unitOfWork->commit();
+        $this->unitOfWork->commit($entity);
     }
 
     /**
