@@ -253,7 +253,9 @@ class UnitOfWork implements PropertyChangedListener
      * 3) All collection deletions
      * 4) All collection updates
      * 5) All entity deletions
-     * 
+     *
+     * @param object $entity
+     * @return void
      */
     public function commit($entity = null)
     {
@@ -352,15 +354,28 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Only flush the given entity according to a rulset that keeps the UoW consistent.
+     * Compute the changesets of all entities scheduled for insertion
+     *
+     * @return void
+     */
+    private function computeScheduleInsertsChangeSets()
+    {
+        foreach ($this->entityInsertions as $entity) {
+            $class = $this->em->getClassMetadata(get_class($entity));
+            $this->computeChangeSet($class, $entity);
+        }
+    }
+
+    /**
+     * Only flush the given entity according to a ruleset that keeps the UoW consistent.
      *
      * 1. All entities scheduled for insertion, (orphan) removals and changes in collections are processed as well!
      * 2. Read Only entities are skipped.
      * 3. Proxies are skipped.
      * 4. Only if entity is properly managed.
      *
-     * @param Proxy $entity
-     * @return type
+     * @param  object $entity
+     * @return void
      */
     private function computeSingleEntityChangeSet($entity)
     {
@@ -375,10 +390,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Compute changes for INSERTed entities first. This must always happen even in this case.
-        foreach ($this->entityInsertions as $entity) {
-            $class = $this->em->getClassMetadata(get_class($entity));
-            $this->computeChangeSet($class, $entity);
-        }
+        $this->computeScheduleInsertsChangeSets();
 
         if ( $class->isReadOnly ) {
             return;
@@ -575,10 +587,7 @@ class UnitOfWork implements PropertyChangedListener
     public function computeChangeSets()
     {
         // Compute changes for INSERTed entities first. This must always happen.
-        foreach ($this->entityInsertions as $entity) {
-            $class = $this->em->getClassMetadata(get_class($entity));
-            $this->computeChangeSet($class, $entity);
-        }
+        $this->computeScheduleInsertsChangeSets();
 
         // Compute changes for other MANAGED entities. Change tracking policies take effect here.
         foreach ($this->identityMap as $className => $entities) {
