@@ -253,12 +253,18 @@ class UnitOfWork implements PropertyChangedListener
      * 3) All collection deletions
      * 4) All collection updates
      * 5) All entity deletions
-     * 
+     *
+     * @param object $entity
+     * @return void
      */
-    public function commit()
+    public function commit($entity = null)
     {
         // Compute changes done since last commit.
-        $this->computeChangeSets();
+        if ($entity === null) {
+            $this->computeChangeSets();
+        } else {
+            $this->computeSingleEntityChangeSet($entity);
+        }
 
         if ( ! ($this->entityInsertions ||
                 $this->entityDeletions ||
@@ -345,6 +351,61 @@ class UnitOfWork implements PropertyChangedListener
         $this->visitedCollections =
         $this->scheduledForDirtyCheck =
         $this->orphanRemovals = array();
+    }
+
+    /**
+     * Compute the changesets of all entities scheduled for insertion
+     *
+     * @return void
+     */
+    private function computeScheduleInsertsChangeSets()
+    {
+        foreach ($this->entityInsertions as $entity) {
+            $class = $this->em->getClassMetadata(get_class($entity));
+            $this->computeChangeSet($class, $entity);
+        }
+    }
+
+    /**
+     * Only flush the given entity according to a ruleset that keeps the UoW consistent.
+     *
+     * 1. All entities scheduled for insertion, (orphan) removals and changes in collections are processed as well!
+     * 2. Read Only entities are skipped.
+     * 3. Proxies are skipped.
+     * 4. Only if entity is properly managed.
+     *
+     * @param  object $entity
+     * @return void
+     */
+    private function computeSingleEntityChangeSet($entity)
+    {
+        if ( ! $this->isInIdentityMap($entity) ) {
+            throw new \InvalidArgumentException("Entity has to be managed for single computation " . self::objToStr($entity));
+        }
+
+        $class = $this->em->getClassMetadata(get_class($entity));
+
+        if ($class->isChangeTrackingDeferredImplicit()) {
+            $this->persist($entity);
+        }
+
+        // Compute changes for INSERTed entities first. This must always happen even in this case.
+        $this->computeScheduleInsertsChangeSets();
+
+        if ( $class->isReadOnly ) {
+            return;
+        }
+
+        // Ignore uninitialized proxy objects
+        if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
+            return;
+        }
+
+        // Only MANAGED entities that are NOT SCHEDULED FOR INSERTION are processed here.
+        $oid = spl_object_hash($entity);
+        if ( ! isset($this->entityInsertions[$oid]) && isset($this->entityStates[$oid])) {
+            $this->computeChangeSet($class, $entity);
+        }
     }
     
     /**
@@ -526,10 +587,7 @@ class UnitOfWork implements PropertyChangedListener
     public function computeChangeSets()
     {
         // Compute changes for INSERTed entities first. This must always happen.
-        foreach ($this->entityInsertions as $entity) {
-            $class = $this->em->getClassMetadata(get_class($entity));
-            $this->computeChangeSet($class, $entity);
-        }
+        $this->computeScheduleInsertsChangeSets();
 
         // Compute changes for other MANAGED entities. Change tracking policies take effect here.
         foreach ($this->identityMap as $className => $entities) {
