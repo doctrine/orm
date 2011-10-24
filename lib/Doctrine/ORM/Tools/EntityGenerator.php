@@ -634,8 +634,8 @@ public function <methodName>()
 
         foreach ($metadata->associationMappings as $associationMapping) {
             if ($associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
-                $nullable = $this->_isAssociationIsNullable($associationMapping);
-                if ($code = $this->_generateEntityStubMethod($metadata, 'set', $associationMapping['fieldName'], $associationMapping['targetEntity'], ($nullable ? 'null' : null))) {
+                $nullable = $this->_isAssociationIsNullable($associationMapping) ? 'null' : null;
+                if ($code = $this->_generateEntityStubMethod($metadata, 'set', $associationMapping['fieldName'], $associationMapping['targetEntity'], $nullable)) {
                     $methods[] = $code;
                 }
                 if ($code = $this->_generateEntityStubMethod($metadata, 'get', $associationMapping['fieldName'], $associationMapping['targetEntity'])) {
@@ -754,7 +754,7 @@ public function <methodName>()
           '<variableName>'      => Inflector::camelize($fieldName),
           '<methodName>'        => $methodName,
           '<fieldName>'         => $fieldName,
-          '<variableDefault>'   => (($defaultValue !== null ) ? ('='.$defaultValue) : ''),
+          '<variableDefault>'   => ($defaultValue !== null ) ? ('='.$defaultValue) : '',
           '<entity>'            => $this->_getClassName($metadata)
         );
 
