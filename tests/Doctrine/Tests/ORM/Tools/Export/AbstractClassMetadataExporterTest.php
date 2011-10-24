@@ -324,7 +324,23 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     {
         $this->assertEquals('user', $class->associationMappings['address']['inversedBy']);
     }
-
+	/**
+     * @depends testOneToManyAssociationsAreExported
+     * @param ClassMetadataInfo $class
+     */
+    public function testCascadeIsDetected($class)
+    {
+        if(!isset($class->associationMappings['interests'])){
+            $this->markTestSkipped('The "interests" association is not aviable.');
+        }else{
+            $this->assertTrue($class->associationMappings['interests']['isCascadePersist']);
+            $this->assertTrue($class->associationMappings['interests']['isCascadeMerge']);
+            $this->assertTrue($class->associationMappings['interests']['isCascadeRemove']);
+            $this->assertTrue($class->associationMappings['interests']['isCascadeRefresh']);
+            $this->assertTrue($class->associationMappings['interests']['isCascadeDetach']);
+        }
+        return $class;
+    }
     public function __destruct()
     {
 #        $this->_deleteDirectory(__DIR__ . '/export/'.$this->_getType());
