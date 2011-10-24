@@ -156,7 +156,7 @@ class UpdateSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id BETWEEN :from AND :to',
-            'UPDATE cms_users SET status = ? WHERE id BETWEEN ? AND ?'
+            'UPDATE cms_users SET status = ? WHERE id BETWEEN :from AND :to'
         );
     }
 

@@ -257,29 +257,40 @@ final class Query extends AbstractQuery
      */
     private function processParameterMappings($paramMappings)
     {
-        $sqlParams = $types = array();
+        $sqlParams      = $types = array();
+        $isPositional   = is_int(key($this->_params));
+        
+        if (!$isPositional) {
+            $types = $this->_paramTypes;
+        }
         
         foreach ($this->_params as $key => $value) {
             if ( ! isset($paramMappings[$key])) {
                 throw QueryException::unknownParameter($key);
             }
             
-            if (isset($this->_paramTypes[$key])) {
-                foreach ($paramMappings[$key] as $position) {
-                    $types[$position] = $this->_paramTypes[$key];
+            if (!$isPositional) {
+                list ($value)       = $this->processParameterValue($value);
+                $sqlParams[$key]    = $value;
+            } else {
+                
+                if (isset($this->_paramTypes[$key])) {
+                    foreach ($paramMappings[$key] as $position) {
+                        $types[$position] = $this->_paramTypes[$key];
+                    }
                 }
-            }
-            
-            $sqlPositions = $paramMappings[$key];
-            $value = array_values($this->processParameterValue($value));
-            $countValue = count($value);
-            
-            for ($i = 0, $l = count($sqlPositions); $i < $l; $i++) {
-                $sqlParams[$sqlPositions[$i]] = $value[($i % $countValue)];
+                
+                $sqlPositions   = $paramMappings[$key];
+                $value          = array_values($this->processParameterValue($value));
+                $countValue     = count($value);
+
+                for ($i = 0, $l = count($sqlPositions); $i < $l; $i++) {
+                    $sqlParams[$sqlPositions[$i]] = $value[($i % $countValue)];
+                }
             }
         }
         
-        if ($sqlParams) {
+        if ($sqlParams && $isPositional) {
             ksort($sqlParams);
             $sqlParams = array_values($sqlParams);
         }
