@@ -46,7 +46,7 @@ class Composite extends Base
             $components[] = $this->processQueryPart($part);
         }
         
-        return implode($this->_separator, $components);
+        return $this->_preSeparator . implode($this->_separator, $components) . $this->_postSeparator;
     }
     
     
