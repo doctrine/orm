@@ -318,7 +318,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $discriminatorMap = array();
 
     /**
-     * READ-ONLY: The definition of the descriminator column used in JOINED and SINGLE_TABLE
+     * READ-ONLY: The definition of the discriminator column used in JOINED and SINGLE_TABLE
      * inheritance mappings.
      *
      * @var array
