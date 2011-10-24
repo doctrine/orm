@@ -635,7 +635,7 @@ public function <methodName>()
         foreach ($metadata->associationMappings as $associationMapping) {
             if ($associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
                 $nullable = $this->_isAssociationIsNullable($associationMapping);
-                if ($code = $this->_generateEntityStubMethod($metadata, 'set', $associationMapping['fieldName'], $associationMapping['targetEntity'], ($nullable?'null':null))) {
+                if ($code = $this->_generateEntityStubMethod($metadata, 'set', $associationMapping['fieldName'], $associationMapping['targetEntity'], ($nullable ? 'null' : null))) {
                     $methods[] = $code;
                 }
                 if ($code = $this->_generateEntityStubMethod($metadata, 'get', $associationMapping['fieldName'], $associationMapping['targetEntity'])) {
@@ -656,16 +656,14 @@ public function <methodName>()
 
     private function _isAssociationIsNullable($associationMapping)
     {
-        if(isset($associationMapping['joinColumns'])){
+        if (isset($associationMapping['joinColumns'])) {
             $joinColumns = $associationMapping['joinColumns'];
-        }else{
+        } else {
             //@todo thereis no way to retreive targetEntity metadata
-            //$targetMetadata = $this->getClassMetadata($associationMapping['targetEntity']);
-            //$joinColumns = $targetMetadata->associationMappings[$associationMapping["mappedBy"]]['joinColumns'];
             $joinColumns = array();
         }
         foreach ($joinColumns as $joinColumn) {
-            if(isset($joinColumn['nullable']) && !$joinColumn['nullable']){
+            if(isset($joinColumn['nullable']) && !$joinColumn['nullable']) {
                 return false;
             }
         }
@@ -756,7 +754,7 @@ public function <methodName>()
           '<variableName>'      => Inflector::camelize($fieldName),
           '<methodName>'        => $methodName,
           '<fieldName>'         => $fieldName,
-          '<variableDefault>'   => ($defaultValue!==null?('='.$defaultValue):''),
+          '<variableDefault>'   => (($defaultValue !== null ) ? ('='.$defaultValue) : ''),
           '<entity>'            => $this->_getClassName($metadata)
         );
 
@@ -825,10 +823,10 @@ public function <methodName>()
     {
         $lines = array();
         $lines[] = $this->_spaces . '/**';
-        
+
         if ($associationMapping['type'] & ClassMetadataInfo::TO_MANY) {
             $lines[] = $this->_spaces . ' * @var \Doctrine\Common\Collections\ArrayCollection';
-        }else{
+        } else {
             $lines[] = $this->_spaces . ' * @var ' . $associationMapping['targetEntity'];
         }
 
