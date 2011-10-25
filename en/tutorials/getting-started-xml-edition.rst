@@ -364,8 +364,8 @@ or an engineer is assigned to the bug, we don't want to update the
 User to persist the reference, but the Bug. This is the case with
 the Bug being at the owning side of the relation.
 
-Bugs reference Products by a uni-directional ManyToMany relation in
-the database that points from from Bugs to Products.
+Bugs reference Products by an uni-directional ManyToMany relation in
+the database that points from Bugs to Products.
 
 .. code-block:: php
 
