@@ -166,6 +166,9 @@ the life-time of their registered entities.
 -  onFlush - The onFlush event occurs after the change-sets of all
    managed entities are computed. This event is not a lifecycle
    callback.
+-  onClear - The onClear event occurs when the EntityManager#clear() operation is
+   invoked, after all references to entities have been removed from the unit of
+   work.
 
 .. warning::
 
