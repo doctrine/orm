@@ -748,7 +748,7 @@ We assume here that you have installed Doctrine using PEAR.
 See :doc:`Configuration <../reference/configuration>` for more details
 on other installation procedures.
 
-The second block contains of the instantiation of the ORM
+The second block consists of the instantiation of the ORM
 Configuration object using the Setup helper. It assumes a bunch
 of defaults that you don't have to bother about for now. You can
 read up on the configuration details in the
