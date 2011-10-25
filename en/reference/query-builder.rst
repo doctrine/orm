@@ -415,7 +415,7 @@ re-written using ``QueryBuilder`` helper methods:
     $qb->select('u')
        ->from('User', 'u')
        ->where('u.id = ?1')
-       ->orderBy('u.name ASC');
+       ->orderBy('u.name', 'ASC');
 
 ``QueryBuilder`` helper methods are considered the standard way to
 build DQL queries. Although it is supported, it should be avoided
