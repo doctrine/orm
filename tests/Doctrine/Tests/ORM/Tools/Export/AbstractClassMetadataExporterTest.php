@@ -98,6 +98,8 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
 
     public function testExportDirectoryAndFilesAreCreated()
     {
+        $this->_deleteDirectory(__DIR__ . '/export/'.$this->_getType());
+
         $type = $this->_getType();
         $metadataDriver = $this->_createMetadataDriver($type, __DIR__ . '/' . $type);
         $em = $this->_createEntityManager($metadataDriver);
@@ -113,6 +115,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $exporter = $cme->getExporter($type, __DIR__ . '/export/' . $type);
         if ($type === 'annotation') {
             $entityGenerator = new EntityGenerator();
+            $entityGenerator->setAnnotationPrefix("");
             $exporter->setEntityGenerator($entityGenerator);
         }
         $this->_extension = $exporter->getExtension();
@@ -138,6 +141,8 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $em = $this->_createEntityManager($metadataDriver);
         $cmf = $this->_createClassMetadataFactory($em, $type);
         $metadata = $cmf->getAllMetadata();
+
+        $this->assertEquals(1, count($metadata));
 
         $class = current($metadata);
     
@@ -322,8 +327,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
 
     public function __destruct()
     {
-        $type = $this->_getType();
-        $this->_deleteDirectory(__DIR__ . '/export/'.$this->_getType());
+#        $this->_deleteDirectory(__DIR__ . '/export/'.$this->_getType());
     }
 
     protected function _deleteDirectory($path)

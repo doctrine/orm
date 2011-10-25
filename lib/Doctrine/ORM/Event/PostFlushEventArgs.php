@@ -1,5 +1,7 @@
 <?php
 /*
+ *  $Id$
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -18,63 +20,38 @@
 */
 
 namespace Doctrine\ORM\Event;
+use Doctrine\ORM\EntityManager;
+use Doctrine\Common\EventArgs;
 
 /**
- * Provides event arguments for the onClear event.
+ * Provides event arguments for the postFlush event.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
  * @since       2.0
  * @version     $Revision$
- * @author      Roman Borschel <roman@code-factory.de>
- * @author      Benjamin Eberlei <kontakt@beberlei.de>
+ * @author      Daniel Freudenberger <df@rebuy.de>
  */
-class OnClearEventArgs extends \Doctrine\Common\EventArgs
+class PostFlushEventArgs extends EventArgs
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var EntityManager
      */
     private $em;
 
     /**
-     * @var string
+     * @param EntityManager $em
      */
-    private $entityClass;
-
-    /**
-     * @param \Doctrine\ORM\EntityManager $em
-     */
-    public function __construct($em, $entityClass = null)
+    public function __construct(EntityManager $em)
     {
         $this->em = $em;
-        $this->entityClass = $entityClass;
     }
 
     /**
-     * @return \Doctrine\ORM\EntityManager
+     * @return EntityManager
      */
     public function getEntityManager()
     {
         return $this->em;
-    }
-
-    /**
-     * Name of the entity class that is cleared, or empty if all are cleared.
-     *
-     * @return string
-     */
-    public function getEntityClass()
-    {
-        return $this->entityClass;
-    }
-
-    /**
-     * Check if event clears all entities.
-     *
-     * @return bool
-     */
-    public function clearsAllEntities()
-    {
-        return $this->entityClass === null;
     }
 }

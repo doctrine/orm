@@ -53,14 +53,14 @@ class AssignedGenerator extends AbstractIdGenerator
                         if (!$em->getUnitOfWork()->isInIdentityMap($value)) {
                             throw ORMException::entityMissingForeignAssignedId($entity, $value);
                         }
-                        
+
                         // NOTE: Single Columns as associated identifiers only allowed - this constraint it is enforced.
                         $identifier[$idField] = current($em->getUnitOfWork()->getEntityIdentifier($value));
                     } else {
                         $identifier[$idField] = $value;
                     }
                 } else {
-                    throw ORMException::entityMissingAssignedId($entity);
+                    throw ORMException::entityMissingAssignedIdForField($entity, $idField);
                 }
             }
         } else {
@@ -71,17 +71,17 @@ class AssignedGenerator extends AbstractIdGenerator
                     if (!$em->getUnitOfWork()->isInIdentityMap($value)) {
                         throw ORMException::entityMissingForeignAssignedId($entity, $value);
                     }
-                    
+
                     // NOTE: Single Columns as associated identifiers only allowed - this constraint it is enforced.
                     $identifier[$idField] = current($em->getUnitOfWork()->getEntityIdentifier($value));
                 } else {
                     $identifier[$idField] = $value;
                 }
             } else {
-                throw ORMException::entityMissingAssignedId($entity);
+                throw ORMException::entityMissingAssignedIdForField($entity, $idField);
             }
         }
-        
+
         return $identifier;
     }
 }

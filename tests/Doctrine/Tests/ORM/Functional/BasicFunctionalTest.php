@@ -863,7 +863,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testGetPartialReferenceToUpdateObjectWithoutLoadingIt()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $user = new CmsUser();
         $user->username = "beberlei";
         $user->name = "Benjamin E.";
@@ -882,7 +881,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertEquals('Stephan', $this->_em->find(get_class($user), $userId)->name);
+        $this->assertEquals('Benjamin E.', $this->_em->find(get_class($user), $userId)->name);
     }
 
     public function testMergePersistsNewEntities()
@@ -980,5 +979,224 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $article->user, "It IS a proxy, ...");
         $this->assertTrue($article->user->__isInitialized__, "...but its initialized!");
         $this->assertEquals($qc+2, $this->getCurrentQueryCount());
+    }
+
+    /**
+     * @group DDC-1278
+     */
+    public function testClearWithEntityName()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+
+        $address = new CmsAddress();
+        $address->city = "Springfield";
+        $address->zip = "12354";
+        $address->country = "Germany";
+        $address->street = "Foo Street";
+        $address->user = $user;
+        $user->address = $address;
+
+        $article1 = new CmsArticle();
+        $article1->topic = 'Foo';
+        $article1->text = 'Foo Text';
+
+        $article2 = new CmsArticle();
+        $article2->topic = 'Bar';
+        $article2->text = 'Bar Text';
+
+        $user->addArticle($article1);
+        $user->addArticle($article2);
+
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+        $this->_em->persist($address);
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $unitOfWork = $this->_em->getUnitOfWork();
+
+        $this->_em->clear('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($user));
+
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $unitOfWork->getEntityState($address));
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $unitOfWork->getEntityState($article1));
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $unitOfWork->getEntityState($article2));
+
+        $this->_em->clear();
+
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($address));
+    }
+
+    /**
+     * @group DDC-720
+     */
+    public function testFlushSingleManagedEntity()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $user->status = 'administrator';
+        $this->_em->flush($user);
+        $this->_em->clear();
+
+        $user = $this->_em->find(get_class($user), $user->id);
+        $this->assertEquals('administrator', $user->status);
+    }
+
+    /**
+     * @group DDC-720
+     */
+    public function testFlushSingleUnmanagedEntity()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+
+        $this->setExpectedException('InvalidArgumentException', 'Entity has to be managed for single computation');
+        $this->_em->flush($user);
+    }
+
+    /**
+     * @group DDC-720
+     */
+    public function testFlushSingleAndNewEntity()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $otherUser = new CmsUser;
+        $otherUser->name = 'Dominik2';
+        $otherUser->username = 'domnikl2';
+        $otherUser->status = 'developer';
+
+        $user->status = 'administrator';
+
+        $this->_em->persist($otherUser);
+        $this->_em->flush($user);
+
+        $this->assertTrue($this->_em->contains($otherUser), "Other user is contained in EntityManager");
+        $this->assertTrue($otherUser->id > 0, "other user has an id");
+    }
+
+    /**
+     * @group DDC-720
+     */
+    public function testFlushAndCascadePersist()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $address = new CmsAddress();
+        $address->city = "Springfield";
+        $address->zip = "12354";
+        $address->country = "Germany";
+        $address->street = "Foo Street";
+        $address->user = $user;
+        $user->address = $address;
+
+        $this->_em->flush($user);
+
+        $this->assertTrue($this->_em->contains($address), "Other user is contained in EntityManager");
+        $this->assertTrue($address->id > 0, "other user has an id");
+    }
+
+    /**
+     * @group DDC-720
+     */
+    public function testFlushSingleAndNoCascade()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $article1 = new CmsArticle();
+        $article1->topic = 'Foo';
+        $article1->text = 'Foo Text';
+        $article1->author = $user;
+        $user->articles[] = $article1;
+
+        $this->setExpectedException('InvalidArgumentException', "A new entity was found through the relationship 'Doctrine\Tests\Models\CMS\CmsUser#articles'");
+        $this->_em->flush($user);
+    }
+
+    /**
+     * @group DDC-720
+     */
+    public function testProxyIsIgnored()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $user = $this->_em->getReference(get_class($user), $user->id);
+
+        $otherUser = new CmsUser;
+        $otherUser->name = 'Dominik2';
+        $otherUser->username = 'domnikl2';
+        $otherUser->status = 'developer';
+
+        $this->_em->persist($otherUser);
+        $this->_em->flush($user);
+
+        $this->assertTrue($this->_em->contains($otherUser), "Other user is contained in EntityManager");
+        $this->assertTrue($otherUser->id > 0, "other user has an id");
+    }
+
+    /**
+     * @group DDC-720
+     */
+    public function testFlushSingleSaveOnlySingle()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+        $this->_em->persist($user);
+
+        $user2 = new CmsUser;
+        $user2->name = 'Dominik';
+        $user2->username = 'domnikl2';
+        $user2->status = 'developer';
+        $this->_em->persist($user2);
+
+        $this->_em->flush();
+
+        $user->status = 'admin';
+        $user2->status = 'admin';
+
+        $this->_em->flush($user);
+        $this->_em->clear();
+
+        $user2 = $this->_em->find(get_class($user2), $user2->id);
+        $this->assertEquals('developer', $user2->status);
     }
 }

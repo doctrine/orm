@@ -147,4 +147,28 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertTrue($entity->wakeUp, "Loading the proxy should call __wakeup().");
     }
+
+    public function testDoNotInitializeProxyOnGettingTheIdentifier()
+    {
+        $id = $this->createProduct();
+
+        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
+        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+
+        $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
+        $this->assertEquals($id, $entity->getId());
+        $this->assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy.");
+    }
+
+    public function testInitializeProxyOnGettingSomethingOtherThanTheIdentifier()
+    {
+        $id = $this->createProduct();
+
+        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
+        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+
+        $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
+        $this->assertEquals('Doctrine Cookbook', $entity->getName());
+        $this->assertTrue($entity->__isInitialized__, "Getting something other than the identifier initializes the proxy.");
+    }
 }

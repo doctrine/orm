@@ -580,12 +580,13 @@ class BasicEntityPersister
      * @param $assoc The association that connects the entity to load to another entity, if any.
      * @param array $hints Hints for entity creation.
      * @param int $lockMode
+     * @param int $limit Limit number of results
      * @return object The loaded and managed entity instance or NULL if the entity can not be found.
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
-    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0)
+    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0, $limit = null)
     {
-        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, $lockMode);
+        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, $lockMode, $limit);
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->_conn->executeQuery($sql, $params, $types);
         
@@ -747,6 +748,7 @@ class BasicEntityPersister
      * 
      * @param array $assoc
      * @param Doctrine\DBAL\Statement $stmt
+     * 
      * @return array
      */
     private function loadArrayFromStatement($assoc, $stmt)
@@ -771,6 +773,8 @@ class BasicEntityPersister
      * @param array $assoc
      * @param Doctrine\DBAL\Statement $stmt
      * @param PersistentCollection $coll
+     * 
+     * @return array
      */
     private function loadCollectionFromStatement($assoc, $stmt, $coll)
     {        
@@ -784,7 +788,8 @@ class BasicEntityPersister
         }
 
         $hydrator = $this->_em->newHydrator(Query::HYDRATE_OBJECT);
-        $hydrator->hydrateAll($stmt, $rsm, $hints);
+        
+        return $hydrator->hydrateAll($stmt, $rsm, $hints);
     }
 
     /**
@@ -819,7 +824,7 @@ class BasicEntityPersister
                     
                     if (isset($sourceClass->associationMappings[$field])) {
                         $value = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
-                        $value = $value[$this->_em->getClassMetadata($assoc['targetEntity'])->identifier[0]];
+                        $value = $value[$this->_em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity'])->identifier[0]];
                     }
 
                     $criteria[$quotedJoinTable . "." . $relationKeyColumn] = $value;
@@ -843,7 +848,7 @@ class BasicEntityPersister
                     
                     if (isset($sourceClass->associationMappings[$field])) {
                         $value = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
-                        $value = $value[$this->_em->getClassMetadata($assoc['targetEntity'])->identifier[0]];
+                        $value = $value[$this->_em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity'])->identifier[0]];
                     }
                     
                     $criteria[$quotedJoinTable . "." . $relationKeyColumn] = $value;
@@ -1056,10 +1061,10 @@ class BasicEntityPersister
                 if ($columnList) $columnList .= ', ';
 
                 $columnAlias = $srcColumn . $this->_sqlAliasCounter++;
-                $columnList .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )  
-                             . '.' . $srcColumn . ' AS ' . $columnAlias;
                 $resultColumnName = $this->_platform->getSQLResultCasing($columnAlias);
-                $this->_rsm->addMetaResult($alias, $this->_platform->getSQLResultCasing($columnAlias), $srcColumn, isset($assoc['id']) && $assoc['id'] === true);
+                $columnList .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )  
+                             . '.' . $srcColumn . ' AS ' . $resultColumnName;
+                $this->_rsm->addMetaResult($alias, $resultColumnName, $srcColumn, isset($assoc['id']) && $assoc['id'] === true);
             }
         }
         
@@ -1179,6 +1184,7 @@ class BasicEntityPersister
         $sql = $this->_getSQLTableAlias($class->name, $alias == 'r' ? '' : $alias) 
              . '.' . $class->getQuotedColumnName($field, $this->_platform);
         $columnAlias = $this->_platform->getSQLResultCasing($columnName . $this->_sqlAliasCounter++);
+        
         $this->_rsm->addFieldResult($alias, $columnAlias, $field);
 
         return $sql . ' AS ' . $columnAlias;
@@ -1228,7 +1234,9 @@ class BasicEntityPersister
         $sql = 'SELECT 1 '
              . $this->_platform->appendLockHint($this->getLockTablesSql(), $lockMode)
              . ($conditionSql ? ' WHERE ' . $conditionSql : '') . ' ' . $lockSql;
+        
         list($params, $types) = $this->expandParameters($criteria);
+        
         $stmt = $this->_conn->executeQuery($sql, $params, $types);
     }
 
@@ -1320,7 +1328,8 @@ class BasicEntityPersister
     public function loadOneToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
     {
         $stmt = $this->getOneToManyStatement($assoc, $sourceEntity);
-        $this->loadCollectionFromStatement($assoc, $stmt, $coll);
+        
+        return $this->loadCollectionFromStatement($assoc, $stmt, $coll);
     }
 
     /**
@@ -1347,7 +1356,7 @@ class BasicEntityPersister
                 
                 if (isset($sourceClass->associationMappings[$field])) {
                     $value = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
-                    $value = $value[$this->_em->getClassMetadata($assoc['targetEntity'])->identifier[0]];
+                    $value = $value[$this->_em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity'])->identifier[0]];
                 }
                 
                 $criteria[$tableAlias . "." . $targetKeyColumn] = $value;
@@ -1478,6 +1487,7 @@ class BasicEntityPersister
     public function exists($entity, array $extraConditions = array())
     {
         $criteria = $this->_class->getIdentifierValues($entity);
+        
         if ($extraConditions) {
             $criteria = array_merge($criteria, $extraConditions);
         }
@@ -1485,7 +1495,9 @@ class BasicEntityPersister
         $sql = 'SELECT 1'
              . ' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' ' . $this->_getSQLTableAlias($this->_class->name)
              . ' WHERE ' . $this->_getSelectConditionSQL($criteria);
-
-        return (bool) $this->_conn->fetchColumn($sql, array_values($criteria));
+        
+        list($params, $types) = $this->expandParameters($criteria);
+        
+        return (bool) $this->_conn->fetchColumn($sql, $params);
     }
 }

@@ -533,4 +533,34 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         
         $this->assertEquals(2, count($users));
     }
+    
+    public function testQueryWithHiddenAsSelectExpression()
+    {
+        $userA = new CmsUser;
+        $userA->name = 'Benjamin';
+        $userA->username = 'beberlei';
+        $userA->status = 'developer';
+        $this->_em->persist($userA);
+        
+        $userB = new CmsUser;
+        $userB->name = 'Roman';
+        $userB->username = 'romanb';
+        $userB->status = 'developer';
+        $this->_em->persist($userB);
+        
+        $userC = new CmsUser;
+        $userC->name = 'Jonathan';
+        $userC->username = 'jwage';
+        $userC->status = 'developer';
+        $this->_em->persist($userC);
+        
+        $this->_em->flush();
+        $this->_em->clear();
+        
+        $query = $this->_em->createQuery("SELECT u, (SELECT COUNT(u2.id) FROM Doctrine\Tests\Models\CMS\CmsUser u2) AS HIDDEN total FROM Doctrine\Tests\Models\CMS\CmsUser u");
+        $users = $query->execute();
+        
+        $this->assertEquals(3, count($users));
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
+    }
 }

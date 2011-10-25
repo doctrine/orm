@@ -98,7 +98,7 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertArrayHasKey('CmsUsers', $metadatas, 'CmsUsers entity was not detected.');
         $this->assertArrayHasKey('CmsGroups', $metadatas, 'CmsGroups entity was not detected.');
 
-        $this->assertEquals(1, count($metadatas['CmsUsers']->associationMappings));
+        $this->assertEquals(2, count($metadatas['CmsUsers']->associationMappings));
         $this->assertArrayHasKey('group', $metadatas['CmsUsers']->associationMappings);
         $this->assertEquals(1, count($metadatas['CmsGroups']->associationMappings));
         $this->assertArrayHasKey('user', $metadatas['CmsGroups']->associationMappings);
