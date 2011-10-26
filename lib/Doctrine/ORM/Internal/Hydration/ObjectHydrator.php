@@ -353,7 +353,13 @@ class ObjectHydrator extends AbstractHydrator
 
                                 if (isset($this->_rsm->indexByMap[$dqlAlias])) {
                                     $field = $this->_rsm->indexByMap[$dqlAlias];
-                                    $indexValue = $this->_ce[$entityName]->reflFields[$field]->getValue($element);
+
+                                    if (isset($this->_ce[$entityName]->reflFields[$field])) {
+                                        $indexValue = $this->_ce[$entityName]->reflFields[$field]->getValue($element);
+                                    } else {
+                                        $indexValue = $data[$field];
+                                    }
+
                                     $reflFieldValue->hydrateSet($indexValue, $element);
                                     $this->_identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $indexValue;
                                 } else {
@@ -430,7 +436,13 @@ class ObjectHydrator extends AbstractHydrator
                     $element = $this->_getEntity($rowData[$dqlAlias], $dqlAlias);
                     if (isset($this->_rsm->indexByMap[$dqlAlias])) {
                         $field = $this->_rsm->indexByMap[$dqlAlias];
-                        $key = $this->_ce[$entityName]->reflFields[$field]->getValue($element);
+
+                        if (isset($this->_ce[$entityName]->reflFields[$field]) && !isset($this->_ce[$entityName]->associationMappings[$field])) {
+                            $key = $this->_ce[$entityName]->reflFields[$field]->getValue($element);
+                        } else {
+                            $key = $data[$field];
+                        }
+
                         if ($this->_rsm->isMixed) {
                             $element = array($key => $element);
                             $result[] = $element;
