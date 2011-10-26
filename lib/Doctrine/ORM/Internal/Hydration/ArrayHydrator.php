@@ -66,12 +66,12 @@ class ArrayHydrator extends AbstractHydrator
     }
 
     /** @override */
-    protected function _hydrateRow(array $data, array &$cache, array &$result)
+    protected function _hydrateRow(array $row, array &$cache, array &$result)
     {
         // 1) Initialize
         $id = $this->_idTemplate; // initialize the id-memory
         $nonemptyComponents = array();
-        $rowData = $this->_gatherRowData($data, $cache, $id, $nonemptyComponents);
+        $rowData = $this->_gatherRowData($row, $cache, $id, $nonemptyComponents);
 
         // Extract scalar values. They're appended at the end.
         if (isset($rowData['scalars'])) {
@@ -128,8 +128,7 @@ class ArrayHydrator extends AbstractHydrator
                         if ( ! $indexExists || ! $indexIsValid) {
                             $element = $data;
                             if (isset($this->_rsm->indexByMap[$dqlAlias])) {
-                                $field = $this->_rsm->indexByMap[$dqlAlias];
-                                $baseElement[$relationAlias][$element[$field]] = $element;
+                                $baseElement[$relationAlias][$row[$this->_rsm->indexByMap[$dqlAlias]]] = $element;
                             } else {
                                 $baseElement[$relationAlias][] = $element;
                             }
@@ -167,6 +166,7 @@ class ArrayHydrator extends AbstractHydrator
                     } else {
                         $result[] = null;
                     }
+                    $resultKey = $this->_resultCounter;
                     ++$this->_resultCounter;
                     continue;
                 }
@@ -174,26 +174,23 @@ class ArrayHydrator extends AbstractHydrator
                 // Check for an existing element
                 if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $rowData[$dqlAlias];
-                    if (isset($this->_rsm->indexByMap[$dqlAlias])) {
-                        $field = $this->_rsm->indexByMap[$dqlAlias];
-                        if ($this->_rsm->isMixed) {
-                            $result[] = array($element[$field] => $element);
-                            ++$this->_resultCounter;
-                        } else {
-                            $result[$element[$field]] = $element;
-                        }
-                    } else {
-                        if ($this->_rsm->isMixed) {
-                            $result[] = array($element);
-                            ++$this->_resultCounter;
-                        } else {
-                            $result[] = $element;
-                        }
+                    if ($this->_rsm->isMixed) {
+                        $element = array(0 => $element);
                     }
-                    end($result);
-                    $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = key($result);
+
+                    if (isset($this->_rsm->indexByMap[$dqlAlias])) {
+                        $resultKey = $row[$this->_rsm->indexByMap[$dqlAlias]];
+                        $result[$resultKey] = $element;
+                    } else {
+                        $resultKey = $this->_resultCounter;
+                        $result[] = $element;
+                        ++$this->_resultCounter;
+                    }
+
+                    $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $resultKey;
                 } else {
                     $index = $this->_identifierMap[$dqlAlias][$id[$dqlAlias]];
+                    $resultKey = $index;
                     /*if ($this->_rsm->isMixed) {
                         $result[] =& $result[$index];
                         ++$this->_resultCounter;
@@ -205,8 +202,17 @@ class ArrayHydrator extends AbstractHydrator
 
         // Append scalar values to mixed result sets
         if (isset($scalars)) {
+            if ( ! isset($resultKey) ) {
+                // this only ever happens when no object is fetched (scalar result only)
+                if (isset($this->_rsm->indexByMap['scalars'])) {
+                    $resultKey = $row[$this->_rsm->indexByMap['scalars']];
+                } else {
+                    $resultKey = $this->_resultCounter - 1;
+                }
+            }
+
             foreach ($scalars as $name => $value) {
-                $result[$this->_resultCounter - 1][$name] = $value;
+                $result[$resultKey][$name] = $value;
             }
         }
     }

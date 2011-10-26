@@ -34,6 +34,7 @@ use Doctrine\DBAL\Types\Type,
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  * @author  Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author	Ehab Al-hakawati <e.hakawati@softfeedder.com>
  */
 abstract class AbstractQuery
 {
@@ -119,6 +120,11 @@ abstract class AbstractQuery
      */
     protected $_resultCacheTTL;
 
+	/**
+    * @var array The map of query grouping.
+    */
+	protected $_tags;
+	
     /**
      * Initializes a new instance of a class derived from <tt>AbstractQuery</tt>.
      *
@@ -599,6 +605,8 @@ abstract class AbstractQuery
 
                 $cacheDriver->save($hash, array($key => $result), $this->_resultCacheTTL);
 
+				$this->registerToTags($hash);
+				
                 return $result;
             } else {
                 // Cache hit.
@@ -666,6 +674,48 @@ abstract class AbstractQuery
         }
     }
 
+	/**
+     * Add query taging (group), the results will be tagged for simplifing cache 
+     * common results flushing
+     *
+     * @param string $sTag
+     */
+	public function addTag($sTag) {
+		$this->_tags[] = $sTag;
+	}
+	
+	 /**
+     * Get query tags
+     *
+     * @return array ($sTags)
+     */
+	public function getTags() {
+		return $this->_tags;
+	}
+	
+	/**
+	 * Register multible queries to the same tag
+	 * in order to simplify batch cache flush
+	 * 
+	 * @param string $sHash
+	 */
+	protected function registerToTags($sHash)	{
+		
+		if ($this->_useResultCache && $cacheDriver = $this->getResultCacheDriver()) {	
+			if(is_array($this->_tags)){
+				foreach ($this->_tags as $sTag) {
+					if($sKeys2TagList = $cacheDriver->fetch(MD5($sTag)))	{
+						$aKeys2TagList = unserialize($sKeys2TagList);
+						$aKeys2TagList[] = $sHash;
+					} else {
+						$aKeys2TagList = array($sHash);
+					}
+					$cacheDriver->save(MD5($sTag), serialize($aKeys2TagList), $this->_resultCacheTTL);
+				}
+			}
+		}
+	}
+	
     /**
      * Executes the query and returns a the resulting Statement object.
      *
