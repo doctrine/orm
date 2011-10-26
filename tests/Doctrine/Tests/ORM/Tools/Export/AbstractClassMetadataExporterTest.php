@@ -325,21 +325,23 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertEquals('user', $class->associationMappings['address']['inversedBy']);
     }
 	/**
-     * @depends testOneToManyAssociationsAreExported
-     * @param ClassMetadataInfo $class
+     * @depends testExportDirectoryAndFilesAreCreated
      */
-    public function testCascadeIsDetected($class)
+    public function testCascadeAllCollapsed()
     {
-        if(!isset($class->associationMappings['interests'])){
-            $this->markTestSkipped('The "interests" association is not aviable.');
-        }else{
-            $this->assertTrue($class->associationMappings['interests']['isCascadePersist']);
-            $this->assertTrue($class->associationMappings['interests']['isCascadeMerge']);
-            $this->assertTrue($class->associationMappings['interests']['isCascadeRemove']);
-            $this->assertTrue($class->associationMappings['interests']['isCascadeRefresh']);
-            $this->assertTrue($class->associationMappings['interests']['isCascadeDetach']);
+        $type = $this->_getType();
+        if ($type == 'xml') {
+            $xml = simplexml_load_file(__DIR__ . '/export/'.$type.'/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.xml');
+
+            $xml->registerXPathNamespace("d", "http://doctrine-project.org/schemas/orm/doctrine-mapping");
+            $nodes = $xml->xpath("/d:doctrine-mapping/d:entity/d:one-to-many[@field='interests']/d:cascade/d:*");
+            $this->assertEquals(1, count($nodes));
+
+            $this->assertEquals('cascade-all', $nodes[0]->getName());
+
+        } else {
+            $this->markTestSkipped('Test aviable only for XML dirver');
         }
-        return $class;
     }
     public function __destruct()
     {
