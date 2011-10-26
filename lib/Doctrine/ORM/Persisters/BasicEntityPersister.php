@@ -1020,9 +1020,16 @@ class BasicEntityPersister
                             $this->_selectJoinSql .= ' AND ';
                         }
                         
+                        $tableAlias = $this->_getSQLTableAlias($assoc['targetEntity'], $assocAlias);
                         $this->_selectJoinSql .= $this->_getSQLTableAlias($assoc['sourceEntity']) . '.' . $sourceCol . ' = ' 
-                                               . $this->_getSQLTableAlias($assoc['targetEntity'], $assocAlias) . '.' . $targetCol . ' ';
+                                               . $tableAlias . '.' . $targetCol . ' ';
+
                         $first = false;
+                    }
+
+                    // Add filter SQL
+                    if('' !== $filterSql = $this->generateFilterConditionSQL($eagerEntity, $tableAlias)) {
+                        $this->_selectJoinSql .= ' AND ' . $filterSql;
                     }
                 } else {
                     $eagerEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
