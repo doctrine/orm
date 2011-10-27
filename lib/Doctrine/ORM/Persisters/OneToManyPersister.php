@@ -135,7 +135,7 @@ class OneToManyPersister extends AbstractCollectionPersister
             if ($where != '') {
                 $where .= ' AND ';
             }
-            $where .= $joinColumn['name'] . " = ?";
+            $where .= "t." . $joinColumn['name'] . " = ?";
             if ($targetClass->containsForeignIdentifier) {
                 $params[] = $id[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])];
             } else {
@@ -143,7 +143,15 @@ class OneToManyPersister extends AbstractCollectionPersister
             }
         }
 
-        $sql = "SELECT count(*) FROM " . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) . " WHERE " . $where;
+        $sql = "SELECT count(*) FROM " . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) . " t WHERE " . $where;
+
+        // Apply the filters
+        foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
+            if("" !== $filterExpr = $filter->addFilterConstraint($targetClass, 't')) {
+                $sql .= ' AND (' . $filterExpr . ')';
+            }
+        }
+
         return $this->_conn->fetchColumn($sql, $params);
     }
 

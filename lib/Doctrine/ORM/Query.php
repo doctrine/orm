@@ -198,10 +198,13 @@ final class Query extends AbstractQuery
      */
     private function _parse()
     {
-        if ($this->_state === self::STATE_CLEAN) {
+        // Return previous parser result if the query and the filter collection are both clean
+        if ($this->_state === self::STATE_CLEAN
+            && $this->_em->isFiltersStateClean()
+        ) {
             return $this->_parserResult;
         }
-        
+
         // Check query cache.
         if ($this->_useQueryCache && ($queryCache = $this->getQueryCacheDriver())) {
             $hash   = $this->_getQueryCacheId();
@@ -597,7 +600,8 @@ final class Query extends AbstractQuery
         ksort($this->_hints);
 
         return md5(
-            $this->getDql() . var_export($this->_hints, true) . 
+            $this->getDql() . var_export($this->_hints, true) .
+            ($this->_em->hasFilters() ? $this->_em->getFilters()->getHash() : '') .
             '&firstResult=' . $this->_firstResult . '&maxResult=' . $this->_maxResults .
             '&hydrationMode='.$this->_hydrationMode.'DOCTRINE_QUERY_CACHE_SALT'
         );

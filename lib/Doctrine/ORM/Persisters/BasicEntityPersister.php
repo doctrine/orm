@@ -229,7 +229,6 @@ class BasicEntityPersister
 
             if (isset($insertData[$tableName])) {
                 $paramIndex = 1;
-                
                 foreach ($insertData[$tableName] as $column => $value) {
                     $stmt->bindValue($paramIndex++, $value, $this->_columnTypes[$column]);
                 }
@@ -897,9 +896,17 @@ class BasicEntityPersister
             $lockSql = ' ' . $this->_platform->getWriteLockSql();
         }
 
+        $alias = $this->_getSQLTableAlias($this->_class->name);
+
+        $filterSql = $this->generateFilterConditionSQL($this->_class, $alias);
+        if('' !== $filterSql) {
+            if($conditionSql) $conditionSql .= ' AND ';
+            $conditionSql .= $filterSql;
+        }
+
         return $this->_platform->modifyLimitQuery('SELECT ' . $this->_getSelectColumnListSQL()
              . $this->_platform->appendLockHint(' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' '
-             . $this->_getSQLTableAlias($this->_class->name), $lockMode)
+             . $alias, $lockMode)
              . $this->_selectJoinSql . $joinSql
              . ($conditionSql ? ' WHERE ' . $conditionSql : '')
              . $orderBySql, $limit, $offset)
@@ -1492,12 +1499,34 @@ class BasicEntityPersister
             $criteria = array_merge($criteria, $extraConditions);
         }
 
+        $alias = $this->_getSQLTableAlias($this->_class->name);
+
         $sql = 'SELECT 1'
-             . ' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' ' . $this->_getSQLTableAlias($this->_class->name)
+             . ' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' ' . $alias
              . ' WHERE ' . $this->_getSelectConditionSQL($criteria);
+
+        $filterSql = $this->generateFilterConditionSQL($this->_class, $alias);
+        if('' !== $filterSql) {
+            $sql .= ' AND ' . $filterSql;
+        }
         
         list($params, $types) = $this->expandParameters($criteria);
         
         return (bool) $this->_conn->fetchColumn($sql, $params);
+    }
+
+    private function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    {
+        $filterSql = '';
+
+        $first =  true;
+        foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
+            if("" !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+                if ( ! $first) $sql .= ' AND '; else $first = false;
+                $filterSql .= '(' . $filterExpr . ')';
+            }
+        }
+
+        return $filterSql;
     }
 }
