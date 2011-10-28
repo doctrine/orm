@@ -232,6 +232,9 @@ final class Query extends AbstractQuery
     protected function _doExecute()
     {
         $executor = $this->_parse()->getSqlExecutor();
+        if ($this->_queryCacheProfile) {
+            $executor->setQueryCacheProfile($this->_queryCacheProfile);
+        }
 
         // Prepare parameters
         $paramMappings = $this->_parserResult->getParameterMappings();
