@@ -62,7 +62,7 @@ class ObjectHydrator extends AbstractHydrator
         if (!isset($this->_hints['deferEagerLoad'])) {
             $this->_hints['deferEagerLoad'] = true;
         }
-        
+
         foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
             $this->_identifierMap[$dqlAlias] = array();
             $this->_idTemplate[$dqlAlias] = '';
@@ -116,13 +116,13 @@ class ObjectHydrator extends AbstractHydrator
     protected function _cleanup()
     {
         $eagerLoad = (isset($this->_hints['deferEagerLoad'])) && $this->_hints['deferEagerLoad'] == true;
-        
+
         parent::_cleanup();
         $this->_identifierMap =
         $this->_initializedCollections =
         $this->_existingCollections =
         $this->_resultPointers = array();
-        
+
         if ($eagerLoad) {
             $this->_em->getUnitOfWork()->triggerEagerLoads();
         }
@@ -192,7 +192,7 @@ class ObjectHydrator extends AbstractHydrator
 
     /**
      * Gets an entity instance.
-     * 
+     *
      * @param $data The instance data.
      * @param $dqlAlias The DQL alias of the entity's class.
      * @return object The entity.
@@ -205,12 +205,12 @@ class ObjectHydrator extends AbstractHydrator
             $className = $this->_ce[$className]->discriminatorMap[$data[$discrColumn]];
             unset($data[$discrColumn]);
         }
-        
+
         if (isset($this->_hints[Query::HINT_REFRESH_ENTITY]) && isset($this->_rootAliases[$dqlAlias])) {
             $class = $this->_ce[$className];
             $this->registerManaged($class, $this->_hints[Query::HINT_REFRESH_ENTITY], $data);
         }
-        
+
         return $this->_uow->createEntity($className, $data, $this->_hints);
     }
 
@@ -240,7 +240,7 @@ class ObjectHydrator extends AbstractHydrator
      * Gets a ClassMetadata instance from the local cache.
      * If the instance is not yet in the local cache, it is loaded into the
      * local cache.
-     * 
+     *
      * @param string $className The name of the class.
      * @return ClassMetadata
      */
@@ -254,21 +254,21 @@ class ObjectHydrator extends AbstractHydrator
 
     /**
      * Hydrates a single row in an SQL result set.
-     * 
+     *
      * @internal
      * First, the data of the row is split into chunks where each chunk contains data
      * that belongs to a particular component/class. Afterwards, all these chunks
      * are processed, one after the other. For each chunk of class data only one of the
      * following code paths is executed:
-     * 
+     *
      * Path A: The data chunk belongs to a joined/associated object and the association
      *         is collection-valued.
      * Path B: The data chunk belongs to a joined/associated object and the association
      *         is single-valued.
      * Path C: The data chunk belongs to a root result element/object that appears in the topmost
      *         level of the hydrated result. A typical example are the objects of the type
-     *         specified by the FROM clause in a DQL query. 
-     * 
+     *         specified by the FROM clause in a DQL query.
+     *
      * @param array $data The data of the row to process.
      * @param array $cache The cache to use.
      * @param array $result The result array to fill.
@@ -369,10 +369,7 @@ class ObjectHydrator extends AbstractHydrator
                             $this->_resultPointers[$dqlAlias] = $reflFieldValue[$index];
                         }
                     } else if ( ! $reflField->getValue($parentObject)) {
-                        $coll = new PersistentCollection($this->_em, $this->_ce[$entityName], new ArrayCollection);
-                        $coll->setOwner($parentObject, $relation);
-                        $reflField->setValue($parentObject, $coll);
-                        $this->_uow->setOriginalEntityProperty($oid, $relationField, $coll);
+                        $reflFieldValue = $this->_initRelatedCollection($parentObject, $parentClass, $relationField);
                     }
                 } else {
                     // PATH B: Single-valued association
