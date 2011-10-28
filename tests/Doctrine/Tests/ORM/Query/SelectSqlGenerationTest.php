@@ -620,7 +620,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             // SQL
             'SELECT DISTINCT c0_.id AS id0, c0_.name AS name1 FROM cms_employees c0_'
                 . ' WHERE EXISTS ('
-                    . 'SELECT 1 FROM cms_employees c1_ WHERE c1_.id = c0_.spouse_id'
+                    . 'SELECT 1 AS sclr2 FROM cms_employees c1_ WHERE c1_.id = c0_.spouse_id'
                     . ')'
         );
     }
