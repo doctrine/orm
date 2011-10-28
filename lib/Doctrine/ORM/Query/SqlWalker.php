@@ -1292,83 +1292,80 @@ class SqlWalker implements TreeWalker
      */
     public function walkSimpleSelectExpression($simpleSelectExpression)
     {
-        $sql = '';
         $expr = $simpleSelectExpression->expression;
-
-        if ($expr instanceof AST\PathExpression) {
-            $sql .= $this->walkPathExpression($expr);
-        } else if ($expr instanceof AST\AggregateExpression) {
-            if ( ! $simpleSelectExpression->fieldIdentificationVariable) {
-                $alias = $this->_scalarResultCounter++;
-            } else {
-                $alias = $simpleSelectExpression->fieldIdentificationVariable;
-            }
-
-            $sql .= $this->walkAggregateExpression($expr) . ' AS dctrn__' . $alias;
-        } else if ($expr instanceof AST\Subselect) {
-            if ( ! $simpleSelectExpression->fieldIdentificationVariable) {
-                $alias = $this->_scalarResultCounter++;
-            } else {
-                $alias = $simpleSelectExpression->fieldIdentificationVariable;
-            }
-
-            $columnAlias = 'sclr' . $this->_aliasCounter++;
-            $sql .= '(' . $this->walkSubselect($expr) . ') AS ' . $columnAlias;
-            $this->_scalarResultAliasMap[$alias] = $columnAlias;
-        } else if ($expr instanceof AST\Functions\FunctionNode) {
-            if ( ! $simpleSelectExpression->fieldIdentificationVariable) {
-                $alias = $this->_scalarResultCounter++;
-            } else {
-                $alias = $simpleSelectExpression->fieldIdentificationVariable;
-            }
-
-            $columnAlias = 'sclr' . $this->_aliasCounter++;
-            $sql .= $this->walkFunction($expr) . ' AS ' . $columnAlias;
-            $this->_scalarResultAliasMap[$alias] = $columnAlias;
-        } else if (
-            $expr instanceof AST\SimpleArithmeticExpression ||
-            $expr instanceof AST\ArithmeticTerm ||
-            $expr instanceof AST\ArithmeticFactor ||
-            $expr instanceof AST\ArithmeticPrimary
-        ) {
-            if ( ! $simpleSelectExpression->fieldIdentificationVariable) {
-                $alias = $this->_scalarResultCounter++;
-            } else {
-                $alias = $simpleSelectExpression->fieldIdentificationVariable;
-            }
-
-            $columnAlias = 'sclr' . $this->_aliasCounter++;
-            $sql .= $this->walkSimpleArithmeticExpression($expr) . ' AS ' . $columnAlias;
-            $this->_scalarResultAliasMap[$alias] = $columnAlias;
-        } else if (
-            $expr instanceof AST\NullIfExpression ||
-            $expr instanceof AST\CoalesceExpression ||
-            $expr instanceof AST\GeneralCaseExpression ||
-            $expr instanceof AST\SimpleCaseExpression
-        ) {
-            if ( ! $simpleSelectExpression->fieldIdentificationVariable) {
-                $alias = $this->_scalarResultCounter++;
-            } else {
-                $alias = $simpleSelectExpression->fieldIdentificationVariable;
-            }
-
-            $columnAlias = 'sclr' . $this->_aliasCounter++;
-            $sql .= $this->walkCaseExpression($expr) . ' AS ' . $columnAlias;
+        $sql  = ' ';
+        
+        switch (true) {
+            case ($expr instanceof AST\PathExpression):
+                $sql .= $this->walkPathExpression($expr);
+                break;
             
-            $this->_scalarResultAliasMap[$alias] = $columnAlias;
-        } else {
-            // IdentificationVariable
-            $class = $this->_queryComponents[$expr]['metadata'];
-            $tableAlias = $this->getSQLTableAlias($class->getTableName(), $expr);
-            $first = true;
+            case ($expr instanceof AST\AggregateExpression):
+                $alias = $simpleSelectExpression->fieldIdentificationVariable ?: $this->_scalarResultCounter++;
+                
+                $sql .= $this->walkAggregateExpression($expr) . ' AS dctrn__' . $alias;
+                break;
+            
+            case ($expr instanceof AST\Subselect):
+                $alias = $simpleSelectExpression->fieldIdentificationVariable ?: $this->_scalarResultCounter++;
+                
+                $columnAlias = 'sclr' . $this->_aliasCounter++;
+                $this->_scalarResultAliasMap[$alias] = $columnAlias;
+                
+                $sql .= '(' . $this->walkSubselect($expr) . ') AS ' . $columnAlias;
+                break;
+            
+            case ($expr instanceof AST\Functions\FunctionNode):
+                $alias = $simpleSelectExpression->fieldIdentificationVariable ?: $this->_scalarResultCounter++;
+                
+                $columnAlias = 'sclr' . $this->_aliasCounter++;
+                $this->_scalarResultAliasMap[$alias] = $columnAlias;
+                
+                $sql .= $this->walkFunction($expr) . ' AS ' . $columnAlias;
+                break;
+            
+            case ($expr instanceof AST\Literal):
+                $sql .= $this->walkLiteral($expr);
+                break;
+            
+            case ($expr instanceof AST\SimpleArithmeticExpression):
+            case ($expr instanceof AST\ArithmeticTerm):
+            case ($expr instanceof AST\ArithmeticFactor):
+            case ($expr instanceof AST\ArithmeticPrimary):
+                $alias = $simpleSelectExpression->fieldIdentificationVariable ?: $this->_scalarResultCounter++;
+                
+                $columnAlias = 'sclr' . $this->_aliasCounter++;
+                $this->_scalarResultAliasMap[$alias] = $columnAlias;
+                
+                $sql .= $this->walkSimpleArithmeticExpression($expr) . ' AS ' . $columnAlias;
+                break;
+                
+            case ($expr instanceof AST\NullIfExpression):
+            case ($expr instanceof AST\CoalesceExpression):
+            case ($expr instanceof AST\GeneralCaseExpression):
+            case ($expr instanceof AST\SimpleCaseExpression):
+                $alias = $simpleSelectExpression->fieldIdentificationVariable ?: $this->_scalarResultCounter++;
+                
+                $columnAlias = 'sclr' . $this->_aliasCounter++;
+                $this->_scalarResultAliasMap[$alias] = $columnAlias;
+                
+                $sql .= $this->walkCaseExpression($expr) . ' AS ' . $columnAlias;
+                break;
+            
+            default: // IdentificationVariable
+                $class      = $this->_queryComponents[$expr]['metadata'];
+                $tableAlias = $this->getSQLTableAlias($class->getTableName(), $expr);
+                $sqlParts   = array();
 
-            foreach ($class->identifier as $identifier) {
-                if ($first) $first = false; else $sql .= ', ';
-                $sql .= $tableAlias . '.' . $class->getQuotedColumnName($identifier, $this->_platform);
-            }
+                foreach ($class->identifier as $identifier) {
+                    $sqlParts[] = $tableAlias . '.' . $class->getQuotedColumnName($identifier, $this->_platform);
+                }
+                
+                $sql .= implode(', ', $sqlParts);
+                break;
         }
-
-        return ' ' . $sql;
+        
+        return $sql;
     }
 
     /**
