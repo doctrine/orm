@@ -1115,25 +1115,25 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getIdentifierColumnNames()
     {
-        if ($this->isIdentifierComposite) {
-            $columnNames = array();
-            foreach ($this->identifier as $idField) {
-                if (isset($this->associationMappings[$idField])) {
-                    // no composite pk as fk entity assumption:
-                    $columnNames[] = $this->associationMappings[$idField]['joinColumns'][0]['name'];
-                } else {
-                    $columnNames[] = $this->fieldMappings[$idField]['columnName'];
-                }
+        $columnNames = array();
+        
+        foreach ($this->identifier as $idProperty) {
+            if (isset($this->fieldMappings[$idProperty])) {
+                $columnNames[] = $this->fieldMappings[$idProperty]['columnName'];
+                
+                continue;
             }
-            return $columnNames;
-        } else if(isset($this->fieldMappings[$this->identifier[0]])) {
-            return array($this->fieldMappings[$this->identifier[0]]['columnName']);
-        } else {
-            // no composite pk as fk entity assumption:
-            return array($this->associationMappings[$this->identifier[0]]['joinColumns'][0]['name']);
+            
+            // Association defined as Id field
+            $joinColumns      = $this->associationMappings[$idProperty]['joinColumns'];
+            $assocColumnNames = array_map(function ($joinColumn) { return $joinColumn['name']; }, $joinColumns);
+            
+            $columnNames = array_merge($columnNames, $assocColumnNames);
         }
+        
+        return $columnNames;
     }
-
+    
     /**
      * Sets the type of Id generator to use for the mapped class.
      */
@@ -1891,6 +1891,42 @@ class ClassMetadataInfo implements ClassMetadata
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Gets the (possibly quoted) identifier column names for safe use in an SQL statement.
+     * 
+     * @param AbstractPlatform $platform
+     * @return array
+     */
+    public function getQuotedIdentifierColumnNames($platform)
+    {
+        $quotedColumnNames = array();
+        
+        foreach ($this->identifier as $idProperty) {
+            if (isset($this->fieldMappings[$idProperty])) {
+                $quotedColumnNames[] = isset($this->fieldMappings[$idProperty]['quoted']) 
+                    ? $platform->quoteIdentifier($this->fieldMappings[$idProperty]['columnName']) 
+                    : $this->fieldMappings[$idProperty]['columnName'];
+                
+                continue;
+            }
+            
+            // Association defined as Id field
+            $joinColumns            = $this->associationMappings[$idProperty]['joinColumns'];
+            $assocQuotedColumnNames = array_map(
+                function ($joinColumn) {
+                    return isset($joinColumn['quoted']) 
+                        ? $platform->quoteIdentifier($joinColumn['name']) 
+                        : $joinColumn['name'];
+                }, 
+                $joinColumns
+            );
+            
+            $quotedColumnNames = array_merge($quotedColumnNames, $assocQuotedColumnNames);
+        }
+        
+        return $quotedColumnNames;
     }
 
     /**

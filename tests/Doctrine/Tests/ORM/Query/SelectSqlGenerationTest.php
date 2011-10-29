@@ -1094,6 +1094,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             array(Query::HINT_FORCE_PARTIAL_LOAD => true)
         );
     }
+    
+    /**
+     * @group DDC-1435
+     */
+    public function testForeignKeyAsPrimaryKeySubselect()
+    {
+        $this->assertSqlGeneration(
+            "SELECT s FROM Doctrine\Tests\Models\DDC117\DDC117Article s WHERE EXISTS (SELECT r FROM Doctrine\Tests\Models\DDC117\DDC117Reference r WHERE r.source = s)",
+            "SELECT d0_.article_id AS article_id0, d0_.title AS title1 FROM DDC117Article d0_ WHERE EXISTS (SELECT d1_.source_id, d1_.target_id FROM DDC117Reference d1_ WHERE d1_.source_id = d0_.article_id)"
+        );
+    }
 }
 
 
