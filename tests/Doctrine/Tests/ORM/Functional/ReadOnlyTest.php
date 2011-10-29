@@ -27,14 +27,14 @@ class ReadOnlyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         $readOnly->name = "Test2";
-        $readOnly->number = 4321;
+        $readOnly->numericValue = 4321;
 
         $this->_em->flush();
         $this->_em->clear();
 
         $dbReadOnly = $this->_em->find('Doctrine\Tests\ORM\Functional\ReadOnlyEntity', $readOnly->id);
         $this->assertEquals("Test1", $dbReadOnly->name);
-        $this->assertEquals(1234, $dbReadOnly->number);
+        $this->assertEquals(1234, $dbReadOnly->numericValue);
     }
 }
 
@@ -51,11 +51,11 @@ class ReadOnlyEntity
     /** @column(type="string") */
     public $name;
     /** @Column(type="integer") */
-    public $number;
+    public $numericValue;
 
     public function __construct($name, $number)
     {
         $this->name = $name;
-        $this->number = $number;
+        $this->numericValue = $number;
     }
 }
