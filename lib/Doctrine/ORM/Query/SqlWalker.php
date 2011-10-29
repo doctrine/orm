@@ -248,10 +248,9 @@ class SqlWalker implements TreeWalker
             $sql .= 'JOIN ' . $parentClass->getQuotedTableName($this->_platform) . ' ' . $tableAlias . ' ON ';
             $first = true;
             
-            foreach ($class->identifier as $idField) {
+            foreach ($class->getQuotedIdentifierColumnNames($this->_platform) as $columnName) {
                 if ($first) $first = false; else $sql .= ' AND ';
 
-                $columnName = $class->getQuotedColumnName($idField, $this->_platform);
                 $sql .= $baseTableAlias . '.' . $columnName . ' = ' . $tableAlias . '.' . $columnName;
             }
         }
@@ -264,10 +263,9 @@ class SqlWalker implements TreeWalker
                 $sql .= ' LEFT JOIN ' . $subClass->getQuotedTableName($this->_platform) . ' ' . $tableAlias . ' ON ';
                 $first = true;
                 
-                foreach ($class->identifier as $idField) {
+                foreach ($class->getQuotedIdentifierColumnNames($this->_platform) as $columnName) {
                     if ($first) $first = false; else $sql .= ' AND ';
 
-                    $columnName = $class->getQuotedColumnName($idField, $this->_platform);
                     $sql .= $baseTableAlias . '.' . $columnName . ' = ' . $tableAlias . '.' . $columnName;
                 }
             }
@@ -1346,8 +1344,8 @@ class SqlWalker implements TreeWalker
                 $tableAlias = $this->getSQLTableAlias($class->getTableName(), $expr);
                 $sqlParts   = array();
 
-                foreach ($class->identifier as $identifier) {
-                    $sqlParts[] = $tableAlias . '.' . $class->getQuotedColumnName($identifier, $this->_platform);
+                foreach ($class->getQuotedIdentifierColumnNames($this->_platform) as $columnName) {
+                    $sqlParts[] = $tableAlias . '.' . $columnName;
                 }
                 
                 $sql .= implode(', ', $sqlParts);
@@ -1634,12 +1632,11 @@ class SqlWalker implements TreeWalker
             $sql .= ' AND ';
             $first = true;
             
-            foreach ($targetClass->identifier as $idField) {
+            foreach ($targetClass->getQuotedIdentifierColumnNames($this->_platform) as $targetColumnName) {
                 if ($first) $first = false; else $sql .= ' AND ';
                 
                 $this->_parserResult->addParameterMapping($dqlParamKey, $this->_sqlParamIndex++);
-                $sql .= $targetTableAlias . '.' 
-                      . $targetClass->getQuotedColumnName($idField, $this->_platform) . ' = ?';
+                $sql .= $targetTableAlias . '.'  . $targetColumnName . ' = ?';
             }
         } else { // many-to-many
             $targetClass = $this->_em->getClassMetadata($assoc['targetEntity']);
@@ -1684,12 +1681,11 @@ class SqlWalker implements TreeWalker
             $sql .= ' AND ';
             $first = true;
             
-            foreach ($targetClass->identifier as $idField) {
+            foreach ($targetClass->getQuotedIdentifierColumnNames($this->_platform) as $targetColumnName) {
                 if ($first) $first = false; else $sql .= ' AND ';
                 
                 $this->_parserResult->addParameterMapping($dqlParamKey, $this->_sqlParamIndex++);
-                $sql .= $targetTableAlias . '.' 
-                      . $targetClass->getQuotedColumnName($idField, $this->_platform) . ' = ?';
+                $sql .= $targetTableAlias . '.' . $targetColumnName . ' = ?';
             }
         }
 
