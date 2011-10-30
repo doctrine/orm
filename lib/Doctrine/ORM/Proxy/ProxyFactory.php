@@ -230,10 +230,12 @@ class ProxyFactory
      */
     private function isShortIdentifierGetter($method, $class)
     {
+        $identifier = lcfirst(substr($method->getName(), 3)); 
         return (
             $method->getNumberOfParameters() == 0 &&
             substr($method->getName(), 0, 3) == "get" &&
-            in_array(lcfirst(substr($method->getName(), 3)), $class->identifier, true) &&
+            in_array($identifier, $class->identifier, true) &&
+            $class->hasField($identifier) &&
             (($method->getEndLine() - $method->getStartLine()) <= 4)
         );
     }

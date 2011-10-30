@@ -20,7 +20,8 @@
 namespace Doctrine\ORM;
 
 use Doctrine\DBAL\Types\Type,
-    Doctrine\ORM\Query\QueryException;
+    Doctrine\ORM\Query\QueryException,
+    Doctrine\DBAL\Cache\QueryCacheProfile;
 
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
@@ -91,33 +92,14 @@ abstract class AbstractQuery
     protected $_hydrationMode = self::HYDRATE_OBJECT;
 
     /**
-     * The locally set cache driver used for caching result sets of this query.
-     *
-     * @var CacheDriver
+     * @param \Doctrine\DBAL\Cache\QueryCacheProfile
      */
-    protected $_resultCacheDriver;
-
-    /**
-     * Boolean flag for whether or not to cache the results of this query.
-     *
-     * @var boolean
-     */
-    protected $_useResultCache;
-
-    /**
-     * @var string The id to store the result cache entry under.
-     */
-    protected $_resultCacheId;
+    protected $_queryCacheProfile;
 
     /**
      * @var boolean Boolean value that indicates whether or not expire the result cache.
      */
     protected $_expireResultCache = false;
-
-    /**
-     * @var int Result Cache lifetime.
-     */
-    protected $_resultCacheTTL;
 
     /**
      * Initializes a new instance of a class derived from <tt>AbstractQuery</tt>.
@@ -260,7 +242,7 @@ abstract class AbstractQuery
     }
 
     /**
-     * Defines a cache driver to be used for caching result sets.
+     * Defines a cache driver to be used for caching result sets and implictly enables caching.
      *
      * @param Doctrine\Common\Cache\Cache $driver Cache driver
      * @return Doctrine\ORM\AbstractQuery
@@ -270,9 +252,10 @@ abstract class AbstractQuery
         if ($resultCacheDriver !== null && ! ($resultCacheDriver instanceof \Doctrine\Common\Cache\Cache)) {
             throw ORMException::invalidResultCacheDriver();
         }
-        $this->_resultCacheDriver = $resultCacheDriver;
-        if ($resultCacheDriver) {
-            $this->_useResultCache = true;
+        if ($this->_queryCacheProfile) {
+            $this->_queryCacheProfile = $this->_queryCacheProfile->setResultCacheDriver($resultCacheDriver);
+        } else {
+            $this->_queryCacheProfile = new QueryCacheProfile(0, null, $resultCacheDriver);
         }
         return $this;
     }
@@ -280,12 +263,13 @@ abstract class AbstractQuery
     /**
      * Returns the cache driver used for caching result sets.
      *
+     * @deprecated
      * @return Doctrine\Common\Cache\Cache Cache driver
      */
     public function getResultCacheDriver()
     {
-        if ($this->_resultCacheDriver) {
-            return $this->_resultCacheDriver;
+        if ($this->_queryCacheProfile && $this->_queryCacheProfile->getResultCacheDriver()) {
+            return $this->_queryCacheProfile->getResultCacheDriver();
         } else {
             return $this->_em->getConfiguration()->getResultCacheImpl();
         }
@@ -296,18 +280,17 @@ abstract class AbstractQuery
      * how long and which ID to use for the cache entry.
      *
      * @param boolean $bool
-     * @param integer $timeToLive
+     * @param integer $lifetime
      * @param string $resultCacheId
      * @return Doctrine\ORM\AbstractQuery This query instance.
      */
-    public function useResultCache($bool, $timeToLive = null, $resultCacheId = null)
+    public function useResultCache($bool, $lifetime = null, $resultCacheId = null)
     {
-        $this->_useResultCache = $bool;
-        if ($timeToLive) {
-            $this->setResultCacheLifetime($timeToLive);
-        }
-        if ($resultCacheId) {
-            $this->_resultCacheId = $resultCacheId;
+        if ($bool) {
+            $this->setResultCacheLifetime($lifetime);
+            $this->setResultCacheId($resultCacheId);
+        } else {
+            $this->_queryCacheProfile = null;
         }
         return $this;
     }
@@ -315,27 +298,33 @@ abstract class AbstractQuery
     /**
      * Defines how long the result cache will be active before expire.
      *
-     * @param integer $timeToLive How long the cache entry is valid.
+     * @param integer $lifetime How long the cache entry is valid.
      * @return Doctrine\ORM\AbstractQuery This query instance.
      */
-    public function setResultCacheLifetime($timeToLive)
+    public function setResultCacheLifetime($lifetime)
     {
-        if ($timeToLive !== null) {
-            $timeToLive = (int) $timeToLive;
+        if ($lifetime === null) {
+            $lifetime = 0;
+        } else {
+            $lifetime = (int)$lifetime;
         }
-
-        $this->_resultCacheTTL = $timeToLive;
+        if ($this->_queryCacheProfile) {
+            $this->_queryCacheProfile = $this->_queryCacheProfile->setLifetime($lifetime);
+        } else {
+            $this->_queryCacheProfile = new QueryCacheProfile($lifetime);
+        }
         return $this;
     }
 
     /**
      * Retrieves the lifetime of resultset cache.
      *
+     * @deprecated
      * @return integer
      */
     public function getResultCacheLifetime()
     {
-        return $this->_resultCacheTTL;
+        return $this->_queryCacheProfile ? $this->_queryCacheProfile->getLifetime() : 0;
     }
 
     /**
@@ -358,6 +347,14 @@ abstract class AbstractQuery
     public function getExpireResultCache()
     {
         return $this->_expireResultCache;
+    }
+
+    /**
+     * @return QueryCacheProfile
+     */
+    public function getQueryCacheProfile()
+    {
+        return $this->_queryCacheProfile;
     }
 
     /**
@@ -548,7 +545,7 @@ abstract class AbstractQuery
      *
      * @param array $params The query parameters.
      * @param integer $hydrationMode The hydration mode to use.
-     * @return IterableResult
+     * @return \Doctrine\ORM\Internal\Hydration\IterableResult
      */
     public function iterate(array $params = array(), $hydrationMode = null)
     {
@@ -584,28 +581,6 @@ abstract class AbstractQuery
             $this->setParameters($params);
         }
 
-        // Check result cache
-        if ($this->_useResultCache && $cacheDriver = $this->getResultCacheDriver()) {
-            list($key, $hash) = $this->getResultCacheId();
-            $cached = $this->_expireResultCache ? false : $cacheDriver->fetch($hash);
-
-            if ($cached === false || !isset($cached[$key])) {
-                // Cache miss.
-                $stmt = $this->_doExecute();
-
-                $result = $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
-                    $stmt, $this->_resultSetMapping, $this->_hints
-                );
-
-                $cacheDriver->save($hash, array($key => $result), $this->_resultCacheTTL);
-
-                return $result;
-            } else {
-                // Cache hit.
-                return $cached[$key];
-            }
-        }
-
         $stmt = $this->_doExecute();
 
         if (is_numeric($stmt)) {
@@ -627,43 +602,23 @@ abstract class AbstractQuery
      */
     public function setResultCacheId($id)
     {
-        $this->_resultCacheId = $id;
+        if ($this->_queryCacheProfile) {
+            $this->_queryCacheProfile = $this->_queryCacheProfile->setCacheKey($id);
+        } else {
+            $this->_queryCacheProfile = new QueryCacheProfile(0, $id);
+        }
         return $this;
     }
 
     /**
-     * Get the result cache id to use to store the result set cache entry.
-     * Will return the configured id if it exists otherwise a hash will be
-     * automatically generated for you.
+     * Get the result cache id to use to store the result set cache entry if set.
      *
-     * @return array ($key, $hash)
+     * @deprecated
+     * @return string
      */
-    protected function getResultCacheId()
+    public function getResultCacheId()
     {
-        if ($this->_resultCacheId) {
-            return array($this->_resultCacheId, $this->_resultCacheId);
-        } else {
-            $params = $this->_params;
-            foreach ($params AS $key => $value) {
-                if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(get_class($value))) {
-                    if ($this->_em->getUnitOfWork()->getEntityState($value) == UnitOfWork::STATE_MANAGED) {
-                        $idValues = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
-                    } else {
-                        $class = $this->_em->getClassMetadata(get_class($value));
-                        $idValues = $class->getIdentifierValues($value);
-                    }
-                    $params[$key] = $idValues;
-                } else {
-                    $params[$key] = $value;
-                }
-            }
-
-            $sql = $this->getSql();
-            ksort($this->_hints);
-            $key = implode(";", (array)$sql) . var_export($params, true) .
-                var_export($this->_hints, true)."&hydrationMode=".$this->_hydrationMode;
-            return array($key, md5($key));
-        }
+        return $this->_queryCacheProfile ? $this->_queryCacheProfile->getCacheKey() : null;
     }
 
     /**

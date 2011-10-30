@@ -15,7 +15,7 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
-*/
+ */
 
 namespace Doctrine\ORM\Event;
 
@@ -23,16 +23,15 @@ namespace Doctrine\ORM\Event;
  * Provides event arguments for the onClear event.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
+ * @link        www.doctrine-project.org
  * @since       2.0
- * @version     $Revision$
  * @author      Roman Borschel <roman@code-factory.de>
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
  */
 class OnClearEventArgs extends \Doctrine\Common\EventArgs
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var Doctrine\ORM\EntityManager
      */
     private $em;
 
@@ -42,16 +41,21 @@ class OnClearEventArgs extends \Doctrine\Common\EventArgs
     private $entityClass;
 
     /**
-     * @param \Doctrine\ORM\EntityManager $em
+     * Constructor.
+     * 
+     * @param Doctrine\ORM\EntityManager $em
+     * @param string $entityClass Optional entity class
      */
     public function __construct($em, $entityClass = null)
     {
-        $this->em = $em;
+        $this->em          = $em;
         $this->entityClass = $entityClass;
     }
 
     /**
-     * @return \Doctrine\ORM\EntityManager
+     * Retrieve associated EntityManager.
+     * 
+     * @return Doctrine\ORM\EntityManager
      */
     public function getEntityManager()
     {
@@ -75,6 +79,6 @@ class OnClearEventArgs extends \Doctrine\Common\EventArgs
      */
     public function clearsAllEntities()
     {
-        return $this->entityClass === null;
+        return ($this->entityClass === null);
     }
 }

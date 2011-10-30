@@ -604,7 +604,24 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
                 . ' WHERE EXISTS ('
                     . 'SELECT c1_.id FROM cms_employees c1_ WHERE c1_.id = c0_.spouse_id'
                     . ')'
+        );
+    }
 
+    public function testExistsExpressionWithSimpleSelectReturningScalar()
+    {
+        $this->assertSqlGeneration(
+            // DQL
+            // The result of this query consists of all employees whose spouses are also employees.
+            'SELECT DISTINCT emp FROM Doctrine\Tests\Models\CMS\CmsEmployee emp
+                WHERE EXISTS (
+                    SELECT 1
+                    FROM Doctrine\Tests\Models\CMS\CmsEmployee spouseEmp
+                    WHERE spouseEmp = emp.spouse)',
+            // SQL
+            'SELECT DISTINCT c0_.id AS id0, c0_.name AS name1 FROM cms_employees c0_'
+                . ' WHERE EXISTS ('
+                    . 'SELECT 1 AS sclr2 FROM cms_employees c1_ WHERE c1_.id = c0_.spouse_id'
+                    . ')'
         );
     }
 
@@ -1272,6 +1289,16 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT e.name FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
             'SELECT c0_.name AS name0 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id'
+        );
+    }
+    /**
+     * @group DDC-1435
+     */
+    public function testForeignKeyAsPrimaryKeySubselect()
+    {
+        $this->assertSqlGeneration(
+            "SELECT s FROM Doctrine\Tests\Models\DDC117\DDC117Article s WHERE EXISTS (SELECT r FROM Doctrine\Tests\Models\DDC117\DDC117Reference r WHERE r.source = s)",
+            "SELECT d0_.article_id AS article_id0, d0_.title AS title1 FROM DDC117Article d0_ WHERE EXISTS (SELECT d1_.source_id, d1_.target_id FROM DDC117Reference d1_ WHERE d1_.source_id = d0_.article_id)"
         );
     }
 }

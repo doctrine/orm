@@ -70,10 +70,16 @@ class TestUtil
             } else {
                 $sm = $realConn->getSchemaManager();
 
-                $tableNames = $sm->listTableNames();
-                
-                foreach ($tableNames AS $tableName) {
-                    $sm->dropTable($tableName);
+                /* @var $schema Schema */
+                $schema = $sm->createSchema();
+                $stmts = $schema->toDropSql($realConn->getDatabasePlatform());
+
+                foreach ($stmts AS $stmt) {
+                    try {
+                        $realConn->exec($stmt);
+                    } catch(\Exception $e) {
+                        // TODO: Now is this a real good idea?
+                    }
                 }
             }
 

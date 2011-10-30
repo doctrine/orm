@@ -1,5 +1,7 @@
 <?php
 /*
+ *  $Id$
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -15,23 +17,22 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
-*/
+ */
 
 namespace Doctrine\ORM\Event;
 
-use Doctrine\Common\EventArgs;
 use Doctrine\ORM\EntityManager;
+use Doctrine\Common\EventArgs;
 
 /**
- * Lifecycle Events are triggered by the UnitOfWork during lifecycle transitions
- * of entities.
+ * Provides event arguments for the postFlush event.
  *
- * @link   www.doctrine-project.org
- * @since  2.0
- * @author Roman Borschel <roman@code-factory.de>
- * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link        www.doctrine-project.org
+ * @since       2.0
+ * @author      Daniel Freudenberger <df@rebuy.de>
  */
-class LifecycleEventArgs extends EventArgs
+class PostFlushEventArgs extends EventArgs
 {
     /**
      * @var Doctrine\ORM\EntityManager
@@ -39,30 +40,13 @@ class LifecycleEventArgs extends EventArgs
     private $em;
 
     /**
-     * @var object
-     */
-    private $entity;
-    
-    /**
-     * Constructor
+     * Constructor.
      * 
-     * @param object $entity
-     * @param Doctrine\ORM\EntityManager $em 
+     * @param Doctrine\ORM\EntityManager $em
      */
-    public function __construct($entity, EntityManager $em)
+    public function __construct(EntityManager $em)
     {
-        $this->entity = $entity;
-        $this->em     = $em;
-    }
-    
-    /**
-     * Retireve associated Entity.
-     * 
-     * @return object 
-     */
-    public function getEntity()
-    {
-        return $this->entity;
+        $this->em = $em;
     }
 
     /**

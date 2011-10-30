@@ -90,10 +90,10 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testUseResultCache()
     {
         $cache = new \Doctrine\Common\Cache\ArrayCache();
-        $this->_em->getConfiguration()->setResultCacheImpl($cache);
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
         $query->useResultCache(true);
+        $query->setResultCacheDriver($cache);
         $query->setResultCacheId('testing_result_cache_id');
         $users = $query->getResult();
 
@@ -108,11 +108,11 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testUseResultCacheParams()
     {
         $cache = new \Doctrine\Common\Cache\ArrayCache();
-        $this->_em->getConfiguration()->setResultCacheImpl($cache);
 
         $sqlCount = count($this->_sqlLoggerStack->queries);
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux WHERE ux.id = ?1');
         $query->setParameter(1, 1);
+        $query->setResultCacheDriver($cache);
         $query->useResultCache(true);
         $query->getResult();
 
@@ -149,10 +149,10 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
-     * @param <type> $query
+     * @param string $query
      * @depends testNativeQueryResultCaching
      */
-    public function testResultCacheDependsOnQueryHints($query)
+    public function testResultCacheNotDependsOnQueryHints($query)
     {
         $cache = $query->getResultCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
@@ -160,7 +160,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setHint('foo', 'bar');
         $query->getResult();
 
-        $this->assertEquals($cacheCount + 1, $this->getCacheSize($cache));
+        $this->assertEquals($cacheCount, $this->getCacheSize($cache));
     }
 
     /**
@@ -182,7 +182,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
      * @param <type> $query
      * @depends testNativeQueryResultCaching
      */
-    public function testResultCacheDependsOnHydrationMode($query)
+    public function testResultCacheNotDependsOnHydrationMode($query)
     {
         $cache = $query->getResultCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
@@ -190,7 +190,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertNotEquals(\Doctrine\ORM\Query::HYDRATE_ARRAY, $query->getHydrationMode());
         $query->getArrayResult();
 
-        $this->assertEquals($cacheCount + 1, $this->getCacheSize($cache));
+        $this->assertEquals($cacheCount, $this->getCacheSize($cache));
     }
 
     /**
