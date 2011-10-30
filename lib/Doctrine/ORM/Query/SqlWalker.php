@@ -980,17 +980,13 @@ class SqlWalker implements TreeWalker
             $qComp = $this->_queryComponents[$dqlAlias];
             $class = $qComp['metadata'];
 
-            if ( ! $selectExpression->fieldIdentificationVariable) {
-                $resultAlias = $fieldName;
-            } else {
-                $resultAlias = $selectExpression->fieldIdentificationVariable;
-            }
+            $resultAlias = ( ! $selectExpression->fieldIdentificationVariable) 
+                ? $fieldName
+                : $selectExpression->fieldIdentificationVariable;
 
-            if ($class->isInheritanceTypeJoined()) {
-                $tableName = $this->_em->getUnitOfWork()->getEntityPersister($class->name)->getOwningTable($fieldName);
-            } else {
-                $tableName = $class->getTableName();
-            }
+            $tableName = ($class->isInheritanceTypeJoined())
+                ? $this->_em->getUnitOfWork()->getEntityPersister($class->name)->getOwningTable($fieldName)
+                : $class->getTableName();
 
             $sqlTableAlias = $this->getSQLTableAlias($tableName, $dqlAlias);
             $columnName = $class->getQuotedColumnName($fieldName, $this->_platform);
