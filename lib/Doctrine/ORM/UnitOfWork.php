@@ -471,19 +471,21 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function computeChangeSet(ClassMetadata $class, $entity)
     {
-        if ( ! $class->isInheritanceTypeNone()) {
-            $class = $this->em->getClassMetadata(get_class($entity));
-        }
-        
         $oid = spl_object_hash($entity);
 
         if (isset($this->readOnlyObjects[$oid])) {
             return;
         }
 
+        if ( ! $class->isInheritanceTypeNone()) {
+            $class = $this->em->getClassMetadata(get_class($entity));
+        }
+        
         $actualData = array();
+        
         foreach ($class->reflFields as $name => $refProp) {
             $value = $refProp->getValue($entity);
+            
             if (isset($class->associationMappings[$name])
                     && ($class->associationMappings[$name]['type'] & ClassMetadata::TO_MANY)
                     && $value !== null
