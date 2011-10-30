@@ -526,7 +526,7 @@ final class Query extends AbstractQuery
      *
      * @param array $params The query parameters.
      * @param integer $hydrationMode The hydration mode to use.
-     * @return IterableResult
+     * @return \Doctrine\ORM\Internal\Hydration\IterableResult
      */
     public function iterate(array $params = array(), $hydrationMode = self::HYDRATE_OBJECT)
     {
