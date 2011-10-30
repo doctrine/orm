@@ -1060,9 +1060,8 @@ class BasicEntityPersister
             foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
                 if ($columnList) $columnList .= ', ';
 
-                $columnAlias = $srcColumn . $this->_sqlAliasCounter++;
-                $resultColumnName = $this->_platform->getSQLResultCasing($columnAlias);
-                $columnList .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )
+                $resultColumnName = $this->getSQLColumnAlias($srcColumn);
+                $columnList .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )  
                              . '.' . $srcColumn . ' AS ' . $resultColumnName;
                 $this->_rsm->addMetaResult($alias, $resultColumnName, $srcColumn, isset($assoc['id']) && $assoc['id'] === true);
             }
@@ -1180,10 +1179,9 @@ class BasicEntityPersister
      */
     protected function _getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
-        $columnName = $class->columnNames[$field];
-        $sql = $this->_getSQLTableAlias($class->name, $alias == 'r' ? '' : $alias)
+        $sql = $this->_getSQLTableAlias($class->name, $alias == 'r' ? '' : $alias) 
              . '.' . $class->getQuotedColumnName($field, $this->_platform);
-        $columnAlias = $this->_platform->getSQLResultCasing($columnName . $this->_sqlAliasCounter++);
+        $columnAlias = $this->getSQLColumnAlias($class->columnNames[$field]);
 
         $this->_rsm->addFieldResult($alias, $columnAlias, $field);
 
@@ -1499,5 +1497,20 @@ class BasicEntityPersister
         list($params, $types) = $this->expandParameters($criteria);
 
         return (bool) $this->_conn->fetchColumn($sql, $params);
+    }
+
+    /**
+     * Gets an SQL column alias for a column name.
+     *
+     * @param string $columnName
+     * @return string
+     */
+    public function getSQLColumnAlias($columnName)
+    {
+        // Trim the column alias to the maximum identifier length of the platform.
+        // If the alias is to long, characters are cut off from the beginning.
+        return $this->_platform->getSQLResultCasing(
+            substr($columnName . $this->_sqlAliasCounter++, -$this->_platform->getMaxIdentifierLength())
+        );
     }
 }

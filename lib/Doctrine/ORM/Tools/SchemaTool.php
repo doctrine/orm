@@ -67,7 +67,9 @@ class SchemaTool
     /**
      * Creates the database schema for the given array of ClassMetadata instances.
      *
+     * @throws ToolsException
      * @param array $classes
+     * @return void
      */
     public function createSchema(array $classes)
     {
@@ -75,7 +77,11 @@ class SchemaTool
         $conn = $this->_em->getConnection();
 
         foreach ($createSchemaSql as $sql) {
-            $conn->executeQuery($sql);
+            try {
+                $conn->executeQuery($sql);
+            } catch(\Exception $e) {
+                throw ToolsException::schemaToolFailure($sql, $e);
+            }
         }
     }
 
@@ -94,7 +100,7 @@ class SchemaTool
 
     /**
      * Some instances of ClassMetadata don't need to be processed in the SchemaTool context. This method detects them.
-     * 
+     *
      * @param ClassMetadata $class
      * @param array $processedClasses
      * @return bool
@@ -551,7 +557,7 @@ class SchemaTool
             try {
                 $conn->executeQuery($sql);
             } catch(\Exception $e) {
-                
+
             }
         }
     }
@@ -589,7 +595,7 @@ class SchemaTool
 
     /**
      * Get SQL to drop the tables defined by the passed classes.
-     * 
+     *
      * @param array $classes
      * @return array
      */
@@ -615,7 +621,7 @@ class SchemaTool
                 }
             }
         }
-        
+
         if ($this->_platform->supportsSequences()) {
             foreach ($schema->getSequences() AS $sequence) {
                 $visitor->acceptSequence($sequence);
@@ -659,7 +665,7 @@ class SchemaTool
     /**
      * Gets the sequence of SQL statements that need to be performed in order
      * to bring the given class mappings in-synch with the relational schema.
-     * If $saveMode is set to true the command is executed in the Database, 
+     * If $saveMode is set to true the command is executed in the Database,
      * else SQL is returned.
      *
      * @param array $classes The classes to consider.
