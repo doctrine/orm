@@ -202,6 +202,11 @@ class ObjectHydrator extends AbstractHydrator
         $className = $this->_rsm->aliasMap[$dqlAlias];
         if (isset($this->_rsm->discriminatorColumns[$dqlAlias])) {
             $discrColumn = $this->_rsm->metaMappings[$this->_rsm->discriminatorColumns[$dqlAlias]];
+
+            if ($data[$discrColumn] === "") {
+                throw HydrationException::emptyDiscriminatorValue($dqlAlias);
+            }
+
             $className = $this->_ce[$className]->discriminatorMap[$data[$discrColumn]];
             unset($data[$discrColumn]);
         }

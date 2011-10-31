@@ -89,8 +89,13 @@ class SimpleObjectHydrator extends AbstractHydrator
             $entityName = $this->class->name;
         } else {
             $discrColumnName = $this->_platform->getSQLResultCasing($this->class->discriminatorColumn['name']);
+            if ($sqlResult[$discrColumnName] === "") {
+                throw HydrationException::emptyDiscriminatorValue(key($this->_rsm->aliasMap));
+            }
+
             $entityName = $this->class->discriminatorMap[$sqlResult[$discrColumnName]];
             unset($sqlResult[$discrColumnName]);
+
             foreach ($sqlResult as $column => $value) {
                 if (!isset($cache[$column])) {
                     if (isset($this->_rsm->fieldMappings[$column])) {
