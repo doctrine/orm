@@ -17,9 +17,10 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
-*/
+ */
 
 namespace Doctrine\ORM\Event;
+
 use Doctrine\ORM\EntityManager;
 use Doctrine\Common\EventArgs;
 
@@ -27,20 +28,21 @@ use Doctrine\Common\EventArgs;
  * Provides event arguments for the postFlush event.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
+ * @link        www.doctrine-project.org
  * @since       2.0
- * @version     $Revision$
  * @author      Daniel Freudenberger <df@rebuy.de>
  */
 class PostFlushEventArgs extends EventArgs
 {
     /**
-     * @var EntityManager
+     * @var Doctrine\ORM\EntityManager
      */
     private $em;
 
     /**
-     * @param EntityManager $em
+     * Constructor.
+     * 
+     * @param Doctrine\ORM\EntityManager $em
      */
     public function __construct(EntityManager $em)
     {
@@ -48,7 +50,9 @@ class PostFlushEventArgs extends EventArgs
     }
 
     /**
-     * @return EntityManager
+     * Retrieve associated EntityManager.
+     * 
+     * @return Doctrine\ORM\EntityManager
      */
     public function getEntityManager()
     {

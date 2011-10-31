@@ -19,42 +19,59 @@
 
 namespace Doctrine\ORM\Event;
 
+use Doctrine\Common\EventArgs;
+use Doctrine\ORM\EntityManager;
+
 /**
  * Lifecycle Events are triggered by the UnitOfWork during lifecycle transitions
  * of entities.
  *
- * @since 2.0
+ * @link   www.doctrine-project.org
+ * @since  2.0
  * @author Roman Borschel <roman@code-factory.de>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class LifecycleEventArgs extends \Doctrine\Common\EventArgs
+class LifecycleEventArgs extends EventArgs
 {
     /**
-     * @var EntityManager
+     * @var Doctrine\ORM\EntityManager
      */
-    private $_em;
+    private $em;
 
     /**
      * @var object
      */
-    private $_entity;
+    private $entity;
     
-    public function __construct($entity, $em)
+    /**
+     * Constructor
+     * 
+     * @param object $entity
+     * @param Doctrine\ORM\EntityManager $em 
+     */
+    public function __construct($entity, EntityManager $em)
     {
-        $this->_entity = $entity;
-        $this->_em = $em;
+        $this->entity = $entity;
+        $this->em     = $em;
     }
     
+    /**
+     * Retireve associated Entity.
+     * 
+     * @return object 
+     */
     public function getEntity()
     {
-        return $this->_entity;
+        return $this->entity;
     }
 
     /**
-     * @return EntityManager
+     * Retrieve associated EntityManager.
+     * 
+     * @return Doctrine\ORM\EntityManager
      */
     public function getEntityManager()
     {
-        return $this->_em;
+        return $this->em;
     }
 }

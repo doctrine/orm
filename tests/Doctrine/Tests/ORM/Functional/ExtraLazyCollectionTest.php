@@ -29,7 +29,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup');
         $class->associationMappings['users']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
 
-        
+
         $this->loadFixture();
     }
 
@@ -137,9 +137,9 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
         $this->assertFalse($user->groups->isInitialized(), "Pre-Condition: Collection is not initialized.");
-        
+
         $queryCount = $this->getCurrentQueryCount();
-        
+
         $someGroups = $user->groups->slice(0, 2);
 
         $this->assertContainsOnly('Doctrine\Tests\Models\CMS\CmsGroup', $someGroups);
@@ -225,7 +225,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($user->articles->isInitialized(), "Pre-Condition: Collection is not initialized.");
 
         $article = $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId);
-        
+
         $queryCount = $this->getCurrentQueryCount();
         $this->assertTrue($user->articles->contains($article));
         $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
@@ -304,6 +304,49 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
     }
 
+    /**
+     * @group DDC-1399
+     */
+    public function testCountAfterAddThenFlush()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+
+        $newGroup = new \Doctrine\Tests\Models\CMS\CmsGroup();
+        $newGroup->name = "Test4";
+
+        $user->addGroup($newGroup);
+        $this->_em->persist($newGroup);
+
+        $this->assertFalse($user->groups->isInitialized());
+        $this->assertEquals(4, count($user->groups));
+        $this->assertFalse($user->groups->isInitialized());
+
+        $this->_em->flush();
+
+        $this->assertEquals(4, count($user->groups));
+    }
+
+    /**
+     * @group DDC-1462
+     */
+    public function testSliceOnDirtyCollection()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        /* @var $user CmsUser */
+
+        $newGroup = new \Doctrine\Tests\Models\CMS\CmsGroup();
+        $newGroup->name = "Test4";
+
+        $user->addGroup($newGroup);
+        $this->_em->persist($newGroup);
+
+        $qc = $this->getCurrentQueryCount();
+        $groups = $user->groups->slice(0, 10);
+
+        $this->assertEquals(4, count($groups));
+        $this->assertEquals($qc + 1, $this->getCurrentQueryCount());
+    }
+
     private function loadFixture()
     {
         $user1 = new \Doctrine\Tests\Models\CMS\CmsUser();
@@ -364,7 +407,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->persist($article1);
         $this->_em->persist($article2);
-        
+
         $this->_em->flush();
         $this->_em->clear();
 

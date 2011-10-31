@@ -471,19 +471,21 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function computeChangeSet(ClassMetadata $class, $entity)
     {
-        if ( ! $class->isInheritanceTypeNone()) {
-            $class = $this->em->getClassMetadata(get_class($entity));
-        }
-        
         $oid = spl_object_hash($entity);
 
         if (isset($this->readOnlyObjects[$oid])) {
             return;
         }
 
+        if ( ! $class->isInheritanceTypeNone()) {
+            $class = $this->em->getClassMetadata(get_class($entity));
+        }
+        
         $actualData = array();
+        
         foreach ($class->reflFields as $name => $refProp) {
             $value = $refProp->getValue($entity);
+            
             if (isset($class->associationMappings[$name])
                     && ($class->associationMappings[$name]['type'] & ClassMetadata::TO_MANY)
                     && $value !== null
@@ -2053,6 +2055,11 @@ class UnitOfWork implements PropertyChangedListener
 
             // Loading the entity right here, if its in the eager loading map get rid of it there.
             unset($this->eagerLoadingEntities[$class->rootEntityName][$idHash]);
+            
+            if (isset($this->eagerLoadingEntities[$class->rootEntityName]) && 
+                ! $this->eagerLoadingEntities[$class->rootEntityName]) {
+                unset($this->eagerLoadingEntities[$class->rootEntityName]);
+            }
             
             // Properly initialize any unfetched associations, if partial objects are not allowed.
             if ( ! isset($hints[Query::HINT_FORCE_PARTIAL_LOAD])) {

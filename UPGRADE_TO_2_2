@@ -1,3 +1,17 @@
+# ResultCache implementation rewritten
+
+The result cache is completly rewritten and now works on the database result level, not inside the ORM AbstractQuery
+anymore. This means that for result cached queries the hydration will now always be performed again, regardless of
+the hydration mode. Affected areas are:
+
+1. Fixes the problem that entities coming from the result cache were not registered in the UnitOfWork
+   leading to problems during EntityManager#flush. Calls to EntityManager#merge are not necessary anymore.
+2. Affects the array hydrator which now includes the overhead of hydration compared to caching the final result.
+
+The API is backwards compatible however most of the getter methods on the `AbstractQuery` object are now
+deprecated in favor of calling AbstractQuery#getQueryCacheProfile(). This method returns a `Doctrine\DBAL\Cache\QueryCacheProfile`
+instance with access to result cache driver, lifetime and cache key.
+
 # EntityManager#getPartialReference() creates read-only entity
 
 Entities returned from EntityManager#getPartialReference() are now marked as read-only if they
