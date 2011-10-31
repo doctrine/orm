@@ -58,7 +58,7 @@ or adding entities to a collection twice. You have to check for both conditions 
 in the code before calling ``$em->flush()`` if you know that unique constraint failures
 can occur.
 
-In `Symfony 2 <http://www.symfony.com>`_ for example there is a Unique Entity Validator
+In `Symfony2 <http://www.symfony.com>`_ for example there is a Unique Entity Validator
 to achieve this task.
 
 For collections you can check with ``$collection->contains($entity)`` if an entity is already
