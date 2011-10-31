@@ -192,7 +192,7 @@ built-in mapping types:
 
     If you need specific timezone handling you have to handle this
     in your domain, converting all the values back and forth from UTC.
-    There is also a `cookbook entry <../cookbook/working-with-datetime>`
+    There is also a :doc:`cookbook entry <../cookbook/working-with-datetime>`
     on working with datetimes that gives hints for implementing
     multi timezone applications.
 
