@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Persisters;
 use Doctrine\ORM\ORMException,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\DBAL\LockMode,
+    Doctrine\DBAL\Types\Type,
     Doctrine\ORM\Query\ResultSetMapping;
 
 /**
@@ -143,9 +144,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             // Execute insert on root table
             $paramIndex = 1;
+            
             foreach ($insertData[$rootTableName] as $columnName => $value) {
                 $rootTableStmt->bindValue($paramIndex++, $value, $this->_columnTypes[$columnName]);
             }
+            
             $rootTableStmt->execute();
 
             if ($isPostInsertId) {
@@ -160,12 +163,17 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             foreach ($subTableStmts as $tableName => $stmt) {
                 $data = isset($insertData[$tableName]) ? $insertData[$tableName] : array();
                 $paramIndex = 1;
-                foreach ((array) $id as $idVal) {
-                    $stmt->bindValue($paramIndex++, $idVal);
+                
+                foreach ((array) $id as $idName => $idVal) {
+                    $type = isset($this->_columnTypes[$idName]) ? $this->_columnTypes[$idName] : Type::STRING;
+                    
+                    $stmt->bindValue($paramIndex++, $idVal, $type);
                 }
+                
                 foreach ($data as $columnName => $value) {
                     $stmt->bindValue($paramIndex++, $value, $this->_columnTypes[$columnName]);
                 }
+                
                 $stmt->execute();
             }
         }
@@ -191,7 +199,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     {
         $updateData = $this->_prepareUpdateData($entity);
 
-        if ($isVersioned = $this->_class->isVersioned) {
+        if (($isVersioned = $this->_class->isVersioned) != false) {
             $versionedClass = $this->_getVersionedClassMetadata();
             $versionedTable = $versionedClass->table['name'];
         }
@@ -200,6 +208,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             foreach ($updateData as $tableName => $data) {
                 $this->_updateTable($entity, $this->_quotedTableMap[$tableName], $data, $isVersioned && $versionedTable == $tableName);
             }
+            
             // Make sure the table with the version column is updated even if no columns on that
             // table were affected.
             if ($isVersioned && ! isset($updateData[$versionedTable])) {
@@ -229,6 +238,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         } else {
             // Delete from all tables individually, starting from this class' table up to the root table.
             $this->_conn->delete($this->_class->getQuotedTableName($this->_platform), $id);
+            
             foreach ($this->_class->parentClasses as $parentClass) {
                 $this->_conn->delete($this->_em->getClassMetadata($parentClass)->getQuotedTableName($this->_platform), $id);
             }
