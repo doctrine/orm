@@ -1916,9 +1916,13 @@ class SqlWalker implements TreeWalker
     public function walkArithmeticTerm($term)
     {
         if (is_string($term)) {
-            return (isset($this->_queryComponents[$term])) 
-                ? $this->_scalarResultAliasMap[$this->_queryComponents[$term]['token']['value']]
-                : $term;
+            if (isset($this->_queryComponents[$term])) {
+                $columnName = $this->_queryComponents[$term]['token']['value'];
+                
+                return $this->_scalarResultAliasMap[$columnName];
+            }
+            
+            return $term;
         }
 
         // Phase 2 AST optimization: Skip processment of ArithmeticTerm
