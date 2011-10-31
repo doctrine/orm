@@ -157,7 +157,41 @@ class ResultSetMapping
      */
     public function addIndexBy($alias, $fieldName)
     {
-        $this->indexByMap[$alias] = $fieldName;
+        $found = false;
+        foreach ($this->fieldMappings AS $columnName => $columnFieldName) {
+            if ($columnFieldName === $fieldName && $this->columnOwnerMap[$columnName] == $alias) {
+                $this->addIndexByColumn($alias, $columnName);
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) {
+            throw new \LogicException("Cannot add index by for dql alias " . $alias . " and field " .
+                                      $fieldName . " without calling addFieldResult() for them before.");
+        }
+    }
+
+    /**
+     * Set to index by a scalar result column name
+     *
+     * @param $resultColumnName
+     * @return void
+     */
+    public function addIndexByScalar($resultColumnName)
+    {
+        $this->indexByMap['scalars'] = $resultColumnName;
+    }
+
+    /**
+     * Sets a column to use for indexing an entity or joined entity result by the given alias name.
+     *
+     * @param $alias
+     * @param $resultColumnName
+     * @return void
+     */
+    public function addIndexByColumn($alias, $resultColumnName)
+    {
+        $this->indexByMap[$alias] = $resultColumnName;
     }
 
     /**

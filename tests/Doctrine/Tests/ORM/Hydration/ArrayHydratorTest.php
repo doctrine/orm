@@ -256,20 +256,20 @@ class ArrayHydratorTest extends HydrationTestCase
 
         $this->assertEquals(2, count($result));
         $this->assertTrue(is_array($result));
-        $this->assertTrue(is_array($result[0]));
         $this->assertTrue(is_array($result[1]));
+        $this->assertTrue(is_array($result[2]));
 
         // test the scalar values
-        $this->assertEquals('ROMANB', $result[0]['nameUpper']);
-        $this->assertEquals('JWAGE', $result[1]['nameUpper']);
+        $this->assertEquals('ROMANB', $result[1]['nameUpper']);
+        $this->assertEquals('JWAGE', $result[2]['nameUpper']);
         // first user => 2 phonenumbers. notice the custom indexing by user id
-        $this->assertEquals(2, count($result[0]['1']['phonenumbers']));
+        $this->assertEquals(2, count($result[1][0]['phonenumbers']));
         // second user => 1 phonenumber. notice the custom indexing by user id
-        $this->assertEquals(1, count($result[1]['2']['phonenumbers']));
+        $this->assertEquals(1, count($result[2][0]['phonenumbers']));
         // test the custom indexing of the phonenumbers
-        $this->assertTrue(isset($result[0]['1']['phonenumbers']['42']));
-        $this->assertTrue(isset($result[0]['1']['phonenumbers']['43']));
-        $this->assertTrue(isset($result[1]['2']['phonenumbers']['91']));
+        $this->assertTrue(isset($result[1][0]['phonenumbers']['42']));
+        $this->assertTrue(isset($result[1][0]['phonenumbers']['43']));
+        $this->assertTrue(isset($result[2][0]['phonenumbers']['91']));
     }
 
     /**
@@ -816,5 +816,44 @@ class ArrayHydratorTest extends HydrationTestCase
         $this->assertNull($result[1][0]);
         $this->assertEquals(array('id' => 2, 'status' => 'developer'), $result[2][0]);
         $this->assertNull($result[3][0]);
+    }
+
+    /**
+     * @group DDC-1385
+     */
+    public function testIndexByAndMixedResult()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__status', 'status');
+        $rsm->addScalarResult('sclr0', 'nameUpper');
+        $rsm->addIndexBy('u', 'id');
+
+        // Faked result set
+        $resultSet = array(
+            //row1
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'sclr0' => 'ROMANB',
+                ),
+            array(
+                'u__id' => '2',
+                'u__status' => 'developer',
+                'sclr0' => 'JWAGE',
+                ),
+            );
+
+        $stmt = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+
+        $result = $hydrator->hydrateAll($stmt, $rsm);
+
+        $this->assertEquals(2, count($result));
+        $this->assertTrue(isset($result[1]));
+        $this->assertEquals(1, $result[1][0]['id']);
+        $this->assertTrue(isset($result[2]));
+        $this->assertEquals(2, $result[2][0]['id']);
     }
 }

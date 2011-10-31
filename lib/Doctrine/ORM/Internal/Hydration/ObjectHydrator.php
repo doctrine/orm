@@ -273,13 +273,13 @@ class ObjectHydrator extends AbstractHydrator
      * @param array $cache The cache to use.
      * @param array $result The result array to fill.
      */
-    protected function _hydrateRow(array $data, array &$cache, array &$result)
+    protected function _hydrateRow(array $row, array &$cache, array &$result)
     {
         // Initialize
         $id = $this->_idTemplate; // initialize the id-memory
         $nonemptyComponents = array();
         // Split the row data into chunks of class data.
-        $rowData = $this->_gatherRowData($data, $cache, $id, $nonemptyComponents);
+        $rowData = $this->_gatherRowData($row, $cache, $id, $nonemptyComponents);
 
         // Extract scalar values. They're appended at the end.
         if (isset($rowData['scalars'])) {
@@ -352,8 +352,7 @@ class ObjectHydrator extends AbstractHydrator
                                 $element = $this->_getEntity($data, $dqlAlias);
 
                                 if (isset($this->_rsm->indexByMap[$dqlAlias])) {
-                                    $field = $this->_rsm->indexByMap[$dqlAlias];
-                                    $indexValue = $this->_ce[$entityName]->reflFields[$field]->getValue($element);
+                                    $indexValue = $row[$this->_rsm->indexByMap[$dqlAlias]];
                                     $reflFieldValue->hydrateSet($indexValue, $element);
                                     $this->_identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $indexValue;
                                 } else {
@@ -418,6 +417,7 @@ class ObjectHydrator extends AbstractHydrator
                     } else {
                         $result[] = null;
                     }
+                    $resultKey = $this->_resultCounter;
                     ++$this->_resultCounter;
                     continue;
                 }
@@ -425,34 +425,30 @@ class ObjectHydrator extends AbstractHydrator
                 // check for existing result from the iterations before
                 if ( ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $this->_getEntity($rowData[$dqlAlias], $dqlAlias);
+                    if ($this->_rsm->isMixed) {
+                        $element = array(0 => $element);
+                    }
+
                     if (isset($this->_rsm->indexByMap[$dqlAlias])) {
-                        $field = $this->_rsm->indexByMap[$dqlAlias];
-                        $key = $this->_ce[$entityName]->reflFields[$field]->getValue($element);
-                        if ($this->_rsm->isMixed) {
-                            $element = array($key => $element);
-                            $result[] = $element;
-                            $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $this->_resultCounter;
-                            ++$this->_resultCounter;
-                        } else {
-                            $result[$key] = $element;
-                            $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $key;
-                        }
+                        $resultKey = $row[$this->_rsm->indexByMap[$dqlAlias]];
 
                         if (isset($this->_hints['collection'])) {
-                            $this->_hints['collection']->hydrateSet($key, $element);
+                            $this->_hints['collection']->hydrateSet($resultKey, $element);
                         }
+
+                        $result[$resultKey] = $element;
                     } else {
-                        if ($this->_rsm->isMixed) {
-                            $element = array(0 => $element);
-                        }
-                        $result[] = $element;
-                        $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $this->_resultCounter;
+                        $resultKey = $this->_resultCounter;
                         ++$this->_resultCounter;
 
                         if (isset($this->_hints['collection'])) {
                             $this->_hints['collection']->hydrateAdd($element);
                         }
+
+                        $result[] = $element;
                     }
+
+                    $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $resultKey;
 
                     // Update result pointer
                     $this->_resultPointers[$dqlAlias] = $element;
@@ -461,6 +457,7 @@ class ObjectHydrator extends AbstractHydrator
                     // Update result pointer
                     $index = $this->_identifierMap[$dqlAlias][$id[$dqlAlias]];
                     $this->_resultPointers[$dqlAlias] = $result[$index];
+                    $resultKey = $index;
                     /*if ($this->_rsm->isMixed) {
                         $result[] = $result[$index];
                         ++$this->_resultCounter;
@@ -471,8 +468,16 @@ class ObjectHydrator extends AbstractHydrator
 
         // Append scalar values to mixed result sets
         if (isset($scalars)) {
+            if ( ! isset($resultKey) ) {
+                if (isset($this->_rsm->indexByMap['scalars'])) {
+                    $resultKey = $row[$this->_rsm->indexByMap['scalars']];
+                } else {
+                    $resultKey = $this->_resultCounter - 1;
+                }
+            }
+
             foreach ($scalars as $name => $value) {
-                $result[$this->_resultCounter - 1][$name] = $value;
+                $result[$resultKey][$name] = $value;
             }
         }
     }
