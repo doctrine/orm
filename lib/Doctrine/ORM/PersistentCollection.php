@@ -672,7 +672,10 @@ final class PersistentCollection implements Collection
      */
     public function slice($offset, $length = null)
     {
-        if (!$this->initialized && $this->association['fetch'] == Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {
+        if ( ! $this->initialized &&
+             ! $this->isDirty &&
+               $this->association['fetch'] == Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {
+
             return $this->em->getUnitOfWork()
                             ->getCollectionPersister($this->association)
                             ->slice($this, $offset, $length);
