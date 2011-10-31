@@ -115,6 +115,34 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $waggon->train);
         $this->assertNotNull($waggon->train);
     }
+
+    public function testEagerLoadWithNullableColumnsGeneratesLeftJoin()
+    {
+        $train = new Train();
+        $this->_em->persist($train);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $train = $this->_em->find(get_class($train), $train->id);
+        $this->assertEquals(
+            "SELECT t0.id AS id1, t0.driver_id AS driver_id2, t3.id AS id4, t3.name AS name5 FROM Train t0 LEFT JOIN TrainDriver t3 ON t0.driver_id = t3.id WHERE t0.id = ?",
+            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
+        );
+    }
+
+    public function testEagerLoadWithNonNullableColumnsGeneratesInnerJoin()
+    {
+        $waggon = new Waggon();
+        $this->_em->persist($waggon);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $waggon = $this->_em->find(get_class($waggon), $waggon->id);
+        $this->assertEquals(
+            "SELECT t0.id AS id1, t0.train_id AS train_id2, t3.id AS id4, t3.driver_id AS driver_id5 FROM Waggon t0 INNER JOIN Train t3 ON t0.train_id = t3.id WHERE t0.id = ?",
+            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
+        );
+    }
 }
 
 /**
@@ -130,6 +158,7 @@ class Train
     /**
      * Owning side
      * @OneToOne(targetEntity="TrainDriver", inversedBy="train", fetch="EAGER", cascade={"persist"})
+     * @JoinColumn(nullable=true)
      */
     public $driver;
     /**
