@@ -145,7 +145,7 @@ class SchemaTool
                 $this->_gatherRelationsSql($class, $table, $schema);
 
                 // Add the discriminator column
-                $discrColumnDef = $this->_getDiscriminatorColumnDefinition($class, $table);
+                $this->addDiscriminatorColumnDefinition($class, $table);
 
                 // Aggregate all the information from all classes in the hierarchy
                 foreach ($class->parentClasses as $parentClassName) {
@@ -177,7 +177,7 @@ class SchemaTool
 
                 // Add the discriminator column only to the root table
                 if ($class->name == $class->rootEntityName) {
-                    $discrColumnDef = $this->_getDiscriminatorColumnDefinition($class, $table);
+                    $this->addDiscriminatorColumnDefinition($class, $table);
                 } else {
                     // Add an ID FK column to child tables
                     /* @var Doctrine\ORM\Mapping\ClassMetadata $class */
@@ -267,7 +267,7 @@ class SchemaTool
      * @return array The portable column definition of the discriminator column as required by
      *              the DBAL.
      */
-    private function _getDiscriminatorColumnDefinition($class, $table)
+    private function addDiscriminatorColumnDefinition($class, $table)
     {
         $discrColumn = $class->discriminatorColumn;
 
