@@ -326,6 +326,27 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(4, count($user->groups));
     }
 
+    /**
+     * @group DDC-1462
+     */
+    public function testSliceOnDirtyCollection()
+    {
+        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        /* @var $user CmsUser */
+
+        $newGroup = new \Doctrine\Tests\Models\CMS\CmsGroup();
+        $newGroup->name = "Test4";
+
+        $user->addGroup($newGroup);
+        $this->_em->persist($newGroup);
+
+        $qc = $this->getCurrentQueryCount();
+        $groups = $user->groups->slice(0, 10);
+
+        $this->assertEquals(4, count($groups));
+        $this->assertEquals($qc + 1, $this->getCurrentQueryCount());
+    }
+
     private function loadFixture()
     {
         $user1 = new \Doctrine\Tests\Models\CMS\CmsUser();
