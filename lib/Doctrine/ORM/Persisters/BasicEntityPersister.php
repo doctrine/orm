@@ -1002,10 +1002,10 @@ class BasicEntityPersister
                     }
                 }
                 
-                $this->_selectJoinSql .= ' LEFT JOIN'; // TODO: Inner join when all join columns are NOT nullable.
                 $first = true;
                 
                 if ($assoc['isOwningSide']) {
+                    $this->_selectJoinSql .= $this->getJoinSQLForJoinColumns($assoc['joinColumns']);
                     $this->_selectJoinSql .= ' ' . $eagerEntity->getQuotedTableName($this->_platform) . ' ' . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) .' ON ';
                     
                     foreach ($assoc['sourceToTargetKeyColumns'] AS $sourceCol => $targetCol) {
@@ -1020,7 +1020,8 @@ class BasicEntityPersister
                 } else {
                     $eagerEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
                     $owningAssoc = $eagerEntity->getAssociationMapping($assoc['mappedBy']);
-                    
+
+                    $this->_selectJoinSql .= $this->getJoinSQLForJoinColumns($owningAssoc['joinColumns']);
                     $this->_selectJoinSql .= ' ' . $eagerEntity->getQuotedTableName($this->_platform) . ' ' 
                                            . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) . ' ON ';
 
@@ -1499,5 +1500,23 @@ class BasicEntityPersister
         list($params, $types) = $this->expandParameters($criteria);
         
         return (bool) $this->_conn->fetchColumn($sql, $params);
+    }
+
+    /**
+     * Generates the appropriate join SQL for the given join column.
+     *
+     * @param array $joinColumns The join columns definition of an association.
+     * @return string LEFT JOIN if one of the columns is nullable, INNER JOIN otherwise.
+     */
+    protected function getJoinSQLForJoinColumns($joinColumns)
+    {
+        // if one of the join columns is nullable, return left join
+        foreach($joinColumns as $joinColumn) {
+             if(isset($joinColumn['nullable']) && $joinColumn['nullable']){
+                 return ' LEFT JOIN ';
+             }
+        }
+
+        return ' INNER JOIN ';
     }
 }

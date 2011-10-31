@@ -130,6 +130,7 @@ class Train
     /**
      * Owning side
      * @OneToOne(targetEntity="TrainDriver", inversedBy="train", fetch="EAGER", cascade={"persist"})
+     * @JoinColumn(nullable=true)
      */
     public $driver;
     /**
