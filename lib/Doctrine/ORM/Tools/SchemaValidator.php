@@ -214,6 +214,6 @@ class SchemaValidator
         $schemaTool = new SchemaTool($this->em);
 
         $allMetadata = $this->em->getMetadataFactory()->getAllMetadata();
-        return (count($schemaTool->getUpdateSchemaSql($allMetadata, false)) == 0);
+        return (count($schemaTool->getUpdateSchemaSql($allMetadata, true)) == 0);
     }
 }
