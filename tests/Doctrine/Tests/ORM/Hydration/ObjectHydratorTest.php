@@ -16,7 +16,7 @@ require_once __DIR__ . '/../../TestInit.php';
 class ObjectHydratorTest extends HydrationTestCase
 {
     /**
-     * Select u.id, u.name from \Doctrine\Tests\Models\CMS\CmsUser u
+     * SELECT PARTIAL u.{id,name} FROM \Doctrine\Tests\Models\CMS\CmsUser u
      */
     public function testSimpleEntityQuery()
     {
@@ -54,6 +54,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
     /**
      * @group DDC-644
+     * SELECT PARTIAL u.{id,name} FROM \Doctrine\Tests\Models\CMS\CmsUser u
      */
     public function testSkipUnknownColumns()
     {
@@ -80,7 +81,8 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * Select u.id, u.name from \Doctrine\Tests\Models\CMS\CmsUser u
+     * SELECT PARTIAL u.{id,name}, PARTIAL a.{id,topic}
+     * FROM \Doctrine\Tests\Models\CMS\CmsUser u, \Doctrine\Tests\Models\CMS\CmsArticle a
      */
     public function testSimpleMultipleRootEntityQuery()
     {
@@ -115,7 +117,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
 
         $this->assertEquals(4, count($result));
-        
+
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[1]);
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[2]);
@@ -132,7 +134,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * Select p from \Doctrine\Tests\Models\ECommerce\ECommerceProduct p
+     * SELECT p FROM \Doctrine\Tests\Models\ECommerce\ECommerceProduct p
      */
     public function testCreatesProxyForLazyLoadingWithForeignKeys()
     {
@@ -177,11 +179,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * select u.id, u.status, p.phonenumber, upper(u.name) nameUpper from User u
-     * join u.phonenumbers p
-     * =
-     * select u.id, u.status, p.phonenumber, upper(u.name) as u__0 from USERS u
-     * INNER JOIN PHONENUMBERS p ON u.id = p.user_id
+     * select u, p, upper(u.name) nameUpper from User u JOIN u.phonenumbers p
      */
     public function testMixedQueryFetchJoin()
     {
@@ -251,11 +249,8 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * select u.id, u.status, count(p.phonenumber) numPhones from User u
-     * join u.phonenumbers p group by u.status, u.id
-     * =
-     * select u.id, u.status, count(p.phonenumber) as p__0 from USERS u
-     * INNER JOIN PHONENUMBERS p ON u.id = p.user_id group by u.id, u.status
+     * select u, count(p.phonenumber) numPhones from User u
+     * join u.phonenumbers p group by u.id
      */
     public function testMixedQueryNormalJoin()
     {
@@ -298,11 +293,8 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * select u.id, u.status, upper(u.name) nameUpper from User u index by u.id
+     * select u, p, upper(u.name) nameUpper from User u index by u.id
      * join u.phonenumbers p indexby p.phonenumber
-     * =
-     * select u.id, u.status, upper(u.name) as p__0 from USERS u
-     * INNER JOIN PHONENUMBERS p ON u.id = p.user_id
      */
     public function testMixedQueryFetchJoinCustomIndex()
     {
@@ -373,15 +365,10 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * select u.id, u.status, p.phonenumber, upper(u.name) nameUpper, a.id, a.topic
+     * select u, p, upper(u.name) nameUpper, a
      * from User u
      * join u.phonenumbers p
      * join u.articles a
-     * =
-     * select u.id, u.status, p.phonenumber, upper(u.name) as u__0, a.id, a.topic
-     * from USERS u
-     * inner join PHONENUMBERS p ON u.id = p.user_id
-     * inner join ARTICLES a ON u.id = a.user_id
      */
     public function testMixedQueryMultipleFetchJoin()
     {
@@ -484,19 +471,12 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * select u.id, u.status, p.phonenumber, upper(u.name) nameUpper, a.id, a.topic,
+     * select u, p, upper(u.name) nameUpper, a, c
      * c.id, c.topic
      * from User u
      * join u.phonenumbers p
      * join u.articles a
      * left join a.comments c
-     * =
-     * select u.id, u.status, p.phonenumber, upper(u.name) as u__0, a.id, a.topic,
-     * c.id, c.topic
-     * from USERS u
-     * inner join PHONENUMBERS p ON u.id = p.user_id
-     * inner join ARTICLES a ON u.id = a.user_id
-     * left outer join COMMENTS c ON a.id = c.article_id
      */
     public function testMixedQueryMultipleDeepMixedFetchJoin()
     {
@@ -717,7 +697,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertEquals(1, count($result[1]->boards));
 
     }
-    
+
     public function testChainedJoinWithEmptyCollections()
     {
         $rsm = new ResultSetMapping;
@@ -773,10 +753,10 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertEquals(0, $result[0]->articles->count());
         $this->assertEquals(0, $result[1]->articles->count());
     }
-    
+
     /**
      * DQL: select partial u.{id,status}, a.id, a.topic, c.id as cid, c.topic as ctopic from CmsUser u left join u.articles a left join a.comments c
-     * 
+     *
      * @group bubu
      */
     /*public function testChainedJoinWithScalars()
@@ -825,25 +805,25 @@ class ObjectHydratorTest extends HydrationTestCase
         $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
 
         $this->assertEquals(3, count($result));
-        
+
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]); // User object
         $this->assertEquals(1, $result[0]['id']);
         $this->assertEquals('The First', $result[0]['topic']);
         $this->assertEquals(1, $result[0]['cid']);
         $this->assertEquals('First Comment', $result[0]['ctopic']);
-        
+
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][0]); // Same User object
         $this->assertEquals(1, $result[1]['id']); // duplicated
         $this->assertEquals('The First', $result[1]['topic']); // duplicated
         $this->assertEquals(2, $result[1]['cid']);
         $this->assertEquals('Second Comment', $result[1]['ctopic']);
-        
+
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[2][0]); // Same User object
         $this->assertEquals(42, $result[2]['id']);
         $this->assertEquals('The Answer', $result[2]['topic']);
         $this->assertNull($result[2]['cid']);
         $this->assertNull($result[2]['ctopic']);
-        
+
         $this->assertTrue($result[0][0] === $result[1][0]);
         $this->assertTrue($result[1][0] === $result[2][0]);
         $this->assertTrue($result[0][0] === $result[2][0]);
