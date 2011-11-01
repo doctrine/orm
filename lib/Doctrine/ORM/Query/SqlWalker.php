@@ -358,7 +358,7 @@ class SqlWalker implements TreeWalker
             $first =  true;
             foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
                 if("" !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
-                    if ( ! $first) $sql .= ' AND '; else $first = false;
+                    if ( ! $first) $filterSql .= ' AND '; else $first = false;
                     $filterSql .= '(' . $filterExpr . ')';
                 }
             }
