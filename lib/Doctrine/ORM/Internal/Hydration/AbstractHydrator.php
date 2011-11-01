@@ -158,11 +158,12 @@ abstract class AbstractHydrator
 
     /**
      * Processes a row of the result set.
+     *
      * Used for identity-based hydration (HYDRATE_OBJECT and HYDRATE_ARRAY).
-     * Puts the elements of a result row into a new array, grouped by the class
+     * Puts the elements of a result row into a new array, grouped by the dql alias
      * they belong to. The column names in the result set are mapped to their
      * field names during this procedure as well as any necessary conversions on
-     * the values applied.
+     * the values applied. Scalar values are kept in a specfic key 'scalars'.
      *
      * @param array $data SQL Result Row
      * @param array &$cache Cache for column to field result information
@@ -203,7 +204,7 @@ abstract class AbstractHydrator
                     $cache[$key]['isIdentifier'] = isset($this->_rsm->isIdentifierColumn[$cache[$key]['dqlAlias']][$key]);
                 }
             }
-            
+
             if (isset($cache[$key]['isScalar'])) {
                 $rowData['scalars'][$cache[$key]['fieldName']] = $value;
                 continue;
@@ -221,7 +222,7 @@ abstract class AbstractHydrator
                 }
                 continue;
             }
-            
+
             // in an inheritance hierachy the same field could be defined several times.
             // We overwrite this value so long we dont have a non-null value, that value we keep.
             // Per definition it cannot be that a field is defined several times and has several values.
@@ -241,6 +242,7 @@ abstract class AbstractHydrator
 
     /**
      * Processes a row of the result set.
+     * 
      * Used for HYDRATE_SCALAR. This is a variant of _gatherRowData() that
      * simply converts column names to field names and properly converts the
      * values according to their types. The resulting row has the same number
@@ -277,7 +279,7 @@ abstract class AbstractHydrator
                     $cache[$key]['dqlAlias'] = $this->_rsm->columnOwnerMap[$key];
                 }
             }
-            
+
             $fieldName = $cache[$key]['fieldName'];
 
             if (isset($cache[$key]['isScalar'])) {
@@ -292,7 +294,7 @@ abstract class AbstractHydrator
 
         return $rowData;
     }
-    
+
     protected function registerManaged($class, $entity, $data)
     {
         if ($class->isIdentifierComposite) {
