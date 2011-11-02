@@ -55,7 +55,11 @@ class CmsUser
      *      )
      */
     public $groups;
-    
+
+    public $nonPersistedProperty;
+
+    public $nonPersistedPropertyObject;
+
     public function __construct() {
         $this->phonenumbers = new ArrayCollection;
         $this->articles = new ArrayCollection;

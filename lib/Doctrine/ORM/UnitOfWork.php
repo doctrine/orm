@@ -1522,7 +1522,9 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             // Merge state of $entity into existing (managed) entity
-            foreach ($class->reflFields as $name => $prop) {
+            foreach ($class->reflClass->getProperties() as $prop) {
+                $name = $prop->name;
+                $prop->setAccessible(true);
                 if ( ! isset($class->associationMappings[$name])) {
                     if ( ! $class->isIdentifier($name)) {
                         $prop->setValue($managedCopy, $prop->getValue($entity));
