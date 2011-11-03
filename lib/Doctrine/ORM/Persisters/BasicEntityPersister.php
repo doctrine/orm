@@ -1019,7 +1019,7 @@ class BasicEntityPersister
                     $eagerEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
                     $owningAssoc = $eagerEntity->getAssociationMapping($assoc['mappedBy']);
 
-                    $this->_selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($owningAssoc['joinColumns']);
+                    $this->_selectJoinSql .= ' LEFT JOIN';
                     $this->_selectJoinSql .= ' ' . $eagerEntity->getQuotedTableName($this->_platform) . ' ' 
                                            . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) . ' ON ';
 
