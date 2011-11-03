@@ -25,8 +25,9 @@ use PDO, Doctrine\DBAL\Connection, Doctrine\ORM\Mapping\ClassMetadata;
  * The ArrayHydrator produces a nested array "graph" that is often (not always)
  * interchangeable with the corresponding object graph for read-only access.
  *
+ * @since  2.0
  * @author Roman Borschel <roman@code-factory.org>
- * @since 1.0
+ * @author Guilherme Blanco <guilhermeblanoc@hotmail.com>
  */
 class ArrayHydrator extends AbstractHydrator
 {
@@ -38,45 +39,54 @@ class ArrayHydrator extends AbstractHydrator
     private $_idTemplate = array();
     private $_resultCounter = 0;
 
-    /** @override */
-    protected function _prepare()
+    /** 
+     * {@inheritdoc} 
+     */
+    protected function prepare()
     {
-        $this->_isSimpleQuery = count($this->_rsm->aliasMap) <= 1;
-        $this->_identifierMap = array();
+        $this->_isSimpleQuery  = count($this->_rsm->aliasMap) <= 1;
+        $this->_identifierMap  = array();
         $this->_resultPointers = array();
-        $this->_idTemplate = array();
-        $this->_resultCounter = 0;
+        $this->_idTemplate     = array();
+        $this->_resultCounter  = 0;
+        
         foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
-            $this->_identifierMap[$dqlAlias] = array();
+            $this->_identifierMap[$dqlAlias]  = array();
             $this->_resultPointers[$dqlAlias] = array();
-            $this->_idTemplate[$dqlAlias] = '';
+            $this->_idTemplate[$dqlAlias]     = '';
         }
     }
 
-    /** @override */
-    protected function _hydrateAll()
+    /** 
+     * {@inheritdoc} 
+     */
+    protected function hydrateAllData()
     {
         $result = array();
-        $cache = array();
+        $cache  = array();
+        
         while ($data = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
-            $this->_hydrateRow($data, $cache, $result);
+            $this->hydrateRowData($data, $cache, $result);
         }
 
         return $result;
     }
 
-    /** @override */
-    protected function _hydrateRow(array $row, array &$cache, array &$result)
+    /**
+     * {@inheritdoc}
+     */
+    protected function hydrateRowData(array $row, array &$cache, array &$result)
     {
         // 1) Initialize
         $id = $this->_idTemplate; // initialize the id-memory
         $nonemptyComponents = array();
-        $rowData = $this->_gatherRowData($row, $cache, $id, $nonemptyComponents);
+        $rowData = $this->gatherRowData($row, $cache, $id, $nonemptyComponents);
 
         // Extract scalar values. They're appended at the end.
         if (isset($rowData['scalars'])) {
             $scalars = $rowData['scalars'];
             unset($rowData['scalars']);
+            
             if (empty($rowData)) {
                 ++$this->_resultCounter;
             }
@@ -111,7 +121,7 @@ class ArrayHydrator extends AbstractHydrator
                 }
                 
                 $relationAlias = $this->_rsm->relationMap[$dqlAlias];
-                $relation = $this->_getClassMetadata($this->_rsm->aliasMap[$parent])->associationMappings[$relationAlias];
+                $relation = $this->getClassMetadata($this->_rsm->aliasMap[$parent])->associationMappings[$relationAlias];
 
                 // Check the type of the relation (many or single-valued)
                 if ( ! ($relation['type'] & ClassMetadata::TO_ONE)) {
@@ -230,28 +240,45 @@ class ArrayHydrator extends AbstractHydrator
     {
         if ($coll === null) {
             unset($this->_resultPointers[$dqlAlias]); // Ticket #1228
+            
             return;
         }
+        
         if ($index !== false) {
             $this->_resultPointers[$dqlAlias] =& $coll[$index];
+            
             return;
-        } else {
-            if ($coll) {
-                if ($oneToOne) {
-                    $this->_resultPointers[$dqlAlias] =& $coll;
-                } else {
-                    end($coll);
-                    $this->_resultPointers[$dqlAlias] =& $coll[key($coll)];
-                }
-            }
+        } 
+        
+        if ( ! $coll) {
+            return;
         }
+        
+        if ($oneToOne) {
+            $this->_resultPointers[$dqlAlias] =& $coll;
+            
+            return;
+        }
+        
+        end($coll);
+        $this->_resultPointers[$dqlAlias] =& $coll[key($coll)];
+        
+        return;
     }
     
-    private function _getClassMetadata($className)
+    /**
+     * Retrieve ClassMetadata associated to entity class name.
+     * 
+     * @param string $className
+     * 
+     * @return Doctrine\ORM\Mapping\ClassMetadata
+     */
+    private function getClassMetadata($className)
     {
         if ( ! isset($this->_ce[$className])) {
             $this->_ce[$className] = $this->_em->getClassMetadata($className);
         }
+        
         return $this->_ce[$className];
     }
 }

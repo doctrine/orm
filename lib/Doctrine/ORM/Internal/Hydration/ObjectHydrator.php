@@ -29,8 +29,10 @@ use PDO,
 /**
  * The ObjectHydrator constructs an object graph out of an SQL result set.
  *
+ * @since  2.0
  * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
+ * @author Guilherme Blanco <guilhermeblanoc@hotmail.com>
+ * 
  * @internal Highly performance-sensitive code.
  */
 class ObjectHydrator extends AbstractHydrator
@@ -53,7 +55,7 @@ class ObjectHydrator extends AbstractHydrator
 
 
     /** @override */
-    protected function _prepare()
+    protected function prepare()
     {
         $this->_identifierMap =
         $this->_resultPointers =
@@ -113,11 +115,12 @@ class ObjectHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    protected function _cleanup()
+    protected function cleanup()
     {
         $eagerLoad = (isset($this->_hints['deferEagerLoad'])) && $this->_hints['deferEagerLoad'] == true;
 
-        parent::_cleanup();
+        parent::cleanup();
+        
         $this->_identifierMap =
         $this->_initializedCollections =
         $this->_existingCollections =
@@ -131,13 +134,13 @@ class ObjectHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    protected function _hydrateAll()
+    protected function hydrateAllData()
     {
         $result = array();
         $cache = array();
 
         while ($row = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
-            $this->_hydrateRow($row, $cache, $result);
+            $this->hydrateRowData($row, $cache, $result);
         }
 
         // Take snapshots from all newly initialized collections
@@ -278,13 +281,13 @@ class ObjectHydrator extends AbstractHydrator
      * @param array $cache The cache to use.
      * @param array $result The result array to fill.
      */
-    protected function _hydrateRow(array $row, array &$cache, array &$result)
+    protected function hydrateRowData(array $row, array &$cache, array &$result)
     {
         // Initialize
         $id = $this->_idTemplate; // initialize the id-memory
         $nonemptyComponents = array();
         // Split the row data into chunks of class data.
-        $rowData = $this->_gatherRowData($row, $cache, $id, $nonemptyComponents);
+        $rowData = $this->gatherRowData($row, $cache, $id, $nonemptyComponents);
 
         // Extract scalar values. They're appended at the end.
         if (isset($rowData['scalars'])) {

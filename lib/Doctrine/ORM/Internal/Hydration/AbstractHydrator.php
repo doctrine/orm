@@ -22,15 +22,17 @@ namespace Doctrine\ORM\Internal\Hydration;
 use PDO,
     Doctrine\DBAL\Connection,
     Doctrine\DBAL\Types\Type,
-    Doctrine\ORM\EntityManager;
+    Doctrine\ORM\EntityManager,
+    Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
  * of transformation of an SQL result set into another structure.
  *
- * @since       2.0
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @author      Roman Borschel <roman@code-factory.org>
+ * @since  2.0
+ * @author Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author Roman Borschel <roman@code-factory.org>
+ * @author Guilherme Blanco <guilhermeblanoc@hotmail.com>
  */
 abstract class AbstractHydrator
 {
@@ -62,9 +64,9 @@ abstract class AbstractHydrator
      */
     public function __construct(EntityManager $em)
     {
-        $this->_em = $em;
+        $this->_em       = $em;
         $this->_platform = $em->getConnection()->getDatabasePlatform();
-        $this->_uow = $em->getUnitOfWork();
+        $this->_uow      = $em->getUnitOfWork();
     }
 
     /**
@@ -72,14 +74,17 @@ abstract class AbstractHydrator
      *
      * @param object $stmt
      * @param object $resultSetMapping
+     * 
      * @return IterableResult
      */
     public function iterate($stmt, $resultSetMapping, array $hints = array())
     {
-        $this->_stmt = $stmt;
-        $this->_rsm = $resultSetMapping;
+        $this->_stmt  = $stmt;
+        $this->_rsm   = $resultSetMapping;
         $this->_hints = $hints;
-        $this->_prepare();
+        
+        $this->prepare();
+        
         return new IterableResult($this);
     }
 
@@ -92,12 +97,16 @@ abstract class AbstractHydrator
      */
     public function hydrateAll($stmt, $resultSetMapping, array $hints = array())
     {
-        $this->_stmt = $stmt;
-        $this->_rsm = $resultSetMapping;
+        $this->_stmt  = $stmt;
+        $this->_rsm   = $resultSetMapping;
         $this->_hints = $hints;
-        $this->_prepare();
-        $result = $this->_hydrateAll();
-        $this->_cleanup();
+        
+        $this->prepare();
+        
+        $result = $this->hydrateAllData();
+        
+        $this->cleanup();
+        
         return $result;
     }
 
@@ -110,12 +119,17 @@ abstract class AbstractHydrator
     public function hydrateRow()
     {
         $row = $this->_stmt->fetch(PDO::FETCH_ASSOC);
+        
         if ( ! $row) {
-            $this->_cleanup();
+            $this->cleanup();
+            
             return false;
         }
+        
         $result = array();
-        $this->_hydrateRow($row, $this->_cache, $result);
+        
+        $this->hydrateRowData($row, $this->_cache, $result);
+        
         return $result;
     }
 
@@ -123,16 +137,17 @@ abstract class AbstractHydrator
      * Excutes one-time preparation tasks, once each time hydration is started
      * through {@link hydrateAll} or {@link iterate()}.
      */
-    protected function _prepare()
+    protected function prepare()
     {}
 
     /**
      * Excutes one-time cleanup tasks at the end of a hydration that was initiated
      * through {@link hydrateAll} or {@link iterate()}.
      */
-    protected function _cleanup()
+    protected function cleanup()
     {
         $this->_rsm = null;
+        
         $this->_stmt->closeCursor();
         $this->_stmt = null;
     }
@@ -146,15 +161,15 @@ abstract class AbstractHydrator
      * @param array $cache The cache to use.
      * @param mixed $result The result to fill.
      */
-    protected function _hydrateRow(array $data, array &$cache, array &$result)
+    protected function hydrateRowData(array $data, array &$cache, array &$result)
     {
-        throw new HydrationException("_hydrateRow() not implemented by this hydrator.");
+        throw new HydrationException("hydrateRowData() not implemented by this hydrator.");
     }
 
     /**
      * Hydrates all rows from the current statement instance at once.
      */
-    abstract protected function _hydrateAll();
+    abstract protected function hydrateAllData();
 
     /**
      * Processes a row of the result set.
@@ -173,7 +188,7 @@ abstract class AbstractHydrator
      * @return array  An array with all the fields (name => value) of the data row,
      *                grouped by their component alias.
      */
-    protected function _gatherRowData(array $data, array &$cache, array &$id, array &$nonemptyComponents)
+    protected function gatherRowData(array $data, array &$cache, array &$id, array &$nonemptyComponents)
     {
         $rowData = array();
 
@@ -207,6 +222,7 @@ abstract class AbstractHydrator
 
             if (isset($cache[$key]['isScalar'])) {
                 $rowData['scalars'][$cache[$key]['fieldName']] = $value;
+                
                 continue;
             }
 
@@ -220,10 +236,11 @@ abstract class AbstractHydrator
                 if (!isset($rowData[$dqlAlias][$cache[$key]['fieldName']]) || $value !== null) {
                     $rowData[$dqlAlias][$cache[$key]['fieldName']] = $value;
                 }
+                
                 continue;
             }
 
-            // in an inheritance hierachy the same field could be defined several times.
+            // in an inheritance hierarchy the same field could be defined several times.
             // We overwrite this value so long we dont have a non-null value, that value we keep.
             // Per definition it cannot be that a field is defined several times and has several values.
             if (isset($rowData[$dqlAlias][$cache[$key]['fieldName']]) && $value === null) {
@@ -250,9 +267,10 @@ abstract class AbstractHydrator
      *
      * @param array $data
      * @param array $cache
+     * 
      * @return array The processed row.
      */
-    protected function _gatherScalarRowData(&$data, &$cache)
+    protected function gatherScalarRowData(&$data, &$cache)
     {
         $rowData = array();
 
@@ -294,8 +312,15 @@ abstract class AbstractHydrator
 
         return $rowData;
     }
-
-    protected function registerManaged($class, $entity, $data)
+    
+    /**
+     * Register entity as managed in UnitOfWork.
+     * 
+     * @param Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param object $entity
+     * @param array $data 
+     */
+    protected function registerManaged(ClassMetadata $class, $entity, array $data)
     {
         if ($class->isIdentifierComposite) {
             $id = array();
@@ -313,6 +338,7 @@ abstract class AbstractHydrator
                 $id = array($class->identifier[0] => $data[$class->identifier[0]]);
             }
         }
+        
         $this->_em->getUnitOfWork()->registerManaged($entity, $id, $data);
     }
 }
