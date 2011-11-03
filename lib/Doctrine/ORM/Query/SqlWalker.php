@@ -709,6 +709,14 @@ class SqlWalker implements TreeWalker
         $sql      = ($joinType == AST\Join::JOIN_TYPE_LEFT || $joinType == AST\Join::JOIN_TYPE_LEFTOUTER)
             ? ' LEFT JOIN '
             : ' INNER JOIN ';
+        
+        if ($joinVarDecl->indexBy) {
+            // For Many-To-One or One-To-One associations this obviously makes no sense, but is ignored silently.
+            $this->_rsm->addIndexBy(
+                $joinVarDecl->indexBy->simpleStateFieldPathExpression->identificationVariable,
+                $joinVarDecl->indexBy->simpleStateFieldPathExpression->field
+            );
+        }
 
         $joinAssocPathExpr = $join->joinAssociationPathExpression;
         $joinedDqlAlias    = $join->aliasIdentificationVariable;
