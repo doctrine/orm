@@ -725,10 +725,11 @@ public function <methodName>()
         $var = sprintf('_%sMethodTemplate', $type);
         $template = self::$$var;
 
-        $variableType = $typeHint ? $typeHint . ' ' : null;
-
         $types = \Doctrine\DBAL\Types\Type::getTypesMap();
         $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : null;
+        
+        $variableType = $typeHint ? $typeHint . ' ' : null;
+        $variableType = $typeHint && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : $variableType;
 
         $replacements = array(
           '<description>'       => ucfirst($type) . ' ' . $fieldName,
