@@ -563,7 +563,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->_em->getClassMetadata(get_class($person))->setIdentifierValues($person, array('id' => 101));
         $q3->setParameter('param', $person);
         $this->assertEquals(
-            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.title AS title2, c1_.car_id AS car_id3, c2_.salary AS salary4, c2_.department AS department5, c2_.startDate AS startDate6, c0_.discr AS discr7, c0_.spouse_id AS spouse_id8 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id WHERE EXISTS (SELECT 1 FROM company_persons_friends c3_ INNER JOIN company_persons c4_ ON c3_.friend_id = c4_.id WHERE c3_.person_id = c0_.id AND c4_.id = ?)',
+            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.title AS title2, c2_.salary AS salary3, c2_.department AS department4, c2_.startDate AS startDate5, c0_.discr AS discr6, c0_.spouse_id AS spouse_id7, c1_.car_id AS car_id8 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id WHERE EXISTS (SELECT 1 FROM company_persons_friends c3_ INNER JOIN company_persons c4_ ON c3_.friend_id = c4_.id WHERE c3_.person_id = c0_.id AND c4_.id = ?)',
             $q3->getSql()
         );
     }
@@ -1120,7 +1120,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p',
-            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.title AS title2, c1_.car_id AS car_id3, c2_.salary AS salary4, c2_.department AS department5, c2_.startDate AS startDate6, c0_.discr AS discr7, c0_.spouse_id AS spouse_id8 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id',
+            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.title AS title2, c2_.salary AS salary3, c2_.department AS department4, c2_.startDate AS startDate5, c0_.discr AS discr6, c0_.spouse_id AS spouse_id7, c1_.car_id AS car_id8 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id',
             array(Query::HINT_FORCE_PARTIAL_LOAD => false)
         );
     }
@@ -1144,7 +1144,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
-            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c2_.title AS title5, c2_.car_id AS car_id6, c0_.discr AS discr7, c0_.spouse_id AS spouse_id8 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id LEFT JOIN company_managers c2_ ON c1_.id = c2_.id',
+            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c2_.title AS title5, c0_.discr AS discr6, c0_.spouse_id AS spouse_id7, c2_.car_id AS car_id8 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id LEFT JOIN company_managers c2_ ON c1_.id = c2_.id',
             array(Query::HINT_FORCE_PARTIAL_LOAD => false)
         );
     }
@@ -1264,7 +1264,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT p, pp FROM Doctrine\Tests\Models\Company\CompanyPerson p JOIN p.spouse pp',
-            "SELECT c0_.id AS id0, c0_.name AS name1, c1_.title AS title2, c1_.car_id AS car_id3, c2_.salary AS salary4, c2_.department AS department5, c2_.startDate AS startDate6, c3_.id AS id7, c3_.name AS name8, c4_.title AS title9, c4_.car_id AS car_id10, c5_.salary AS salary11, c5_.department AS department12, c5_.startDate AS startDate13, c0_.discr AS discr14, c0_.spouse_id AS spouse_id15, c3_.discr AS discr16, c3_.spouse_id AS spouse_id17 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id INNER JOIN company_persons c3_ ON c0_.spouse_id = c3_.id LEFT JOIN company_managers c4_ ON c3_.id = c4_.id LEFT JOIN company_employees c5_ ON c3_.id = c5_.id",
+            "SELECT c0_.id AS id0, c0_.name AS name1, c1_.title AS title2, c2_.salary AS salary3, c2_.department AS department4, c2_.startDate AS startDate5, c3_.id AS id6, c3_.name AS name7, c4_.title AS title8, c5_.salary AS salary9, c5_.department AS department10, c5_.startDate AS startDate11, c0_.discr AS discr12, c0_.spouse_id AS spouse_id13, c1_.car_id AS car_id14, c3_.discr AS discr15, c3_.spouse_id AS spouse_id16, c4_.car_id AS car_id17 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id INNER JOIN company_persons c3_ ON c0_.spouse_id = c3_.id LEFT JOIN company_managers c4_ ON c3_.id = c4_.id LEFT JOIN company_employees c5_ ON c3_.id = c5_.id",
             array(Query::HINT_FORCE_PARTIAL_LOAD => false)
         );
     }
