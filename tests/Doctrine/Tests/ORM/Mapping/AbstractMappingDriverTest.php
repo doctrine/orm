@@ -552,3 +552,7 @@ class Dog extends Animal
         
     }
 }
+
+class Address {}
+class Phonenumber {}
+class Group {}
