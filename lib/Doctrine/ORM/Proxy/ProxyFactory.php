@@ -164,11 +164,14 @@ class ProxyFactory
     private function _generateMethods(ClassMetadata $class)
     {
         $methods = '';
+        $previousMethods = array();
 
         foreach ($class->reflClass->getMethods() as $method) {
             /* @var $method ReflectionMethod */
-            if ($method->isConstructor() || in_array(strtolower($method->getName()), array("__sleep", "__clone"))) {
+            if ($method->isConstructor() || strtolower($method->getName()) == "__sleep" || in_array($method->getName(), $previousMethods)) {
                 continue;
+            } else {
+                $previousMethods[] = $method->getName();
             }
 
             if ($method->isPublic() && ! $method->isFinal() && ! $method->isStatic()) {
