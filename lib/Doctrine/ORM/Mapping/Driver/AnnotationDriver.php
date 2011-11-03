@@ -446,6 +446,10 @@ class AnnotationDriver implements Driver
                     if (isset($annotations['Doctrine\ORM\Mapping\PostLoad'])) {
                         $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postLoad);
                     }
+
+                    if (isset($annotations['Doctrine\ORM\Mapping\PreFlush'])) {
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preFlush);
+                    }
                 }
             }
         }

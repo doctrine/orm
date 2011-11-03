@@ -259,6 +259,41 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function commit($entity = null)
     {
+        // Run preFlush lifecycle callback for new entities
+        foreach ($this->entityInsertions as $classEntity) {
+            $class = $this->em->getClassMetadata(get_class($classEntity));
+
+            // Skip class if instances are read-only
+            if ($class->isReadOnly) {
+                continue;
+            }
+
+            if (isset($class->lifecycleCallbacks[Events::preFlush])) {
+                $class->invokeLifecycleCallbacks(Events::preFlush, $classEntity);
+            }
+        }
+
+        // Run preFlush lifecycle callback for persisted entities
+        foreach ($this->identityMap as $className => $classEntities) {
+            $class = $this->em->getClassMetadata($className);
+
+            // Skip class if instances are read-only
+            if ($class->isReadOnly) {
+                continue;
+            }
+
+            if (isset($class->lifecycleCallbacks[Events::preFlush])) {
+                foreach ($classEntities as $classEntity) {
+                    $class->invokeLifecycleCallbacks(Events::preFlush, $classEntity);
+                }
+            }
+        }
+
+        // Raise preFlush
+        if ($this->evm->hasListeners(Events::preFlush)) {
+            $this->evm->dispatchEvent(Events::preFlush, new Event\PreFlushEventArgs($this->em));
+        }
+
         // Compute changes done since last commit.
         if ($entity === null) {
             $this->computeChangeSets();
