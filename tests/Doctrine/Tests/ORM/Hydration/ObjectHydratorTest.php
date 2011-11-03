@@ -16,9 +16,10 @@ require_once __DIR__ . '/../../TestInit.php';
 class ObjectHydratorTest extends HydrationTestCase
 {
     /**
-     * SELECT PARTIAL u.{id,name} FROM \Doctrine\Tests\Models\CMS\CmsUser u
+     * SELECT PARTIAL u.{id,name} 
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
-    public function testSimpleEntityQuery()
+    public function testSimpleEntityScalarFieldsQuery()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
@@ -30,22 +31,22 @@ class ObjectHydratorTest extends HydrationTestCase
             array(
                 'u__id' => '1',
                 'u__name' => 'romanb'
-                ),
+            ),
             array(
                 'u__id' => '2',
                 'u__name' => 'jwage'
-                )
-            );
+            )
+        );
 
-
-        $stmt = new HydratorMockStatement($resultSet);
+        $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
-
-        $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
 
         $this->assertEquals(2, count($result));
+        
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1]);
+        
         $this->assertEquals(1, $result[0]->id);
         $this->assertEquals('romanb', $result[0]->name);
         $this->assertEquals(2, $result[1]->id);
@@ -53,8 +54,10 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
+     * SELECT PARTIAL u.{id,name} 
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u
+     * 
      * @group DDC-644
-     * SELECT PARTIAL u.{id,name} FROM \Doctrine\Tests\Models\CMS\CmsUser u
      */
     public function testSkipUnknownColumns()
     {
@@ -69,20 +72,60 @@ class ObjectHydratorTest extends HydrationTestCase
                 'u__id' => '1',
                 'u__name' => 'romanb',
                 'foo' => 'bar', // unknown!
-                ),
+            ),
         );
 
-        $stmt = new HydratorMockStatement($resultSet);
+        $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
-
-        $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
 
         $this->assertEquals(1, count($result));
     }
 
     /**
-     * SELECT PARTIAL u.{id,name}, PARTIAL a.{id,topic}
-     * FROM \Doctrine\Tests\Models\CMS\CmsUser u, \Doctrine\Tests\Models\CMS\CmsArticle a
+     * SELECT u.id, 
+     *        u.name
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u
+     */
+    public function testScalarQueryWithoutResultVariables()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addScalarResult('sclr0', 'id');
+        $rsm->addScalarResult('sclr1', 'name');
+        
+        // Faked result set
+        $resultSet = array(
+            array(
+                'sclr0' => '1',
+                'sclr1' => 'romanb'
+            ),
+            array(
+                'sclr0' => '2',
+                'sclr1' => 'jwage'
+            )
+        );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+
+        $this->assertEquals(2, count($result));
+        
+        $this->assertInternalType('array', $result[0]);
+        $this->assertInternalType('array', $result[1]);
+        
+        $this->assertEquals(1, $result[0]['id']);
+        $this->assertEquals('romanb', $result[0]['name']);
+        $this->assertEquals(2, $result[1]['id']);
+        $this->assertEquals('jwage', $result[1]['name']);
+    }
+    
+    /**
+     * SELECT PARTIAL u.{id, name}
+     *        PARTIAL a.{id, topic}
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u, 
+     *        Doctrine\Tests\Models\CMS\CmsArticle a
      */
     public function testSimpleMultipleRootEntityQuery()
     {
@@ -101,20 +144,18 @@ class ObjectHydratorTest extends HydrationTestCase
                 'u__name' => 'romanb',
                 'a__id' => '1',
                 'a__topic' => 'Cool things.'
-                ),
+            ),
             array(
                 'u__id' => '2',
                 'u__name' => 'jwage',
                 'a__id' => '2',
                 'a__topic' => 'Cool things II.'
-                )
-            );
+            )
+        );
 
-
-        $stmt = new HydratorMockStatement($resultSet);
+        $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
-
-        $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
 
         $this->assertEquals(4, count($result));
 
@@ -134,7 +175,8 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT p FROM \Doctrine\Tests\Models\ECommerce\ECommerceProduct p
+     * SELECT p 
+     *   FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p
      */
     public function testCreatesProxyForLazyLoadingWithForeignKeys()
     {
@@ -150,8 +192,8 @@ class ObjectHydratorTest extends HydrationTestCase
                 'p__id' => '1',
                 'p__name' => 'Doctrine Book',
                 'p__shipping_id' => 42
-                )
-            );
+            )
+        );
 
         $proxyInstance = new \Doctrine\Tests\Models\ECommerce\ECommerceShipping();
 
@@ -159,8 +201,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $proxyFactory = $this->getMock('Doctrine\ORM\Proxy\ProxyFactory', array('getProxy'), array(), '', false, false, false);
         $proxyFactory->expects($this->once())
                      ->method('getProxy')
-                     ->with($this->equalTo('Doctrine\Tests\Models\ECommerce\ECommerceShipping'),
-                            array('id' => 42))
+                     ->with($this->equalTo('Doctrine\Tests\Models\ECommerce\ECommerceShipping'), array('id' => 42))
                      ->will($this->returnValue($proxyInstance));
 
         $this->_em->setProxyFactory($proxyFactory);
@@ -169,32 +210,36 @@ class ObjectHydratorTest extends HydrationTestCase
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
         $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
 
-        $stmt = new HydratorMockStatement($resultSet);
+        $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
-
-        $result = $hydrator->hydrateAll($stmt, $rsm);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(1, count($result));
+        
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $result[0]);
     }
 
     /**
-     * select u, p, upper(u.name) nameUpper from User u JOIN u.phonenumbers p
+     * SELECT PARTIAL u.{id, status}, 
+     *        PARTIAL p.{phonenumber}, 
+     *        UPPER(u.name) nameUpper 
+     *   FROM User u 
+     *   JOIN u.phonenumbers p
      */
     public function testMixedQueryFetchJoin()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addJoinedEntityResult(
-                'Doctrine\Tests\Models\CMS\CmsPhonenumber',
-                'p',
-                'u',
-                'phonenumbers'
+            'Doctrine\Tests\Models\CMS\CmsPhonenumber',
+            'p',
+            'u',
+            'phonenumbers'
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper');
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
+        $rsm->addScalarResult('sclr0', 'nameUpper');
 
         // Faked result set
         $resultSet = array(
@@ -202,32 +247,32 @@ class ObjectHydratorTest extends HydrationTestCase
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
-                ),
+                'sclr0' => 'ROMANB',
+            ),
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
-                'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
-                ),
+                'sclr0' => 'ROMANB',
+            ),
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
+                'p__phonenumber' => '91',
                 'sclr0' => 'JWAGE',
-                'p__phonenumber' => '91'
-                )
-            );
+            )
+        );
 
-        $stmt = new HydratorMockStatement($resultSet);
+        $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
-
-        $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
 
         $this->assertEquals(2, count($result));
-        $this->assertTrue(is_array($result));
-        $this->assertTrue(is_array($result[0]));
-        $this->assertTrue(is_array($result[1]));
+        
+        $this->assertInternalType('array', $result);
+        $this->assertInternalType('array', $result[0]);
+        $this->assertInternalType('array', $result[1]);
 
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]);
         $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0][0]->phonenumbers);
@@ -239,6 +284,7 @@ class ObjectHydratorTest extends HydrationTestCase
         // first user => 2 phonenumbers
         $this->assertEquals(2, count($result[0][0]->phonenumbers));
         $this->assertEquals('ROMANB', $result[0]['nameUpper']);
+        
         // second user => 1 phonenumber
         $this->assertEquals(1, count($result[1][0]->phonenumbers));
         $this->assertEquals('JWAGE', $result[1]['nameUpper']);
@@ -249,8 +295,11 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * select u, count(p.phonenumber) numPhones from User u
-     * join u.phonenumbers p group by u.id
+     * SELECT PARTIAL u.{id, status}, 
+     *        COUNT(p.phonenumber) numPhones 
+     *   FROM User u
+     *   JOIN u.phonenumbers p 
+     *  GROUP BY u.id
      */
     public function testMixedQueryNormalJoin()
     {
@@ -267,25 +316,27 @@ class ObjectHydratorTest extends HydrationTestCase
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => '2',
-                ),
+            ),
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => '1',
-                )
-            );
+            )
+        );
 
-        $stmt = new HydratorMockStatement($resultSet);
+        $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
-
-        $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
 
         $this->assertEquals(2, count($result));
-        $this->assertTrue(is_array($result));
-        $this->assertTrue(is_array($result[0]));
-        $this->assertTrue(is_array($result[1]));
+        
+        $this->assertInternalType('array', $result);
+        $this->assertInternalType('array', $result[0]);
+        $this->assertInternalType('array', $result[1]);
+
         // first user => 2 phonenumbers
         $this->assertEquals(2, $result[0]['numPhones']);
+        
         // second user => 1 phonenumber
         $this->assertEquals(1, $result[1]['numPhones']);
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]);
@@ -293,18 +344,23 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * select u, p, upper(u.name) nameUpper from User u index by u.id
-     * join u.phonenumbers p indexby p.phonenumber
+     * SELECT u, 
+     *        p, 
+     *        UPPER(u.name) nameUpper 
+     *   FROM User u 
+     *        INDEX BY u.id
+     *   JOIN u.phonenumbers p 
+     *        INDEX BY p.phonenumber
      */
     public function testMixedQueryFetchJoinCustomIndex()
     {
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addJoinedEntityResult(
-                'Doctrine\Tests\Models\CMS\CmsPhonenumber',
-                'p',
-                'u',
-                'phonenumbers'
+            'Doctrine\Tests\Models\CMS\CmsPhonenumber',
+            'p',
+            'u',
+            'phonenumbers'
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -321,31 +377,31 @@ class ObjectHydratorTest extends HydrationTestCase
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
-                ),
+            ),
             array(
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
-                ),
+            ),
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91'
-                )
-            );
+            )
+        );
 
 
-        $stmt = new HydratorMockStatement($resultSet);
+        $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
-
-        $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
 
         $this->assertEquals(2, count($result));
-        $this->assertTrue(is_array($result));
-        $this->assertTrue(is_array($result[1]));
-        $this->assertTrue(is_array($result[2]));
+        
+        $this->assertInternalType('array', $result);
+        $this->assertInternalType('array', $result[1]);
+        $this->assertInternalType('array', $result[2]);
 
         // test the scalar values
         $this->assertEquals('ROMANB', $result[1]['nameUpper']);
@@ -354,10 +410,13 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][0]);
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[2][0]);
         $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[1][0]->phonenumbers);
+        
         // first user => 2 phonenumbers. notice the custom indexing by user id
         $this->assertEquals(2, count($result[1][0]->phonenumbers));
+        
         // second user => 1 phonenumber. notice the custom indexing by user id
         $this->assertEquals(1, count($result[2][0]->phonenumbers));
+        
         // test the custom indexing of the phonenumbers
         $this->assertTrue(isset($result[1][0]->phonenumbers['42']));
         $this->assertTrue(isset($result[1][0]->phonenumbers['43']));
@@ -1130,15 +1189,15 @@ class ObjectHydratorTest extends HydrationTestCase
                 'sclr0' => 'ROMANB',
                 'a__id' => 1,
                 'a__city' => 'Berlin',
-                ),
+            ),
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => 'BENJAMIN',
                 'a__id' => null,
                 'a__city' => null,
-                ),
-            );
+            ),
+        );
 
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
@@ -1169,13 +1228,13 @@ class ObjectHydratorTest extends HydrationTestCase
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
-                ),
+            ),
             array(
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => 'JWAGE',
-                ),
-            );
+            ),
+        );
 
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
@@ -1198,21 +1257,21 @@ class ObjectHydratorTest extends HydrationTestCase
         $rsm->addScalarResult('sclr0', 'nameUpper');
         $rsm->addIndexByScalar('sclr0');
 
-                // Faked result set
+        // Faked result set
         $resultSet = array(
             //row1
             array(
                 'sclr0' => 'ROMANB',
-                ),
+            ),
             array(
                 'sclr0' => 'JWAGE',
-                ),
-            );
+            ),
+        );
 
-        $stmt = new HydratorMockStatement($resultSet);
+        $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
 
         $this->assertEquals(array('ROMANB' => array('nameUpper' => 'ROMANB'), 'JWAGE' => array('nameUpper' => 'JWAGE')), $result);
     }
