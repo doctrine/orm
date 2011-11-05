@@ -435,7 +435,11 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($entity);
         
-        return isset($this->entityChangeSets[$oid]) ? $this->entityChangeSets[$oid] : array();
+        if (isset($this->entityChangeSets[$oid])) {
+            return $this->entityChangeSets[$oid];
+        }
+        
+        return array();
     }
 
     /**
@@ -531,6 +535,7 @@ class UnitOfWork implements PropertyChangedListener
                     $changeSet[$propName] = array(null, $actualValue);
                 }
             }
+            
             $this->entityChangeSets[$oid] = $changeSet;
         } else {
             // Entity is "fully" MANAGED: it was already fully persisted before
@@ -1195,61 +1200,67 @@ class UnitOfWork implements PropertyChangedListener
     public function getEntityState($entity, $assume = null)
     {
         $oid = spl_object_hash($entity);
-        if ( ! isset($this->entityStates[$oid])) {
-            // State can only be NEW or DETACHED, because MANAGED/REMOVED states are known.
-            // Note that you can not remember the NEW or DETACHED state in _entityStates since
-            // the UoW does not hold references to such objects and the object hash can be reused.
-            // More generally because the state may "change" between NEW/DETACHED without the UoW being aware of it.
-            if ($assume === null) {
-                $class = $this->em->getClassMetadata(get_class($entity));
-                $id = $class->getIdentifierValues($entity);
-                if ( ! $id) {
-                    return self::STATE_NEW;
-                } else if ($class->isIdentifierNatural()) {
-                    // Check for a version field, if available, to avoid a db lookup.
-                    if ($class->isVersioned) {
-                        if ($class->getFieldValue($entity, $class->versionField)) {
-                            return self::STATE_DETACHED;
-                        } else {
-                            return self::STATE_NEW;
-                        }
-                    } else {
-                        // Last try before db lookup: check the identity map.
-                        if ($this->tryGetById($id, $class->rootEntityName)) {
-                            return self::STATE_DETACHED;
-                        } else {
-                            // db lookup
-                            if ($this->getEntityPersister(get_class($entity))->exists($entity)) {
-                                return self::STATE_DETACHED;
-                            } else {
-                                return self::STATE_NEW;
-                            }
-                        }
-                    }
-                } else if (!$class->idGenerator->isPostInsertGenerator()) {
-                    // if we have a pre insert generator we can't be sure that having an id
-                    // really means that the entity exists. We have to verify this through
-                    // the last resort: a db lookup
-
-                    // Last try before db lookup: check the identity map.
-                    if ($this->tryGetById($id, $class->rootEntityName)) {
-                        return self::STATE_DETACHED;
-                    } else {
-                        // db lookup
-                        if ($this->getEntityPersister(get_class($entity))->exists($entity)) {
-                            return self::STATE_DETACHED;
-                        } else {
-                            return self::STATE_NEW;
-                        }
-                    }
-                } else {
+        
+        if (isset($this->entityStates[$oid])) {
+            return $this->entityStates[$oid];
+        }
+        
+        if ($assume !== null) {
+            return $assume;
+        }
+        
+        // State can only be NEW or DETACHED, because MANAGED/REMOVED states are known.
+        // Note that you can not remember the NEW or DETACHED state in _entityStates since
+        // the UoW does not hold references to such objects and the object hash can be reused.
+        // More generally because the state may "change" between NEW/DETACHED without the UoW being aware of it.
+        $class = $this->em->getClassMetadata(get_class($entity));
+        $id    = $class->getIdentifierValues($entity);
+        
+        if ( ! $id) {
+            return self::STATE_NEW;
+        }
+        
+        switch (true) {
+            case ($class->isIdentifierNatural());
+                // Check for a version field, if available, to avoid a db lookup.
+                if ($class->isVersioned) {
+                    return ($class->getFieldValue($entity, $class->versionField))
+                        ? self::STATE_DETACHED
+                        : self::STATE_NEW;
+                }
+                
+                // Last try before db lookup: check the identity map.
+                if ($this->tryGetById($id, $class->rootEntityName)) {
                     return self::STATE_DETACHED;
                 }
-            } else {
-                return $assume;
-            }
+                
+                // db lookup
+                if ($this->getEntityPersister(get_class($entity))->exists($entity)) {
+                    return self::STATE_DETACHED;
+                }
+                
+                return self::STATE_NEW;
+                
+            case ( ! $class->idGenerator->isPostInsertGenerator()):
+                // if we have a pre insert generator we can't be sure that having an id
+                // really means that the entity exists. We have to verify this through
+                // the last resort: a db lookup
+
+                // Last try before db lookup: check the identity map.
+                if ($this->tryGetById($id, $class->rootEntityName)) {
+                    return self::STATE_DETACHED;
+                } 
+                
+                // db lookup
+                if ($this->getEntityPersister(get_class($entity))->exists($entity)) {
+                    return self::STATE_DETACHED;
+                }
+                
+                return self::STATE_NEW;
+                
+            default:
+                return self::STATE_DETACHED;
         }
-        return $this->entityStates[$oid];
     }
 
     /**
@@ -1266,13 +1277,17 @@ class UnitOfWork implements PropertyChangedListener
         $oid = spl_object_hash($entity);
         $classMetadata = $this->em->getClassMetadata(get_class($entity));
         $idHash = implode(' ', $this->entityIdentifiers[$oid]);
+        
         if ($idHash === '') {
             throw new InvalidArgumentException("The given entity has no identity.");
         }
+        
         $className = $classMetadata->rootEntityName;
+        
         if (isset($this->identityMap[$className][$idHash])) {
             unset($this->identityMap[$className][$idHash]);
             //$this->entityStates[$oid] = self::STATE_DETACHED;
+            
             return true;
         }
 
@@ -1305,8 +1320,11 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function tryGetByIdHash($idHash, $rootClassName)
     {
-        return isset($this->identityMap[$rootClassName][$idHash]) ?
-                $this->identityMap[$rootClassName][$idHash] : false;
+        if (isset($this->identityMap[$rootClassName][$idHash])) {
+            return $this->identityMap[$rootClassName][$idHash];
+        }
+        
+        return false;
     }
 
     /**
@@ -1318,11 +1336,14 @@ class UnitOfWork implements PropertyChangedListener
     public function isInIdentityMap($entity)
     {
         $oid = spl_object_hash($entity);
+        
         if ( ! isset($this->entityIdentifiers[$oid])) {
             return false;
         }
+        
         $classMetadata = $this->em->getClassMetadata(get_class($entity));
-        $idHash = implode(' ', $this->entityIdentifiers[$oid]);
+        $idHash        = implode(' ', $this->entityIdentifiers[$oid]);
+        
         if ($idHash === '') {
             return false;
         }
