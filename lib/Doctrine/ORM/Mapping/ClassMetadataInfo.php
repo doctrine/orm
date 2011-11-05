@@ -137,10 +137,6 @@ class ClassMetadataInfo implements ClassMetadata
      */
     const MANY_TO_ONE = 2;
     /**
-     * Combined bitmask for to-one (single-valued) associations.
-     */
-    const TO_ONE = 3;
-    /**
      * Identifies a one-to-many association.
      */
     const ONE_TO_MANY = 4;
@@ -148,6 +144,10 @@ class ClassMetadataInfo implements ClassMetadata
      * Identifies a many-to-many association.
      */
     const MANY_TO_MANY = 8;
+    /**
+     * Combined bitmask for to-one (single-valued) associations.
+     */
+    const TO_ONE = 3;
     /**
      * Combined bitmask for to-many (collection-valued) associations.
      */
@@ -1504,14 +1504,16 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Stores the association mapping.
      *
-     * @param AssociationMapping $assocMapping
+     * @param array $assocMapping
      */
     protected function _storeAssociationMapping(array $assocMapping)
     {
         $sourceFieldName = $assocMapping['fieldName'];
+        
         if (isset($this->fieldMappings[$sourceFieldName]) || isset($this->associationMappings[$sourceFieldName])) {
             throw MappingException::duplicateFieldMapping($this->name, $sourceFieldName);
         }
+        
         $this->associationMappings[$sourceFieldName] = $assocMapping;
     }
 
