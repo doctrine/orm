@@ -40,7 +40,7 @@ of the constructor, like this:
     $config->setMetadataDriverImpl($driver);
 
 Simplified YAML Driver
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 The Symfony project sponsored a driver that simplifies usage of the YAML Driver.
 The changes between the original driver are:
