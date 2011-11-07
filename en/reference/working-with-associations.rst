@@ -383,7 +383,7 @@ Synchronizing Bidirectional Collections
 
 In the case of Many-To-Many associations you as the developer have the 
 responsibility of keeping the collections on the owning and inverse side
- in sync when you apply changes to them. Doctrine can only
+in sync when you apply changes to them. Doctrine can only
 guarantee a consistent state for the hydration, not for your client
 code.
 
