@@ -788,7 +788,7 @@ statements native queries can be used. Native queries are built by
 using a hand-crafted SQL query and a ResultSetMapping that
 describes how the SQL result set should be transformed by Doctrine.
 More information about native queries can be found in
-`the dedicated chapter <http://www.doctrine-project.org/documentation/manual/2_0/en/native-sql>`_.
+:doc:`the dedicated chapter <native-sql>`.
 
 Custom Repositories
 ~~~~~~~~~~~~~~~~~~~
