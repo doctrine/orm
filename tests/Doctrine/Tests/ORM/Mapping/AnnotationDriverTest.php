@@ -199,6 +199,20 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         
         $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\ChildEntity');
     }
+
+    public function testInvalidFetchOptionThrowsException()
+    {
+        $annotationDriver = $this->_loadDriver();
+
+        $em = $this->_getTestEntityManager();
+        $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
+        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory->setEntityManager($em);
+
+        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException',
+            "Entity 'Doctrine\Tests\ORM\Mapping\InvalidFetchOption' has a mapping with invalid fetch mode 'eager");
+        $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\InvalidFetchOption');
+    }
 }
 
 /**
@@ -310,4 +324,15 @@ class ChildEntity extends MiddleMappedSuperclass
      * @Column(type="string")
      */
     private $text;
+}
+
+/**
+ * @Entity
+ */
+class InvalidFetchOption
+{
+    /**
+     * @OneToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", fetch="eager")
+     */
+    private $collection;
 }
