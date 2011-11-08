@@ -298,4 +298,9 @@ class MappingException extends \Doctrine\ORM\ORMException
     {
         return new self("Entity '" . $className . "' has no method '" . $methodName . "' to be registered as lifecycle callback.");
     }
+
+    public static function invalidFetchMode($className, $annotation)
+    {
+        return new self("Entity '" . $className . "' has a mapping with invalid fetch mode '" . $annotation . "'");
+    }
 }
