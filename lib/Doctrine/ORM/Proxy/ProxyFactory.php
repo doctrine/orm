@@ -212,7 +212,7 @@ class ProxyFactory
                 if ($this->isShortIdentifierGetter($method, $class)) {
                     $identifier = lcfirst(substr($method->getName(), 3));
 
-                    $cast = in_array($class->fieldMappings[$identifier]['type'], array('integer', 'bigint', 'smallint')) ? '(int) ' : '';
+                    $cast = in_array($class->fieldMappings[$identifier]['type'], array('integer', 'smallint')) ? '(int) ' : '';
 
                     $methods .= '        if ($this->__isInitialized__ === false) {' . "\n";
                     $methods .= '            return ' . $cast . '$this->_identifier["' . $identifier . '"];' . "\n";
