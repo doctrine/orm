@@ -68,7 +68,7 @@ on your CLI:
 ::
 
     $ pear channel-discover pear.doctrine-project.org
-    $ pear install doctrine/DoctrineORM --all-deps
+    $ pear install --alldeps doctrine/DoctrineORM
 
 This should install the packages DoctrineCommon, DoctrineDBAL, DoctrineORM,
 SymfonyConsole and SymfonyYAML.
@@ -779,7 +779,7 @@ We also have to create a general bootstrap file for our application:
 .. code-block:: php
 
     <?php
-    // boostrap.php
+    // bootstrap.php
 
     require_once "entities/User.php";
     require_once "entities/Product.php";
