@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Proxy\ProxyClassGenerator;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
+use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -157,6 +158,29 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
         $this->assertEquals($id, $entity->getId());
+        $this->assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy.");
+    }
+
+    public function testDoNotInitializeProxyOnGettingTheIdentifierAndReturnTheRightType()
+    {
+        $product = new ECommerceProduct();
+        $product->setName('Doctrine Cookbook');
+
+        $shipping = new ECommerceShipping();
+        $shipping->setDays(1);
+        $product->setShipping($shipping);
+        $this->_em->persist($product);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $id = $shipping->getId();
+
+        $product = $this->_em->getRepository('Doctrine\Tests\Models\ECommerce\ECommerceProduct')->find($product->getId());
+
+        $entity = $product->getShipping();
+        $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
+        $this->assertEquals($id, $entity->getId());
+        $this->assertTrue($id === $entity->getId(), "Check that the id's are the same value, and type.");
         $this->assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy.");
     }
 
