@@ -165,10 +165,13 @@ class ResultSetMapping
                 break;
             }
         }
+
+        /* TODO: check if this exception can be put back, for now it's gone because of assumptions made by some ORM internals
         if (!$found) {
             throw new \LogicException("Cannot add index by for dql alias " . $alias . " and field " .
                                       $fieldName . " without calling addFieldResult() for them before.");
         }
+         */
     }
 
     /**
