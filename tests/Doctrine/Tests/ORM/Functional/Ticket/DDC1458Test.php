@@ -74,8 +74,6 @@ class TestEntity
      */
     protected $additional;
 
-    private $i = 0;
-
     public function getValue()
     {
         return $this->value;
