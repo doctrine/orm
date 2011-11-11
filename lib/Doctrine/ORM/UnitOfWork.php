@@ -1943,6 +1943,11 @@ class UnitOfWork implements PropertyChangedListener
                 }
             } else {
                 $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
+
+                // If only a specific entity is set to refresh, check that it's the one
+                if(isset($hints[Query::HINT_REFRESH_ENTITY])) {
+                    $overrideLocalValues = $hints[Query::HINT_REFRESH_ENTITY] === $entity;
+                }
             }
 
             if ($overrideLocalValues) {
