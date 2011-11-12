@@ -57,7 +57,7 @@ class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
 
     /** @override */
     public function getVarcharTypeDeclarationSQL(array $field) {}
-    
+
     /** @override */
     public function getClobTypeDeclarationSQL(array $field) {}
 
@@ -85,6 +85,13 @@ class DatabasePlatformMock extends \Doctrine\DBAL\Platforms\AbstractPlatform
 
     protected function initializeDoctrineTypeMappings()
     {
-        
+
+    }
+    /**
+     * Gets the SQL Snippet used to declare a BLOB column type.
+     */
+    public function getBlobTypeDeclarationSQL(array $field)
+    {
+        throw DBALException::notSupported(__METHOD__);
     }
 }

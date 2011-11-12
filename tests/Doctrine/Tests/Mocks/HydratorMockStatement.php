@@ -8,10 +8,10 @@ namespace Doctrine\Tests\Mocks;
  *
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class HydratorMockStatement implements \Doctrine\DBAL\Driver\Statement
+class HydratorMockStatement implements \IteratorAggregate, \Doctrine\DBAL\Driver\Statement
 {
-    private $_resultSet;    
-    
+    private $_resultSet;
+
     /**
      * Creates a new mock statement that will serve the provided fake result set to clients.
      *
@@ -21,7 +21,7 @@ class HydratorMockStatement implements \Doctrine\DBAL\Driver\Statement
     {
         $this->_resultSet = $resultSet;
     }
-    
+
     /**
      * Fetches all rows from the result set.
      *
@@ -31,7 +31,7 @@ class HydratorMockStatement implements \Doctrine\DBAL\Driver\Statement
     {
         return $this->_resultSet;
     }
-    
+
     public function fetchColumn($columnNumber = 0)
     {
         $row = current($this->_resultSet);
@@ -39,10 +39,10 @@ class HydratorMockStatement implements \Doctrine\DBAL\Driver\Statement
         $val = array_shift($row);
         return $val !== null ? $val : false;
     }
-    
+
     /**
      * Fetches the next row in the result set.
-     * 
+     *
      */
     public function fetch($fetchStyle = null)
     {
@@ -50,7 +50,7 @@ class HydratorMockStatement implements \Doctrine\DBAL\Driver\Statement
         next($this->_resultSet);
         return $current;
     }
-    
+
     /**
      * Closes the cursor, enabling the statement to be executed again.
      *
@@ -60,13 +60,13 @@ class HydratorMockStatement implements \Doctrine\DBAL\Driver\Statement
     {
         return true;
     }
-    
+
     public function setResultSet(array $resultSet)
     {
         reset($resultSet);
         $this->_resultSet = $resultSet;
     }
-    
+
     public function bindColumn($column, &$param, $type = null)
     {
     }
@@ -78,7 +78,7 @@ class HydratorMockStatement implements \Doctrine\DBAL\Driver\Statement
     public function bindParam($column, &$variable, $type = null, $length = null, $driverOptions = array())
     {
     }
-    
+
     public function columnCount()
     {
     }
@@ -86,16 +86,26 @@ class HydratorMockStatement implements \Doctrine\DBAL\Driver\Statement
     public function errorCode()
     {
     }
-    
+
     public function errorInfo()
     {
     }
-    
+
     public function execute($params = array())
     {
     }
-    
+
     public function rowCount()
     {
-    }  
+    }
+
+    public function getIterator()
+    {
+        return $this->_resultSet;
+    }
+
+    public function setFetchMode($fetchMode)
+    {
+        
+    }
 }
