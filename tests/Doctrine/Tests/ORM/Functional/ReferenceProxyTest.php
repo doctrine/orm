@@ -98,7 +98,7 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($clone->isCloned);
         $this->assertFalse($entity->isCloned);
     }
-    
+
     /**
      * @group DDC-733
      */
@@ -108,12 +108,12 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
         $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
-        
+
         $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
         $this->_em->getUnitOfWork()->initializeObject($entity);
         $this->assertTrue($entity->__isInitialized__, "Should be initialized after called UnitOfWork::initializeObject()");
     }
-    
+
     /**
      * @group DDC-1163
      */
@@ -124,10 +124,10 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
         $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
         $entity->setName('Doctrine 2 Cookbook');
-        
+
         $this->_em->flush();
         $this->_em->clear();
-        
+
         $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
         $this->assertEquals('Doctrine 2 Cookbook', $entity->getName());
     }
@@ -180,7 +180,7 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $entity = $product->getShipping();
         $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
         $this->assertEquals($id, $entity->getId());
-        $this->assertTrue($id === $entity->getId(), "Check that the id's are the same value, and type.");
+        $this->assertSame($id, $entity->getId(), "Check that the id's are the same value, and type.");
         $this->assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy.");
     }
 
