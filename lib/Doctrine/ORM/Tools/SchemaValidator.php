@@ -173,14 +173,14 @@ class SchemaValidator
                     if (count($targetMetadata->getIdentifierColumnNames()) != count($assoc['joinTable']['inverseJoinColumns'])) {
                         $ce[] = "The inverse join columns of the many-to-many table '" . $assoc['joinTable']['name'] . "' " .
                                 "have to contain to ALL identifier columns of the target entity '". $targetMetadata->name . "', " .
-                                "however '" . implode(", ", array_diff($targetMetadata->getIdentifierColumnNames(), $assoc['relationToTargetKeyColumns'])) .
+                                "however '" . implode(", ", array_diff($targetMetadata->getIdentifierColumnNames(), array_values($assoc['relationToTargetKeyColumns']))) .
                                 "' are missing.";
                     }
 
                     if (count($class->getIdentifierColumnNames()) != count($assoc['joinTable']['joinColumns'])) {
                         $ce[] = "The join columns of the many-to-many table '" . $assoc['joinTable']['name'] . "' " .
                                 "have to contain to ALL identifier columns of the source entity '". $class->name . "', " .
-                                "however '" . implode(", ", array_diff($class->getIdentifierColumnNames(), $assoc['relationToSourceKeyColumns'])) .
+                                "however '" . implode(", ", array_diff($class->getIdentifierColumnNames(), array_values($assoc['relationToSourceKeyColumns']))) .
                                 "' are missing.";
                     }
 
@@ -200,9 +200,14 @@ class SchemaValidator
                     }
 
                     if (count($class->getIdentifierColumnNames()) != count($assoc['joinColumns'])) {
+                        $ids = array();
+                        foreach ($assoc['joinColumns'] AS $joinColumn) {
+                            $ids[] = $joinColumn['name'];
+                        }
+
                         $ce[] = "The join columns of the association '" . $assoc['fieldName'] . "' " .
                                 "have to match to ALL identifier columns of the source entity '". $class->name . "', " .
-                                "however '" . implode(", ", array_diff($class->getIdentifierColumnNames(), $assoc['joinColumns'])) .
+                                "however '" . implode(", ", array_diff($class->getIdentifierColumnNames(), $ids)) .
                                 "' are missing.";
                     }
                 }
