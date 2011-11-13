@@ -43,6 +43,29 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('changed from preUpdate callback!', $result[0]->value);
     }
     
+    public function testPreFlushCallbacksAreInvoked()
+    {
+        $entity = new LifecycleCallbackTestEntity;
+        $entity->value = 'hello';
+        $this->_em->persist($entity);
+
+        $this->_em->flush();
+
+        $this->assertTrue($entity->prePersistCallbackInvoked);
+        $this->assertTrue($entity->preFlushCallbackInvoked);
+
+        $entity->preFlushCallbackInvoked = false;
+        $this->_em->flush();
+
+        $this->assertTrue($entity->preFlushCallbackInvoked);
+
+        $entity->value = 'bye';
+        $entity->preFlushCallbackInvoked = false;
+        $this->_em->flush();
+
+        $this->assertTrue($entity->preFlushCallbackInvoked);
+    }
+
     public function testChangesDontGetLost()
     {
         $user = new LifecycleCallbackTestUser;
@@ -190,6 +213,8 @@ class LifecycleCallbackTestEntity
     public $postPersistCallbackInvoked = false;
     public $postLoadCallbackInvoked = false;
     
+    public $preFlushCallbackInvoked = false;
+
     /**
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -232,6 +257,11 @@ class LifecycleCallbackTestEntity
     /** @PreUpdate */
     public function doStuffOnPreUpdate() {
         $this->value = 'changed from preUpdate callback!';
+    }
+
+    /** @PreFlush */
+    public function doStuffOnPreFlush() {
+        $this->preFlushCallbackInvoked = true;
     }
 }
 

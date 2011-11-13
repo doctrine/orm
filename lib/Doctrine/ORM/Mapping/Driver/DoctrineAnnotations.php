@@ -387,3 +387,9 @@ final class PostRemove implements Annotation {}
  * @Target("METHOD")
  */
 final class PostLoad implements Annotation {}
+
+/**
+ * @Annotation
+ * @Target("METHOD")
+ */
+final class PreFlush implements Annotation {}
