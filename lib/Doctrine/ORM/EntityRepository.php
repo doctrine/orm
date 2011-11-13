@@ -226,6 +226,14 @@ class EntityRepository implements ObjectRepository
     }
 
     /**
+     * @return string
+     */
+    public function getClassName()
+    {
+        return $this->getEntityName();
+    }
+
+    /**
      * @return EntityManager
      */
     protected function getEntityManager()
