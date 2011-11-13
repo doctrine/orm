@@ -165,11 +165,13 @@ class ProxyFactory
     {
         $methods = '';
 
+        $methodNames = array();
         foreach ($class->reflClass->getMethods() as $method) {
             /* @var $method ReflectionMethod */
-            if ($method->isConstructor() || in_array(strtolower($method->getName()), array("__sleep", "__clone")) || $class->reflClass->getName() != $method->class) {
+            if ($method->isConstructor() || in_array(strtolower($method->getName()), array("__sleep", "__clone")) || isset($methodNames[$method->getName()])) {
                 continue;
             }
+            $methodNames[$method->getName()] = true;
 
             if ($method->isPublic() && ! $method->isFinal() && ! $method->isStatic()) {
                 $methods .= "\n" . '    public function ';
@@ -234,7 +236,7 @@ class ProxyFactory
      */
     private function isShortIdentifierGetter($method, $class)
     {
-        $identifier = lcfirst(substr($method->getName(), 3)); 
+        $identifier = lcfirst(substr($method->getName(), 3));
         return (
             $method->getNumberOfParameters() == 0 &&
             substr($method->getName(), 0, 3) == "get" &&
