@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phpunit>
+   <testsuites>
+     <testsuite name="Doctrine ORM Test Suite">
+        <directory>./../Doctrine/Tests/ORM</directory>
+     </testsuite>
+    </testsuites>
+    <groups>
+      <exclude>
+         <group>performance</group>
+         <group>locking_functional</group>
+      </exclude>
+    </groups>
+
+</phpunit>
