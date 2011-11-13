@@ -221,27 +221,6 @@ class ProxyFactory
     }
 
     /**
-<<<<<<< HEAD
-=======
-     * @param ReflectionMethod $method
-     * @param ClassMetadata $class
-     * @return bool
-     */
-    private function isShortIdentifierGetter($method, $class)
-    {
-        $identifier = lcfirst(substr($method->getName(), 3));
-        return (
-            $method->getNumberOfParameters() == 0 &&
-            substr($method->getName(), 0, 3) == "get" &&
-            in_array($identifier, $class->identifier, true) &&
-            $class->hasField($identifier) &&
-            (($method->getEndLine() - $method->getStartLine()) <= 4)
-            && in_array($class->fieldMappings[$identifier]['type'], array('integer', 'bigint', 'smallint', 'string'))
-        );
-    }
-
-    /**
->>>>>>> DDC-1477 - Adjust patch to really fix bug in Proxy generation
      * Generates the code for the __sleep method for a proxy class.
      *
      * @param $class
