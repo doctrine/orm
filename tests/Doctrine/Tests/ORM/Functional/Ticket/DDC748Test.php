@@ -33,10 +33,10 @@ class DDC748Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($article);
         $this->_em->flush();
 
-        $this->assertType('Doctrine\Common\Collections\Collection', $user->articles);
+        $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $user->articles);
         $this->_em->refresh($article);
         $this->assertTrue($article !== $user->articles, "The article should not be replaced on the inverse side of the relation.");
-        $this->assertType('Doctrine\Common\Collections\Collection', $user->articles);
+        $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $user->articles);
     }
 
     public function testRefreshOneToOne()
