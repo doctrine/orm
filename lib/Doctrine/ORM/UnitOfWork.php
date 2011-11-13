@@ -259,6 +259,11 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function commit($entity = null)
     {
+        // Raise preFlush
+        if ($this->evm->hasListeners(Events::preFlush)) {
+            $this->evm->dispatchEvent(Events::preFlush, new Event\PreFlushEventArgs($this->em));
+        }
+
         // Compute changes done since last commit.
         if ($entity === null) {
             $this->computeChangeSets();
@@ -485,6 +490,11 @@ class UnitOfWork implements PropertyChangedListener
             $class = $this->em->getClassMetadata(get_class($entity));
         }
         
+        // Fire PreFlush lifecycle callbacks
+        if (isset($class->lifecycleCallbacks[Events::preFlush])) {
+            $class->invokeLifecycleCallbacks(Events::preFlush, $entity);
+        }
+
         $actualData = array();
         
         foreach ($class->reflFields as $name => $refProp) {

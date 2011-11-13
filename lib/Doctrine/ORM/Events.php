@@ -110,6 +110,13 @@ final class Events
     const loadClassMetadata = 'loadClassMetadata';
     
     /**
+     * The preFlush event occurs when the EntityManager#flush() operation is invoked,
+     * but before any changes to managed entites have been calculated. This event is
+     * always raised right after EntityManager#flush() call.
+     */
+    const preFlush = 'preFlush';
+
+    /**
      * The onFlush event occurs when the EntityManager#flush() operation is invoked,
      * after any changes to managed entities have been determined but before any
      * actual database operations are executed. The event is only raised if there is
