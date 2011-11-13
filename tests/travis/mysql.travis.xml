@@ -17,8 +17,8 @@
     </php>
 
     <testsuites>
-        <testsuite name="Doctrine DBAL Test Suite">
-            <directory>./../Doctrine/Tests/DBAL</directory>
+        <testsuite name="Doctrine Test Suite">
+            <directory>./../Doctrine/Tests</directory>
         </testsuite>
     </testsuites>
     <groups>
