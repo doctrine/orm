@@ -46,7 +46,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
         $this->_sequenceName = $sequenceName;
         $this->_allocationSize = $allocationSize;
     }
-    
+
     /**
      * Generates an ID for the given entity.
      *
@@ -60,11 +60,11 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
             // Allocate new values
             $conn = $em->getConnection();
             $sql  = $conn->getDatabasePlatform()->getSequenceNextValSQL($this->_sequenceName);
-            
-            $this->_nextValue = $conn->fetchColumn($sql);
+
+            $this->_nextValue = (int)$conn->fetchColumn($sql);
             $this->_maxValue  = $this->_nextValue + $this->_allocationSize;
         }
-        
+
         return $this->_nextValue++;
     }
 
@@ -99,7 +99,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
     public function unserialize($serialized)
     {
         $array = unserialize($serialized);
-        
+
         $this->_sequenceName = $array['sequenceName'];
         $this->_allocationSize = $array['allocationSize'];
     }
