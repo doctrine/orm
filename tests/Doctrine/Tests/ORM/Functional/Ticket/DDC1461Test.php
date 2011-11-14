@@ -14,7 +14,6 @@ class DDC1461Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()
     {
-        $this->useModelSet('cms');
         parent::setUp();
 
         try {
@@ -26,32 +25,7 @@ class DDC1461Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         }
     }
-
-    public function testChangeDetectionDeferredImplitic()
-    {
-        $address = new \Doctrine\Tests\Models\CMS\CmsAddress();
-        $address->city = "Karlsruhe";
-        $address->country = "Germany";
-        $address->street = "somestreet";
-        $address->zip = 12345;
-
-        $this->_em->persist($address);
-        $this->_em->flush();
-
-        $user = new CmsUser();
-        $user->name = "schmittjoh";
-        $user->username = "schmittjoh";
-        $user->status = "active";
-
-        $address->setUser($user);
-        $this->_em->flush();
-        $this->_em->clear();
-
-        $user = $this->_em->find(get_class($user), $user->getId());
-        $this->assertNotNull($user->getAddress());
-        $this->assertEquals("Karlsruhe", $user->getAddress()->getCity());
-    }
-
+    
     public function testChangeDetectionDeferredExplicit()
     {
         $user = new DDC1461User;

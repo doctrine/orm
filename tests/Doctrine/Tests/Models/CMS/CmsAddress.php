@@ -38,7 +38,7 @@ class CmsAddress
     public $street;
 
     /**
-     * @OneToOne(targetEntity="CmsUser", inversedBy="address", cascade={"persist"})
+     * @OneToOne(targetEntity="CmsUser", inversedBy="address")
      * @JoinColumn(referencedColumnName="id")
      */
     public $user;
