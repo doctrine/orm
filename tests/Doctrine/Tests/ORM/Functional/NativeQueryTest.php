@@ -35,7 +35,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->status = 'dev';
         $this->_em->persist($user);
         $this->_em->flush();
-        
+
         $this->_em->clear();
 
         $rsm = new ResultSetMapping;
@@ -94,24 +94,24 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($addr->street, $addresses[0]->street);
         $this->assertTrue($addresses[0]->user instanceof CmsUser);
     }
-    
+
     public function testJoinedOneToManyNativeQuery()
     {
         $user = new CmsUser;
         $user->name = 'Roman';
         $user->username = 'romanb';
         $user->status = 'dev';
-        
+
         $phone = new CmsPhonenumber;
         $phone->phonenumber = 424242;
-        
+
         $user->addPhonenumber($phone);
-        
+
         $this->_em->persist($user);
         $this->_em->flush();
-        
+
         $this->_em->clear();
-        
+
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('id'), 'id');
@@ -119,7 +119,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('status'), 'status');
         $rsm->addJoinedEntityResult('Doctrine\Tests\Models\CMS\CmsPhonenumber', 'p', 'u', 'phonenumbers');
         $rsm->addFieldResult('p', $this->platform->getSQLResultCasing('phonenumber'), 'phonenumber');
-        
+
         $query = $this->_em->createNativeQuery('SELECT id, name, status, phonenumber FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?', $rsm);
         $query->setParameter(1, 'romanb');
 
@@ -133,30 +133,30 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $phones = $users[0]->getPhonenumbers();
         $this->assertEquals(424242, $phones[0]->phonenumber);
         $this->assertTrue($phones[0]->getUser() === $users[0]);
-        
+
     }
-    
+
     public function testJoinedOneToOneNativeQuery()
     {
         $user = new CmsUser;
         $user->name = 'Roman';
         $user->username = 'romanb';
         $user->status = 'dev';
-        
+
         $addr = new CmsAddress;
         $addr->country = 'germany';
         $addr->zip = 10827;
         $addr->city = 'Berlin';
-        
-        
+
+
         $user->setAddress($addr);
-        
+
         $this->_em->persist($user);
         $this->_em->flush();
-        
+
         $this->_em->clear();
-        
-        
+
+
         $rsm = new ResultSetMapping;
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('id'), 'id');
@@ -167,12 +167,12 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('country'), 'country');
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('zip'), 'zip');
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('city'), 'city');
-        
+
         $query = $this->_em->createNativeQuery('SELECT u.id, u.name, u.status, a.id AS a_id, a.country, a.zip, a.city FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
         $query->setParameter(1, 'romanb');
-        
+
         $users = $query->getResult();
-        
+
         $this->assertEquals(1, count($users));
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
         $this->assertEquals('Roman', $users[0]->name);

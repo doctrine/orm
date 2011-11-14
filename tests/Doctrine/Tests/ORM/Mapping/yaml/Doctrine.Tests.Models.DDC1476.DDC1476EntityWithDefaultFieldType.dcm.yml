@@ -1,0 +1,8 @@
+Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType:
+  type: entity
+  id:
+    id: 
+      generator:
+        strategy: NONE
+  fields:
+    name:

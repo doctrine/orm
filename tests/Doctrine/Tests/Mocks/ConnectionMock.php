@@ -8,7 +8,7 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
     private $_platformMock;
     private $_lastInsertId = 0;
     private $_inserts = array();
-    
+
     public function __construct(array $params, $driver, $config = null, $eventManager = null)
     {
         $this->_platformMock = new DatabasePlatformMock();
@@ -18,7 +18,7 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
         // Override possible assignment of platform to database platform mock
         $this->_platform = $this->_platformMock;
     }
-    
+
     /**
      * @override
      */
@@ -26,15 +26,15 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
     {
         return $this->_platformMock;
     }
-    
+
     /**
      * @override
      */
-    public function insert($tableName, array $data)
+    public function insert($tableName, array $data, array $types = array())
     {
         $this->_inserts[$tableName][] = $data;
     }
-    
+
     /**
      * @override
      */
@@ -50,7 +50,7 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
     {
         return $this->_fetchOneResult;
     }
-    
+
     /**
      * @override
      */
@@ -61,29 +61,29 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
         }
         return $input;
     }
-    
+
     /* Mock API */
 
     public function setFetchOneResult($fetchOneResult)
     {
         $this->_fetchOneResult = $fetchOneResult;
     }
-    
+
     public function setDatabasePlatform($platform)
     {
         $this->_platformMock = $platform;
     }
-    
+
     public function setLastInsertId($id)
     {
         $this->_lastInsertId = $id;
     }
-    
+
     public function getInserts()
     {
         return $this->_inserts;
     }
-    
+
     public function reset()
     {
         $this->_inserts = array();

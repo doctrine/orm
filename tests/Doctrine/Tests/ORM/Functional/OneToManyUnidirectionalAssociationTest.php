@@ -73,7 +73,14 @@ class OneToManyUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunction
         $this->_em->persist($routeA);
         $this->_em->persist($routeB);
 
-        $this->setExpectedException('Exception'); // depends on the underyling Database Driver
-        $this->_em->flush(); // Exception
+        $exceptionThrown = false;
+        try {
+            // exception depending on the underyling Database Driver
+            $this->_em->flush();
+        } catch(\Exception $e) {
+            $exceptionThrown = true;
+        }
+
+        $this->assertTrue($exceptionThrown, "The underlying database driver throws an exception.");
     }
 }

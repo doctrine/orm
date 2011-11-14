@@ -137,10 +137,6 @@ class ClassMetadataInfo implements ClassMetadata
      */
     const MANY_TO_ONE = 2;
     /**
-     * Combined bitmask for to-one (single-valued) associations.
-     */
-    const TO_ONE = 3;
-    /**
      * Identifies a one-to-many association.
      */
     const ONE_TO_MANY = 4;
@@ -148,6 +144,10 @@ class ClassMetadataInfo implements ClassMetadata
      * Identifies a many-to-many association.
      */
     const MANY_TO_MANY = 8;
+    /**
+     * Combined bitmask for to-one (single-valued) associations.
+     */
+    const TO_ONE = 3;
     /**
      * Combined bitmask for to-many (collection-valued) associations.
      */
@@ -685,7 +685,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! isset($this->namedQueries[$queryName])) {
             throw MappingException::queryNotFound($this->name, $queryName);
         }
-        return $this->namedQueries[$queryName];
+        return $this->namedQueries[$queryName]['dql'];
     }
 
     /**
@@ -1111,25 +1111,25 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getIdentifierColumnNames()
     {
-        if ($this->isIdentifierComposite) {
-            $columnNames = array();
-            foreach ($this->identifier as $idField) {
-                if (isset($this->associationMappings[$idField])) {
-                    // no composite pk as fk entity assumption:
-                    $columnNames[] = $this->associationMappings[$idField]['joinColumns'][0]['name'];
-                } else {
-                    $columnNames[] = $this->fieldMappings[$idField]['columnName'];
-                }
+        $columnNames = array();
+        
+        foreach ($this->identifier as $idProperty) {
+            if (isset($this->fieldMappings[$idProperty])) {
+                $columnNames[] = $this->fieldMappings[$idProperty]['columnName'];
+                
+                continue;
             }
-            return $columnNames;
-        } else if(isset($this->fieldMappings[$this->identifier[0]])) {
-            return array($this->fieldMappings[$this->identifier[0]]['columnName']);
-        } else {
-            // no composite pk as fk entity assumption:
-            return array($this->associationMappings[$this->identifier[0]]['joinColumns'][0]['name']);
+            
+            // Association defined as Id field
+            $joinColumns      = $this->associationMappings[$idProperty]['joinColumns'];
+            $assocColumnNames = array_map(function ($joinColumn) { return $joinColumn['name']; }, $joinColumns);
+            
+            $columnNames = array_merge($columnNames, $assocColumnNames);
         }
+        
+        return $columnNames;
     }
-
+    
     /**
      * Sets the type of Id generator to use for the mapped class.
      */
@@ -1448,8 +1448,15 @@ class ClassMetadataInfo implements ClassMetadata
         if (isset($this->namedQueries[$queryMapping['name']])) {
             throw MappingException::duplicateQueryMapping($this->name, $queryMapping['name']);
         }
-        $query = str_replace('__CLASS__', $this->name, $queryMapping['query']);
-        $this->namedQueries[$queryMapping['name']] = $query;
+        
+        $name   = $queryMapping['name'];
+        $query  = $queryMapping['query'];
+        $dql    = str_replace('__CLASS__', $this->name, $query);
+        $this->namedQueries[$name] = array(
+            'name'  => $name,
+            'query' => $query,
+            'dql'   => $dql
+        );
     }
 
     /**
@@ -1504,14 +1511,16 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Stores the association mapping.
      *
-     * @param AssociationMapping $assocMapping
+     * @param array $assocMapping
      */
     protected function _storeAssociationMapping(array $assocMapping)
     {
         $sourceFieldName = $assocMapping['fieldName'];
+        
         if (isset($this->fieldMappings[$sourceFieldName]) || isset($this->associationMappings[$sourceFieldName])) {
             throw MappingException::duplicateFieldMapping($this->name, $sourceFieldName);
         }
+        
         $this->associationMappings[$sourceFieldName] = $assocMapping;
     }
 
@@ -1905,6 +1914,42 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Gets the (possibly quoted) identifier column names for safe use in an SQL statement.
+     * 
+     * @param AbstractPlatform $platform
+     * @return array
+     */
+    public function getQuotedIdentifierColumnNames($platform)
+    {
+        $quotedColumnNames = array();
+        
+        foreach ($this->identifier as $idProperty) {
+            if (isset($this->fieldMappings[$idProperty])) {
+                $quotedColumnNames[] = isset($this->fieldMappings[$idProperty]['quoted']) 
+                    ? $platform->quoteIdentifier($this->fieldMappings[$idProperty]['columnName']) 
+                    : $this->fieldMappings[$idProperty]['columnName'];
+                
+                continue;
+            }
+            
+            // Association defined as Id field
+            $joinColumns            = $this->associationMappings[$idProperty]['joinColumns'];
+            $assocQuotedColumnNames = array_map(
+                function ($joinColumn) {
+                    return isset($joinColumn['quoted']) 
+                        ? $platform->quoteIdentifier($joinColumn['name']) 
+                        : $joinColumn['name'];
+                }, 
+                $joinColumns
+            );
+            
+            $quotedColumnNames = array_merge($quotedColumnNames, $assocQuotedColumnNames);
+        }
+        
+        return $quotedColumnNames;
+    }
+
+    /**
      * Gets the (possibly quoted) column name of a mapped field for safe use
      * in an SQL statement.
      * 
@@ -1914,7 +1959,9 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getQuotedColumnName($field, $platform)
     {
-        return isset($this->fieldMappings[$field]['quoted']) ? $platform->quoteIdentifier($this->fieldMappings[$field]['columnName']) : $this->fieldMappings[$field]['columnName'];
+        return isset($this->fieldMappings[$field]['quoted']) 
+            ? $platform->quoteIdentifier($this->fieldMappings[$field]['columnName']) 
+            : $this->fieldMappings[$field]['columnName'];
     }
     
     /**

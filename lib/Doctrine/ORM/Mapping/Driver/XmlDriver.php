@@ -89,7 +89,7 @@ class XmlDriver extends AbstractFileDriver
         if (isset($xmlRoot['schema'])) {
             $metadata->table['schema'] = (string)$xmlRoot['schema'];
         }*/
-        
+
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string)$xmlRoot['inheritance-type'];
             $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceType));
@@ -166,9 +166,12 @@ class XmlDriver extends AbstractFileDriver
             foreach ($xmlRoot->field as $fieldMapping) {
                 $mapping = array(
                     'fieldName' => (string)$fieldMapping['name'],
-                    'type' => (string)$fieldMapping['type']
                 );
 
+                if (isset($fieldMapping['type'])) {
+                    $mapping['type'] = (string)$fieldMapping['type'];
+                }
+                
                 if (isset($fieldMapping['column'])) {
                     $mapping['columnName'] = (string)$fieldMapping['column'];
                 }
@@ -219,9 +222,12 @@ class XmlDriver extends AbstractFileDriver
 
             $mapping = array(
                 'id' => true,
-                'fieldName' => (string)$idElement['name'],
-                'type' => (string)$idElement['type']
+                'fieldName' => (string)$idElement['name']
             );
+            
+            if (isset($fieldMapping['type'])) {
+                $mapping['type'] = (string)$idElement['type'];
+            }
 
             if (isset($idElement['column'])) {
                 $mapping['columnName'] = (string)$idElement['column'];
@@ -327,6 +333,8 @@ class XmlDriver extends AbstractFileDriver
 
                 if (isset($oneToManyElement['index-by'])) {
                     $mapping['indexBy'] = (string)$oneToManyElement['index-by'];
+                } else if (isset($oneToManyElement->{'index-by'})) {
+                    throw new \InvalidArgumentException("<index-by /> is not a valid tag");
                 }
 
                 $metadata->mapOneToMany($mapping);
@@ -432,8 +440,10 @@ class XmlDriver extends AbstractFileDriver
                     $mapping['orderBy'] = $orderBy;
                 }
 
-                if (isset($manyToManyElement->{'index-by'})) {
-                    $mapping['indexBy'] = (string)$manyToManyElement->{'index-by'};
+                if (isset($manyToManyElement['index-by'])) {
+                    $mapping['indexBy'] = (string)$manyToManyElement['index-by'];
+                } else if (isset($manyToManyElement->{'index-by'})) {
+                    throw new \InvalidArgumentException("<index-by /> is not a valid tag");
                 }
 
                 $metadata->mapManyToMany($mapping);

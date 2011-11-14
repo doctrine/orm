@@ -331,7 +331,7 @@ class AnnotationDriver implements Driver
                 $mapping['inversedBy'] = $oneToOneAnnot->inversedBy;
                 $mapping['cascade'] = $oneToOneAnnot->cascade;
                 $mapping['orphanRemoval'] = $oneToOneAnnot->orphanRemoval;
-                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $oneToOneAnnot->fetch);
+                $mapping['fetch'] = $this->getFetchMode($className, $oneToOneAnnot->fetch);
                 $metadata->mapOneToOne($mapping);
             } else if ($oneToManyAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OneToMany')) {
                 $mapping['mappedBy'] = $oneToManyAnnot->mappedBy;
@@ -339,7 +339,7 @@ class AnnotationDriver implements Driver
                 $mapping['cascade'] = $oneToManyAnnot->cascade;
                 $mapping['indexBy'] = $oneToManyAnnot->indexBy;
                 $mapping['orphanRemoval'] = $oneToManyAnnot->orphanRemoval;
-                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $oneToManyAnnot->fetch);
+                $mapping['fetch'] = $this->getFetchMode($className, $oneToManyAnnot->fetch);
 
                 if ($orderByAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OrderBy')) {
                     $mapping['orderBy'] = $orderByAnnot->value;
@@ -355,7 +355,7 @@ class AnnotationDriver implements Driver
                 $mapping['cascade'] = $manyToOneAnnot->cascade;
                 $mapping['inversedBy'] = $manyToOneAnnot->inversedBy;
                 $mapping['targetEntity'] = $manyToOneAnnot->targetEntity;
-                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $manyToOneAnnot->fetch);
+                $mapping['fetch'] = $this->getFetchMode($className, $manyToOneAnnot->fetch);
                 $metadata->mapManyToOne($mapping);
             } else if ($manyToManyAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\ManyToMany')) {
                 $joinTable = array();
@@ -395,7 +395,7 @@ class AnnotationDriver implements Driver
                 $mapping['inversedBy'] = $manyToManyAnnot->inversedBy;
                 $mapping['cascade'] = $manyToManyAnnot->cascade;
                 $mapping['indexBy'] = $manyToManyAnnot->indexBy;
-                $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $manyToManyAnnot->fetch);
+                $mapping['fetch'] = $this->getFetchMode($className, $manyToManyAnnot->fetch);
 
                 if ($orderByAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OrderBy')) {
                     $mapping['orderBy'] = $orderByAnnot->value;
@@ -445,6 +445,10 @@ class AnnotationDriver implements Driver
 
                     if (isset($annotations['Doctrine\ORM\Mapping\PostLoad'])) {
                         $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postLoad);
+                    }
+
+                    if (isset($annotations['Doctrine\ORM\Mapping\PreFlush'])) {
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preFlush);
                     }
                 }
             }
@@ -536,6 +540,22 @@ class AnnotationDriver implements Driver
         return $classes;
     }
 
+    /**
+     * Attempts to resolve the fetch mode.
+     *
+     * @param string $className The class name
+     * @param string $fetchMode The fetch mode
+     * @return integer The fetch mode as defined in ClassMetadata
+     * @throws MappingException If the fetch mode is not valid
+     */
+    private function getFetchMode($className, $fetchMode)
+    {
+        if(!defined('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $fetchMode)) {
+            throw MappingException::invalidFetchMode($className,  $fetchMode);
+        }
+
+        return constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $fetchMode);
+    }
     /**
      * Factory method for the Annotation Driver
      *

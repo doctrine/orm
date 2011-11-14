@@ -117,7 +117,7 @@ public function <methodName>()
  * @param <variableType>$<variableName>
  * @return <entity>
  */
-public function <methodName>(<methodTypeHint>$<variableName>)
+public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
 {
 <spaces>$this-><fieldName> = $<variableName>;
 <spaces>return $this;
@@ -406,7 +406,7 @@ public function <methodName>()
         }
         
         if ($collections) {
-            return $this->_prefixCodeWithSpaces(str_replace("<collections>", implode("\n", $collections), self::$_constructorMethodTemplate));
+            return $this->_prefixCodeWithSpaces(str_replace("<collections>", implode("\n".$this->_spaces, $collections), self::$_constructorMethodTemplate));
         }
         
         return '';
@@ -634,7 +634,8 @@ public function <methodName>()
 
         foreach ($metadata->associationMappings as $associationMapping) {
             if ($associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
-                if ($code = $this->_generateEntityStubMethod($metadata, 'set', $associationMapping['fieldName'], $associationMapping['targetEntity'])) {
+                $nullable = $this->_isAssociationIsNullable($associationMapping) ? 'null' : null;
+                if ($code = $this->_generateEntityStubMethod($metadata, 'set', $associationMapping['fieldName'], $associationMapping['targetEntity'], $nullable)) {
                     $methods[] = $code;
                 }
                 if ($code = $this->_generateEntityStubMethod($metadata, 'get', $associationMapping['fieldName'], $associationMapping['targetEntity'])) {
@@ -651,6 +652,22 @@ public function <methodName>()
         }
 
         return implode("\n\n", $methods);
+    }
+
+    private function _isAssociationIsNullable($associationMapping)
+    {
+        if (isset($associationMapping['joinColumns'])) {
+            $joinColumns = $associationMapping['joinColumns'];
+        } else {
+            //@todo thereis no way to retreive targetEntity metadata
+            $joinColumns = array();
+        }
+        foreach ($joinColumns as $joinColumn) {
+            if(isset($joinColumn['nullable']) && !$joinColumn['nullable']) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private function _generateEntityLifecycleCallbackMethods(ClassMetadataInfo $metadata)
@@ -707,7 +724,7 @@ public function <methodName>()
         return implode("\n", $lines);
     }
 
-    private function _generateEntityStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null)
+    private function _generateEntityStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null,  $defaultValue = null)
     {
         if ($type == "add") {
             $addMethod = explode("\\", $typeHint);
@@ -737,6 +754,7 @@ public function <methodName>()
           '<variableName>'      => Inflector::camelize($fieldName),
           '<methodName>'        => $methodName,
           '<fieldName>'         => $fieldName,
+          '<variableDefault>'   => ($defaultValue !== null ) ? ('='.$defaultValue) : '',
           '<entity>'            => $this->_getClassName($metadata)
         );
 
@@ -805,7 +823,12 @@ public function <methodName>()
     {
         $lines = array();
         $lines[] = $this->_spaces . '/**';
-        $lines[] = $this->_spaces . ' * @var ' . $associationMapping['targetEntity'];
+
+        if ($associationMapping['type'] & ClassMetadataInfo::TO_MANY) {
+            $lines[] = $this->_spaces . ' * @var \Doctrine\Common\Collections\ArrayCollection';
+        } else {
+            $lines[] = $this->_spaces . ' * @var ' . $associationMapping['targetEntity'];
+        }
 
         if ($this->_generateAnnotations) {
             $lines[] = $this->_spaces . ' *';

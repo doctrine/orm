@@ -19,6 +19,7 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $schemaTool->createSchema(array(
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Train'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\TrainDriver'),
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\TrainOwner'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Waggon'),
             ));
         } catch(\Exception $e) {}
@@ -26,7 +27,7 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testEagerLoadOneToOneOwningSide()
     {
-        $train = new Train();
+        $train = new Train(new TrainOwner("Alexander"));
         $driver = new TrainDriver("Benjamin");
         $waggon = new Waggon();
         
@@ -48,7 +49,7 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testEagerLoadOneToOneNullOwningSide()
     {
-        $train = new Train();
+        $train = new Train(new TrainOwner("Alexander"));
 
         $this->_em->persist($train); // cascades
         $this->_em->flush();
@@ -65,9 +66,8 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testEagerLoadOneToOneInverseSide()
     {
-        $train = new Train();
-        $driver = new TrainDriver("Benjamin");
-        $train->setDriver($driver);
+        $owner = new TrainOwner("Alexander");
+        $train = new Train($owner);
 
         $this->_em->persist($train); // cascades
         $this->_em->flush();
@@ -75,9 +75,9 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $sqlCount = count($this->_sqlLoggerStack->queries);
 
-        $driver = $this->_em->find(get_class($driver), $driver->id);
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $driver->train);
-        $this->assertNotNull($driver->train);
+        $driver = $this->_em->find(get_class($owner), $owner->id);
+        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $owner->train);
+        $this->assertNotNull($owner->train);
 
         $this->assertEquals($sqlCount + 1, count($this->_sqlLoggerStack->queries));
     }
@@ -103,7 +103,7 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testEagerLoadManyToOne()
     {
-        $train = new Train();
+        $train = new Train(new TrainOwner("Alexander"));
         $waggon = new Waggon();
         $train->addWaggon($waggon);
 
@@ -114,6 +114,59 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $waggon = $this->_em->find(get_class($waggon), $waggon->id);
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $waggon->train);
         $this->assertNotNull($waggon->train);
+    }
+
+    public function testEagerLoadWithNullableColumnsGeneratesLeftJoinOnBothSides()
+    {
+        $train = new Train(new TrainOwner("Alexander"));
+        $driver = new TrainDriver("Benjamin");
+        $train->setDriver($driver);
+
+        $this->_em->persist($train);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $train = $this->_em->find(get_class($train), $train->id);
+        $this->assertEquals(
+            "SELECT t0.id AS id1, t0.driver_id AS driver_id2, t3.id AS id4, t3.name AS name5, t0.owner_id AS owner_id6, t7.id AS id8, t7.name AS name9 FROM Train t0 LEFT JOIN TrainDriver t3 ON t0.driver_id = t3.id INNER JOIN TrainOwner t7 ON t0.owner_id = t7.id WHERE t0.id = ?",
+            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
+        );
+
+        $this->_em->clear();
+        $driver = $this->_em->find(get_class($driver), $driver->id);
+        $this->assertEquals(
+            "SELECT t0.id AS id1, t0.name AS name2, t3.id AS id4, t3.driver_id AS driver_id5, t3.owner_id AS owner_id6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id IN (?)",
+            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
+        );
+    }
+
+    public function testEagerLoadWithNonNullableColumnsGeneratesInnerJoinOnOwningSide()
+    {
+        $waggon = new Waggon();
+        $this->_em->persist($waggon);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $waggon = $this->_em->find(get_class($waggon), $waggon->id);
+        $this->assertEquals(
+            "SELECT t0.id AS id1, t0.train_id AS train_id2, t3.id AS id4, t3.driver_id AS driver_id5, t3.owner_id AS owner_id6 FROM Waggon t0 INNER JOIN Train t3 ON t0.train_id = t3.id WHERE t0.id = ?",
+            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
+        );
+    }
+
+    public function testEagerLoadWithNonNullableColumnsGeneratesLeftJoinOnNonOwningSide()
+    {
+        $owner = new TrainOwner('Alexander');
+        $train = new Train($owner);
+        $this->_em->persist($train);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $waggon = $this->_em->find(get_class($owner), $owner->id);
+        $this->assertEquals(
+            "SELECT t0.id AS id1, t0.name AS name2, t3.id AS id4, t3.driver_id AS driver_id5, t3.owner_id AS owner_id6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id = ?",
+            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
+        );
     }
 }
 
@@ -130,22 +183,35 @@ class Train
     /**
      * Owning side
      * @OneToOne(targetEntity="TrainDriver", inversedBy="train", fetch="EAGER", cascade={"persist"})
+     * @JoinColumn(nullable=true)
      */
     public $driver;
+    /**
+     * Owning side
+     * @OneToOne(targetEntity="TrainOwner", inversedBy="train", fetch="EAGER", cascade={"persist"})
+     */
+    public $owner;
     /**
      * @oneToMany(targetEntity="Waggon", mappedBy="train", cascade={"persist"})
      */
     public $waggons;
 
-    public function __construct()
+    public function __construct(TrainOwner $owner)
     {
         $this->waggons = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->setOwner($owner);
     }
 
     public function setDriver(TrainDriver $driver)
     {
         $this->driver = $driver;
         $driver->setTrain($this);
+    }
+
+    public function setOwner(TrainOwner $owner)
+    {
+        $this->owner = $owner;
+        $owner->setTrain($this);
     }
 
     public function addWaggon(Waggon $w)
@@ -167,6 +233,32 @@ class TrainDriver
     /**
      * Inverse side
      * @OneToOne(targetEntity="Train", mappedBy="driver", fetch="EAGER")
+     */
+    public $train;
+
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
+
+    public function setTrain(Train $t)
+    {
+        $this->train = $t;
+    }
+}
+
+/**
+ * @Entity
+ */
+class TrainOwner
+{
+    /** @Id @Column(type="integer") @GeneratedValue */
+    public $id;
+    /** @column(type="string") */
+    public $name;
+    /**
+     * Inverse side
+     * @OneToOne(targetEntity="Train", mappedBy="owner", fetch="EAGER")
      */
     public $train;
 

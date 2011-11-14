@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -33,11 +31,13 @@ require_once __DIR__ . '/../../TestInit.php';
  * @link        http://www.doctrine-project.org
  * @since       2.0
  */
-class CustomTreeWalkersTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
 {
-    protected function setUp() {
-        $this->useModelSet('cms');
-        parent::setUp();
+    private $_em;
+
+    protected function setUp()
+    {
+        $this->_em = $this->_getTestEntityManager();
     }
 
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed)
@@ -70,7 +70,7 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmFunctionalTestCase
             "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.email_id AS email_id4 FROM cms_users c0_ WHERE (c0_.name = ? OR c0_.name = ?) AND c0_.id = 1"
         );
     }
-    
+
     public function testSupportsQueriesWithSimpleConditionalExpression()
     {
         $this->assertSqlGeneration(
@@ -94,7 +94,7 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
                 $dqlAliases[] = $dqlAlias;
             }
         }
-        
+
         // Create our conditions for all involved classes
         $factors = array();
         foreach ($dqlAliases as $alias) {
@@ -108,7 +108,7 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
             $factor = new Query\AST\ConditionalFactor($condPrimary);
             $factors[] = $factor;
         }
-        
+
         if (($whereClause = $selectStatement->whereClause) !== null) {
             // There is already a WHERE clause, so append the conditions
             $condExpr = $whereClause->conditionalExpression;
@@ -119,18 +119,18 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
 
                 $whereClause->conditionalExpression = $condExpr;
             }
-            
+
             $existingTerms = $whereClause->conditionalExpression->conditionalTerms;
-            
+
             if (count($existingTerms) > 1) {
                 // More than one term, so we need to wrap all these terms in a single root term
                 // i.e: "WHERE u.name = :foo or u.other = :bar" => "WHERE (u.name = :foo or u.other = :bar) AND <our condition>"
-                
+
                 $primary = new Query\AST\ConditionalPrimary;
                 $primary->conditionalExpression = new Query\AST\ConditionalExpression($existingTerms);
                 $existingFactor = new Query\AST\ConditionalFactor($primary);
                 $term = new Query\AST\ConditionalTerm(array_merge(array($existingFactor), $factors));
-                
+
                 $selectStatement->whereClause->conditionalExpression->conditionalTerms = array($term);
             } else {
                 // Just one term so we can simply append our factors to that term
