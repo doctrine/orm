@@ -165,15 +165,14 @@ class YamlDriver extends AbstractFileDriver
                     continue;
                 }
 
-                if (!isset($idElement['type'])) {
-                    throw MappingException::propertyTypeIsRequired($className, $name);
-                }
-
                 $mapping = array(
                     'id' => true,
-                    'fieldName' => $name,
-                    'type' => $idElement['type']
+                    'fieldName' => $name
                 );
+                
+                if (isset($idElement['type'])) {
+                    $mapping['type'] = $idElement['type'];
+                }
 
                 if (isset($idElement['column'])) {
                     $mapping['columnName'] = $idElement['column'];
@@ -201,19 +200,21 @@ class YamlDriver extends AbstractFileDriver
         // Evaluate fields
         if (isset($element['fields'])) {
             foreach ($element['fields'] as $name => $fieldMapping) {
-                if (!isset($fieldMapping['type'])) {
-                    throw MappingException::propertyTypeIsRequired($className, $name);
-                }
-
-                $e = explode('(', $fieldMapping['type']);
-                $fieldMapping['type'] = $e[0];
-                if (isset($e[1])) {
-                    $fieldMapping['length'] = substr($e[1], 0, strlen($e[1]) - 1);
-                }
+                
                 $mapping = array(
-                    'fieldName' => $name,
-                    'type' => $fieldMapping['type']
+                    'fieldName' => $name
                 );
+                
+                if (isset($fieldMapping['type'])) {
+                    $e = explode('(', $fieldMapping['type']);
+                    $fieldMapping['type'] = $e[0];
+                    $mapping['type']      = $fieldMapping['type'];
+                    
+                    if (isset($e[1])) {
+                        $fieldMapping['length'] = substr($e[1], 0, strlen($e[1]) - 1);
+                    }
+                }
+                
                 if (isset($fieldMapping['id'])) {
                     $mapping['id'] = true;
                     if (isset($fieldMapping['generator']['strategy'])) {

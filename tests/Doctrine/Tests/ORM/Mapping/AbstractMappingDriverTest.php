@@ -327,6 +327,51 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
              $em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment"));
         $this->assertTrue($em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment")->isTrue());
     }
+    
+    /**
+     * @group DDC-1476
+     */
+    public function testDefaultFieldType()
+    {
+        $driver     = $this->_loadDriver();
+        $em         = $this->_getTestEntityManager();
+        $factory    = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        
+        $em->getConfiguration()->setMetadataDriverImpl($driver);
+        $factory->setEntityManager($em);
+        
+        
+        $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType');
+        
+        
+        $this->assertArrayHasKey('id', $class->fieldMappings);
+        $this->assertArrayHasKey('name', $class->fieldMappings);
+        
+        
+        $this->assertArrayHasKey('type', $class->fieldMappings['id']);
+        $this->assertArrayHasKey('type', $class->fieldMappings['name']);
+        
+        $this->assertEquals('string', $class->fieldMappings['id']['type']);
+        $this->assertEquals('string', $class->fieldMappings['name']['type']);
+        
+        
+        
+        $this->assertArrayHasKey('fieldName', $class->fieldMappings['id']);
+        $this->assertArrayHasKey('fieldName', $class->fieldMappings['name']);
+        
+        $this->assertEquals('id', $class->fieldMappings['id']['fieldName']);
+        $this->assertEquals('name', $class->fieldMappings['name']['fieldName']);
+        
+        
+        
+        $this->assertArrayHasKey('columnName', $class->fieldMappings['id']);
+        $this->assertArrayHasKey('columnName', $class->fieldMappings['name']);
+        
+        $this->assertEquals('id', $class->fieldMappings['id']['columnName']);
+        $this->assertEquals('name', $class->fieldMappings['name']['columnName']);
+        
+        $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_NONE, $class->generatorType);
+    }
 }
 
 /**
