@@ -628,13 +628,7 @@ class BasicEntityPersister
             $hints = array();
 
             if ($isInverseSingleValued) {
-                $hints['fetched'][$targetClass->name][$assoc['inversedBy']] = true;
-
-                if ($targetClass->subClasses) {
-                    foreach ($targetClass->subClasses as $targetSubclassName) {
-                        $hints['fetched'][$targetSubclassName][$assoc['inversedBy']] = true;
-                    }
-                }
+                $hints['fetched']["r"][$assoc['inversedBy']] = true;
             }
 
             /* cascade read-only status
@@ -1011,7 +1005,7 @@ class BasicEntityPersister
                         if ( ! $first) {
                             $this->_selectJoinSql .= ' AND ';
                         }
-                        $this->_selectJoinSql .= $this->_getSQLTableAlias($assoc['sourceEntity']) . '.' . $sourceCol . ' = ' 
+                        $this->_selectJoinSql .= $this->_getSQLTableAlias($assoc['sourceEntity']) . '.' . $sourceCol . ' = '
                                                . $this->_getSQLTableAlias($assoc['targetEntity'], $assocAlias) . '.' . $targetCol;
                         $first = false;
                     }
@@ -1020,7 +1014,7 @@ class BasicEntityPersister
                     $owningAssoc = $eagerEntity->getAssociationMapping($assoc['mappedBy']);
 
                     $this->_selectJoinSql .= ' LEFT JOIN';
-                    $this->_selectJoinSql .= ' ' . $eagerEntity->getQuotedTableName($this->_platform) . ' ' 
+                    $this->_selectJoinSql .= ' ' . $eagerEntity->getQuotedTableName($this->_platform) . ' '
                                            . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) . ' ON ';
 
                     foreach ($owningAssoc['sourceToTargetKeyColumns'] AS $sourceCol => $targetCol) {
@@ -1060,7 +1054,7 @@ class BasicEntityPersister
                 if ($columnList) $columnList .= ', ';
 
                 $resultColumnName = $this->getSQLColumnAlias($srcColumn);
-                $columnList .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )  
+                $columnList .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )
                              . '.' . $srcColumn . ' AS ' . $resultColumnName;
                 $this->_rsm->addMetaResult($alias, $resultColumnName, $srcColumn, isset($assoc['id']) && $assoc['id'] === true);
             }
@@ -1178,7 +1172,7 @@ class BasicEntityPersister
      */
     protected function _getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
-        $sql = $this->_getSQLTableAlias($class->name, $alias == 'r' ? '' : $alias) 
+        $sql = $this->_getSQLTableAlias($class->name, $alias == 'r' ? '' : $alias)
              . '.' . $class->getQuotedColumnName($field, $this->_platform);
         $columnAlias = $this->getSQLColumnAlias($class->columnNames[$field]);
 
