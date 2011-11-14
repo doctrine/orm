@@ -166,9 +166,12 @@ class XmlDriver extends AbstractFileDriver
             foreach ($xmlRoot->field as $fieldMapping) {
                 $mapping = array(
                     'fieldName' => (string)$fieldMapping['name'],
-                    'type' => (string)$fieldMapping['type']
                 );
 
+                if (isset($fieldMapping['type'])) {
+                    $mapping['type'] = (string)$fieldMapping['type'];
+                }
+                
                 if (isset($fieldMapping['column'])) {
                     $mapping['columnName'] = (string)$fieldMapping['column'];
                 }
@@ -219,9 +222,12 @@ class XmlDriver extends AbstractFileDriver
 
             $mapping = array(
                 'id' => true,
-                'fieldName' => (string)$idElement['name'],
-                'type' => (string)$idElement['type']
+                'fieldName' => (string)$idElement['name']
             );
+            
+            if (isset($fieldMapping['type'])) {
+                $mapping['type'] = (string)$idElement['type'];
+            }
 
             if (isset($idElement['column'])) {
                 $mapping['columnName'] = (string)$idElement['column'];
