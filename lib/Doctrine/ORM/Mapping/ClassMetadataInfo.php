@@ -685,7 +685,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! isset($this->namedQueries[$queryName])) {
             throw MappingException::queryNotFound($this->name, $queryName);
         }
-        return $this->namedQueries[$queryName];
+        return $this->namedQueries[$queryName]['dql'];
     }
 
     /**
@@ -1448,8 +1448,15 @@ class ClassMetadataInfo implements ClassMetadata
         if (isset($this->namedQueries[$queryMapping['name']])) {
             throw MappingException::duplicateQueryMapping($this->name, $queryMapping['name']);
         }
-        $query = str_replace('__CLASS__', $this->name, $queryMapping['query']);
-        $this->namedQueries[$queryMapping['name']] = $query;
+        
+        $name   = $queryMapping['name'];
+        $query  = $queryMapping['query'];
+        $dql    = str_replace('__CLASS__', $this->name, $query);
+        $this->namedQueries[$name] = array(
+            'name'  => $name,
+            'query' => $query,
+            'dql'   => $dql
+        );
     }
 
     /**

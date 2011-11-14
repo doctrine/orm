@@ -54,7 +54,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('phonenumbers', $oneOneMapping['fieldName']);
         $this->assertEquals('Doctrine\Tests\Models\CMS\Bar', $oneOneMapping['targetEntity']);
         $this->assertTrue($cm->isReadOnly);
-        $this->assertEquals(array('dql' => 'foo'), $cm->namedQueries);
+        $this->assertEquals(array('dql' => array('name'=>'dql','query'=>'foo','dql'=>'foo')), $cm->namedQueries);
     }
 
     public function testFieldIsNullable()
