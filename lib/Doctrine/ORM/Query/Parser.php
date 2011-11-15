@@ -1905,6 +1905,9 @@ class Parser
         } else if (in_array($this->_lexer->lookahead['type'], array(Lexer::T_OPEN_PARENTHESIS, Lexer::T_INTEGER, Lexer::T_FLOAT, Lexer::T_STRING))) {
             // Shortcut: ScalarExpression => SimpleArithmeticExpression
             $expression = $this->SimpleArithmeticExpression();
+        } else if (in_array($this->_lexer->lookahead['type'], array(Lexer::T_PLUS, Lexer::T_MINUS))) {
+             // SimpleArithmeticExpression : (- u.value ) or ( + u.value )
+            $expression = $this->SimpleArithmeticExpression();
         } else {
             $this->syntaxError(
                 'IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression',
