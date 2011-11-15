@@ -945,7 +945,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT g, count(u.id) FROM Doctrine\Tests\Models\CMS\CmsGroup g JOIN g.users u GROUP BY g',
-            'SELECT c0_.id AS id0, c0_.name AS name1, count(c1_.id) AS sclr2 FROM cms_groups c0_ INNER JOIN cms_users_groups c2_ ON c0_.id = c2_.group_id INNER JOIN cms_users c1_ ON c1_.id = c2_.user_id GROUP BY c0_.id'
+            'SELECT c0_.id AS id0, c0_.name AS name1, count(c1_.id) AS sclr2 FROM cms_groups c0_ INNER JOIN cms_users_groups c2_ ON c0_.id = c2_.group_id INNER JOIN cms_users c1_ ON c1_.id = c2_.user_id GROUP BY c0_.id, c0_.name'
         );
     }
 
