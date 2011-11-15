@@ -276,7 +276,7 @@ mapping:
                   User_id:
                     referencedColumnName: id
                 inverseJoinColumns:
-                  Group_id
+                  Group_id:
                     referencedColumnName: id                  
 
 In that case, the name of the join table defaults to a combination
@@ -532,10 +532,10 @@ it is bidirectional.
         Cart:
           oneToOne:
             customer:
-              targetEntity Customer
+              targetEntity: Customer
               inversedBy: cart
               joinColumn:
-                name: customer_id:
+                name: customer_id
                 referencedColumnName: id
 
 Note that the @JoinColumn is not really necessary in this example,
@@ -892,7 +892,7 @@ database perspective is known as an adjacency list approach.
         Category:
           type: entity
           oneToMany:
-            children
+            children:
               targetEntity: Category
               mappedBy: parent
           manyToOne:
