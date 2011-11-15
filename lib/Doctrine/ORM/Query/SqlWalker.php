@@ -22,7 +22,8 @@ namespace Doctrine\ORM\Query;
 use Doctrine\DBAL\LockMode,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Query,
-    Doctrine\ORM\Query\QueryException;
+    Doctrine\ORM\Query\QueryException,
+    Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * The SqlWalker is a TreeWalker that walks over a DQL AST and constructs
@@ -1306,6 +1307,14 @@ class SqlWalker implements TreeWalker
                 $item       = new AST\PathExpression(AST\PathExpression::TYPE_STATE_FIELD, $groupByItem, $field);
                 $item->type = AST\PathExpression::TYPE_STATE_FIELD;
                 $sqlParts[] = $this->walkGroupByItem($item);
+            }
+            
+            foreach ($this->_queryComponents[$groupByItem]['metadata']->associationMappings AS $mapping) {
+                if ($mapping['isOwningSide'] && $mapping['type'] & ClassMetadataInfo::TO_ONE) {
+                    $item       = new AST\PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $groupByItem, $mapping['fieldName']);
+                    $item->type = AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
+                    $sqlParts[] = $this->walkGroupByItem($item);
+                }
             }
         }
 

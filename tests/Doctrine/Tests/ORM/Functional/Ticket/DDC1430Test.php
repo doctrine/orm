@@ -110,20 +110,9 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($result[0]['p_count'], 2);
         $this->assertEquals($result[1]['p_count'], 3);
     }
-    
-    
-     
-    public function testWithForeignKeys()
-    {
-        $query = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY u');
-        $this->assertEquals('SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.email_id AS email_id4 FROM cms_users c0_ GROUP BY c0_.id, c0_.status, c0_.username, c0_.name', $query->getSQL());
-        
-        $query = $this->_em->createQuery('SELECT e FROM Doctrine\Tests\Models\CMS\CmsEmployee e GROUP BY e');
-        $this->assertEquals('SELECT c0_.id AS id0, c0_.name AS name1, c0_.spouse_id AS spouse_id2 FROM cms_employees c0_ GROUP BY c0_.id, c0_.name', $query->getSQL());
-    }
 
     public function loadFixtures()
-    {   
+    {
         $o1 = new DDC1430Order('NEW');
         $o2 = new DDC1430Order('OK');
         
