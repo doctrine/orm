@@ -20,7 +20,7 @@ how to build a ``QueryBuilder`` object:
 
     <?php
     // $em instanceof EntityManager
-    
+
     // example1: creating a QueryBuilder instance
     $qb = $em->createQueryBuilder();
 
@@ -32,7 +32,7 @@ example is to inspect what type of object the ``QueryBuilder`` is.
 
     <?php
     // $qb instanceof QueryBuilder
-    
+
     // example2: retrieving type of QueryBuilder
     echo $qb->getType(); // Prints: 0
 
@@ -51,13 +51,13 @@ you finish building your DQL.
 
     <?php
     // $qb instanceof QueryBuilder
-    
+
     // example3: retrieve the associated EntityManager
     $em = $qb->getEntityManager();
-    
+
     // example4: retrieve the DQL string of what was defined in QueryBuilder
     $dql = $qb->getDql();
-    
+
     // example5: retrieve the associated Query object with the processed DQL
     $q = $qb->getQuery();
 
@@ -96,7 +96,7 @@ of DQL. It takes 3 parameters: ``$dqlPartName``, ``$dqlPart`` and
 
     <?php
     // $qb instanceof QueryBuilder
-    
+
     // example6: how to define: "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC" using QueryBuilder string support
     $qb->add('select', 'u')
        ->add('from', 'User u')
@@ -116,7 +116,7 @@ allowed. Binding parameters can simply be achieved as follows:
 
     <?php
     // $qb instanceof QueryBuilder
-    
+
     // example6: how to define: "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC" using QueryBuilder string support
     $qb->add('select', 'u')
        ->add('from', 'User u')
@@ -131,7 +131,7 @@ alternative syntax is available:
 
     <?php
     // $qb instanceof QueryBuilder
-    
+
     // example6: how to define: "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC" using QueryBuilder string support
     $qb->add('select', 'u')
        ->add('from', 'User u')
@@ -150,7 +150,7 @@ following syntax:
 
     <?php
     // $qb instanceof QueryBuilder
-    
+
     // Query here...
     $qb->setParameters(array(1 => 'value for ?1', 2 => 'value for ?2'));
 
@@ -161,7 +161,7 @@ mentioned syntax with "getParameter()" or "getParameters()":
 
     <?php
     // $qb instanceof QueryBuilder
-    
+
     // See example above
     $params = $qb->getParameters(array(1, 2));
     // Equivalent to
@@ -226,7 +226,7 @@ same query of example 6 written using
 
     <?php
     // $qb instanceof QueryBuilder
-    
+
     // example7: how to define: "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC" using QueryBuilder using Expr\* instances
     $qb->add('select', new Expr\Select(array('u')))
        ->add('from', new Expr\From('User', 'u'))
@@ -249,7 +249,7 @@ set of useful methods to help build expressions:
 
     <?php
     // $qb instanceof QueryBuilder
-    
+
     // example8: QueryBuilder port of: "SELECT u FROM User u WHERE u.id = ? OR u.nickname LIKE ? ORDER BY u.surname DESC" using Expr class
     $qb->add('select', new Expr\Select(array('u')))
        ->add('from', new Expr\From('User', 'u'))
@@ -268,32 +268,32 @@ complete list of supported helper methods available:
     <?php
     class Expr
     {
-        /** Conditional objects **/        
-    
+        /** Conditional objects **/
+
         // Example - $qb->expr()->andX($cond1 [, $condN])->add(...)->...
         public function andX($x = null); // Returns Expr\AndX instance
-    
+
         // Example - $qb->expr()->orX($cond1 [, $condN])->add(...)->...
         public function orX($x = null); // Returns Expr\OrX instance
-    
-    
+
+
         /** Comparison objects **/
-    
+
         // Example - $qb->expr()->eq('u.id', '?1') => u.id = ?1
         public function eq($x, $y); // Returns Expr\Comparison instance
-    
+
         // Example - $qb->expr()->neq('u.id', '?1') => u.id <> ?1
         public function neq($x, $y); // Returns Expr\Comparison instance
-    
+
         // Example - $qb->expr()->lt('u.id', '?1') => u.id < ?1
         public function lt($x, $y); // Returns Expr\Comparison instance
-    
+
         // Example - $qb->expr()->lte('u.id', '?1') => u.id <= ?1
         public function lte($x, $y); // Returns Expr\Comparison instance
-    
+
         // Example - $qb->expr()->gt('u.id', '?1') => u.id > ?1
         public function gt($x, $y); // Returns Expr\Comparison instance
-    
+
         // Example - $qb->expr()->gte('u.id', '?1') => u.id >= ?1
         public function gte($x, $y); // Returns Expr\Comparison instance
 
@@ -302,93 +302,93 @@ complete list of supported helper methods available:
 
         // Example - $qb->expr()->isNotNull('u.id') => u.id IS NOT NULL
         public function isNotNull($x); // Returns string
-    
-    
+
+
         /** Arithmetic objects **/
-    
+
         // Example - $qb->expr()->prod('u.id', '2') => u.id * 2
         public function prod($x, $y); // Returns Expr\Math instance
-    
+
         // Example - $qb->expr()->diff('u.id', '2') => u.id - 2
         public function diff($x, $y); // Returns Expr\Math instance
-    
+
         // Example - $qb->expr()->sum('u.id', '2') => u.id + 2
         public function sum($x, $y); // Returns Expr\Math instance
-    
+
         // Example - $qb->expr()->quot('u.id', '2') => u.id / 2
         public function quot($x, $y); // Returns Expr\Math instance
-    
-    
+
+
         /** Pseudo-function objects **/
-    
+
         // Example - $qb->expr()->exists($qb2->getDql())
         public function exists($subquery); // Returns Expr\Func instance
-    
+
         // Example - $qb->expr()->all($qb2->getDql())
         public function all($subquery); // Returns Expr\Func instance
-    
+
         // Example - $qb->expr()->some($qb2->getDql())
         public function some($subquery); // Returns Expr\Func instance
-    
+
         // Example - $qb->expr()->any($qb2->getDql())
         public function any($subquery); // Returns Expr\Func instance
-    
+
         // Example - $qb->expr()->not($qb->expr()->eq('u.id', '?1'))
         public function not($restriction); // Returns Expr\Func instance
-    
+
         // Example - $qb->expr()->in('u.id', array(1, 2, 3))
         // Make sure that you do NOT use something similar to $qb->expr()->in('value', array('stringvalue')) as this will cause Doctrine to throw an Exception.
         // Instead, use $qb->expr()->in('value', array('?1')) and bind your parameter to ?1 (see section above)
         public function in($x, $y); // Returns Expr\Func instance
-    
+
         // Example - $qb->expr()->notIn('u.id', '2')
         public function notIn($x, $y); // Returns Expr\Func instance
-    
+
         // Example - $qb->expr()->like('u.firstname', $qb->expr()->literal('Gui%'))
         public function like($x, $y); // Returns Expr\Comparison instance
-    
+
         // Example - $qb->expr()->between('u.id', '1', '10')
         public function between($val, $x, $y); // Returns Expr\Func
-    
-    
+
+
         /** Function objects **/
-    
+
         // Example - $qb->expr()->trim('u.firstname')
         public function trim($x); // Returns Expr\Func
-    
+
         // Example - $qb->expr()->concat('u.firstname', $qb->expr()->concat(' ', 'u.lastname'))
         public function concat($x, $y); // Returns Expr\Func
-    
+
         // Example - $qb->expr()->substr('u.firstname', 0, 1)
         public function substr($x, $from, $len); // Returns Expr\Func
-    
+
         // Example - $qb->expr()->lower('u.firstname')
         public function lower($x); // Returns Expr\Func
-    
+
         // Example - $qb->expr()->upper('u.firstname')
         public function upper($x); // Returns Expr\Func
-    
+
         // Example - $qb->expr()->length('u.firstname')
         public function length($x); // Returns Expr\Func
-    
+
         // Example - $qb->expr()->avg('u.age')
         public function avg($x); // Returns Expr\Func
-    
+
         // Example - $qb->expr()->max('u.age')
         public function max($x); // Returns Expr\Func
-    
+
         // Example - $qb->expr()->min('u.age')
         public function min($x); // Returns Expr\Func
-    
+
         // Example - $qb->expr()->abs('u.currentBalance')
         public function abs($x); // Returns Expr\Func
-    
+
         // Example - $qb->expr()->sqrt('u.currentBalance')
         public function sqrt($x); // Returns Expr\Func
-    
+
         // Example - $qb->expr()->count('u.firstname')
         public function count($x); // Returns Expr\Func
-    
+
         // Example - $qb->expr()->countDistinct('u.surname')
         public function countDistinct($x); // Returns Expr\Func
     }
@@ -410,7 +410,7 @@ re-written using ``QueryBuilder`` helper methods:
 
     <?php
     // $qb instanceof QueryBuilder
-    
+
     // example9: how to define: "SELECT u FROM User u WHERE u.id = ?1 ORDER BY u.name ASC" using QueryBuilder helper methods
     $qb->select('u')
        ->from('User', 'u')
@@ -427,7 +427,7 @@ suggested standard way to build queries:
 
     <?php
     // $qb instanceof QueryBuilder
-    
+
     // example8: QueryBuilder port of: "SELECT u FROM User u WHERE u.id = ?1 OR u.nickname LIKE ?2 ORDER BY u.surname DESC" using QueryBuilder helper methods
     $qb->select(array('u')) // string 'u' is converted to array internally
        ->from('User', 'u')
@@ -449,67 +449,67 @@ Here is a complete list of helper methods available in
         // Example - $qb->select(array('u', 'p'))
         // Example - $qb->select($qb->expr()->select('u', 'p'))
         public function select($select = null);
-    
+
         // Example - $qb->delete('User', 'u')
         public function delete($delete = null, $alias = null);
-    
+
         // Example - $qb->update('Group', 'g')
         public function update($update = null, $alias = null);
-    
+
         // Example - $qb->set('u.firstName', $qb->expr()->literal('Arnold'))
         // Example - $qb->set('u.numChilds', 'u.numChilds + ?1')
         // Example - $qb->set('u.numChilds', $qb->expr()->sum('u.numChilds', '?1'))
         public function set($key, $value);
-    
+
         // Example - $qb->from('Phonenumber', 'p')
         public function from($from, $alias = null);
-    
-        // Example - $qb->innerJoin('u.Group', 'g', Expr\Join::ON, $qb->expr()->and($qb->expr()->eq('u.group_id', 'g.id'), 'g.name = ?1'))
-        // Example - $qb->innerJoin('u.Group', 'g', 'ON', 'u.group_id = g.id AND g.name = ?1')
+
+        // Example - $qb->innerJoin('u.Group', 'g', Expr\Join::WITH, $qb->expr()->eq('u.status_id', '?1'))
+        // Example - $qb->innerJoin('u.Group', 'g', 'WITH', 'u.status = ?1')
         public function innerJoin($join, $alias = null, $conditionType = null, $condition = null);
-    
+
         // Example - $qb->leftJoin('u.Phonenumbers', 'p', Expr\Join::WITH, $qb->expr()->eq('p.area_code', 55))
-        // Example - $qb->leftJoin('u.Phonenumbers', 'p', 'WITH', 'p.area_code = 55')    
+        // Example - $qb->leftJoin('u.Phonenumbers', 'p', 'WITH', 'p.area_code = 55')
         public function leftJoin($join, $alias = null, $conditionType = null, $condition = null);
-    
+
         // NOTE: ->where() overrides all previously set conditions
         //
         // Example - $qb->where('u.firstName = ?1', $qb->expr()->eq('u.surname', '?2'))
         // Example - $qb->where($qb->expr()->andX($qb->expr()->eq('u.firstName', '?1'), $qb->expr()->eq('u.surname', '?2')))
-        // Example - $qb->where('u.firstName = ?1 AND u.surname = ?2')    
+        // Example - $qb->where('u.firstName = ?1 AND u.surname = ?2')
         public function where($where);
-    
+
         // Example - $qb->andWhere($qb->expr()->orX($qb->expr()->lte('u.age', 40), 'u.numChild = 0'))
         public function andWhere($where);
-    
+
         // Example - $qb->orWhere($qb->expr()->between('u.id', 1, 10));
         public function orWhere($where);
-    
+
         // NOTE: -> groupBy() overrides all previously set grouping conditions
         //
-        // Example - $qb->groupBy('u.id')   
+        // Example - $qb->groupBy('u.id')
         public function groupBy($groupBy);
-    
+
         // Example - $qb->addGroupBy('g.name')
         public function addGroupBy($groupBy);
-    
+
         // NOTE: -> having() overrides all previously set having conditions
         //
         // Example - $qb->having('u.salary >= ?1')
         // Example - $qb->having($qb->expr()->gte('u.salary', '?1'))
         public function having($having);
-    
+
         // Example - $qb->andHaving($qb->expr()->gt($qb->expr()->count('u.numChild'), 0))
         public function andHaving($having);
-    
-        // Example - $qb->orHaving($qb->expr()->lte('g.managerLevel', '100'))    
+
+        // Example - $qb->orHaving($qb->expr()->lte('g.managerLevel', '100'))
         public function orHaving($having);
-    
+
         // NOTE: -> orderBy() overrides all previously set ordering conditions
         //
         // Example - $qb->orderBy('u.surname', 'DESC')
         public function orderBy($sort, $order = null);
-    
+
         // Example - $qb->addOrderBy('u.firstName')
         public function addOrderBy($sort, $order = null); // Default $order = 'ASC'
     }
