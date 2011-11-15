@@ -1302,11 +1302,10 @@ class SqlWalker implements TreeWalker
                 continue;
             }
 
-            foreach ($this->_queryComponents[$groupByItem]['metadata']->identifier AS $idField) {
-                $groupByItem = new AST\PathExpression(AST\PathExpression::TYPE_STATE_FIELD, $groupByItem, $idField);
-                $groupByItem->type = AST\PathExpression::TYPE_STATE_FIELD;
-
-                $sqlParts[] = $this->walkGroupByItem($groupByItem);
+            foreach ($this->_queryComponents[$groupByItem]['metadata']->fieldNames AS $field) {
+                $item       = new AST\PathExpression(AST\PathExpression::TYPE_STATE_FIELD, $groupByItem, $field);
+                $item->type = AST\PathExpression::TYPE_STATE_FIELD;
+                $sqlParts[] = $this->walkGroupByItem($item);
             }
         }
 
