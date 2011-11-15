@@ -524,9 +524,9 @@ class SqlWalker implements TreeWalker
                 $this->_query->getHint(Query::HINT_INCLUDE_META_COLUMNS);
 
         foreach ($this->_selectedClasses as $selectedClass) {
-        	$class       = $selectedClass['class'];
-        	$dqlAlias    = $selectedClass['dqlAlias'];
-        	$resultAlias = $selectedClass['resultAlias'];
+            $class       = $selectedClass['class'];
+            $dqlAlias    = $selectedClass['dqlAlias'];
+            $resultAlias = $selectedClass['resultAlias'];
 
             // Register as entity or joined entity result
             if ($this->_queryComponents[$dqlAlias]['relation'] === null) {

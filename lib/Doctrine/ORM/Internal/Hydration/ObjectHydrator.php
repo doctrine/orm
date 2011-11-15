@@ -310,7 +310,9 @@ class ObjectHydrator extends AbstractHydrator
         // Extract scalar values. They're appended at the end.
         if (isset($rowData['scalars'])) {
             $scalars = $rowData['scalars'];
+
             unset($rowData['scalars']);
+
             if (empty($rowData)) {
                 ++$this->_resultCounter;
             }
