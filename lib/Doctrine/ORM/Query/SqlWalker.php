@@ -524,9 +524,9 @@ class SqlWalker implements TreeWalker
                 $this->_query->getHint(Query::HINT_INCLUDE_META_COLUMNS);
 
         foreach ($this->_selectedClasses as $selectedClass) {
-        	$class       = $selectedClass['class'];
-        	$dqlAlias    = $selectedClass['dqlAlias'];
-        	$resultAlias = $selectedClass['resultAlias'];
+            $class       = $selectedClass['class'];
+            $dqlAlias    = $selectedClass['dqlAlias'];
+            $resultAlias = $selectedClass['resultAlias'];
 
             // Register as entity or joined entity result
             if ($this->_queryComponents[$dqlAlias]['relation'] === null) {
@@ -1294,14 +1294,14 @@ class SqlWalker implements TreeWalker
     public function walkGroupByClause($groupByClause)
     {
         $sqlParts = array();
-        
+
         foreach ($groupByClause->groupByItems AS $groupByItem) {
             if ( ! is_string($groupByItem)) {
                 $sqlParts[] = $this->walkGroupByItem($groupByItem);
 
                 continue;
             }
-            
+
             foreach ($this->_queryComponents[$groupByItem]['metadata']->fieldNames AS $idField) {
                 $item       = new AST\PathExpression(AST\PathExpression::TYPE_STATE_FIELD, $groupByItem, $idField);
                 $item->type = AST\PathExpression::TYPE_STATE_FIELD;
