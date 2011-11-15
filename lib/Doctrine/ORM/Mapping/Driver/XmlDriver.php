@@ -171,7 +171,7 @@ class XmlDriver extends AbstractFileDriver
                 if (isset($fieldMapping['type'])) {
                     $mapping['type'] = (string)$fieldMapping['type'];
                 }
-                
+
                 if (isset($fieldMapping['column'])) {
                     $mapping['columnName'] = (string)$fieldMapping['column'];
                 }
@@ -224,8 +224,8 @@ class XmlDriver extends AbstractFileDriver
                 'id' => true,
                 'fieldName' => (string)$idElement['name']
             );
-            
-            if (isset($fieldMapping['type'])) {
+
+            if (isset($idElement['type'])) {
                 $mapping['type'] = (string)$idElement['type'];
             }
 
