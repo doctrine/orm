@@ -1301,6 +1301,22 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT d0_.article_id AS article_id0, d0_.title AS title1 FROM DDC117Article d0_ WHERE EXISTS (SELECT d1_.source_id, d1_.target_id FROM DDC117Reference d1_ WHERE d1_.source_id = d0_.article_id)"
         );
     }
+    
+    /**
+     * @group DDC-1474
+     */
+    public function testSelectWithArithmeticExpressionBeforeField()
+    {
+        $this->assertSqlGeneration(
+            'SELECT - e.value AS value, e.id FROM ' . __NAMESPACE__ . '\DDC1474Entity e',
+            'SELECT -d0_.value AS sclr0, d0_.id AS id1 FROM DDC1474Entity d0_'
+        );
+        
+        $this->assertSqlGeneration(
+            'SELECT e.id, + e.value AS value FROM ' . __NAMESPACE__ . '\DDC1474Entity e',
+            'SELECT d0_.id AS id0, +d0_.value AS sclr1 FROM DDC1474Entity d0_'
+        );
+    }
 }
 
 
@@ -1343,3 +1359,57 @@ class DDC1384Model
      */
     protected $aVeryLongIdentifierThatShouldBeShortenedByTheSQLWalker_fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo;
 }
+
+
+/**
+ * @Entity
+ */
+class DDC1474Entity
+{
+
+    /**
+     * @Id 
+     * @Column(type="integer")
+     * @GeneratedValue()
+     */
+    protected $id;
+
+    /**
+     * @column(type="float") 
+     */
+    private $value;
+
+    /**
+     * @param string $float 
+     */
+    public function __construct($float)
+    {
+        $this->value = $float;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return float 
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * @param float $value 
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
+    }
+
+}
+
