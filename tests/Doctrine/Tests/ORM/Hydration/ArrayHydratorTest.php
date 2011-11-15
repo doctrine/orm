@@ -17,26 +17,14 @@ class ArrayHydratorTest extends HydrationTestCase
         );
     }
 
-    public function provideDataForMultipleRootEntityResult()
-    {
-        return array(
-            array(0, 0),
-            array('user', 0),
-            array(0, 'article'),
-            array('user', 'article'),
-        );
-    }
-
     /**
      * SELECT PARTIAL u.{id, name}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
-    public function testSimpleEntityQuery($userEntityKey)
+    public function testSimpleEntityQuery()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
@@ -68,16 +56,54 @@ class ArrayHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id, name}, PARTIAL a.{id, topic}
-     *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
-     *
-     * @dataProvider provideDataForMultipleRootEntityResult
+     * SELECT PARTIAL u.{id, name} AS user
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
-    public function testSimpleMultipleRootEntityQuery($userEntityKey, $articleEntityKey)
+    public function testSimpleEntityQueryWithAliasedUserEntity()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a', $articleEntityKey ?: null);
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb'
+            ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage'
+            )
+        );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
+
+        $this->assertEquals(2, count($result));
+
+        $this->assertTrue(is_array($result));
+
+        $this->assertArrayHasKey('user', $result[0]);
+        $this->assertEquals(1, $result[0]['user']['id']);
+        $this->assertEquals('romanb', $result[0]['user']['name']);
+
+        $this->assertArrayHasKey('user', $result[1]);
+        $this->assertEquals(2, $result[1]['user']['id']);
+        $this->assertEquals('jwage', $result[1]['user']['name']);
+    }
+
+    /**
+     * SELECT PARTIAL u.{id, name}, PARTIAL a.{id, topic}
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
+     */
+    public function testSimpleMultipleRootEntityQuery()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
         $rsm->addFieldResult('a', 'a__id', 'id');
@@ -116,6 +142,214 @@ class ArrayHydratorTest extends HydrationTestCase
 
         $this->assertEquals(2, $result[3]['id']);
         $this->assertEquals('Cool things II.', $result[3]['topic']);
+    }
+
+    /**
+     * SELECT PARTIAL u.{id, name} AS user, PARTIAL a.{id, topic}
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
+     */
+    public function testSimpleMultipleRootEntityQueryWithAliasedUserEntity()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+        $rsm->addFieldResult('a', 'a__id', 'id');
+        $rsm->addFieldResult('a', 'a__topic', 'topic');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb',
+                'a__id' => '1',
+                'a__topic' => 'Cool things.'
+            ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'a__id' => '2',
+                'a__topic' => 'Cool things II.'
+            )
+        );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
+
+        $this->assertEquals(4, count($result));
+
+        $this->assertArrayHasKey('user', $result[0]);
+        $this->assertEquals(1, $result[0]['user']['id']);
+        $this->assertEquals('romanb', $result[0]['user']['name']);
+
+        $this->assertArrayHasKey(0, $result[1]);
+        $this->assertEquals(1, $result[1][0]['id']);
+        $this->assertEquals('Cool things.', $result[1][0]['topic']);
+
+        $this->assertArrayHasKey('user', $result[2]);
+        $this->assertEquals(2, $result[2]['user']['id']);
+        $this->assertEquals('jwage', $result[2]['user']['name']);
+
+        $this->assertArrayHasKey(0, $result[3]);
+        $this->assertEquals(2, $result[3][0]['id']);
+        $this->assertEquals('Cool things II.', $result[3][0]['topic']);
+    }
+
+    /**
+     * SELECT PARTIAL u.{id, name}, PARTIAL a.{id, topic} AS article
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
+     */
+    public function testSimpleMultipleRootEntityQueryWithAliasedArticleEntity()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a', 'article');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+        $rsm->addFieldResult('a', 'a__id', 'id');
+        $rsm->addFieldResult('a', 'a__topic', 'topic');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb',
+                'a__id' => '1',
+                'a__topic' => 'Cool things.'
+            ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'a__id' => '2',
+                'a__topic' => 'Cool things II.'
+            )
+        );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
+
+        $this->assertEquals(4, count($result));
+
+        $this->assertArrayHasKey(0, $result[0]);
+        $this->assertEquals(1, $result[0][0]['id']);
+        $this->assertEquals('romanb', $result[0][0]['name']);
+
+        $this->assertArrayHasKey('article', $result[1]);
+        $this->assertEquals(1, $result[1]['article']['id']);
+        $this->assertEquals('Cool things.', $result[1]['article']['topic']);
+
+        $this->assertArrayHasKey(0, $result[2]);
+        $this->assertEquals(2, $result[2][0]['id']);
+        $this->assertEquals('jwage', $result[2][0]['name']);
+
+        $this->assertArrayHasKey('article', $result[3]);
+        $this->assertEquals(2, $result[3]['article']['id']);
+        $this->assertEquals('Cool things II.', $result[3]['article']['topic']);
+    }
+
+    /**
+     * SELECT PARTIAL u.{id, name} AS user, PARTIAL a.{id, topic} AS article
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
+     */
+    public function testSimpleMultipleRootEntityQueryWithAliasedEntities()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a', 'article');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+        $rsm->addFieldResult('a', 'a__id', 'id');
+        $rsm->addFieldResult('a', 'a__topic', 'topic');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb',
+                'a__id' => '1',
+                'a__topic' => 'Cool things.'
+            ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'a__id' => '2',
+                'a__topic' => 'Cool things II.'
+            )
+        );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
+
+        $this->assertEquals(4, count($result));
+
+        $this->assertArrayHasKey('user', $result[0]);
+        $this->assertEquals(1, $result[0]['user']['id']);
+        $this->assertEquals('romanb', $result[0]['user']['name']);
+
+        $this->assertArrayHasKey('article', $result[1]);
+        $this->assertEquals(1, $result[1]['article']['id']);
+        $this->assertEquals('Cool things.', $result[1]['article']['topic']);
+
+        $this->assertArrayHasKey('user', $result[2]);
+        $this->assertEquals(2, $result[2]['user']['id']);
+        $this->assertEquals('jwage', $result[2]['user']['name']);
+
+        $this->assertArrayHasKey('article', $result[3]);
+        $this->assertEquals(2, $result[3]['article']['id']);
+        $this->assertEquals('Cool things II.', $result[3]['article']['topic']);
+    }
+
+    /**
+     * SELECT PARTIAL u.{id, status}, COUNT(p.phonenumber) AS numPhones
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u
+     *   JOIN u.phonenumbers p
+     *  GROUP BY u.status, u.id
+     *
+     * @dataProvider provideDataForUserEntityResult
+     */
+    public function testMixedQueryNormalJoin($userEntityKey)
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__status', 'status');
+        $rsm->addScalarResult('sclr0', 'numPhones');
+
+        // Faked result set
+        $resultSet = array(
+            //row1
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'sclr0' => '2',
+            ),
+            array(
+                'u__id' => '2',
+                'u__status' => 'developer',
+                'sclr0' => '1',
+            )
+        );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
+
+        $this->assertEquals(2, count($result));
+        $this->assertTrue(is_array($result));
+        $this->assertTrue(is_array($result[0]));
+        $this->assertTrue(is_array($result[1]));
+
+        // first user => 2 phonenumbers
+        $this->assertArrayHasKey($userEntityKey, $result[0]);
+        $this->assertEquals(2, $result[0]['numPhones']);
+
+        // second user => 1 phonenumber
+        $this->assertArrayHasKey($userEntityKey, $result[1]);
+        $this->assertEquals(1, $result[1]['numPhones']);
     }
 
     /**
@@ -184,55 +418,6 @@ class ArrayHydratorTest extends HydrationTestCase
         $this->assertEquals(42, $result[0][$userEntityKey]['phonenumbers'][0]['phonenumber']);
         $this->assertEquals(43, $result[0][$userEntityKey]['phonenumbers'][1]['phonenumber']);
         $this->assertEquals(91, $result[1][$userEntityKey]['phonenumbers'][0]['phonenumber']);
-    }
-
-    /**
-     * SELECT PARTIAL u.{id, status}, COUNT(p.phonenumber) AS numPhones
-     *   FROM Doctrine\Tests\Models\CMS\CmsUser u
-     *   JOIN u.phonenumbers p
-     *  GROUP BY u.status, u.id
-     *
-     * @dataProvider provideDataForUserEntityResult
-     */
-    public function testMixedQueryNormalJoin($userEntityKey)
-    {
-        $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
-        $rsm->addFieldResult('u', 'u__id', 'id');
-        $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'numPhones');
-
-        // Faked result set
-        $resultSet = array(
-            //row1
-            array(
-                'u__id' => '1',
-                'u__status' => 'developer',
-                'sclr0' => '2',
-            ),
-            array(
-                'u__id' => '2',
-                'u__status' => 'developer',
-                'sclr0' => '1',
-            )
-        );
-
-        $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
-        $result   = $hydrator->hydrateAll($stmt, $rsm);
-
-        $this->assertEquals(2, count($result));
-        $this->assertTrue(is_array($result));
-        $this->assertTrue(is_array($result[0]));
-        $this->assertTrue(is_array($result[1]));
-
-        // first user => 2 phonenumbers
-        $this->assertArrayHasKey($userEntityKey, $result[0]);
-        $this->assertEquals(2, $result[0]['numPhones']);
-
-        // second user => 1 phonenumber
-        $this->assertArrayHasKey($userEntityKey, $result[1]);
-        $this->assertEquals(1, $result[1]['numPhones']);
     }
 
     /**
@@ -738,15 +923,13 @@ class ArrayHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id, status}, UPPER(u.name) AS nameUpper
+     * SELECT PARTIAL u.{id, status}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
-    public function testResultIteration($userEntityKey)
+    public function testResultIteration()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
@@ -784,16 +967,60 @@ class ArrayHydratorTest extends HydrationTestCase
     }
 
     /**
+     * SELECT PARTIAL u.{id, status}
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u
+     */
+    public function testResultIterationWithAliasedUserEntity()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb'
+            ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage'
+            )
+        );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $iterator = $hydrator->iterate($stmt, $rsm);
+        $rowNum   = 0;
+
+        while (($row = $iterator->next()) !== false) {
+            $this->assertEquals(1, count($row));
+            $this->assertArrayHasKey(0, $row);
+            $this->assertArrayHasKey('user', $row[0]);
+
+            if ($rowNum == 0) {
+                $this->assertEquals(1, $row[0]['user']['id']);
+                $this->assertEquals('romanb', $row[0]['user']['name']);
+            } else if ($rowNum == 1) {
+                $this->assertEquals(2, $row[0]['user']['id']);
+                $this->assertEquals('jwage', $row[0]['user']['name']);
+            }
+
+            ++$rowNum;
+        }
+    }
+
+    /**
      * SELECT PARTIAL u.{id, name}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *
      * @group DDC-644
-     * @dataProvider provideDataForUserEntityResult
      */
-    public function testSkipUnknownColumns($userEntityKey)
+    public function testSkipUnknownColumns()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 

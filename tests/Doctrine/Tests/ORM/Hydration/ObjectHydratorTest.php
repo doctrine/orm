@@ -44,13 +44,11 @@ class ObjectHydratorTest extends HydrationTestCase
     /**
      * SELECT PARTIAL u.{id,name}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
-    public function testSimpleEntityScalarFieldsQuery($userEntityKey)
+    public function testSimpleEntityQuery()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
@@ -83,16 +81,13 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id,name}
+     * SELECT PARTIAL u.{id,name} AS user
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
-     *
-     * @group DDC-644
-     * @dataProvider provideDataForUserEntityResult
      */
-    public function testSkipUnknownColumns($userEntityKey)
+    public function testSimpleEntityQueryWithAliasedUserEntity()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
@@ -100,40 +95,11 @@ class ObjectHydratorTest extends HydrationTestCase
         $resultSet = array(
             array(
                 'u__id' => '1',
-                'u__name' => 'romanb',
-                'foo' => 'bar', // unknown!
-            ),
-        );
-
-        $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
-
-        $this->assertEquals(1, count($result));
-    }
-
-    /**
-     * SELECT u.id, u.name
-     *   FROM Doctrine\Tests\Models\CMS\CmsUser u
-     *
-     * @dataProvider provideDataForUserEntityResult
-     */
-    public function testScalarQueryWithoutResultVariables($userEntityKey)
-    {
-        $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
-        $rsm->addScalarResult('sclr0', 'id');
-        $rsm->addScalarResult('sclr1', 'name');
-
-        // Faked result set
-        $resultSet = array(
-            array(
-                'sclr0' => '1',
-                'sclr1' => 'romanb'
+                'u__name' => 'romanb'
             ),
             array(
-                'sclr0' => '2',
-                'sclr1' => 'jwage'
+                'u__id' => '2',
+                'u__name' => 'jwage'
             )
         );
 
@@ -143,27 +109,28 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(2, count($result));
 
-        $this->assertInternalType('array', $result[0]);
-        $this->assertInternalType('array', $result[1]);
+        $this->assertArrayHasKey('user', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]['user']);
 
-        $this->assertEquals(1, $result[0]['id']);
-        $this->assertEquals('romanb', $result[0]['name']);
+        $this->assertArrayHasKey('user', $result[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1]['user']);
 
-        $this->assertEquals(2, $result[1]['id']);
-        $this->assertEquals('jwage', $result[1]['name']);
+        $this->assertEquals(1, $result[0]['user']->id);
+        $this->assertEquals('romanb', $result[0]['user']->name);
+
+        $this->assertEquals(2, $result[1]['user']->id);
+        $this->assertEquals('jwage', $result[1]['user']->name);
     }
 
     /**
      * SELECT PARTIAL u.{id, name}, PARTIAL a.{id, topic}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
-     *
-     * @dataProvider provideDataForMultipleRootEntityResult
      */
-    public function testSimpleMultipleRootEntityQuery($userEntityKey, $articleEntityKey)
+    public function testSimpleMultipleRootEntityQuery()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a', $articleEntityKey ?: null);
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
         $rsm->addFieldResult('a', 'a__id', 'id');
@@ -210,50 +177,236 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT p
-     *   FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p
-     *
-     * @dataProvider provideDataForProductEntityResult
+     * SELECT PARTIAL u.{id, name} AS user, PARTIAL a.{id, topic}
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
      */
-    public function testCreatesProxyForLazyLoadingWithForeignKeys($productEntityKey)
+    public function testSimpleMultipleRootEntityQueryWithAliasedUserEntity()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\ECommerce\ECommerceProduct', 'p', $productEntityKey ?: null);
-        $rsm->addFieldResult('p', 'p__id', 'id');
-        $rsm->addFieldResult('p', 'p__name', 'name');
-        $rsm->addMetaResult('p', 'p__shipping_id', 'shipping_id');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+        $rsm->addFieldResult('a', 'a__id', 'id');
+        $rsm->addFieldResult('a', 'a__topic', 'topic');
 
         // Faked result set
         $resultSet = array(
             array(
-                'p__id' => '1',
-                'p__name' => 'Doctrine Book',
-                'p__shipping_id' => 42
+                'u__id' => '1',
+                'u__name' => 'romanb',
+                'a__id' => '1',
+                'a__topic' => 'Cool things.'
+            ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'a__id' => '2',
+                'a__topic' => 'Cool things II.'
             )
         );
 
-        $proxyInstance = new \Doctrine\Tests\Models\ECommerce\ECommerceShipping();
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
 
-        // mocking the proxy factory
-        $proxyFactory = $this->getMock('Doctrine\ORM\Proxy\ProxyFactory', array('getProxy'), array(), '', false, false, false);
-        $proxyFactory->expects($this->once())
-                     ->method('getProxy')
-                     ->with($this->equalTo('Doctrine\Tests\Models\ECommerce\ECommerceShipping'), array('id' => 42))
-                     ->will($this->returnValue($proxyInstance));
+        $this->assertEquals(4, count($result));
 
-        $this->_em->setProxyFactory($proxyFactory);
+        $this->assertArrayHasKey('user', $result[0]);
+        $this->assertArrayNotHasKey(0, $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]['user']);
+        $this->assertEquals(1, $result[0]['user']->id);
+        $this->assertEquals('romanb', $result[0]['user']->name);
 
-        // configuring lazy loading
-        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
-        $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $this->assertArrayHasKey(0, $result[1]);
+        $this->assertArrayNotHasKey('user', $result[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[1][0]);
+        $this->assertEquals(1, $result[1][0]->id);
+        $this->assertEquals('Cool things.', $result[1][0]->topic);
+
+        $this->assertArrayHasKey('user', $result[2]);
+        $this->assertArrayNotHasKey(0, $result[2]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[2]['user']);
+        $this->assertEquals(2, $result[2]['user']->id);
+        $this->assertEquals('jwage', $result[2]['user']->name);
+
+        $this->assertArrayHasKey(0, $result[3]);
+        $this->assertArrayNotHasKey('user', $result[3]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[3][0]);
+        $this->assertEquals(2, $result[3][0]->id);
+        $this->assertEquals('Cool things II.', $result[3][0]->topic);
+    }
+
+    /**
+     * SELECT PARTIAL u.{id, name}, PARTIAL a.{id, topic} AS article
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
+     */
+    public function testSimpleMultipleRootEntityQueryWithAliasedArticleEntity()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a', 'article');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+        $rsm->addFieldResult('a', 'a__id', 'id');
+        $rsm->addFieldResult('a', 'a__topic', 'topic');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb',
+                'a__id' => '1',
+                'a__topic' => 'Cool things.'
+            ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'a__id' => '2',
+                'a__topic' => 'Cool things II.'
+            )
+        );
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
-        $result   = $hydrator->hydrateAll($stmt, $rsm);
+        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
 
-        $this->assertEquals(1, count($result));
+        $this->assertEquals(4, count($result));
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $result[0]);
+        $this->assertArrayHasKey(0, $result[0]);
+        $this->assertArrayNotHasKey('article', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]);
+        $this->assertEquals(1, $result[0][0]->id);
+        $this->assertEquals('romanb', $result[0][0]->name);
+
+        $this->assertArrayHasKey('article', $result[1]);
+        $this->assertArrayNotHasKey(0, $result[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[1]['article']);
+        $this->assertEquals(1, $result[1]['article']->id);
+        $this->assertEquals('Cool things.', $result[1]['article']->topic);
+
+        $this->assertArrayHasKey(0, $result[2]);
+        $this->assertArrayNotHasKey('article', $result[2]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[2][0]);
+        $this->assertEquals(2, $result[2][0]->id);
+        $this->assertEquals('jwage', $result[2][0]->name);
+
+        $this->assertArrayHasKey('article', $result[3]);
+        $this->assertArrayNotHasKey(0, $result[3]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[3]['article']);
+        $this->assertEquals(2, $result[3]['article']->id);
+        $this->assertEquals('Cool things II.', $result[3]['article']->topic);
+    }
+
+    /**
+     * SELECT PARTIAL u.{id, name} AS user, PARTIAL a.{id, topic} AS article
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
+     */
+    public function testSimpleMultipleRootEntityQueryWithAliasedEntities()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a', 'article');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+        $rsm->addFieldResult('a', 'a__id', 'id');
+        $rsm->addFieldResult('a', 'a__topic', 'topic');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb',
+                'a__id' => '1',
+                'a__topic' => 'Cool things.'
+            ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'a__id' => '2',
+                'a__topic' => 'Cool things II.'
+            )
+        );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+
+        $this->assertEquals(4, count($result));
+
+        $this->assertArrayHasKey('user', $result[0]);
+        $this->assertArrayNotHasKey('article', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]['user']);
+        $this->assertEquals(1, $result[0]['user']->id);
+        $this->assertEquals('romanb', $result[0]['user']->name);
+
+        $this->assertArrayHasKey('article', $result[1]);
+        $this->assertArrayNotHasKey('user', $result[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[1]['article']);
+        $this->assertEquals(1, $result[1]['article']->id);
+        $this->assertEquals('Cool things.', $result[1]['article']->topic);
+
+        $this->assertArrayHasKey('user', $result[2]);
+        $this->assertArrayNotHasKey('article', $result[2]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[2]['user']);
+        $this->assertEquals(2, $result[2]['user']->id);
+        $this->assertEquals('jwage', $result[2]['user']->name);
+
+        $this->assertArrayHasKey('article', $result[3]);
+        $this->assertArrayNotHasKey('user', $result[3]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[3]['article']);
+        $this->assertEquals(2, $result[3]['article']->id);
+        $this->assertEquals('Cool things II.', $result[3]['article']->topic);
+    }
+
+    /**
+     * SELECT PARTIAL u.{id, status}, COUNT(p.phonenumber) numPhones
+     *   FROM User u
+     *   JOIN u.phonenumbers p
+     *  GROUP BY u.id
+     *
+     * @dataProvider provideDataForUserEntityResult
+     */
+    public function testMixedQueryNormalJoin($userEntityKey)
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__status', 'status');
+        $rsm->addScalarResult('sclr0', 'numPhones');
+
+        // Faked result set
+        $resultSet = array(
+            //row1
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'sclr0' => '2',
+            ),
+            array(
+                'u__id' => '2',
+                'u__status' => 'developer',
+                'sclr0' => '1',
+            )
+        );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+
+        $this->assertEquals(2, count($result));
+
+        $this->assertInternalType('array', $result);
+        $this->assertInternalType('array', $result[0]);
+        $this->assertInternalType('array', $result[1]);
+
+        // first user => 2 phonenumbers
+        $this->assertEquals(2, $result[0]['numPhones']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][$userEntityKey]);
+
+        // second user => 1 phonenumber
+        $this->assertEquals(1, $result[1]['numPhones']);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][$userEntityKey]);
     }
 
     /**
@@ -330,56 +483,6 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertEquals(42, $result[0][$userEntityKey]->phonenumbers[0]->phonenumber);
         $this->assertEquals(43, $result[0][$userEntityKey]->phonenumbers[1]->phonenumber);
         $this->assertEquals(91, $result[1][$userEntityKey]->phonenumbers[0]->phonenumber);
-    }
-
-    /**
-     * SELECT PARTIAL u.{id, status}, COUNT(p.phonenumber) numPhones
-     *   FROM User u
-     *   JOIN u.phonenumbers p
-     *  GROUP BY u.id
-     *
-     * @dataProvider provideDataForUserEntityResult
-     */
-    public function testMixedQueryNormalJoin($userEntityKey)
-    {
-        $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
-        $rsm->addFieldResult('u', 'u__id', 'id');
-        $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'numPhones');
-
-        // Faked result set
-        $resultSet = array(
-            //row1
-            array(
-                'u__id' => '1',
-                'u__status' => 'developer',
-                'sclr0' => '2',
-            ),
-            array(
-                'u__id' => '2',
-                'u__status' => 'developer',
-                'sclr0' => '1',
-            )
-        );
-
-        $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
-
-        $this->assertEquals(2, count($result));
-
-        $this->assertInternalType('array', $result);
-        $this->assertInternalType('array', $result[0]);
-        $this->assertInternalType('array', $result[1]);
-
-        // first user => 2 phonenumbers
-        $this->assertEquals(2, $result[0]['numPhones']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][$userEntityKey]);
-
-        // second user => 1 phonenumber
-        $this->assertEquals(1, $result[1]['numPhones']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][$userEntityKey]);
     }
 
     /**
@@ -808,7 +911,168 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertTrue(isset($result[1]->boards));
         $this->assertEquals(1, count($result[1]->boards));
+    }
 
+    /**
+     * SELECT PARTIAL u.{id,name}
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u
+     *
+     * @group DDC-644
+     */
+    public function testSkipUnknownColumns()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb',
+                'foo' => 'bar', // unknown!
+            ),
+        );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+
+        $this->assertEquals(1, count($result));
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
+    }
+
+    /**
+     * SELECT u.id, u.name
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u
+     *
+     * @dataProvider provideDataForUserEntityResult
+     */
+    public function testScalarQueryWithoutResultVariables($userEntityKey)
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addScalarResult('sclr0', 'id');
+        $rsm->addScalarResult('sclr1', 'name');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'sclr0' => '1',
+                'sclr1' => 'romanb'
+            ),
+            array(
+                'sclr0' => '2',
+                'sclr1' => 'jwage'
+            )
+        );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+
+        $this->assertEquals(2, count($result));
+
+        $this->assertInternalType('array', $result[0]);
+        $this->assertInternalType('array', $result[1]);
+
+        $this->assertEquals(1, $result[0]['id']);
+        $this->assertEquals('romanb', $result[0]['name']);
+
+        $this->assertEquals(2, $result[1]['id']);
+        $this->assertEquals('jwage', $result[1]['name']);
+    }
+
+    /**
+     * SELECT p
+     *   FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p
+     */
+    public function testCreatesProxyForLazyLoadingWithForeignKeys()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\ECommerce\ECommerceProduct', 'p');
+        $rsm->addFieldResult('p', 'p__id', 'id');
+        $rsm->addFieldResult('p', 'p__name', 'name');
+        $rsm->addMetaResult('p', 'p__shipping_id', 'shipping_id');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'p__id' => '1',
+                'p__name' => 'Doctrine Book',
+                'p__shipping_id' => 42
+            )
+        );
+
+        $proxyInstance = new \Doctrine\Tests\Models\ECommerce\ECommerceShipping();
+
+        // mocking the proxy factory
+        $proxyFactory = $this->getMock('Doctrine\ORM\Proxy\ProxyFactory', array('getProxy'), array(), '', false, false, false);
+        $proxyFactory->expects($this->once())
+                     ->method('getProxy')
+                     ->with($this->equalTo('Doctrine\Tests\Models\ECommerce\ECommerceShipping'), array('id' => 42))
+                     ->will($this->returnValue($proxyInstance));
+
+        $this->_em->setProxyFactory($proxyFactory);
+
+        // configuring lazy loading
+        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
+        $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
+
+        $this->assertEquals(1, count($result));
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $result[0]);
+    }
+
+    /**
+     * SELECT p AS product
+     *   FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p
+     */
+    public function testCreatesProxyForLazyLoadingWithForeignKeysWithAliasedProductEntity()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\ECommerce\ECommerceProduct', 'p', 'product');
+        $rsm->addFieldResult('p', 'p__id', 'id');
+        $rsm->addFieldResult('p', 'p__name', 'name');
+        $rsm->addMetaResult('p', 'p__shipping_id', 'shipping_id');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'p__id' => '1',
+                'p__name' => 'Doctrine Book',
+                'p__shipping_id' => 42
+            )
+        );
+
+        $proxyInstance = new \Doctrine\Tests\Models\ECommerce\ECommerceShipping();
+
+        // mocking the proxy factory
+        $proxyFactory = $this->getMock('Doctrine\ORM\Proxy\ProxyFactory', array('getProxy'), array(), '', false, false, false);
+        $proxyFactory->expects($this->once())
+                     ->method('getProxy')
+                     ->with($this->equalTo('Doctrine\Tests\Models\ECommerce\ECommerceShipping'), array('id' => 42))
+                     ->will($this->returnValue($proxyInstance));
+
+        $this->_em->setProxyFactory($proxyFactory);
+
+        // configuring lazy loading
+        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
+        $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
+
+        $this->assertEquals(1, count($result));
+
+        $this->assertInternalType('array', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $result[0]['product']);
     }
 
     /**
@@ -816,13 +1080,11 @@ class ObjectHydratorTest extends HydrationTestCase
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *   LEFT JOIN u.articles a
      *   LEFT JOIN a.comments c
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
-    public function testChainedJoinWithEmptyCollections($userEntityKey)
+    public function testChainedJoinWithEmptyCollections()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addJoinedEntityResult(
             'Doctrine\Tests\Models\CMS\CmsArticle',
             'a',
@@ -874,6 +1136,72 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(0, $result[0]->articles->count());
         $this->assertEquals(0, $result[1]->articles->count());
+    }
+
+    /**
+     * SELECT PARTIAL u.{id, status} AS user, PARTIAL a.{id, topic}, PARTIAL c.{id, topic}
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u
+     *   LEFT JOIN u.articles a
+     *   LEFT JOIN a.comments c
+     */
+    public function testChainedJoinWithEmptyCollectionsWithAliasedUserEntity()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
+        $rsm->addJoinedEntityResult(
+            'Doctrine\Tests\Models\CMS\CmsArticle',
+            'a',
+            'u',
+            'articles'
+        );
+        $rsm->addJoinedEntityResult(
+            'Doctrine\Tests\Models\CMS\CmsComment',
+            'c',
+            'a',
+            'comments'
+        );
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__status', 'status');
+        $rsm->addFieldResult('a', 'a__id', 'id');
+        $rsm->addFieldResult('a', 'a__topic', 'topic');
+        $rsm->addFieldResult('c', 'c__id', 'id');
+        $rsm->addFieldResult('c', 'c__topic', 'topic');
+
+        // Faked result set
+        $resultSet = array(
+            //row1
+            array(
+                'u__id' => '1',
+                'u__status' => 'developer',
+                'a__id' => null,
+                'a__topic' => null,
+                'c__id' => null,
+                'c__topic' => null
+            ),
+            array(
+                'u__id' => '2',
+                'u__status' => 'developer',
+                'a__id' => null,
+                'a__topic' => null,
+                'c__id' => null,
+                'c__topic' => null
+            ),
+        );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+
+        $this->assertEquals(2, count($result));
+
+        $this->assertInternalType('array', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]['user']);
+
+        $this->assertInternalType('array', $result[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1]['user']);
+
+        $this->assertEquals(0, $result[0]['user']->articles->count());
+        $this->assertEquals(0, $result[1]['user']->articles->count());
     }
 
     /**
@@ -941,12 +1269,13 @@ class ObjectHydratorTest extends HydrationTestCase
     }*/
 
     /**
-     * @dataProvider provideDataForUserEntityResult
+     * SELECT PARTIAL u.{id, name}
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
-    public function testResultIteration($userEntityKey)
+    public function testResultIteration()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
@@ -984,18 +1313,63 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
+     * SELECT PARTIAL u.{id, name}
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u
+     */
+    public function testResultIterationWithAliasedUserEntity()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb'
+            ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage'
+            )
+        );
+
+        $stmt           = new HydratorMockStatement($resultSet);
+        $hydrator       = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $iterableResult = $hydrator->iterate($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+        $rowNum         = 0;
+
+        while (($row = $iterableResult->next()) !== false) {
+            $this->assertEquals(1, count($row));
+            $this->assertArrayHasKey(0, $row);
+            $this->assertArrayHasKey('user', $row[0]);
+            $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $row[0]['user']);
+
+            if ($rowNum == 0) {
+                $this->assertEquals(1, $row[0]['user']->id);
+                $this->assertEquals('romanb', $row[0]['user']->name);
+            } else if ($rowNum == 1) {
+                $this->assertEquals(2, $row[0]['user']->id);
+                $this->assertEquals('jwage', $row[0]['user']->name);
+            }
+
+            ++$rowNum;
+        }
+    }
+
+    /**
      * Checks if multiple joined multiple-valued collections is hydrated correctly.
      *
      * SELECT PARTIAL u.{id, status}, PARTIAL g.{id, name}, PARTIAL p.{phonenumber}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *
      * @group DDC-809
-     * @dataProvider provideDataForUserEntityResult
      */
-    public function testManyToManyHydration($userEntityKey)
+    public function testManyToManyHydration()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
         $rsm->addJoinedEntityResult('Doctrine\Tests\Models\CMS\CmsGroup', 'g', 'u', 'groups');
@@ -1105,6 +1479,132 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(4, count($result[1]->groups));
         $this->assertEquals(2, count($result[1]->phonenumbers));
+    }
+
+    /**
+     * Checks if multiple joined multiple-valued collections is hydrated correctly.
+     *
+     * SELECT PARTIAL u.{id, status} As user, PARTIAL g.{id, name}, PARTIAL p.{phonenumber}
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u
+     *
+     * @group DDC-809
+     */
+    public function testManyToManyHydrationWithAliasedUserEntity()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+        $rsm->addJoinedEntityResult('Doctrine\Tests\Models\CMS\CmsGroup', 'g', 'u', 'groups');
+        $rsm->addFieldResult('g', 'g__id', 'id');
+        $rsm->addFieldResult('g', 'g__name', 'name');
+        $rsm->addJoinedEntityResult('Doctrine\Tests\Models\CMS\CmsPhonenumber', 'p', 'u', 'phonenumbers');
+        $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb',
+                'g__id' => '3',
+                'g__name' => 'TestGroupB',
+                'p__phonenumber' => 1111,
+            ),
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb',
+                'g__id' => '5',
+                'g__name' => 'TestGroupD',
+                'p__phonenumber' => 1111,
+            ),
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb',
+                'g__id' => '3',
+                'g__name' => 'TestGroupB',
+                'p__phonenumber' => 2222,
+            ),
+            array(
+                'u__id' => '1',
+                'u__name' => 'romanb',
+                'g__id' => '5',
+                'g__name' => 'TestGroupD',
+                'p__phonenumber' => 2222,
+            ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'g__id' => '2',
+                'g__name' => 'TestGroupA',
+                'p__phonenumber' => 3333,
+            ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'g__id' => '3',
+                'g__name' => 'TestGroupB',
+                'p__phonenumber' => 3333,
+            ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'g__id' => '4',
+                'g__name' => 'TestGroupC',
+                'p__phonenumber' => 3333,
+            ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'g__id' => '5',
+                'g__name' => 'TestGroupD',
+                'p__phonenumber' => 3333,
+            ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'g__id' => '2',
+                'g__name' => 'TestGroupA',
+                'p__phonenumber' => 4444,
+            ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'g__id' => '3',
+                'g__name' => 'TestGroupB',
+                'p__phonenumber' => 4444,
+            ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'g__id' => '4',
+                'g__name' => 'TestGroupC',
+                'p__phonenumber' => 4444,
+            ),
+            array(
+                'u__id' => '2',
+                'u__name' => 'jwage',
+                'g__id' => '5',
+                'g__name' => 'TestGroupD',
+                'p__phonenumber' => 4444,
+            ),
+        );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+
+        $this->assertEquals(2, count($result));
+
+        $this->assertInternalType('array', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]['user']);
+        $this->assertInternalType('array', $result[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1]['user']);
+
+        $this->assertEquals(2, count($result[0]['user']->groups));
+        $this->assertEquals(2, count($result[0]['user']->phonenumbers));
+
+        $this->assertEquals(4, count($result[1]['user']->groups));
+        $this->assertEquals(2, count($result[1]['user']->phonenumbers));
     }
 
     /**

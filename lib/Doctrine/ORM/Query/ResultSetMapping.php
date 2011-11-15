@@ -127,6 +127,10 @@ class ResultSetMapping
     {
         $this->aliasMap[$alias] = $class;
         $this->entityMappings[$alias] = $resultAlias;
+
+        if ($resultAlias !== null) {
+            $this->isMixed = true;
+        }
     }
 
     /**
