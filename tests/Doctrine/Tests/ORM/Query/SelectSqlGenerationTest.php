@@ -1317,6 +1317,22 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT d0_.id AS id0, +d0_.value AS sclr1 FROM DDC1474Entity d0_'
         );
     }
+    
+     /**
+     * @group DDC-1430
+     */
+    public function testGroupByAllFieldsWhenObjectHasForeignKeys()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY u',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ GROUP BY c0_.id, c0_.status, c0_.username, c0_.name, c0_.email_id'
+        );
+        
+        $this->assertSqlGeneration(
+            'SELECT e FROM Doctrine\Tests\Models\CMS\CmsEmployee e GROUP BY e',
+            'SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_employees c0_ GROUP BY c0_.id, c0_.name, c0_.spouse_id'
+        );
+    }
 }
 
 
