@@ -1294,19 +1294,18 @@ class SqlWalker implements TreeWalker
     public function walkGroupByClause($groupByClause)
     {
         $sqlParts = array();
-
+        
         foreach ($groupByClause->groupByItems AS $groupByItem) {
             if ( ! is_string($groupByItem)) {
                 $sqlParts[] = $this->walkGroupByItem($groupByItem);
 
                 continue;
             }
-
-            foreach ($this->_queryComponents[$groupByItem]['metadata']->identifier AS $idField) {
-                $groupByItem = new AST\PathExpression(AST\PathExpression::TYPE_STATE_FIELD, $groupByItem, $idField);
-                $groupByItem->type = AST\PathExpression::TYPE_STATE_FIELD;
-
-                $sqlParts[] = $this->walkGroupByItem($groupByItem);
+            
+            foreach ($this->_queryComponents[$groupByItem]['metadata']->fieldNames AS $idField) {
+                $item       = new AST\PathExpression(AST\PathExpression::TYPE_STATE_FIELD, $groupByItem, $idField);
+                $item->type = AST\PathExpression::TYPE_STATE_FIELD;
+                $sqlParts[] = $this->walkGroupByItem($item);
             }
         }
 
