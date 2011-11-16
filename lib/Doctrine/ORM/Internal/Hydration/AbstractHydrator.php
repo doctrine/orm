@@ -246,7 +246,9 @@ abstract class AbstractHydrator
                 if ( ! isset($rowData[$dqlAlias][$cache[$key]['fieldName']]) || $value !== null) {
                     $rowData[$dqlAlias][$cache[$key]['fieldName']] = $value;
                 }
-
+                if ( ! isset($nonemptyComponents[$dqlAlias]) && $value !== null) {
+                    $nonemptyComponents[$dqlAlias] = true;
+                }
                 continue;
             }
 
