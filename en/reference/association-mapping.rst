@@ -960,10 +960,10 @@ entities:
                 <many-to-many field="groups" target-entity="Group">
                     <join-table name="users_groups">
                         <join-columns>
-                            <join-column="user_id" referenced-column-name="id" />
+                            <join-column name="user_id" referenced-column-name="id" />
                         </join-columns>
                         <inverse-join-columns>
-                            <join-column="group_id" referenced-column-name="id" />
+                            <join-column name="group_id" referenced-column-name="id" />
                         </inverse-join-columns>
                     </join-table>
                 </many-to-many>
@@ -1067,10 +1067,10 @@ one is bidirectional.
                 <many-to-many field="groups" inversed-by="users">
                     <join-table name="users_groups">
                         <join-columns>
-                            <join-column="user_id" referenced-column-name="id" />
+                            <join-column name="user_id" referenced-column-name="id" />
                         </join-columns>
                         <inverse-join-columns>
-                            <join-column="group_id" referenced-column-name="id" />
+                            <join-column name="group_id" referenced-column-name="id" />
                         </inverse-join-columns>
                     </join-table>
                 </many-to-many>
