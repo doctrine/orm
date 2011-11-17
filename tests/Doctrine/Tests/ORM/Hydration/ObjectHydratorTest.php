@@ -1850,7 +1850,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'sclr0' => 'JWAGE',
             ),
         );
-
+        
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
@@ -1863,4 +1863,26 @@ class ObjectHydratorTest extends HydrationTestCase
             $result
         );
     }
+	public function testNonEmptyComponents()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\Buildings\Room', 'h', null);
+       
+        $rsm->addMetaResult('h', 'number1', 'number', true);
+        $rsm->addMetaResult('h', 'hotel1', 'hotel', true);
+        
+        $resultSet = array(
+            array(
+                'number1' => '101',
+            	'hotel1' => 'Luxor',
+            ),
+        );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
+
+        $this->assertTrue(($result[0] instanceof \Doctrine\Tests\Models\Buildings\Room), $result );
+    }
 }
+
