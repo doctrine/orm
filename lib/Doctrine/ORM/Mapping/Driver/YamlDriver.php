@@ -47,7 +47,7 @@ class YamlDriver extends AbstractFileDriver
 
         if ($element['type'] == 'entity') {
             if (isset($element['repositoryClass'])) {
-                $metadata->setCustomRepositoryClass($element['repositoryClass']);  
+                $metadata->setCustomRepositoryClass($element['repositoryClass']);
             }
             if (isset($element['readOnly']) && $element['readOnly'] == true) {
                 $metadata->markReadOnly();
@@ -169,7 +169,7 @@ class YamlDriver extends AbstractFileDriver
                     'id' => true,
                     'fieldName' => $name
                 );
-                
+
                 if (isset($idElement['type'])) {
                     $mapping['type'] = $idElement['type'];
                 }
@@ -200,21 +200,21 @@ class YamlDriver extends AbstractFileDriver
         // Evaluate fields
         if (isset($element['fields'])) {
             foreach ($element['fields'] as $name => $fieldMapping) {
-                
+
                 $mapping = array(
                     'fieldName' => $name
                 );
-                
+
                 if (isset($fieldMapping['type'])) {
                     $e = explode('(', $fieldMapping['type']);
                     $fieldMapping['type'] = $e[0];
                     $mapping['type']      = $fieldMapping['type'];
-                    
+
                     if (isset($e[1])) {
                         $fieldMapping['length'] = substr($e[1], 0, strlen($e[1]) - 1);
                     }
                 }
-                
+
                 if (isset($fieldMapping['id'])) {
                     $mapping['id'] = true;
                     if (isset($fieldMapping['generator']['strategy'])) {
@@ -379,10 +379,6 @@ class YamlDriver extends AbstractFileDriver
                     $mapping['cascade'] = $manyToOneElement['cascade'];
                 }
 
-                if (isset($manyToOneElement['orphanRemoval'])) {
-                    $mapping['orphanRemoval'] = (bool)$manyToOneElement['orphanRemoval'];
-                }
-
                 $metadata->mapManyToOne($mapping);
             }
         }
@@ -436,10 +432,6 @@ class YamlDriver extends AbstractFileDriver
 
                 if (isset($manyToManyElement['cascade'])) {
                     $mapping['cascade'] = $manyToManyElement['cascade'];
-                }
-
-                if (isset($manyToManyElement['orphanRemoval'])) {
-                    $mapping['orphanRemoval'] = (bool)$manyToManyElement['orphanRemoval'];
                 }
 
                 if (isset($manyToManyElement['orderBy'])) {

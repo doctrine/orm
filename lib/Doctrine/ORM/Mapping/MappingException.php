@@ -184,7 +184,7 @@ class MappingException extends \Doctrine\ORM\ORMException
         if ( ! empty($path)) {
             $path = '[' . $path . ']';
         }
-        
+
         return new self(
             'File mapping drivers must have a valid directory path, ' .
             'however the given path ' . $path . ' seems to be incorrect!'
@@ -270,6 +270,12 @@ class MappingException extends \Doctrine\ORM\ORMException
             "part of the identifier in '$className#$field'.");
     }
 
+    public static function illegalOrphanRemoval($className, $field)
+    {
+        return new self("Orphan removal is only allowed on one-to-one and one-to-many ".
+                "associations, but " . $className."#" .$field . " is not.");
+    }
+
     public static function illegalInverseIdentifierAssocation($className, $field)
     {
         return new self("An inverse association is not allowed to be identifier in '$className#$field'.");
@@ -279,12 +285,12 @@ class MappingException extends \Doctrine\ORM\ORMException
     {
         return new self("Many-to-many or one-to-many associations are not allowed to be identifier in '$className#$field'.");
     }
-    
+
     public static function noInheritanceOnMappedSuperClass($className)
     {
         return new self("Its not supported to define inheritance information on a mapped superclass '" . $className . "'.");
     }
-    
+
     public static function mappedClassNotPartOfDiscriminatorMap($className, $rootClassName)
     {
         return new self(

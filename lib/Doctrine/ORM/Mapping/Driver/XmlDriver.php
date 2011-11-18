@@ -377,10 +377,6 @@ class XmlDriver extends AbstractFileDriver
                     $mapping['cascade'] = $this->_getCascadeMappings($manyToOneElement->cascade);
                 }
 
-                if (isset($manyToOneElement->{'orphan-removal'})) {
-                    $mapping['orphanRemoval'] = (bool)$manyToOneElement->{'orphan-removal'};
-                }
-
                 $metadata->mapManyToOne($mapping);
             }
         }
@@ -426,10 +422,6 @@ class XmlDriver extends AbstractFileDriver
 
                 if (isset($manyToManyElement->cascade)) {
                     $mapping['cascade'] = $this->_getCascadeMappings($manyToManyElement->cascade);
-                }
-
-                if (isset($manyToManyElement->{'orphan-removal'})) {
-                    $mapping['orphanRemoval'] = (bool)$manyToManyElement->{'orphan-removal'};
                 }
 
                 if (isset($manyToManyElement->{'order-by'})) {
