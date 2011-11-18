@@ -133,14 +133,14 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     public function testExportedMetadataCanBeReadBackIn()
     {
         $type = $this->_getType();
-        
+
         $metadataDriver = $this->_createMetadataDriver($type, __DIR__ . '/export/' . $type);
         $em = $this->_createEntityManager($metadataDriver);
         $cmf = $this->_createClassMetadataFactory($em, $type);
         $metadata = $cmf->getAllMetadata();
 
         $class = current($metadata);
-    
+
         $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\ExportedUser', $class->name);
 
         return $class;
@@ -217,7 +217,6 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertEquals('address_id', $class->associationMappings['address']['joinColumns'][0]['name']);
         $this->assertEquals('id', $class->associationMappings['address']['joinColumns'][0]['referencedColumnName']);
         $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
-        $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onUpdate']);
 
         $this->assertTrue($class->associationMappings['address']['isCascadeRemove']);
         $this->assertTrue($class->associationMappings['address']['isCascadePersist']);
@@ -247,7 +246,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
         $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
-        
+
         return $class;
     }
 
