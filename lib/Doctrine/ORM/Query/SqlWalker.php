@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Query;
 
 use Doctrine\DBAL\LockMode,
+    Doctrine\DBAL\Types\Type,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Query,
     Doctrine\ORM\Query\QueryException,
@@ -96,6 +97,17 @@ class SqlWalker implements TreeWalker
      * These should only be generated for SELECT queries, not for UPDATE/DELETE.
      */
     private $_useSqlTableAliases = true;
+    
+    /**
+     * Flag that indicates whether to pass columns through Type::convertToPHPValueSQL().
+     * These should only be done for SELECT queries, not for UPDATE.
+     */
+    private $_useDbalTypeValueSql = true;
+    
+    /**
+     * Holds the current columns type.
+     */
+    private $_currentColumnType;
 
     /**
      * The database platform abstraction.
@@ -409,6 +421,7 @@ class SqlWalker implements TreeWalker
     public function walkUpdateStatement(AST\UpdateStatement $AST)
     {
         $this->_useSqlTableAliases = false;
+        $this->_useDbalTypeValueSql = false;
 
         return $this->walkUpdateClause($AST->updateClause) . $this->walkWhereClause($AST->whereClause);
     }
@@ -464,11 +477,20 @@ class SqlWalker implements TreeWalker
                 $dqlAlias = $pathExpr->identificationVariable;
                 $class = $this->_queryComponents[$dqlAlias]['metadata'];
 
+                $column = '';
+
                 if ($this->_useSqlTableAliases) {
-                    $sql .= $this->walkIdentificationVariable($dqlAlias, $fieldName) . '.';
+                    $column .= $this->walkIdentificationVariable($dqlAlias, $fieldName) . '.';
                 }
 
-                $sql .= $class->getQuotedColumnName($fieldName, $this->_platform);
+                $column .= $class->getQuotedColumnName($fieldName, $this->_platform);
+
+                if ($this->_useDbalTypeValueSql && !$class->isIdentifier($fieldName)) {
+                    $type = Type::getType($class->getTypeOfField($fieldName));
+                    $column = $type->convertToPHPValueSQL($column, $this->_conn->getDatabasePlatform());
+                }
+
+                $sql .= $column;
                 break;
 
             case AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION:
@@ -1002,9 +1024,16 @@ class SqlWalker implements TreeWalker
 
                 $sqlTableAlias = $this->getSQLTableAlias($tableName, $dqlAlias);
                 $columnName    = $class->getQuotedColumnName($fieldName, $this->_platform);
-                $columnAlias = $this->getSQLColumnAlias($columnName);
+                $columnAlias   = $this->getSQLColumnAlias($columnName);
 
-                $sql .= $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
+                $col = $sqlTableAlias . '.' . $columnName;
+
+                if (!$class->isIdentifier($fieldName)) {
+                    $type = Type::getType($class->getTypeOfField($fieldName));
+                    $col  = $type->convertToPHPValueSQL($col, $this->_conn->getDatabasePlatform());
+                }
+
+                $sql .= $col . ' AS ' . $columnAlias;
 
                 if ( ! $hidden) {
                     $this->_rsm->addScalarResult($columnAlias, $resultAlias);
@@ -1086,7 +1115,14 @@ class SqlWalker implements TreeWalker
                     $columnAlias      = $this->getSQLColumnAlias($mapping['columnName']);
                     $quotedColumnName = $class->getQuotedColumnName($fieldName, $this->_platform);
 
-                    $sqlParts[] = $sqlTableAlias . '.' . $quotedColumnName . ' AS '. $columnAlias;
+                    $col = $sqlTableAlias . '.' . $quotedColumnName;
+
+                    if (!$class->isIdentifier($fieldName)) {
+                        $type = Type::getType($class->getTypeOfField($fieldName));
+                        $col = $type->convertToPHPValueSQL($col, $this->_platform);
+                    }
+
+                    $sqlParts[] = $col . ' AS '. $columnAlias;
 
                     $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
                 }
@@ -1108,7 +1144,14 @@ class SqlWalker implements TreeWalker
                             $columnAlias      = $this->getSQLColumnAlias($mapping['columnName']);
                             $quotedColumnName = $subClass->getQuotedColumnName($fieldName, $this->_platform);
 
-                            $sqlParts[] = $sqlTableAlias . '.' . $quotedColumnName . ' AS ' . $columnAlias;
+                            $col = $sqlTableAlias . '.' . $quotedColumnName;
+
+                            if (!$subClass->isIdentifier($fieldName)) {
+                                $type = Type::getType($subClass->getTypeOfField($fieldName));
+                                $col = $type->convertToPHPValueSQL($col, $this->_platform);
+                            }
+
+                            $sqlParts[] = $col . ' AS ' . $columnAlias;
 
                             $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $subClassName);
                         }
@@ -1386,7 +1429,18 @@ class SqlWalker implements TreeWalker
 
         switch (true) {
             case ($newValue instanceof AST\Node):
+                $currentColumnTypeBefore = $this->_currentColumnType;
+                $this->_currentColumnType  = null;
+
+                if ($updateItem->pathExpression->type == AST\PathExpression::TYPE_STATE_FIELD) {
+                    $class = $this->_queryComponents[$updateItem->pathExpression->identificationVariable]['metadata'];
+                    if (!$class->isIdentifier($updateItem->pathExpression->field)) {
+                        $this->_currentColumnType = $class->getTypeOfField($updateItem->pathExpression->field);
+                    }
+                }
+
                 $sql .= $newValue->dispatch($this);
+                $this->_currentColumnType = $currentColumnTypeBefore;
                 break;
 
             case ($newValue === null):
@@ -1759,20 +1813,30 @@ class SqlWalker implements TreeWalker
     {
         switch ($literal->type) {
             case AST\Literal::STRING:
-                return $this->_conn->quote($literal->value);
+                $value = $this->_conn->quote($literal->value);
+                break;
 
             case AST\Literal::BOOLEAN:
                 $bool = strtolower($literal->value) == 'true' ? true : false;
                 $boolVal = $this->_conn->getDatabasePlatform()->convertBooleans($bool);
 
-                return $boolVal;
+                $value = $boolVal;
+                break;
 
             case AST\Literal::NUMERIC:
-                return $literal->value;
+                $value = $literal->value;
+                break;
 
             default:
                 throw QueryException::invalidLiteral($literal);
         }
+        
+        if ($this->_currentColumnType !== null) {
+            $type  = Type::getType($this->_currentColumnType);
+            $value = $type->convertToDatabaseValueSQL($value, $this->_conn->getDatabasePlatform());
+        }
+        
+        return $value;
     }
 
     /**

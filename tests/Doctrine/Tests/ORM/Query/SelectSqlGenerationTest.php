@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Query;
 
 require_once __DIR__ . '/../../TestInit.php';
@@ -1331,6 +1332,48 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\CMS\CmsEmployee e GROUP BY e',
             'SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_employees c0_ GROUP BY c0_.id, c0_.name, c0_.spouse_id'
+        );
+    }
+
+    public function testCustomTypeValueSql()
+    {
+        if (DBALType::hasType('negative_to_positive')) {
+            DBALType::overrideType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        } else {
+            DBALType::addType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        }
+
+        $this->assertSqlGeneration(
+            'SELECT p.customInteger FROM Doctrine\Tests\Models\CustomType\CustomTypeParent p WHERE p.id = 1',
+            'SELECT ((c0_.customInteger) * -1) AS customInteger0 FROM customtype_parents c0_ WHERE c0_.id = 1'
+        );
+    }
+
+    public function testCustomTypeValueSqlIgnoresIdentifierColumn()
+    {
+        if (DBALType::hasType('negative_to_positive')) {
+            DBALType::overrideType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        } else {
+            DBALType::addType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        }
+
+        $this->assertSqlGeneration(
+            'SELECT p.id FROM Doctrine\Tests\Models\CustomType\CustomTypeParent p WHERE p.id = 1',
+            'SELECT c0_.id AS id0 FROM customtype_parents c0_ WHERE c0_.id = 1'
+        );
+    }
+
+    public function testCustomTypeValueSqlForAllFields()
+    {
+        if (DBALType::hasType('negative_to_positive')) {
+            DBALType::overrideType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        } else {
+            DBALType::addType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        }
+
+        $this->assertSqlGeneration(
+            'SELECT p FROM Doctrine\Tests\Models\CustomType\CustomTypeParent p',
+            'SELECT c0_.id AS id0, ((c0_.customInteger) * -1) AS customInteger1 FROM customtype_parents c0_'
         );
     }
 }

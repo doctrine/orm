@@ -65,6 +65,11 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
         $columnAlias = $this->getSQLColumnAlias($columnName);
         $this->_rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
 
+        if (!$class->isIdentifier($field)) {
+            $type = Type::getType($class->getTypeOfField($field));
+            $sql = $type->convertToPHPValueSQL($sql, $this->_platform);
+      }
+
         return $sql . ' AS ' . $columnAlias;
     }
 
