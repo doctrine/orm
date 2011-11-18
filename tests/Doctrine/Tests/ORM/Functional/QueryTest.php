@@ -34,9 +34,9 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery("select u, upper(u.name) from Doctrine\Tests\Models\CMS\CmsUser u where u.username = 'gblanco'");
-        
+
         $result = $query->getResult();
-        
+
         $this->assertEquals(1, count($result));
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]);
         $this->assertEquals('Guilherme', $result[0][0]->name);
@@ -109,7 +109,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = ?0');
         $q->setParameter(0, 'jwage');
         $user = $q->getSingleResult();
-        
+
         $this->assertNotNull($user);
     }
 
@@ -216,7 +216,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $identityMap = $this->_em->getUnitOfWork()->getIdentityMap();
             $identityMapCount = count($identityMap['Doctrine\Tests\Models\CMS\CmsArticle']);
             $this->assertTrue($identityMapCount>$iteratedCount);
-            
+
             $iteratedCount++;
         }
 
@@ -235,7 +235,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createQuery("SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.articles a");
         $articles = $query->iterate();
     }
-    
+
     /**
      * @expectedException Doctrine\ORM\NoResultException
      */
@@ -366,7 +366,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[0]->user);
         $this->assertFalse($result[0]->user->__isInitialized__);
     }
-    
+
     /**
      * @group DDC-952
      */
@@ -386,11 +386,11 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
         $this->_em->flush();
         $this->_em->clear();
-        
+
         $articles = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
                          ->setFetchMode('Doctrine\Tests\Models\CMS\CmsArticle', 'user', ClassMetadata::FETCH_EAGER)
                          ->getResult();
-        
+
         $this->assertEquals(10, count($articles));
         foreach ($articles AS $article) {
             $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $article);
@@ -456,7 +456,43 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createQuery("select u.username from Doctrine\Tests\Models\CMS\CmsUser u where u.username = 'gblanco'");
         $this->assertNull($query->getOneOrNullResult(Query::HYDRATE_SCALAR));
     }
-    
+
+    /**
+     * @group DBAL-171
+     */
+    public function testParameterOrder()
+    {
+        $user = new CmsUser;
+        $user->name = 'Benjamin';
+        $user->username = 'beberlei';
+        $user->status = 'developer';
+        $this->_em->persist($user);
+
+        $user = new CmsUser;
+        $user->name = 'Roman';
+        $user->username = 'romanb';
+        $user->status = 'developer';
+        $this->_em->persist($user);
+
+        $user = new CmsUser;
+        $user->name = 'Jonathan';
+        $user->username = 'jwage';
+        $user->status = 'developer';
+        $this->_em->persist($user);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status = :a AND u.id IN (:b)");
+        $query->setParameters(array(
+            'b' => array(1,2,3),
+            'a' => 'developer',
+        ));
+        $result = $query->getResult();
+
+        $this->assertEquals(3, count($result));
+    }
+
     public function testDqlWithAutoInferOfParameters()
     {
         $user = new CmsUser;
@@ -464,30 +500,30 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->username = 'beberlei';
         $user->status = 'developer';
         $this->_em->persist($user);
-        
+
         $user = new CmsUser;
         $user->name = 'Roman';
         $user->username = 'romanb';
         $user->status = 'developer';
         $this->_em->persist($user);
-        
+
         $user = new CmsUser;
         $user->name = 'Jonathan';
         $user->username = 'jwage';
         $user->status = 'developer';
         $this->_em->persist($user);
-        
+
         $this->_em->flush();
         $this->_em->clear();
-        
+
         $query = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username IN (?0)");
         $query->setParameter(0, array('beberlei', 'jwage'));
-        
+
         $users = $query->execute();
-        
+
         $this->assertEquals(2, count($users));
     }
-    
+
     public function testQueryBuilderWithStringWhereClauseContainingOrAndConditionalPrimary()
     {
         $qb = $this->_em->createQueryBuilder();
@@ -495,13 +531,13 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
            ->innerJoin('u.articles', 'a')
            ->where('(u.id = 0) OR (u.id IS NULL)');
-        
+
         $query = $qb->getQuery();
         $users = $query->execute();
-        
+
         $this->assertEquals(0, count($users));
     }
-    
+
     public function testQueryWithArrayOfEntitiesAsParameter()
     {
         $userA = new CmsUser;
@@ -509,31 +545,31 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $userA->username = 'beberlei';
         $userA->status = 'developer';
         $this->_em->persist($userA);
-        
+
         $userB = new CmsUser;
         $userB->name = 'Roman';
         $userB->username = 'romanb';
         $userB->status = 'developer';
         $this->_em->persist($userB);
-        
+
         $userC = new CmsUser;
         $userC->name = 'Jonathan';
         $userC->username = 'jwage';
         $userC->status = 'developer';
         $this->_em->persist($userC);
-        
+
         $this->_em->flush();
         $this->_em->clear();
-        
+
         $query = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u IN (?0) OR u.username = ?1");
         $query->setParameter(0, array($userA, $userC));
         $query->setParameter(1, 'beberlei');
-        
+
         $users = $query->execute();
-        
+
         $this->assertEquals(2, count($users));
     }
-    
+
     public function testQueryWithHiddenAsSelectExpression()
     {
         $userA = new CmsUser;
@@ -541,25 +577,25 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $userA->username = 'beberlei';
         $userA->status = 'developer';
         $this->_em->persist($userA);
-        
+
         $userB = new CmsUser;
         $userB->name = 'Roman';
         $userB->username = 'romanb';
         $userB->status = 'developer';
         $this->_em->persist($userB);
-        
+
         $userC = new CmsUser;
         $userC->name = 'Jonathan';
         $userC->username = 'jwage';
         $userC->status = 'developer';
         $this->_em->persist($userC);
-        
+
         $this->_em->flush();
         $this->_em->clear();
-        
+
         $query = $this->_em->createQuery("SELECT u, (SELECT COUNT(u2.id) FROM Doctrine\Tests\Models\CMS\CmsUser u2) AS HIDDEN total FROM Doctrine\Tests\Models\CMS\CmsUser u");
         $users = $query->execute();
-        
+
         $this->assertEquals(3, count($users));
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
     }
