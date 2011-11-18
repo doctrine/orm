@@ -567,6 +567,9 @@ final class PersistentCollection implements Collection
             return;
         }
         if ($this->association['type'] == ClassMetadata::ONE_TO_MANY && $this->association['orphanRemoval']) {
+            // we need to initialize here, as orphan removal acts like implicit cascadeRemove,
+            // hence for event listeners we need the objects in memory.
+            $this->initialize();
             foreach ($this->coll as $element) {
                 $this->em->getUnitOfWork()->scheduleOrphanRemoval($element);
             }
