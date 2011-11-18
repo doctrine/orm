@@ -22,7 +22,8 @@
 namespace Doctrine\ORM\Persisters;
 
 use Doctrine\ORM\PersistentCollection,
-    Doctrine\ORM\UnitOfWork;
+    Doctrine\ORM\UnitOfWork,
+    Doctrine\DBAL\Types\Type;
 
 /**
  * Persister for one-to-many collections.
@@ -50,6 +51,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $mapping = $coll->getMapping();
         $targetClass = $this->_em->getClassMetadata($mapping->getTargetEntityName());
         $table = $targetClass->getTableName();
+        $platform = $this->_conn->getDatabasePlatform();
 
         $ownerMapping = $targetClass->getAssociationMapping($mapping['mappedBy']);
 
@@ -62,7 +64,10 @@ class OneToManyPersister extends AbstractCollectionPersister
         $whereClause = '';
         foreach ($targetClass->getIdentifierColumnNames() as $idColumn) {
             if ($whereClause != '') $whereClause .= ' AND ';
-            $whereClause .= "$idColumn = ?";
+
+            $type = Type::getType($targetClass->getTypeOfColumn($idColumn));
+
+            $whereClause .= $idColumn . ' = ' . $type->convertToDatabaseValueSQL('?', $platform);
         }
 
         return array("UPDATE $table SET $setClause WHERE $whereClause", $this->_uow->getEntityIdentifier($element));
@@ -126,6 +131,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $mapping = $coll->getMapping();
         $targetClass = $this->_em->getClassMetadata($mapping['targetEntity']);
         $sourceClass = $this->_em->getClassMetadata($mapping['sourceEntity']);
+        $platform = $this->_conn->getDatabasePlatform();
 
         $params = array();
         $id = $this->_em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
@@ -135,15 +141,19 @@ class OneToManyPersister extends AbstractCollectionPersister
             if ($where != '') {
                 $where .= ' AND ';
             }
-            $where .= $joinColumn['name'] . " = ?";
+
             if ($targetClass->containsForeignIdentifier) {
                 $params[] = $id[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])];
+                $type = Type::getType($sourceClass->getTypeOfColumn($joinColumn['referencedColumnName']));
             } else {
                 $params[] = $id[$sourceClass->fieldNames[$joinColumn['referencedColumnName']]];
+                $type = Type::getType($sourceClass->getTypeOfColumn($sourceClass->fieldNames[$joinColumn['referencedColumnName']]));
             }
+
+            $where .= $joinColumn['name'] . ' = ' . $type->convertToDatabaseValueSQL('?', $platform);
         }
 
-        $sql = "SELECT count(*) FROM " . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) . " WHERE " . $where;
+        $sql = "SELECT count(*) FROM " . $targetClass->getQuotedTableName($platform) . " WHERE " . $where;
         return $this->_conn->fetchColumn($sql, $params);
     }
 
