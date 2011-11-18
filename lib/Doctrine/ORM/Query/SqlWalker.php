@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Query;
 
 use Doctrine\DBAL\LockMode,
+    Doctrine\DBAL\Types\Type,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Query,
     Doctrine\ORM\Query\QueryException,
@@ -332,14 +333,17 @@ class SqlWalker implements TreeWalker
             if ( ! $class->isInheritanceTypeSingleTable()) continue;
 
             $conn   = $this->_em->getConnection();
+            $type   = Type::getType($class->discriminatorColumn['type']);
             $values = array();
 
             if ($class->discriminatorValue !== null) { // discrimnators can be 0
-                $values[] = $conn->quote($class->discriminatorValue);
+                $value = $conn->quote($class->discriminatorValue, $type->getBindingType());
+                $values[] = $type->convertToPHPValueSQL($value, $conn->getDatabasePlatform());
             }
 
             foreach ($class->subClasses as $subclassName) {
-                $values[] = $conn->quote($this->_em->getClassMetadata($subclassName)->discriminatorValue);
+                $value = $conn->quote($this->_em->getClassMetadata($subclassName)->discriminatorValue, $type->getBindingType());
+                $values[] = $type->convertToPHPValueSQL($value, $conn->getDatabasePlatform());
             }
 
             $sqlParts[] = (($this->_useSqlTableAliases) ? $this->getSQLTableAlias($class->getTableName(), $dqlAlias) . '.' : '')
@@ -547,8 +551,11 @@ class SqlWalker implements TreeWalker
                 $tblAlias    = $this->getSQLTableAlias($rootClass->getTableName(), $dqlAlias);
                 $discrColumn = $rootClass->discriminatorColumn;
                 $columnAlias = $this->getSQLColumnAlias($discrColumn['name']);
+                $type        = Type::getType($discrColumn['type']);
 
-                $sqlSelectExpressions[] = $tblAlias . '.' . $discrColumn['name'] . ' AS ' . $columnAlias;
+                $col = $type->convertToPHPValueSQL($tblAlias . '.' . $discrColumn['name'], $this->_conn->getDatabasePlatform());
+
+                $sqlSelectExpressions[] = $col . ' AS ' . $columnAlias;
 
                 $this->_rsm->setDiscriminatorColumn($dqlAlias, $columnAlias);
                 $this->_rsm->addMetaResult($dqlAlias, $columnAlias, $discrColumn['fieldName']);
@@ -564,10 +571,12 @@ class SqlWalker implements TreeWalker
                 $owningClass   = (isset($assoc['inherited'])) ? $this->_em->getClassMetadata($assoc['inherited']) : $class;
                 $sqlTableAlias = $this->getSQLTableAlias($owningClass->getTableName(), $dqlAlias);
 
-                foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
+                foreach ($assoc['targetToSourceKeyColumns'] as $targetColumn => $srcColumn) {
                     $columnAlias = $this->getSQLColumnAlias($srcColumn);
+                    $type        = Type::getType($owningClass->getTypeOfColumn($targetColumn));
+                    $col         = $type->convertToPHPValueSQL($sqlTableAlias . '.' . $srcColumn, $this->_conn->getDatabasePlatform());
 
-                    $sqlSelectExpressions[] = $sqlTableAlias . '.' . $srcColumn . ' AS ' . $columnAlias;
+                    $sqlSelectExpressions[] = $col . ' AS ' . $columnAlias;
 
                     $this->_rsm->addMetaResult($dqlAlias, $columnAlias, $srcColumn, (isset($assoc['id']) && $assoc['id'] === true));
                 }
@@ -584,10 +593,12 @@ class SqlWalker implements TreeWalker
 
                     if ( ! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) continue;
 
-                    foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
+                    foreach ($assoc['targetToSourceKeyColumns'] as $targetColumn => $srcColumn) {
                         $columnAlias = $this->getSQLColumnAlias($srcColumn);
+                        $type        = Type::getType($subClass->getTypeOfColumn($targetColumn));
+                        $col         = $type->convertToPHPValueSQL($sqlTableAlias . '.' . $srcColumn, $this->_conn->getDatabasePlatform());
 
-                        $sqlSelectExpressions[] = $sqlTableAlias . '.' . $srcColumn . ' AS ' . $columnAlias;
+                        $sqlSelectExpressions[] = $col . ' AS ' . $columnAlias;
 
                         $this->_rsm->addMetaResult($dqlAlias, $columnAlias, $srcColumn);
                     }
@@ -1002,9 +1013,12 @@ class SqlWalker implements TreeWalker
 
                 $sqlTableAlias = $this->getSQLTableAlias($tableName, $dqlAlias);
                 $columnName    = $class->getQuotedColumnName($fieldName, $this->_platform);
-                $columnAlias = $this->getSQLColumnAlias($columnName);
+                $columnAlias   = $this->getSQLColumnAlias($columnName);
 
-                $sql .= $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
+                $type = Type::getType($class->getTypeOfField($fieldName));
+                $col  = $type->convertToPHPValueSQL($sqlTableAlias . '.' . $columnName, $this->_conn->getDatabasePlatform());
+
+                $sql .= $col . ' AS ' . $columnAlias;
 
                 if ( ! $hidden) {
                     $this->_rsm->addScalarResult($columnAlias, $resultAlias);
@@ -1086,7 +1100,10 @@ class SqlWalker implements TreeWalker
                     $columnAlias      = $this->getSQLColumnAlias($mapping['columnName']);
                     $quotedColumnName = $class->getQuotedColumnName($fieldName, $this->_platform);
 
-                    $sqlParts[] = $sqlTableAlias . '.' . $quotedColumnName . ' AS '. $columnAlias;
+                    $type = Type::getType($class->getTypeOfField($fieldName, $this->_platform));
+                    $col = $type->convertToPHPValueSQL($sqlTableAlias . '.' . $quotedColumnName, $this->_platform);
+
+                    $sqlParts[] = $col . ' AS '. $columnAlias;
 
                     $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
                 }
@@ -1108,7 +1125,10 @@ class SqlWalker implements TreeWalker
                             $columnAlias      = $this->getSQLColumnAlias($mapping['columnName']);
                             $quotedColumnName = $subClass->getQuotedColumnName($fieldName, $this->_platform);
 
-                            $sqlParts[] = $sqlTableAlias . '.' . $quotedColumnName . ' AS ' . $columnAlias;
+                            $type = Type::getType($subClass->getTypeOfField($fieldName, $this->_platform));
+                            $col = $type->convertToPHPValueSQL($sqlTableAlias . '.' . $quotedColumnName, $this->_platform);
+
+                            $sqlParts[] = $col . ' AS ' . $columnAlias;
 
                             $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $subClassName);
                         }
@@ -1308,7 +1328,7 @@ class SqlWalker implements TreeWalker
                 $item->type = AST\PathExpression::TYPE_STATE_FIELD;
                 $sqlParts[] = $this->walkGroupByItem($item);
             }
-            
+
             foreach ($this->_queryComponents[$groupByItem]['metadata']->associationMappings AS $mapping) {
                 if ($mapping['isOwningSide'] && $mapping['type'] & ClassMetadataInfo::TO_ONE) {
                     $item       = new AST\PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $groupByItem, $mapping['fieldName']);
@@ -1383,20 +1403,34 @@ class SqlWalker implements TreeWalker
 
         $sql      = $this->walkPathExpression($updateItem->pathExpression) . ' = ';
         $newValue = $updateItem->newValue;
+        $type     = null;
+
+        if ($updateItem->pathExpression->type == AST\PathExpression::TYPE_STATE_FIELD) {
+            $class = $this->_queryComponents[$updateItem->pathExpression->identificationVariable]['metadata'];
+            $type  = Type::getType($class->getTypeOfField($updateItem->pathExpression->field));
+        }
 
         switch (true) {
             case ($newValue instanceof AST\Node):
-                $sql .= $newValue->dispatch($this);
+                $value = $newValue->dispatch($this);
+                if ($type) {
+                    $value = $type->convertToDatabaseValueSQL($value, $this->_conn->getDatabasePlatform());
+                }
                 break;
 
             case ($newValue === null):
-                $sql .= 'NULL';
+                $value = 'NULL';
                 break;
 
             default:
-                $sql .= $this->_conn->quote($newValue);
+                $value = $this->_conn->quote($newValue);
+                if ($type) {
+                    $value = $type->convertToDatabaseValueSQL($value, $this->_conn->getDatabasePlatform());
+                }
                 break;
         }
+
+        $sql .= $value;
 
         $this->_useSqlTableAliases = $useTableAliasesBefore;
 
@@ -1667,11 +1701,30 @@ class SqlWalker implements TreeWalker
         $sql = $this->walkPathExpression($inExpr->pathExpression)
              . ($inExpr->not ? ' NOT' : '') . ' IN (';
 
-        $sql .= ($inExpr->subselect)
-            ? $this->walkSubselect($inExpr->subselect)
-            : implode(', ', array_map(array($this, 'walkInParameter'), $inExpr->literals));
+        if ($inExpr->subselect) {
+            $value = $this->walkSubselect($inExpr->subselect);
+        } else {
+            $vals = array();
+            $type = null;
 
-        $sql .= ')';
+            if ($inExpr->pathExpression->type == AST\PathExpression::TYPE_STATE_FIELD) {
+                $class = $this->_queryComponents[$inExpr->pathExpression->identificationVariable]['metadata'];
+                $type  = Type::getType($class->getTypeOfField($inExpr->pathExpression->field));
+            }
+
+            foreach ($inExpr->literals as $literal) {
+                $val = $this->walkInParameter($literal);
+                if ($type) {
+                    $val = $type->convertToDatabaseValueSQL($val, $this->_conn->getDatabasePlatform());
+                }
+
+                $vals[] = $val;
+            }
+
+            $value = implode(', ', $vals);
+        }
+
+        $sql .= $value . ')';
 
         return $sql;
     }
@@ -1700,6 +1753,7 @@ class SqlWalker implements TreeWalker
 
         $sql .= $class->discriminatorColumn['name'] . ($instanceOfExpr->not ? ' NOT IN ' : ' IN ');
 
+        $type = Type::getType($class->discriminatorColumn['type']);
         $sqlParameterList = array();
 
         foreach ($instanceOfExpr->value as $parameter) {
@@ -1719,7 +1773,8 @@ class SqlWalker implements TreeWalker
             }
 
             if ($entityClassName == $class->name) {
-                $sqlParameterList[] = $this->_conn->quote($class->discriminatorValue);
+                $value = $this->_conn->quote($class->discriminatorValue, $type->getBindingType());
+                $sqlParameterList[] = $type->convertToPHPValueSQL($value, $this->_conn->getDatabasePlatform());
             } else {
                 $discrMap = array_flip($class->discriminatorMap);
 
@@ -1727,7 +1782,8 @@ class SqlWalker implements TreeWalker
                     throw QueryException::instanceOfUnrelatedClass($entityClassName, $class->rootEntityName);
                 }
 
-                $sqlParameterList[] = $this->_conn->quote($discrMap[$entityClassName]);
+                $value = $this->_conn->quote($discrMap[$entityClassName], $type->getBindingType());
+                $sqlParameterList[] = $type->convertToPHPValueSQL($value, $this->_conn->getDatabasePlatform());
             }
         }
 
@@ -1787,8 +1843,22 @@ class SqlWalker implements TreeWalker
 
         if ($betweenExpr->not) $sql .= ' NOT';
 
-        $sql .= ' BETWEEN ' . $this->walkArithmeticExpression($betweenExpr->leftBetweenExpression)
-              . ' AND ' . $this->walkArithmeticExpression($betweenExpr->rightBetweenExpression);
+        $left  = $this->walkArithmeticExpression($betweenExpr->leftBetweenExpression);
+        $right = $this->walkArithmeticExpression($betweenExpr->rightBetweenExpression);
+
+        if ($betweenExpr->expression instanceof AST\ArithmeticExpression &&
+            $betweenExpr->expression->isSimpleArithmeticExpression() &&
+            $betweenExpr->expression->simpleArithmeticExpression instanceof AST\PathExpression &&
+            $betweenExpr->expression->simpleArithmeticExpression->type == AST\PathExpression::TYPE_STATE_FIELD) {
+
+            $class = $this->_queryComponents[$betweenExpr->expression->simpleArithmeticExpression->identificationVariable]['metadata'];
+            $type  = Type::getType($class->getTypeOfField($betweenExpr->expression->simpleArithmeticExpression->field));
+
+            $left  = $type->convertToDatabaseValueSQL($left, $this->_conn->getDatabasePlatform());
+            $right = $type->convertToDatabaseValueSQL($right, $this->_conn->getDatabasePlatform());
+        }
+
+        $sql .= ' BETWEEN ' . $left . ' AND ' . $right;
 
         return $sql;
     }
@@ -1841,19 +1911,38 @@ class SqlWalker implements TreeWalker
     {
         $leftExpr  = $compExpr->leftExpression;
         $rightExpr = $compExpr->rightExpression;
-        $sql       = '';
 
-        $sql .= ($leftExpr instanceof AST\Node)
+        $left = ($leftExpr instanceof AST\Node)
             ? $leftExpr->dispatch($this)
             : (is_numeric($leftExpr) ? $leftExpr : $this->_conn->quote($leftExpr));
 
-        $sql .= ' ' . $compExpr->operator . ' ';
+        if ($rightExpr instanceof AST\ArithmeticExpression &&
+            $rightExpr->isSimpleArithmeticExpression() &&
+            $rightExpr->simpleArithmeticExpression instanceof AST\PathExpression &&
+            $rightExpr->simpleArithmeticExpression->type == AST\PathExpression::TYPE_STATE_FIELD) {
 
-        $sql .= ($rightExpr instanceof AST\Node)
+            $class = $this->_queryComponents[$rightExpr->simpleArithmeticExpression->identificationVariable]['metadata'];
+            $type  = Type::getType($class->getTypeOfField($rightExpr->simpleArithmeticExpression->field));
+
+            $left = $type->convertToDatabaseValueSQL($left, $this->_conn->getDatabasePlatform());
+        }
+
+        $right = ($rightExpr instanceof AST\Node)
             ? $rightExpr->dispatch($this)
             : (is_numeric($rightExpr) ? $rightExpr : $this->_conn->quote($rightExpr));
 
-        return $sql;
+        if ($leftExpr instanceof AST\ArithmeticExpression &&
+            $leftExpr->isSimpleArithmeticExpression() &&
+            $leftExpr->simpleArithmeticExpression instanceof AST\PathExpression &&
+            $leftExpr->simpleArithmeticExpression->type == AST\PathExpression::TYPE_STATE_FIELD) {
+
+            $class = $this->_queryComponents[$leftExpr->simpleArithmeticExpression->identificationVariable]['metadata'];
+            $type  = Type::getType($class->getTypeOfField($leftExpr->simpleArithmeticExpression->field));
+
+            $right = $type->convertToDatabaseValueSQL($right, $this->_conn->getDatabasePlatform());
+        }
+
+        return $left . ' ' . $compExpr->operator . ' ' . $right;
     }
 
     /**

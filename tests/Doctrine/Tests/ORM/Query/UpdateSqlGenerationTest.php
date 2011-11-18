@@ -21,6 +21,8 @@
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\DBAL\Types\Type as DBALType;
+
 require_once __DIR__ . '/../../TestInit.php';
 
 /**
@@ -42,6 +44,12 @@ class UpdateSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     private $_em;
 
     protected function setUp() {
+        if (DBALType::hasType('negative_to_positive')) {
+            DBALType::overrideType('negative_to_positive', '\Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        } else {
+            DBALType::addType('negative_to_positive', '\Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        }
+
         $this->_em = $this->_getTestEntityManager();
     }
 
@@ -184,6 +192,30 @@ class UpdateSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             "UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = 'inactive' WHERE SIZE(u.groups) = 10",
             "UPDATE cms_users SET status = 'inactive' WHERE (SELECT COUNT(*) FROM cms_users_groups c0_ WHERE c0_.user_id = cms_users.id) = 10"
+        );
+    }
+
+    public function testSupportsComparisonWhereClauseWithCustomTypeValueSql()
+    {
+        $this->assertSqlGeneration(
+            'UPDATE Doctrine\Tests\Models\CustomType\CustomTypeParent p SET p.customInteger = 1 WHERE p.id = 1',
+            'UPDATE customtype_parents SET customInteger = ABS(1) WHERE id = ABS(1)'
+        );
+    }
+
+    public function testSupportsInWhereClauseWithCustomTypeValueSql()
+    {
+        $this->assertSqlGeneration(
+            'UPDATE Doctrine\Tests\Models\CustomType\CustomTypeParent p SET p.customInteger = 1 WHERE p.id IN(1, 2, 3)',
+            'UPDATE customtype_parents SET customInteger = ABS(1) WHERE id IN (ABS(1), ABS(2), ABS(3))'
+        );
+    }
+
+    public function testSupportsBetweenWhereClauseWithCustomTypeValueSql()
+    {
+        $this->assertSqlGeneration(
+            'UPDATE Doctrine\Tests\Models\CustomType\CustomTypeParent p SET p.customInteger = 1 WHERE p.id BETWEEN 1 AND 10',
+            'UPDATE customtype_parents SET customInteger = ABS(1) WHERE id BETWEEN ABS(1) AND ABS(10)'
         );
     }
 }

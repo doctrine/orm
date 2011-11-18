@@ -65,14 +65,22 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
         $columnAlias = $this->getSQLColumnAlias($columnName);
         $this->_rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
 
-        return $sql . ' AS ' . $columnAlias;
+        $type = Type::getType($class->fieldMappings[$field]['type']);
+
+        return $type->convertToPHPValueSQL($sql, $this->_platform) . ' AS ' . $columnAlias;
     }
 
-    protected function getSelectJoinColumnSQL($tableAlias, $joinColumnName, $className)
+    protected function getSelectJoinColumnSQL($tableAlias, $joinColumnName, $className, $columnType = null)
     {
         $columnAlias = $this->getSQLColumnAlias($joinColumnName);
         $this->_rsm->addMetaResult('r', $columnAlias, $joinColumnName);
-        
-        return $tableAlias . '.' . $joinColumnName . ' AS ' . $columnAlias;
+
+        $col = $tableAlias . '.' . $joinColumnName;
+
+        if ($columnType !== null) {
+            $col = Type::getType($columnType)->convertToPHPValueSQL($col, $this->_platform);
+        }
+
+        return $col . ' AS ' . $columnAlias;
     }
 }

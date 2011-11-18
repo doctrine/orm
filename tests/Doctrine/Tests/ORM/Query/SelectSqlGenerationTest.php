@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Query;
 
 require_once __DIR__ . '/../../TestInit.php';
@@ -12,6 +13,12 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 
     protected function setUp()
     {
+        if (DBALType::hasType('negative_to_positive')) {
+            DBALType::overrideType('negative_to_positive', '\Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        } else {
+            DBALType::addType('negative_to_positive', '\Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        }
+
         $this->_em = $this->_getTestEntityManager();
     }
 
@@ -1331,6 +1338,30 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\CMS\CmsEmployee e GROUP BY e',
             'SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_employees c0_ GROUP BY c0_.id, c0_.name, c0_.spouse_id'
+        );
+    }
+
+    public function testSupportsComparisonWhereClauseWithCustomTypeValueSql()
+    {
+        $this->assertSqlGeneration(
+            'SELECT p FROM Doctrine\Tests\Models\CustomType\CustomTypeParent p WHERE p.id = 1',
+            'SELECT ((c0_.id) * -1) AS id0, ((c0_.customInteger) * -1) AS customInteger1 FROM customtype_parents c0_ WHERE c0_.id = ABS(1)'
+        );
+    }
+
+    public function testSupportsInWhereClauseWithCustomTypeValueSql()
+    {
+        $this->assertSqlGeneration(
+            'SELECT p from \Doctrine\Tests\Models\CustomType\CustomTypeParent p WHERE p.id IN(1, 2, 3)',
+            'SELECT ((c0_.id) * -1) AS id0, ((c0_.customInteger) * -1) AS customInteger1 FROM customtype_parents c0_ WHERE c0_.id IN (ABS(1), ABS(2), ABS(3))'
+        );
+    }
+
+    public function testSupportsBetweenWhereClauseWithCustomTypeValueSql()
+    {
+        $this->assertSqlGeneration(
+            'SELECT p from \Doctrine\Tests\Models\CustomType\CustomTypeParent p WHERE p.id BETWEEN 1 AND 10',
+            'SELECT ((c0_.id) * -1) AS id0, ((c0_.customInteger) * -1) AS customInteger1 FROM customtype_parents c0_ WHERE c0_.id BETWEEN ABS(1) AND ABS(10)'
         );
     }
 }

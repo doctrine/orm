@@ -112,6 +112,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Legacy\LegacyArticle',
             'Doctrine\Tests\Models\Legacy\LegacyCar',
         ),
+        'customtype' => array(
+            'Doctrine\Tests\Models\CustomType\CustomTypeChild',
+            'Doctrine\Tests\Models\CustomType\CustomTypeParent',
+            'Doctrine\Tests\Models\CustomType\CustomTypeUpperCase',
+        ),
     );
 
     protected function useModelSet($setName)
@@ -217,6 +222,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM legacy_articles');
             $conn->executeUpdate('DELETE FROM legacy_cars');
             $conn->executeUpdate('DELETE FROM legacy_users');
+        }
+
+        if (isset($this->_usedModelSets['customtype'])) {
+            $conn->executeUpdate('DELETE FROM customtype_parent_friends');
+            $conn->executeUpdate('DELETE FROM customtype_parents');
+            $conn->executeUpdate('DELETE FROM customtype_children');
+            $conn->executeUpdate('DELETE FROM customtype_uppercases');
         }
 
         $this->_em->clear();

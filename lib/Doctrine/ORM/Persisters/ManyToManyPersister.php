@@ -22,7 +22,8 @@
 namespace Doctrine\ORM\Persisters;
 
 use Doctrine\ORM\PersistentCollection,
-    Doctrine\ORM\UnitOfWork;
+    Doctrine\ORM\UnitOfWork,
+    Doctrine\DBAL\Types\Type;
 
 /**
  * Persister for many-to-many collections.
@@ -39,11 +40,23 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function _getDeleteRowSQL(PersistentCollection $coll)
     {
-        $mapping = $coll->getMapping();
-        $class   = $this->_em->getClassMetadata(get_class($coll->getOwner()));
-        
-        return 'DELETE FROM ' . $class->getQuotedJoinTableName($mapping, $this->_conn->getDatabasePlatform()) 
-             . ' WHERE ' . implode(' = ? AND ', $mapping['joinTableColumns']) . ' = ?';
+        $mapping  = $coll->getMapping();
+        $class    = $this->_em->getClassMetadata(get_class($coll->getOwner()));
+        $platform = $this->_conn->getDatabasePlatform();
+
+        $cols = array();
+        foreach ($mapping['joinTableColumns'] as $column) {
+            if (isset($mapping['relationToTargetKeyColumns'][$column])) {
+                $type = $this->_em->getClassMetadata($mapping['targetEntity'])->getTypeOfColumn($mapping['relationToTargetKeyColumns'][$column]);
+            } else {
+                $type = $class->getTypeOfColumn($mapping['relationToSourceKeyColumns'][$column]);
+            }
+
+            $cols[] = $column . ' = ' . Type::getType($type)->convertToDatabaseValueSQL('?', $platform);
+        }
+
+        return 'DELETE FROM ' . $class->getQuotedJoinTableName($mapping, $platform)
+             . ' WHERE ' . implode(' AND ', $cols);
     }
 
     /**
@@ -75,12 +88,24 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function _getInsertRowSQL(PersistentCollection $coll)
     {
-        $mapping = $coll->getMapping();
-        $columns = $mapping['joinTableColumns'];
-        $class   = $this->_em->getClassMetadata(get_class($coll->getOwner()));
+        $mapping  = $coll->getMapping();
+        $columns  = $mapping['joinTableColumns'];
+        $class    = $this->_em->getClassMetadata(get_class($coll->getOwner()));
+        $platform = $this->_conn->getDatabasePlatform();
+
+        $values = array();
+        foreach ($columns as $column) {
+            if (isset($mapping['relationToTargetKeyColumns'][$column])) {
+                $type = $this->_em->getClassMetadata($mapping['targetEntity'])->getTypeOfColumn($mapping['relationToTargetKeyColumns'][$column]);
+            } else {
+                $type = $class->getTypeOfColumn($mapping['relationToSourceKeyColumns'][$column]);
+            }
+
+            $values[] = Type::getType($type)->convertToDatabaseValueSQL('?', $platform);
+        }
         
-        return 'INSERT INTO ' . $class->getQuotedJoinTableName($mapping, $this->_conn->getDatabasePlatform()) 
-             . ' (' . implode(', ', $columns) . ') VALUES (' . implode(', ', array_fill(0, count($columns), '?')) . ')';
+        return 'INSERT INTO ' . $class->getQuotedJoinTableName($mapping, $platform) 
+             . ' (' . implode(', ', $columns) . ') VALUES (' . implode(', ', $values) . ')';
     }
 
     /**
@@ -153,16 +178,18 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $mapping     = $coll->getMapping();
         $class       = $this->_em->getClassMetadata(get_class($coll->getOwner()));
-        $joinTable = $mapping['joinTable'];
+        $platform    = $this->_conn->getDatabasePlatform();
         $whereClause = '';
         
         foreach ($mapping['relationToSourceKeyColumns'] as $relationColumn => $srcColumn) {
             if ($whereClause !== '') $whereClause .= ' AND ';
             
-            $whereClause .= $relationColumn . ' = ?';
+            $type = Type::getType($class->getTypeOfColumn($srcColumn));
+
+            $whereClause .= $relationColumn . ' = ' . $type->convertToDatabaseValueSQL('?', $platform);
         }
-        
-        return 'DELETE FROM ' . $class->getQuotedJoinTableName($mapping, $this->_conn->getDatabasePlatform()) 
+
+        return 'DELETE FROM ' . $class->getQuotedJoinTableName($mapping, $platform) 
              . ' WHERE ' . $whereClause;
     }
 
@@ -197,10 +224,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function count(PersistentCollection $coll)
     {
-        $params  = array();
-        $mapping = $coll->getMapping();
-        $class   = $this->_em->getClassMetadata($mapping['sourceEntity']);
-        $id      = $this->_em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
+        $params   = array();
+        $mapping  = $coll->getMapping();
+        $class    = $this->_em->getClassMetadata($mapping['sourceEntity']);
+        $id       = $this->_em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
+        $platform = $this->_conn->getDatabasePlatform();
 
         if ($mapping['isOwningSide']) {
             $joinColumns = $mapping['relationToSourceKeyColumns'];
@@ -217,7 +245,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
                     $whereClause .= ' AND ';
                 }
                 
-                $whereClause .= "$joinTableColumn = ?";
+                $type = Type::getType($class->getTypeOfColumn($joinColumns[$joinTableColumn]));
+
+                $whereClause .= $joinTableColumn . ' = ' . $type->convertToDatabaseValueSQL('?', $platform);
 
                 $params[] = ($class->containsForeignIdentifier)
                     ? $id[$class->getFieldForColumn($joinColumns[$joinTableColumn])]
@@ -226,7 +256,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
         
         $sql = 'SELECT COUNT(*)'
-             . ' FROM ' . $class->getQuotedJoinTableName($mapping, $this->_conn->getDatabasePlatform()) 
+             . ' FROM ' . $class->getQuotedJoinTableName($mapping, $platform) 
              . ' WHERE ' . $whereClause;
 
         return $this->_conn->fetchColumn($sql, $params);
@@ -252,6 +282,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     public function contains(PersistentCollection $coll, $element)
     {
         $uow = $this->_em->getUnitOfWork();
+        $platform = $this->_conn->getDatabasePlatform();
 
         // shortcut for new entities
         if ($uow->getEntityState($element, UnitOfWork::STATE_NEW) == UnitOfWork::STATE_NEW) {
@@ -282,8 +313,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 if ($whereClause !== '') {
                     $whereClause .= ' AND ';
                 }
-                
-                $whereClause .= $joinTableColumn . ' = ?';
+
+                $type = Type::getType($targetClass->getTypeOfColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn]));
+
+                $whereClause .= $joinTableColumn . ' = ' . $type->convertToDatabaseValueSQL('?', $platform);
 
                 $params[] = ($targetClass->containsForeignIdentifier)
                     ? $targetId[$targetClass->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])]
@@ -292,8 +325,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 if ($whereClause !== '') {
                     $whereClause .= ' AND ';
                 }
-                
-                $whereClause .= $joinTableColumn . ' = ?';
+
+                $type = Type::getType($sourceClass->getTypeOfColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn]));
+
+                $whereClause .= $joinTableColumn . ' = ' . $type->convertToDatabaseValueSQL('?', $platform);
 
                 $params[] = ($sourceClass->containsForeignIdentifier)
                     ? $sourceId[$sourceClass->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])]
@@ -302,7 +337,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
         
         $sql = 'SELECT 1'
-             . ' FROM ' . $sourceClass->getQuotedJoinTableName($mapping, $this->_conn->getDatabasePlatform()) 
+             . ' FROM ' . $sourceClass->getQuotedJoinTableName($mapping, $platform) 
              . ' WHERE ' . $whereClause;
 
         return (bool) $this->_conn->fetchColumn($sql, $params);
