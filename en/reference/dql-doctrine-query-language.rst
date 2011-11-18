@@ -557,8 +557,8 @@ clauses:
 -  TRIM([LEADING \| TRAILING \| BOTH] ['trchar' FROM] str) - Trim
    the string by the given trim char, defaults to whitespaces.
 -  UPPER(str) - Return the upper-case of the given string.
--  DATE_ADD(date, days) - Add the number of days to a given date.
--  DATE_SUB(date, days) - Substract the number of days from a given date.
+-  DATE_ADD(date, days, unit) - Add the number of days to a given date. (Supported units are DAY, MONTH)
+-  DATE_SUB(date, days, unit) - Substract the number of days from a given date. (Supported units are DAY, MONTH)
 -  DATE_DIFF(date1, date2) - Calculate the difference in days between date1-date2.
 
 Arithmetic operators
