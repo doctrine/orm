@@ -279,6 +279,9 @@ class XmlExporter extends AbstractExporter
             if ($associationMapping['isCascadeDetach']) {
                 $cascade[] = 'cascade-detach';
             }
+            if (count($cascade) === 5) {
+                $cascade  = array('cascade-all');
+            }
             if ($cascade) {
                 $cascadeXml = $associationMappingXml->addChild('cascade');
                 foreach ($cascade as $type) {
