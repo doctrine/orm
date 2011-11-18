@@ -462,30 +462,30 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testParameterOrder()
     {
-        $user = new CmsUser;
-        $user->name = 'Benjamin';
-        $user->username = 'beberlei';
-        $user->status = 'developer';
-        $this->_em->persist($user);
+        $user1 = new CmsUser;
+        $user1->name = 'Benjamin';
+        $user1->username = 'beberlei';
+        $user1->status = 'developer';
+        $this->_em->persist($user1);
 
-        $user = new CmsUser;
-        $user->name = 'Roman';
-        $user->username = 'romanb';
-        $user->status = 'developer';
-        $this->_em->persist($user);
+        $user2 = new CmsUser;
+        $user2->name = 'Roman';
+        $user2->username = 'romanb';
+        $user2->status = 'developer';
+        $this->_em->persist($user2);
 
-        $user = new CmsUser;
-        $user->name = 'Jonathan';
-        $user->username = 'jwage';
-        $user->status = 'developer';
-        $this->_em->persist($user);
+        $user3 = new CmsUser;
+        $user3->name = 'Jonathan';
+        $user3->username = 'jwage';
+        $user3->status = 'developer';
+        $this->_em->persist($user3);
 
         $this->_em->flush();
         $this->_em->clear();
 
         $query = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status = :a AND u.id IN (:b)");
         $query->setParameters(array(
-            'b' => array(1,2,3),
+            'b' => array($user1->id, $user2->id, $user3->id),
             'a' => 'developer',
         ));
         $result = $query->getResult();
