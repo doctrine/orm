@@ -21,7 +21,7 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $address = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
         $this->assertEquals(1, $address->sequenceGeneratorDefinition['allocationSize']);
     }
-    
+
     public function testGetCreateSchemaSql()
     {
         $classes = array(
@@ -32,7 +32,7 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getCreateSchemaSql($classes);
-        
+
         $this->assertEquals("CREATE TABLE cms_addresses (id INT NOT NULL, user_id INT DEFAULT NULL, country VARCHAR(50) NOT NULL, zip VARCHAR(50) NOT NULL, city VARCHAR(50) NOT NULL, PRIMARY KEY(id))", $sql[0]);
         $this->assertEquals("CREATE UNIQUE INDEX UNIQ_ACAC157BA76ED395 ON cms_addresses (user_id)", $sql[1]);
         $this->assertEquals("CREATE TABLE cms_users (id INT NOT NULL, status VARCHAR(50) NOT NULL, username VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id))", $sql[2]);
@@ -48,10 +48,10 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals("ALTER TABLE cms_users_groups ADD CONSTRAINT FK_7EA9409AA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[12]);
         $this->assertEquals("ALTER TABLE cms_users_groups ADD CONSTRAINT FK_7EA9409AFE54D947 FOREIGN KEY (group_id) REFERENCES cms_groups(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[13]);
         $this->assertEquals("ALTER TABLE cms_phonenumbers ADD CONSTRAINT FK_F21F790FA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users(id) NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[14]);
-        
+
         $this->assertEquals(count($sql), 15);
     }
-    
+
     public function testGetCreateSchemaSql2()
     {
         $classes = array(
@@ -62,11 +62,11 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $sql = $tool->getCreateSchemaSql($classes);
 
         $this->assertEquals(2, count($sql));
-        
+
         $this->assertEquals('CREATE TABLE decimal_model (id INT NOT NULL, "decimal" NUMERIC(5, 2) NOT NULL, "high_scale" NUMERIC(14, 4) NOT NULL, PRIMARY KEY(id))', $sql[0]);
         $this->assertEquals("CREATE SEQUENCE decimal_model_id_seq INCREMENT BY 1 MINVALUE 1 START 1", $sql[1]);
     }
-    
+
     public function testGetCreateSchemaSql3()
     {
         $classes = array(
@@ -75,12 +75,12 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getCreateSchemaSql($classes);
-        
+
         $this->assertEquals(2, count($sql));
         $this->assertEquals("CREATE TABLE boolean_model (id INT NOT NULL, booleanField BOOLEAN NOT NULL, PRIMARY KEY(id))", $sql[0]);
         $this->assertEquals("CREATE SEQUENCE boolean_model_id_seq INCREMENT BY 1 MINVALUE 1 START 1", $sql[1]);
     }
-    
+
     public function testGetDropSchemaSql()
     {
         $classes = array(
@@ -96,8 +96,8 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         }
         $sql = $tool->getDropSchemaSQL($classes);
-        
-        $this->assertEquals(10, count($sql));
+
+        $this->assertEquals(13, count($sql));
         $dropSequenceSQLs = 0;
         foreach ($sql AS $stmt) {
             if (strpos($stmt, "DROP SEQUENCE") === 0) {
