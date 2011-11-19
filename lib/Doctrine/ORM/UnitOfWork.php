@@ -24,6 +24,7 @@ use Exception, InvalidArgumentException, UnexpectedValueException,
     Doctrine\Common\Collections\Collection,
     Doctrine\Common\NotifyPropertyChanged,
     Doctrine\Common\PropertyChangedListener,
+    Doctrine\Common\Persistence\ObjectManagerAware,
     Doctrine\ORM\Event\LifecycleEventArgs,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Proxy\Proxy;
@@ -1642,7 +1643,7 @@ class UnitOfWork implements PropertyChangedListener
 
             // If there is no ID, it is actually NEW.
             if ( ! $id) {
-                $managedCopy = $class->newInstance();
+                $managedCopy = $this->newInstance($class);
 
                 $this->persistNew($class, $managedCopy);
             } else {
@@ -1666,7 +1667,7 @@ class UnitOfWork implements PropertyChangedListener
                         throw new EntityNotFoundException;
                     }
 
-                    $managedCopy = $class->newInstance();
+                    $managedCopy = $this->newInstance($class);
                     $class->setIdentifierValues($managedCopy, $id);
 
                     $this->persistNew($class, $managedCopy);
@@ -2158,6 +2159,18 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * @param ClassMetadata $class
+     */
+    private function newInstance($class)
+    {
+        $entity = $class->newInstance();
+        if ($entity instanceof \Doctrine\Common\Persistence\ObjectManagerAware) {
+            $entity->injectObjectManager($this->em, $class);
+        }
+        return $entity;
+    }
+
+    /**
      * INTERNAL:
      * Creates an entity. Used for reconstitution of persistent entities.
      *
@@ -2209,6 +2222,11 @@ class UnitOfWork implements PropertyChangedListener
                 // If only a specific entity is set to refresh, check that it's the one
                 if(isset($hints[Query::HINT_REFRESH_ENTITY])) {
                     $overrideLocalValues = $hints[Query::HINT_REFRESH_ENTITY] === $entity;
+
+                    // inject ObjectManager into just loaded proxies.
+                    if ($overrideLocalValues && $entity instanceof ObjectManagerAware) {
+                        $entity->injectObjectManager($this->em, $class);
+                    }
                 }
             }
 
@@ -2216,7 +2234,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->originalEntityData[$oid] = $data;
             }
         } else {
-            $entity = $class->newInstance();
+            $entity = $this->newInstance($class);
             $oid = spl_object_hash($entity);
             $this->entityIdentifiers[$oid] = $id;
             $this->entityStates[$oid] = self::STATE_MANAGED;

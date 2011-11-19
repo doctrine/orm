@@ -1993,4 +1993,22 @@ class ClassMetadataInfo implements ClassMetadata
     {
         return isset($assoc['joinTable']['quoted']) ? $platform->quoteIdentifier($assoc['joinTable']['name']) : $assoc['joinTable']['name'];
     }
+
+    /**
+     * @param string $fieldName
+     * @return bool
+     */
+    public function isAssociationInverseSide($fieldName)
+    {
+        return isset($this->associationMappings[$fieldName]) && ! $this->associationMappings[$fieldName]['isOwningSide'];
+    }
+
+    /**
+     * @param string $fieldName
+     * @return string
+     */
+    public function getAssociationMappedByTargetField($fieldName)
+    {
+        return $this->associationMappings[$fieldName]['mappedBy'];
+    }
 }
