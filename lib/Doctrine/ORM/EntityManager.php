@@ -128,7 +128,7 @@ class EntityManager implements ObjectManager
         $this->metadataFactory = new $metadataFactoryClassName;
         $this->metadataFactory->setEntityManager($this);
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
-        
+
         $this->unitOfWork = new UnitOfWork($this);
         $this->proxyFactory = new ProxyFactory($this,
                 $config->getProxyDir(),
@@ -203,18 +203,18 @@ class EntityManager implements ObjectManager
     public function transactional(Closure $func)
     {
         $this->conn->beginTransaction();
-        
+
         try {
             $return = $func($this);
-            
+
             $this->flush();
             $this->conn->commit();
-            
+
             return $return ?: true;
         } catch (Exception $e) {
             $this->close();
             $this->conn->rollback();
-            
+
             throw $e;
         }
     }
@@ -244,7 +244,7 @@ class EntityManager implements ObjectManager
      *
      * The class name must be the fully-qualified class name without a leading backslash
      * (as it is returned by get_class($obj)) or an aliased class name.
-     * 
+     *
      * Examples:
      * MyProject\Domain\User
      * sales:PriceRequest
@@ -450,7 +450,7 @@ class EntityManager implements ObjectManager
      *
      * The entity will be entered into the database at or before transaction
      * commit or as a result of the flush operation.
-     * 
+     *
      * NOTE: The persist operation always considers entities that are not yet known to
      * this EntityManager as NEW. Do not pass detached entities to the persist operation.
      *
@@ -632,7 +632,7 @@ class EntityManager implements ObjectManager
 
     /**
      * Check if the Entity manager is open or closed.
-     * 
+     *
      * @return bool
      */
     public function isOpen()
@@ -711,6 +711,14 @@ class EntityManager implements ObjectManager
     public function getProxyFactory()
     {
         return $this->proxyFactory;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function initializeObject($entity)
+    {
+        $this->unitOfWork->initializeObject($entity);
     }
 
     /**

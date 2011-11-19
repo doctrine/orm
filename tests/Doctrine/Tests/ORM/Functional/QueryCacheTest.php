@@ -15,6 +15,10 @@ require_once __DIR__ . '/../../TestInit.php';
 class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp() {
+        if (version_compare(\Doctrine\Common\Version::VERSION, '2.2.0-DEV', '>=')) {
+            $this->markTestSkipped('Test not compatible with 2.2 common');
+        }
+
         $this->useModelSet('cms');
         parent::setUp();
     }
@@ -86,7 +90,7 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
-        
+
         $cache = $this->getMock('Doctrine\Common\Cache\AbstractCache', array('_doFetch', '_doContains', '_doSave', '_doDelete', 'getIds'));
         $cache->expects($this->at(0))
               ->method('_doFetch')

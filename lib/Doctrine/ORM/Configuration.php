@@ -23,6 +23,7 @@ use Doctrine\Common\Cache\Cache,
     Doctrine\Common\Cache\ArrayCache,
     Doctrine\Common\Annotations\AnnotationRegistry,
     Doctrine\Common\Annotations\AnnotationReader,
+    Doctrine\Common\Annotations\SimpleAnnotationReader,
     Doctrine\ORM\Mapping\Driver\Driver,
     Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 
@@ -85,7 +86,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /**
      * Gets the namespace where proxy classes reside.
-     * 
+     *
      * @return string
      */
     public function getProxyNamespace()
@@ -96,7 +97,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /**
      * Sets the namespace where proxy classes reside.
-     * 
+     *
      * @param string $ns
      */
     public function setProxyNamespace($ns)
@@ -118,22 +119,23 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /**
      * Add a new default annotation driver with a correctly configured annotation reader.
-     * 
+     *
      * @param array $paths
      * @return Mapping\Driver\AnnotationDriver
      */
     public function newDefaultAnnotationDriver($paths = array())
     {
-        if (version_compare(\Doctrine\Common\Version::VERSION, '3.0.0-DEV', '>=')) {
+        if (version_compare(\Doctrine\Common\Version::VERSION, '2.2.0-DEV', '>=')) {
             // Register the ORM Annotations in the AnnotationRegistry
             AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
-            
-            $reader = new AnnotationReader();
+
+            $reader = new SimpleAnnotationReader();
+            $reader->addNamespace('Doctrine\ORM\Mapping');
             $reader = new \Doctrine\Common\Annotations\CachedReader($reader, new ArrayCache());
         } else if (version_compare(\Doctrine\Common\Version::VERSION, '2.1.0-DEV', '>=')) {
             // Register the ORM Annotations in the AnnotationRegistry
             AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
-            
+
             $reader = new AnnotationReader();
             $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
             $reader->setIgnoreNotImportedAnnotations(true);
@@ -162,7 +164,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Resolves a registered namespace alias to the full namespace.
      *
-     * @param string $entityNamespaceAlias 
+     * @param string $entityNamespaceAlias
      * @return string
      * @throws MappingException
      */
@@ -185,10 +187,10 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $this->_attributes['entityNamespaces'] = $entityNamespaces;
     }
-    
+
     /**
      * Retrieves the list of registered entity namespace aliases.
-     * 
+     *
      * @return array
      */
     public function getEntityNamespaces()
@@ -360,7 +362,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /**
      * Gets the implementation class name of a registered custom string DQL function.
-     * 
+     *
      * @param string $name
      * @return string
      */
@@ -403,7 +405,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /**
      * Gets the implementation class name of a registered custom numeric DQL function.
-     * 
+     *
      * @param string $name
      * @return string
      */
@@ -446,7 +448,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /**
      * Gets the implementation class name of a registered custom date/time DQL function.
-     * 
+     *
      * @param string $name
      * @return string
      */
@@ -497,7 +499,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /**
      * Set a class metadata factory.
-     * 
+     *
      * @param string $cmf
      */
     public function setClassMetadataFactoryName($cmfName)

@@ -119,7 +119,7 @@ class ClassMetadataInfo implements ClassMetadata
     const FETCH_LAZY = 2;
     /**
      * Specifies that an association is to be fetched when the owner of the
-     * association is fetched. 
+     * association is fetched.
      */
     const FETCH_EAGER = 3;
     /**
@@ -206,7 +206,7 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * READ-ONLY: The named queries allowed to be called directly from Repository.
-     * 
+     *
      * @var array
      */
     public $namedQueries = array();
@@ -361,7 +361,7 @@ class ClassMetadataInfo implements ClassMetadata
      * - <b>mappedBy</b> (string, required for bidirectional associations)
      * The name of the field that completes the bidirectional association on the owning side.
      * This key must be specified on the inverse side of a bidirectional association.
-     * 
+     *
      * - <b>inversedBy</b> (string, required for bidirectional associations)
      * The name of the field that completes the bidirectional association on the inverse side.
      * This key must be specified on the owning side of a bidirectional association.
@@ -388,7 +388,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Specification of a field on target-entity that is used to index the collection by.
      * This field HAS to be either the primary key or a unique column. Otherwise the collection
      * does not contain all the entities that are actually related.
-     * 
+     *
      * A join table definition has the following structure:
      * <pre>
      * array(
@@ -430,7 +430,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * READ-ONLY: The definition of the sequence generator of this class. Only used for the
      * SEQUENCE generation strategy.
-     * 
+     *
      * The definition has the following structure:
      * <code>
      * array(
@@ -774,12 +774,12 @@ class ClassMetadataInfo implements ClassMetadata
         // If targetEntity is unqualified, assume it is in the same namespace as
         // the sourceEntity.
         $mapping['sourceEntity'] = $this->name;
-        
+
         if (isset($mapping['targetEntity'])) {
             if (strlen($this->namespace) > 0 && strpos($mapping['targetEntity'], '\\') === false) {
                 $mapping['targetEntity'] = $this->namespace . '\\' . $mapping['targetEntity'];
             }
-            
+
             $mapping['targetEntity'] = ltrim($mapping['targetEntity'], '\\');
         }
 
@@ -813,7 +813,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! isset($mapping['targetEntity'])) {
             throw MappingException::missingTargetEntity($mapping['fieldName']);
         }
-        
+
         // Mandatory and optional attributes for either side
         if ( ! $mapping['mappedBy']) {
             if (isset($mapping['joinTable']) && $mapping['joinTable']) {
@@ -829,7 +829,7 @@ class ClassMetadataInfo implements ClassMetadata
         if (isset($mapping['id']) && $mapping['id'] === true && $mapping['type'] & self::TO_MANY) {
             throw MappingException::illegalToManyIdentifierAssoaction($this->name, $mapping['fieldName']);
         }
-        
+
         // Fetch mode. Default fetch mode to LAZY, if not set.
         if ( ! isset($mapping['fetch'])) {
             $mapping['fetch'] = self::FETCH_LAZY;
@@ -852,7 +852,7 @@ class ClassMetadataInfo implements ClassMetadata
         $mapping['isCascadeRefresh'] = in_array('refresh',  $cascades);
         $mapping['isCascadeMerge'] = in_array('merge',  $cascades);
         $mapping['isCascadeDetach'] = in_array('detach',  $cascades);
-        
+
         return $mapping;
     }
 
@@ -866,11 +866,11 @@ class ClassMetadataInfo implements ClassMetadata
     protected function _validateAndCompleteOneToOneMapping(array $mapping)
     {
         $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
-        
+
         if (isset($mapping['joinColumns']) && $mapping['joinColumns']) {
             $mapping['isOwningSide'] = true;
         }
-        
+
         if ($mapping['isOwningSide']) {
             if ( ! isset($mapping['joinColumns']) || ! $mapping['joinColumns']) {
                 // Apply default join column
@@ -937,7 +937,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! isset($mapping['mappedBy'])) {
             throw MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
         }
-        
+
         $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) ? (bool) $mapping['orphanRemoval'] : false;
         $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] ? true : $mapping['isCascadeRemove'];
 
@@ -946,7 +946,7 @@ class ClassMetadataInfo implements ClassMetadata
                 throw new \InvalidArgumentException("'orderBy' is expected to be an array, not ".gettype($mapping['orderBy']));
             }
         }
-        
+
         return $mapping;
     }
 
@@ -964,7 +964,7 @@ class ClassMetadataInfo implements ClassMetadata
             } else {
                 $targetShortName = strtolower($mapping['targetEntity']);
             }
-            
+
             // owning side MUST have a join table
             if ( ! isset($mapping['joinTable']['name'])) {
                 $mapping['joinTable']['name'] = $sourceShortName .'_' . $targetShortName;
@@ -1116,24 +1116,24 @@ class ClassMetadataInfo implements ClassMetadata
     public function getIdentifierColumnNames()
     {
         $columnNames = array();
-        
+
         foreach ($this->identifier as $idProperty) {
             if (isset($this->fieldMappings[$idProperty])) {
                 $columnNames[] = $this->fieldMappings[$idProperty]['columnName'];
-                
+
                 continue;
             }
-            
+
             // Association defined as Id field
             $joinColumns      = $this->associationMappings[$idProperty]['joinColumns'];
             $assocColumnNames = array_map(function ($joinColumn) { return $joinColumn['name']; }, $joinColumns);
-            
+
             $columnNames = array_merge($columnNames, $assocColumnNames);
         }
-        
+
         return $columnNames;
     }
-    
+
     /**
      * Sets the type of Id generator to use for the mapped class.
      */
@@ -1630,10 +1630,10 @@ class ClassMetadataInfo implements ClassMetadata
             if (strlen($this->namespace) > 0 && strpos($className, '\\') === false) {
                 $className = $this->namespace . '\\' . $className;
             }
-            
+
             $className = ltrim($className, '\\');
             $this->discriminatorMap[$value] = $className;
-            
+
             if ($this->name == $className) {
                 $this->discriminatorValue = $value;
             } else {
@@ -1712,7 +1712,7 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * Return the single association join column (if any).
-     * 
+     *
      * @param string $fieldName
      * @return string
      */
@@ -1754,7 +1754,7 @@ class ClassMetadataInfo implements ClassMetadata
             foreach ($this->associationMappings AS $assocName => $mapping) {
                 if ($this->isAssociationWithSingleJoinColumn($assocName) &&
                     $this->associationMappings[$assocName]['joinColumns'][0]['name'] == $columnName) {
-                    
+
                     return $assocName;
                 }
             }
@@ -1844,34 +1844,34 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $this->isReadOnly = true;
     }
-    
+
     /**
      * A numerically indexed list of field names of this persistent class.
-     * 
+     *
      * This array includes identifier fields if present on this class.
-     * 
+     *
      * @return array
      */
     public function getFieldNames()
     {
         return array_keys($this->fieldMappings);
     }
-    
+
     /**
      * A numerically indexed list of association names of this persistent class.
-     * 
+     *
      * This array includes identifier associations if present on this class.
-     * 
+     *
      * @return array
      */
     public function getAssociationNames()
     {
         return array_keys($this->associationMappings);
     }
-    
+
     /**
      * Returns the target class name of the given association.
-     * 
+     *
      * @param string $assocName
      * @return string
      */
@@ -1882,10 +1882,10 @@ class ClassMetadataInfo implements ClassMetadata
         }
         return $this->associationMappings[$assocName]['targetEntity'];
     }
-    
+
     /**
      * Get fully-qualified class name of this persistent class.
-     * 
+     *
      * @return string
      */
     public function getName()
@@ -1895,44 +1895,44 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * Gets the (possibly quoted) identifier column names for safe use in an SQL statement.
-     * 
+     *
      * @param AbstractPlatform $platform
      * @return array
      */
     public function getQuotedIdentifierColumnNames($platform)
     {
         $quotedColumnNames = array();
-        
+
         foreach ($this->identifier as $idProperty) {
             if (isset($this->fieldMappings[$idProperty])) {
-                $quotedColumnNames[] = isset($this->fieldMappings[$idProperty]['quoted']) 
-                    ? $platform->quoteIdentifier($this->fieldMappings[$idProperty]['columnName']) 
+                $quotedColumnNames[] = isset($this->fieldMappings[$idProperty]['quoted'])
+                    ? $platform->quoteIdentifier($this->fieldMappings[$idProperty]['columnName'])
                     : $this->fieldMappings[$idProperty]['columnName'];
-                
+
                 continue;
             }
-            
+
             // Association defined as Id field
             $joinColumns            = $this->associationMappings[$idProperty]['joinColumns'];
             $assocQuotedColumnNames = array_map(
                 function ($joinColumn) {
-                    return isset($joinColumn['quoted']) 
-                        ? $platform->quoteIdentifier($joinColumn['name']) 
+                    return isset($joinColumn['quoted'])
+                        ? $platform->quoteIdentifier($joinColumn['name'])
                         : $joinColumn['name'];
-                }, 
+                },
                 $joinColumns
             );
-            
+
             $quotedColumnNames = array_merge($quotedColumnNames, $assocQuotedColumnNames);
         }
-        
+
         return $quotedColumnNames;
     }
 
     /**
      * Gets the (possibly quoted) column name of a mapped field for safe use
      * in an SQL statement.
-     * 
+     *
      * @param string $field
      * @param AbstractPlatform $platform
      * @return string
@@ -1943,11 +1943,11 @@ class ClassMetadataInfo implements ClassMetadata
                 $platform->quoteIdentifier($this->fieldMappings[$field]['columnName']) :
                 $this->fieldMappings[$field]['columnName'];
     }
-    
+
     /**
      * Gets the (possibly quoted) primary table name of this class for safe use
      * in an SQL statement.
-     * 
+     *
      * @param AbstractPlatform $platform
      * @return string
      */
@@ -1969,5 +1969,15 @@ class ClassMetadataInfo implements ClassMetadata
         return isset($assoc['joinTable']['quoted'])
             ? $platform->quoteIdentifier($assoc['joinTable']['name'])
             : $assoc['joinTable']['name'];
+    }
+
+    public function isAssociationInverseSide($fieldName)
+    {
+        return isset($this->associationMappings[$fieldName]) && !$this->associationMappings[$fieldName]['isOwningSide'];
+    }
+
+    public function getAssociationMappedByTargetField($fieldName)
+    {
+        return $this->associationMappings[$fieldName]['mappedBy'];
     }
 }

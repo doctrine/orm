@@ -16,6 +16,10 @@ require_once __DIR__ . '/../../TestInit.php';
 class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp() {
+        if (version_compare(\Doctrine\Common\Version::VERSION, '2.2.0-DEV', '>=')) {
+            $this->markTestSkipped('Test not compatible with 2.2 common');
+        }
+
         $this->useModelSet('cms');
         parent::setUp();
     }
@@ -33,7 +37,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $cache = new ArrayCache();
-        
+
         $query->setResultCacheDriver($cache)->setResultCacheId('my_cache_id');
 
         $this->assertFalse($cache->contains('my_cache_id'));
@@ -65,7 +69,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setResultCacheId('testing_result_cache_id');
 
         $this->assertFalse($cache->contains('testing_result_cache_id'));
-        
+
         $users = $query->getResult();
 
         $this->assertTrue($cache->contains('testing_result_cache_id'));
@@ -124,7 +128,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $cache = new ArrayCache();
         $query->setResultCacheDriver($cache)->useResultCache(true);
-        
+
         $this->assertEquals(0, count($cache->getIds()));
         $query->getResult();
         $this->assertEquals(1, count($cache->getIds()));
@@ -218,7 +222,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query2 = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.user = ?1');
         $query2->setParameter(1, $user1);
-        
+
         $query2->setResultCacheDriver($cache)->useResultCache(true);
 
         $articles = $query2->getResult();
