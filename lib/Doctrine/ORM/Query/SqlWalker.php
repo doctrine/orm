@@ -500,6 +500,10 @@ class SqlWalker implements TreeWalker
                 $sql .= reset($assoc['targetToSourceKeyColumns']);
                 break;
 
+            case AST\PathExpression::TYPE_FUNCTION_PATH:
+                $sql = $pathExpr->function->dispatch($this);
+                break;
+
             default:
                 throw QueryException::invalidPathExpression($pathExpr);
         }

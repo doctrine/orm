@@ -35,15 +35,42 @@ namespace Doctrine\ORM\Query\AST;
  */
 class PathExpression extends Node
 {
-    const TYPE_COLLECTION_VALUED_ASSOCIATION = 2;
-    const TYPE_SINGLE_VALUED_ASSOCIATION = 4;
-    const TYPE_STATE_FIELD = 8;
+    const TYPE_COLLECTION_VALUED_ASSOCIATION    = 2;
+    const TYPE_SINGLE_VALUED_ASSOCIATION        = 4;
+    const TYPE_STATE_FIELD                      = 8;
+    const TYPE_FUNCTION_PATH                    = 16;
     
+    /**
+     * @var integer
+     */
     public $type;
+    
+    /**
+     * @var integer
+     */
     public $expectedType;
+    
+    /**
+     * @var string
+     */
     public $identificationVariable;
+    
+    /**
+     * @var string
+     */
     public $field;
     
+    /**
+     * @var Doctrine\ORM\Query\AST\Functions\FunctionNode
+     */
+    public $function;
+    
+    
+    /**
+     * @param integer   $expectedType
+     * @param string    $identificationVariable
+     * @param string    $field 
+     */
     public function __construct($expectedType, $identificationVariable, $field = null)
     {
         $this->expectedType = $expectedType;
@@ -51,6 +78,12 @@ class PathExpression extends Node
         $this->field = $field;
     }
     
+    /**
+     * Walks down a PathExpression AST node, thereby generating the appropriate SQL.
+     * 
+     * @param \Doctrine\ORM\Query\SqlWalker $walker
+     * @return string The SQL.
+     */
     public function dispatch($walker)
     {
         return $walker->walkPathExpression($this);

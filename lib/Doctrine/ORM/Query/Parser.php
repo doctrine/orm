@@ -1021,6 +1021,21 @@ class Parser
     {
         return $this->PathExpression(AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION);
     }
+    
+    /**
+     * Parses an arbitrary function path expression and defers semantical validation based on expected types.
+     *
+     * FunctionPathExpression ::= FunctionDeclaration
+     *
+     * @return \Doctrine\ORM\Query\AST\FunctionPathExpression
+     */
+    public function FunctionPathExpression()
+    {
+        $pathExpr           = new AST\PathExpression(AST\PathExpression::TYPE_FUNCTION_PATH,null);
+        $pathExpr->type     = AST\PathExpression::TYPE_FUNCTION_PATH;
+        $pathExpr->function = $this->FunctionDeclaration();
+        return $pathExpr;
+    }
 
     /**
      * SelectClause ::= "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}
@@ -2685,7 +2700,15 @@ class Parser
      */
     public function InExpression()
     {
-        $inExpression = new AST\InExpression($this->SingleValuedPathExpression());
+        $peek = $this->_lexer->glimpse();
+        
+        if ($this->_isFunction()) {
+            $expr = $this->FunctionPathExpression();
+        } else {
+            $expr = $this->SingleValuedPathExpression();
+        }
+        
+        $inExpression = new AST\InExpression($expr);
 
         if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);

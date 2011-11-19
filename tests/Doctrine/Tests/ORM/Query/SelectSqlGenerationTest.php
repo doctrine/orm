@@ -1333,6 +1333,39 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_employees c0_ GROUP BY c0_.id, c0_.name, c0_.spouse_id'
         );
     }
+    
+     /**
+     * @group DDC-1472
+     */
+    public function testSupportsFunctionINInWhere()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM(u.name) = 'someone'",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE TRIM(c0_.name) = 'someone'"
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE UPPER(TRIM(u.name)) IN ('SOMEONE')",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE UPPER(TRIM(c0_.name)) IN ('SOMEONE')"
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IN ('some', 'one')",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE c0_.name IN ('some', 'one')"
+        );
+        
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name NOT IN ('some', 'one')",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE c0_.name NOT IN ('some', 'one')"
+        );
+        
+        
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE UPPER(u.name) IN ( SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u1 WHERE u1.status IS NULL )",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE UPPER(c0_.name) IN (SELECT c0_.name FROM cms_users c1_ WHERE c1_.status IS NULL)"
+        );
+        
+    }
 }
 
 
