@@ -199,6 +199,7 @@ class EntityManager implements ObjectManager
      * the transaction is rolled back, the EntityManager closed and the exception re-thrown.
      *
      * @param Closure $func The function to execute transactionally.
+     * @return mixed Returns the non-empty value returned from the closure or true instead
      */
     public function transactional(Closure $func)
     {
