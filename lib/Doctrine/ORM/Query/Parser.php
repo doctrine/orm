@@ -2700,7 +2700,6 @@ class Parser
      */
     public function InExpression()
     {
-        $peek = $this->_lexer->glimpse();
         
         if ($this->_isFunction()) {
             $expr = $this->FunctionPathExpression();
