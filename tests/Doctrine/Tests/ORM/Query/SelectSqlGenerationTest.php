@@ -1359,12 +1359,10 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE c0_.name NOT IN ('some', 'one')"
         );
         
-        
         $this->assertSqlGeneration(
             "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE UPPER(u.name) IN ( SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u1 WHERE u1.status IS NULL )",
             "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE UPPER(c0_.name) IN (SELECT c0_.name FROM cms_users c1_ WHERE c1_.status IS NULL)"
         );
-        
     }
 }
 

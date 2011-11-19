@@ -2700,7 +2700,6 @@ class Parser
      */
     public function InExpression()
     {
-        
         if ($this->_isFunction()) {
             $expr = $this->FunctionPathExpression();
         } else {
