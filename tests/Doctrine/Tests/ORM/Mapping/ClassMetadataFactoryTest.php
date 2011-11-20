@@ -67,7 +67,8 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     public function testHasGetMetadata_NamespaceSeperatorIsNotNormalized()
     {
         require_once __DIR__."/../../Models/Global/GlobalNamespaceModel.php";
-
+        \Doctrine\Common\Annotations\AnnotationRegistry::registerFile(__DIR__ . '/../../../../../lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
+        
         $metadataDriver = $this->createAnnotationDriver(array(__DIR__ . '/../../Models/Global/'));
 
         $entityManager = $this->_createEntityManager($metadataDriver);
