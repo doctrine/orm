@@ -485,7 +485,7 @@ class SqlWalker implements TreeWalker
 
                 $column .= $class->getQuotedColumnName($fieldName, $this->_platform);
 
-                if ($this->_useDbalTypeValueSql && !$class->isIdentifier($fieldName)) {
+                if ($this->_useDbalTypeValueSql && isset($class->fieldMappings[$fieldName]['requireSQLConversion'])) {
                     $type = Type::getType($class->getTypeOfField($fieldName));
                     $column = $type->convertToPHPValueSQL($column, $this->_conn->getDatabasePlatform());
                 }
@@ -1028,7 +1028,7 @@ class SqlWalker implements TreeWalker
 
                 $col = $sqlTableAlias . '.' . $columnName;
 
-                if (!$class->isIdentifier($fieldName)) {
+                if (isset($class->fieldMappings[$fieldName]['requireSQLConversion'])) {
                     $type = Type::getType($class->getTypeOfField($fieldName));
                     $col  = $type->convertToPHPValueSQL($col, $this->_conn->getDatabasePlatform());
                 }
@@ -1117,7 +1117,7 @@ class SqlWalker implements TreeWalker
 
                     $col = $sqlTableAlias . '.' . $quotedColumnName;
 
-                    if (!$class->isIdentifier($fieldName)) {
+                    if (isset($class->fieldMappings[$fieldName]['requireSQLConversion'])) {
                         $type = Type::getType($class->getTypeOfField($fieldName));
                         $col = $type->convertToPHPValueSQL($col, $this->_platform);
                     }
@@ -1146,7 +1146,7 @@ class SqlWalker implements TreeWalker
 
                             $col = $sqlTableAlias . '.' . $quotedColumnName;
 
-                            if (!$subClass->isIdentifier($fieldName)) {
+                            if (isset($subClass->fieldMappings[$fieldName]['requireSQLConversion'])) {
                                 $type = Type::getType($subClass->getTypeOfField($fieldName));
                                 $col = $type->convertToPHPValueSQL($col, $this->_platform);
                             }
@@ -1434,7 +1434,7 @@ class SqlWalker implements TreeWalker
 
                 if ($updateItem->pathExpression->type == AST\PathExpression::TYPE_STATE_FIELD) {
                     $class = $this->_queryComponents[$updateItem->pathExpression->identificationVariable]['metadata'];
-                    if (!$class->isIdentifier($updateItem->pathExpression->field)) {
+                    if (isset($class->fieldMappings[$updateItem->pathExpression->field]['requireSQLConversion'])) {
                         $this->_currentColumnType = $class->getTypeOfField($updateItem->pathExpression->field);
                     }
                 }

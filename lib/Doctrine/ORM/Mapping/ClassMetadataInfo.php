@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\DBAL\Types\Type;
 use ReflectionClass;
 
 /**
@@ -735,7 +736,7 @@ class ClassMetadataInfo implements ClassMetadata
         // Complete id mapping
         if (isset($mapping['id']) && $mapping['id'] === true) {
             if ($this->versionField == $mapping['fieldName']) {
-                throw MappingException::cannotVersionIdField($this->name, $mapping['fieldName']);
+                throw MappingException::cannotVersionIdField($this->name, $mapping['fieldName'], $mapping['type']);
             }
 
             if ( ! in_array($mapping['fieldName'], $this->identifier)) {
@@ -745,6 +746,14 @@ class ClassMetadataInfo implements ClassMetadata
             if ( ! $this->isIdentifierComposite && count($this->identifier) > 1) {
                 $this->isIdentifierComposite = true;
             }
+        }
+
+        if (Type::hasType($mapping['type']) && Type::getType($mapping['type'])->canRequireSQLConversion()) {
+            if (isset($mapping['id']) && $mapping['id'] === true) {
+                 throw MappingException::sqlConversionNotAllowedForIdentifiers($this->name, $mapping['fieldName']);
+            }
+
+            $mapping['requireSQLConversion'] = true;
         }
     }
 

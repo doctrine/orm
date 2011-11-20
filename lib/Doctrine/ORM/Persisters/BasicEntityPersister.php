@@ -344,7 +344,7 @@ class BasicEntityPersister
             if (isset($this->_class->fieldNames[$columnName])) {
                 $column = $this->_class->getQuotedColumnName($this->_class->fieldNames[$columnName], $this->_platform);
 
-                if (!$this->_class->isIdentifier($this->_class->fieldNames[$columnName])) {
+                if (isset($this->_class->fieldMappings[$this->_class->fieldNames[$columnName]]['requireSQLConversion'])) {
                     $type = Type::getType($this->_columnTypes[$columnName]);
                     $placeholder = $type->convertToDatabaseValueSQL('?', $this->_platform);
                 }
@@ -1131,7 +1131,8 @@ class BasicEntityPersister
                 foreach ($columns AS $column) {
                     $placeholder = '?';
 
-                    if (isset($this->_columnTypes[$column])) {
+                    if (isset($this->_columnTypes[$column]) &&
+                        isset($this->_class->fieldMappings[$this->_class->fieldNames[$column]]['requireSQLConversion'])) {
                         $type = Type::getType($this->_columnTypes[$column]);
                         $placeholder = $type->convertToDatabaseValueSQL('?', $this->_platform);
                     }
@@ -1198,8 +1199,8 @@ class BasicEntityPersister
         $columnAlias = $this->getSQLColumnAlias($class->columnNames[$field]);
 
         $this->_rsm->addFieldResult($alias, $columnAlias, $field);
-        
-        if (!$class->isIdentifier($field)) {
+
+        if (isset($class->fieldMappings[$field]['requireSQLConversion'])) {
             $type = Type::getType($class->getTypeOfField($field));
             $sql = $type->convertToPHPValueSQL($sql, $this->_platform);
         }
@@ -1295,7 +1296,7 @@ class BasicEntityPersister
 
                 $conditionSql .= $this->_getSQLTableAlias($className) . '.' . $this->_class->getQuotedColumnName($field, $this->_platform);
 
-                if (!$this->_class->isIdentifier($field)) {
+                if (isset($this->_class->fieldMappings[$field]['requireSQLConversion'])) {
                     $type = Type::getType($this->_class->getTypeOfField($field));
                     $placeholder = $type->convertToDatabaseValueSQL($placeholder, $this->_platform);
                 }

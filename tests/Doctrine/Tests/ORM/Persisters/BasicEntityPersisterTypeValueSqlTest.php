@@ -18,16 +18,22 @@ class BasicEntityPersisterTypeValueSqlTest extends \Doctrine\Tests\OrmTestCase
     protected function setUp()
     {
         parent::setUp();
-
-        $this->_em = $this->_getTestEntityManager();
-
-        $this->_persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata("Doctrine\Tests\Models\CustomType\CustomTypeParent"));
-
+        
         if (DBALType::hasType('negative_to_positive')) {
             DBALType::overrideType('negative_to_positive', '\Doctrine\Tests\DbalTypes\NegativeToPositiveType');
         } else {
             DBALType::addType('negative_to_positive', '\Doctrine\Tests\DbalTypes\NegativeToPositiveType');
         }
+        
+        if (DBALType::hasType('upper_case_string')) {
+            DBALType::overrideType('upper_case_string', '\Doctrine\Tests\DbalTypes\UpperCaseStringType');
+        } else {
+            DBALType::addType('upper_case_string', '\Doctrine\Tests\DbalTypes\UpperCaseStringType');
+        }
+
+        $this->_em = $this->_getTestEntityManager();
+
+        $this->_persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata("Doctrine\Tests\Models\CustomType\CustomTypeParent"));
     }
 
     public function testGetInsertSQLUsesTypeValuesSQL()

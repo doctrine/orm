@@ -9,7 +9,7 @@ namespace Doctrine\Tests\Models\CustomType;
 class CustomTypeChild
 {
     /**
-     * @Id @Column(type="negative_to_positive")
+     * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
