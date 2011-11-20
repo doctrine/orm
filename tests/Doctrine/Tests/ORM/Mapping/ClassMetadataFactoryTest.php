@@ -64,10 +64,40 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_SEQUENCE, $cm1->generatorType);
     }
 
+    public function testGetMetadataFor_ReturnLoadedCustomIdGenerator() {
+        $cm1 = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
+        $cm1->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
+        $cm1->setIdGeneratorType("Doctrine\Tests\ORM\Mapping\CustomIdGenerator");
+        $cmf = $this->_createTestFactory();
+        $cmf->setMetadataForClass('Doctrine\Tests\ORM\Mapping\TestEntity1', $cm1);
+        
+        $actual = $cmf->getMetadataFor('Doctrine\Tests\ORM\Mapping\TestEntity1');
+        
+        $this->assertEquals("Doctrine\Tests\ORM\Mapping\CustomIdGenerator", 
+            $actual->generatorType);
+        $this->assertInstanceOf("Doctrine\Tests\ORM\Mapping\CustomIdGenerator", 
+            $actual->idGenerator);
+        /**
+         * @GeneratedValue(type=@CustomIdGenerator(table="test"))
+         */
+    }
+    
+    public function testGetMetadataFor_ThrowsExceptionOnUnknownCustomGeneratorClass() {
+        $cm1 = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
+        $cm1->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
+        $cm1->setIdGeneratorType("NotExistingIdGenerator");
+        $cmf = $this->_createTestFactory();
+        $cmf->setMetadataForClass('Doctrine\Tests\ORM\Mapping\TestEntity1', $cm1);
+        $this->setExpectedException("Doctrine\ORM\ORMException");
+        
+        $actual = $cmf->getMetadataFor('Doctrine\Tests\ORM\Mapping\TestEntity1');
+    }
+
     public function testHasGetMetadata_NamespaceSeperatorIsNotNormalized()
     {
         require_once __DIR__."/../../Models/Global/GlobalNamespaceModel.php";
-        \Doctrine\Common\Annotations\AnnotationRegistry::registerFile(__DIR__ . '/../../../../../lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
+        AnnotationRegistry::registerFile(__DIR__ . 
+            '/../../../../../lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
         
         $metadataDriver = $this->createAnnotationDriver(array(__DIR__ . '/../../Models/Global/'));
 
@@ -142,6 +172,17 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
 
         return EntityManagerMock::create($conn, $config, $eventManager);
     }
+    
+    /**
+     * @return ClassMetadataFactoryTestSubject 
+     */
+    protected function _createTestFactory() {
+        $mockDriver = new MetadataDriverMock();
+        $entityManager = $this->_createEntityManager($mockDriver);
+        $cmf = new ClassMetadataFactoryTestSubject();
+        $cmf->setEntityManager($entityManager);
+        return $cmf;
+    }
 }
 
 /* Test subject class with overriden factory method for mocking purposes */
@@ -177,4 +218,8 @@ class TestEntity1
     private $name;
     private $other;
     private $association;
+}
+
+class CustomIdGenerator extends \Doctrine\ORM\Id\AbstractIdGenerator {
+    public function generate(\Doctrine\ORM\EntityManager $em, $entity) {}
 }
