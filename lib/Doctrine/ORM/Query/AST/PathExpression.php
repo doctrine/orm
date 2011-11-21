@@ -16,7 +16,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
  */
- 
+
 namespace Doctrine\ORM\Query\AST;
 
 /**
@@ -27,7 +27,7 @@ namespace Doctrine\ORM\Query\AST;
  * CollectionValuedPathExpression ::= IdentificationVariable "." CollectionValuedAssociationField
  * StateField ::= {EmbeddedClassStateField "."}* SimpleStateField
  * SimpleStateFieldPathExpression ::= IdentificationVariable "." StateField
- * 
+ *
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -35,22 +35,54 @@ namespace Doctrine\ORM\Query\AST;
  */
 class PathExpression extends Node
 {
-    const TYPE_COLLECTION_VALUED_ASSOCIATION = 2;
-    const TYPE_SINGLE_VALUED_ASSOCIATION = 4;
-    const TYPE_STATE_FIELD = 8;
-    
+    const TYPE_COLLECTION_VALUED_ASSOCIATION    = 2;
+    const TYPE_SINGLE_VALUED_ASSOCIATION        = 4;
+    const TYPE_STATE_FIELD                      = 8;
+    const TYPE_FUNCTION_PATH                    = 16;
+
+    /**
+     * @var integer
+     */
     public $type;
+
+    /**
+     * @var integer
+     */
     public $expectedType;
+
+    /**
+     * @var string
+     */
     public $identificationVariable;
+
+    /**
+     * @var string
+     */
     public $field;
-    
+
+    /**
+     * @var Doctrine\ORM\Query\AST\Functions\FunctionNode
+     */
+    public $function;
+
+    /**
+     * @param integer   $expectedType
+     * @param string    $identificationVariable
+     * @param string    $field
+     */
     public function __construct($expectedType, $identificationVariable, $field = null)
     {
         $this->expectedType = $expectedType;
         $this->identificationVariable = $identificationVariable;
         $this->field = $field;
     }
-    
+
+    /**
+     * Walks down a PathExpression AST node, thereby generating the appropriate SQL.
+     *
+     * @param \Doctrine\ORM\Query\SqlWalker $walker
+     * @return string The SQL.
+     */
     public function dispatch($walker)
     {
         return $walker->walkPathExpression($this);
