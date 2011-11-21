@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Query;
 
 use Doctrine\DBAL\LockMode,
+    Doctrine\DBAL\Types\Type,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Query,
     Doctrine\ORM\Query\QueryException,
@@ -1002,9 +1003,16 @@ class SqlWalker implements TreeWalker
 
                 $sqlTableAlias = $this->getSQLTableAlias($tableName, $dqlAlias);
                 $columnName    = $class->getQuotedColumnName($fieldName, $this->_platform);
-                $columnAlias = $this->getSQLColumnAlias($columnName);
+                $columnAlias   = $this->getSQLColumnAlias($columnName);
 
-                $sql .= $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
+                $col = $sqlTableAlias . '.' . $columnName;
+
+                if (isset($class->fieldMappings[$fieldName]['requireSQLConversion'])) {
+                    $type = Type::getType($class->getTypeOfField($fieldName));
+                    $col  = $type->convertToPHPValueSQL($col, $this->_conn->getDatabasePlatform());
+                }
+
+                $sql .= $col . ' AS ' . $columnAlias;
 
                 if ( ! $hidden) {
                     $this->_rsm->addScalarResult($columnAlias, $resultAlias);
@@ -1086,7 +1094,14 @@ class SqlWalker implements TreeWalker
                     $columnAlias      = $this->getSQLColumnAlias($mapping['columnName']);
                     $quotedColumnName = $class->getQuotedColumnName($fieldName, $this->_platform);
 
-                    $sqlParts[] = $sqlTableAlias . '.' . $quotedColumnName . ' AS '. $columnAlias;
+                    $col = $sqlTableAlias . '.' . $quotedColumnName;
+
+                    if (isset($class->fieldMappings[$fieldName]['requireSQLConversion'])) {
+                        $type = Type::getType($class->getTypeOfField($fieldName));
+                        $col = $type->convertToPHPValueSQL($col, $this->_platform);
+                    }
+
+                    $sqlParts[] = $col . ' AS '. $columnAlias;
 
                     $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
                 }
@@ -1108,7 +1123,14 @@ class SqlWalker implements TreeWalker
                             $columnAlias      = $this->getSQLColumnAlias($mapping['columnName']);
                             $quotedColumnName = $subClass->getQuotedColumnName($fieldName, $this->_platform);
 
-                            $sqlParts[] = $sqlTableAlias . '.' . $quotedColumnName . ' AS ' . $columnAlias;
+                            $col = $sqlTableAlias . '.' . $quotedColumnName;
+
+                            if (isset($subClass->fieldMappings[$fieldName]['requireSQLConversion'])) {
+                                $type = Type::getType($subClass->getTypeOfField($fieldName));
+                                $col = $type->convertToPHPValueSQL($col, $this->_platform);
+                            }
+
+                            $sqlParts[] = $col . ' AS ' . $columnAlias;
 
                             $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $subClassName);
                         }

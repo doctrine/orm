@@ -8,6 +8,7 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
     private $_platformMock;
     private $_lastInsertId = 0;
     private $_inserts = array();
+    private $_executeUpdates = array();
 
     public function __construct(array $params, $driver, $config = null, $eventManager = null)
     {
@@ -33,6 +34,14 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
     public function insert($tableName, array $data, array $types = array())
     {
         $this->_inserts[$tableName][] = $data;
+    }
+
+    /**
+     * @override
+     */
+    public function executeUpdate($query, array $params = array(), array $types = array())
+    {
+        $this->_executeUpdates[] = array('query' => $query, 'params' => $params, 'types' => $types);
     }
 
     /**
@@ -82,6 +91,11 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
     public function getInserts()
     {
         return $this->_inserts;
+    }
+
+    public function getExecuteUpdates()
+    {
+        return $this->_executeUpdates;
     }
 
     public function reset()
