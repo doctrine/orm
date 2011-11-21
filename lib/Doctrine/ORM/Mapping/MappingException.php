@@ -226,6 +226,11 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self("Setting Id field '$fieldName' as versionale in entity class '$className' is not supported.");
     }
 
+    public static function sqlConversionNotAllowedForIdentifiers($className, $fieldName, $type)
+    {
+        return new self("It is not possible to set id field '$fieldName' to type '$type' in entity class '$className'. The type '$type' requires conversion SQL which is not allowed for identifiers.");
+    }
+
     /**
      * @param  string $className
      * @param  string $columnName
