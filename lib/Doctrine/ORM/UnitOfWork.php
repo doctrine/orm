@@ -712,7 +712,7 @@ class UnitOfWork implements PropertyChangedListener
                     if ( ! $assoc['isCascadePersist']) {
                         $message = "A new entity was found through the relationship '%s#%s' that was not configured " .
                             ' to cascade persist operations for entity: %s. Explicitly persist the new entity or ' .
-                            'configure cascading persist operations on tbe relationship. If you cannot find out ' .
+                            'configure cascading persist operations on the relationship. If you cannot find out ' .
                             'which entity causes the problem, implement %s#__toString() to get a clue.';
 
                         throw new InvalidArgumentException(sprintf(
