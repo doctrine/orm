@@ -60,6 +60,15 @@ class ORMException extends Exception
         return new self("Unrecognized field: $field");
     }
 
+    /**
+     * @param string $className
+     * @param string $field
+     */
+    public static function invalidOrientation($className, $field)
+    {
+        return new self("Invalid order by orientation specified for " . $className . "#" . $field);
+    }
+
     public static function invalidFlushMode($mode)
     {
         return new self("'$mode' is an invalid flush mode.");
