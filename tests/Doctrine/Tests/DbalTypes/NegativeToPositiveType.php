@@ -29,6 +29,6 @@ class NegativeToPositiveType extends Type
 
     public function convertToPHPValueSQL($sqlExpr, $platform)
     {
-        return '((' . $sqlExpr . ') * -1)';
+        return '-(' . $sqlExpr . ')';
     }
 }

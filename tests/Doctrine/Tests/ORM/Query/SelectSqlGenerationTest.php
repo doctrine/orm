@@ -1345,7 +1345,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertSqlGeneration(
             'SELECT p.customInteger FROM Doctrine\Tests\Models\CustomType\CustomTypeParent p WHERE p.id = 1',
-            'SELECT ((c0_.customInteger) * -1) AS customInteger0 FROM customtype_parents c0_ WHERE c0_.id = 1'
+            'SELECT -(c0_.customInteger) AS customInteger0 FROM customtype_parents c0_ WHERE c0_.id = 1'
         );
     }
 
@@ -1373,7 +1373,21 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertSqlGeneration(
             'SELECT p FROM Doctrine\Tests\Models\CustomType\CustomTypeParent p',
-            'SELECT c0_.id AS id0, ((c0_.customInteger) * -1) AS customInteger1 FROM customtype_parents c0_'
+            'SELECT c0_.id AS id0, -(c0_.customInteger) AS customInteger1 FROM customtype_parents c0_'
+        );
+    }
+
+    public function testCustomTypeValueSqlForPartialObject()
+    {
+        if (DBALType::hasType('negative_to_positive')) {
+            DBALType::overrideType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        } else {
+            DBALType::addType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        }
+
+        $this->assertSqlGeneration(
+            'SELECT partial p.{id, customInteger} FROM Doctrine\Tests\Models\CustomType\CustomTypeParent p',
+            'SELECT c0_.id AS id0, -(c0_.customInteger) AS customInteger1 FROM customtype_parents c0_'
         );
     }
 }

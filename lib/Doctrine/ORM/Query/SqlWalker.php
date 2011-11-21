@@ -97,17 +97,6 @@ class SqlWalker implements TreeWalker
      * These should only be generated for SELECT queries, not for UPDATE/DELETE.
      */
     private $_useSqlTableAliases = true;
-    
-    /**
-     * Flag that indicates whether to pass columns through Type::convertToPHPValueSQL().
-     * These should only be done for SELECT queries, not for UPDATE.
-     */
-    private $_useDbalTypeValueSql = true;
-    
-    /**
-     * Holds the current columns type.
-     */
-    private $_currentColumnType;
 
     /**
      * The database platform abstraction.
@@ -421,7 +410,6 @@ class SqlWalker implements TreeWalker
     public function walkUpdateStatement(AST\UpdateStatement $AST)
     {
         $this->_useSqlTableAliases = false;
-        $this->_useDbalTypeValueSql = false;
 
         return $this->walkUpdateClause($AST->updateClause) . $this->walkWhereClause($AST->whereClause);
     }
@@ -477,20 +465,11 @@ class SqlWalker implements TreeWalker
                 $dqlAlias = $pathExpr->identificationVariable;
                 $class = $this->_queryComponents[$dqlAlias]['metadata'];
 
-                $column = '';
-
                 if ($this->_useSqlTableAliases) {
-                    $column .= $this->walkIdentificationVariable($dqlAlias, $fieldName) . '.';
+                    $sql .= $this->walkIdentificationVariable($dqlAlias, $fieldName) . '.';
                 }
 
-                $column .= $class->getQuotedColumnName($fieldName, $this->_platform);
-
-                if ($this->_useDbalTypeValueSql && isset($class->fieldMappings[$fieldName]['requireSQLConversion'])) {
-                    $type = Type::getType($class->getTypeOfField($fieldName));
-                    $column = $type->convertToPHPValueSQL($column, $this->_conn->getDatabasePlatform());
-                }
-
-                $sql .= $column;
+                $sql .= $class->getQuotedColumnName($fieldName, $this->_platform);
                 break;
 
             case AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION:
@@ -1429,18 +1408,7 @@ class SqlWalker implements TreeWalker
 
         switch (true) {
             case ($newValue instanceof AST\Node):
-                $currentColumnTypeBefore = $this->_currentColumnType;
-                $this->_currentColumnType  = null;
-
-                if ($updateItem->pathExpression->type == AST\PathExpression::TYPE_STATE_FIELD) {
-                    $class = $this->_queryComponents[$updateItem->pathExpression->identificationVariable]['metadata'];
-                    if (isset($class->fieldMappings[$updateItem->pathExpression->field]['requireSQLConversion'])) {
-                        $this->_currentColumnType = $class->getTypeOfField($updateItem->pathExpression->field);
-                    }
-                }
-
                 $sql .= $newValue->dispatch($this);
-                $this->_currentColumnType = $currentColumnTypeBefore;
                 break;
 
             case ($newValue === null):
@@ -1813,30 +1781,20 @@ class SqlWalker implements TreeWalker
     {
         switch ($literal->type) {
             case AST\Literal::STRING:
-                $value = $this->_conn->quote($literal->value);
-                break;
+                return $this->_conn->quote($literal->value);
 
             case AST\Literal::BOOLEAN:
                 $bool = strtolower($literal->value) == 'true' ? true : false;
                 $boolVal = $this->_conn->getDatabasePlatform()->convertBooleans($bool);
 
-                $value = $boolVal;
-                break;
+                return $boolVal;
 
             case AST\Literal::NUMERIC:
-                $value = $literal->value;
-                break;
+                return $literal->value;
 
             default:
                 throw QueryException::invalidLiteral($literal);
         }
-        
-        if ($this->_currentColumnType !== null) {
-            $type  = Type::getType($this->_currentColumnType);
-            $value = $type->convertToDatabaseValueSQL($value, $this->_conn->getDatabasePlatform());
-        }
-        
-        return $value;
     }
 
     /**

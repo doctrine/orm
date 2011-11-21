@@ -46,7 +46,7 @@ class TypeValueSqlTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('foo', $entity->lowerCaseString, 'Entity holds lowercase string');
         $this->assertEquals('FOO', $this->_em->getConnection()->fetchColumn("select lowerCaseString from customtype_uppercases where id=".$entity->id.""), 'Database holds uppercase string');
     }
- 
+
     public function testTypeValueSqlWithAssociations()
     {
         $parent = new CustomTypeParent();
@@ -90,12 +90,13 @@ class TypeValueSqlTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $query = $this->_em->createQuery("SELECT p, p.customInteger, c from Doctrine\Tests\Models\CustomType\CustomTypeParent p JOIN p.child c where p.id = " . $parentId . " AND p.customInteger = -1");
+        $query = $this->_em->createQuery("SELECT p, p.customInteger, c from Doctrine\Tests\Models\CustomType\CustomTypeParent p JOIN p.child c where p.id = " . $parentId);
 
         $result = $query->getResult();
 
         $this->assertEquals(1, count($result));
         $this->assertInstanceOf('Doctrine\Tests\Models\CustomType\CustomTypeParent', $result[0][0]);
+        $this->assertEquals(-1, $result[0][0]->customInteger);
 
         $this->assertEquals(-1, $result[0]['customInteger']);
 

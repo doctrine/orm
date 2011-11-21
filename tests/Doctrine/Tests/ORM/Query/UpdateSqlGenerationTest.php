@@ -195,19 +195,11 @@ class UpdateSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testCustomTypeValueSql()
+    public function testCustomTypeValueSqlCompletelyIgnoredInUpdateStatements()
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CustomType\CustomTypeParent p SET p.customInteger = 1 WHERE p.id = 1',
-            'UPDATE customtype_parents SET customInteger = ABS(1) WHERE id = 1'
-        );
-    }
-
-    public function testCustomTypeValueSqlIgnoresIdentifierColumns()
-    {
-        $this->assertSqlGeneration(
-            'UPDATE Doctrine\Tests\Models\CustomType\CustomTypeParent p SET p.id = 2 WHERE p.id = 1',
-            'UPDATE customtype_parents SET id = 2 WHERE id = 1'
+            'UPDATE customtype_parents SET customInteger = 1 WHERE id = 1'
         );
     }
 }
