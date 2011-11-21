@@ -491,5 +491,15 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->getConfiguration()->setDefaultRepositoryClassName("Doctrine\Tests\Models\DDC753\DDC753InvalidRepository");
     }
 
+    /**
+     * @group DDC-1500
+     */
+    public function testInvalidOrientation()
+    {
+        $this->setExpectedException('Doctrine\ORM\ORMException', 'Invalid order by orientation specified for Doctrine\Tests\Models\CMS\CmsUser#username');
+
+        $repo = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $repo->findBy(array('status' => 'test'), array('username' => 'INVALID'));
+    }
 }
 

@@ -906,7 +906,6 @@ class BasicEntityPersister
      * @param array $orderBy
      * @param string $baseTableAlias
      * @return string
-     * @todo Rename: _getOrderBySQL
      */
     protected final function _getOrderBySQL(array $orderBy, $baseTableAlias)
     {
@@ -915,6 +914,11 @@ class BasicEntityPersister
         foreach ($orderBy as $fieldName => $orientation) {
             if ( ! isset($this->_class->fieldMappings[$fieldName])) {
                 throw ORMException::unrecognizedField($fieldName);
+            }
+
+            $orientation = strtoupper(trim($orientation));
+            if ($orientation != 'ASC' && $orientation != 'DESC') {
+                throw ORMException::invalidOrientation($this->_class->name, $fieldName);
             }
 
             $tableAlias = isset($this->_class->fieldMappings[$fieldName]['inherited']) ?
