@@ -61,14 +61,41 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, 
             $actual->generatorType);
-        $this->assertInstanceOf("Doctrine\Tests\ORM\Mapping\CustomIdGenerator", 
+        $this->assertInstanceOf("Doctrine\Tests\ORM\Mapping\CustomIdGenerator",
             $actual->idGenerator);
+    }
+    
+    public function testGetMetadataFor_PasesArgumentsToGeneratorsConstructor() {
+        $cm1 = $this->_createValidClassMetadata();
+        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
+        $cm1->customGeneratorDefinition = array(
+            "class" => "Doctrine\Tests\ORM\Mapping\CustomIdGenerator",
+            "args" => array("parameter"));
+        $cmf = $this->_createTestFactory();
+        $cmf->setMetadataForClass($cm1->name, $cm1);
+        $expected = new CustomIdGenerator("parameter");
+        
+        $actual = $cmf->getMetadataFor($cm1->name);
+        
+        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, 
+            $actual->generatorType);
+        $this->assertEquals($expected, $actual->idGenerator);
     }
     
     public function testGetMetadataFor_ThrowsExceptionOnUnknownCustomGeneratorClass() {
         $cm1 = $this->_createValidClassMetadata();
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
         $cm1->customGeneratorDefinition = array("class" => "NotExistingGenerator");
+        $cmf = $this->_createTestFactory();
+        $cmf->setMetadataForClass($cm1->name, $cm1);
+        $this->setExpectedException("Doctrine\ORM\ORMException");
+        
+        $actual = $cmf->getMetadataFor($cm1->name);
+    }
+    
+    public function testGetMetadataFor_ThrowsExceptionOnMissingCustomGeneratorDefinition() {
+        $cm1 = $this->_createValidClassMetadata();
+        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
         $cmf = $this->_createTestFactory();
         $cmf->setMetadataForClass($cm1->name, $cm1);
         $this->setExpectedException("Doctrine\ORM\ORMException");
@@ -227,5 +254,9 @@ class TestEntity1
 }
 
 class CustomIdGenerator extends \Doctrine\ORM\Id\AbstractIdGenerator {
+    public $parameter;
+    public function __construct($parameter = null) {
+        $this->parameter = $parameter;
+    }
     public function generate(\Doctrine\ORM\EntityManager $em, $entity) {}
 }

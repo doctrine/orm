@@ -181,6 +181,23 @@ class ClassMetadataInfo implements ClassMetadata
     public $rootEntityName;
 
     /**
+     * READ-ONLY: The definition of custom generator. Only used for CUSTOM 
+     * generator type
+     *
+     * The definition has the following structure:
+     * <code>
+     * array(
+     *     'class' => 'ClassName',
+     *     'args' => array("constructor", "arguments")
+     * )
+     * </code>
+     *
+     * @var array
+     * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
+     */
+    public $customGeneratorDefinition;
+
+    /**
      * The name of the custom repository class used for the entity class.
      * (Optional).
      *
