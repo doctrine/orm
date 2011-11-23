@@ -25,8 +25,14 @@ use PDO, Doctrine\DBAL\Connection, Doctrine\ORM\Mapping\ClassMetadata;
  * The ArrayHydrator produces a nested array "graph" that is often (not always)
  * interchangeable with the corresponding object graph for read-only access.
  *
+ * @since  2.0
  * @author Roman Borschel <roman@code-factory.org>
- * @since 1.0
+ * @author Guilherme Blanco <guilhermeblanoc@hotmail.com>
+ *
+ * @todo General behavior is "wrong" if you define an alias to selected IdentificationVariable.
+ * Example: SELECT u AS user FROM User u
+ * The result should contains an array where each array index is an array: array('user' => [User object])
+ * Problem must be solved somehow by removing the isMixed in ResultSetMapping
  */
 class ArrayHydrator extends AbstractHydrator
 {
@@ -38,45 +44,55 @@ class ArrayHydrator extends AbstractHydrator
     private $_idTemplate = array();
     private $_resultCounter = 0;
 
-    /** @override */
-    protected function _prepare()
+    /**
+     * {@inheritdoc}
+     */
+    protected function prepare()
     {
-        $this->_isSimpleQuery = count($this->_rsm->aliasMap) <= 1;
-        $this->_identifierMap = array();
+        $this->_isSimpleQuery  = count($this->_rsm->aliasMap) <= 1;
+        $this->_identifierMap  = array();
         $this->_resultPointers = array();
-        $this->_idTemplate = array();
-        $this->_resultCounter = 0;
+        $this->_idTemplate     = array();
+        $this->_resultCounter  = 0;
+
         foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
-            $this->_identifierMap[$dqlAlias] = array();
+            $this->_identifierMap[$dqlAlias]  = array();
             $this->_resultPointers[$dqlAlias] = array();
-            $this->_idTemplate[$dqlAlias] = '';
+            $this->_idTemplate[$dqlAlias]     = '';
         }
     }
 
-    /** @override */
-    protected function _hydrateAll()
+    /**
+     * {@inheritdoc}
+     */
+    protected function hydrateAllData()
     {
         $result = array();
-        $cache = array();
+        $cache  = array();
+
         while ($data = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
-            $this->_hydrateRow($data, $cache, $result);
+            $this->hydrateRowData($data, $cache, $result);
         }
 
         return $result;
     }
 
-    /** @override */
-    protected function _hydrateRow(array $data, array &$cache, array &$result)
+    /**
+     * {@inheritdoc}
+     */
+    protected function hydrateRowData(array $row, array &$cache, array &$result)
     {
         // 1) Initialize
         $id = $this->_idTemplate; // initialize the id-memory
         $nonemptyComponents = array();
-        $rowData = $this->_gatherRowData($data, $cache, $id, $nonemptyComponents);
+        $rowData = $this->gatherRowData($row, $cache, $id, $nonemptyComponents);
 
         // Extract scalar values. They're appended at the end.
         if (isset($rowData['scalars'])) {
             $scalars = $rowData['scalars'];
+
             unset($rowData['scalars']);
+
             if (empty($rowData)) {
                 ++$this->_resultCounter;
             }
@@ -90,7 +106,7 @@ class ArrayHydrator extends AbstractHydrator
                 // It's a joined result
 
                 $parent = $this->_rsm->parentAliasMap[$dqlAlias];
-                $path = $parent . '.' . $dqlAlias;
+                $path   = $parent . '.' . $dqlAlias;
 
                 // missing parent data, skipping as RIGHT JOIN hydration is not supported.
                 if ( ! isset($nonemptyComponents[$parent]) ) {
@@ -109,39 +125,41 @@ class ArrayHydrator extends AbstractHydrator
                     unset($this->_resultPointers[$dqlAlias]); // Ticket #1228
                     continue;
                 }
-                
+
                 $relationAlias = $this->_rsm->relationMap[$dqlAlias];
-                $relation = $this->_getClassMetadata($this->_rsm->aliasMap[$parent])->associationMappings[$relationAlias];
+                $relation = $this->getClassMetadata($this->_rsm->aliasMap[$parent])->associationMappings[$relationAlias];
 
                 // Check the type of the relation (many or single-valued)
                 if ( ! ($relation['type'] & ClassMetadata::TO_ONE)) {
                     $oneToOne = false;
+
                     if (isset($nonemptyComponents[$dqlAlias])) {
                         if ( ! isset($baseElement[$relationAlias])) {
                             $baseElement[$relationAlias] = array();
                         }
-                        
-                        $indexExists = isset($this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]]);
-                        $index = $indexExists ? $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] : false;
+
+                        $indexExists  = isset($this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]]);
+                        $index        = $indexExists ? $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] : false;
                         $indexIsValid = $index !== false ? isset($baseElement[$relationAlias][$index]) : false;
-                        
+
                         if ( ! $indexExists || ! $indexIsValid) {
                             $element = $data;
                             if (isset($this->_rsm->indexByMap[$dqlAlias])) {
-                                $field = $this->_rsm->indexByMap[$dqlAlias];
-                                $baseElement[$relationAlias][$element[$field]] = $element;
+                                $baseElement[$relationAlias][$row[$this->_rsm->indexByMap[$dqlAlias]]] = $element;
                             } else {
                                 $baseElement[$relationAlias][] = $element;
                             }
+
                             end($baseElement[$relationAlias]);
-                            $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] =
-                                    key($baseElement[$relationAlias]);
+
+                            $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = key($baseElement[$relationAlias]);
                         }
                     } else if ( ! isset($baseElement[$relationAlias])) {
                         $baseElement[$relationAlias] = array();
                     }
                 } else {
                     $oneToOne = true;
+
                     if ( ! isset($nonemptyComponents[$dqlAlias]) && ! isset($baseElement[$relationAlias])) {
                         $baseElement[$relationAlias] = null;
                     } else if ( ! isset($baseElement[$relationAlias])) {
@@ -157,43 +175,42 @@ class ArrayHydrator extends AbstractHydrator
 
             } else {
                 // It's a root result element
-                
+
                 $this->_rootAliases[$dqlAlias] = true; // Mark as root
+                $entityKey = $this->_rsm->entityMappings[$dqlAlias] ?: 0;
 
                 // if this row has a NULL value for the root result id then make it a null result.
                 if ( ! isset($nonemptyComponents[$dqlAlias]) ) {
                     if ($this->_rsm->isMixed) {
-                        $result[] = array(0 => null);
+                        $result[] = array($entityKey => null);
                     } else {
                         $result[] = null;
                     }
+                    $resultKey = $this->_resultCounter;
                     ++$this->_resultCounter;
                     continue;
                 }
-                
+
                 // Check for an existing element
                 if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $rowData[$dqlAlias];
-                    if (isset($this->_rsm->indexByMap[$dqlAlias])) {
-                        $field = $this->_rsm->indexByMap[$dqlAlias];
-                        if ($this->_rsm->isMixed) {
-                            $result[] = array($element[$field] => $element);
-                            ++$this->_resultCounter;
-                        } else {
-                            $result[$element[$field]] = $element;
-                        }
-                    } else {
-                        if ($this->_rsm->isMixed) {
-                            $result[] = array($element);
-                            ++$this->_resultCounter;
-                        } else {
-                            $result[] = $element;
-                        }
+                    if ($this->_rsm->isMixed) {
+                        $element = array($entityKey => $element);
                     }
-                    end($result);
-                    $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = key($result);
+
+                    if (isset($this->_rsm->indexByMap[$dqlAlias])) {
+                        $resultKey = $row[$this->_rsm->indexByMap[$dqlAlias]];
+                        $result[$resultKey] = $element;
+                    } else {
+                        $resultKey = $this->_resultCounter;
+                        $result[] = $element;
+                        ++$this->_resultCounter;
+                    }
+
+                    $this->_identifierMap[$dqlAlias][$id[$dqlAlias]] = $resultKey;
                 } else {
                     $index = $this->_identifierMap[$dqlAlias][$id[$dqlAlias]];
+                    $resultKey = $index;
                     /*if ($this->_rsm->isMixed) {
                         $result[] =& $result[$index];
                         ++$this->_resultCounter;
@@ -205,8 +222,17 @@ class ArrayHydrator extends AbstractHydrator
 
         // Append scalar values to mixed result sets
         if (isset($scalars)) {
+            if ( ! isset($resultKey) ) {
+                // this only ever happens when no object is fetched (scalar result only)
+                if (isset($this->_rsm->indexByMap['scalars'])) {
+                    $resultKey = $row[$this->_rsm->indexByMap['scalars']];
+                } else {
+                    $resultKey = $this->_resultCounter - 1;
+                }
+            }
+
             foreach ($scalars as $name => $value) {
-                $result[$this->_resultCounter - 1][$name] = $value;
+                $result[$resultKey][$name] = $value;
             }
         }
     }
@@ -224,28 +250,45 @@ class ArrayHydrator extends AbstractHydrator
     {
         if ($coll === null) {
             unset($this->_resultPointers[$dqlAlias]); // Ticket #1228
+
             return;
         }
+
         if ($index !== false) {
             $this->_resultPointers[$dqlAlias] =& $coll[$index];
+
             return;
-        } else {
-            if ($coll) {
-                if ($oneToOne) {
-                    $this->_resultPointers[$dqlAlias] =& $coll;
-                } else {
-                    end($coll);
-                    $this->_resultPointers[$dqlAlias] =& $coll[key($coll)];
-                }
-            }
         }
+
+        if ( ! $coll) {
+            return;
+        }
+
+        if ($oneToOne) {
+            $this->_resultPointers[$dqlAlias] =& $coll;
+
+            return;
+        }
+
+        end($coll);
+        $this->_resultPointers[$dqlAlias] =& $coll[key($coll)];
+
+        return;
     }
-    
-    private function _getClassMetadata($className)
+
+    /**
+     * Retrieve ClassMetadata associated to entity class name.
+     *
+     * @param string $className
+     *
+     * @return Doctrine\ORM\Mapping\ClassMetadata
+     */
+    private function getClassMetadata($className)
     {
         if ( ! isset($this->_ce[$className])) {
             $this->_ce[$className] = $this->_em->getClassMetadata($className);
         }
+
         return $this->_ce[$className];
     }
 }

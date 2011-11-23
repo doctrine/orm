@@ -16,5 +16,8 @@
         "ext-pdo": "*",
         "doctrine/common": "master-dev",
         "doctrine/dbal": "master-dev"
+    },
+    "autoload": {
+        "psr-0": { "Doctrine\\ORM": "lib/" }
     }
 }

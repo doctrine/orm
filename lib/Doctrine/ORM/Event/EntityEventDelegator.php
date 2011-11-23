@@ -19,14 +19,16 @@
 
 namespace Doctrine\ORM\Event;
 
-use \Doctrine\Common\EventSubscriber;
-use \LogicException;
+use Doctrine\Common\EventSubscriber;
+use LogicException;
 
 /**
  * Delegate events only for certain entities they are registered for.
  *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
- * @since 2.2
+ * @link    www.doctrine-project.org
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @since   2.2
  */
 class EntityEventDelegator implements EventSubscriber
 {
@@ -54,17 +56,23 @@ class EntityEventDelegator implements EventSubscriber
     public function addEventListener($events, $entities, $listener)
     {
         if ($this->frozen) {
-            throw new LogicException("Cannot add event listeners after EntityEventDelegator::getSubscribedEvents() " .
-                "is called once. This happens when you register the delegator with the event manager.");
+            throw new LogicException(
+                "Cannot add event listeners after EntityEventDelegator::getSubscribedEvents() " .
+                "is called once. This happens when you register the delegator with the event manager."
+            );
         }
 
         // Picks the hash code related to that listener
-        $hash = spl_object_hash($listener);
+        $hash     = spl_object_hash($listener);
+        $entities = array_flip((array) $entities);
 
         foreach ((array) $events as $event) {
             // Overrides listener if a previous one was associated already
             // Prevents duplicate listeners on same event (same instance only)
-            $this->listeners[$event][$hash] = array('listener' => $listener, 'entities' => array_flip((array)$entities));
+            $this->listeners[$event][$hash] = array(
+                'listener' => $listener, 
+                'entities' => $entities
+            );
         }
     }
 
@@ -73,6 +81,7 @@ class EntityEventDelegator implements EventSubscriber
      * interested in and added as a listener for these events.
      *
      * @param Doctrine\Common\EventSubscriber $subscriber The subscriber.
+     * @param array $entities
      */
     public function addEventSubscriber(EventSubscriber $subscriber, $entities)
     {
@@ -87,24 +96,27 @@ class EntityEventDelegator implements EventSubscriber
     public function getSubscribedEvents()
     {
         $this->frozen = true;
+        
         return array_keys($this->listeners);
     }
 
     /**
      * Delegate the event to an appropriate listener
      *
-     * @param $eventName
-     * @param $event
+     * @param string $eventName
+     * @param array $args
      * @return void
      */
     public function __call($eventName, $args)
     {
         $event = $args[0];
+        
         foreach ($this->listeners[$eventName] AS $listenerData) {
             $class = get_class($event->getEntity());
-            if (isset($listenerData['entities'][$class])) {
-                $listenerData['listener']->$eventName($event);
-            }
+            
+            if ( ! isset($listenerData['entities'][$class])) continue;
+            
+            $listenerData['listener']->$eventName($event);
         }
     }
 }

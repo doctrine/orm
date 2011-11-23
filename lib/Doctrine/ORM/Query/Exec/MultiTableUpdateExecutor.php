@@ -141,11 +141,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
     }
 
     /**
-     * Executes all SQL statements.
-     *
-     * @param Connection $conn The database connection that is used to execute the queries.
-     * @param array $params The parameters.
-     * @override
+     * {@inheritDoc}
      */
     public function execute(Connection $conn, array $params, array $types)
     {

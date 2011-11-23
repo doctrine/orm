@@ -47,6 +47,11 @@ class QueryException extends \Doctrine\ORM\ORMException
         return new self('[Semantical Error] ' . $message);
     }
 
+    public static function invalidLockMode()
+    {
+        return new self('Invalid lock mode hint provided.');
+    }
+
     public static function invalidParameterType($expected, $received)
     {
         return new self('Invalid parameter type, ' . $received . ' given, but ' . $expected . ' expected.');
@@ -70,6 +75,11 @@ class QueryException extends \Doctrine\ORM\ORMException
     public static function unknownParameter($key)
     {
         return new self("Invalid parameter: token ".$key." is not defined in the query.");
+    }
+
+    public static function parameterTypeMissmatch()
+    {
+        return new self("DQL Query parameter and type numbers missmatch, but have to be exactly equal.");
     }
 
     public static function invalidPathExpression($pathExpr)
@@ -135,7 +145,7 @@ class QueryException extends \Doctrine\ORM\ORMException
             "in the query."
         );
     }
-    
+
     public static function instanceOfUnrelatedClass($className, $rootClass)
     {
         return new self("Cannot check if a child of '" . $rootClass . "' is instanceof '" . $className . "', " .

@@ -86,20 +86,22 @@ class ResultSetMappingBuilder extends ResultSetMapping
             if (isset($renamedColumns[$columnName])) {
                 $columnName = $renamedColumns[$columnName];
             }
+            $columnName = $platform->getSQLResultCasing($columnName);
             if (isset($this->fieldMappings[$columnName])) {
                 throw new \InvalidArgumentException("The column '$columnName' conflicts with another column in the mapper.");
             }
-            $this->addFieldResult($alias, $platform->getSQLResultCasing($columnName), $propertyName);
+            $this->addFieldResult($alias, $columnName, $propertyName);
         }
         foreach ($classMetadata->associationMappings AS $associationMapping) {
             if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
                 foreach ($associationMapping['joinColumns'] AS $joinColumn) {
                     $columnName = $joinColumn['name'];
                     $renamedColumnName = isset($renamedColumns[$columnName]) ? $renamedColumns[$columnName] : $columnName;
+                    $renamedColumnName = $platform->getSQLResultCasing($renamedColumnName);
                     if (isset($this->metaMappings[$renamedColumnName])) {
                         throw new \InvalidArgumentException("The column '$renamedColumnName' conflicts with another column in the mapper.");
                     }
-                    $this->addMetaResult($alias, $platform->getSQLResultCasing($renamedColumnName), $platform->getSQLResultCasing($columnName));
+                    $this->addMetaResult($alias, $renamedColumnName, $columnName);
                 }
             }
         }

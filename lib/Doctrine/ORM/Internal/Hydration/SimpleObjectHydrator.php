@@ -17,7 +17,6 @@
  * <http://www.doctrine-project.org>.
  */
 
-
 namespace Doctrine\ORM\Internal\Hydration;
 
 use \PDO;
@@ -32,15 +31,21 @@ class SimpleObjectHydrator extends AbstractHydrator
      */
     private $class;
 
+    /**
+     * @var array
+     */
     private $declaringClasses = array();
 
-    protected function _hydrateAll()
+    /**
+     * {@inheritdoc}
+     */
+    protected function hydrateAllData()
     {
         $result = array();
         $cache = array();
 
         while ($row = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
-            $this->_hydrateRow($row, $cache, $result);
+            $this->hydrateRowData($row, $cache, $result);
         }
 
         $this->_em->getUnitOfWork()->triggerEagerLoads();
@@ -48,77 +53,71 @@ class SimpleObjectHydrator extends AbstractHydrator
         return $result;
     }
 
-    protected function _prepare()
+    /**
+     * {@inheritdoc}
+     */
+    protected function prepare()
     {
-        if (count($this->_rsm->aliasMap) == 1) {
-            $this->class = $this->_em->getClassMetadata(reset($this->_rsm->aliasMap));
-            if ($this->class->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
-                foreach ($this->_rsm->declaringClasses AS $column => $class) {
-                    $this->declaringClasses[$column] = $this->_em->getClassMetadata($class);
-                }
-            }
-        } else {
-            throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping not containing exactly one object result.");
+        if (count($this->_rsm->aliasMap) !== 1) {
+            throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains more than one object result.");
         }
+        
         if ($this->_rsm->scalarMappings) {
             throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains scalar mappings.");
         }
+        
+        $this->class = $this->_em->getClassMetadata(reset($this->_rsm->aliasMap));
+        
+        // We only need to add declaring classes if we have inheritance.
+        if ($this->class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_NONE) {
+            return;
+        }
+        
+        foreach ($this->_rsm->declaringClasses AS $column => $class) {
+            $this->declaringClasses[$column] = $this->_em->getClassMetadata($class);
+        }
     }
 
-    protected function _hydrateRow(array $sqlResult, array &$cache, array &$result)
+    /**
+     * {@inheritdoc}
+     */
+    protected function hydrateRowData(array $sqlResult, array &$cache, array &$result)
     {
-        $data = array();
-        if ($this->class->inheritanceType == ClassMetadata::INHERITANCE_TYPE_NONE) {
-            foreach ($sqlResult as $column => $value) {
-
-                if (!isset($cache[$column])) {
-                    if (isset($this->_rsm->fieldMappings[$column])) {
-                        $cache[$column]['name'] = $this->_rsm->fieldMappings[$column];
-                        $cache[$column]['field'] = true;
-                    } else {
-                        $cache[$column]['name'] = $this->_rsm->metaMappings[$column];
-                    }
-                }
-
-                if (isset($cache[$column]['field'])) {
-                    $value = Type::getType($this->class->fieldMappings[$cache[$column]['name']]['type'])
-                                    ->convertToPHPValue($value, $this->_platform);
-                }
-                $data[$cache[$column]['name']] = $value;
-            }
-            $entityName = $this->class->name;
-        } else {
+        $entityName = $this->class->name;
+        $data       = array();
+        
+        // We need to find the correct entity class name if we have inheritance in resultset
+        if ($this->class->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
             $discrColumnName = $this->_platform->getSQLResultCasing($this->class->discriminatorColumn['name']);
+            
+            if ($sqlResult[$discrColumnName] === '') {
+                throw HydrationException::emptyDiscriminatorValue(key($this->_rsm->aliasMap));
+            }
+
             $entityName = $this->class->discriminatorMap[$sqlResult[$discrColumnName]];
+            
             unset($sqlResult[$discrColumnName]);
-            foreach ($sqlResult as $column => $value) {
-                if (!isset($cache[$column])) {
-                    if (isset($this->_rsm->fieldMappings[$column])) {
-                        $field = $this->_rsm->fieldMappings[$column];
-                        $class = $this->declaringClasses[$column];
-                        if ($class->name == $entityName || is_subclass_of($entityName, $class->name)) {
-                            $cache[$column]['name'] = $field;
-                            $cache[$column]['class'] = $class;
-                        }
-                    } else if (isset($this->_rsm->relationMap[$column])) {
-                        if ($this->_rsm->relationMap[$column] == $entityName || is_subclass_of($entityName, $this->_rsm->relationMap[$column])) {
-                            $cache[$column]['name'] = $field;
-                        }
-                    } else {
-                        $cache[$column]['name'] = $this->_rsm->metaMappings[$column];
-                    }
+        }
+        
+        foreach ($sqlResult as $column => $value) {
+            // Hydrate column information if not yet present
+            if ( ! isset($cache[$column])) {
+                if (($info = $this->hydrateColumnInfo($entityName, $column)) === null) {
+                    continue;
                 }
+                
+                $cache[$column] = $info;
+            }
 
-                if (isset($cache[$column]['class'])) {
-                    $value = Type::getType($cache[$column]['class']->fieldMappings[$cache[$column]['name']]['type'])
-                                    ->convertToPHPValue($value, $this->_platform);
-                }
-
-                // the second and part is to prevent overwrites in case of multiple
-                // inheritance classes using the same property name (See AbstractHydrator)
-                if (isset($cache[$column]) && (!isset($data[$cache[$column]['name']]) || $value !== null)) {
-                    $data[$cache[$column]['name']] = $value;
-                }
+            // Convert field to a valid PHP value
+            if (isset($cache[$column]['field'])) {
+                $type  = Type::getType($cache[$column]['class']->fieldMappings[$cache[$column]['name']]['type']);
+                $value = $type->convertToPHPValue($value, $this->_platform);
+            }
+            
+            // Prevent overwrite in case of inherit classes using same property name (See AbstractHydrator)
+            if (isset($cache[$column]) && ( ! isset($data[$cache[$column]['name']]) || $value !== null)) {
+                $data[$cache[$column]['name']] = $value;
             }
         }
 
@@ -127,5 +126,53 @@ class SimpleObjectHydrator extends AbstractHydrator
         }
 
         $result[] = $this->_em->getUnitOfWork()->createEntity($entityName, $data, $this->_hints);
+    }
+    
+    /**
+     * Retrieve column information form ResultSetMapping.
+     * 
+     * @param string $entityName
+     * @param string $column
+     * 
+     * @return array 
+     */
+    protected function hydrateColumnInfo($entityName, $column)
+    {
+        switch (true) {
+            case (isset($this->_rsm->fieldMappings[$column])):
+                $class = isset($this->declaringClasses[$column]) 
+                    ? $this->declaringClasses[$column] 
+                    : $this->class;
+
+                // If class is not part of the inheritance, ignore
+                if ( ! ($class->name === $entityName || is_subclass_of($entityName, $class->name))) {
+                    return null;
+                }
+
+                return array(
+                    'class' => $class,
+                    'name'  => $this->_rsm->fieldMappings[$column],
+                    'field' => true,
+                );
+
+            case (isset($this->_rsm->relationMap[$column])):
+                $class = isset($this->_rsm->relationMap[$column]) 
+                    ? $this->_rsm->relationMap[$column] 
+                    : $this->class;
+
+                // If class is not self referencing, ignore
+                if ( ! ($class === $entityName || is_subclass_of($entityName, $class))) {
+                    return null;
+                }
+
+                // TODO: Decide what to do with associations. It seems original code is incomplete. 
+                // One solution is to load the association, but it might require extra efforts.
+                return array('name' => $column);
+
+            default:
+                return array(
+                    'name' => $this->_rsm->metaMappings[$column]
+                );
+        }
     }
 }

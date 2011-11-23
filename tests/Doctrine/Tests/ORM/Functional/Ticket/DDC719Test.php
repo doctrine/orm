@@ -19,7 +19,10 @@ class DDC719Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $q = $this->_em->createQuery('SELECT g, c FROM Doctrine\Tests\ORM\Functional\Ticket\DDC719Group g LEFT JOIN g.children c  WHERE g.parents IS EMPTY');
 
-        $this->assertEquals('SELECT g0_.name AS name0, g0_.description AS description1, g0_.id AS id2, g1_.name AS name3, g1_.description AS description4, g1_.id AS id5 FROM groups g0_ LEFT JOIN groups_groups g2_ ON g0_.id = g2_.parent_id LEFT JOIN groups g1_ ON g1_.id = g2_.child_id WHERE (SELECT COUNT(*) FROM groups_groups g3_ WHERE g3_.child_id = g0_.id) = 0', $q->getSQL());
+        $this->assertEquals(
+            strtolower('SELECT g0_.name AS name0, g0_.description AS description1, g0_.id AS id2, g1_.name AS name3, g1_.description AS description4, g1_.id AS id5 FROM groups g0_ LEFT JOIN groups_groups g2_ ON g0_.id = g2_.parent_id LEFT JOIN groups g1_ ON g1_.id = g2_.child_id WHERE (SELECT COUNT(*) FROM groups_groups g3_ WHERE g3_.child_id = g0_.id) = 0'),
+            strtolower($q->getSQL())
+        );
     }
 }
 
@@ -28,12 +31,12 @@ class DDC719Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class Entity
 {
-    /** 
+    /**
      * @Id @GeneratedValue
-     * @Column(type="integer") 
+     * @Column(type="integer")
      */
     protected $id;
-    
+
     public function getId() { return $this->id; }
 }
 

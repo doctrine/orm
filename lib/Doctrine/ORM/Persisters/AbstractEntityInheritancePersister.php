@@ -62,17 +62,21 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     {
         $columnName = $class->columnNames[$field];
         $sql = $this->_getSQLTableAlias($class->name, $alias == 'r' ? '' : $alias) . '.' . $class->getQuotedColumnName($field, $this->_platform);
-        $columnAlias = $this->_platform->getSQLResultCasing($columnName . $this->_sqlAliasCounter++);
+        $columnAlias = $this->getSQLColumnAlias($columnName);
         $this->_rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
+
+        if (isset($class->fieldMappings[$field]['requireSQLConversion'])) {
+            $type = Type::getType($class->getTypeOfField($field));
+            $sql = $type->convertToPHPValueSQL($sql, $this->_platform);
+        }
 
         return $sql . ' AS ' . $columnAlias;
     }
 
     protected function getSelectJoinColumnSQL($tableAlias, $joinColumnName, $className)
     {
-        $columnAlias = $joinColumnName . $this->_sqlAliasCounter++;
-        $resultColumnName = $this->_platform->getSQLResultCasing($columnAlias);
-        $this->_rsm->addMetaResult('r', $resultColumnName, $joinColumnName);
+        $columnAlias = $this->getSQLColumnAlias($joinColumnName);
+        $this->_rsm->addMetaResult('r', $columnAlias, $joinColumnName);
         
         return $tableAlias . '.' . $joinColumnName . ' AS ' . $columnAlias;
     }

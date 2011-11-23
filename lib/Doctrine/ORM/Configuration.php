@@ -210,27 +210,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Gets the cache driver implementation that is used for query result caching.
-     *
-     * @return \Doctrine\Common\Cache\Cache
-     */
-    public function getResultCacheImpl()
-    {
-        return isset($this->_attributes['resultCacheImpl']) ?
-                $this->_attributes['resultCacheImpl'] : null;
-    }
-
-    /**
-     * Sets the cache driver implementation that is used for query result caching.
-     *
-     * @param \Doctrine\Common\Cache\Cache $cacheImpl
-     */
-    public function setResultCacheImpl(Cache $cacheImpl)
-    {
-        $this->_attributes['resultCacheImpl'] = $cacheImpl;
-    }
-
-    /**
      * Gets the cache driver implementation that is used for the query cache (SQL cache).
      *
      * @return \Doctrine\Common\Cache\Cache

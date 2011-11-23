@@ -35,6 +35,16 @@
             </order-by>
         </one-to-many>
         
+        <one-to-many field="interests" target-entity="Doctrine\Tests\ORM\Tools\Export\Interests" mapped-by="user" orphan-removal="true">
+            <cascade>
+                <cascade-refresh/>
+                <cascade-persist/>
+                <cascade-merge/>
+                <cascade-detach/>
+                <cascade-remove/>
+            </cascade>
+        </one-to-many>
+        
         <many-to-many field="groups" target-entity="Doctrine\Tests\ORM\Tools\Export\Group">
             <cascade>
                 <cascade-all/>
