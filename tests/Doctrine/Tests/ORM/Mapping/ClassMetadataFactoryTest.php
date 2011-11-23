@@ -25,27 +25,12 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $mockPlatform->setPrefersSequences(true);
         $mockPlatform->setPrefersIdentityColumns(false);
 
-        // Self-made metadata
-        $cm1 = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
-        $cm1->setPrimaryTable(array('name' => '`group`'));
-        // Add a mapped field
-        $cm1->mapField(array('fieldName' => 'name', 'type' => 'varchar'));
-        // Add a mapped field
-        $cm1->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
-        // and a mapped association
-        $cm1->mapOneToOne(array('fieldName' => 'other', 'targetEntity' => 'Other', 'mappedBy' => 'this'));
-        // and an association on the owning side
-        $joinColumns = array(
-            array('name' => 'other_id', 'referencedColumnName' => 'id')
-        );
-        $cm1->mapOneToOne(array('fieldName' => 'association', 'targetEntity' => 'Other', 'joinColumns' => $joinColumns));
-        // and an id generator type
-        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+        $cm1 = $this->_createValidClassMetadata();
 
         // SUT
         $cmf = new ClassMetadataFactoryTestSubject();
         $cmf->setEntityManager($entityManager);
-        $cmf->setMetadataForClass('Doctrine\Tests\ORM\Mapping\TestEntity1', $cm1);
+        $cmf->setMetadataForClass($cm1->name, $cm1);
 
         // Prechecks
         $this->assertEquals(array(), $cm1->parentClasses);
@@ -55,7 +40,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $cm1->generatorType);
 
         // Go
-        $cm1 = $cmf->getMetadataFor('Doctrine\Tests\ORM\Mapping\TestEntity1');
+        $cm1 = $cmf->getMetadataFor($cm1->name);
 
         $this->assertEquals('group', $cm1->table['name']);
         $this->assertTrue($cm1->table['quoted']);
@@ -64,33 +49,31 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_SEQUENCE, $cm1->generatorType);
     }
 
-    public function testGetMetadataFor_ReturnLoadedCustomIdGenerator() {
-        $cm1 = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
-        $cm1->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
-        $cm1->setIdGeneratorType("Doctrine\Tests\ORM\Mapping\CustomIdGenerator");
+    public function testGetMetadataFor_ReturnsLoadedCustomIdGenerator() {
+        $cm1 = $this->_createValidClassMetadata();
+        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
+        $cm1->customGeneratorDefinition = array(
+            "class" => "Doctrine\Tests\ORM\Mapping\CustomIdGenerator");
         $cmf = $this->_createTestFactory();
-        $cmf->setMetadataForClass('Doctrine\Tests\ORM\Mapping\TestEntity1', $cm1);
+        $cmf->setMetadataForClass($cm1->name, $cm1);
         
-        $actual = $cmf->getMetadataFor('Doctrine\Tests\ORM\Mapping\TestEntity1');
+        $actual = $cmf->getMetadataFor($cm1->name);
         
-        $this->assertEquals("Doctrine\Tests\ORM\Mapping\CustomIdGenerator", 
+        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, 
             $actual->generatorType);
         $this->assertInstanceOf("Doctrine\Tests\ORM\Mapping\CustomIdGenerator", 
             $actual->idGenerator);
-        /**
-         * @GeneratedValue(type=@CustomIdGenerator(table="test"))
-         */
     }
     
     public function testGetMetadataFor_ThrowsExceptionOnUnknownCustomGeneratorClass() {
-        $cm1 = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
-        $cm1->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
-        $cm1->setIdGeneratorType("NotExistingIdGenerator");
+        $cm1 = $this->_createValidClassMetadata();
+        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
+        $cm1->customGeneratorDefinition = array("class" => "NotExistingGenerator");
         $cmf = $this->_createTestFactory();
-        $cmf->setMetadataForClass('Doctrine\Tests\ORM\Mapping\TestEntity1', $cm1);
+        $cmf->setMetadataForClass($cm1->name, $cm1);
         $this->setExpectedException("Doctrine\ORM\ORMException");
         
-        $actual = $cmf->getMetadataFor('Doctrine\Tests\ORM\Mapping\TestEntity1');
+        $actual = $cmf->getMetadataFor($cm1->name);
     }
 
     public function testHasGetMetadata_NamespaceSeperatorIsNotNormalized()
@@ -182,6 +165,29 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $cmf = new ClassMetadataFactoryTestSubject();
         $cmf->setEntityManager($entityManager);
         return $cmf;
+    }
+    
+    /**
+     * @param string $class
+     * @return ClassMetadata 
+     */
+    protected function _createValidClassMetadata() {
+        $cm1 = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
+        $cm1->setPrimaryTable(array('name' => '`group`'));
+        // Add a mapped field
+        $cm1->mapField(array('fieldName' => 'name', 'type' => 'varchar'));
+        // Add a mapped field
+        $cm1->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
+        // and a mapped association
+        $cm1->mapOneToOne(array('fieldName' => 'other', 'targetEntity' => 'Other', 'mappedBy' => 'this'));
+        // and an association on the owning side
+        $joinColumns = array(
+            array('name' => 'other_id', 'referencedColumnName' => 'id')
+        );
+        $cm1->mapOneToOne(array('fieldName' => 'association', 'targetEntity' => 'Other', 'joinColumns' => $joinColumns));
+        // and an id generator type
+        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+        return $cm1;
     }
 }
 

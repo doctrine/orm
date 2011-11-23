@@ -95,6 +95,10 @@ class ClassMetadataInfo implements ClassMetadata
      */
     const GENERATOR_TYPE_NONE = 5;
     /**
+     * CUSTOM means that customer will use own ID generator that supposedly work
+     */
+    const GENERATOR_TYPE_CUSTOM = 6;
+    /**
      * DEFERRED_IMPLICIT means that changes of entities are calculated at commit-time
      * by doing a property-by-property comparison with the original data. This will
      * be done for all entities that are in MANAGED state at commit-time.
