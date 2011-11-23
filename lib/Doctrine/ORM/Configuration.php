@@ -126,15 +126,13 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         if (version_compare(\Doctrine\Common\Version::VERSION, '2.2.0-DEV', '>=')) {
             // Register the ORM Annotations in the AnnotationRegistry
-            AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
-
+            \Doctrine\ORM\Mapping\DoctrineAnnotations::INIT;
             $reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
             $reader->addNamespace('Doctrine\ORM\Mapping');
             $reader = new \Doctrine\Common\Annotations\CachedReader($reader, new ArrayCache());
         } else if (version_compare(\Doctrine\Common\Version::VERSION, '2.1.0-DEV', '>=')) {
             // Register the ORM Annotations in the AnnotationRegistry
-            AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
-
+            \Doctrine\ORM\Mapping\DoctrineAnnotations::INIT;
             $reader = new AnnotationReader();
             $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
             $reader->setIgnoreNotImportedAnnotations(true);
