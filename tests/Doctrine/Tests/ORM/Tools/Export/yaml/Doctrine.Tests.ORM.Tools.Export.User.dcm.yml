@@ -34,6 +34,11 @@ Doctrine\Tests\ORM\Tools\Export\User:
         number: ASC
       cascade: [ persist, merge ]
       orphanRemoval: true
+    interests:
+      targetEntity: Doctrine\Tests\ORM\Tools\Export\Interests
+      mappedBy: user
+      cascade: [ persist, merge, remove, refresh, detach ]
+      orphanRemoval: true            
   manyToMany:
     groups:
       targetEntity: Doctrine\Tests\ORM\Tools\Export\Group

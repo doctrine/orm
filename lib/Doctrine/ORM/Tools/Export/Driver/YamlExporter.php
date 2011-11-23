@@ -147,6 +147,9 @@ class YamlExporter extends AbstractExporter
             if ($associationMapping['isCascadeDetach']) {
                 $cascade[] = 'detach';
             }
+            if (count($cascade) === 5) {
+                $cascade = array('all');
+            }
             $associationMappingArray = array(
                 'targetEntity' => $associationMapping['targetEntity'],
                 'cascade'     => $cascade,

@@ -338,10 +338,19 @@ class BasicEntityPersister
         $set = $params = $types = array();
 
         foreach ($updateData as $columnName => $value) {
-            $set[] = (isset($this->_class->fieldNames[$columnName]))
-                ? $this->_class->getQuotedColumnName($this->_class->fieldNames[$columnName], $this->_platform) . ' = ?'
-                : $columnName . ' = ?';
+            $column = $columnName;
+            $placeholder = '?';
+            
+            if (isset($this->_class->fieldNames[$columnName])) {
+                $column = $this->_class->getQuotedColumnName($this->_class->fieldNames[$columnName], $this->_platform);
 
+                if (isset($this->_class->fieldMappings[$this->_class->fieldNames[$columnName]]['requireSQLConversion'])) {
+                    $type = Type::getType($this->_columnTypes[$columnName]);
+                    $placeholder = $type->convertToDatabaseValueSQL('?', $this->_platform);
+                }
+            }
+
+            $set[] = $column . ' = ' . $placeholder;
             $params[] = $value;
             $types[] = $this->_columnTypes[$columnName];
         }
@@ -628,13 +637,7 @@ class BasicEntityPersister
             $hints = array();
 
             if ($isInverseSingleValued) {
-                $hints['fetched'][$targetClass->name][$assoc['inversedBy']] = true;
-
-                if ($targetClass->subClasses) {
-                    foreach ($targetClass->subClasses as $targetSubclassName) {
-                        $hints['fetched'][$targetSubclassName][$assoc['inversedBy']] = true;
-                    }
-                }
+                $hints['fetched']["r"][$assoc['inversedBy']] = true;
             }
 
             /* cascade read-only status
@@ -912,7 +915,6 @@ class BasicEntityPersister
      * @param array $orderBy
      * @param string $baseTableAlias
      * @return string
-     * @todo Rename: _getOrderBySQL
      */
     protected final function _getOrderBySQL(array $orderBy, $baseTableAlias)
     {
@@ -921,6 +923,11 @@ class BasicEntityPersister
         foreach ($orderBy as $fieldName => $orientation) {
             if ( ! isset($this->_class->fieldMappings[$fieldName])) {
                 throw ORMException::unrecognizedField($fieldName);
+            }
+
+            $orientation = strtoupper(trim($orientation));
+            if ($orientation != 'ASC' && $orientation != 'DESC') {
+                throw ORMException::invalidOrientation($this->_class->name, $fieldName);
             }
 
             $tableAlias = isset($this->_class->fieldMappings[$fieldName]['inherited']) ?
@@ -1011,7 +1018,7 @@ class BasicEntityPersister
                         if ( ! $first) {
                             $this->_selectJoinSql .= ' AND ';
                         }
-                        $this->_selectJoinSql .= $this->_getSQLTableAlias($assoc['sourceEntity']) . '.' . $sourceCol . ' = ' 
+                        $this->_selectJoinSql .= $this->_getSQLTableAlias($assoc['sourceEntity']) . '.' . $sourceCol . ' = '
                                                . $this->_getSQLTableAlias($assoc['targetEntity'], $assocAlias) . '.' . $targetCol;
                         $first = false;
                     }
@@ -1020,7 +1027,7 @@ class BasicEntityPersister
                     $owningAssoc = $eagerEntity->getAssociationMapping($assoc['mappedBy']);
 
                     $this->_selectJoinSql .= ' LEFT JOIN';
-                    $this->_selectJoinSql .= ' ' . $eagerEntity->getQuotedTableName($this->_platform) . ' ' 
+                    $this->_selectJoinSql .= ' ' . $eagerEntity->getQuotedTableName($this->_platform) . ' '
                                            . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) . ' ON ';
 
                     foreach ($owningAssoc['sourceToTargetKeyColumns'] AS $sourceCol => $targetCol) {
@@ -1060,7 +1067,7 @@ class BasicEntityPersister
                 if ($columnList) $columnList .= ', ';
 
                 $resultColumnName = $this->getSQLColumnAlias($srcColumn);
-                $columnList .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )  
+                $columnList .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )
                              . '.' . $srcColumn . ' AS ' . $resultColumnName;
                 $this->_rsm->addMetaResult($alias, $resultColumnName, $srcColumn, isset($assoc['id']) && $assoc['id'] === true);
             }
@@ -1123,7 +1130,19 @@ class BasicEntityPersister
                 );
             } else {
                 $columns = array_unique($columns);
-                $values = array_fill(0, count($columns), '?');
+
+                $values = array();
+                foreach ($columns AS $column) {
+                    $placeholder = '?';
+
+                    if (isset($this->_columnTypes[$column]) &&
+                        isset($this->_class->fieldMappings[$this->_class->fieldNames[$column]]['requireSQLConversion'])) {
+                        $type = Type::getType($this->_columnTypes[$column]);
+                        $placeholder = $type->convertToDatabaseValueSQL('?', $this->_platform);
+                    }
+
+                    $values[] = $placeholder;
+                }
 
                 $insertSql = 'INSERT INTO ' . $this->_class->getQuotedTableName($this->_platform)
                         . ' (' . implode(', ', $columns) . ') VALUES (' . implode(', ', $values) . ')';
@@ -1162,6 +1181,7 @@ class BasicEntityPersister
                 }
             } else if ($this->_class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $this->_class->identifier[0] != $name) {
                 $columns[] = $this->_class->getQuotedColumnName($name, $this->_platform);
+                $this->_columnTypes[$name] = $this->_class->fieldMappings[$name]['type'];
             }
         }
 
@@ -1178,11 +1198,16 @@ class BasicEntityPersister
      */
     protected function _getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
-        $sql = $this->_getSQLTableAlias($class->name, $alias == 'r' ? '' : $alias) 
+        $sql = $this->_getSQLTableAlias($class->name, $alias == 'r' ? '' : $alias)
              . '.' . $class->getQuotedColumnName($field, $this->_platform);
         $columnAlias = $this->getSQLColumnAlias($class->columnNames[$field]);
 
         $this->_rsm->addFieldResult($alias, $columnAlias, $field);
+
+        if (isset($class->fieldMappings[$field]['requireSQLConversion'])) {
+            $type = Type::getType($class->getTypeOfField($field));
+            $sql = $type->convertToPHPValueSQL($sql, $this->_platform);
+        }
 
         return $sql . ' AS ' . $columnAlias;
     }
@@ -1265,6 +1290,8 @@ class BasicEntityPersister
 
         foreach ($criteria as $field => $value) {
             $conditionSql .= $conditionSql ? ' AND ' : '';
+            
+            $placeholder = '?';
 
             if (isset($this->_class->columnNames[$field])) {
                 $className = (isset($this->_class->fieldMappings[$field]['inherited']))
@@ -1272,6 +1299,11 @@ class BasicEntityPersister
                     : $this->_class->name;
 
                 $conditionSql .= $this->_getSQLTableAlias($className) . '.' . $this->_class->getQuotedColumnName($field, $this->_platform);
+
+                if (isset($this->_class->fieldMappings[$field]['requireSQLConversion'])) {
+                    $type = Type::getType($this->_class->getTypeOfField($field));
+                    $placeholder = $type->convertToDatabaseValueSQL($placeholder, $this->_platform);
+                }
             } else if (isset($this->_class->associationMappings[$field])) {
                 if ( ! $this->_class->associationMappings[$field]['isOwningSide']) {
                     throw ORMException::invalidFindByInverseAssociation($this->_class->name, $field);
@@ -1292,7 +1324,7 @@ class BasicEntityPersister
                 throw ORMException::unrecognizedField($field);
             }
 
-            $conditionSql .= (is_array($value)) ? ' IN (?)' : (($value === null) ? ' IS NULL' : ' = ?');
+            $conditionSql .= (is_array($value)) ? ' IN (?)' : (($value === null) ? ' IS NULL' : ' = ' . $placeholder);
         }
         return $conditionSql;
     }

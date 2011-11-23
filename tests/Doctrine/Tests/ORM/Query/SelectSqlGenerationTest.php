@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Query;
 
 require_once __DIR__ . '/../../TestInit.php';
@@ -945,7 +946,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT g, count(u.id) FROM Doctrine\Tests\Models\CMS\CmsGroup g JOIN g.users u GROUP BY g',
-            'SELECT c0_.id AS id0, c0_.name AS name1, count(c1_.id) AS sclr2 FROM cms_groups c0_ INNER JOIN cms_users_groups c2_ ON c0_.id = c2_.group_id INNER JOIN cms_users c1_ ON c1_.id = c2_.user_id GROUP BY c0_.id'
+            'SELECT c0_.id AS id0, c0_.name AS name1, count(c1_.id) AS sclr2 FROM cms_groups c0_ INNER JOIN cms_users_groups c2_ ON c0_.id = c2_.group_id INNER JOIN cms_users c1_ ON c1_.id = c2_.user_id GROUP BY c0_.id, c0_.name'
         );
     }
 
@@ -1301,6 +1302,94 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT d0_.article_id AS article_id0, d0_.title AS title1 FROM DDC117Article d0_ WHERE EXISTS (SELECT d1_.source_id, d1_.target_id FROM DDC117Reference d1_ WHERE d1_.source_id = d0_.article_id)"
         );
     }
+    
+    /**
+     * @group DDC-1474
+     */
+    public function testSelectWithArithmeticExpressionBeforeField()
+    {
+        $this->assertSqlGeneration(
+            'SELECT - e.value AS value, e.id FROM ' . __NAMESPACE__ . '\DDC1474Entity e',
+            'SELECT -d0_.value AS sclr0, d0_.id AS id1 FROM DDC1474Entity d0_'
+        );
+        
+        $this->assertSqlGeneration(
+            'SELECT e.id, + e.value AS value FROM ' . __NAMESPACE__ . '\DDC1474Entity e',
+            'SELECT d0_.id AS id0, +d0_.value AS sclr1 FROM DDC1474Entity d0_'
+        );
+    }
+    
+     /**
+     * @group DDC-1430
+     */
+    public function testGroupByAllFieldsWhenObjectHasForeignKeys()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY u',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ GROUP BY c0_.id, c0_.status, c0_.username, c0_.name, c0_.email_id'
+        );
+        
+        $this->assertSqlGeneration(
+            'SELECT e FROM Doctrine\Tests\Models\CMS\CmsEmployee e GROUP BY e',
+            'SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_employees c0_ GROUP BY c0_.id, c0_.name, c0_.spouse_id'
+        );
+    }
+
+    public function testCustomTypeValueSql()
+    {
+        if (DBALType::hasType('negative_to_positive')) {
+            DBALType::overrideType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        } else {
+            DBALType::addType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        }
+
+        $this->assertSqlGeneration(
+            'SELECT p.customInteger FROM Doctrine\Tests\Models\CustomType\CustomTypeParent p WHERE p.id = 1',
+            'SELECT -(c0_.customInteger) AS customInteger0 FROM customtype_parents c0_ WHERE c0_.id = 1'
+        );
+    }
+
+    public function testCustomTypeValueSqlIgnoresIdentifierColumn()
+    {
+        if (DBALType::hasType('negative_to_positive')) {
+            DBALType::overrideType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        } else {
+            DBALType::addType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        }
+
+        $this->assertSqlGeneration(
+            'SELECT p.id FROM Doctrine\Tests\Models\CustomType\CustomTypeParent p WHERE p.id = 1',
+            'SELECT c0_.id AS id0 FROM customtype_parents c0_ WHERE c0_.id = 1'
+        );
+    }
+
+    public function testCustomTypeValueSqlForAllFields()
+    {
+        if (DBALType::hasType('negative_to_positive')) {
+            DBALType::overrideType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        } else {
+            DBALType::addType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        }
+
+        $this->assertSqlGeneration(
+            'SELECT p FROM Doctrine\Tests\Models\CustomType\CustomTypeParent p',
+            'SELECT c0_.id AS id0, -(c0_.customInteger) AS customInteger1 FROM customtype_parents c0_'
+        );
+    }
+
+    public function testCustomTypeValueSqlForPartialObject()
+    {
+        if (DBALType::hasType('negative_to_positive')) {
+            DBALType::overrideType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        } else {
+            DBALType::addType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        }
+
+        $this->assertSqlGeneration(
+            'SELECT partial p.{id, customInteger} FROM Doctrine\Tests\Models\CustomType\CustomTypeParent p',
+            'SELECT c0_.id AS id0, -(c0_.customInteger) AS customInteger1 FROM customtype_parents c0_'
+        );
+    }
 }
 
 
@@ -1343,3 +1432,57 @@ class DDC1384Model
      */
     protected $aVeryLongIdentifierThatShouldBeShortenedByTheSQLWalker_fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo;
 }
+
+
+/**
+ * @Entity
+ */
+class DDC1474Entity
+{
+
+    /**
+     * @Id 
+     * @Column(type="integer")
+     * @GeneratedValue()
+     */
+    protected $id;
+
+    /**
+     * @column(type="float") 
+     */
+    private $value;
+
+    /**
+     * @param string $float 
+     */
+    public function __construct($float)
+    {
+        $this->value = $float;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return float 
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * @param float $value 
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
+    }
+
+}
+

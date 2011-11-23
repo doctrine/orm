@@ -49,17 +49,21 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(sizeof($result['bar@bar.com']->phones), 3);
         $this->assertEquals(sizeof($result['foobar@foobar.com']->phones), 3);
 
-        $this->assertArrayHasKey(1, $result['foo@foo.com']->phones->toArray());
-        $this->assertArrayHasKey(2, $result['foo@foo.com']->phones->toArray());
-        $this->assertArrayHasKey(3, $result['foo@foo.com']->phones->toArray());
+        $foo = $result['foo@foo.com']->phones->toArray();
+        $bar = $result['bar@bar.com']->phones->toArray();
+        $foobar = $result['foobar@foobar.com']->phones->toArray();
 
-        $this->assertArrayHasKey(4, $result['bar@bar.com']->phones->toArray());
-        $this->assertArrayHasKey(5, $result['bar@bar.com']->phones->toArray());
-        $this->assertArrayHasKey(6, $result['bar@bar.com']->phones->toArray());
+        $this->assertArrayHasKey(1, $foo);
+        $this->assertArrayHasKey(2, $foo);
+        $this->assertArrayHasKey(3, $foo);
 
-        $this->assertArrayHasKey(7, $result['foobar@foobar.com']->phones->toArray());
-        $this->assertArrayHasKey(8, $result['foobar@foobar.com']->phones->toArray());
-        $this->assertArrayHasKey(9, $result['foobar@foobar.com']->phones->toArray());
+        $this->assertArrayHasKey(4, $bar);
+        $this->assertArrayHasKey(5, $bar);
+        $this->assertArrayHasKey(6, $bar);
+
+        $this->assertArrayHasKey(7, $foobar);
+        $this->assertArrayHasKey(8, $foobar);
+        $this->assertArrayHasKey(9, $foobar);
     }
 
     public function testTicket()

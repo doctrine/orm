@@ -166,8 +166,11 @@ class XmlDriver extends AbstractFileDriver
             foreach ($xmlRoot->field as $fieldMapping) {
                 $mapping = array(
                     'fieldName' => (string)$fieldMapping['name'],
-                    'type' => (string)$fieldMapping['type']
                 );
+
+                if (isset($fieldMapping['type'])) {
+                    $mapping['type'] = (string)$fieldMapping['type'];
+                }
 
                 if (isset($fieldMapping['column'])) {
                     $mapping['columnName'] = (string)$fieldMapping['column'];
@@ -219,9 +222,12 @@ class XmlDriver extends AbstractFileDriver
 
             $mapping = array(
                 'id' => true,
-                'fieldName' => (string)$idElement['name'],
-                'type' => (string)$idElement['type']
+                'fieldName' => (string)$idElement['name']
             );
+
+            if (isset($idElement['type'])) {
+                $mapping['type'] = (string)$idElement['type'];
+            }
 
             if (isset($idElement['column'])) {
                 $mapping['columnName'] = (string)$idElement['column'];
@@ -371,10 +377,6 @@ class XmlDriver extends AbstractFileDriver
                     $mapping['cascade'] = $this->_getCascadeMappings($manyToOneElement->cascade);
                 }
 
-                if (isset($manyToOneElement->{'orphan-removal'})) {
-                    $mapping['orphanRemoval'] = (bool)$manyToOneElement->{'orphan-removal'};
-                }
-
                 $metadata->mapManyToOne($mapping);
             }
         }
@@ -420,10 +422,6 @@ class XmlDriver extends AbstractFileDriver
 
                 if (isset($manyToManyElement->cascade)) {
                     $mapping['cascade'] = $this->_getCascadeMappings($manyToManyElement->cascade);
-                }
-
-                if (isset($manyToManyElement->{'orphan-removal'})) {
-                    $mapping['orphanRemoval'] = (bool)$manyToManyElement->{'orphan-removal'};
                 }
 
                 if (isset($manyToManyElement->{'order-by'})) {
