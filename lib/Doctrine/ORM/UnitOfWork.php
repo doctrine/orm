@@ -1468,21 +1468,18 @@ class UnitOfWork implements PropertyChangedListener
                             // do not merge fields marked lazy that have not been fetched.
                             continue;
                         } else if ( ! $assoc2['isCascadeMerge']) {
-                            if ($this->getEntityState($other, self::STATE_DETACHED) == self::STATE_MANAGED) {
-                                $prop->setValue($managedCopy, $other);
-                            } else {
-
+                            if ($this->getEntityState($other, self::STATE_DETACHED) !== self::STATE_MANAGED) {
                                 $targetClass = $this->em->getClassMetadata($assoc2['targetEntity']);
                                 $relatedId = $targetClass->getIdentifierValues($other);
 
                                 if ($targetClass->subClasses) {
-                                    $entity = $this->em->find($targetClass->name, $relatedId);
+                                    $other = $this->em->find($targetClass->name, $relatedId);
                                 } else {
-                                    $proxy = $this->em->getProxyFactory()->getProxy($assoc2['targetEntity'], $relatedId);
-                                    $prop->setValue($managedCopy, $proxy);
-                                    $this->registerManaged($proxy, $relatedId, array());
+                                    $other = $this->em->getProxyFactory()->getProxy($assoc2['targetEntity'], $relatedId);
+                                    $this->registerManaged($other, $relatedId, array());
                                 }
                             }
+                            $prop->setValue($managedCopy, $other);
                         }
                     } else {
                         $mergeCol = $prop->getValue($entity);
