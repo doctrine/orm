@@ -2202,6 +2202,12 @@ class UnitOfWork implements PropertyChangedListener
             if (isset($class->associationMappings[$class->identifier[0]])) {
                 $idHash = $data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']];
             } else {
+                /*echo $className;
+                \Doctrine\Common\Util\Debug::dump($data);
+                \Doctrine\Common\Util\Debug::dump($class->identifier);
+                ob_end_flush();
+                ob_start();*/
+                
                 $idHash = $data[$class->identifier[0]];
             }
             $id = array($class->identifier[0] => $idHash);

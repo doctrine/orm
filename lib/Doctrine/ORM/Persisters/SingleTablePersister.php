@@ -120,10 +120,10 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
             $values[] = $this->_conn->quote($this->_class->discriminatorValue);
         }
 
-        $discrValues = array_keys($this->_class->discriminatorMap);
+        $discrValues = array_flip($this->_class->discriminatorMap);
         
-        foreach ($this->_class->subClasses as $i => $subclassName) {
-            $values[] = $this->_conn->quote($discrValues[$i]);
+        foreach ($this->_class->subClasses as $subclassName) {
+            $values[] = $this->_conn->quote($discrValues[$subclassName]);
         }
         
         $conditionSql .= $this->_getSQLTableAlias($this->_class->name) . '.' . $this->_class->discriminatorColumn['name']
