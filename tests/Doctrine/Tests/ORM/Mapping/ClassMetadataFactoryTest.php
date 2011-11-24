@@ -3,7 +3,6 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Tests\Mocks\MetadataDriverMock;
-use Doctrine\Tests\Mocks\DatabasePlatformMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
