@@ -160,7 +160,7 @@ class ResultSetMapping
     {
         $found = false;
 
-        foreach ($this->fieldMappings AS $columnName => $columnFieldName) {
+        foreach (array_merge($this->metaMappings, $this->fieldMappings) AS $columnName => $columnFieldName) {
             if ( ! ($columnFieldName === $fieldName && $this->columnOwnerMap[$columnName] === $alias)) continue;
 
             $this->addIndexByColumn($alias, $columnName);
