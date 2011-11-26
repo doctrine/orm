@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -20,6 +21,21 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
         $annotationDriver->loadMetadataForClass('stdClass', $cm);
+    }
+    
+    public function testLoadMetadataForClassSetsCustomIdGenerator() 
+    {
+        $cm = new ClassMetadata("Doctrine\Tests\ORM\Mapping\CustomIdGeneratorClass");
+        $driver = $this->_loadDriver();
+        $expected = array("class" => "\stdClass", 
+            "args" => array("par1", "par2"));
+        
+        $driver->loadMetadataForClass(
+                "Docrtine\Tests\ORM\Mapping\CustomIdGeneratorClass", $cm);
+        
+        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, $cm->generatorType);
+        $this->assertEquals($expected, $cm->customGeneratorDefinition);
+        
     }
 
     /**
@@ -99,6 +115,8 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
     protected function _loadDriver()
     {
+        AnnotationRegistry::registerFile(__DIR__ . 
+            '/../../../../../lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
         return $this->createAnnotationDriver();
     }
 
@@ -213,6 +231,19 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
             "Entity 'Doctrine\Tests\ORM\Mapping\InvalidFetchOption' has a mapping with invalid fetch mode 'eager");
         $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\InvalidFetchOption');
     }
+}
+
+/**
+ * @Entity
+ */
+class CustomIdGeneratorClass
+{
+    /**
+     * @Id @Column
+     * @GeneratedValue(strategy="CUSTOM")
+     * @CustomIdGenerator(class="\stdClass", args={"par1", "par2"})
+     */
+    public $id;
 }
 
 /**

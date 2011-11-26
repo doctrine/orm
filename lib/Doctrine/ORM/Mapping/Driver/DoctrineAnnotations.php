@@ -39,6 +39,7 @@ require_once __DIR__.'/../UniqueConstraint.php';
 require_once __DIR__.'/../Index.php';
 require_once __DIR__.'/../JoinTable.php';
 require_once __DIR__.'/../SequenceGenerator.php';
+require_once __DIR__.'/../CustomIdGenerator.php';
 require_once __DIR__.'/../ChangeTrackingPolicy.php';
 require_once __DIR__.'/../OrderBy.php';
 require_once __DIR__.'/../NamedQueries.php';

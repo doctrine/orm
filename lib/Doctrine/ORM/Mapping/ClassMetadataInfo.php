@@ -1828,6 +1828,14 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $this->idGenerator = $generator;
     }
+    
+    /**
+     * Sets definition 
+     * @param array $definition 
+     */
+    public function setCustomGeneratorDefinition(array $definition) {
+        $this->customGeneratorDefinition = $definition;
+    }
 
     /**
      * Sets the definition of the sequence ID generator for this class.
