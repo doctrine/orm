@@ -4,7 +4,6 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
-use Doctrine\Common\Annotations\AnnotationRegistry;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -115,8 +114,6 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
     protected function _loadDriver()
     {
-        AnnotationRegistry::registerFile(__DIR__ . 
-            '/../../../../../lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
         return $this->createAnnotationDriver();
     }
 
