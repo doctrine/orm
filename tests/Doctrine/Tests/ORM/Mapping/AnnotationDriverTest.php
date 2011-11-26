@@ -23,7 +23,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver->loadMetadataForClass('stdClass', $cm);
     }
     
-    public function testLoadMetadataForClassSetsCustomIdGenerator() 
+    public function testLoadMetadataForClassSetsCustomGeneratorDefinition() 
     {
         $cm = new ClassMetadata("Doctrine\Tests\ORM\Mapping\CustomIdGeneratorClass");
         $driver = $this->_loadDriver();
