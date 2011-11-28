@@ -590,7 +590,8 @@ abstract class Animal
 
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
-
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_CUSTOM);
+        $metadata->setCustomGeneratorDefinition(array("class" => "stdClass", "args" => array("par1", "par2")));
     }
 }
 
