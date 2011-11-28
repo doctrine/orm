@@ -583,7 +583,8 @@ class User
 abstract class Animal
 {
     /**
-     * @Id @Column(type="string") @GeneratedValue
+     * @Id @Column(type="string") @GeneratedValue(strategy="CUSTOM")
+     * @CustomIdGenerator(class="stdClass", args={"par1", "par2"})
      */
     public $id;
 
