@@ -250,6 +250,16 @@ class XmlDriver extends AbstractFileDriver
                     'allocationSize' => (string)$seqGenerator['allocation-size'],
                     'initialValue' => (string)$seqGenerator['initial-value']
                 ));
+            } else if (isset($idElement->{'custom-generator'})) {
+                $customGenerator = $idElement->{'custom-generator'};
+                $args = array();
+                foreach ($customGenerator->args->children() as $argument) {
+                    $args[] = (string) $argument;
+                }
+                $metadata->setCustomGeneratorDefinition(array(
+                    'class' => (string) $customGenerator['class'],
+                    'args' => $args
+                ));
             } else if (isset($idElement->{'table-generator'})) {
                 throw MappingException::tableIdGeneratorNotImplemented($className);
             }

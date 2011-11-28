@@ -88,6 +88,18 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
             $class->sequenceGeneratorDefinition
         );
     }
+    
+    public function testEntityCustomGenerator()
+    {
+        $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\Animal');
+        
+        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, 
+            $class->generatorType, "Generator Type");
+        $this->assertEquals(
+            array("class" => "stdClass", "args" => array("par1", "par2")),
+            $class->customGeneratorDefinition,
+            "Custom Generator Definition");
+    }
 
 
     /**
