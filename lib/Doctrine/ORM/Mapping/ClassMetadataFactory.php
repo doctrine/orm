@@ -486,10 +486,18 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function isTransient($className)
+    public function isTransient($class)
     {
-        $this->initialize();
-
-        return $this->driver->isTransient($className);
+        if ( ! $this->initialized) {
+            $this->initialize();
+        }
+        
+        // Check for namespace alias
+        if (strpos($class, ':') !== false) {
+            list($namespaceAlias, $simpleClassName) = explode(':', $class);
+            $class = $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
+        }
+        
+        return $this->driver->isTransient($class);
     }
 }
