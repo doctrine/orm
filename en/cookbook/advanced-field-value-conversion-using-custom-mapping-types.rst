@@ -23,8 +23,8 @@ longitude/latitude pair to represent a geographic location.
 The entity
 ----------
 
-We create a simple entity which contains a field ``$point`` which should hold
-a value object ``Point`` representing the latitude and longitude of the position.
+We create a simple entity whith a field ``$point`` which holds a value object 
+``Point`` representing the latitude and longitude of the position.
 
 The entity class:
 
@@ -32,7 +32,7 @@ The entity class:
 
     <?php
     
-    namespace Geo;
+    namespace Geo\Entity;
  
     /**
      * @Entity
@@ -69,7 +69,7 @@ The point class:
 
     <?php
     
-    namespace Geo;
+    namespace Geo\ValueObject;
 
     class Point
     {
@@ -89,3 +89,67 @@ The point class:
             return $this->longitude;
         }
     }
+
+The mapping type
+----------------
+
+As you may have noticed, we used the custom type ``point`` in the ``@Column`` 
+docblock annotation of the ``$point`` field.
+
+Now we're going to create this type and implement all required methods.
+
+.. code-block:: php
+
+    <?php
+
+    namespace Geo\Types;
+
+    use Doctrine\DBAL\Types\Type;
+    use Doctrine\DBAL\Platforms\AbstractPlatform;
+
+    use Geo\ValueObject\Point;
+
+    class PointType extends Type
+    {
+        const POINT = 'point';
+
+        public function getName()
+        {
+            return self::POINT;
+        }
+
+        public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+        {
+            return 'POINT';
+        }
+
+        public function convertToPHPValue($value, AbstractPlatform $platform)
+        {
+            list($longitude, $latitude) = sscanf($value, 'POINT(%f %f)');
+
+            return new Point($latitude, $longitude);
+        }
+
+        public function convertToDatabaseValue($value, AbstractPlatform $platform)
+        {
+            if ($value instanceof Point) {
+                $value = sprintf('POINT(%F %F)', $value->getLongitude(), $value->getLatitude());
+            }
+
+            return $value;
+        }
+
+        public function convertToPHPValueSQL($sqlExpr, AbstractPlatform $platform)
+        {
+            return sprintf('AsText(%s)', $sqlExpr);
+        }
+
+        public function convertToDatabaseValue($sqlExpr, AbstractPlatform $platform)
+        {
+            return sprintf('GeomFromText(%s)', $sqlExpr);
+        }
+    }
+
+A few notes about the implementation:
+
+  * 
