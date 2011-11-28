@@ -191,6 +191,12 @@ class YamlDriver extends AbstractFileDriver
                 // Check for SequenceGenerator/TableGenerator definition
                 if (isset($idElement['sequenceGenerator'])) {
                     $metadata->setSequenceGeneratorDefinition($idElement['sequenceGenerator']);
+                } else if (isset($idElement['customIdGenerator'])) {
+                $customGenerator = $idElement['customIdGenerator'];
+                $metadata->setCustomGeneratorDefinition(array(
+                    'class' => (string) $customGenerator['class'],
+                    'args' => $customGenerator['args']
+                ));
                 } else if (isset($idElement['tableGenerator'])) {
                     throw MappingException::tableIdGeneratorNotImplemented($className);
                 }
