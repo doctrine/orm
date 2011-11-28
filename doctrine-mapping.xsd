@@ -254,7 +254,7 @@
     <xs:sequence>
       <xs:element name="generator" type="orm:generator" minOccurs="0" />
       <xs:element name="sequence-generator" type="orm:sequence-generator" minOccurs="0" maxOccurs="1" />
-      <xs:element name="custom-generator" type="orm:custom-generator" minOccurs="0" maxOccurs="1" />
+      <xs:element name="custom-id-generator" type="orm:custom-id-generator" minOccurs="0" maxOccurs="1" />
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
@@ -274,7 +274,7 @@
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
   
-  <xs:complexType name="custom-generator">
+  <xs:complexType name="custom-id-generator">
     <xs:sequence>
       <xs:element name="args" minOccurs="0" maxOccurs="1">
           <xs:complexType>

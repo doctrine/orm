@@ -10,12 +10,12 @@
         </discriminator-map>
         <id name="id" type="integer" column="id">
             <generator strategy="CUSTOM"/>
-            <custom-generator class="stdClass">
+            <custom-id-generator class="stdClass">
                 <args>
                     <arg>par1</arg>
                     <arg>par2</arg>
                 </args>
-            </custom-generator>
+            </custom-id-generator>
         </id>
     </entity>
 </doctrine-mapping>

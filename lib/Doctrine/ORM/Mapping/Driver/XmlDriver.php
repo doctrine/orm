@@ -250,8 +250,8 @@ class XmlDriver extends AbstractFileDriver
                     'allocationSize' => (string)$seqGenerator['allocation-size'],
                     'initialValue' => (string)$seqGenerator['initial-value']
                 ));
-            } else if (isset($idElement->{'custom-generator'})) {
-                $customGenerator = $idElement->{'custom-generator'};
+            } else if (isset($idElement->{'custom-id-generator'})) {
+                $customGenerator = $idElement->{'custom-id-generator'};
                 $args = array();
                 foreach ($customGenerator->args->children() as $argument) {
                     $args[] = (string) $argument;
