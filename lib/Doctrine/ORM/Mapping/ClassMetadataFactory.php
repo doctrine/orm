@@ -486,7 +486,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function isTransient($className)
+    public function isTransient($class)
     {
         if ( ! $this->initialized) {
             $this->initialize();
