@@ -5,7 +5,7 @@ Advanced field value conversion using custom mapping types
 
 When creating entities, you sometimes have the need to transform field values
 before they are saved to the database. In Doctrine you can use Custom Mapping 
-Types to solve this (see: :ref:`reference-basic_mapping-custom_mapping_types`).
+Types to solve this (see: :ref:`reference-basic-mapping-custom-mapping-types`).
 
 There are several ways to achieve this: converting the value inside the Type
 class, converting the value on the database-level or a combination of both.
