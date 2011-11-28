@@ -300,6 +300,8 @@ list:
 -  ``scale``: (optional, default 0) The scale for a decimal (exact
    numeric) column. (Applies only if a decimal column is used.)
 
+.. _reference-basic_mapping-custom_mapping_types:
+
 Custom Mapping Types
 --------------------
 
