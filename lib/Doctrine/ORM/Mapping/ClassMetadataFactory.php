@@ -519,7 +519,6 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 break;
             default:
                 throw new ORMException("Unknown generator type: " . $class->generatorType);
-                
         }
     }
 
