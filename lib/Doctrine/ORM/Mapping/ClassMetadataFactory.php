@@ -521,6 +521,12 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             $this->initialize();
         }
         
+        // Check for namespace alias
+        if (strpos($class, ':') !== false) {
+            list($namespaceAlias, $simpleClassName) = explode(':', $class);
+            $class = $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
+        }
+        
         return $this->driver->isTransient($class);
     }
 }

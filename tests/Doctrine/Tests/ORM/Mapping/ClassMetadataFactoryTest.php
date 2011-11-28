@@ -9,6 +9,7 @@ use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\EventManager;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -80,6 +81,51 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertNotSame($m1, $m2);
         $this->assertFalse($h2);
         $this->assertTrue($h1);
+    }
+    
+    /**
+     * @group DDC-1512
+     */
+    public function testIsTransient()
+    {
+        $cmf = new ClassMetadataFactory();
+        $driver = $this->getMock('Doctrine\ORM\Mapping\Driver\Driver');
+        $driver->expects($this->at(0))
+               ->method('isTransient')
+               ->with($this->equalTo('Doctrine\Tests\Models\CMS\CmsUser'))
+               ->will($this->returnValue(true));
+        $driver->expects($this->at(1))
+               ->method('isTransient')
+               ->with($this->equalTo('Doctrine\Tests\Models\CMS\CmsArticle'))
+               ->will($this->returnValue(false));
+        
+        $em = $this->_createEntityManager($driver);
+        
+        $this->assertTrue($em->getMetadataFactory()->isTransient('Doctrine\Tests\Models\CMS\CmsUser'));
+        $this->assertFalse($em->getMetadataFactory()->isTransient('Doctrine\Tests\Models\CMS\CmsArticle'));
+    }
+    
+    /**
+     * @group DDC-1512
+     */
+    public function testIsTransientEntityNamespace()
+    {
+        $cmf = new ClassMetadataFactory();
+        $driver = $this->getMock('Doctrine\ORM\Mapping\Driver\Driver');
+        $driver->expects($this->at(0))
+               ->method('isTransient')
+               ->with($this->equalTo('Doctrine\Tests\Models\CMS\CmsUser'))
+               ->will($this->returnValue(true));
+        $driver->expects($this->at(1))
+               ->method('isTransient')
+               ->with($this->equalTo('Doctrine\Tests\Models\CMS\CmsArticle'))
+               ->will($this->returnValue(false));
+        
+        $em = $this->_createEntityManager($driver);
+        $em->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
+        
+        $this->assertTrue($em->getMetadataFactory()->isTransient('CMS:CmsUser'));
+        $this->assertFalse($em->getMetadataFactory()->isTransient('CMS:CmsArticle'));
     }
 
     protected function _createEntityManager($metadataDriver)
