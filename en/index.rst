@@ -67,3 +67,4 @@ Cookbook
    cookbook/validation-of-entities
    cookbook/working-with-datetime
    cookbook/mysql-enums
+   cookbook/advanced-field-value-conversion-using-custom-mapping-types
