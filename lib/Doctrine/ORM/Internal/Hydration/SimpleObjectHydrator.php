@@ -19,10 +19,12 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use \PDO;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Query;
+use \PDO,
+    Doctrine\DBAL\Types\Type,
+    Doctrine\ORM\Mapping\ClassMetadata,
+    Doctrine\ORM\Event\LifecycleEventArgs,
+    Doctrine\ORM\Events,
+    Doctrine\ORM\Query;
 
 class SimpleObjectHydrator extends AbstractHydrator
 {
@@ -125,7 +127,21 @@ class SimpleObjectHydrator extends AbstractHydrator
             $this->registerManaged($this->class, $this->_hints[Query::HINT_REFRESH_ENTITY], $data);
         }
 
-        $result[] = $this->_em->getUnitOfWork()->createEntity($entityName, $data, $this->_hints);
+        $uow    = $this->_em->getUnitOfWork();
+        $entity = $uow->createEntity($entityName, $data, $this->_hints);
+        
+        //TODO: These should be invoked later, after hydration, because associations may not yet be loaded here.
+        if (isset($this->class->lifecycleCallbacks[Events::postLoad])) {
+            $this->class->invokeLifecycleCallbacks(Events::postLoad, $entity);
+        }
+
+        $evm = $this->_em->getEventManager();
+
+        if ($evm->hasListeners(Events::postLoad)) {
+            $evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($entity, $this->_em));
+        }
+        
+        $result[] = $entity;
     }
     
     /**
