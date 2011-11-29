@@ -23,7 +23,8 @@ namespace Doctrine\ORM\Mapping;
  * @Annotation
  * @Target("PROPERTY")
  */
-final class CustomIdGenerator implements Annotation {
+final class CustomIdGenerator implements Annotation
+{
     /** @var string */
     public $class;
     /** @var array */

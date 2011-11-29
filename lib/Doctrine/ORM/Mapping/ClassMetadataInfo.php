@@ -181,7 +181,7 @@ class ClassMetadataInfo implements ClassMetadata
     public $rootEntityName;
 
     /**
-     * READ-ONLY: The definition of custom generator. Only used for CUSTOM 
+     * READ-ONLY: The definition of custom generator. Only used for CUSTOM
      * generator type
      *
      * The definition has the following structure:
@@ -1828,12 +1828,13 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $this->idGenerator = $generator;
     }
-    
+
     /**
-     * Sets definition 
-     * @param array $definition 
+     * Sets definition
+     * @param array $definition
      */
-    public function setCustomGeneratorDefinition(array $definition) {
+    public function setCustomGeneratorDefinition(array $definition)
+    {
         $this->customGeneratorDefinition = $definition;
     }
 

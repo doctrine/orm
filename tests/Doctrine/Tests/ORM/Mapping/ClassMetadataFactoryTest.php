@@ -48,23 +48,25 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_SEQUENCE, $cm1->generatorType);
     }
 
-    public function testGetMetadataFor_ReturnsLoadedCustomIdGenerator() {
+    public function testGetMetadataFor_ReturnsLoadedCustomIdGenerator()
+    {
         $cm1 = $this->_createValidClassMetadata();
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
         $cm1->customGeneratorDefinition = array(
             "class" => "Doctrine\Tests\ORM\Mapping\CustomIdGenerator");
         $cmf = $this->_createTestFactory();
         $cmf->setMetadataForClass($cm1->name, $cm1);
-        
+
         $actual = $cmf->getMetadataFor($cm1->name);
-        
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, 
+
+        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM,
             $actual->generatorType);
         $this->assertInstanceOf("Doctrine\Tests\ORM\Mapping\CustomIdGenerator",
             $actual->idGenerator);
     }
-    
-    public function testGetMetadataFor_PasesArgumentsToGeneratorsConstructor() {
+
+    public function testGetMetadataFor_PasesArgumentsToGeneratorsConstructor()
+    {
         $cm1 = $this->_createValidClassMetadata();
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
         $cm1->customGeneratorDefinition = array(
@@ -73,39 +75,41 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $cmf = $this->_createTestFactory();
         $cmf->setMetadataForClass($cm1->name, $cm1);
         $expected = new CustomIdGenerator("parameter");
-        
+
         $actual = $cmf->getMetadataFor($cm1->name);
-        
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, 
+
+        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM,
             $actual->generatorType);
         $this->assertEquals($expected, $actual->idGenerator);
     }
-    
-    public function testGetMetadataFor_ThrowsExceptionOnUnknownCustomGeneratorClass() {
+
+    public function testGetMetadataFor_ThrowsExceptionOnUnknownCustomGeneratorClass()
+    {
         $cm1 = $this->_createValidClassMetadata();
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
         $cm1->customGeneratorDefinition = array("class" => "NotExistingGenerator");
         $cmf = $this->_createTestFactory();
         $cmf->setMetadataForClass($cm1->name, $cm1);
         $this->setExpectedException("Doctrine\ORM\ORMException");
-        
+
         $actual = $cmf->getMetadataFor($cm1->name);
     }
-    
-    public function testGetMetadataFor_ThrowsExceptionOnMissingCustomGeneratorDefinition() {
+
+    public function testGetMetadataFor_ThrowsExceptionOnMissingCustomGeneratorDefinition()
+    {
         $cm1 = $this->_createValidClassMetadata();
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
         $cmf = $this->_createTestFactory();
         $cmf->setMetadataForClass($cm1->name, $cm1);
         $this->setExpectedException("Doctrine\ORM\ORMException");
-        
+
         $actual = $cmf->getMetadataFor($cm1->name);
     }
 
     public function testHasGetMetadata_NamespaceSeperatorIsNotNormalized()
     {
         require_once __DIR__."/../../Models/Global/GlobalNamespaceModel.php";
-        
+
         $metadataDriver = $this->createAnnotationDriver(array(__DIR__ . '/../../Models/Global/'));
 
         $entityManager = $this->_createEntityManager($metadataDriver);
@@ -120,7 +124,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFalse($h2);
         $this->assertTrue($h1);
     }
-    
+
     /**
      * @group DDC-1512
      */
@@ -136,13 +140,13 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
                ->method('isTransient')
                ->with($this->equalTo('Doctrine\Tests\Models\CMS\CmsArticle'))
                ->will($this->returnValue(false));
-        
+
         $em = $this->_createEntityManager($driver);
-        
+
         $this->assertTrue($em->getMetadataFactory()->isTransient('Doctrine\Tests\Models\CMS\CmsUser'));
         $this->assertFalse($em->getMetadataFactory()->isTransient('Doctrine\Tests\Models\CMS\CmsArticle'));
     }
-    
+
     /**
      * @group DDC-1512
      */
@@ -158,10 +162,10 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
                ->method('isTransient')
                ->with($this->equalTo('Doctrine\Tests\Models\CMS\CmsArticle'))
                ->will($this->returnValue(false));
-        
+
         $em = $this->_createEntityManager($driver);
         $em->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
-        
+
         $this->assertTrue($em->getMetadataFactory()->isTransient('CMS:CmsUser'));
         $this->assertFalse($em->getMetadataFactory()->isTransient('CMS:CmsArticle'));
     }
@@ -179,23 +183,25 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
 
         return EntityManagerMock::create($conn, $config, $eventManager);
     }
-    
+
     /**
-     * @return ClassMetadataFactoryTestSubject 
+     * @return ClassMetadataFactoryTestSubject
      */
-    protected function _createTestFactory() {
+    protected function _createTestFactory()
+    {
         $mockDriver = new MetadataDriverMock();
         $entityManager = $this->_createEntityManager($mockDriver);
         $cmf = new ClassMetadataFactoryTestSubject();
         $cmf->setEntityManager($entityManager);
         return $cmf;
     }
-    
+
     /**
      * @param string $class
-     * @return ClassMetadata 
+     * @return ClassMetadata
      */
-    protected function _createValidClassMetadata() {
+    protected function _createValidClassMetadata()
+    {
         $cm1 = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
         $cm1->setPrimaryTable(array('name' => '`group`'));
         // Add a mapped field
@@ -250,10 +256,14 @@ class TestEntity1
     private $association;
 }
 
-class CustomIdGenerator extends \Doctrine\ORM\Id\AbstractIdGenerator {
+class CustomIdGenerator extends \Doctrine\ORM\Id\AbstractIdGenerator
+{
     public $parameter;
-    public function __construct($parameter = null) {
+    public function __construct($parameter = null)
+    {
         $this->parameter = $parameter;
     }
-    public function generate(\Doctrine\ORM\EntityManager $em, $entity) {}
+    public function generate(\Doctrine\ORM\EntityManager $em, $entity)
+    {
+    }
 }

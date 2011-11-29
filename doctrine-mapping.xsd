@@ -273,7 +273,7 @@
       <xs:attribute name="initial-value" type="xs:integer" use="optional" default="1" />
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
-  
+
   <xs:complexType name="custom-id-generator">
     <xs:sequence>
       <xs:element name="args" minOccurs="0" maxOccurs="1">
