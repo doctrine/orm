@@ -27,13 +27,9 @@ use Doctrine\ORM\PersistentCollection,
 /**
  * Persister for one-to-many collections.
  *
- * IMPORTANT:
- * This persister is only used for uni-directional one-to-many mappings on a foreign key
- * (which are not yet supported). So currently this persister is not used.
- *
- * @since 2.0
- * @author Roman Borschel <roman@code-factory.org>
- * @todo Remove
+ * @author  Roman Borschel <roman@code-factory.org>
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @since   2.0
  */
 class OneToManyPersister extends AbstractCollectionPersister
 {
@@ -48,30 +44,35 @@ class OneToManyPersister extends AbstractCollectionPersister
     protected function _getDeleteRowSQL(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
-        $targetClass = $this->_em->getClassMetadata($mapping->getTargetEntityName());
-        $table = $targetClass->getTableName();
+        $class   = $this->_em->getClassMetadata($mapping['targetEntity']);
+        
+        return 'DELETE FROM ' . $class->getQuotedTableName($this->_conn->getDatabasePlatform())
+             . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
+    }
 
-        $ownerMapping = $targetClass->getAssociationMapping($mapping['mappedBy']);
-
-        $setClause = '';
-        foreach ($ownerMapping->sourceToTargetKeyColumns as $sourceCol => $targetCol) {
-            if ($setClause != '') $setClause .= ', ';
-            $setClause .= "$sourceCol = NULL";
-        }
-
-        $whereClause = '';
-        foreach ($targetClass->getIdentifierColumnNames() as $idColumn) {
-            if ($whereClause != '') $whereClause .= ' AND ';
-            $whereClause .= "$idColumn = ?";
-        }
-
-        return array("UPDATE $table SET $setClause WHERE $whereClause", $this->_uow->getEntityIdentifier($element));
+    /**
+     * {@inheritdoc}
+     * 
+     */
+    protected function _getDeleteRowSQLParameters(PersistentCollection $coll, $element)
+    {
+        return array_values($this->_uow->getEntityIdentifier($element));
     }
 
     protected function _getInsertRowSQL(PersistentCollection $coll)
     {
         return "UPDATE xxx SET foreign_key = yyy WHERE foreign_key = zzz";
     }
+
+    /**
+     * Gets the SQL parameters for the corresponding SQL statement to insert the given
+     * element of the given collection into the database.
+     *
+     * @param PersistentCollection $coll
+     * @param mixed $element
+     */
+    protected function _getInsertRowSQLParameters(PersistentCollection $coll, $element)
+    {}
 
     /* Not used for OneToManyPersister */
     protected function _getUpdateRowSQL(PersistentCollection $coll)
@@ -99,51 +100,30 @@ class OneToManyPersister extends AbstractCollectionPersister
     {}
 
     /**
-     * Gets the SQL parameters for the corresponding SQL statement to insert the given
-     * element of the given collection into the database.
-     *
-     * @param PersistentCollection $coll
-     * @param mixed $element
-     */
-    protected function _getInsertRowSQLParameters(PersistentCollection $coll, $element)
-    {}
-
-    /**
-     * Gets the SQL parameters for the corresponding SQL statement to delete the given
-     * element from the given collection.
-     *
-     * @param PersistentCollection $coll
-     * @param mixed $element
-     */
-    protected function _getDeleteRowSQLParameters(PersistentCollection $coll, $element)
-    {}
-
-    /**
      * {@inheritdoc}
      */
     public function count(PersistentCollection $coll)
     {
-        $mapping = $coll->getMapping();
+        $mapping     = $coll->getMapping();
         $targetClass = $this->_em->getClassMetadata($mapping['targetEntity']);
         $sourceClass = $this->_em->getClassMetadata($mapping['sourceEntity']);
+        $id          = $this->_em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
 
-        $params = array();
-        $id = $this->_em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
-
-        $where = '';
+        $whereClauses = array();
+        $params       = array();
+        
         foreach ($targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'] AS $joinColumn) {
-            if ($where != '') {
-                $where .= ' AND ';
-            }
-            $where .= $joinColumn['name'] . " = ?";
-            if ($targetClass->containsForeignIdentifier) {
-                $params[] = $id[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])];
-            } else {
-                $params[] = $id[$sourceClass->fieldNames[$joinColumn['referencedColumnName']]];
-            }
+            $whereClauses[] = $joinColumn['name'] . ' = ?';
+            
+            $params[] = ($targetClass->containsForeignIdentifier)
+                ? $id[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])]
+                : $id[$sourceClass->fieldNames[$joinColumn['referencedColumnName']]];
         }
 
-        $sql = "SELECT count(*) FROM " . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) . " WHERE " . $where;
+        $sql = 'SELECT count(*)'
+             . ' FROM ' . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) 
+             . ' WHERE ' . implode(' AND ', $whereClauses);
+        
         return $this->_conn->fetchColumn($sql, $params);
     }
 
@@ -155,31 +135,57 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function slice(PersistentCollection $coll, $offset, $length = null)
     {
-        $mapping = $coll->getMapping();
-        return $this->_em->getUnitOfWork()
-                  ->getEntityPersister($mapping['targetEntity'])
-                  ->getOneToManyCollection($mapping, $coll->getOwner(), $offset, $length);
+        $mapping   = $coll->getMapping();
+        $uow       = $this->_em->getUnitOfWork();
+        $persister = $uow->getEntityPersister($mapping['targetEntity']);
+        
+        return $persister->getOneToManyCollection($mapping, $coll->getOwner(), $offset, $length);
     }
 
     /**
      * @param PersistentCollection $coll
      * @param object $element
+     * @return boolean
      */
     public function contains(PersistentCollection $coll, $element)
     {
         $mapping = $coll->getMapping();
-        $uow = $this->_em->getUnitOfWork();
+        $uow     = $this->_em->getUnitOfWork();
         
         // shortcut for new entities
         if ($uow->getEntityState($element, UnitOfWork::STATE_NEW) == UnitOfWork::STATE_NEW) {
             return false;
         }
 
-        // only works with single id identifier entities. Will throw an exception in Entity Persisters
-        // if that is not the case for the 'mappedBy' field.
+        $persister = $uow->getEntityPersister($mapping['targetEntity']);
+        
+        // only works with single id identifier entities. Will throw an 
+        // exception in Entity Persisters if that is not the case for the 
+        // 'mappedBy' field.
         $id = current( $uow->getEntityIdentifier($coll->getOwner()) );
 
-        return $uow->getEntityPersister($mapping['targetEntity'])
-                   ->exists($element, array($mapping['mappedBy'] => $id));
+        return $persister->exists($element, array($mapping['mappedBy'] => $id));
+    }
+    
+    /**
+     * @param PersistentCollection $coll
+     * @param object $element
+     * @return boolean
+     */
+    public function removeElement(PersistentCollection $coll, $element)
+    {
+        $uow = $this->_em->getUnitOfWork();
+
+        // shortcut for new entities
+        if ($uow->getEntityState($element, UnitOfWork::STATE_NEW) == UnitOfWork::STATE_NEW) {
+            return false;
+        }
+
+        $mapping = $coll->getMapping();
+        $class   = $this->_em->getClassMetadata($mapping['targetEntity']);
+        $sql     = 'DELETE FROM ' . $class->getQuotedTableName($this->_conn->getDatabasePlatform())
+                 . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
+               
+        return (bool) $this->_conn->executeUpdate($sql, $this->_getDeleteRowSQLParameters($coll, $element));
     }
 }

@@ -151,6 +151,16 @@ abstract class AbstractCollectionPersister
         throw new \BadMethodCallException("Checking for existance of a key is not supported by this CollectionPersister.");
     }
 
+    public function removeElement(PersistentCollection $coll, $element)
+    {
+        throw new \BadMethodCallException("Removing an element is not supported by this CollectionPersister.");
+    }
+
+    public function removeKey(PersistentCollection $coll, $key)
+    {
+        throw new \BadMethodCallException("Removing a key is not supported by this CollectionPersister.");
+    }
+
     public function get(PersistentCollection $coll, $index)
     {
         throw new \BadMethodCallException("Selecting a collection by index is not supported by this CollectionPersister.");
