@@ -32,6 +32,7 @@ namespace Doctrine\ORM\Tools\Console;
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Jonathan Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
+ * @author      Tomasz Kowalczyk <tomasz@kowalczyk.cc>
  */
 class MetadataFilter extends \FilterIterator implements \Countable
 {
@@ -66,7 +67,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
         $metadata = $it->current();
 
         foreach ($this->_filter AS $filter) {
-            if (strpos($metadata->name, $filter) !== false) {
+            if (preg_match('/'.$filter.'/', $metadata->name)) {
                 return true;
             }
         }
