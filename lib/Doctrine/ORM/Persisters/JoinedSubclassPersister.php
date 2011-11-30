@@ -328,7 +328,16 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
                 $joinSql .= $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
             }
+
+            // Filters for each parent table
+            $filterSql = $this->generateFilterConditionSQL($parentClass, $tableAlias, $parentClass->table['name']);
+            if('' !== $filterSql) {
+                if (!$first) $joinSql .= ' AND ';
+                $joinSql .= $filterSql;
+            }
         }
+
+        //@todo: filters for the sub tables of childs
 
         // OUTER JOIN sub tables
         foreach ($this->_class->subClasses as $subClassName) {
@@ -387,6 +396,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $lockSql = ' ' . $this->_platform->getReadLockSql();
         } else if ($lockMode == LockMode::PESSIMISTIC_WRITE) {
             $lockSql = ' ' . $this->_platform->getWriteLockSql();
+        }
+
+        // Filters for the base table
+        $filterSql = $this->generateFilterConditionSQL($this->_class, $baseTableAlias, $this->_class->table['name']);
+        if('' !== $filterSql) {
+            if($conditionSql) $conditionSql .= ' AND ';
+            $conditionSql .= $filterSql;
         }
 
         return $this->_platform->modifyLimitQuery('SELECT ' . $this->_selectColumnListSql
@@ -472,5 +488,20 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     {
         $value = $this->fetchVersionValue($this->_getVersionedClassMetadata(), $id);
         $this->_class->setFieldValue($entity, $this->_class->versionField, $value);
+    }
+
+    private function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
+    {
+        $filterSql = '';
+
+        $first =  true;
+        foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
+            if("" !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias, $targetTable)) {
+                if ( ! $first) $filterSql .= ' AND '; else $first = false;
+                $filterSql .= '(' . $filterExpr . ')';
+            }
+        }
+
+        return $filterSql;
     }
 }

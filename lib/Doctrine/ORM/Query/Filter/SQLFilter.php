@@ -73,5 +73,5 @@ abstract class SQLFilter
     /**
      * @return string The constraint if there is one, empty string otherwise
      */
-    abstract public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias);
+    abstract public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '');
 }

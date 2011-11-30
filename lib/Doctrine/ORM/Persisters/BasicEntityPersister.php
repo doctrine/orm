@@ -1584,7 +1584,7 @@ class BasicEntityPersister
         );
     }
 
-    private function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    private function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
     {
         $filterSql = '';
 

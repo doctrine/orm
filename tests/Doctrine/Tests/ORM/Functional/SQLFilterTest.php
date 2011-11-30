@@ -15,6 +15,10 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
 
+use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\Models\Company\CompanyManager;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
+
 require_once __DIR__ . '/../../TestInit.php';
 
 /**
@@ -30,6 +34,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         $this->useModelSet('cms');
+        $this->useModelSet('company');
         parent::setUp();
     }
 
@@ -444,6 +449,44 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(1, count($user->groups->slice(0,10)));
     }
 
+    public function testJoinSubclassPersister_FilterOnBaseTable()
+    {
+        $this->loadCompanyFixtureData();
+        $this->assertEquals(2, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyManager')->findAll()));
+
+        // Enable the filter
+        $conf = $this->_em->getConfiguration();
+        $conf->addFilter("manager_title", "\Doctrine\Tests\ORM\Functional\CompanyManagerTitleFilter");
+        $this->_em->getFilters()
+            ->enable("manager_title")
+            ->setParameter("title", "devlead", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
+
+        $this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+
+        $managers = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyManager')->findAll();
+        $this->assertEquals(1, count($managers));
+        $this->assertEquals("Guilherme", $managers[0]->getName());
+    }
+
+    public function testJoinSubclassPersister_FilterOnParentTable()
+    {
+        $this->loadCompanyFixtureData();
+        $this->assertEquals(2, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyManager')->findAll()));
+
+        // Enable the filter
+        $conf = $this->_em->getConfiguration();
+        $conf->addFilter("employee_department", "\Doctrine\Tests\ORM\Functional\CompanyEmployeeDepartmentFilter");
+        $this->_em->getFilters()
+            ->enable("employee_department")
+            ->setParameter("department", "parsers", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
+
+        $this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+
+        $managers = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyManager')->findAll();
+        $this->assertEquals(1, count($managers));
+        $this->assertEquals("Guilherme", $managers[0]->getName());
+    }
+
     private function loadFixtureData()
     {
         $user = new CmsUser;
@@ -507,11 +550,31 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->groupId = $group->id;
         $this->groupId2 = $group2->id;
     }
+
+    private function loadCompanyFixtureData()
+    {
+        $manager = new CompanyManager;
+        $manager->setName('Roman');
+        $manager->setTitle('testlead');
+        $manager->setSalary(42);
+        $manager->setDepartment('persisters');
+
+        $manager2 = new CompanyManager;
+        $manager2->setName('Guilherme');
+        $manager2->setTitle('devlead');
+        $manager2->setSalary(42);
+        $manager2->setDepartment('parsers');
+
+        $this->_em->persist($manager);
+        $this->_em->persist($manager2);
+        $this->_em->flush();
+        $this->_em->clear();
+    }
 }
 
 class MySoftDeleteFilter extends SQLFilter
 {
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
     {
         if ($targetEntity->name != "MyEntity\SoftDeleteNewsItem") {
             return "";
@@ -523,7 +586,7 @@ class MySoftDeleteFilter extends SQLFilter
 
 class MyLocaleFilter extends SQLFilter
 {
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
     {
         if (!in_array("LocaleAware", $targetEntity->reflClass->getInterfaceNames())) {
             return "";
@@ -535,7 +598,7 @@ class MyLocaleFilter extends SQLFilter
 
 class CMSCountryFilter extends SQLFilter
 {
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
     {
         if ($targetEntity->name != "Doctrine\Tests\Models\CMS\CmsAddress") {
             return "";
@@ -547,7 +610,7 @@ class CMSCountryFilter extends SQLFilter
 
 class CMSGroupPrefixFilter extends SQLFilter
 {
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
     {
         if ($targetEntity->name != "Doctrine\Tests\Models\CMS\CmsGroup") {
             return "";
@@ -558,12 +621,36 @@ class CMSGroupPrefixFilter extends SQLFilter
 }
 class CMSArticleTopicFilter extends SQLFilter
 {
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
     {
         if ($targetEntity->name != "Doctrine\Tests\Models\CMS\CmsArticle") {
             return "";
         }
 
         return $targetTableAlias.'.topic = ' . $this->getParameter('topic'); // getParam uses connection to quote the value.
+    }
+}
+
+class CompanyManagerTitleFilter extends SQLFilter
+{
+    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
+    {
+        if ($targetEntity->name != "Doctrine\Tests\Models\Company\CompanyManager") {
+            return "";
+        }
+
+        return $targetTableAlias.'.title = ' . $this->getParameter('title'); // getParam uses connection to quote the value.
+    }
+}
+
+class CompanyEmployeeDepartmentFilter extends SQLFilter
+{
+    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
+    {
+        if ($targetEntity->name != "Doctrine\Tests\Models\Company\CompanyEmployee") {
+            return "";
+        }
+
+        return $targetTableAlias.'.department = ' . $this->getParameter('department'); // getParam uses connection to quote the value.
     }
 }
