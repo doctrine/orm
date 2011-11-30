@@ -401,10 +401,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      *
      * @return string
      */
-    public function getLockTablesSql()
+    public function getLockTablesSql($alias = null)
     {
         $idColumns = $this->_class->getIdentifierColumnNames();
-        $baseTableAlias = $this->_getSQLTableAlias($this->_class->name);
+        $baseTableAlias = null !== $alias ? $alias : $this->_getSQLTableAlias($this->_class->name);
 
         // INNER JOIN parent tables
         $joinSql = '';

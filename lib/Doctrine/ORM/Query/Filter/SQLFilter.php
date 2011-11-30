@@ -42,7 +42,7 @@ abstract class SQLFilter
         $this->em = $em;
     }
 
-    final function setParameter($name, $value, $type)
+    final public function setParameter($name, $value, $type)
     {
         // @todo: check for a valid type?
         $this->parameters[$name] = array('value' => $value, 'type' => $type);
@@ -56,7 +56,7 @@ abstract class SQLFilter
         return $this;
     }
 
-    final function getParameter($name)
+    final public function getParameter($name)
     {
         if(!isset($this->parameters[$name])) {
             throw new \InvalidArgumentException("Parameter '" . $name . "' does not exist.");
@@ -65,13 +65,13 @@ abstract class SQLFilter
         return $this->em->getConnection()->quote($this->parameters[$name]['value'], $this->parameters[$name]['type']);
     }
 
-    final function __toString()
+    final public function __toString()
     {
         return serialize($this->parameters);
     }
 
     /**
-     * @return string The contstraint if there is one, empty string otherwise
+     * @return string The constraint if there is one, empty string otherwise
      */
-    abstract function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias);
+    abstract public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias);
 }

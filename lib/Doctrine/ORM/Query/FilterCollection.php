@@ -29,6 +29,17 @@ use Doctrine\ORM\Configuration,
  */
 class FilterCollection
 {
+    /* Filter STATES */
+    /**
+     * A filter object is in CLEAN state when it has no changed parameters.
+     */
+    const FILTERS_STATE_CLEAN  = 1;
+
+    /**
+     * A filter object is in DIRTY state when it has changed parameters.
+     */
+    const FILTERS_STATE_DIRTY = 2;
+
     private $config;
     private $em;
     private $filters;
@@ -45,36 +56,41 @@ class FilterCollection
      */
     private $filterHash;
 
-    /* Filter STATES */
     /**
-     * A filter object is in CLEAN state when it has no changed parameters.
-     */
-    const FILTERS_STATE_CLEAN  = 1;
-
-    /**
-     * A filter object is in DIRTY state when it has changed parameters.
-     */
-    const FILTERS_STATE_DIRTY = 2;
-
-    /**
-     * @var integer $state   The current state of this filter
+     * @var integer $state The current state of this filter
      */
     private $filtersState = self::FILTERS_STATE_CLEAN;
 
-    final public function __construct(EntityManager $em)
+    /**
+     * Constructor.
+     *
+     * @param EntityManager $em
+     */
+    public function __construct(EntityManager $em)
     {
         $this->em = $em;
         $this->config = $em->getConfiguration();
     }
 
-    /** @return SQLFilter[] */
+    /**
+     * Get all the enabled filters.
+     *
+     * @return array The enabled filters.
+     */
     public function getEnabledFilters()
     {
         return $this->enabledFilters;
     }
 
-    /** Throws exception if filter does not exist. No-op if the filter is alrady enabled.
-    * @return SQLFilter */
+    /**
+     * Enables a filter from the collection.
+     *
+     * @param mixed $name Name of the filter.
+     *
+     * @throws \InvalidArgumentException If the filter does not exist.
+     *
+     * @return SQLFilter The enabled filter.
+     */
     public function enable($name)
     {
         if(null === $filterClass = $this->config->getFilterClassName($name)) {
@@ -94,7 +110,15 @@ class FilterCollection
         return $this->enabledFilters[$name];
     }
 
-    /** Disable the filter, looses the state */
+    /**
+     * Disables a filter.
+     *
+     * @param mixed $name Name of the filter.
+     *
+     * @return SQLFilter The disabled filter.
+     *
+     * @throws \InvalidArgumentException If the filter does not exist.
+     */
     public function disable($name)
     {
         // Get the filter to return it
@@ -108,7 +132,15 @@ class FilterCollection
         return $filter;
     }
 
-    /** throws exception if not in enabled filters */
+    /**
+     * Get an enabled filter from the collection.
+     *
+     * @param mixed $name Name of the filter.
+     *
+     * @return SQLFilter The filter.
+     *
+     * @throws \InvalidArgumentException If the filter is not enabled.
+     */
     public function getFilter($name)
     {
         if(!isset($this->enabledFilters[$name])) {
@@ -146,6 +178,9 @@ class FilterCollection
         return $filterHash;
     }
 
+    /**
+     * Set the filter state to dirty.
+     */
     public function setFiltersStateDirty()
     {
         $this->filtersState = self::FILTERS_STATE_DIRTY;

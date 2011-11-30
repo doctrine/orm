@@ -1020,6 +1020,7 @@ class BasicEntityPersister
 
                 if ($assoc['isOwningSide']) {
                     $this->_selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($assoc['joinColumns']);
+                    $this->_selectJoinSql .= ' ' . $eagerEntity->getQuotedTableName($this->_platform) . ' ' . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) .' ON ';
 
                     foreach ($assoc['sourceToTargetKeyColumns'] AS $sourceCol => $targetCol) {
                         if ( ! $first) {
@@ -1027,7 +1028,7 @@ class BasicEntityPersister
                         }
                         $tableAlias = $this->_getSQLTableAlias($assoc['targetEntity'], $assocAlias);
                         $this->_selectJoinSql .= $this->_getSQLTableAlias($assoc['sourceEntity']) . '.' . $sourceCol . ' = '
-                                               . $tableAlias . '.' . $targetCol . ' ';
+                                               . $tableAlias . '.' . $targetCol;
                         $first = false;
                     }
 
@@ -1536,7 +1537,7 @@ class BasicEntityPersister
 
         $alias = $this->_getSQLTableAlias($this->_class->name);
 
-        $sql = 'SELECT 1'
+        $sql = 'SELECT 1 '
              . $this->getLockTablesSql($alias)
              . ' WHERE ' . $this->_getSelectConditionSQL($criteria);
 
