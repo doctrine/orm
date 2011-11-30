@@ -677,13 +677,10 @@ class Parser
                 }
 
                 // Build the error message
-                $semanticalError = 'Invalid PathExpression. ';
-
-                if (count($expectedStringTypes) == 1) {
-                    $semanticalError .= 'Must be a ' . $expectedStringTypes[0] . '.';
-                } else {
-                    $semanticalError .= implode(' or ', $expectedStringTypes) . ' expected.';
-                }
+                $semanticalError  = 'Invalid PathExpression. ';
+                $semanticalError .= (count($expectedStringTypes) == 1)
+                    ? 'Must be a ' . $expectedStringTypes[0] . '.'
+                    : implode(' or ', $expectedStringTypes) . ' expected.';
 
                 $this->semanticalError($semanticalError, $deferredItem['token']);
             }
@@ -1866,53 +1863,78 @@ class Parser
         $expression    = null;
         $identVariable = null;
         $peek          = $this->_lexer->glimpse();
+        $lookaheadType = $this->_lexer->lookahead['type'];
 
-        if ($this->_lexer->lookahead['type'] === Lexer::T_IDENTIFIER && $peek['type'] === Lexer::T_DOT) {
+        switch (true) {
             // ScalarExpression (u.name)
-            $expression = $this->ScalarExpression();
-        } else if ($this->_lexer->lookahead['type'] === Lexer::T_IDENTIFIER && $peek['type'] !== Lexer::T_OPEN_PARENTHESIS) {
-            // IdentificationVariable (u)
-            $expression = $identVariable = $this->IdentificationVariable();
-        } else if (in_array($this->_lexer->lookahead['type'], array(Lexer::T_CASE, Lexer::T_COALESCE, Lexer::T_NULLIF))) {
-            // CaseExpression (CASE ... or NULLIF(...) or COALESCE(...))
-            $expression = $this->CaseExpression();
-        } else if ($this->_isFunction()) {
-            // DQL Function (SUM(u.value) or SUM(u.value) + 1)
-            $this->_lexer->peek(); // "("
-
-            $lookaheadType = $this->_lexer->lookahead['type'];
-            $beyond        = $this->_peekBeyondClosingParenthesis();
-
-            if ($this->_isMathOperator($beyond)) {
-                // SUM(u.id) + COUNT(u.id)
+            case ($lookaheadType === Lexer::T_IDENTIFIER && $peek['type'] === Lexer::T_DOT):
                 $expression = $this->ScalarExpression();
-            } else if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
-                // COUNT(u.id)
-                $expression = $this->AggregateExpression();
-            } else {
-                // SUM(u.id)
-                $expression = $this->FunctionDeclaration();
-            }
-        } else if ($this->_lexer->lookahead['type'] === Lexer::T_PARTIAL) {
+                break;
+
+            // IdentificationVariable (u)
+            case ($lookaheadType === Lexer::T_IDENTIFIER && $peek['type'] !== Lexer::T_OPEN_PARENTHESIS):
+                $expression = $identVariable = $this->IdentificationVariable();
+                break;
+
+            // CaseExpression (CASE ... or NULLIF(...) or COALESCE(...))
+            case ($lookaheadType === Lexer::T_CASE):
+            case ($lookaheadType === Lexer::T_COALESCE):
+            case ($lookaheadType === Lexer::T_NULLIF):
+                $expression = $this->CaseExpression();
+                break;
+
+            // DQL Function (SUM(u.value) or SUM(u.value) + 1)
+            case ($this->_isFunction()):
+                $this->_lexer->peek(); // "("
+
+                switch (true) {
+                    case ($this->_isMathOperator($this->_peekBeyondClosingParenthesis())):
+                        // SUM(u.id) + COUNT(u.id)
+                        $expression = $this->ScalarExpression();
+                        break;
+
+                    case ($this->_isAggregateFunction($lookaheadType)):
+                        // COUNT(u.id)
+                        $expression = $this->AggregateExpression();
+                        break;
+
+                    default:
+                        // IDENTITY(u)
+                        $expression = $this->FunctionDeclaration();
+                        break;
+                }
+
+                break;
+
             // PartialObjectExpression (PARTIAL u.{id, name})
-            $expression = $this->PartialObjectExpression();
-            $identVariable = $expression->identificationVariable;
-        } else if ($this->_lexer->lookahead['type'] === Lexer::T_OPEN_PARENTHESIS && $peek['type'] === Lexer::T_SELECT) {
+            case ($lookaheadType === Lexer::T_PARTIAL):
+                $expression    = $this->PartialObjectExpression();
+                $identVariable = $expression->identificationVariable;
+                break;
+
             // Subselect
-            $this->match(Lexer::T_OPEN_PARENTHESIS);
-            $expression = $this->Subselect();
-            $this->match(Lexer::T_CLOSE_PARENTHESIS);
-        } else if (in_array($this->_lexer->lookahead['type'], array(Lexer::T_OPEN_PARENTHESIS, Lexer::T_INTEGER, Lexer::T_FLOAT, Lexer::T_STRING))) {
+            case ($lookaheadType === Lexer::T_OPEN_PARENTHESIS && $peek['type'] === Lexer::T_SELECT):
+                $this->match(Lexer::T_OPEN_PARENTHESIS);
+                $expression = $this->Subselect();
+                $this->match(Lexer::T_CLOSE_PARENTHESIS);
+                break;
+
             // Shortcut: ScalarExpression => SimpleArithmeticExpression
-            $expression = $this->SimpleArithmeticExpression();
-        } else if (in_array($this->_lexer->lookahead['type'], array(Lexer::T_PLUS, Lexer::T_MINUS))) {
-             // SimpleArithmeticExpression : (- u.value ) or ( + u.value )
-            $expression = $this->SimpleArithmeticExpression();
-        } else {
-            $this->syntaxError(
-                'IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression',
-                $this->_lexer->lookahead
-            );
+            case ($lookaheadType === Lexer::T_OPEN_PARENTHESIS):
+            case ($lookaheadType === Lexer::T_INTEGER):
+            case ($lookaheadType === Lexer::T_STRING):
+            case ($lookaheadType === Lexer::T_FLOAT):
+            // SimpleArithmeticExpression : (- u.value ) or ( + u.value )
+            case ($lookaheadType === Lexer::T_MINUS):
+            case ($lookaheadType === Lexer::T_PLUS):
+                $expression = $this->SimpleArithmeticExpression();
+                break;
+
+            default:
+                $this->syntaxError(
+                    'IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression',
+                    $this->_lexer->lookahead
+                );
         }
 
         // [["AS"] ["HIDDEN"] AliasResultVariable]
@@ -1965,25 +1987,41 @@ class Parser
     {
         $peek = $this->_lexer->glimpse();
 
-        if ($peek['value'] != '(' && $this->_lexer->lookahead['type'] === Lexer::T_IDENTIFIER) {
-            // SingleValuedPathExpression | IdentificationVariable
-            $expression = ($peek['value'] == '.')
-            	? $this->StateFieldPathExpression()
-            	: $this->IdentificationVariable();
+        switch ($this->_lexer->lookahead['type']) {
+            case Lexer::T_IDENTIFIER:
+                switch (true) {
+                    case ($peek['type'] === Lexer::T_DOT):
+                        $expression = $this->StateFieldPathExpression();
 
-            return new AST\SimpleSelectExpression($expression);
-        } else if ($this->_lexer->lookahead['value'] == '(') {
-            if ($peek['type'] == Lexer::T_SELECT) {
+                        return new AST\SimpleSelectExpression($expression);
+
+                    case ($peek['type'] !== Lexer::T_OPEN_PARENTHESIS):
+                        $expression = $this->IdentificationVariable();
+
+                        return new AST\SimpleSelectExpression($expression);
+
+                    default:
+                        // Do nothing
+                }
+                break;
+
+            case Lexer::T_OPEN_PARENTHESIS:
+                if ($peek['type'] !== Lexer::T_SELECT) {
+                    // Shortcut: ScalarExpression => SimpleArithmeticExpression
+                    $expression = $this->SimpleArithmeticExpression();
+
+                    return new AST\SimpleSelectExpression($expression);
+                }
+
                 // Subselect
                 $this->match(Lexer::T_OPEN_PARENTHESIS);
                 $expression = $this->Subselect();
                 $this->match(Lexer::T_CLOSE_PARENTHESIS);
-            } else {
-                // Shortcut: ScalarExpression => SimpleArithmeticExpression
-                $expression = $this->SimpleArithmeticExpression();
-            }
 
-            return new AST\SimpleSelectExpression($expression);
+                return new AST\SimpleSelectExpression($expression);
+
+            default:
+                // Do nothing
         }
 
         $this->_lexer->peek();
@@ -2099,26 +2137,25 @@ class Parser
     {
         $condPrimary = new AST\ConditionalPrimary;
 
-        if ($this->_lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)) {
-            // Peek beyond the matching closing paranthesis ')'
-            $peek = $this->_peekBeyondClosingParenthesis();
-
-            if (in_array($peek['value'], array("=",  "<", "<=", "<>", ">", ">=", "!=")) ||
-                    $peek['type'] === Lexer::T_NOT ||
-                    $peek['type'] === Lexer::T_BETWEEN ||
-                    $peek['type'] === Lexer::T_LIKE ||
-                    $peek['type'] === Lexer::T_IN ||
-                    $peek['type'] === Lexer::T_IS ||
-                    $peek['type'] === Lexer::T_EXISTS) {
-                $condPrimary->simpleConditionalExpression = $this->SimpleConditionalExpression();
-            } else {
-                $this->match(Lexer::T_OPEN_PARENTHESIS);
-                $condPrimary->conditionalExpression = $this->ConditionalExpression();
-                $this->match(Lexer::T_CLOSE_PARENTHESIS);
-            }
-        } else {
+        if ( ! $this->_lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)) {
             $condPrimary->simpleConditionalExpression = $this->SimpleConditionalExpression();
+
+            return $condPrimary;
         }
+
+        // Peek beyond the matching closing paranthesis ')'
+        $peek = $this->_peekBeyondClosingParenthesis();
+
+        if (in_array($peek['value'], array("=",  "<", "<=", "<>", ">", ">=", "!=")) ||
+            in_array($peek['type'], array(Lexer::T_NOT, Lexer::T_BETWEEN, Lexer::T_LIKE, Lexer::T_IN, Lexer::T_IS, Lexer::T_EXISTS))) {
+            $condPrimary->simpleConditionalExpression = $this->SimpleConditionalExpression();
+
+            return $condPrimary;
+        }
+
+        $this->match(Lexer::T_OPEN_PARENTHESIS);
+        $condPrimary->conditionalExpression = $this->ConditionalExpression();
+        $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
         return $condPrimary;
     }
@@ -2132,10 +2169,10 @@ class Parser
      */
     public function SimpleConditionalExpression()
     {
+        $token = $this->_lexer->lookahead;
+
         if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
             $token = $this->_lexer->glimpse();
-        } else {
-            $token = $this->_lexer->lookahead;
         }
 
         if ($token['type'] === Lexer::T_EXISTS) {
@@ -2464,9 +2501,9 @@ class Parser
                     }
 
                     return $this->FunctionDeclaration();
-                } else {
-                    return $this->Literal();
                 }
+
+                return $this->Literal();
         }
     }
 
@@ -2498,30 +2535,46 @@ class Parser
      */
     public function StringPrimary()
     {
-        if ($this->_lexer->isNextToken(Lexer::T_IDENTIFIER)) {
-            $peek = $this->_lexer->glimpse();
+        $lookaheadType = $this->_lexer->lookahead['type'];
 
-            if ($peek['value'] == '.') {
-                return $this->StateFieldPathExpression();
-            } else if ($peek['value'] == '(') {
-                // do NOT directly go to FunctionsReturningString() because it doesnt check for custom functions.
-                return $this->FunctionDeclaration();
-            } else {
+        switch ($lookaheadType) {
+            case Lexer::T_IDENTIFIER:
+                $peek = $this->_lexer->glimpse();
+
+                if ($peek['value'] == '.') {
+                    return $this->StateFieldPathExpression();
+                }
+
+                if ($peek['value'] == '(') {
+                    // do NOT directly go to FunctionsReturningString() because it doesnt check for custom functions.
+                    return $this->FunctionDeclaration();
+                }
+
                 $this->syntaxError("'.' or '('");
-            }
-        } else if ($this->_lexer->isNextToken(Lexer::T_STRING)) {
-            $this->match(Lexer::T_STRING);
+                break;
 
-            return $this->_lexer->token['value'];
-        } else if ($this->_lexer->isNextToken(Lexer::T_INPUT_PARAMETER)) {
-            return $this->InputParameter();
-        } else if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
-            return $this->AggregateExpression();
-        } else if (in_array($this->_lexer->lookahead['type'], array(Lexer::T_CASE, Lexer::T_COALESCE, Lexer::T_NULLIF))) {
-            return $this->CaseExpression();
+            case Lexer::T_STRING:
+                $this->match(Lexer::T_STRING);
+
+                return $this->_lexer->token['value'];
+
+            case Lexer::T_INPUT_PARAMETER:
+                return $this->InputParameter();
+
+            case Lexer::T_CASE:
+            case Lexer::T_COALESCE:
+            case Lexer::T_NULLIF:
+                return $this->CaseExpression();
+
+            default:
+                if ($this->_isAggregateFunction($lookaheadType)) {
+                    return $this->AggregateExpression();
+                }
         }
 
-        $this->syntaxError('StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression');
+        $this->syntaxError(
+            'StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression'
+        );
     }
 
     /**
@@ -2564,39 +2617,27 @@ class Parser
      */
     public function AggregateExpression()
     {
+        $lookaheadType = $this->_lexer->lookahead['type'];
         $isDistinct = false;
-        $functionName = '';
 
-        if ($this->_lexer->isNextToken(Lexer::T_COUNT)) {
-            $this->match(Lexer::T_COUNT);
-            $functionName = $this->_lexer->token['value'];
-            $this->match(Lexer::T_OPEN_PARENTHESIS);
-
-            if ($this->_lexer->isNextToken(Lexer::T_DISTINCT)) {
-                $this->match(Lexer::T_DISTINCT);
-                $isDistinct = true;
-            }
-
-            $pathExp = $this->SingleValuedPathExpression();
-            $this->match(Lexer::T_CLOSE_PARENTHESIS);
-        } else {
-            if ($this->_lexer->isNextToken(Lexer::T_AVG)) {
-                $this->match(Lexer::T_AVG);
-            } else if ($this->_lexer->isNextToken(Lexer::T_MAX)) {
-                $this->match(Lexer::T_MAX);
-            } else if ($this->_lexer->isNextToken(Lexer::T_MIN)) {
-                $this->match(Lexer::T_MIN);
-            } else if ($this->_lexer->isNextToken(Lexer::T_SUM)) {
-                $this->match(Lexer::T_SUM);
-            } else {
-                $this->syntaxError('One of: MAX, MIN, AVG, SUM, COUNT');
-            }
-
-            $functionName = $this->_lexer->token['value'];
-            $this->match(Lexer::T_OPEN_PARENTHESIS);
-            $pathExp = $this->SimpleArithmeticExpression();
-            $this->match(Lexer::T_CLOSE_PARENTHESIS);
+        if ( ! in_array($lookaheadType, array(Lexer::T_COUNT, Lexer::T_AVG, Lexer::T_MAX, Lexer::T_MIN, Lexer::T_SUM))) {
+            $this->syntaxError('One of: MAX, MIN, AVG, SUM, COUNT');
         }
+
+        $this->match($lookaheadType);
+        $functionName = $this->_lexer->token['value'];
+        $this->match(Lexer::T_OPEN_PARENTHESIS);
+
+        if ($this->_lexer->isNextToken(Lexer::T_DISTINCT)) {
+            $this->match(Lexer::T_DISTINCT);
+            $isDistinct = true;
+        }
+
+        $pathExp = ($lookaheadType === Lexer::T_COUNT) 
+            ? $this->SingleValuedPathExpression()
+            : $this->SimpleArithmeticExpression();
+
+	    $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
         return new AST\AggregateExpression($functionName, $pathExp, $isDistinct);
     }
@@ -2608,24 +2649,19 @@ class Parser
      */
     public function QuantifiedExpression()
     {
-        $type = '';
+        $lookaheadType = $this->_lexer->lookahead['type'];
+        $value = $this->_lexer->lookahead['value'];
 
-        if ($this->_lexer->isNextToken(Lexer::T_ALL)) {
-            $this->match(Lexer::T_ALL);
-            $type = 'ALL';
-        } else if ($this->_lexer->isNextToken(Lexer::T_ANY)) {
-            $this->match(Lexer::T_ANY);
-             $type = 'ANY';
-        } else if ($this->_lexer->isNextToken(Lexer::T_SOME)) {
-            $this->match(Lexer::T_SOME);
-             $type = 'SOME';
-        } else {
+        if ( ! in_array($lookaheadType, array(Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME))) {
             $this->syntaxError('ALL, ANY or SOME');
         }
 
+        $this->match($lookaheadType);
         $this->match(Lexer::T_OPEN_PARENTHESIS);
+
         $qExpr = new AST\QuantifiedExpression($this->Subselect());
-        $qExpr->type = $type;
+        $qExpr->type = $value;
+
         $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
         return $qExpr;
@@ -2666,14 +2702,11 @@ class Parser
     {
         $peek = $this->_lexer->glimpse();
 
-        $leftExpr = $this->ArithmeticExpression();
-        $operator = $this->ComparisonOperator();
-
-        if ($this->_isNextAllAnySome()) {
-            $rightExpr = $this->QuantifiedExpression();
-        } else {
-            $rightExpr = $this->ArithmeticExpression();
-        }
+        $leftExpr  = $this->ArithmeticExpression();
+        $operator  = $this->ComparisonOperator();
+        $rightExpr = ($this->_isNextAllAnySome())
+            ? $this->QuantifiedExpression()
+            : $this->ArithmeticExpression();
 
         return new AST\ComparisonExpression($leftExpr, $operator, $rightExpr);
     }

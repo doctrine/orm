@@ -23,8 +23,9 @@ namespace Doctrine\ORM\Internal;
  * The CommitOrderCalculator is used by the UnitOfWork to sort out the
  * correct order in which changes to entities need to be persisted.
  *
- * @since 2.0
- * @author Roman Borschel <roman@code-factory.org> 
+ * @since 	2.0
+ * @author 	Roman Borschel <roman@code-factory.org> 
+ * @author	Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class CommitOrderCalculator
 {
@@ -60,10 +61,9 @@ class CommitOrderCalculator
     {
         // Check whether we need to do anything. 0 or 1 node is easy.
         $nodeCount = count($this->_classes);
-        if ($nodeCount == 0) {
-            return array();
-        } else if ($nodeCount == 1) {
-            return array_values($this->_classes);
+
+        if ($nodeCount <= 1) {
+            return ($nodeCount == 1) ? array_values($this->_classes) : array();
         }
         
         // Init

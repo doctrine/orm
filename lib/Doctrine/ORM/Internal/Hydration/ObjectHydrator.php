@@ -36,11 +36,6 @@ use PDO,
  * @author Guilherme Blanco <guilhermeblanoc@hotmail.com>
  *
  * @internal Highly performance-sensitive code.
- *
- * @todo General behavior is "wrong" if you define an alias to selected IdentificationVariable.
- * Example: SELECT u AS user FROM User u
- * The result should contains an array where each array index is an array: array('user' => [User object])
- * Problem must be solved somehow by removing the isMixed in ResultSetMapping
  */
 class ObjectHydrator extends AbstractHydrator
 {
