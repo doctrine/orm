@@ -368,28 +368,38 @@ class EntityManager implements ObjectManager
      * without actually loading it, if the entity is not yet loaded.
      *
      * @param string $entityName The name of the entity type.
-     * @param mixed $identifier The entity identifier.
+     * @param mixed $id The entity identifier.
      * @return object The entity reference.
      */
-    public function getReference($entityName, $identifier)
+    public function getReference($entityName, $id)
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        if ( ! is_array($id)) {
+            $id = array($class->identifier[0] => $id);
+        }
+        $sortedId = array();
+        foreach ($class->identifier as $identifier) {
+            if (!isset($id[$identifier])) {
+                throw ORMException::missingIdentifierField($class->name, $identifier);
+            }
+            $sortedId[$identifier] = $id[$identifier];
+        }
 
         // Check identity map first, if its already in there just return it.
-        if ($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) {
+        if ($entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName)) {
             return ($entity instanceof $class->name) ? $entity : null;
         }
 
         if ($class->subClasses) {
-            return $this->find($entityName, $identifier);
+            return $this->find($entityName, $sortedId);
         }
 
-        if ( ! is_array($identifier)) {
-            $identifier = array($class->identifier[0] => $identifier);
+        if ( ! is_array($sortedId)) {
+            $sortedId = array($class->identifier[0] => $sortedId);
         }
 
-        $entity = $this->proxyFactory->getProxy($class->name, $identifier);
-        $this->unitOfWork->registerManaged($entity, $identifier, array());
+        $entity = $this->proxyFactory->getProxy($class->name, $sortedId);
+        $this->unitOfWork->registerManaged($entity, $sortedId, array());
 
         return $entity;
     }

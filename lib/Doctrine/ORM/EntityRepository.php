@@ -107,8 +107,19 @@ class EntityRepository implements ObjectRepository
      */
     public function find($id, $lockMode = LockMode::NONE, $lockVersion = null)
     {
+        if ( ! is_array($id)) {
+            $id = array($this->_class->identifier[0] => $id);
+        }
+        $sortedId = array();
+        foreach ($this->_class->identifier as $identifier) {
+            if (!isset($id[$identifier])) {
+                throw ORMException::missingIdentifierField($this->_class->name, $identifier);
+            }
+            $sortedId[$identifier] = $id[$identifier];
+        }
+        
         // Check identity map first
-        if ($entity = $this->_em->getUnitOfWork()->tryGetById($id, $this->_class->rootEntityName)) {
+        if ($entity = $this->_em->getUnitOfWork()->tryGetById($sortedId, $this->_class->rootEntityName)) {
             if ( ! ($entity instanceof $this->_class->name)) {
                 return null;
             }
@@ -120,22 +131,16 @@ class EntityRepository implements ObjectRepository
             return $entity; // Hit!
         }
 
-        if ( ! is_array($id) || count($id) <= 1) {
-            // @todo FIXME: Not correct. Relies on specific order.
-            $value = is_array($id) ? array_values($id) : array($id);
-            $id = array_combine($this->_class->identifier, $value);
-        }
-
         switch ($lockMode) {
             case LockMode::NONE:
-                return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($id);
+                return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($sortedId);
 
             case LockMode::OPTIMISTIC:
                 if ( ! $this->_class->isVersioned) {
                     throw OptimisticLockException::notVersioned($this->_entityName);
                 }
 
-                $entity = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($id);
+                $entity = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($sortedId);
 
                 $this->_em->getUnitOfWork()->lock($entity, $lockMode, $lockVersion);
 
@@ -146,7 +151,7 @@ class EntityRepository implements ObjectRepository
                     throw TransactionRequiredException::transactionRequired();
                 }
 
-                return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($id, null, null, array(), $lockMode);
+                return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($sortedId, null, null, array(), $lockMode);
         }
     }
 
