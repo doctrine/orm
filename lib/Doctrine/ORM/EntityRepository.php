@@ -109,11 +109,11 @@ class EntityRepository implements ObjectRepository
     {
         // Check identity map first
         if ($entity = $this->_em->getUnitOfWork()->tryGetById($id, $this->_class->rootEntityName)) {
-            if (!($entity instanceof $this->_class->name)) {
+            if ( ! ($entity instanceof $this->_class->name)) {
                 return null;
             }
-            
-            if ($lockMode != LockMode::NONE) {
+
+            if ($lockMode !== LockMode::NONE) {
                 $this->_em->lock($entity, $lockMode, $lockVersion);
             }
 
@@ -126,23 +126,27 @@ class EntityRepository implements ObjectRepository
             $id = array_combine($this->_class->identifier, $value);
         }
 
-        if ($lockMode == LockMode::NONE) {
-            return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($id);
-        } else if ($lockMode == LockMode::OPTIMISTIC) {
-            if (!$this->_class->isVersioned) {
-                throw OptimisticLockException::notVersioned($this->_entityName);
-            }
-            $entity = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($id);
+        switch ($lockMode) {
+            case LockMode::NONE:
+                return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($id);
 
-            $this->_em->getUnitOfWork()->lock($entity, $lockMode, $lockVersion);
+            case LockMode::OPTIMISTIC:
+                if ( ! $this->_class->isVersioned) {
+                    throw OptimisticLockException::notVersioned($this->_entityName);
+                }
 
-            return $entity;
-        } else {
-            if (!$this->_em->getConnection()->isTransactionActive()) {
-                throw TransactionRequiredException::transactionRequired();
-            }
-            
-            return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($id, null, null, array(), $lockMode);
+                $entity = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($id);
+
+                $this->_em->getUnitOfWork()->lock($entity, $lockMode, $lockVersion);
+
+                return $entity;
+
+            default:
+                if ( ! $this->_em->getConnection()->isTransactionActive()) {
+                    throw TransactionRequiredException::transactionRequired();
+                }
+
+                return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($id, null, null, array(), $lockMode);
         }
     }
 
@@ -191,30 +195,35 @@ class EntityRepository implements ObjectRepository
      */
     public function __call($method, $arguments)
     {
-        if (substr($method, 0, 6) == 'findBy') {
-            $by = substr($method, 6, strlen($method));
-            $method = 'findBy';
-        } else if (substr($method, 0, 9) == 'findOneBy') {
-            $by = substr($method, 9, strlen($method));
-            $method = 'findOneBy';
-        } else {
-            throw new \BadMethodCallException(
-                "Undefined method '$method'. The method name must start with ".
-                "either findBy or findOneBy!"
-            );
+        switch (true) {
+            case (substr($method, 0, 6) == 'findBy'):
+                $by = substr($method, 6, strlen($method));
+                $method = 'findBy';
+                break;
+
+            case (substr($method, 0, 9) == 'findOneBy'):
+                $by = substr($method, 9, strlen($method));
+                $method = 'findOneBy';
+                break;
+
+            default:
+                throw new \BadMethodCallException(
+                    "Undefined method '$method'. The method name must start with ".
+                    "either findBy or findOneBy!"
+                );
         }
 
         if (empty($arguments)) {
-            throw ORMException::findByRequiresParameter($method.$by);
+            throw ORMException::findByRequiresParameter($method . $by);
         }
 
         $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
 
         if ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName)) {
             return $this->$method(array($fieldName => $arguments[0]));
-        } else {
-            throw ORMException::invalidFindByCall($this->_entityName, $fieldName, $method.$by);
         }
+
+        throw ORMException::invalidFindByCall($this->_entityName, $fieldName, $method.$by);
     }
 
     /**
