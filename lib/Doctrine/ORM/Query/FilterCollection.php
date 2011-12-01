@@ -85,7 +85,7 @@ class FilterCollection
     /**
      * Enables a filter from the collection.
      *
-     * @param mixed $name Name of the filter.
+     * @param string $name Name of the filter.
      *
      * @throws \InvalidArgumentException If the filter does not exist.
      *
@@ -113,7 +113,7 @@ class FilterCollection
     /**
      * Disables a filter.
      *
-     * @param mixed $name Name of the filter.
+     * @param string $name Name of the filter.
      *
      * @return SQLFilter The disabled filter.
      *
@@ -135,7 +135,7 @@ class FilterCollection
     /**
      * Get an enabled filter from the collection.
      *
-     * @param mixed $name Name of the filter.
+     * @param string $name Name of the filter.
      *
      * @return SQLFilter The filter.
      *
