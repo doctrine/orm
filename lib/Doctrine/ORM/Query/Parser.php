@@ -2,7 +2,7 @@
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHARNTABILITY AND FITNESS FOR
  * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
  * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
  * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
@@ -1305,7 +1305,7 @@ class Parser
     }
 
     /**
-     * GroupByItem ::= IdentificationVariable | SingleValuedPathExpression
+     * GroupByItem ::= IdentificationVariable | ResultVariable | SingleValuedPathExpression
      *
      * @return string | \Doctrine\ORM\Query\AST\PathExpression
      */
@@ -1314,18 +1314,20 @@ class Parser
         // We need to check if we are in a IdentificationVariable or SingleValuedPathExpression
         $glimpse = $this->_lexer->glimpse();
 
-        if ($glimpse['type'] == Lexer::T_DOT) {
+        if ($glimpse['type'] === Lexer::T_DOT) {
             return $this->SingleValuedPathExpression();
         }
 
-        $token = $this->_lexer->lookahead;
-        $identVariable = $this->IdentificationVariable();
+        // Still need to decide between IdentificationVariable or ResultVariable
+        $lookaheadValue = $this->_lexer->lookahead['value'];
 
-        if ( ! isset($this->_queryComponents[$identVariable])) {
-            $this->semanticalError('Cannot group by undefined identification variable.');
+        if ( ! isset($this->_queryComponents[$lookaheadValue])) {
+            $this->semanticalError('Cannot group by undefined identification or result variable.');
         }
 
-        return $identVariable;
+        return (isset($this->_queryComponents[$lookaheadValue]['metadata']))
+            ? $this->IdentificationVariable()
+            : $this->ResultVariable();
     }
 
     /**
@@ -2633,7 +2635,7 @@ class Parser
             $isDistinct = true;
         }
 
-        $pathExp = ($lookaheadType === Lexer::T_COUNT) 
+        $pathExp = ($lookaheadType === Lexer::T_COUNT)
             ? $this->SingleValuedPathExpression()
             : $this->SimpleArithmeticExpression();
 

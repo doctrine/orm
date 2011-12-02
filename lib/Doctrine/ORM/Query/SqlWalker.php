@@ -1014,6 +1014,8 @@ class SqlWalker implements TreeWalker
 
                 $sql .= $col . ' AS ' . $columnAlias;
 
+                $this->_scalarResultAliasMap[$resultAlias] = $columnAlias;
+
                 if ( ! $hidden) {
                     $this->_rsm->addScalarResult($columnAlias, $resultAlias);
                     $this->_scalarFields[$dqlAlias][$fieldName] = $columnAlias;
@@ -1103,6 +1105,8 @@ class SqlWalker implements TreeWalker
 
                     $sqlParts[] = $col . ' AS '. $columnAlias;
 
+                    $this->_scalarResultAliasMap[$resultAlias][] = $columnAlias;
+
                     $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
                 }
 
@@ -1131,6 +1135,8 @@ class SqlWalker implements TreeWalker
                             }
 
                             $sqlParts[] = $col . ' AS ' . $columnAlias;
+
+                            $this->_scalarResultAliasMap[$resultAlias][] = $columnAlias;
 
                             $this->_rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $subClassName);
                         }
@@ -1319,25 +1325,7 @@ class SqlWalker implements TreeWalker
         $sqlParts = array();
 
         foreach ($groupByClause->groupByItems AS $groupByItem) {
-            if ( ! is_string($groupByItem)) {
-                $sqlParts[] = $this->walkGroupByItem($groupByItem);
-
-                continue;
-            }
-
-            foreach ($this->_queryComponents[$groupByItem]['metadata']->fieldNames AS $field) {
-                $item       = new AST\PathExpression(AST\PathExpression::TYPE_STATE_FIELD, $groupByItem, $field);
-                $item->type = AST\PathExpression::TYPE_STATE_FIELD;
-                $sqlParts[] = $this->walkGroupByItem($item);
-            }
-            
-            foreach ($this->_queryComponents[$groupByItem]['metadata']->associationMappings AS $mapping) {
-                if ($mapping['isOwningSide'] && $mapping['type'] & ClassMetadataInfo::TO_ONE) {
-                    $item       = new AST\PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $groupByItem, $mapping['fieldName']);
-                    $item->type = AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
-                    $sqlParts[] = $this->walkGroupByItem($item);
-                }
-            }
+            $sqlParts[] = $this->walkGroupByItem($groupByItem);
         }
 
         return ' GROUP BY ' . implode(', ', $sqlParts);
@@ -1349,9 +1337,38 @@ class SqlWalker implements TreeWalker
      * @param GroupByItem
      * @return string The SQL.
      */
-    public function walkGroupByItem(AST\PathExpression $pathExpr)
+    public function walkGroupByItem($groupByItem)
     {
-        return $this->walkPathExpression($pathExpr);
+        // StateFieldPathExpression
+        if ( ! is_string($groupByItem)) {
+            return $this->walkPathExpression($groupByItem);
+        }
+
+        // ResultVariable
+        if (isset($this->_queryComponents[$groupByItem]['resultVariable'])) {
+            return $this->walkResultVariable($groupByItem);
+        }
+
+        // IdentificationVariable
+        $sqlParts = array();
+
+        foreach ($this->_queryComponents[$groupByItem]['metadata']->fieldNames AS $field) {
+            $item       = new AST\PathExpression(AST\PathExpression::TYPE_STATE_FIELD, $groupByItem, $field);
+            $item->type = AST\PathExpression::TYPE_STATE_FIELD;
+
+            $sqlParts[] = $this->walkPathExpression($item);
+        }
+
+        foreach ($this->_queryComponents[$groupByItem]['metadata']->associationMappings AS $mapping) {
+            if ($mapping['isOwningSide'] && $mapping['type'] & ClassMetadataInfo::TO_ONE) {
+                $item       = new AST\PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $groupByItem, $mapping['fieldName']);
+                $item->type = AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
+
+                $sqlParts[] = $this->walkPathExpression($item);
+            }
+        }
+
+        return implode(', ', $sqlParts);
     }
 
     /**
@@ -1996,5 +2013,22 @@ class SqlWalker implements TreeWalker
         return (is_string($stringPrimary))
             ? $this->_conn->quote($stringPrimary)
             : $stringPrimary->dispatch($this);
+    }
+
+    /**
+     * Walks down a ResultVriable that represents an AST node, thereby generating the appropriate SQL.
+     *
+     * @param string $resultVariable
+     * @return string The SQL.
+     */
+    public function walkResultVariable($resultVariable)
+    {
+        $resultAlias = $this->_scalarResultAliasMap[$resultVariable];
+
+        if (is_array($resultAlias)) {
+            return implode(', ', $resultAlias);
+        }
+
+        return $resultAlias;
     }
 }

@@ -40,7 +40,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
                 $query->setHint($name, $value);
             }
 
-            parent::assertEquals($sqlToBeConfirmed, $query->getSQL());
+            $sqlGenerated = $query->getSQL();
+
+            parent::assertEquals(
+                $sqlToBeConfirmed,
+                $sqlGenerated,
+                sprintf('"%s" is not equal of "%s"', $sqlGenerated, $sqlToBeConfirmed)
+            );
+
             $query->free();
         } catch (\Exception $e) {
             $this->fail($e->getMessage() ."\n".$e->getTraceAsString());
@@ -1302,7 +1309,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT d0_.article_id AS article_id0, d0_.title AS title1 FROM DDC117Article d0_ WHERE EXISTS (SELECT d1_.source_id, d1_.target_id FROM DDC117Reference d1_ WHERE d1_.source_id = d0_.article_id)"
         );
     }
-    
+
     /**
      * @group DDC-1474
      */
@@ -1312,13 +1319,13 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT - e.value AS value, e.id FROM ' . __NAMESPACE__ . '\DDC1474Entity e',
             'SELECT -d0_.value AS sclr0, d0_.id AS id1 FROM DDC1474Entity d0_'
         );
-        
+
         $this->assertSqlGeneration(
             'SELECT e.id, + e.value AS value FROM ' . __NAMESPACE__ . '\DDC1474Entity e',
             'SELECT d0_.id AS id0, +d0_.value AS sclr1 FROM DDC1474Entity d0_'
         );
     }
-    
+
      /**
      * @group DDC-1430
      */
@@ -1328,10 +1335,32 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY u',
             'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ GROUP BY c0_.id, c0_.status, c0_.username, c0_.name, c0_.email_id'
         );
-        
+
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\CMS\CmsEmployee e GROUP BY e',
             'SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_employees c0_ GROUP BY c0_.id, c0_.name, c0_.spouse_id'
+        );
+    }
+
+    /**
+     * @group DDC-1236
+     */
+    public function testGroupBySupportsResultVariable()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u, u.status AS st FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY st',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.status AS status4 FROM cms_users c0_ GROUP BY status4'
+        );
+    }
+
+    /**
+     * @group DDC-1236
+     */
+    public function testGroupBySupportsIdentificationVariable()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u AS user FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY user',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ GROUP BY id0, status1, username2, name3'
         );
     }
 
@@ -1441,19 +1470,19 @@ class DDC1474Entity
 {
 
     /**
-     * @Id 
+     * @Id
      * @Column(type="integer")
      * @GeneratedValue()
      */
     protected $id;
 
     /**
-     * @column(type="float") 
+     * @column(type="float")
      */
     private $value;
 
     /**
-     * @param string $float 
+     * @param string $float
      */
     public function __construct($float)
     {
@@ -1469,7 +1498,7 @@ class DDC1474Entity
     }
 
     /**
-     * @return float 
+     * @return float
      */
     public function getValue()
     {
@@ -1477,7 +1506,7 @@ class DDC1474Entity
     }
 
     /**
-     * @param float $value 
+     * @param float $value
      */
     public function setValue($value)
     {
