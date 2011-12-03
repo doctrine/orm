@@ -2607,7 +2607,7 @@ class Parser
             return $this->InputParameter();
         }
 
-        return $this->IdentificationVariable();
+        return $this->StateFieldPathExpression();
     }
 
     /**
