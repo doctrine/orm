@@ -2147,7 +2147,7 @@ class UnitOfWork implements PropertyChangedListener
         if ($this->commitOrderCalculator === null) {
             $this->commitOrderCalculator = new Internal\CommitOrderCalculator;
         }
-        
+
         return $this->commitOrderCalculator;
     }
 
@@ -2652,7 +2652,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param string $entityName  The name of the Entity.
      *
-     * @return Doctrine\ORM\Persisters\AbstractEntityPersister
+     * @return Doctrine\ORM\Persisters\BasicEntityPersister
      */
     public function getEntityPersister($entityName)
     {
