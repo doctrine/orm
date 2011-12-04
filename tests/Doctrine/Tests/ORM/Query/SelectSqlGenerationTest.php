@@ -451,8 +451,8 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testSupportsSingleValuedInExpressionWithoutSpacesInWherePart()
     {
         $this->assertSqlGeneration(
-            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN(46)",
-            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE c0_.id IN (46)"
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE IDENTITY(u.email) IN(46)",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE c0_.email_id IN (46)"
         );
     }
 
@@ -467,8 +467,8 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testSupportsNotInExpressionInWherePart()
     {
         $this->assertSqlGeneration(
-            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN (1)',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id NOT IN (1)'
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :id NOT IN (1)',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE ? NOT IN (1)'
         );
     }
 

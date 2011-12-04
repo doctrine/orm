@@ -1727,8 +1727,7 @@ class SqlWalker implements TreeWalker
      */
     public function walkInExpression($inExpr)
     {
-        $sql = $this->walkPathExpression($inExpr->pathExpression)
-             . ($inExpr->not ? ' NOT' : '') . ' IN (';
+        $sql = $this->walkArithmeticExpression($inExpr->expression) . ($inExpr->not ? ' NOT' : '') . ' IN (';
 
         $sql .= ($inExpr->subselect)
             ? $this->walkSubselect($inExpr->subselect)

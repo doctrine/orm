@@ -2720,7 +2720,7 @@ class Parser
      */
     public function InExpression()
     {
-        $inExpression = new AST\InExpression($this->SingleValuedPathExpression());
+        $inExpression = new AST\InExpression($this->ArithmeticExpression());
 
         if ($this->_lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
