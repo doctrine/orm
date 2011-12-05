@@ -33,6 +33,7 @@ use Doctrine\DBAL\LockMode,
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author Roman Borschel <roman@code-factory.org>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @author Alexander <iam.asm89@gmail.com>
  * @since  2.0
  * @todo Rename: SQLWalker
  */
@@ -362,19 +363,17 @@ class SqlWalker implements TreeWalker
      */
     private function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        $filterSql = '';
+        $filterClauses = array();
 
         if($this->_em->hasFilters()) {
-            $first = true;
             foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
                 if("" !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
-                    if ( ! $first) $filterSql .= ' AND '; else $first = false;
-                    $filterSql .= '(' . $filterExpr . ')';
+                    $filterClauses[] = '(' . $filterExpr . ')';
                 }
             }
         }
 
-        return $filterSql;
+        return implode(' AND ', $filterClauses);
     }
     /**
      * Walks down a SelectStatement AST node, thereby generating the appropriate SQL.

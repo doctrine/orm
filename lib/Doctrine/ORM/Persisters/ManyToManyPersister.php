@@ -30,6 +30,7 @@ use Doctrine\ORM\Mapping\ClassMetadata,
  *
  * @author  Roman Borschel <roman@code-factory.org>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Alexander <iam.asm89@gmail.com>
  * @since   2.0
  */
 class ManyToManyPersister extends AbstractCollectionPersister
@@ -379,16 +380,14 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        $filterSql = '';
+        $filterClauses = array();
 
-        $first = true;
         foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
             if('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
-                if($first) $first = false; else $filterSql .= ' AND ';
-                $filterSql .= '(' . $filterExpr . ')';
+                $filterClauses[] = '(' . $filterExpr . ')';
             }
         }
 
-        return $filterSql;
+        return implode(' AND ', $filterClauses);
     }
 }

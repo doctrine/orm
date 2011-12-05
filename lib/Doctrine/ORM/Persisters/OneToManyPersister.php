@@ -29,6 +29,7 @@ use Doctrine\ORM\PersistentCollection,
  *
  * @author  Roman Borschel <roman@code-factory.org>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Alexander <iam.asm89@gmail.com>
  * @since   2.0
  */
 class OneToManyPersister extends AbstractCollectionPersister

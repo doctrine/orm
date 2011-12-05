@@ -27,6 +27,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @author Alexander <iam.asm89@gmail.com>
  * @since 2.0
  * @link http://martinfowler.com/eaaCatalog/singleTableInheritance.html
  */
