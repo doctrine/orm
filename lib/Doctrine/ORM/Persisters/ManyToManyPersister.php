@@ -28,8 +28,9 @@ use Doctrine\ORM\Mapping\ClassMetadata,
 /**
  * Persister for many-to-many collections.
  *
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
+ * @author  Roman Borschel <roman@code-factory.org>
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @since   2.0
  */
 class ManyToManyPersister extends AbstractCollectionPersister
 {
@@ -80,8 +81,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $columns = $mapping['joinTableColumns'];
         $class   = $this->_em->getClassMetadata(get_class($coll->getOwner()));
         
-        return 'INSERT INTO ' . $class->getQuotedJoinTableName($mapping, $this->_conn->getDatabasePlatform()) 
-             . ' (' . implode(', ', $columns) . ') VALUES (' . implode(', ', array_fill(0, count($columns), '?')) . ')';
+        $joinTable = $class->getQuotedJoinTableName($mapping, $this->_conn->getDatabasePlatform());
+        
+        return 'INSERT INTO ' . $joinTable . ' (' . implode(', ', $columns) . ')'
+             . ' VALUES (' . implode(', ', array_fill(0, count($columns), '?')) . ')';
     }
 
     /**
@@ -119,27 +122,21 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
-            if (isset($mapping['relationToSourceKeyColumns'][$joinTableColumn])) {
-                if ($isComposite) {
-                    if ($class1->containsForeignIdentifier) {
-                        $params[] = $identifier1[$class1->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])];
-                    } else {
-                        $params[] = $identifier1[$class1->fieldNames[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]];
-                    }
-                } else {
-                    $params[] = array_pop($identifier1);
-                }
-            } else {
-                if ($isComposite) {
-                    if ($class2->containsForeignIdentifier) {
-                        $params[] = $identifier2[$class2->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])];
-                    } else {
-                        $params[] = $identifier2[$class2->fieldNames[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]];
-                    }
-                } else {
-                    $params[] = array_pop($identifier2);
-                }
+            $isRelationToSource = isset($mapping['relationToSourceKeyColumns'][$joinTableColumn]);
+            
+            if ( ! $isComposite) {
+                $params[] = $isRelationToSource ? array_pop($identifier1) : array_pop($identifier2);
+                
+                continue;
             }
+            
+            if ($isRelationToSource) {
+                $params[] = $identifier1[$class1->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])];
+                
+                continue;
+            }
+            
+            $params[] = $identifier2[$class2->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])];
         }
 
         return $params;
@@ -152,19 +149,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function _getDeleteSQL(PersistentCollection $coll)
     {
-        $mapping     = $coll->getMapping();
-        $class       = $this->_em->getClassMetadata(get_class($coll->getOwner()));
-        $joinTable = $mapping['joinTable'];
-        $whereClause = '';
-        
-        foreach ($mapping['relationToSourceKeyColumns'] as $relationColumn => $srcColumn) {
-            if ($whereClause !== '') $whereClause .= ' AND ';
-            
-            $whereClause .= $relationColumn . ' = ?';
-        }
+        $class   = $this->_em->getClassMetadata(get_class($coll->getOwner()));
+        $mapping = $coll->getMapping();
         
         return 'DELETE FROM ' . $class->getQuotedJoinTableName($mapping, $this->_conn->getDatabasePlatform()) 
-             . ' WHERE ' . $whereClause;
+             . ' WHERE ' . implode(' = ? AND ', array_keys($mapping['relationToSourceKeyColumns'])) . ' = ?';
     }
 
     /**
@@ -176,20 +165,24 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function _getDeleteSQLParameters(PersistentCollection $coll)
     {
-        $params = array();
-        $mapping = $coll->getMapping();
         $identifier = $this->_uow->getEntityIdentifier($coll->getOwner());
+        $mapping    = $coll->getMapping();
+        $params     = array();
         
-        if (count($mapping['relationToSourceKeyColumns']) > 1) {
-            $sourceClass = $this->_em->getClassMetadata(get_class($mapping->getOwner()));
+        // Optimization for single column identifier
+        if (count($mapping['relationToSourceKeyColumns']) === 1) {
+            $params[] = array_pop($identifier);
             
-            foreach ($mapping['relationToSourceKeyColumns'] as $relColumn => $srcColumn) {
-                $params[] = $identifier[$sourceClass->fieldNames[$srcColumn]];
-            }
-        } else {
-           $params[] = array_pop($identifier);
+            return $params;
         }
-
+        
+        // Composite identifier
+        $sourceClass = $this->_em->getClassMetadata(get_class($mapping->getOwner()));
+        
+        foreach ($mapping['relationToSourceKeyColumns'] as $relColumn => $srcColumn) {
+            $params[] = $identifier[$sourceClass->fieldNames[$srcColumn]];
+        }
+        
         return $params;
     }
 
@@ -198,7 +191,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function count(PersistentCollection $coll)
     {
-        $params  = array();
         $mapping = $coll->getMapping();
         $class   = $this->_em->getClassMetadata($mapping['sourceEntity']);
         $id      = $this->_em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
@@ -210,28 +202,30 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $joinColumns = $mapping['relationToTargetKeyColumns'];
         }
 
-        $whereClause = '';
+        $whereClauses = array();
+        $params  = array();
         
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
-            if (isset($joinColumns[$joinTableColumn])) {
-                if ($whereClause !== '') {
-                    $whereClause .= ' AND ';
-                }
-                $whereClause .= "t.$joinTableColumn = ?";
-
-                $params[] = ($class->containsForeignIdentifier)
-                    ? $id[$class->getFieldForColumn($joinColumns[$joinTableColumn])]
-                    : $id[$class->fieldNames[$joinColumns[$joinTableColumn]]];
+            if ( ! isset($joinColumns[$joinTableColumn])) {
+                continue;
             }
+            
+            $whereClauses[] = $joinTableColumn . ' = ?';
+
+            $params[] = ($class->containsForeignIdentifier)
+                ? $id[$class->getFieldForColumn($joinColumns[$joinTableColumn])]
+                : $id[$class->fieldNames[$joinColumns[$joinTableColumn]]];
         }
 
         list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($mapping);
-        
+        if('' !== $filterSql) {
+            $whereClauses[] = $filterSql;
+        }
+
         $sql = 'SELECT COUNT(*)'
             . ' FROM ' . $class->getQuotedJoinTableName($mapping, $this->_conn->getDatabasePlatform()) . ' t'
             . $joinTargetEntitySQL
-            . ' WHERE ' . $whereClause
-            . $filterSql;
+            . ' WHERE ' . implode(' AND ', $whereClauses);
 
         return $this->_conn->fetchColumn($sql, $params);
     }
@@ -252,6 +246,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * @param PersistentCollection $coll
      * @param object $element
+     * @return boolean
      */
     public function contains(PersistentCollection $coll, $element)
     {
@@ -262,9 +257,45 @@ class ManyToManyPersister extends AbstractCollectionPersister
             return false;
         }
 
-        $params = array();
-        $mapping = $coll->getMapping();
+        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($coll, $element, true);
+        
+        $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
 
+        return (bool) $this->_conn->fetchColumn($sql, $params);
+    }
+    
+    /**
+     * @param PersistentCollection $coll
+     * @param object $element
+     * @return boolean
+     */
+    public function removeElement(PersistentCollection $coll, $element)
+    {
+        $uow = $this->_em->getUnitOfWork();
+
+        // shortcut for new entities
+        if ($uow->getEntityState($element, UnitOfWork::STATE_NEW) == UnitOfWork::STATE_NEW) {
+            return false;
+        }
+
+        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($coll, $element, false);
+
+        $sql = 'DELETE FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
+             
+        return (bool) $this->_conn->executeUpdate($sql, $params);
+    }
+    
+    /**
+     * @param Doctrine\ORM\PersistentCollection $coll
+     * @param object $element
+     * @param boolean $addFilters Whether the filter SQL should be included or not.
+     * @return array
+     */
+    private function getJoinTableRestrictions(PersistentCollection $coll, $element, $addFilters)
+    {
+        $uow     = $this->_em->getUnitOfWork();
+        $mapping = $coll->getMapping();
+        
         if ( ! $mapping['isOwningSide']) {
             $sourceClass = $this->_em->getClassMetadata($mapping['targetEntity']);
             $targetClass = $this->_em->getClassMetadata($mapping['sourceEntity']);
@@ -279,41 +310,35 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $targetId = $uow->getEntityIdentifier($element);
         }
         
-        $whereClause = '';
+        $quotedJoinTable = $sourceClass->getQuotedJoinTableName($mapping, $this->_conn->getDatabasePlatform());
+        $whereClauses    = array();
+        $params          = array();
         
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
-            if (isset($mapping['relationToTargetKeyColumns'][$joinTableColumn])) {
-                if ($whereClause !== '') {
-                    $whereClause .= ' AND ';
-                }
-                
-                $whereClause .= $joinTableColumn . ' = ?';
+            $whereClauses[] = $joinTableColumn . ' = ?';
 
+            if (isset($mapping['relationToTargetKeyColumns'][$joinTableColumn])) {
                 $params[] = ($targetClass->containsForeignIdentifier)
                     ? $targetId[$targetClass->getFieldForColumn($mapping['relationToTargetKeyColumns'][$joinTableColumn])]
                     : $targetId[$targetClass->fieldNames[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]];
-            } else if (isset($mapping['relationToSourceKeyColumns'][$joinTableColumn])) {
-                if ($whereClause !== '') {
-                    $whereClause .= ' AND ';
-                }
-                
-                $whereClause .= $joinTableColumn . ' = ?';
-
-                $params[] = ($sourceClass->containsForeignIdentifier)
-                    ? $sourceId[$sourceClass->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])]
-                    : $sourceId[$sourceClass->fieldNames[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]];
+                continue;
             }
+            
+            // relationToSourceKeyColumns
+            $params[] = ($sourceClass->containsForeignIdentifier)
+                ? $sourceId[$sourceClass->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])]
+                : $sourceId[$sourceClass->fieldNames[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]];
         }
 
-        list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($mapping);
+        if($addFilters) {
+            list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($mapping);
+            if('' !== $filterSql) {
+                $quotedJoinTable .= ' t ' . $joinTargetEntitySQL;
+                $whereClauses[] = $filterSql;
+            }
+        }
         
-        $sql = 'SELECT 1'
-            . ' FROM ' . $sourceClass->getQuotedJoinTableName($mapping, $this->_conn->getDatabasePlatform()) . ' t'
-            . $joinTargetEntitySQL
-            . ' WHERE ' . $whereClause
-           . $filterSql;
-
-        return (bool) $this->_conn->fetchColumn($sql, $params);
+        return array($quotedJoinTable, $whereClauses, $params);
     }
 
     /**
@@ -356,9 +381,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $filterSql = '';
 
+        $first = true;
         foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
             if('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
-                $filterSql .= 'AND (' . $filterExpr . ')';
+                if($first) $first = false; else $filterSql .= ' AND ';
+                $filterSql .= '(' . $filterExpr . ')';
             }
         }
 

@@ -23,6 +23,8 @@ use PDO,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\PersistentCollection,
     Doctrine\ORM\Query,
+    Doctrine\ORM\Event\LifecycleEventArgs,
+    Doctrine\ORM\Events,
     Doctrine\Common\Collections\ArrayCollection,
     Doctrine\Common\Collections\Collection;
 
@@ -34,11 +36,6 @@ use PDO,
  * @author Guilherme Blanco <guilhermeblanoc@hotmail.com>
  *
  * @internal Highly performance-sensitive code.
- *
- * @todo General behavior is "wrong" if you define an alias to selected IdentificationVariable.
- * Example: SELECT u AS user FROM User u
- * The result should contains an array where each array index is an array: array('user' => [User object])
- * Problem must be solved somehow by removing the isMixed in ResultSetMapping
  */
 class ObjectHydrator extends AbstractHydrator
 {
@@ -235,7 +232,21 @@ class ObjectHydrator extends AbstractHydrator
         }
 
         $this->_hints['fetchAlias'] = $dqlAlias;
-        return $this->_uow->createEntity($className, $data, $this->_hints);
+        
+        $entity = $this->_uow->createEntity($className, $data, $this->_hints);
+        
+        //TODO: These should be invoked later, after hydration, because associations may not yet be loaded here.
+        if (isset($this->_ce[$className]->lifecycleCallbacks[Events::postLoad])) {
+            $this->_ce[$className]->invokeLifecycleCallbacks(Events::postLoad, $entity);
+        }
+        
+        $evm = $this->_em->getEventManager();
+
+        if ($evm->hasListeners(Events::postLoad)) {
+            $evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($entity, $this->_em));
+        }
+        
+        return $entity;
     }
 
     private function _getEntityFromIdentityMap($className, array $data)

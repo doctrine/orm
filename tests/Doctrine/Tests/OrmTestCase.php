@@ -52,6 +52,8 @@ abstract class OrmTestCase extends DoctrineTestCase
                 $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
             }
         }
+        \Doctrine\Common\Annotations\AnnotationRegistry::registerFile(
+            __DIR__ . "/../../../lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php");
         return new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader, (array)$paths);
     }
     

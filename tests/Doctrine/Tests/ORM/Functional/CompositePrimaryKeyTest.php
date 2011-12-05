@@ -92,4 +92,10 @@ class CompositePrimaryKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals(1, count($tours));
     }
+    
+    public function testSpecifiyUnknownIdentifierPrimaryKeyFails()
+    {
+        $this->setExpectedException('Doctrine\ORM\ORMException', 'The identifier long is missing for a query of Doctrine\Tests\Models\Navigation\NavPointOfInterest');
+        $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('key1' => 100));
+    }
 }

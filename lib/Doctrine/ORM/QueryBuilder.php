@@ -355,12 +355,9 @@ class QueryBuilder
     public function setParameters(array $params, array $types = array())
     {
         foreach ($params as $key => $value) {
-            if (isset($types[$key])) {
-                $this->setParameter($key, $value, $types[$key]);
-            } else {
-                $this->setParameter($key, $value);
-            }
+            $this->setParameter($key, $value, isset($types[$key]) ? $types[$key] : null);
         }
+
         return $this;
     }
 
@@ -394,6 +391,7 @@ class QueryBuilder
     public function setFirstResult($firstResult)
     {
         $this->_firstResult = $firstResult;
+
         return $this;
     }
 
@@ -417,6 +415,7 @@ class QueryBuilder
     public function setMaxResults($maxResults)
     {
         $this->_maxResults = $maxResults;
+
         return $this;
     }
 
@@ -652,13 +651,16 @@ class QueryBuilder
     public function innerJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
         $rootAlias = substr($join, 0, strpos($join, '.'));
-        if (!in_array($rootAlias, $this->getRootAliases())) {
+
+        if ( ! in_array($rootAlias, $this->getRootAliases())) {
             $rootAlias = $this->getRootAlias();
         }
 
-        return $this->add('join', array(
-            $rootAlias => new Expr\Join(Expr\Join::INNER_JOIN, $join, $alias, $conditionType, $condition, $indexBy)
-        ), true);
+        $join = new Expr\Join(
+            Expr\Join::INNER_JOIN, $join, $alias, $conditionType, $condition, $indexBy
+        );
+
+        return $this->add('join', array($rootAlias => $join), true);
     }
 
     /**
@@ -685,13 +687,16 @@ class QueryBuilder
     public function leftJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
         $rootAlias = substr($join, 0, strpos($join, '.'));
-        if (!in_array($rootAlias, $this->getRootAliases())) {
+
+        if ( ! in_array($rootAlias, $this->getRootAliases())) {
             $rootAlias = $this->getRootAlias();
         }
 
-        return $this->add('join', array(
-            $rootAlias => new Expr\Join(Expr\Join::LEFT_JOIN, $join, $alias, $conditionType, $condition, $indexBy)
-        ), true);
+        $join = new Expr\Join(
+            Expr\Join::LEFT_JOIN, $join, $alias, $conditionType, $condition, $indexBy
+        );
+
+        return $this->add('join', array($rootAlias => $join), true);
     }
 
     /**

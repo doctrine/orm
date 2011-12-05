@@ -138,10 +138,12 @@ class EntityManager implements ObjectManager
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
 
         $this->unitOfWork = new UnitOfWork($this);
-        $this->proxyFactory = new ProxyFactory($this,
-                $config->getProxyDir(),
-                $config->getProxyNamespace(),
-                $config->getAutoGenerateProxyClasses());
+        $this->proxyFactory = new ProxyFactory(
+            $this,
+            $config->getProxyDir(),
+            $config->getProxyNamespace(),
+            $config->getAutoGenerateProxyClasses()
+        );
     }
 
     /**
@@ -183,6 +185,7 @@ class EntityManager implements ObjectManager
         if ($this->expressionBuilder === null) {
             $this->expressionBuilder = new Query\Expr;
         }
+
         return $this->expressionBuilder;
     }
 
@@ -275,9 +278,11 @@ class EntityManager implements ObjectManager
     public function createQuery($dql = "")
     {
         $query = new Query($this);
+
         if ( ! empty($dql)) {
             $query->setDql($dql);
         }
+
         return $query;
     }
 
@@ -304,6 +309,7 @@ class EntityManager implements ObjectManager
         $query = new NativeQuery($this);
         $query->setSql($sql);
         $query->setResultSetMapping($rsm);
+
         return $query;
     }
 
@@ -316,6 +322,7 @@ class EntityManager implements ObjectManager
     public function createNamedNativeQuery($name)
     {
         list($sql, $rsm) = $this->config->getNamedNativeQuery($name);
+
         return $this->createNativeQuery($sql, $rsm);
     }
 
@@ -344,6 +351,7 @@ class EntityManager implements ObjectManager
     public function flush($entity = null)
     {
         $this->errorIfClosed();
+
         $this->unitOfWork->commit($entity);
     }
 
@@ -368,26 +376,38 @@ class EntityManager implements ObjectManager
      * without actually loading it, if the entity is not yet loaded.
      *
      * @param string $entityName The name of the entity type.
-     * @param mixed $identifier The entity identifier.
+     * @param mixed $id The entity identifier.
      * @return object The entity reference.
      */
-    public function getReference($entityName, $identifier)
+    public function getReference($entityName, $id)
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        if ( ! is_array($id)) {
+            $id = array($class->identifier[0] => $id);
+        }
+        $sortedId = array();
+        foreach ($class->identifier as $identifier) {
+            if (!isset($id[$identifier])) {
+                throw ORMException::missingIdentifierField($class->name, $identifier);
+            }
+            $sortedId[$identifier] = $id[$identifier];
+        }
 
         // Check identity map first, if its already in there just return it.
-        if ($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) {
+        if ($entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName)) {
             return ($entity instanceof $class->name) ? $entity : null;
         }
+
         if ($class->subClasses) {
-            $entity = $this->find($entityName, $identifier);
-        } else {
-            if ( ! is_array($identifier)) {
-                $identifier = array($class->identifier[0] => $identifier);
-            }
-            $entity = $this->proxyFactory->getProxy($class->name, $identifier);
-            $this->unitOfWork->registerManaged($entity, $identifier, array());
+            return $this->find($entityName, $sortedId);
         }
+
+        if ( ! is_array($sortedId)) {
+            $sortedId = array($class->identifier[0] => $sortedId);
+        }
+
+        $entity = $this->proxyFactory->getProxy($class->name, $sortedId);
+        $this->unitOfWork->registerManaged($entity, $sortedId, array());
 
         return $entity;
     }
@@ -419,6 +439,7 @@ class EntityManager implements ObjectManager
         if ($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) {
             return ($entity instanceof $class->name) ? $entity : null;
         }
+
         if ( ! is_array($identifier)) {
             $identifier = array($class->identifier[0] => $identifier);
         }
@@ -469,7 +490,9 @@ class EntityManager implements ObjectManager
         if ( ! is_object($entity)) {
             throw new \InvalidArgumentException(gettype($entity));
         }
+
         $this->errorIfClosed();
+
         $this->unitOfWork->persist($entity);
     }
 
@@ -486,7 +509,9 @@ class EntityManager implements ObjectManager
         if ( ! is_object($entity)) {
             throw new \InvalidArgumentException(gettype($entity));
         }
+
         $this->errorIfClosed();
+
         $this->unitOfWork->remove($entity);
     }
 
@@ -501,7 +526,9 @@ class EntityManager implements ObjectManager
         if ( ! is_object($entity)) {
             throw new \InvalidArgumentException(gettype($entity));
         }
+
         $this->errorIfClosed();
+
         $this->unitOfWork->refresh($entity);
     }
 
@@ -519,6 +546,7 @@ class EntityManager implements ObjectManager
         if ( ! is_object($entity)) {
             throw new \InvalidArgumentException(gettype($entity));
         }
+
         $this->unitOfWork->detach($entity);
     }
 
@@ -535,7 +563,9 @@ class EntityManager implements ObjectManager
         if ( ! is_object($entity)) {
             throw new \InvalidArgumentException(gettype($entity));
         }
+
         $this->errorIfClosed();
+
         return $this->unitOfWork->merge($entity);
     }
 
@@ -575,19 +605,19 @@ class EntityManager implements ObjectManager
     public function getRepository($entityName)
     {
         $entityName = ltrim($entityName, '\\');
+
         if (isset($this->repositories[$entityName])) {
             return $this->repositories[$entityName];
         }
 
         $metadata = $this->getClassMetadata($entityName);
-        $customRepositoryClassName = $metadata->customRepositoryClassName;
+        $repositoryClassName = $metadata->customRepositoryClassName;
 
-        if ($customRepositoryClassName !== null) {
-            $repository = new $customRepositoryClassName($this, $metadata);
-        } else {
-            $repositoryClass = $this->config->getDefaultRepositoryClassName();
-            $repository      = new $repositoryClass($this, $metadata);
+        if ($repositoryClassName === null) {
+            $repositoryClassName = $this->config->getDefaultRepositoryClassName();
         }
+
+        $repository = new $repositoryClassName($this, $metadata);
 
         $this->repositories[$entityName] = $repository;
 
@@ -602,9 +632,9 @@ class EntityManager implements ObjectManager
      */
     public function contains($entity)
     {
-        return $this->unitOfWork->isScheduledForInsert($entity) ||
-               $this->unitOfWork->isInIdentityMap($entity) &&
-               ! $this->unitOfWork->isScheduledForDelete($entity);
+        return $this->unitOfWork->isScheduledForInsert($entity)
+            || $this->unitOfWork->isInIdentityMap($entity)
+            && ! $this->unitOfWork->isScheduledForDelete($entity);
     }
 
     /**
@@ -687,29 +717,27 @@ class EntityManager implements ObjectManager
     {
         switch ($hydrationMode) {
             case Query::HYDRATE_OBJECT:
-                $hydrator = new Internal\Hydration\ObjectHydrator($this);
-                break;
+                return new Internal\Hydration\ObjectHydrator($this);
+
             case Query::HYDRATE_ARRAY:
-                $hydrator = new Internal\Hydration\ArrayHydrator($this);
-                break;
+                return new Internal\Hydration\ArrayHydrator($this);
+
             case Query::HYDRATE_SCALAR:
-                $hydrator = new Internal\Hydration\ScalarHydrator($this);
-                break;
+                return new Internal\Hydration\ScalarHydrator($this);
+
             case Query::HYDRATE_SINGLE_SCALAR:
-                $hydrator = new Internal\Hydration\SingleScalarHydrator($this);
-                break;
+                return new Internal\Hydration\SingleScalarHydrator($this);
+
             case Query::HYDRATE_SIMPLEOBJECT:
-                $hydrator = new Internal\Hydration\SimpleObjectHydrator($this);
-                break;
+                return new Internal\Hydration\SimpleObjectHydrator($this);
+
             default:
                 if ($class = $this->config->getCustomHydrationMode($hydrationMode)) {
-                    $hydrator = new $class($this);
-                    break;
+                    return new $class($this);
                 }
-                throw ORMException::invalidHydrationMode($hydrationMode);
         }
 
-        return $hydrator;
+        throw ORMException::invalidHydrationMode($hydrationMode);
     }
 
     /**
@@ -745,18 +773,25 @@ class EntityManager implements ObjectManager
      */
     public static function create($conn, Configuration $config, EventManager $eventManager = null)
     {
-        if (!$config->getMetadataDriverImpl()) {
+        if ( ! $config->getMetadataDriverImpl()) {
             throw ORMException::missingMappingDriverImpl();
         }
 
-        if (is_array($conn)) {
-            $conn = \Doctrine\DBAL\DriverManager::getConnection($conn, $config, ($eventManager ?: new EventManager()));
-        } else if ($conn instanceof Connection) {
-            if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
-                 throw ORMException::mismatchedEventManager();
-            }
-        } else {
-            throw new \InvalidArgumentException("Invalid argument: " . $conn);
+        switch (true) {
+            case (is_array($conn)):
+                $conn = \Doctrine\DBAL\DriverManager::getConnection(
+                    $conn, $config, ($eventManager ?: new EventManager())
+                );
+                break;
+
+            case ($conn instanceof Connection):
+                if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
+                     throw ORMException::mismatchedEventManager();
+                }
+                break;
+
+            default:
+                throw new \InvalidArgumentException("Invalid argument: " . $conn);
         }
 
         return new EntityManager($conn, $config, $conn->getEventManager());
