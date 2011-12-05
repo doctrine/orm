@@ -19,6 +19,9 @@ use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 
+use Doctrine\Tests\Models\Company\CompanyFlexContract;
+use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
+
 require_once __DIR__ . '/../../TestInit.php';
 
 /**
@@ -515,7 +518,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testJoinSubclassPersister_FilterOnlyOnRootTableWhenFetchingSubEntity()
     {
-        $this->loadCompanyFixtureData();
+        $this->loadCompanyJoinedSubclassFixtureData();
         $this->assertEquals(2, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyManager')->findAll()));
 
         // Enable the filter
@@ -532,7 +535,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testJoinSubclassPersister_FilterOnlyOnRootTableWhenFetchingRootEntity()
     {
-        $this->loadCompanyFixtureData();
+        $this->loadCompanyJoinedSubclassFixtureData();
         $this->assertEquals(3, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyPerson')->findAll()));
 
         // Enable the filter
@@ -542,12 +545,12 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
             ->enable("person_name")
             ->setParameter("name", "Guilh%", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
 
-        $managers = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyPerson')->findAll();
-        $this->assertEquals(1, count($managers));
-        $this->assertEquals("Guilherme", $managers[0]->getName());
+        $persons = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyPerson')->findAll();
+        $this->assertEquals(1, count($persons));
+        $this->assertEquals("Guilherme", $persons[0]->getName());
     }
 
-    private function loadCompanyFixtureData()
+    private function loadCompanyJoinedSubclassFixtureData()
     {
         $manager = new CompanyManager;
         $manager->setName('Roman');
@@ -567,6 +570,52 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($manager);
         $this->_em->persist($manager2);
         $this->_em->persist($person);
+        $this->_em->flush();
+        $this->_em->clear();
+    }
+
+    public function testSingleTableInheritance_FilterOnlyOnRootTableWhenFetchingSubEntity()
+    {
+        $this->loadCompanySingleTableInheritanceFixtureData();
+        $this->assertEquals(2, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexUltraContract')->findAll()));
+
+        // Enable the filter
+        $conf = $this->_em->getConfiguration();
+        $conf->addFilter("completed_contract", "\Doctrine\Tests\ORM\Functional\CompletedContractFilter");
+        $this->_em->getFilters()
+            ->enable("completed_contract");
+
+        $this->assertEquals(1, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexUltraContract')->findAll()));
+    }
+
+    public function testSingleTableInheritance_FilterOnlyOnRootTableWhenFetchingRootEntity()
+    {
+        $this->loadCompanySingleTableInheritanceFixtureData();
+        $this->assertEquals(4, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexContract')->findAll()));
+
+        // Enable the filter
+        $conf = $this->_em->getConfiguration();
+        $conf->addFilter("completed_contract", "\Doctrine\Tests\ORM\Functional\CompletedContractFilter");
+        $this->_em->getFilters()
+            ->enable("completed_contract");
+
+        $this->assertEquals(2, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexContract')->findAll()));
+    }
+
+    private function loadCompanySingleTableInheritanceFixtureData()
+    {
+        $contract1 = new CompanyFlexUltraContract;
+        $contract2 = new CompanyFlexUltraContract;
+        $contract2->markCompleted();
+
+        $contract3 = new CompanyFlexContract;
+        $contract4 = new CompanyFlexContract;
+        $contract4->markCompleted();
+
+        $this->_em->persist($contract1);
+        $this->_em->persist($contract2);
+        $this->_em->persist($contract3);
+        $this->_em->persist($contract4);
         $this->_em->flush();
         $this->_em->clear();
     }
@@ -640,5 +689,17 @@ class CompanyPersonNameFilter extends SQLFilter
         }
 
         return $targetTableAlias.'.name LIKE ' . $this->getParameter('name');
+    }
+}
+
+class CompletedContractFilter extends SQLFilter
+{
+    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
+    {
+        if ($targetEntity->name != "Doctrine\Tests\Models\Company\CompanyContract") {
+            return "";
+        }
+
+        return $targetTableAlias.'.completed = 1';
     }
 }

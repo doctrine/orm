@@ -131,4 +131,16 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
         return $conditionSql;
     }
+
+    /** {@inheritdoc} */
+    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    {
+        // Ensure that the filters are applied to the root entity of the inheritance tree
+        $realTargetEntity = $targetEntity;
+        if($targetEntity->name !== $targetEntity->rootEntityName) {
+            $realTargetEntity = $this->_em->getClassMetadata($targetEntity->rootEntityName);
+        }
+
+        return parent::generateFilterConditionSQL($realTargetEntity, $targetTableAlias);
+    }
 }

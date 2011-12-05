@@ -1584,7 +1584,15 @@ class BasicEntityPersister
         );
     }
 
-    private function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    /**
+     * Generates the filter SQL for a given entity and table alias.
+     *
+     * @param ClassMetadata $targetEntity Metadata of the target entity.
+     * @param string $targetTableAlias The table alias of the joined/selected table.
+     *
+     * @return string The SQL query part to add to a query.
+     */
+    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
     {
         $filterSql = '';
 

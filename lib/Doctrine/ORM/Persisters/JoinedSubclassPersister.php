@@ -491,18 +491,4 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $this->_class->setFieldValue($entity, $this->_class->versionField, $value);
     }
 
-    private function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
-    {
-        $filterSql = '';
-
-        $first =  true;
-        foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
-            if("" !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
-                if ( ! $first) $filterSql .= ' AND '; else $first = false;
-                $filterSql .= '(' . $filterExpr . ')';
-            }
-        }
-
-        return $filterSql;
-    }
 }
