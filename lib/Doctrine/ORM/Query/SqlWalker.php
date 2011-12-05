@@ -1502,24 +1502,21 @@ class SqlWalker implements TreeWalker
         $condSql  = null !== $whereClause ? $this->walkConditionalExpression($whereClause->conditionalExpression) : '';
         $discrSql = $this->_generateDiscriminatorColumnConditionSql($this->_rootAliases);
 
-        $filterSql = '';
-
         // Apply the filters for all entities in FROM
-        $first = true;
+        $filterClauses = array();
         foreach ($this->_rootAliases as $dqlAlias) {
             $class = $this->_queryComponents[$dqlAlias]['metadata'];
             $tableAlias = $this->getSQLTableAlias($class->table['name'], $dqlAlias);
 
             if("" !== $filterExpr = $this->generateFilterConditionSQL($class, $tableAlias)) {
-                if ( ! $first) $filterSql .= ' AND '; else $first = false;
-                $filterSql .= $filterExpr;
+                $filterClauses[] = $filterExpr;
             }
         }
 
-        if ('' !== $filterSql) {
+        if (count($filterClauses)) {
             if($condSql) $condSql .= ' AND ';
 
-            $condSql .= $filterSql;
+            $condSql .= implode(' AND ', $filterClauses);
         }
 
         if ($condSql) {

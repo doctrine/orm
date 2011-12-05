@@ -360,11 +360,12 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) . ' te'
                 . ' ON';
 
-            $first = true;
+            $joinTargetEntitySQLClauses = array();
             foreach($mapping['relationToTargetKeyColumns'] as $joinTableColumn => $targetTableColumn) {
-                if(!$first) $joinTargetEntitySQL .= ' AND '; else $first = false;
-                $joinTargetEntitySQL .= ' t.' . $joinTableColumn . ' = ' . 'te.' . $targetTableColumn;
+                $joinTargetEntitySQLClauses[] = ' t.' . $joinTableColumn . ' = ' . 'te.' . $targetTableColumn;
             }
+
+            $joinTargetEntitySQL .= implode(' AND ', $joinTargetEntitySQLClauses);
         }
 
         return array($joinTargetEntitySQL, $filterSql);

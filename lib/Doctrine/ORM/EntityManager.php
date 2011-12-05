@@ -800,7 +800,6 @@ class EntityManager implements ObjectManager
     /**
      * Gets the enabled filters.
      *
-     * @access public
      * @return FilterCollection The active filter collection.
      */
     public function getFilters()
