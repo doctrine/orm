@@ -513,6 +513,40 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->groupId2 = $group2->id;
     }
 
+    public function testJoinSubclassPersister_FilterOnlyOnRootTableWhenFetchingSubEntity()
+    {
+        $this->loadCompanyFixtureData();
+        $this->assertEquals(2, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyManager')->findAll()));
+
+        // Enable the filter
+        $conf = $this->_em->getConfiguration();
+        $conf->addFilter("person_name", "\Doctrine\Tests\ORM\Functional\CompanyPersonNameFilter");
+        $this->_em->getFilters()
+            ->enable("person_name")
+            ->setParameter("name", "Guilh%", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
+
+        $managers = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyManager')->findAll();
+        $this->assertEquals(1, count($managers));
+        $this->assertEquals("Guilherme", $managers[0]->getName());
+    }
+
+    public function testJoinSubclassPersister_FilterOnlyOnRootTableWhenFetchingRootEntity()
+    {
+        $this->loadCompanyFixtureData();
+        $this->assertEquals(3, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyPerson')->findAll()));
+
+        // Enable the filter
+        $conf = $this->_em->getConfiguration();
+        $conf->addFilter("person_name", "\Doctrine\Tests\ORM\Functional\CompanyPersonNameFilter");
+        $this->_em->getFilters()
+            ->enable("person_name")
+            ->setParameter("name", "Guilh%", \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::STRING)->getBindingType());
+
+        $managers = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyPerson')->findAll();
+        $this->assertEquals(1, count($managers));
+        $this->assertEquals("Guilherme", $managers[0]->getName());
+    }
+
     private function loadCompanyFixtureData()
     {
         $manager = new CompanyManager;
@@ -527,8 +561,12 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $manager2->setSalary(42);
         $manager2->setDepartment('parsers');
 
+        $person = new CompanyPerson;
+        $person->setName('Benjamin');
+
         $this->_em->persist($manager);
         $this->_em->persist($manager2);
+        $this->_em->persist($person);
         $this->_em->flush();
         $this->_em->clear();
     }
@@ -590,5 +628,17 @@ class CMSArticleTopicFilter extends SQLFilter
         }
 
         return $targetTableAlias.'.topic = ' . $this->getParameter('topic'); // getParam uses connection to quote the value.
+    }
+}
+
+class CompanyPersonNameFilter extends SQLFilter
+{
+    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
+    {
+        if ($targetEntity->name != "Doctrine\Tests\Models\Company\CompanyPerson") {
+            return "";
+        }
+
+        return $targetTableAlias.'.name LIKE ' . $this->getParameter('name');
     }
 }
