@@ -903,8 +903,11 @@ class BasicEntityPersister
 
         $alias = $this->_getSQLTableAlias($this->_class->name);
 
-        if('' !== $filterSql = $this->generateFilterConditionSQL($this->_class, $alias)) {
-            if($conditionSql) $conditionSql .= ' AND ';
+        if ('' !== $filterSql = $this->generateFilterConditionSQL($this->_class, $alias)) {
+            if ($conditionSql) {
+                $conditionSql .= ' AND ';
+            }
+
             $conditionSql .= $filterSql;
         }
 
@@ -1033,7 +1036,7 @@ class BasicEntityPersister
                     }
 
                     // Add filter SQL
-                    if('' !== $filterSql = $this->generateFilterConditionSQL($eagerEntity, $tableAlias)) {
+                    if ('' !== $filterSql = $this->generateFilterConditionSQL($eagerEntity, $tableAlias)) {
                         $this->_selectJoinSql .= ' AND ' . $filterSql;
                     }
                 } else {
@@ -1541,7 +1544,7 @@ class BasicEntityPersister
              . $this->getLockTablesSql($alias)
              . ' WHERE ' . $this->_getSelectConditionSQL($criteria);
 
-        if('' !== $filterSql = $this->generateFilterConditionSQL($this->_class, $alias)) {
+        if ('' !== $filterSql = $this->generateFilterConditionSQL($this->_class, $alias)) {
             $sql .= ' AND ' . $filterSql;
         }
 
@@ -1559,8 +1562,8 @@ class BasicEntityPersister
     protected function getJoinSQLForJoinColumns($joinColumns)
     {
         // if one of the join columns is nullable, return left join
-        foreach($joinColumns as $joinColumn) {
-             if(isset($joinColumn['nullable']) && $joinColumn['nullable']){
+        foreach ($joinColumns as $joinColumn) {
+             if (isset($joinColumn['nullable']) && $joinColumn['nullable']) {
                  return 'LEFT JOIN';
              }
         }
@@ -1595,8 +1598,8 @@ class BasicEntityPersister
     {
         $filterClauses = array();
 
-        foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
-            if('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+        foreach ($this->_em->getFilters()->getEnabledFilters() as $filter) {
+            if ('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
                 $filterClauses[] = '(' . $filterExpr . ')';
             }
         }

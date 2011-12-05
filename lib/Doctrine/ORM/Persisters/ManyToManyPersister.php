@@ -219,7 +219,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($mapping);
-        if('' !== $filterSql) {
+        if ('' !== $filterSql) {
             $whereClauses[] = $filterSql;
         }
 
@@ -331,9 +331,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 : $sourceId[$sourceClass->fieldNames[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]];
         }
 
-        if($addFilters) {
+        if ($addFilters) {
             list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($mapping);
-            if('' !== $filterSql) {
+            if ('' !== $filterSql) {
                 $quotedJoinTable .= ' t ' . $joinTargetEntitySQL;
                 $whereClauses[] = $filterSql;
             }
@@ -355,13 +355,13 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         // A join is needed if there is filtering on the target entity
         $joinTargetEntitySQL = '';
-        if('' !== $filterSql = $this->generateFilterConditionSQL($targetClass, 'te')) {
+        if ('' !== $filterSql = $this->generateFilterConditionSQL($targetClass, 'te')) {
             $joinTargetEntitySQL = ' JOIN '
                 . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) . ' te'
                 . ' ON';
 
             $joinTargetEntitySQLClauses = array();
-            foreach($mapping['relationToTargetKeyColumns'] as $joinTableColumn => $targetTableColumn) {
+            foreach ($mapping['relationToTargetKeyColumns'] as $joinTableColumn => $targetTableColumn) {
                 $joinTargetEntitySQLClauses[] = ' t.' . $joinTableColumn . ' = ' . 'te.' . $targetTableColumn;
             }
 
@@ -383,8 +383,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $filterClauses = array();
 
-        foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
-            if('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+        foreach ($this->_em->getFilters()->getEnabledFilters() as $filter) {
+            if ('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
                 $filterClauses[] = '(' . $filterExpr . ')';
             }
         }

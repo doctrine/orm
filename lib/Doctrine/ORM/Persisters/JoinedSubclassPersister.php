@@ -329,9 +329,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
                 $joinSql .= $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
 
-                if($parentClass->name === $this->_class->rootEntityName) {
+                if ($parentClass->name === $this->_class->rootEntityName) {
                     // Add filters on the root class
-                    if('' !== $filterSql = $this->generateFilterConditionSQL($parentClass, $tableAlias)) {
+                    if ('' !== $filterSql = $this->generateFilterConditionSQL($parentClass, $tableAlias)) {
                         $joinSql .= ' AND ' . $filterSql;
                     }
                 }
@@ -383,9 +383,12 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $conditionSql = $this->_getSelectConditionSQL($criteria, $assoc);
 
         // If the current class in the root entity, add the filters
-        if($this->_class->name === $this->_class->rootEntityName) {
-            if('' !== $filterSql = $this->generateFilterConditionSQL($this->_class, $baseTableAlias)) {
-                if($conditionSql) $conditionSql .= ' AND ';
+        if ($this->_class->name === $this->_class->rootEntityName) {
+            if ('' !== $filterSql = $this->generateFilterConditionSQL($this->_class, $baseTableAlias)) {
+                if ($conditionSql) {
+                    $conditionSql .= ' AND ';
+                }
+
                 $conditionSql .= $filterSql;
             }
         }

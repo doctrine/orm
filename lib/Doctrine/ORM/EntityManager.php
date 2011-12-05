@@ -804,7 +804,7 @@ class EntityManager implements ObjectManager
      */
     public function getFilters()
     {
-        if(null === $this->filterCollection) {
+        if (null === $this->filterCollection) {
             $this->filterCollection = new FilterCollection($this);
         }
 
@@ -814,7 +814,7 @@ class EntityManager implements ObjectManager
     /**
      * Checks whether the state of the filter collection is clean.
      *
-     * @return boolean True, iff the filter collection is clean.
+     * @return boolean True, if the filter collection is clean.
      */
     public function isFiltersStateClean()
     {
@@ -825,7 +825,7 @@ class EntityManager implements ObjectManager
     /**
      * Checks whether the Entity Manager has filters.
      *
-     * @return True, iff the EM has a filter collection.
+     * @return True, if the EM has a filter collection.
      */
     public function hasFilters()
     {

@@ -49,7 +49,6 @@ abstract class SQLFilter
      * Constructs the SQLFilter object.
      *
      * @param EntityManager $em The EM
-     * @final
      */
     final public function __construct(EntityManager $em)
     {
@@ -63,7 +62,6 @@ abstract class SQLFilter
      * @param string $value Value of the parameter.
      * @param string $type Type of the parameter.
      *
-     * @final
      * @return SQLFilter The current SQL filter.
      */
     final public function setParameter($name, $value, $type)
@@ -88,12 +86,11 @@ abstract class SQLFilter
      *
      * @param string $name Name of the parameter.
      *
-     * @final
      * @return string The SQL escaped parameter to use in a query.
      */
     final public function getParameter($name)
     {
-        if(!isset($this->parameters[$name])) {
+        if (!isset($this->parameters[$name])) {
             throw new \InvalidArgumentException("Parameter '" . $name . "' does not exist.");
         }
 
@@ -103,8 +100,7 @@ abstract class SQLFilter
     /**
      * Returns as string representation of the SQLFilter parameters (the state).
      *
-     * @final
-     * @return string String representation of the the SQLFilter.
+     * @return string String representation of the SQLFilter.
      */
     final public function __toString()
     {

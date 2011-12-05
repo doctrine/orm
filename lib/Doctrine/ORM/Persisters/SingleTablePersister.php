@@ -138,7 +138,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     {
         // Ensure that the filters are applied to the root entity of the inheritance tree
         $realTargetEntity = $targetEntity;
-        if($targetEntity->name !== $targetEntity->rootEntityName) {
+        if ($targetEntity->name !== $targetEntity->rootEntityName) {
             $realTargetEntity = $this->_em->getClassMetadata($targetEntity->rootEntityName);
         }
 

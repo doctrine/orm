@@ -365,9 +365,9 @@ class SqlWalker implements TreeWalker
     {
         $filterClauses = array();
 
-        if($this->_em->hasFilters()) {
-            foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
-                if("" !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+        if ($this->_em->hasFilters()) {
+            foreach ($this->_em->getFilters()->getEnabledFilters() as $filter) {
+                if ('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
                     $filterClauses[] = '(' . $filterExpr . ')';
                 }
             }
@@ -827,9 +827,8 @@ class SqlWalker implements TreeWalker
             }
 
             // Apply the filters
-            if("" !== $filterExpr = $this->generateFilterConditionSQL($targetClass, $targetTableAlias)) {
-                if ( ! $first) $sql .= ' AND '; else $first = false;
-                $sql .= $filterExpr;
+            if ('' !== $filterExpr = $this->generateFilterConditionSQL($targetClass, $targetTableAlias)) {
+                $sql .= ' AND ' . $filterExpr;
             }
         } else if ($assoc['type'] == ClassMetadata::MANY_TO_MANY) {
             // Join relation table
@@ -896,9 +895,8 @@ class SqlWalker implements TreeWalker
             }
 
             // Apply the filters
-            if("" !== $filterExpr = $this->generateFilterConditionSQL($targetClass, $targetTableAlias)) {
-                if ( ! $first) $sql .= ' AND '; else $first = false;
-                $sql .= $filterExpr;
+            if ('' !== $filterExpr = $this->generateFilterConditionSQL($targetClass, $targetTableAlias)) {
+                $sql .= ' AND ' . $filterExpr;
             }
         }
 
@@ -1508,13 +1506,15 @@ class SqlWalker implements TreeWalker
             $class = $this->_queryComponents[$dqlAlias]['metadata'];
             $tableAlias = $this->getSQLTableAlias($class->table['name'], $dqlAlias);
 
-            if("" !== $filterExpr = $this->generateFilterConditionSQL($class, $tableAlias)) {
+            if ('' !== $filterExpr = $this->generateFilterConditionSQL($class, $tableAlias)) {
                 $filterClauses[] = $filterExpr;
             }
         }
 
         if (count($filterClauses)) {
-            if($condSql) $condSql .= ' AND ';
+            if ($condSql) {
+                $condSql .= ' AND ';
+            }
 
             $condSql .= implode(' AND ', $filterClauses);
         }

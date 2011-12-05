@@ -103,11 +103,11 @@ class FilterCollection
      */
     public function enable($name)
     {
-        if(null === $filterClass = $this->config->getFilterClassName($name)) {
+        if (null === $filterClass = $this->config->getFilterClassName($name)) {
             throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
         }
 
-        if(!isset($this->enabledFilters[$name])) {
+        if (!isset($this->enabledFilters[$name])) {
             $this->enabledFilters[$name] = new $filterClass($this->em);
 
             // Keep the enabled filters sorted for the hash
@@ -153,7 +153,7 @@ class FilterCollection
      */
     public function getFilter($name)
     {
-        if(!isset($this->enabledFilters[$name])) {
+        if (!isset($this->enabledFilters[$name])) {
             throw new \InvalidArgumentException("Filter '" . $name . "' is not enabled.");
         }
 
@@ -176,12 +176,12 @@ class FilterCollection
     public function getHash()
     {
         // If there are only clean filters, the previous hash can be returned
-        if(self::FILTERS_STATE_CLEAN === $this->filtersState) {
+        if (self::FILTERS_STATE_CLEAN === $this->filtersState) {
             return $this->filterHash;
         }
 
         $filterHash = '';
-        foreach($this->enabledFilters as $name => $filter) {
+        foreach ($this->enabledFilters as $name => $filter) {
             $filterHash .= $name . $filter;
         }
 
