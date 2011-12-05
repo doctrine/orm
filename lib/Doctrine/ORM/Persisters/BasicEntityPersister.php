@@ -902,8 +902,7 @@ class BasicEntityPersister
 
         $alias = $this->_getSQLTableAlias($this->_class->name);
 
-        $filterSql = $this->generateFilterConditionSQL($this->_class, $alias);
-        if('' !== $filterSql) {
+        if('' !== $filterSql = $this->generateFilterConditionSQL($this->_class, $alias)) {
             if($conditionSql) $conditionSql .= ' AND ';
             $conditionSql .= $filterSql;
         }
@@ -1541,8 +1540,7 @@ class BasicEntityPersister
              . $this->getLockTablesSql($alias)
              . ' WHERE ' . $this->_getSelectConditionSQL($criteria);
 
-        $filterSql = $this->generateFilterConditionSQL($this->_class, $alias);
-        if('' !== $filterSql) {
+        if('' !== $filterSql = $this->generateFilterConditionSQL($this->_class, $alias)) {
             $sql .= ' AND ' . $filterSql;
         }
 
@@ -1598,8 +1596,8 @@ class BasicEntityPersister
 
         $first =  true;
         foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
-            if("" !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
-                if ( ! $first) $filterSql .= ' AND '; else $first = false;
+            if('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+                if (!$first) $filterSql .= ' AND '; else $first = false;
                 $filterSql .= '(' . $filterExpr . ')';
             }
         }

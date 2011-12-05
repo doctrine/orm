@@ -33,15 +33,39 @@ use Doctrine\ORM\EntityManager;
  */
 abstract class SQLFilter
 {
+    /**
+     * The entity manager.
+     * @var EntityManager
+     */
     private $em;
 
+    /**
+     * Parameters for the filter.
+     * @var array
+     */
     private $parameters;
 
+    /**
+     * Constructs the SQLFilter object.
+     *
+     * @param EntityManager $em The EM
+     * @final
+     */
     final public function __construct(EntityManager $em)
     {
         $this->em = $em;
     }
 
+    /**
+     * Sets a parameter that can be used by the filter.
+     *
+     * @param string $name Name of the parameter.
+     * @param string $value Value of the parameter.
+     * @param string $type Type of the parameter.
+     *
+     * @final
+     * @return SQLFilter The current SQL filter.
+     */
     final public function setParameter($name, $value, $type)
     {
         // @todo: check for a valid type?
@@ -56,6 +80,17 @@ abstract class SQLFilter
         return $this;
     }
 
+    /**
+     * Gets a parameter to use in a query.
+     *
+     * The function is responsible for the right output escaping to use the
+     * value in a query.
+     *
+     * @param string $name Name of the parameter.
+     *
+     * @final
+     * @return string The SQL escaped parameter to use in a query.
+     */
     final public function getParameter($name)
     {
         if(!isset($this->parameters[$name])) {
@@ -65,13 +100,21 @@ abstract class SQLFilter
         return $this->em->getConnection()->quote($this->parameters[$name]['value'], $this->parameters[$name]['type']);
     }
 
+    /**
+     * Returns as string representation of the SQLFilter parameters (the state).
+     *
+     * @final
+     * @return string String representation of the the SQLFilter.
+     */
     final public function __toString()
     {
         return serialize($this->parameters);
     }
 
     /**
-     * @return string The constraint if there is one, empty string otherwise
+     * Gets the SQL query part to add to a query.
+     *
+     * @return string The constraint SQL if there is available, empty string otherwise
      */
     abstract public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias);
 }

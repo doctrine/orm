@@ -352,12 +352,20 @@ class SqlWalker implements TreeWalker
         return (count($sqlParts) > 1) ? '(' . $sql . ')' : $sql;
     }
 
+    /**
+     * Generates the filter SQL for a given entity and table alias.
+     *
+     * @param ClassMetadata $targetEntity Metadata of the target entity.
+     * @param string $targetTableAlias The table alias of the joined/selected table.
+     *
+     * @return string The SQL query part to add to a query.
+     */
     private function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
     {
         $filterSql = '';
 
         if($this->_em->hasFilters()) {
-            $first =  true;
+            $first = true;
             foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
                 if("" !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
                     if ( ! $first) $filterSql .= ' AND '; else $first = false;

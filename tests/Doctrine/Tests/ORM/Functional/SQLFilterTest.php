@@ -668,6 +668,7 @@ class CMSGroupPrefixFilter extends SQLFilter
         return $targetTableAlias.'.name LIKE ' . $this->getParameter('prefix'); // getParam uses connection to quote the value.
     }
 }
+
 class CMSArticleTopicFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)

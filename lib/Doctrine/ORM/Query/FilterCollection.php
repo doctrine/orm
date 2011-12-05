@@ -40,9 +40,19 @@ class FilterCollection
      */
     const FILTERS_STATE_DIRTY = 2;
 
+    /**
+     * The used Configuration.
+     *
+     * @var Doctrine\ORM\Configuration
+     */
     private $config;
+
+    /**
+     * The EntityManager that "owns" this FilterCollection instance.
+     *
+     * @var Doctrine\ORM\EntityManager
+     */
     private $em;
-    private $filters;
 
     /**
      * Instances of enabled filters.

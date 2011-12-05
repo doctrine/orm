@@ -21,7 +21,8 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\ORM\PersistentCollection,
+use Doctrine\ORM\Mapping\ClassMetadata,
+    Doctrine\ORM\PersistentCollection,
     Doctrine\ORM\UnitOfWork;
 
 /**
@@ -315,21 +316,20 @@ class ManyToManyPersister extends AbstractCollectionPersister
         return (bool) $this->_conn->fetchColumn($sql, $params);
     }
 
+    /**
+     * Generates the filter SQL for a given mapping.
+     *
+     * @param array $targetEntity Array containing mapping information.
+     *
+     * @return string The SQL query part to add to a query.
+     */
     public function getFilterSql($mapping)
     {
         $targetClass = $this->_em->getClassMetadata($mapping['targetEntity']);
 
-        // Get the SQL for the filters
-        $filterSql = '';
-        foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
-            if("" !== $filterExpr = $filter->addFilterConstraint($targetClass, 'te')) {
-                $filterSql .= ' AND (' . $filterExpr . ')';
-            }
-        }
-
         // A join is needed if there is filtering on the target entity
         $joinTargetEntitySQL = '';
-        if('' !== $filterSql) {
+        if('' !== $filterSql = $this->generateFilterConditionSQL($targetClass, 'te')) {
             $joinTargetEntitySQL = ' JOIN '
                 . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) . ' te'
                 . ' ON';
@@ -342,5 +342,26 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         return array($joinTargetEntitySQL, $filterSql);
+    }
+
+    /**
+     * Generates the filter SQL for a given entity and table alias.
+     *
+     * @param ClassMetadata $targetEntity Metadata of the target entity.
+     * @param string $targetTableAlias The table alias of the joined/selected table.
+     *
+     * @return string The SQL query part to add to a query.
+     */
+    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    {
+        $filterSql = '';
+
+        foreach($this->_em->getFilters()->getEnabledFilters() as $filter) {
+            if('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+                $filterSql .= 'AND (' . $filterExpr . ')';
+            }
+        }
+
+        return $filterSql;
     }
 }

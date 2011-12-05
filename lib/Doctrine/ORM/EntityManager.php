@@ -762,6 +762,12 @@ class EntityManager implements ObjectManager
         return new EntityManager($conn, $config, $conn->getEventManager());
     }
 
+    /**
+     * Gets the enabled filters.
+     *
+     * @access public
+     * @return FilterCollection The active filter collection.
+     */
     public function getFilters()
     {
         if(null === $this->filterCollection) {
@@ -772,7 +778,9 @@ class EntityManager implements ObjectManager
     }
 
     /**
-     * @return boolean True, if the filter collection is clean.
+     * Checks whether the state of the filter collection is clean.
+     *
+     * @return boolean True, iff the filter collection is clean.
      */
     public function isFiltersStateClean()
     {
@@ -780,6 +788,11 @@ class EntityManager implements ObjectManager
            || $this->filterCollection->isClean();
     }
 
+    /**
+     * Checks whether the Entity Manager has filters.
+     *
+     * @return True, iff the EM has a filter collection.
+     */
     public function hasFilters()
     {
         return null !== $this->filterCollection;
