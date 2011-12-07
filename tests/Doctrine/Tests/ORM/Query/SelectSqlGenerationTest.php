@@ -1393,7 +1393,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-     * @group DDC-1236
+     * @group DDC-1213
      */
     public function testSupportsBitComparsion()
     {
