@@ -1391,6 +1391,27 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ GROUP BY id0, status1, username2, name3'
         );
     }
+    
+    /**
+     * @group DDC-1236
+     */
+    public function testSupportsBitComparsion()
+    {
+        $this->assertSqlGeneration(
+            'SELECT e FROM '. __NAMESPACE__ . '\DDC1213Entity e WHERE (e.mask | 2)',
+            'SELECT d0_.id AS id0, d0_.mask AS mask1 FROM DDC1213Entity d0_ WHERE (d0_.mask | 2)'
+        );
+        
+        $this->assertSqlGeneration(
+            'SELECT e FROM '. __NAMESPACE__ . '\DDC1213Entity e WHERE (e.mask & 3)',
+            'SELECT d0_.id AS id0, d0_.mask AS mask1 FROM DDC1213Entity d0_ WHERE (d0_.mask & 3)'
+        );
+        
+        $this->assertSqlGeneration(
+            'SELECT e FROM '. __NAMESPACE__ . '\DDC1213Entity e WHERE (e.mask | 2) OR (e.mask & 3)',
+            'SELECT d0_.id AS id0, d0_.mask AS mask1 FROM DDC1213Entity d0_ WHERE (d0_.mask | 2) OR (d0_.mask & 3)'
+        );
+    }
 
     public function testCustomTypeValueSql()
     {
@@ -1541,5 +1562,25 @@ class DDC1474Entity
         $this->value = $value;
     }
 
+}
+
+/**
+ * @Entity
+ */
+class DDC1213Entity
+{
+
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue()
+     */
+    protected $id;
+
+    /**
+     * @column(type="integer")
+     */
+    private $mask;
+    
 }
 

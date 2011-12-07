@@ -2943,9 +2943,17 @@ class Parser
                 $this->match(Lexer::T_EQUALS);
 
                 return '<>';
+                
+            case '&':
+            	$this->match(LEXER::T_BIT_AND);
+            	return '&';
+                
+            case '|':
+            	$this->match(LEXER::T_BIT_OR);
+            	return '|';
 
             default:
-                $this->syntaxError('=, <, <=, <>, >, >=, !=');
+                $this->syntaxError('=, <, <=, <>, >, >=, !=, &, |');
         }
     }
 
