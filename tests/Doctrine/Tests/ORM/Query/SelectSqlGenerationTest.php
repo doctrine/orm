@@ -1392,6 +1392,27 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group DDC-1213
+     */
+    public function testSupportsBitComparsion()
+    {
+        $this->assertSqlGeneration(
+            'SELECT e FROM '. __NAMESPACE__ . '\DDC1213Entity e WHERE (e.mask | 2)',
+            'SELECT d0_.id AS id0, d0_.mask AS mask1 FROM DDC1213Entity d0_ WHERE (d0_.mask | 2)'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT e FROM '. __NAMESPACE__ . '\DDC1213Entity e WHERE (e.mask & 3)',
+            'SELECT d0_.id AS id0, d0_.mask AS mask1 FROM DDC1213Entity d0_ WHERE (d0_.mask & 3)'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT e FROM '. __NAMESPACE__ . '\DDC1213Entity e WHERE (e.mask | 2) OR (e.mask & 3)',
+            'SELECT d0_.id AS id0, d0_.mask AS mask1 FROM DDC1213Entity d0_ WHERE (d0_.mask | 2) OR (d0_.mask & 3)'
+        );
+    }
+
     public function testCustomTypeValueSql()
     {
         if (DBALType::hasType('negative_to_positive')) {
@@ -1541,5 +1562,25 @@ class DDC1474Entity
         $this->value = $value;
     }
 
+}
+
+/**
+ * @Entity
+ */
+class DDC1213Entity
+{
+
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue()
+     */
+    protected $id;
+
+    /**
+     * @column(type="integer")
+     */
+    private $mask;
+    
 }
 

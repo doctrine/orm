@@ -49,6 +49,8 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_PLUS                = 17;
     const T_OPEN_CURLY_BRACE    = 18;
     const T_CLOSE_CURLY_BRACE   = 19;
+    const T_BIT_AND             = 20;
+    const T_BIT_OR              = 21;
 
     // All tokens that are also identifiers should be >= 100
     const T_IDENTIFIER          = 100;
@@ -197,6 +199,8 @@ class Lexer extends \Doctrine\Common\Lexer
             case ($value === '!'): return self::T_NEGATE;
             case ($value === '{'): return self::T_OPEN_CURLY_BRACE;
             case ($value === '}'): return self::T_CLOSE_CURLY_BRACE;
+            case ($value === '&'): return self::T_BIT_AND;
+            case ($value === '|'): return self::T_BIT_OR;
 
             // Default
             default:
