@@ -2943,7 +2943,7 @@ class Parser
                 $this->match(Lexer::T_EQUALS);
 
                 return '<>';
-                
+
             case '&':
                 $this->match(Lexer::T_BIT_AND);
 

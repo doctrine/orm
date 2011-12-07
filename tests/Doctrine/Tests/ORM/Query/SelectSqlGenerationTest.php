@@ -1391,7 +1391,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ GROUP BY id0, status1, username2, name3'
         );
     }
-    
+
     /**
      * @group DDC-1236
      */
