@@ -268,6 +268,11 @@ class SqlWalker implements TreeWalker
                 $sqlParts[] = $baseTableAlias . '.' . $columnName . ' = ' . $tableAlias . '.' . $columnName;
             }
 
+            // Add filters on the root class
+            if ('' !== $filterSql = $this->generateFilterConditionSQL($parentClass, $tableAlias)) {
+                $sqlParts[] = $filterSql;
+            }
+
             $sql .= implode(' AND ', $sqlParts);
         }
 
@@ -363,13 +368,35 @@ class SqlWalker implements TreeWalker
      */
     private function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        $filterClauses = array();
+        if (!$this->_em->hasFilters()) {
+            return '';
+        }
 
-        if ($this->_em->hasFilters()) {
-            foreach ($this->_em->getFilters()->getEnabledFilters() as $filter) {
-                if ('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
-                    $filterClauses[] = '(' . $filterExpr . ')';
+        switch($targetEntity->inheritanceType) {
+            case ClassMetadata::INHERITANCE_TYPE_NONE:
+                break;
+            case ClassMetadata::INHERITANCE_TYPE_JOINED:
+                // The classes in the inheritance will be added to the query one by one,
+                // but only the root node is getting filtered
+                if ($targetEntity->name !== $targetEntity->rootEntityName) {
+                    return '';
                 }
+                break;
+            case ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE:
+                // With STI the table will only be queried once, make sure that the filters
+                // are added to the root entity
+                $targetEntity = $this->_em->getClassMetadata($targetEntity->rootEntityName);
+                break;
+            default:
+                //@todo: throw exception?
+                return '';
+            break;
+        }
+
+        $filterClauses = array();
+        foreach ($this->_em->getFilters()->getEnabledFilters() as $filter) {
+            if ('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+                $filterClauses[] = '(' . $filterExpr . ')';
             }
         }
 

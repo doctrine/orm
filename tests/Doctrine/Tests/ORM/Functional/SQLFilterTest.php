@@ -519,7 +519,10 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testJoinSubclassPersister_FilterOnlyOnRootTableWhenFetchingSubEntity()
     {
         $this->loadCompanyJoinedSubclassFixtureData();
+        // Persister
         $this->assertEquals(2, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyManager')->findAll()));
+        // SQLWalker
+        $this->assertEquals(2, count($this->_em->createQuery("SELECT cm FROM Doctrine\Tests\Models\Company\CompanyManager cm")->getResult()));
 
         // Enable the filter
         $conf = $this->_em->getConfiguration();
@@ -531,12 +534,15 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $managers = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyManager')->findAll();
         $this->assertEquals(1, count($managers));
         $this->assertEquals("Guilherme", $managers[0]->getName());
+
+        $this->assertEquals(1, count($this->_em->createQuery("SELECT cm FROM Doctrine\Tests\Models\Company\CompanyManager cm")->getResult()));
     }
 
     public function testJoinSubclassPersister_FilterOnlyOnRootTableWhenFetchingRootEntity()
     {
         $this->loadCompanyJoinedSubclassFixtureData();
         $this->assertEquals(3, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyPerson')->findAll()));
+        $this->assertEquals(3, count($this->_em->createQuery("SELECT cp FROM Doctrine\Tests\Models\Company\CompanyPerson cp")->getResult()));
 
         // Enable the filter
         $conf = $this->_em->getConfiguration();
@@ -548,6 +554,8 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $persons = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyPerson')->findAll();
         $this->assertEquals(1, count($persons));
         $this->assertEquals("Guilherme", $persons[0]->getName());
+
+        $this->assertEquals(1, count($this->_em->createQuery("SELECT cp FROM Doctrine\Tests\Models\Company\CompanyPerson cp")->getResult()));
     }
 
     private function loadCompanyJoinedSubclassFixtureData()
@@ -577,7 +585,10 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testSingleTableInheritance_FilterOnlyOnRootTableWhenFetchingSubEntity()
     {
         $this->loadCompanySingleTableInheritanceFixtureData();
+        // Persister
         $this->assertEquals(2, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexUltraContract')->findAll()));
+        // SQLWalker
+        $this->assertEquals(2, count($this->_em->createQuery("SELECT cfc FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract cfc")->getResult()));
 
         // Enable the filter
         $conf = $this->_em->getConfiguration();
@@ -586,12 +597,14 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
             ->enable("completed_contract");
 
         $this->assertEquals(1, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexUltraContract')->findAll()));
+        $this->assertEquals(1, count($this->_em->createQuery("SELECT cfc FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract cfc")->getResult()));
     }
 
     public function testSingleTableInheritance_FilterOnlyOnRootTableWhenFetchingRootEntity()
     {
         $this->loadCompanySingleTableInheritanceFixtureData();
         $this->assertEquals(4, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexContract')->findAll()));
+        $this->assertEquals(4, count($this->_em->createQuery("SELECT cfc FROM Doctrine\Tests\Models\Company\CompanyFlexContract cfc")->getResult()));
 
         // Enable the filter
         $conf = $this->_em->getConfiguration();
@@ -600,6 +613,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
             ->enable("completed_contract");
 
         $this->assertEquals(2, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexContract')->findAll()));
+        $this->assertEquals(2, count($this->_em->createQuery("SELECT cfc FROM Doctrine\Tests\Models\Company\CompanyFlexContract cfc")->getResult()));
     }
 
     private function loadCompanySingleTableInheritanceFixtureData()
