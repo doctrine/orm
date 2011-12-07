@@ -121,7 +121,6 @@ class ResultSetMapping
      * @param string $resultAlias The result alias with which the entity result should be
      *                            placed in the result structure.
      * @return ResultSetMapping This ResultSetMapping instance.
-     *
      * @todo Rename: addRootEntity
      */
     public function addEntityResult($class, $alias, $resultAlias = null)
@@ -145,7 +144,6 @@ class ResultSetMapping
      *                      column should be used for.
      * @param string $discrColumn The name of the discriminator column in the SQL result set.
      * @return ResultSetMapping This ResultSetMapping instance.
-     * 
      * @todo Rename: addDiscriminatorColumn
      */
     public function setDiscriminatorColumn($alias, $discrColumn)
@@ -175,7 +173,7 @@ class ResultSetMapping
 
             break;
         }
-        
+
         /* TODO: check if this exception can be put back, for now it's gone because of assumptions made by some ORM internals
         if ( ! $found) {
             $message = sprintf(
