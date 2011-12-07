@@ -2945,12 +2945,14 @@ class Parser
                 return '<>';
                 
             case '&':
-            	$this->match(LEXER::T_BIT_AND);
-            	return '&';
-                
+                $this->match(Lexer::T_BIT_AND);
+
+                return '&';
+
             case '|':
-            	$this->match(LEXER::T_BIT_OR);
-            	return '|';
+                $this->match(Lexer::T_BIT_OR);
+
+                return '|';
 
             default:
                 $this->syntaxError('=, <, <=, <>, >, >=, !=, &, |');
