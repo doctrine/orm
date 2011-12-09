@@ -210,7 +210,7 @@ class QueryBuilder
      *
      * @return Query
      */
-    public function getQuery()
+    public function createQuery()
     {
         return $this->_em->createQuery($this->getDQL())
                 ->setParameters($this->_params, $this->_paramTypes)
