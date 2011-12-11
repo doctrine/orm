@@ -59,12 +59,7 @@ class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $q->setParameter('activeUser', $user1);
         $articles = $q->getResult();
 
-        var_dump(array_keys($articles[0]->userStates->toArray()));
-
         $this->_em->flush();
-        var_dump($this->_sqlLoggerStack);
-
-
     }
 }
 
