@@ -34,7 +34,7 @@ use Doctrine\ORM\EntityManager;
 class LifecycleEventArgs extends EventArgs
 {
     /**
-     * @var Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
     private $em;
 
@@ -47,7 +47,7 @@ class LifecycleEventArgs extends EventArgs
      * Constructor
      * 
      * @param object $entity
-     * @param Doctrine\ORM\EntityManager $em 
+     * @param \Doctrine\ORM\EntityManager $em
      */
     public function __construct($entity, EntityManager $em)
     {
@@ -68,7 +68,7 @@ class LifecycleEventArgs extends EventArgs
     /**
      * Retrieve associated EntityManager.
      * 
-     * @return Doctrine\ORM\EntityManager
+     * @return \Doctrine\ORM\EntityManager
      */
     public function getEntityManager()
     {

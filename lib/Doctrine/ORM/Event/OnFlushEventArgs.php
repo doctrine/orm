@@ -45,7 +45,7 @@ class OnFlushEventArgs extends \Doctrine\Common\EventArgs
     /**
      * Constructor.
      * 
-     * @param Doctrine\ORM\EntityManager $em 
+     * @param \Doctrine\ORM\EntityManager $em
      */
     public function __construct(EntityManager $em)
     {
@@ -55,7 +55,7 @@ class OnFlushEventArgs extends \Doctrine\Common\EventArgs
     /**
      * Retrieve associated EntityManager.
      * 
-     * @return Doctrine\ORM\EntityManager
+     * @return \Doctrine\ORM\EntityManager
      */
     public function getEntityManager()
     {

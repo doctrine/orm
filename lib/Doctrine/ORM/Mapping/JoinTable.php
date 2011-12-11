@@ -29,8 +29,8 @@ final class JoinTable implements Annotation
     public $name;
     /** @var string */
     public $schema;
-    /** @var array<Doctrine\ORM\Mapping\JoinColumn> */
+    /** @var array<\Doctrine\ORM\Mapping\JoinColumn> */
     public $joinColumns = array();
-    /** @var array<Doctrine\ORM\Mapping\JoinColumn> */
+    /** @var array<\Doctrine\ORM\Mapping\JoinColumn> */
     public $inverseJoinColumns = array();
 }
