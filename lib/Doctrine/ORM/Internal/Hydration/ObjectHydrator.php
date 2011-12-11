@@ -332,9 +332,9 @@ class ObjectHydrator extends AbstractHydrator
         // Hydrate the data chunks
         foreach ($rowData as $dqlAlias => $data) {
             $entityName = $this->_rsm->aliasMap[$dqlAlias];
-
+ 
             if (isset($this->_rsm->parentAliasMap[$dqlAlias])) {
-                // It's a joined result
+               // It's a joined result
 
                 $parentAlias = $this->_rsm->parentAliasMap[$dqlAlias];
                 // we need the $path to save into the identifier map which entities were already
