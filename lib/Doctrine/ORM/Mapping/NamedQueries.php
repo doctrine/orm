@@ -25,6 +25,6 @@ namespace Doctrine\ORM\Mapping;
  */
 final class NamedQueries implements Annotation
 {
-    /** @var array<Doctrine\ORM\Mapping\NamedQuery> */
+    /** @var array<\Doctrine\ORM\Mapping\NamedQuery> */
     public $value;
 }

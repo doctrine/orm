@@ -60,7 +60,7 @@ abstract class AbstractHydrator
     /**
      * Initializes a new instance of a class derived from <tt>AbstractHydrator</tt>.
      *
-     * @param Doctrine\ORM\EntityManager $em The EntityManager to use.
+     * @param \Doctrine\ORM\EntityManager $em The EntityManager to use.
      */
     public function __construct(EntityManager $em)
     {
@@ -344,7 +344,7 @@ abstract class AbstractHydrator
     /**
      * Register entity as managed in UnitOfWork.
      *
-     * @param Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
      * @param object $entity
      * @param array $data
      *

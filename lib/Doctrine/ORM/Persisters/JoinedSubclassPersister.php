@@ -67,7 +67,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      * This function finds the ClassMetadata instance in an inheritance hierarchy
      * that is responsible for enabling versioning.
      *
-     * @return Doctrine\ORM\Mapping\ClassMetadata
+     * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
     private function _getVersionedClassMetadata()
     {

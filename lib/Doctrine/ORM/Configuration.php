@@ -501,7 +501,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * 
      * @since 2.2
      * @param string $className
-     * @throws ORMException If not is a Doctrine\ORM\EntityRepository
+     * @throws ORMException If not is a \Doctrine\ORM\EntityRepository
      */
     public function setDefaultRepositoryClassName($className)
     {
