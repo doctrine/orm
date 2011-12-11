@@ -57,7 +57,7 @@ class SqlWalker implements TreeWalker
     private $_em;
 
     /**
-     * @var Doctrine\DBAL\Connection
+     * @var \Doctrine\DBAL\Connection
      */
     private $_conn;
 

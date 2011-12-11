@@ -49,9 +49,9 @@ abstract class AbstractSqlExecutor
     /**
      * Executes all sql statements.
      *
-     * @param Doctrine\DBAL\Connection $conn The database connection that is used to execute the queries.
+     * @param \Doctrine\DBAL\Connection $conn The database connection that is used to execute the queries.
      * @param array $params  The parameters.
-     * @return Doctrine\DBAL\Driver\Statement
+     * @return \Doctrine\DBAL\Driver\Statement
      */
     abstract public function execute(Connection $conn, array $params, array $types);    
 }
