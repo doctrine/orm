@@ -504,7 +504,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function addFilter($name, $className)
     {
-        $this->_attributes['filters'][strtolower($name)] = $className;
+        $this->_attributes['filters'][$name] = $className;
     }
 
     /**
@@ -517,7 +517,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getFilterClassName($name)
     {
-        $name = strtolower($name);
         return isset($this->_attributes['filters'][$name]) ?
                 $this->_attributes['filters'][$name] : null;
     }
