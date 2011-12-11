@@ -903,7 +903,7 @@ class BasicEntityPersister
 
         $alias = $this->_getSQLTableAlias($this->_class->name);
 
-        if ('' !== $filterSql = $this->generateFilterConditionSQL($this->_class, $alias)) {
+        if ($filterSql = $this->generateFilterConditionSQL($this->_class, $alias)) {
             if ($conditionSql) {
                 $conditionSql .= ' AND ';
             }
@@ -1025,11 +1025,11 @@ class BasicEntityPersister
                     $this->_selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($assoc['joinColumns']);
                     $this->_selectJoinSql .= ' ' . $eagerEntity->getQuotedTableName($this->_platform) . ' ' . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) .' ON ';
 
+                    $tableAlias = $this->_getSQLTableAlias($assoc['targetEntity'], $assocAlias);
                     foreach ($assoc['sourceToTargetKeyColumns'] AS $sourceCol => $targetCol) {
                         if ( ! $first) {
                             $this->_selectJoinSql .= ' AND ';
                         }
-                        $tableAlias = $this->_getSQLTableAlias($assoc['targetEntity'], $assocAlias);
                         $this->_selectJoinSql .= $this->_getSQLTableAlias($assoc['sourceEntity']) . '.' . $sourceCol . ' = '
                                                . $tableAlias . '.' . $targetCol;
                         $first = false;
