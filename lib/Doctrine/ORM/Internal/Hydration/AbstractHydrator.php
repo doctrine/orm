@@ -217,6 +217,7 @@ abstract class AbstractHydrator
 
             if (isset($cache[$key]['isMetaColumn'])) {
                 if (!isset($rowData[$dqlAlias][$cache[$key]['fieldName']]) || $value !== null) {
+                    $nonemptyComponents[$dqlAlias] = true;
                     $rowData[$dqlAlias][$cache[$key]['fieldName']] = $value;
                 }
                 continue;
