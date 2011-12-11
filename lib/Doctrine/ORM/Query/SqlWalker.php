@@ -269,7 +269,7 @@ class SqlWalker implements TreeWalker
             }
 
             // Add filters on the root class
-            if ('' !== $filterSql = $this->generateFilterConditionSQL($parentClass, $tableAlias)) {
+            if ($filterSql = $this->generateFilterConditionSQL($parentClass, $tableAlias)) {
                 $sqlParts[] = $filterSql;
             }
 
@@ -853,10 +853,6 @@ class SqlWalker implements TreeWalker
                 }
             }
 
-            // Apply the filters
-            if ('' !== $filterExpr = $this->generateFilterConditionSQL($targetClass, $targetTableAlias)) {
-                $sql .= ' AND ' . $filterExpr;
-            }
         } else if ($assoc['type'] == ClassMetadata::MANY_TO_MANY) {
             // Join relation table
             $joinTable = $assoc['joinTable'];
@@ -920,11 +916,11 @@ class SqlWalker implements TreeWalker
                     $sql .= $targetTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableAlias . '.' . $relationColumn;
                 }
             }
+        }
 
-            // Apply the filters
-            if ('' !== $filterExpr = $this->generateFilterConditionSQL($targetClass, $targetTableAlias)) {
-                $sql .= ' AND ' . $filterExpr;
-            }
+        // Apply the filters
+        if ($filterExpr = $this->generateFilterConditionSQL($targetClass, $targetTableAlias)) {
+            $sql .= ' AND ' . $filterExpr;
         }
 
         // Handle WITH clause
@@ -1527,23 +1523,24 @@ class SqlWalker implements TreeWalker
         $condSql  = null !== $whereClause ? $this->walkConditionalExpression($whereClause->conditionalExpression) : '';
         $discrSql = $this->_generateDiscriminatorColumnConditionSql($this->_rootAliases);
 
-        // Apply the filters for all entities in FROM
-        $filterClauses = array();
-        foreach ($this->_rootAliases as $dqlAlias) {
-            $class = $this->_queryComponents[$dqlAlias]['metadata'];
-            $tableAlias = $this->getSQLTableAlias($class->table['name'], $dqlAlias);
+        if ($this->_em->hasFilters()) {
+            $filterClauses = array();
+            foreach ($this->_rootAliases as $dqlAlias) {
+                $class = $this->_queryComponents[$dqlAlias]['metadata'];
+                $tableAlias = $this->getSQLTableAlias($class->table['name'], $dqlAlias);
 
-            if ('' !== $filterExpr = $this->generateFilterConditionSQL($class, $tableAlias)) {
-                $filterClauses[] = $filterExpr;
-            }
-        }
-
-        if (count($filterClauses)) {
-            if ($condSql) {
-                $condSql .= ' AND ';
+                if ($filterExpr = $this->generateFilterConditionSQL($class, $tableAlias)) {
+                    $filterClauses[] = $filterExpr;
+                }
             }
 
-            $condSql .= implode(' AND ', $filterClauses);
+            if (count($filterClauses)) {
+                if ($condSql) {
+                    $condSql .= ' AND ';
+                }
+
+                $condSql .= implode(' AND ', $filterClauses);
+            }
         }
 
         if ($condSql) {
