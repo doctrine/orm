@@ -1781,7 +1781,7 @@ class Parser
     /**
      * GeneralCaseExpression ::= "CASE" WhenClause {WhenClause}* "ELSE" ScalarExpression "END"
      *
-     * @return Doctrine\ORM\Query\AST\GeneralExpression
+     * @return \Doctrine\ORM\Query\AST\GeneralExpression
      */
     public function GeneralCaseExpression()
     {
@@ -1827,7 +1827,7 @@ class Parser
     /**
      * WhenClause ::= "WHEN" ConditionalExpression "THEN" ScalarExpression
      *
-     * @return Doctrine\ORM\Query\AST\WhenExpression
+     * @return \Doctrine\ORM\Query\AST\WhenExpression
      */
     public function WhenClause()
     {
@@ -1841,7 +1841,7 @@ class Parser
     /**
      * SimpleWhenClause ::= "WHEN" ScalarExpression "THEN" ScalarExpression
      *
-     * @return Doctrine\ORM\Query\AST\SimpleWhenExpression
+     * @return \Doctrine\ORM\Query\AST\SimpleWhenExpression
      */
     public function SimpleWhenClause()
     {

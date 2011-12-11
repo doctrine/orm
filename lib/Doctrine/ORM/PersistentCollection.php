@@ -728,7 +728,7 @@ final class PersistentCollection implements Collection
     /**
      * Retrieves the wrapped Collection instance.
      *
-     * @return Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function unwrap()
     {

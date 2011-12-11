@@ -279,7 +279,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
     
     /**
-     * @param Doctrine\ORM\PersistentCollection $coll
+     * @param \Doctrine\ORM\PersistentCollection $coll
      * @param object $element
      * @return array
      */

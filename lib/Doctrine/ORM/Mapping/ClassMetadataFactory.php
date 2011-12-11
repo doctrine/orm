@@ -437,8 +437,8 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      * Adds inherited named queries to the subclass mapping.
      * 
      * @since 2.2
-     * @param Doctrine\ORM\Mapping\ClassMetadata $subClass
-     * @param Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
      */
     private function addInheritedNamedQueries(ClassMetadata $subClass, ClassMetadata $parentClass)
     {

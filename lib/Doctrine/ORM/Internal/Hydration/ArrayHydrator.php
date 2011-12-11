@@ -276,7 +276,7 @@ class ArrayHydrator extends AbstractHydrator
      *
      * @param string $className
      *
-     * @return Doctrine\ORM\Mapping\ClassMetadata
+     * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
     private function getClassMetadata($className)
     {

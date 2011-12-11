@@ -43,7 +43,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      * Constructor.
      * 
      * @param object $entity
-     * @param Doctrine\ORM\EntityManager $em
+     * @param \Doctrine\ORM\EntityManager $em
      * @param array $changeSet
      */
     public function __construct($entity, EntityManager $em, array &$changeSet)
