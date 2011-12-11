@@ -81,7 +81,7 @@ final class Query extends AbstractQuery
     const HINT_INCLUDE_META_COLUMNS = 'doctrine.includeMetaColumns';
 
     /**
-     * An array of class names that implement Doctrine\ORM\Query\TreeWalker and
+     * An array of class names that implement \Doctrine\ORM\Query\TreeWalker and
      * are iterated and executed after the DQL has been parsed into an AST.
      *
      * @var string
@@ -89,7 +89,7 @@ final class Query extends AbstractQuery
     const HINT_CUSTOM_TREE_WALKERS = 'doctrine.customTreeWalkers';
 
     /**
-     * A string with a class name that implements Doctrine\ORM\Query\TreeWalker
+     * A string with a class name that implements \Doctrine\ORM\Query\TreeWalker
      * and is used for generating the target SQL from any DQL AST tree.
      *
      * @var string
@@ -119,7 +119,7 @@ final class Query extends AbstractQuery
     private $_dql = null;
 
     /**
-     * @var Doctrine\ORM\Query\ParserResult  The parser result that holds DQL => SQL information.
+     * @var \Doctrine\ORM\Query\ParserResult  The parser result that holds DQL => SQL information.
      */
     private $_parserResult;
 
@@ -158,7 +158,7 @@ final class Query extends AbstractQuery
     /**
      * Initializes a new Query instance.
      *
-     * @param Doctrine\ORM\EntityManager $entityManager
+     * @param \Doctrine\ORM\EntityManager $entityManager
      */
     /*public function __construct(EntityManager $entityManager)
     {
@@ -179,9 +179,9 @@ final class Query extends AbstractQuery
     /**
      * Returns the corresponding AST for this DQL query.
      *
-     * @return Doctrine\ORM\Query\AST\SelectStatement |
-     *         Doctrine\ORM\Query\AST\UpdateStatement |
-     *         Doctrine\ORM\Query\AST\DeleteStatement
+     * @return \Doctrine\ORM\Query\AST\SelectStatement |
+     *         \Doctrine\ORM\Query\AST\UpdateStatement |
+     *         \Doctrine\ORM\Query\AST\DeleteStatement
      */
     public function getAST()
     {
@@ -194,7 +194,7 @@ final class Query extends AbstractQuery
      *
      * Note: Populates $this->_parserResult as a side-effect.
      *
-     * @return Doctrine\ORM\Query\ParserResult
+     * @return \Doctrine\ORM\Query\ParserResult
      */
     private function _parse()
     {
@@ -428,7 +428,7 @@ final class Query extends AbstractQuery
      * Sets a DQL query string.
      *
      * @param string $dqlQuery DQL Query
-     * @return Doctrine\ORM\AbstractQuery
+     * @return \Doctrine\ORM\AbstractQuery
      */
     public function setDQL($dqlQuery)
     {
@@ -558,7 +558,7 @@ final class Query extends AbstractQuery
     /**
      * Set the lock mode for this Query.
      *
-     * @see Doctrine\DBAL\LockMode
+     * @see \Doctrine\DBAL\LockMode
      * @param  int $lockMode
      * @return Query
      */

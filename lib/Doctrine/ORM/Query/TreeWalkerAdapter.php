@@ -55,7 +55,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     /**
      * Retrieve Query Instance reponsible for the current walkers execution.
      *
-     * @return Doctrine\ORM\Query
+     * @return \Doctrine\ORM\Query
      */
     protected function _getQuery()
     {
@@ -65,7 +65,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     /**
      * Retrieve ParserResult
      *
-     * @return Doctrine\ORM\Query\ParserResult
+     * @return \Doctrine\ORM\Query\ParserResult
      */
     protected function _getParserResult()
     {

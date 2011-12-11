@@ -48,7 +48,7 @@ class EntityRepository implements ObjectRepository
     protected $_em;
 
     /**
-     * @var Doctrine\ORM\Mapping\ClassMetadata
+     * @var \Doctrine\ORM\Mapping\ClassMetadata
      */
     protected $_class;
 
