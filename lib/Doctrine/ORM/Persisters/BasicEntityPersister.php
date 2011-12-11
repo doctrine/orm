@@ -1036,7 +1036,7 @@ class BasicEntityPersister
                     }
 
                     // Add filter SQL
-                    if ('' !== $filterSql = $this->generateFilterConditionSQL($eagerEntity, $tableAlias)) {
+                    if ($filterSql = $this->generateFilterConditionSQL($eagerEntity, $tableAlias)) {
                         $this->_selectJoinSql .= ' AND ' . $filterSql;
                     }
                 } else {
@@ -1284,10 +1284,10 @@ class BasicEntityPersister
      *
      * @return string
      */
-    protected function getLockTablesSql($alias = null)
+    protected function getLockTablesSql()
     {
         return 'FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' '
-             . (null !== $alias ? $alias : $this->_getSQLTableAlias($this->_class->name));
+             . $this->_getSQLTableAlias($this->_class->name);
     }
 
     /**
@@ -1541,10 +1541,10 @@ class BasicEntityPersister
         $alias = $this->_getSQLTableAlias($this->_class->name);
 
         $sql = 'SELECT 1 '
-             . $this->getLockTablesSql($alias)
+             . $this->getLockTablesSql()
              . ' WHERE ' . $this->_getSelectConditionSQL($criteria);
 
-        if ('' !== $filterSql = $this->generateFilterConditionSQL($this->_class, $alias)) {
+        if ($filterSql = $this->generateFilterConditionSQL($this->_class, $alias)) {
             $sql .= ' AND ' . $filterSql;
         }
 
