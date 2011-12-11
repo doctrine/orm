@@ -67,7 +67,7 @@ final class PersistentCollection implements Collection
     /**
      * The EntityManager that manages the persistence of the collection.
      *
-     * @var Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
     private $em;
 
@@ -284,7 +284,7 @@ final class PersistentCollection implements Collection
     /**
      * INTERNAL: Gets the association mapping of the collection.
      *
-     * @return Doctrine\ORM\Mapping\AssociationMapping
+     * @return \Doctrine\ORM\Mapping\AssociationMapping
      */
     public function getMapping()
     {

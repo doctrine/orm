@@ -85,7 +85,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     /**
      * Sets the cache driver used by the factory to cache ClassMetadata instances.
      *
-     * @param Doctrine\Common\Cache\Cache $cacheDriver
+     * @param \Doctrine\Common\Cache\Cache $cacheDriver
      */
     public function setCacheDriver($cacheDriver)
     {
@@ -95,7 +95,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     /**
      * Gets the cache driver used by the factory to cache ClassMetadata instances.
      *
-     * @return Doctrine\Common\Cache\Cache
+     * @return \Doctrine\Common\Cache\Cache
      */
     public function getCacheDriver()
     {
@@ -143,7 +143,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      * Gets the class metadata descriptor for a class.
      *
      * @param string $className The name of the class.
-     * @return Doctrine\ORM\Mapping\ClassMetadata
+     * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
     public function getMetadataFor($className)
     {
@@ -377,7 +377,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      * Creates a new ClassMetadata instance for the given class name.
      *
      * @param string $className
-     * @return Doctrine\ORM\Mapping\ClassMetadata
+     * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
     protected function newClassMetadataInstance($className)
     {
@@ -387,8 +387,8 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     /**
      * Adds inherited fields to the subclass mapping.
      *
-     * @param Doctrine\ORM\Mapping\ClassMetadata $subClass
-     * @param Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
      */
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
@@ -409,8 +409,8 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     /**
      * Adds inherited association mappings to the subclass mapping.
      *
-     * @param Doctrine\ORM\Mapping\ClassMetadata $subClass
-     * @param Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
      */
     private function addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
@@ -456,7 +456,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      * Completes the ID generator mapping. If "auto" is specified we choose the generator
      * most appropriate for the targeted database platform.
      *
-     * @param Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
      */
     private function completeIdGeneratorMapping(ClassMetadataInfo $class)
     {

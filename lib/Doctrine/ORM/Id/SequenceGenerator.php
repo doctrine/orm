@@ -37,7 +37,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
     /**
      * Initializes a new sequence generator.
      *
-     * @param Doctrine\ORM\EntityManager $em The EntityManager to use.
+     * @param \Doctrine\ORM\EntityManager $em The EntityManager to use.
      * @param string $sequenceName The name of the sequence.
      * @param integer $allocationSize The allocation size of the sequence.
      */

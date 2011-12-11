@@ -37,8 +37,8 @@ class ParameterTypeInferer
 {
     /**
      * Infer type of a given value, returning a compatible constant:
-     * - Type (Doctrine\DBAL\Types\Type::*) 
-     * - Connection (Doctrine\DBAL\Connection::PARAM_*)
+     * - Type (\Doctrine\DBAL\Types\Type::*)
+     * - Connection (\Doctrine\DBAL\Connection::PARAM_*)
      * 
      * @param mixed $value Parameter value
      * 
