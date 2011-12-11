@@ -29,7 +29,7 @@ namespace Doctrine\ORM\Internal\Hydration;
 class IterableResult implements \Iterator
 {
     /**
-     * @var Doctrine\ORM\Internal\Hydration\AbstractHydrator
+     * @var \Doctrine\ORM\Internal\Hydration\AbstractHydrator
      */
     private $_hydrator;
 
@@ -49,7 +49,7 @@ class IterableResult implements \Iterator
     private $_current = null;
 
     /**
-     * @param Doctrine\ORM\Internal\Hydration\AbstractHydrator $hydrator
+     * @param \Doctrine\ORM\Internal\Hydration\AbstractHydrator $hydrator
      */
     public function __construct($hydrator)
     {

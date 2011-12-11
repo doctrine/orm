@@ -78,28 +78,28 @@ class BasicEntityPersister
     /**
      * Metadata object that describes the mapping of the mapped entity class.
      *
-     * @var Doctrine\ORM\Mapping\ClassMetadata
+     * @var \Doctrine\ORM\Mapping\ClassMetadata
      */
     protected $_class;
 
     /**
      * The underlying DBAL Connection of the used EntityManager.
      *
-     * @var Doctrine\DBAL\Connection $conn
+     * @var \Doctrine\DBAL\Connection $conn
      */
     protected $_conn;
 
     /**
      * The database platform.
      *
-     * @var Doctrine\DBAL\Platforms\AbstractPlatform
+     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
      */
     protected $_platform;
 
     /**
      * The EntityManager instance.
      *
-     * @var Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
     protected $_em;
 
@@ -171,8 +171,8 @@ class BasicEntityPersister
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
      * and persists instances of the class described by the given ClassMetadata descriptor.
      *
-     * @param Doctrine\ORM\EntityManager $em
-     * @param Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param \Doctrine\ORM\EntityManager $em
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
      */
     public function __construct(EntityManager $em, ClassMetadata $class)
     {
@@ -183,7 +183,7 @@ class BasicEntityPersister
     }
 
     /**
-     * @return Doctrine\ORM\Mapping\ClassMetadata
+     * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
     public function getClassMetadata()
     {
@@ -271,7 +271,7 @@ class BasicEntityPersister
     /**
      * Fetch the current version value of a versioned entity.
      *
-     * @param Doctrine\ORM\Mapping\ClassMetadata $versionedClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $versionedClass
      * @param mixed $id
      * @return mixed
      */
@@ -724,7 +724,7 @@ class BasicEntityPersister
      * Load an array of entities from a given dbal statement.
      *
      * @param array $assoc
-     * @param Doctrine\DBAL\Statement $stmt
+     * @param \Doctrine\DBAL\Statement $stmt
      * @return array
      */
     private function loadArrayFromStatement($assoc, $stmt)
@@ -746,7 +746,7 @@ class BasicEntityPersister
      * Hydrate a collection from a given dbal statement.
      *
      * @param array $assoc
-     * @param Doctrine\DBAL\Statement $stmt
+     * @param \Doctrine\DBAL\Statement $stmt
      * @param PersistentCollection $coll
      */
     private function loadCollectionFromStatement($assoc, $stmt, $coll)
@@ -1272,7 +1272,7 @@ class BasicEntityPersister
      * @param object $sourceEntity
      * @param int|null $offset
      * @param int|null $limit
-     * @return Doctrine\DBAL\Statement
+     * @return \Doctrine\DBAL\Statement
      */
     private function getOneToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {

@@ -176,7 +176,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * The EntityManager that "owns" this UnitOfWork instance.
      *
-     * @var Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
     private $em;
 
@@ -184,7 +184,7 @@ class UnitOfWork implements PropertyChangedListener
      * The calculator used to calculate the order in which changes to
      * entities need to be written to the database.
      *
-     * @var Doctrine\ORM\Internal\CommitOrderCalculator
+     * @var \Doctrine\ORM\Internal\CommitOrderCalculator
      */
     private $commitOrderCalculator;
 
@@ -233,7 +233,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      *
-     * @param Doctrine\ORM\EntityManager $em
+     * @param \Doctrine\ORM\EntityManager $em
      */
     public function __construct(EntityManager $em)
     {
@@ -700,7 +700,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Executes all entity insertions for entities of the specified type.
      *
-     * @param Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
      */
     private function executeInserts($class)
     {
@@ -753,7 +753,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Executes all entity updates for entities of the specified type.
      *
-     * @param Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
      */
     private function executeUpdates($class)
     {
@@ -797,7 +797,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Executes all entity deletions for entities of the specified type.
      *
-     * @param Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
      */
     private function executeDeletions($class)
     {
@@ -1823,7 +1823,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the CommitOrderCalculator used by the UnitOfWork to order commits.
      *
-     * @return Doctrine\ORM\Internal\CommitOrderCalculator
+     * @return \Doctrine\ORM\Internal\CommitOrderCalculator
      */
     public function getCommitOrderCalculator()
     {
@@ -2261,7 +2261,7 @@ class UnitOfWork implements PropertyChangedListener
      * Gets the EntityPersister for an Entity.
      *
      * @param string $entityName  The name of the Entity.
-     * @return Doctrine\ORM\Persisters\AbstractEntityPersister
+     * @return \Doctrine\ORM\Persisters\AbstractEntityPersister
      */
     public function getEntityPersister($entityName)
     {

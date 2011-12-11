@@ -1238,7 +1238,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Gets the type of a field.
      *
      * @param string $fieldName
-     * @return Doctrine\DBAL\Types\Type
+     * @return \Doctrine\DBAL\Types\Type
      */
     public function getTypeOfField($fieldName)
     {
@@ -1249,7 +1249,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets the type of a column.
      *
-     * @return Doctrine\DBAL\Types\Type
+     * @return \Doctrine\DBAL\Types\Type
      */
     public function getTypeOfColumn($columnName)
     {

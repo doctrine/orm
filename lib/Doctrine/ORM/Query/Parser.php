@@ -75,14 +75,14 @@ class Parser
     /**
      * The lexer.
      *
-     * @var Doctrine\ORM\Query\Lexer
+     * @var \Doctrine\ORM\Query\Lexer
      */
     private $_lexer;
 
     /**
      * The parser result.
      *
-     * @var Doctrine\ORM\Query\ParserResult
+     * @var \Doctrine\ORM\Query\ParserResult
      */
     private $_parserResult;
 
@@ -170,7 +170,7 @@ class Parser
     /**
      * Gets the lexer used by the parser.
      *
-     * @return Doctrine\ORM\Query\Lexer
+     * @return \Doctrine\ORM\Query\Lexer
      */
     public function getLexer()
     {
@@ -180,7 +180,7 @@ class Parser
     /**
      * Gets the ParserResult that is being filled with information during parsing.
      *
-     * @return Doctrine\ORM\Query\ParserResult
+     * @return \Doctrine\ORM\Query\ParserResult
      */
     public function getParserResult()
     {
@@ -1466,7 +1466,7 @@ class Parser
     /**
      * RangeVariableDeclaration ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
      *
-     * @return Doctrine\ORM\Query\AST\RangeVariableDeclaration
+     * @return \Doctrine\ORM\Query\AST\RangeVariableDeclaration
      */
     public function RangeVariableDeclaration()
     {
@@ -1537,7 +1537,7 @@ class Parser
      * Join ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression
      *          ["AS"] AliasIdentificationVariable ["WITH" ConditionalExpression]
      *
-     * @return Doctrine\ORM\Query\AST\Join
+     * @return \Doctrine\ORM\Query\AST\Join
      */
     public function Join()
     {
@@ -1607,7 +1607,7 @@ class Parser
     /**
      * IndexBy ::= "INDEX" "BY" StateFieldPathExpression
      *
-     * @return Doctrine\ORM\Query\AST\IndexBy
+     * @return \Doctrine\ORM\Query\AST\IndexBy
      */
     public function IndexBy()
     {
@@ -1698,7 +1698,7 @@ class Parser
     /**
      * CoalesceExpression ::= "COALESCE" "(" ScalarExpression {"," ScalarExpression}* ")"
      * 
-     * @return Doctrine\ORM\Query\AST\CoalesceExpression 
+     * @return \Doctrine\ORM\Query\AST\CoalesceExpression
      */
     public function CoalesceExpression()
     {
@@ -1722,7 +1722,7 @@ class Parser
     /**
      * NullIfExpression ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
      * 
-     * @return Doctrine\ORM\Query\AST\ExistsExpression 
+     * @return \Doctrine\ORM\Query\AST\ExistsExpression
      */
     public function NullIfExpression()
     {
@@ -1743,7 +1743,7 @@ class Parser
      *      IdentificationVariable | StateFieldPathExpression |
      *      (AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable]
      *
-     * @return Doctrine\ORM\Query\AST\SelectExpression
+     * @return \Doctrine\ORM\Query\AST\SelectExpression
      */
     public function SelectExpression()
     {
@@ -1967,7 +1967,7 @@ class Parser
     /**
      * ConditionalPrimary ::= SimpleConditionalExpression | "(" ConditionalExpression ")"
      *
-     * @return Doctrine\ORM\Query\AST\ConditionalPrimary
+     * @return \Doctrine\ORM\Query\AST\ConditionalPrimary
      */
     public function ConditionalPrimary()
     {

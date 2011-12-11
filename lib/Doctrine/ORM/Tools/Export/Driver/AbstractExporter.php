@@ -27,7 +27,7 @@ use Doctrine\ORM\Tools\Export\ExportException;
 
 /**
  * Abstract base class which is to be used for the Exporter drivers
- * which can be found in Doctrine\ORM\Tools\Export\Driver
+ * which can be found in \Doctrine\ORM\Tools\Export\Driver
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
