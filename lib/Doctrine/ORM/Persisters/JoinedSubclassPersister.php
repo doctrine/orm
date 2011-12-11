@@ -328,13 +328,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 if ($first) $first = false; else $joinSql .= ' AND ';
 
                 $joinSql .= $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
-
-                if ($parentClass->name === $this->_class->rootEntityName) {
-                    // Add filters on the root class
-                    if ('' !== $filterSql = $this->generateFilterConditionSQL($parentClass, $tableAlias)) {
-                        $joinSql .= ' AND ' . $filterSql;
-                    }
-                }
             }
         }
 
@@ -383,14 +376,12 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $conditionSql = $this->_getSelectConditionSQL($criteria, $assoc);
 
         // If the current class in the root entity, add the filters
-        if ($this->_class->name === $this->_class->rootEntityName) {
-            if ('' !== $filterSql = $this->generateFilterConditionSQL($this->_class, $baseTableAlias)) {
-                if ($conditionSql) {
-                    $conditionSql .= ' AND ';
-                }
-
-                $conditionSql .= $filterSql;
+        if ($filterSql = $this->generateFilterConditionSQL($this->_em->getClassMetadata($this->_class->rootEntityName), $this->_getSQLTableAlias($this->_class->rootEntityName))) {
+            if ($conditionSql) {
+                $conditionSql .= ' AND ';
             }
+
+            $conditionSql .= $filterSql;
         }
 
         $orderBy = ($assoc !== null && isset($assoc['orderBy'])) ? $assoc['orderBy'] : $orderBy;
@@ -420,10 +411,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      *
      * @return string
      */
-    public function getLockTablesSql($alias = null)
+    public function getLockTablesSql()
     {
         $idColumns = $this->_class->getIdentifierColumnNames();
-        $baseTableAlias = null !== $alias ? $alias : $this->_getSQLTableAlias($this->_class->name);
+        $baseTableAlias = $this->_getSQLTableAlias($this->_class->name);
 
         // INNER JOIN parent tables
         $joinSql = '';

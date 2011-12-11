@@ -66,7 +66,6 @@ abstract class SQLFilter
      */
     final public function setParameter($name, $value, $type)
     {
-        // @todo: check for a valid type?
         $this->parameters[$name] = array('value' => $value, 'type' => $type);
 
         // Keep the parameters sorted for the hash

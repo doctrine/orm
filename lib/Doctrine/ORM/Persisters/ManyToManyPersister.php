@@ -219,7 +219,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($mapping);
-        if ('' !== $filterSql) {
+        if ($filterSql) {
             $whereClauses[] = $filterSql;
         }
 
@@ -333,7 +333,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         if ($addFilters) {
             list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($mapping);
-            if ('' !== $filterSql) {
+            if ($filterSql) {
                 $quotedJoinTable .= ' t ' . $joinTargetEntitySQL;
                 $whereClauses[] = $filterSql;
             }
@@ -345,6 +345,12 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * Generates the filter SQL for a given mapping.
      *
+     * This method is not used for actually grabbing the related entities
+     * but when the extra-lazy collection methods are called on a filtered
+     * association. This is why besides the many to many table we also
+     * have to join in the actual entities table leading to additional
+     * JOIN.
+     *
      * @param array $targetEntity Array containing mapping information.
      *
      * @return string The SQL query part to add to a query.
@@ -352,10 +358,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
     public function getFilterSql($mapping)
     {
         $targetClass = $this->_em->getClassMetadata($mapping['targetEntity']);
+        $targetClass = $this->_em->getClassMetadata($targetClass->rootEntityName);
 
         // A join is needed if there is filtering on the target entity
         $joinTargetEntitySQL = '';
-        if ('' !== $filterSql = $this->generateFilterConditionSQL($targetClass, 'te')) {
+        if ($filterSql = $this->generateFilterConditionSQL($targetClass, 'te')) {
             $joinTargetEntitySQL = ' JOIN '
                 . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) . ' te'
                 . ' ON';
@@ -384,11 +391,12 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $filterClauses = array();
 
         foreach ($this->_em->getFilters()->getEnabledFilters() as $filter) {
-            if ('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+            if ($filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
                 $filterClauses[] = '(' . $filterExpr . ')';
             }
         }
 
-        return implode(' AND ', $filterClauses);
+        $sql = implode(' AND ', $filterClauses);
+        return $sql ? "(" . $sql . ")" : "";
     }
 }

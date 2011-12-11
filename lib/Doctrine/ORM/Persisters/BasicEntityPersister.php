@@ -1604,6 +1604,7 @@ class BasicEntityPersister
             }
         }
 
-        return implode(' AND ', $filterClauses);
+        $sql = implode(' AND ', $filterClauses);
+        return $sql ? "(" . $sql . ")" : ""; // Wrap again to avoid "X or Y and FilterConditionSQL"
     }
 }
