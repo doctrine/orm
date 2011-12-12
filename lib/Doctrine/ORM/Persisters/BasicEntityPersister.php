@@ -1320,13 +1320,12 @@ class BasicEntityPersister
             }
 
             $type = null;
-            if (isset($this->_class->fieldMappings[$field])) {
-                $type = Type::getType($this->_class->fieldMappings[$field]['type'])->getBindingType();
-            }
             if (is_array($value)) {
+                $type = Type::getType( $this->_class->fieldMappings[$field]['type'] )->getBindingType();
                 $type += Connection::ARRAY_PARAM_OFFSET;
+            } else if (isset($this->_class->fieldMappings[$field])) {
+                $type = $this->_class->fieldMappings[$field]['type'];
             }
-
             $params[] = $value;
             $types[] = $type;
         }
