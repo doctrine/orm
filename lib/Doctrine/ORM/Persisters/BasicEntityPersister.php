@@ -1433,7 +1433,7 @@ class BasicEntityPersister
     {
         switch (true) {
             case (isset($this->_class->fieldMappings[$field])):
-                $type = Type::getType($this->_class->fieldMappings[$field]['type'])->getBindingType();
+                $type = $this->_class->fieldMappings[$field]['type'];
                 break;
 
             case (isset($this->_class->associationMappings[$field])):
@@ -1448,7 +1448,7 @@ class BasicEntityPersister
                 $type         = null;
 
                 if (isset($targetClass->fieldNames[$targetColumn])) {
-                    $type = Type::getType($targetClass->fieldMappings[$targetClass->fieldNames[$targetColumn]]['type'])->getBindingType();
+                    $type = $targetClass->fieldMappings[$targetClass->fieldNames[$targetColumn]]['type'];
                 }
 
                 break;
@@ -1456,8 +1456,8 @@ class BasicEntityPersister
             default:
                 $type = null;
         }
-
         if (is_array($value)) {
+            $type = Type::getType( $type )->getBindingType();
             $type += Connection::ARRAY_PARAM_OFFSET;
         }
 
