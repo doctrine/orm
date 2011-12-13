@@ -626,7 +626,8 @@ classes have to implement the base class :
     namespace MyProject\Query\AST;
     
     use \Doctrine\ORM\Query\AST\Functions\FunctionNode;
-    
+    use \Doctrine\ORM\Query\Lexer;
+
     class MysqlFloor extends FunctionNode
     {
         public $simpleArithmeticExpression;
@@ -642,7 +643,7 @@ classes have to implement the base class :
         {
             $lexer = $parser->getLexer();
     
-            $parser->match(Lexer::T_ABS);
+            $parser->match(Lexer::T_IDENTIFIER);
             $parser->match(Lexer::T_OPEN_PARENTHESIS);
     
             $this->simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
