@@ -2499,9 +2499,11 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($eagerLoadingEntities as $entityName => $ids) {
             $class = $this->em->getClassMetadata($entityName);
 
-            $this->getEntityPersister($entityName)->loadAll(
-                array_combine($class->identifier, array(array_values($ids)))
-            );
+            if ($ids) {
+                $this->getEntityPersister($entityName)->loadAll(
+                    array_combine($class->identifier, array(array_values($ids)))
+                );
+            }
         }
     }
 
