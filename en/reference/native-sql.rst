@@ -380,9 +380,9 @@ in your sQL statement:
     $sql = "SELECT u.id, u.name, a.id AS address_id, a.street, a.city " . 
            "FROM users u INNER JOIN address a ON u.address_id = a.id";
 
-    $rsm = new ResultSetMappingBuilder;
+    $rsm = new ResultSetMappingBuilder($em);
     $rsm->addRootEntityFromClassMetadata('MyProject\User', 'u');
-    $rsm->addJoinedEntityFromClassMetadata('MyProject\Address', 'a', array('id' => 'address_id'));
+    $rsm->addJoinedEntityFromClassMetadata('MyProject\Address', 'a', 'u', 'address', array('id' => 'address_id'));
 
 For entites with more columns the builder is very convenient to use. It extends the ``ResultSetMapping`` class
 and as such has all the functionality of it as well. Currently the ``ResultSetMappingBuilder`` does not support
