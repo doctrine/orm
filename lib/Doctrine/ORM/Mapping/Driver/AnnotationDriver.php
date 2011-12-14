@@ -23,7 +23,8 @@ use Doctrine\Common\Cache\ArrayCache,
     Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\Common\Annotations\AnnotationRegistry,
     Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Mapping\MappingException;
+    Doctrine\ORM\Mapping\MappingException,
+    Doctrine\ORM\Mapping\JoinColumn;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -275,6 +276,43 @@ class AnnotationDriver implements Driver
             }
         }
 
+        $associationOverrides = array();
+        // Evaluate AssociationOverrides annotation
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\AssociationOverrides'])) {
+            $associationOverridesAnnot = $classAnnotations['Doctrine\ORM\Mapping\AssociationOverrides'];
+
+            foreach ($associationOverridesAnnot->value as $associationOverride) {
+                // Check for JoinColummn/JoinColumns annotations
+                if ($associationOverride->joinColumns) {
+                    $joinColumns = array();
+                    foreach ($associationOverride->joinColumns as $joinColumn) {
+                        $joinColumns[] = $this->joinColumnToArray($joinColumn);
+                    }
+                    $associationOverrides[$associationOverride->name]['joinColumns'] = $joinColumns;
+                }
+
+                // Check for JoinTable annotations
+                if ($associationOverride->joinTable) {
+                    $joinTable      = null;
+                    $joinTableAnnot = $associationOverride->joinTable;
+                    $joinTable = array(
+                        'name'      => $joinTableAnnot->name,
+                        'schema'    => $joinTableAnnot->schema
+                    );
+
+                    foreach ($joinTableAnnot->joinColumns as $joinColumn) {
+                        $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
+                    }
+
+                    foreach ($joinTableAnnot->inverseJoinColumns as $joinColumn) {
+                        $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumn);
+                    }
+
+                    $associationOverrides[$associationOverride->name]['joinTable'] = $joinTable;
+                }
+            }
+        }
+
         // Evaluate InheritanceType annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\InheritanceType'])) {
             $inheritanceTypeAnnot = $classAnnotations['Doctrine\ORM\Mapping\InheritanceType'];
@@ -325,25 +363,13 @@ class AnnotationDriver implements Driver
             // Check for JoinColummn/JoinColumns annotations
             $joinColumns = array();
 
-            if ($joinColumnAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinColumn')) {
-                $joinColumns[] = array(
-                    'name' => $joinColumnAnnot->name,
-                    'referencedColumnName' => $joinColumnAnnot->referencedColumnName,
-                    'unique' => $joinColumnAnnot->unique,
-                    'nullable' => $joinColumnAnnot->nullable,
-                    'onDelete' => $joinColumnAnnot->onDelete,
-                    'columnDefinition' => $joinColumnAnnot->columnDefinition,
-                );
+            if (isset($associationOverrides[$property->name]['joinColumns'])) {
+                $joinColumns = $associationOverrides[$property->name]['joinColumns'];
+            } else if ($joinColumnAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinColumn')) {
+                $joinColumns[] = $this->joinColumnToArray($joinColumnAnnot);
             } else if ($joinColumnsAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinColumns')) {
                 foreach ($joinColumnsAnnot->value as $joinColumn) {
-                    $joinColumns[] = array(
-                        'name' => $joinColumn->name,
-                        'referencedColumnName' => $joinColumn->referencedColumnName,
-                        'unique' => $joinColumn->unique,
-                        'nullable' => $joinColumn->nullable,
-                        'onDelete' => $joinColumn->onDelete,
-                        'columnDefinition' => $joinColumn->columnDefinition,
-                    );
+                    $joinColumns[] = $this->joinColumnToArray($joinColumn);
                 }
             }
 
@@ -440,32 +466,20 @@ class AnnotationDriver implements Driver
             } else if ($manyToManyAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\ManyToMany')) {
                 $joinTable = array();
 
-                if ($joinTableAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinTable')) {
+                if (isset($associationOverrides[$property->name]['joinTable'])) {
+                    $joinTable = $associationOverrides[$property->name]['joinTable'];
+                } else if ($joinTableAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinTable')) {
                     $joinTable = array(
                         'name' => $joinTableAnnot->name,
                         'schema' => $joinTableAnnot->schema
                     );
 
                     foreach ($joinTableAnnot->joinColumns as $joinColumn) {
-                        $joinTable['joinColumns'][] = array(
-                            'name' => $joinColumn->name,
-                            'referencedColumnName' => $joinColumn->referencedColumnName,
-                            'unique' => $joinColumn->unique,
-                            'nullable' => $joinColumn->nullable,
-                            'onDelete' => $joinColumn->onDelete,
-                            'columnDefinition' => $joinColumn->columnDefinition,
-                        );
+                        $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
                     }
 
                     foreach ($joinTableAnnot->inverseJoinColumns as $joinColumn) {
-                        $joinTable['inverseJoinColumns'][] = array(
-                            'name' => $joinColumn->name,
-                            'referencedColumnName' => $joinColumn->referencedColumnName,
-                            'unique' => $joinColumn->unique,
-                            'nullable' => $joinColumn->nullable,
-                            'onDelete' => $joinColumn->onDelete,
-                            'columnDefinition' => $joinColumn->columnDefinition,
-                        );
+                        $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumn);
                     }
                 }
 
@@ -635,6 +649,25 @@ class AnnotationDriver implements Driver
 
         return constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $fetchMode);
     }
+
+    /**
+     * Parse the given JoinColumn as array
+     *
+     * @param   JoinColumn $joinColumn
+     * @return  array
+     */
+    private function joinColumnToArray(JoinColumn $joinColumn)
+    {
+        return array(
+            'name' => $joinColumn->name,
+            'unique' => $joinColumn->unique,
+            'nullable' => $joinColumn->nullable,
+            'onDelete' => $joinColumn->onDelete,
+            'columnDefinition' => $joinColumn->columnDefinition,
+            'referencedColumnName' => $joinColumn->referencedColumnName,
+        );
+    }
+    
     /**
      * Factory method for the Annotation Driver
      *
