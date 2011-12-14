@@ -276,11 +276,14 @@ class SchemaTool
             $discrColumn['length'] = 255;
         }
 
-        $table->addColumn(
-            $discrColumn['name'],
-            $discrColumn['type'],
-            array('length' => $discrColumn['length'], 'notnull' => true)
-        );
+        // Allow discriminatorColumn for existing column
+        if (!$table->hasColumn($discrColumn['name'])) {
+            $table->addColumn(
+                $discrColumn['name'],
+                $discrColumn['type'],
+                array('length' => $discrColumn['length'], 'notnull' => true)
+            );
+        }
     }
 
     /**
