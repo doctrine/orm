@@ -33,6 +33,24 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $this->assertEquals($expectedMap, $class->discriminatorMap);
     }
 
+    public function testIdentifierWithAssociationKey()
+    {
+        $driver  = $this->_loadDriver();
+        $em      = $this->_getTestEntityManager();
+        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+
+        $em->getConfiguration()->setMetadataDriverImpl($driver);
+        $factory->setEntityManager($em);
+
+        $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC117\DDC117Translation');
+
+        $this->assertEquals(array('language', 'article'), $class->identifier);
+        $this->assertArrayHasKey('article', $class->associationMappings);
+
+        $this->assertArrayHasKey('id', $class->associationMappings['article']);
+        $this->assertTrue($class->associationMappings['article']['id']);
+    }
+
     /**
      * @param string $xmlMappingFile
      * @dataProvider dataValidSchema
