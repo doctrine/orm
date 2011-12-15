@@ -26,7 +26,8 @@ use PDO,
     Doctrine\ORM\Event\LifecycleEventArgs,
     Doctrine\ORM\Events,
     Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\Common\Collections\Collection;
+    Doctrine\Common\Collections\Collection,
+    Doctrine\ORM\Proxy\Proxy;
 
 /**
  * The ObjectHydrator constructs an object graph out of an SQL result set.
@@ -358,6 +359,7 @@ class ObjectHydrator extends AbstractHydrator
                     continue;
                 }
 
+
                 $parentClass = $this->_ce[$this->_rsm->aliasMap[$parentAlias]];
                 $oid = spl_object_hash($parentObject);
                 $relationField = $this->_rsm->relationMap[$dqlAlias];
@@ -412,7 +414,9 @@ class ObjectHydrator extends AbstractHydrator
                 } else {
                     // PATH B: Single-valued association
                     $reflFieldValue = $reflField->getValue($parentObject);
-                    if ( ! $reflFieldValue || isset($this->_hints[Query::HINT_REFRESH])) {
+                    if ( ! $reflFieldValue || isset($this->_hints[Query::HINT_REFRESH]) || ($reflFieldValue instanceof Proxy && !$reflFieldValue->__isInitialized__)) {
+                        // we only need to take action if this value is null,
+                        // we refresh the entity or its an unitialized proxy.
                         if (isset($nonemptyComponents[$dqlAlias])) {
                             $element = $this->_getEntity($data, $dqlAlias);
                             $reflField->setValue($parentObject, $element);
