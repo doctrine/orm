@@ -112,7 +112,7 @@ class EntityRepository implements ObjectRepository
             if (!($entity instanceof $this->_class->name)) {
                 return null;
             }
-            
+
             if ($lockMode != LockMode::NONE) {
                 $this->_em->lock($entity, $lockMode, $lockVersion);
             }
@@ -141,7 +141,7 @@ class EntityRepository implements ObjectRepository
             if (!$this->_em->getConnection()->isTransactionActive()) {
                 throw TransactionRequiredException::transactionRequired();
             }
-            
+
             return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($id, null, null, array(), $lockMode);
         }
     }
