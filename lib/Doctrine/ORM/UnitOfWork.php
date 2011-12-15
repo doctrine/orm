@@ -1647,7 +1647,20 @@ class UnitOfWork implements PropertyChangedListener
 
                 $this->persistNew($class, $managedCopy);
             } else {
-                $managedCopy = $this->tryGetById($id, $class->rootEntityName);
+                $flatId = $id;
+                if ($class->containsForeignIdentifier) {
+                    // convert foreign identifiers into scalar foreign key
+                    // values to avoid object to string conversion failures.
+                    foreach ($id as $idField => $idValue) {
+                        if (isset($class->associationMappings[$idField])) {
+                            $targetClassMetadata = $this->em->getClassMetadata($class->associationMappings[$idField]['targetEntity']);
+                            $associatedId = $this->getEntityIdentifier($idValue);
+                            $flatId[$idField] = $associatedId[$targetClassMetadata->identifier[0]];
+                        }
+                    }
+                }
+
+                $managedCopy = $this->tryGetById($flatId, $class->rootEntityName);
 
                 if ($managedCopy) {
                     // We have the entity in-memory already, just make sure its not removed.
@@ -1657,7 +1670,7 @@ class UnitOfWork implements PropertyChangedListener
                     }
                 } else {
                     // We need to fetch the managed copy in order to merge.
-                    $managedCopy = $this->em->find($class->name, $id);
+                    $managedCopy = $this->em->find($class->name, $flatId);
                 }
 
                 if ($managedCopy === null) {

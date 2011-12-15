@@ -117,7 +117,7 @@ class EntityRepository implements ObjectRepository
             }
             $sortedId[$identifier] = $id[$identifier];
         }
-        
+
         // Check identity map first
         if ($entity = $this->_em->getUnitOfWork()->tryGetById($sortedId, $this->_class->rootEntityName)) {
             if ( ! ($entity instanceof $this->_class->name)) {
