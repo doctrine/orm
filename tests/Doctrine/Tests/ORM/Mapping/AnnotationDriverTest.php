@@ -213,6 +213,22 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
             "Entity 'Doctrine\Tests\ORM\Mapping\InvalidFetchOption' has a mapping with invalid fetch mode 'eager");
         $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\InvalidFetchOption');
     }
+
+    public function testJoinedInheritanceTypeRootClassWithoutDiscriminatorMapGeneratesADefaultMap()
+    {
+        $annotationDriver = $this->_loadDriver();
+        $annotationDriver->addPaths(array(__DIR__ . '/../../Models/JoinedInheritanceType/'));
+        $em = $this->_getTestEntityManager();
+        $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
+        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory->setEntityManager($em);
+
+        $metadata = $factory->getMetadataFor('Doctrine\Tests\Models\JoinedInheritanceType\RootClass');
+
+        $this->assertTrue(in_array('Doctrine\Tests\Models\JoinedInheritanceType\RootClass', $metadata->discriminatorMap));
+        $this->assertTrue(in_array('Doctrine\Tests\Models\JoinedInheritanceType\ChildClass', $metadata->discriminatorMap));
+        $this->assertTrue(in_array('Doctrine\Tests\Models\JoinedInheritanceType\AnotherChildClass', $metadata->discriminatorMap));
+   }
 }
 
 /**

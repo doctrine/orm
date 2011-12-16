@@ -229,6 +229,17 @@ class AnnotationDriver implements Driver
                 if (isset($classAnnotations['Doctrine\ORM\Mapping\DiscriminatorMap'])) {
                     $discrMapAnnot = $classAnnotations['Doctrine\ORM\Mapping\DiscriminatorMap'];
                     $metadata->setDiscriminatorMap($discrMapAnnot->value);
+                } else if ($metadata->inheritanceType == \Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_JOINED) {
+                    $map = array();
+
+                    foreach ($this->getAllClassNames() as $c) {
+                        if ($c == $className || is_subclass_of($c, $className)) {
+                            $refl = new \ReflectionClass($c);
+                            $map[$refl->getShortName()] = $refl->getName();
+                        }
+                    }
+
+                    $metadata->setDiscriminatorMap($map);
                 }
             }
         }
