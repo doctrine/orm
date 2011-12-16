@@ -221,8 +221,7 @@ class XmlExporter extends AbstractExporter
                 $associationMappingXml->addAttribute('index-by', $associationMapping['indexBy']);
             }
             if (isset($associationMapping['orphanRemoval']) && $associationMapping['orphanRemoval']!==false) {
-                // false is the xml default 
-                $associationMappingXml->addAttribute('orphan-removal', $associationMapping['orphanRemoval']);
+                $associationMappingXml->addAttribute('orphan-removal', 'true');
             }
             if (isset($associationMapping['joinTable']) && $associationMapping['joinTable']) {
                 $joinTableXml = $associationMappingXml->addChild('join-table');
