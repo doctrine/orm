@@ -34,6 +34,24 @@ about the use of generate entities for example, you can call:
 
     doctrine orm:generate-entities --help
 
+Setting up the Console
+----------------------
+
+Doctrine uses the Symfony Console component for generating the command
+line interface. You can take a look at the ``bin/doctrine.php``
+script and the ``Doctrine\ORM\Tools\Console\ConsoleRunner`` command
+for inspiration how to setup the cli.
+
+In general the required code looks like this:
+
+.. code-block:: php
+
+        $cli = new Application('Doctrine Command Line Interface', \Doctrine\ORM\Version::VERSION);
+        $cli->setCatchExceptions(true);
+        $cli->setHelperSet($helperSet);
+        Doctrine\ORM\Tools\Console\ConsoleRunner::addCommands($cli);
+        $cli->run();
+
 Configuration
 ~~~~~~~~~~~~~
 
