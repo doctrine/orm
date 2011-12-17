@@ -298,7 +298,7 @@ class ClassMetadataBuilder
         $builder = $this->createManyToOne($name, $targetEntity);
 
         if ($inversedBy) {
-            $builder->setInversedBy($inversedBy);
+            $builder->inversedBy($inversedBy);
         }
 
         return $builder->build();
@@ -355,7 +355,7 @@ class ClassMetadataBuilder
     public function addInverseOneToOne($name, $targetEntity, $mappedBy)
     {
         $builder = $this->createOneToOne($name, $targetEntity);
-        $builder->setMappedBy($mappedBy);
+        $builder->mappedBy($mappedBy);
 
         return $builder->build();
     }
@@ -373,7 +373,7 @@ class ClassMetadataBuilder
         $builder = $this->createOneToOne($name, $targetEntity);
 
         if ($inversedBy) {
-            $builder->setInversedBy($inversedBy);
+            $builder->inversedBy($inversedBy);
         }
 
         return $builder->build();
@@ -411,7 +411,7 @@ class ClassMetadataBuilder
         $builder = $this->createManyToMany($name, $targetEntity);
 
         if ($inversedBy) {
-            $builder->setInversedBy($inversedBy);
+            $builder->inversedBy($inversedBy);
         }
 
         return $builder->build();
@@ -428,7 +428,7 @@ class ClassMetadataBuilder
     public function addInverseManyToMany($name, $targetEntity, $mappedBy)
     {
         $builder = $this->createManyToMany($name, $targetEntity);
-        $builder->setMappedBy($mappedBy);
+        $builder->mappedBy($mappedBy);
 
         return $builder->build();
     }
@@ -463,7 +463,7 @@ class ClassMetadataBuilder
     public function addOneToMany($name, $targetEntity, $mappedBy)
     {
         $builder = $this->createOneToMany($name, $targetEntity);
-        $builder->setMappedBy($mappedBy);
+        $builder->mappedBy($mappedBy);
 
         return $builder->build();
     }
