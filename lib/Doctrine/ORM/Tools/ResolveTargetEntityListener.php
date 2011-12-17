@@ -19,7 +19,8 @@
 
 namespace Doctrine\ORM\Tools;
 
-use Doctrine\ORM\Events\LoadClassMetadataEventArgs;
+use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * ResolveTargetEntityListener
@@ -67,24 +68,25 @@ class ResolveTargetEntityListener
         }
     }
 
-    private function remapAssocation($classMetadata, $mapping)
+    private function remapAssociation($classMetadata, $mapping)
     {
         $newMapping = $this->resolveTargetEntities[$mapping['targetEntity']];
+        $newMapping = array_replace_recursive($mapping, $newMapping);
         $newMapping['fieldName'] = $mapping['fieldName'];
-        unset($cm->associationMappings[$mapping['fieldName']]);
+        unset($classMetadata->associationMappings[$mapping['fieldName']]);
 
         switch ($mapping['type']) {
             case ClassMetadata::MANY_TO_MANY:
-                $cm->mapManyToMany($newMapping);
+                $classMetadata->mapManyToMany($newMapping);
                 break;
             case ClassMetadata::MANY_TO_ONE:
-                $cm->mapManyToOne($newMapping);
+                $classMetadata->mapManyToOne($newMapping);
                 break;
             case ClassMetadata::ONE_TO_MANY:
-                $cm->mapOneToMany($newMapping);
+                $classMetadata->mapOneToMany($newMapping);
                 break;
             case ClassMetadata::ONE_TO_ONE:
-                $cm->mapOneToOne($newMapping);
+                $classMetadata->mapOneToOne($newMapping);
                 break;
         }
     }
