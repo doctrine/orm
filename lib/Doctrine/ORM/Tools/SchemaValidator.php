@@ -28,7 +28,6 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
  * @since       1.0
- * @version     $Revision$
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Jonathan Wage <jonwage@gmail.com>
@@ -138,6 +137,19 @@ class SchemaValidator
                     $ce[] = "The mappings " . $class->name . "#" . $fieldName . " and " .
                             $assoc['targetEntity'] . "#" . $assoc['inversedBy'] . " are ".
                             "incosistent with each other.";
+                }
+
+                // Verify inverse side/owning side match each other
+                $targetAssoc = $targetMetadata->associationMappings[$assoc['inversedBy']];
+                if ($assoc['type'] == ClassMetadata::ONE_TO_ONE && $targetAssoc['type'] !== ClassMetadata::ONE_TO_ONE){
+                    $ce[] = "If association " . $class->name . "#" . $fieldName . " is one-to-one, then the inversed " .
+                            "side " . $targetMetadata->name . "#" . $assoc['inversedBy'] . " has to be one-to-one as well.";
+                } else if ($assoc['type'] == ClassMetadata::MANY_TO_ONE && $targetAssoc['type'] !== ClassMetadata::ONE_TO_MANY){
+                    $ce[] = "If association " . $class->name . "#" . $fieldName . " is many-to-one, then the inversed " .
+                            "side " . $targetMetadata->name . "#" . $assoc['inversedBy'] . " has to be one-to-many.";
+                } else if ($assoc['type'] == ClassMetadata::MANY_TO_MANY && $targetAssoc['type'] !== ClassMetadata::MANY_TO_MANY){
+                    $ce[] = "If association " . $class->name . "#" . $fieldName . " is many-to-many, then the inversed " .
+                            "side " . $targetMetadata->name . "#" . $assoc['inversedBy'] . " has to be many-to-many as well.";
                 }
             }
 
