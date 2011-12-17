@@ -27,7 +27,8 @@ use Closure, Exception,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\ClassMetadataFactory,
     Doctrine\ORM\Query\ResultSetMapping,
-    Doctrine\ORM\Proxy\ProxyFactory;
+    Doctrine\ORM\Proxy\ProxyFactory,
+    Doctrine\ORM\Query\FilterCollection;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -109,6 +110,13 @@ class EntityManager implements ObjectManager
      * @var bool
      */
     private $closed = false;
+
+    /**
+     * Collection of query filters.
+     *
+     * @var Doctrine\ORM\Query\FilterCollection
+     */
+    private $filterCollection;
 
     /**
      * Creates a new EntityManager that operates on the given database connection
@@ -787,5 +795,40 @@ class EntityManager implements ObjectManager
         }
 
         return new EntityManager($conn, $config, $conn->getEventManager());
+    }
+
+    /**
+     * Gets the enabled filters.
+     *
+     * @return FilterCollection The active filter collection.
+     */
+    public function getFilters()
+    {
+        if (null === $this->filterCollection) {
+            $this->filterCollection = new FilterCollection($this);
+        }
+
+        return $this->filterCollection;
+    }
+
+    /**
+     * Checks whether the state of the filter collection is clean.
+     *
+     * @return boolean True, if the filter collection is clean.
+     */
+    public function isFiltersStateClean()
+    {
+        return null === $this->filterCollection
+           || $this->filterCollection->isClean();
+    }
+
+    /**
+     * Checks whether the Entity Manager has filters.
+     *
+     * @return True, if the EM has a filter collection.
+     */
+    public function hasFilters()
+    {
+        return null !== $this->filterCollection;
     }
 }

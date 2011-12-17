@@ -72,6 +72,7 @@ use PDO,
  * @author Roman Borschel <roman@code-factory.org>
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @author Alexander <iam.asm89@gmail.com>
  * @since 2.0
  */
 class BasicEntityPersister
@@ -900,9 +901,19 @@ class BasicEntityPersister
             $lockSql = ' ' . $this->_platform->getWriteLockSql();
         }
 
+        $alias = $this->_getSQLTableAlias($this->_class->name);
+
+        if ('' !== $filterSql = $this->generateFilterConditionSQL($this->_class, $alias)) {
+            if ($conditionSql) {
+                $conditionSql .= ' AND ';
+            }
+
+            $conditionSql .= $filterSql;
+        }
+
         return $this->_platform->modifyLimitQuery('SELECT ' . $this->_getSelectColumnListSQL()
              . $this->_platform->appendLockHint(' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' '
-             . $this->_getSQLTableAlias($this->_class->name), $lockMode)
+             . $alias, $lockMode)
              . $this->_selectJoinSql . $joinSql
              . ($conditionSql ? ' WHERE ' . $conditionSql : '')
              . $orderBySql, $limit, $offset)
@@ -1018,9 +1029,15 @@ class BasicEntityPersister
                         if ( ! $first) {
                             $this->_selectJoinSql .= ' AND ';
                         }
+                        $tableAlias = $this->_getSQLTableAlias($assoc['targetEntity'], $assocAlias);
                         $this->_selectJoinSql .= $this->_getSQLTableAlias($assoc['sourceEntity']) . '.' . $sourceCol . ' = '
-                                               . $this->_getSQLTableAlias($assoc['targetEntity'], $assocAlias) . '.' . $targetCol;
+                                               . $tableAlias . '.' . $targetCol;
                         $first = false;
+                    }
+
+                    // Add filter SQL
+                    if ('' !== $filterSql = $this->generateFilterConditionSQL($eagerEntity, $tableAlias)) {
+                        $this->_selectJoinSql .= ' AND ' . $filterSql;
                     }
                 } else {
                     $eagerEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
@@ -1267,10 +1284,10 @@ class BasicEntityPersister
      *
      * @return string
      */
-    protected function getLockTablesSql()
+    protected function getLockTablesSql($alias = null)
     {
         return 'FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' '
-             . $this->_getSQLTableAlias($this->_class->name);
+             . (null !== $alias ? $alias : $this->_getSQLTableAlias($this->_class->name));
     }
 
     /**
@@ -1521,9 +1538,15 @@ class BasicEntityPersister
             $criteria = array_merge($criteria, $extraConditions);
         }
 
+        $alias = $this->_getSQLTableAlias($this->_class->name);
+
         $sql = 'SELECT 1 '
-             . $this->getLockTablesSql()
+             . $this->getLockTablesSql($alias)
              . ' WHERE ' . $this->_getSelectConditionSQL($criteria);
+
+        if ('' !== $filterSql = $this->generateFilterConditionSQL($this->_class, $alias)) {
+            $sql .= ' AND ' . $filterSql;
+        }
 
         list($params, $types) = $this->expandParameters($criteria);
 
@@ -1539,8 +1562,8 @@ class BasicEntityPersister
     protected function getJoinSQLForJoinColumns($joinColumns)
     {
         // if one of the join columns is nullable, return left join
-        foreach($joinColumns as $joinColumn) {
-             if(isset($joinColumn['nullable']) && $joinColumn['nullable']){
+        foreach ($joinColumns as $joinColumn) {
+             if (isset($joinColumn['nullable']) && $joinColumn['nullable']) {
                  return 'LEFT JOIN';
              }
         }
@@ -1561,5 +1584,26 @@ class BasicEntityPersister
         return $this->_platform->getSQLResultCasing(
             substr($columnName . $this->_sqlAliasCounter++, -$this->_platform->getMaxIdentifierLength())
         );
+    }
+
+    /**
+     * Generates the filter SQL for a given entity and table alias.
+     *
+     * @param ClassMetadata $targetEntity Metadata of the target entity.
+     * @param string $targetTableAlias The table alias of the joined/selected table.
+     *
+     * @return string The SQL query part to add to a query.
+     */
+    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    {
+        $filterClauses = array();
+
+        foreach ($this->_em->getFilters()->getEnabledFilters() as $filter) {
+            if ('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+                $filterClauses[] = '(' . $filterExpr . ')';
+            }
+        }
+
+        return implode(' AND ', $filterClauses);
     }
 }

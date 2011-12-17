@@ -31,6 +31,7 @@ use Doctrine\ORM\ORMException,
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @author Alexander <iam.asm89@gmail.com>
  * @since 2.0
  * @see http://martinfowler.com/eaaCatalog/classTableInheritance.html
  */
@@ -327,6 +328,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 if ($first) $first = false; else $joinSql .= ' AND ';
 
                 $joinSql .= $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
+
+                if ($parentClass->name === $this->_class->rootEntityName) {
+                    // Add filters on the root class
+                    if ('' !== $filterSql = $this->generateFilterConditionSQL($parentClass, $tableAlias)) {
+                        $joinSql .= ' AND ' . $filterSql;
+                    }
+                }
             }
         }
 
@@ -374,6 +382,17 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         $conditionSql = $this->_getSelectConditionSQL($criteria, $assoc);
 
+        // If the current class in the root entity, add the filters
+        if ($this->_class->name === $this->_class->rootEntityName) {
+            if ('' !== $filterSql = $this->generateFilterConditionSQL($this->_class, $baseTableAlias)) {
+                if ($conditionSql) {
+                    $conditionSql .= ' AND ';
+                }
+
+                $conditionSql .= $filterSql;
+            }
+        }
+
         $orderBy = ($assoc !== null && isset($assoc['orderBy'])) ? $assoc['orderBy'] : $orderBy;
         $orderBySql = $orderBy ? $this->_getOrderBySQL($orderBy, $baseTableAlias) : '';
 
@@ -401,10 +420,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      *
      * @return string
      */
-    public function getLockTablesSql()
+    public function getLockTablesSql($alias = null)
     {
         $idColumns = $this->_class->getIdentifierColumnNames();
-        $baseTableAlias = $this->_getSQLTableAlias($this->_class->name);
+        $baseTableAlias = null !== $alias ? $alias : $this->_getSQLTableAlias($this->_class->name);
 
         // INNER JOIN parent tables
         $joinSql = '';
@@ -473,4 +492,5 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $value = $this->fetchVersionValue($this->_getVersionedClassMetadata(), $id);
         $this->_class->setFieldValue($entity, $this->_class->versionField, $value);
     }
+
 }

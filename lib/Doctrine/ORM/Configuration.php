@@ -495,7 +495,33 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
         return $this->_attributes['classMetadataFactoryName'];
     }
-    
+
+    /**
+     * Add a filter to the list of possible filters.
+     *
+     * @param string $name The name of the filter.
+     * @param string $className The class name of the filter.
+     */
+    public function addFilter($name, $className)
+    {
+        $this->_attributes['filters'][strtolower($name)] = $className;
+    }
+
+    /**
+     * Gets the class name for a given filter name.
+     *
+     * @param string $name The name of the filter.
+     *
+     * @return string The class name of the filter, or null of it is not
+     *  defined.
+     */
+    public function getFilterClassName($name)
+    {
+        $name = strtolower($name);
+        return isset($this->_attributes['filters'][$name]) ?
+                $this->_attributes['filters'][$name] : null;
+    }
+
     /**
      * Set default repository class.
      * 
