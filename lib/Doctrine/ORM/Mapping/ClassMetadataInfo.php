@@ -1850,21 +1850,6 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Refine an association targetEntity class pointer to be consumed through loadMetadata event.
-     *
-     * @param string $assoc
-     * @param string $class
-     */
-    public function setAssociationTargetClass($assocName, $class)
-    {
-        if ( ! isset($this->associationMappings[$assocName])) {
-            throw new \InvalidArgumentException("Association name expected, '" . $assocName ."' is not an association.");
-        }
-
-        $this->associationMappings[$assocName]['targetEntity'] = $class;
-    }
-
-    /**
      * Sets whether this class is to be versioned for optimistic locking.
      *
      * @param boolean $bool
