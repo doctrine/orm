@@ -319,6 +319,11 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
             $class->setParentClasses($visited);
 
+            // Calculate Discriminator Map if needed and if no discriminator map is set
+            if ($class->isInheritanceTypeJoined() && empty($class->discriminatorMap)) {
+                $this->addDefaultDiscriminatorMap($class);
+            }
+
             if ($this->evm->hasListeners(Events::loadClassMetadata)) {
                 $eventArgs = new \Doctrine\ORM\Event\LoadClassMetadataEventArgs($class, $this->em);
                 $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
@@ -386,6 +391,40 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     protected function newClassMetadataInstance($className)
     {
         return new ClassMetadata($className);
+    }
+
+    /**
+     * Adds a default discriminator map if no one is given
+     *
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     */
+    private function addDefaultDiscriminatorMap(ClassMetadata $class)
+    {
+        $allClasses = $this->driver->getAllClassNames();
+        $subClassesMetadata = array();
+        $map = array();
+        $fqcn = $class->getName();
+
+        foreach ($allClasses as $c) {
+            if ($c === $fqcn || is_subclass_of($c, $fqcn)) {
+                $subClassMetadata = $this->newClassMetadataInstance($c);
+                $this->driver->loadMetadataForClass($c, $subClassMetadata);
+
+                if (!$subClassMetadata->isMappedSuperclass) {
+                    $refl = new \ReflectionClass($c);
+                    $subClassFqcn = $refl->getName();
+                    $map[str_replace('\\', '.', $subClassFqcn)] = $subClassFqcn;
+                    $subClassesMetadata[] = $subClassMetadata;
+                }
+            }
+        }
+
+        $class->setDiscriminatorMap($map);
+
+        // Now we set the discriminator map for the subclasses
+        foreach ($subClassesMetadata as $sc) {
+            $sc->setDiscriminatorMap($map);
+        }
     }
 
     /**

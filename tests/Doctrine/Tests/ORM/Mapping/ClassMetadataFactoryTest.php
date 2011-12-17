@@ -127,6 +127,29 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($em->getMetadataFactory()->isTransient('CMS:CmsUser'));
         $this->assertFalse($em->getMetadataFactory()->isTransient('CMS:CmsArticle'));
     }
+    
+    public function testAddDefaultDiscriminatorMap()
+    {
+        $cmf = new ClassMetadataFactory();
+        $driver = $this->createAnnotationDriver(array(__DIR__ . '/../../Models/JoinedInheritanceType/'));
+        $em = $this->_createEntityManager($driver);
+        $cmf->setEntityManager($em);
+
+        $metadata = $cmf->getMetadataFor('Doctrine\Tests\Models\JoinedInheritanceType\RootClass');
+        $discriminatorMap = $metadata->discriminatorMap;
+
+        $rootClass = 'Doctrine\Tests\Models\JoinedInheritanceType\RootClass';
+        $childClass = 'Doctrine\Tests\Models\JoinedInheritanceType\ChildClass';
+        $anotherChildClass = 'Doctrine\Tests\Models\JoinedInheritanceType\AnotherChildClass';
+
+        $rootClassKey = array_search($rootClass, $discriminatorMap);
+        $childClassKey = array_search($childClass, $discriminatorMap);
+        $anotherChildClassKey = array_search($anotherChildClass, $discriminatorMap);
+
+        $this->assertEquals(str_replace('\\', '.', $rootClass), $rootClassKey);
+        $this->assertEquals(str_replace('\\', '.', $childClassKey), $childClassKey);
+        $this->assertEquals(str_replace('\\', '.', $anotherChildClassKey), $anotherChildClassKey);
+    }
 
     protected function _createEntityManager($metadataDriver)
     {
