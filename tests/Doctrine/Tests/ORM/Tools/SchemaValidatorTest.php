@@ -141,13 +141,11 @@ class InvalidEntity2
 {
     /**
      * @Id @Column
-     * @GeneratedValue(strategy="AUTO")
      */
     protected $key3;
 
     /**
      * @Id @Column
-     * @GeneratedValue(strategy="AUTO")
      */
     protected $key4;
 

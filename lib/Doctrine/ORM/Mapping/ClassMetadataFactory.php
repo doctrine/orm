@@ -371,6 +371,10 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierachy
             throw MappingException::noInheritanceOnMappedSuperClass($class->name);
         }
+
+        if ($class->usesIdGenerator() && $class->isIdentifierComposite) {
+            throw MappingException::compositeKeyAssignedIdGeneratorRequired($class->name);
+        }
     }
 
     /**

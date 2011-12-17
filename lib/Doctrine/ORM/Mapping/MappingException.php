@@ -314,4 +314,9 @@ class MappingException extends \Doctrine\ORM\ORMException
     {
         return new self("Entity '" . $className . "' has a mapping with invalid fetch mode '" . $annotation . "'");
     }
+
+    public static function compositeKeyAssignedIdGeneratorRequired($className)
+    {
+        return new self("Entity '". $className . "' has a composite identifier but uses an ID generator other than manually assigning (Identity, Sequence). This is not supported.");
+    }
 }
