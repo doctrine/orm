@@ -594,7 +594,8 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $conf = $this->_em->getConfiguration();
         $conf->addFilter("completed_contract", "\Doctrine\Tests\ORM\Functional\CompletedContractFilter");
         $this->_em->getFilters()
-            ->enable("completed_contract");
+            ->enable("completed_contract")
+            ->setParameter("completed", true, \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::BOOLEAN)->getBindingType());
 
         $this->assertEquals(1, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexUltraContract')->findAll()));
         $this->assertEquals(1, count($this->_em->createQuery("SELECT cfc FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract cfc")->getResult()));
@@ -610,7 +611,8 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $conf = $this->_em->getConfiguration();
         $conf->addFilter("completed_contract", "\Doctrine\Tests\ORM\Functional\CompletedContractFilter");
         $this->_em->getFilters()
-            ->enable("completed_contract");
+            ->enable("completed_contract")
+            ->setParameter("completed", true, \Doctrine\DBAL\Types\Type::getType(\Doctrine\DBAL\Types\Type::BOOLEAN)->getBindingType());
 
         $this->assertEquals(2, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexContract')->findAll()));
         $this->assertEquals(2, count($this->_em->createQuery("SELECT cfc FROM Doctrine\Tests\Models\Company\CompanyFlexContract cfc")->getResult()));
@@ -715,6 +717,6 @@ class CompletedContractFilter extends SQLFilter
             return "";
         }
 
-        return $targetTableAlias.'.completed = 1';
+        return $targetTableAlias.'.completed = ' . $this->getParameter('completed');
     }
 }
