@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -29,6 +27,7 @@ use Doctrine\ORM\PersistentCollection,
  *
  * @author  Roman Borschel <roman@code-factory.org>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Alexander <iam.asm89@gmail.com>
  * @since   2.0
  */
 class OneToManyPersister extends AbstractCollectionPersister
@@ -120,10 +119,16 @@ class OneToManyPersister extends AbstractCollectionPersister
                 : $id[$sourceClass->fieldNames[$joinColumn['referencedColumnName']]];
         }
 
+        foreach ($this->_em->getFilters()->getEnabledFilters() as $filter) {
+            if ($filterExpr = $filter->addFilterConstraint($targetClass, 't')) {
+                $whereClauses[] = '(' . $filterExpr . ')';
+            }
+        }
+
         $sql = 'SELECT count(*)'
-             . ' FROM ' . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) 
+             . ' FROM ' . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) . ' t'
              . ' WHERE ' . implode(' AND ', $whereClauses);
-        
+
         return $this->_conn->fetchColumn($sql, $params);
     }
 
