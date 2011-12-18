@@ -53,6 +53,8 @@ class Parser
         'mod'       => 'Doctrine\ORM\Query\AST\Functions\ModFunction',
         'size'      => 'Doctrine\ORM\Query\AST\Functions\SizeFunction',
         'date_diff' => 'Doctrine\ORM\Query\AST\Functions\DateDiffFunction',
+        'bit_and'   => 'Doctrine\ORM\Query\AST\Functions\BitAndFunction',
+        'bit_or'    => 'Doctrine\ORM\Query\AST\Functions\BitOrFunction',
     );
 
     /** READ-ONLY: Maps BUILT-IN datetime function names to AST class names. */
