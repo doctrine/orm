@@ -1563,7 +1563,7 @@ class BasicEntityPersister
     {
         // if one of the join columns is nullable, return left join
         foreach ($joinColumns as $joinColumn) {
-             if (isset($joinColumn['nullable']) && $joinColumn['nullable']) {
+             if (!isset($joinColumn['nullable']) || $joinColumn['nullable']) {
                  return 'LEFT JOIN';
              }
         }
