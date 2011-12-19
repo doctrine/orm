@@ -249,7 +249,9 @@ abstract class AbstractHydrator
                         $nonemptyComponents[$dqlAlias] = true;
                     }
                 }
-
+                if ( ! isset($nonemptyComponents[$dqlAlias]) && $value !== null) {
+                    $nonemptyComponents[$dqlAlias] = true;
+                }
                 continue;
             }
 
