@@ -13,9 +13,9 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 require_once __DIR__ . '/../../../TestInit.php';
 
 /**
- * @group DDC-1040
+ * @group DDC-1545
  */
-class ATest extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     private $articleId;
 
