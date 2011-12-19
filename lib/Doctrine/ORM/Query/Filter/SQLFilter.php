@@ -19,8 +19,9 @@
 
 namespace Doctrine\ORM\Query\Filter;
 
-use Doctrine\ORM\Mapping\ClassMetaData;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManager,
+    Doctrine\ORM\Mapping\ClassMetaData,
+    Doctrine\ORM\Query\ParameterTypeInferer;
 
 /**
  * The base class that user defined filters should extend.
@@ -60,12 +61,18 @@ abstract class SQLFilter
      *
      * @param string $name Name of the parameter.
      * @param string $value Value of the parameter.
-     * @param string $type Type of the parameter.
+     * @param string $type The parameter type. If specified, the given value will be run through
+     *                     the type conversion of this type. This is usually not needed for
+     *                     strings and numeric types.
      *
      * @return SQLFilter The current SQL filter.
      */
-    final public function setParameter($name, $value, $type)
+    final public function setParameter($name, $value, $type = null)
     {
+        if (null === $type) {
+            $type = ParameterTypeInferer::inferType($value);
+        }
+
         $this->parameters[$name] = array('value' => $value, 'type' => $type);
 
         // Keep the parameters sorted for the hash
