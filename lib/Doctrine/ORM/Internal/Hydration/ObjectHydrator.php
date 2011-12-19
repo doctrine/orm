@@ -443,6 +443,8 @@ class ObjectHydrator extends AbstractHydrator
                             }
                             // Update result pointer
                             $this->_resultPointers[$dqlAlias] = $element;
+                        } else {
+                            $this->_uow->setOriginalEntityProperty($oid, $relationField, null);
                         }
                         // else leave $reflFieldValue null for single-valued associations
                     } else {
