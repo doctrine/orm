@@ -401,29 +401,42 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     private function addDefaultDiscriminatorMap(ClassMetadata $class)
     {
         $allClasses = $this->driver->getAllClassNames();
-        $subClassesMetadata = array();
+        $loadedSubClassesMetadata = array();
         $map = array();
         $fqcn = $class->getName();
 
         foreach ($allClasses as $c) {
             if ($c === $fqcn || is_subclass_of($c, $fqcn)) {
-                $subClassMetadata = $this->newClassMetadataInstance($c);
-                $this->driver->loadMetadataForClass($c, $subClassMetadata);
+                if (isset($this->loadedMetadata[$c])) {
+                    $subClassMetadata = $this->loadedMetadata[$c];
+
+                    if (!$subClassMetadata->isMappedSuperclass) {
+                        $loadedSubClassesMetadata[] = $subClassMetadata;
+                    }
+                } else {
+                    $subClassMetadata = $this->newClassMetadataInstance($c);
+                    $this->driver->loadMetadataForClass($c, $subClassMetadata);
+                }
 
                 if (!$subClassMetadata->isMappedSuperclass) {
-                    $refl = new \ReflectionClass($c);
-                    $subClassFqcn = $refl->getName();
-                    $map[str_replace('\\', '.', $subClassFqcn)] = $subClassFqcn;
-                    $subClassesMetadata[] = $subClassMetadata;
+                    $map[str_replace('\\', '.', $subClassMetadata->getName())] = $subClassMetadata->getName();
                 }
             }
         }
 
         $class->setDiscriminatorMap($map);
 
-        // Now we set the discriminator map for the subclasses
-        foreach ($subClassesMetadata as $sc) {
+        // Now we set the discriminator map for the subclasses already loaded
+        foreach ($loadedSubClassesMetadata as $sc) {
             $sc->setDiscriminatorMap($map);
+
+            // We need to overwrite the cached version of the metadata, because
+            // it was cached without the discriminator map
+            if ($this->cacheDriver) {
+                $this->cacheDriver->save(
+                    $sc->getName()."\$CLASSMETADATA", $sc, null
+                );
+            }
         }
     }
 
