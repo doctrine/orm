@@ -705,6 +705,7 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($unwrappedValue as $key => $entry) {
             $state = $this->getEntityState($entry, self::STATE_NEW);
+            $oid   = spl_object_hash($entry);
 
             switch ($state) {
                 case self::STATE_NEW:
@@ -2292,14 +2293,13 @@ class UnitOfWork implements PropertyChangedListener
             $id = array($class->identifier[0] => $idHash);
         }
 
-        $overrideLocalValues = true;
-
         if (isset($this->identityMap[$class->rootEntityName][$idHash])) {
             $entity = $this->identityMap[$class->rootEntityName][$idHash];
             $oid = spl_object_hash($entity);
 
             if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
                 $entity->__isInitialized__ = true;
+                $overrideLocalValues = true;
 
                 if ($entity instanceof NotifyPropertyChanged) {
                     $entity->addPropertyChangedListener($this);
@@ -2308,7 +2308,7 @@ class UnitOfWork implements PropertyChangedListener
                 $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
 
                 // If only a specific entity is set to refresh, check that it's the one
-                if (isset($hints[Query::HINT_REFRESH_ENTITY])) {
+                if(isset($hints[Query::HINT_REFRESH_ENTITY])) {
                     $overrideLocalValues = $hints[Query::HINT_REFRESH_ENTITY] === $entity;
 
                     // inject ObjectManager into just loaded proxies.
@@ -2333,6 +2333,8 @@ class UnitOfWork implements PropertyChangedListener
             if ($entity instanceof NotifyPropertyChanged) {
                 $entity->addPropertyChangedListener($this);
             }
+
+            $overrideLocalValues = true;
         }
 
         if ( ! $overrideLocalValues) {
@@ -2360,10 +2362,6 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($class->associationMappings as $field => $assoc) {
             // Check if the association is not among the fetch-joined associations already.
             if (isset($hints['fetchAlias']) && isset($hints['fetched'][$hints['fetchAlias']][$field])) {
-                // DDC-1545: Fetched associations must have original entity data set.
-                // Define NULL value right now, since next iteration may fill it with actual value.
-                $this->originalEntityData[$oid][$field] = null;
-
                 continue;
             }
 
@@ -2384,15 +2382,12 @@ class UnitOfWork implements PropertyChangedListener
                     foreach ($assoc['targetToSourceKeyColumns'] as $targetColumn => $srcColumn) {
                         $joinColumnValue = isset($data[$srcColumn]) ? $data[$srcColumn] : null;
 
-                        // Skip is join column value is null
-                        if ($joinColumnValue === null) {
-                            continue;
-                        }
-
-                        if ($targetClass->containsForeignIdentifier) {
-                            $associatedId[$targetClass->getFieldForColumn($targetColumn)] = $joinColumnValue;
-                        } else {
-                            $associatedId[$targetClass->fieldNames[$targetColumn]] = $joinColumnValue;
+                        if ($joinColumnValue !== null) {
+                            if ($targetClass->containsForeignIdentifier) {
+                                $associatedId[$targetClass->getFieldForColumn($targetColumn)] = $joinColumnValue;
+                            } else {
+                                $associatedId[$targetClass->fieldNames[$targetColumn]] = $joinColumnValue;
+                            }
                         }
                     }
 
