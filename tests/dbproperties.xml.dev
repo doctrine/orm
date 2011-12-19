@@ -8,8 +8,8 @@
         2) Edit the file and fill in your settings (database name, type, username, etc.)
            Just change the "value"s, not the names of the var elements.
         3) To run the tests against the database type the following from within the
-           tests/ folder: phpunit --configuration <filename> ...
-           Example: phpunit --configuration mysqlconf.xml AllTests
+           tests/ folder: phpunit configuration <filename> ...
+           Example: phpunit configuration mysqlconf.xml AllTests
 -->
 <phpunit>
   <php>
@@ -29,5 +29,7 @@
     <var name="tmpdb_password" value="" />
     <var name="tmpdb_name" value="doctrine_tests_tmp" />
     <var name="tmpdb_port" value="3306"/>
-  </php>
+</php>
+<testsuites>
+    <testsuite name="Doctrine"><directory>Doctrine/Tests/ORM</directory></testsuite></testsuites>
 </phpunit>

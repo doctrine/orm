@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Use this configuration file as a template to run the tests against any dbms.
+    Procedure:
+        1) Save a copy of this file with a name of your chosing. It doesn't matter
+           where you place it as long as you know where it is.
+           i.e. "mysqlconf.xml" (It needs the ending .xml).
+        2) Edit the file and fill in your settings (database name, type, username, etc.)
+           Just change the "value"s, not the names of the var elements.
+        3) To run the tests against the database type the following from within the
+           tests/ folder: phpunit configuration <filename> ...
+           Example: phpunit configuration mysqlconf.xml AllTests
+-->
+<phpunit bootstrap="tests/Doctrine/Tests/TestInit.php">
+    <php>
+        <!-- "Real" test database -->
+        <!--<var name="db_type" value="pdo_mysql"/>
+        <var name="db_host" value="localhost" />
+        <var name="db_username" value="root" />
+        <var name="db_password" value="" />
+        <var name="db_name" value="doctrine_tests" />
+        <var name="db_port" value="3306"/>
+        <var name="tmpdb_type" value="pdo_mysql"/>
+        <var name="tmpdb_host" value="localhost" />
+        <var name="tmpdb_username" value="root" />
+        <var name="tmpdb_password" value="" />
+        <var name="tmpdb_name" value="doctrine_tests_tmp" />
+        <var name="tmpdb_port" value="3306"/>-->
+    </php>
+    <testsuites>
+        <testsuite name="Doctrine"><directory>tests/Doctrine/Tests/ORM</directory></testsuite>
+    </testsuites>
+</phpunit>

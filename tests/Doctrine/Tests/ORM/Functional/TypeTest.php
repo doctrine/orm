@@ -8,7 +8,6 @@ use Doctrine\Tests\Models\Generic\DecimalModel;
 use Doctrine\Tests\Models\Generic\SerializationModel;
 
 use Doctrine\ORM\Mapping\AssociationMapping;
-use Doctrine\DBAL\Types\Type;
 
 require_once __DIR__ . '/../../TestInit.php';
 

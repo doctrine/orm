@@ -8,6 +8,9 @@ error_reporting(E_ALL | E_STRICT);
 
 require_once __DIR__ . '/../../../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
 
+$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Tests', __DIR__.'/../../');
+$classLoader->register();
+
 if (isset($GLOBALS['DOCTRINE_COMMON_PATH'])) {
     $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Common', $GLOBALS['DOCTRINE_COMMON_PATH']);
 } else {
