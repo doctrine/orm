@@ -812,7 +812,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testOneToOneOrphanRemoval()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $user = new CmsUser();
         $user->username = "beberlei";
         $user->name = "Benjamin E.";
@@ -858,7 +857,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->flush();
         $this->assertEquals(1, $this->_em->getConnection()->fetchColumn("select count(*) from cms_addresses"));
-        $this->assertEquals(0, $this->_em->getConnection()->fetchColumn("select count(*) from cms_addresses where id=".$addressId.""));
     }
 
     public function testGetPartialReferenceToUpdateObjectWithoutLoadingIt()
