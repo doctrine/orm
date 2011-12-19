@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * Performs strict validation of the mapping schema
@@ -86,6 +87,12 @@ class SchemaValidator
     {
         $ce = array();
         $cmf = $this->em->getMetadataFactory();
+
+        foreach ($class->fieldMappings as $fieldName => $mapping) {
+            if (!Type::hasType($mapping['type'])) {
+                $ce[] = "The field '" . $class->name . "#" . $fieldName."' uses a non-existant type '" . $mapping['type'] . "'.";
+            }
+        }
 
         foreach ($class->associationMappings AS $fieldName => $assoc) {
             if (!$cmf->hasMetadataFor($assoc['targetEntity'])) {
