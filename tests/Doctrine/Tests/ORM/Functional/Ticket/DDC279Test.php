@@ -44,14 +44,14 @@ class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
             'SELECT x, y, z FROM Doctrine\Tests\ORM\Functional\Ticket\DDC279EntityX x '.
             'INNER JOIN x.y y INNER JOIN y.z z WHERE x.id = ?1'
         )->setParameter(1, $x->id);
-        
+
         $result = $query->getResult();
-        
+
         $expected1 = 'Y';
         $expected2 = 'Z';
 
         $this->assertEquals(1, count($result));
-        
+
         $this->assertEquals($expected1, $result[0]->y->data);
         $this->assertEquals($expected2, $result[0]->y->z->data);
     }

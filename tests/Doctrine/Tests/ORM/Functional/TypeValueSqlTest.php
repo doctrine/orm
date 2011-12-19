@@ -36,9 +36,9 @@ class TypeValueSqlTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->persist($entity);
         $this->_em->flush();
-        
+
         $id = $entity->id;
-        
+
         $this->_em->clear();
 
         $entity = $this->_em->find('\Doctrine\Tests\Models\CustomType\CustomTypeUpperCase', $id);

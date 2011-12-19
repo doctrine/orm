@@ -37,7 +37,7 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $a->id = $aId;
 
         $this->assertInstanceOf('Doctrine\Common\Collections\ArrayCollection', $a->related);
-        
+
         $a = $this->_em->merge($a);
 
         $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $a->related);
@@ -68,7 +68,7 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $a = new DDC729A();
         $a->id = $aId;
-        
+
         $a = $this->_em->merge($a);
 
         $a->related->set(0, $this->_em->merge($b1));

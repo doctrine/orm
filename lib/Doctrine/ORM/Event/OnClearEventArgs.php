@@ -42,7 +42,7 @@ class OnClearEventArgs extends \Doctrine\Common\EventArgs
 
     /**
      * Constructor.
-     * 
+     *
      * @param \Doctrine\ORM\EntityManager $em
      * @param string $entityClass Optional entity class
      */
@@ -54,7 +54,7 @@ class OnClearEventArgs extends \Doctrine\Common\EventArgs
 
     /**
      * Retrieve associated EntityManager.
-     * 
+     *
      * @return \Doctrine\ORM\EntityManager
      */
     public function getEntityManager()

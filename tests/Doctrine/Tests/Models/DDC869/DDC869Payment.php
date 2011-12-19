@@ -27,16 +27,16 @@ class DDC869Payment
 {
 
     /**
-     * @Id 
-     * @Column(type="integer") 
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     protected $id;
 
     /** @column(type="float") */
     protected $value;
-    
-    
+
+
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
     {
         $metadata->mapField(array(

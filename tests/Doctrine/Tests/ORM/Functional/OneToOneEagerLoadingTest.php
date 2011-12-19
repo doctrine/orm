@@ -30,7 +30,7 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $train = new Train(new TrainOwner("Alexander"));
         $driver = new TrainDriver("Benjamin");
         $waggon = new Waggon();
-        
+
         $train->setDriver($driver);
         $train->addWaggon($waggon);
 

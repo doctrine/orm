@@ -8,8 +8,8 @@ namespace Doctrine\Tests\Models\Company;
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({
- *     "fix"       = "CompanyFixContract", 
- *     "flexible"  = "CompanyFlexContract", 
+ *     "fix"       = "CompanyFixContract",
+ *     "flexible"  = "CompanyFlexContract",
  *     "flexultra" = "CompanyFlexUltraContract"
  * })
  */

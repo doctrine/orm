@@ -30,7 +30,7 @@ use Doctrine\DBAL\Connection,
  * @author      Roman Borschel <roman@code-factory.org>
  * @link        www.doctrine-project.org
  * @since       2.0
- * @todo This is exactly the same as SingleSelectExecutor. Unify in SingleStatementExecutor. 
+ * @todo This is exactly the same as SingleSelectExecutor. Unify in SingleStatementExecutor.
  */
 class SingleTableDeleteUpdateExecutor extends AbstractSqlExecutor
 {

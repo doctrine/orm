@@ -181,7 +181,7 @@ class YamlDriver extends AbstractFileDriver
                 if (isset($idElement['length'])) {
                     $mapping['length'] = $idElement['length'];
                 }
-                
+
                 if (isset($idElement['columnDefinition'])) {
                     $mapping['columnDefinition'] = $idElement['columnDefinition'];
                 }

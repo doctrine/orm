@@ -616,7 +616,7 @@ abstract class AbstractQuery
         $this->_queryCacheProfile = $this->_queryCacheProfile
             ? $this->_queryCacheProfile->setCacheKey($id)
             : new QueryCacheProfile(0, $id);
-        
+
         return $this;
     }
 

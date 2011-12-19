@@ -22,7 +22,7 @@ class DDC258Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIssue()
     {
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        
+
         $c1 = new DDC258Class1();
         $c1->title = "Foo";
         $c1->description = "Foo";
@@ -48,9 +48,9 @@ class DDC258Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Bar', $e2->title);
         $this->assertEquals('Bar', $e2->description);
         $this->assertEquals('Bar', $e2->text);
-        
+
         $all = $this->_em->getRepository(__NAMESPACE__.'\DDC258Super')->findAll();
-        
+
         foreach ($all as $obj) {
             if ($obj instanceof DDC258Class1) {
                 $this->assertEquals('Foo', $obj->title);

@@ -10,7 +10,7 @@ require_once __DIR__ . '/../../TestInit.php';
 
 /**
  * Tests a self referential one-to-one association mapping (without inheritance).
- * Relation is defined as the mentor that a customer choose. The mentor could 
+ * Relation is defined as the mentor that a customer choose. The mentor could
  * help only one other customer, while a customer can choose only one mentor
  * for receiving support.
  * Inverse side is not present.
@@ -34,7 +34,7 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         $this->customer->setMentor($this->mentor);
         $this->_em->persist($this->customer);
         $this->_em->flush();
-        
+
         $this->assertForeignKeyIs($this->mentor->getId());
     }
 
@@ -66,24 +66,24 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         $customer = $result[0];
         $this->assertLoadingOfAssociation($customer);
     }
-    
+
     /**
      * @group mine
      * @return unknown_type
      */
     public function testLazyLoadsAssociation()
-    {    
+    {
         $this->_createFixture();
 
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCustomer');
         $metadata->associationMappings['mentor']['fetch'] = ClassMetadata::FETCH_LAZY;
-        
+
         $query = $this->_em->createQuery("select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c where c.name='Luke Skywalker'");
         $result = $query->getResult();
         $customer = $result[0];
         $this->assertLoadingOfAssociation($customer);
     }
-    
+
     public function testMultiSelfReference()
     {
         try {
@@ -93,17 +93,17 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
-        
+
         $entity1 = new MultiSelfReference();
         $this->_em->persist($entity1);
         $entity1->setOther1($entity2 = new MultiSelfReference);
         $entity1->setOther2($entity3 = new MultiSelfReference);
         $this->_em->flush();
-        
+
         $this->_em->clear();
-        
+
         $entity2 = $this->_em->find(get_class($entity1), $entity1->getId());
-        
+
         $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\MultiSelfReference', $entity2->getOther1());
         $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\MultiSelfReference', $entity2->getOther2());
         $this->assertNull($entity2->getOther1()->getOther1());
@@ -130,9 +130,9 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         $mentor = new ECommerceCustomer;
         $mentor->setName('Obi-wan Kenobi');
         $customer->setMentor($mentor);
-        
+
         $this->_em->persist($customer);
-        
+
         $this->_em->flush();
         $this->_em->clear();
 
@@ -156,7 +156,7 @@ class MultiSelfReference {
      * @JoinColumn(name="other2", referencedColumnName="id")
      */
     private $other2;
-    
+
     public function getId() {return $this->id;}
     public function setOther1($other1) {$this->other1 = $other1;}
     public function getOther1() {return $this->other1;}

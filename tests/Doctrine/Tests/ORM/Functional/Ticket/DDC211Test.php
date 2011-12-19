@@ -14,11 +14,11 @@ class DDC211Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC211Group')
         ));
     }
-    
+
     public function testIssue()
     {
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        
+
         $user = new DDC211User;
         $user->setName('John Doe');
 
@@ -41,7 +41,7 @@ class DDC211Test extends \Doctrine\Tests\OrmFunctionalTestCase
         }
 
         $this->assertEquals(4, $user->getGroups()->count());
-        
+
     }
 }
 

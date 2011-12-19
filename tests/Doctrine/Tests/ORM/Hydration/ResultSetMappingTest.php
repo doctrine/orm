@@ -18,7 +18,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
      * @var ResultSetMapping
      */
     private $_rsm;
-    
+
     /**
      * @var \Doctrine\ORM\EntityManager
      */
@@ -63,16 +63,16 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('username', $this->_rsm->getFieldName('username'));
         $this->assertEquals('name', $this->_rsm->getFieldName('name'));
     }
-    
+
     /**
      * @group DDC-1057
-     * 
+     *
      * Fluent interface test, not a real result set mapping
      */
     public function testFluentInterface()
     {
         $rms = $this->_rsm;
-        
+
         $rms->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser','u')
             ->addJoinedEntityResult('Doctrine\Tests\Models\CMS\CmsPhonenumber','p','u','phonenumbers')
             ->addFieldResult('u', 'id', 'id')
@@ -83,8 +83,8 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
             ->addIndexByScalar('sclr0')
             ->addScalarResult('sclr0', 'numPhones')
             ->addMetaResult('a', 'user_id', 'user_id');
-        
-        
+
+
         $this->assertTrue($rms->hasIndexBy('id'));
         $this->assertTrue($rms->isFieldResult('id'));
         $this->assertTrue($rms->isFieldResult('name'));

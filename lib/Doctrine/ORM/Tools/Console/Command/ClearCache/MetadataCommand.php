@@ -51,11 +51,11 @@ class MetadataCommand extends Console\Command\Command
                 'If defined, cache entries will be flushed instead of deleted/invalidated.'
             )
         ));
-        
+
         $fullName = $this->getName();
         $this->setHelp(<<<EOT
 The <info>$fullName</info> command is meant to clear the metadata cache of associated Entity Manager.
-It is possible to invalidate all cache entries at once - called delete -, or flushes the cache provider 
+It is possible to invalidate all cache entries at once - called delete -, or flushes the cache provider
 instance completely.
 
 The execution type differ on how you execute the command.
@@ -66,7 +66,7 @@ If you want to invalidate the entries (and not delete from cache instance), this
 Alternatively, if you want to flush the cache provider using this command:
 
 <info>$fullName --flush</info>
-    
+
 Finally, be aware that if <info>--flush</info> option is passed, not all cache providers are able to flush entries,
 because of a limitation of its execution nature.
 EOT
@@ -84,7 +84,7 @@ EOT
         if ( ! $cacheDriver) {
             throw new \InvalidArgumentException('No Metadata cache driver is configured on given EntityManager.');
         }
-        
+
         if ($cacheDriver instanceof Cache\ApcCache) {
             throw new \LogicException("Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.");
         }
@@ -93,12 +93,12 @@ EOT
 
         $result  = $cacheDriver->deleteAll();
         $message = ($result) ? 'Successfully deleted cache entries.' : 'No cache entries were deleted.';
-        
+
         if (true === $input->getOption('flush')) {
             $result  = $cacheDriver->flushAll();
             $message = ($result) ? 'Successfully flushed cache entries.' : $message;
         }
-        
+
         $output->write($message . PHP_EOL);
     }
 }

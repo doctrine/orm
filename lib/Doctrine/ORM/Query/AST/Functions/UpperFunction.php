@@ -53,9 +53,9 @@ class UpperFunction extends FunctionNode
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
-        
+
         $this->stringPrimary = $parser->StringPrimary();
-        
+
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }

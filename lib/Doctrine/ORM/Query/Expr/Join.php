@@ -36,10 +36,10 @@ class Join
 {
     const INNER_JOIN = 'INNER';
     const LEFT_JOIN  = 'LEFT';
-    
+
     const ON   = 'ON';
     const WITH = 'WITH';
-    
+
     private $_joinType;
     private $_join;
     private $_alias;

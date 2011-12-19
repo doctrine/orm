@@ -6,7 +6,7 @@ use Doctrine\Tests\Models\ECommerce\ECommerceCart,
     Doctrine\Tests\Models\ECommerce\ECommerceFeature,
     Doctrine\Tests\Models\ECommerce\ECommerceCustomer,
     Doctrine\Tests\Models\ECommerce\ECommerceProduct;
-    
+
 use Doctrine\ORM\Mapping\AssociationMapping;
 
 require_once __DIR__ . '/../../TestInit.php';
@@ -24,7 +24,7 @@ class StandardEntityPersisterTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     public function testAcceptsForeignKeysAsCriteria()
-    {        
+    {
         $customer = new ECommerceCustomer();
         $customer->setName('John Doe');
         $cart = new ECommerceCart();
@@ -35,16 +35,16 @@ class StandardEntityPersisterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
         $cardId = $cart->getId();
         unset($cart);
-        
+
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCart');
-        
+
         $persister = $this->_em->getUnitOfWork()->getEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceCart');
         $newCart = new ECommerceCart();
         $this->_em->getUnitOfWork()->registerManaged($newCart, array('id' => $cardId), array());
         $persister->load(array('customer_id' => $customer->getId()), $newCart, $class->associationMappings['customer']);
         $this->assertEquals('Credit card', $newCart->getPayment());
     }
-    
+
     /**
      * Ticket #2478 from Damon Jones (dljones)
      */
@@ -62,7 +62,7 @@ class StandardEntityPersisterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($p);
 
         $this->_em->flush();
-        
+
         $this->assertEquals(2, count($p->getFeatures()));
         $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $p->getFeatures());
 
@@ -71,12 +71,12 @@ class StandardEntityPersisterTest extends \Doctrine\Tests\OrmFunctionalTestCase
                FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p
                JOIN p.features f'
         );
-        
+
         $res = $q->getResult();
-        
+
         $this->assertEquals(2, count($p->getFeatures()));
         $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $p->getFeatures());
-        
+
         // Check that the features are the same instances still
         foreach ($p->getFeatures() as $feature) {
             if ($feature->getDescription() == 'AC-3') {
@@ -85,25 +85,25 @@ class StandardEntityPersisterTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->assertTrue($feature === $f2);
             }
         }
-        
-        // Now we test how Hydrator affects IdentityMap 
+
+        // Now we test how Hydrator affects IdentityMap
         // (change from ArrayCollection to PersistentCollection)
         $f3 = new ECommerceFeature();
         $f3->setDescription('XVID');
         $p->addFeature($f3);
-        
+
         // Now we persist the Feature #3
         $this->_em->persist($p);
         $this->_em->flush();
-        
+
         $q = $this->_em->createQuery(
             'SELECT p, f
                FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p
                JOIN p.features f'
         );
-        
+
         $res = $q->getResult();
-        
+
         // Persisted Product now must have 3 Feature items
         $this->assertEquals(3, count($res[0]->getFeatures()));
     }

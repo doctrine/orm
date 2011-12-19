@@ -55,13 +55,13 @@ class ModFunction extends FunctionNode
     {
         $parser->match(Lexer::T_MOD);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
-        
+
         $this->firstSimpleArithmeticExpression = $parser->SimpleArithmeticExpression();
-        
+
         $parser->match(Lexer::T_COMMA);
-        
+
         $this->secondSimpleArithmeticExpression = $parser->SimpleArithmeticExpression();
-        
+
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }

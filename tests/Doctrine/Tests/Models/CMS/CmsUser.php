@@ -55,7 +55,7 @@ class CmsUser
      *      )
      */
     public $groups;
-    
+
     public function __construct() {
         $this->phonenumbers = new ArrayCollection;
         $this->articles = new ArrayCollection;
@@ -115,22 +115,22 @@ class CmsUser
         }
         return false;
     }
-    
+
     public function getAddress() { return $this->address; }
-    
+
     public function setAddress(CmsAddress $address) {
         if ($this->address !== $address) {
             $this->address = $address;
             $address->setUser($this);
         }
     }
-    
+
     public function getEmail() { return $this->email; }
-    
+
     public function setEmail(CmsEmail $email = null) {
         if ($this->email !== $email) {
             $this->email = $email;
-            
+
             if ($email) {
                 $email->setUser($this);
             }

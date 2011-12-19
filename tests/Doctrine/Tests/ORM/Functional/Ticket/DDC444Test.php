@@ -61,13 +61,13 @@ class DDC444Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class DDC444User
-{ 
+{
     /**
-     * @Id @Column(name="id", type="integer") 
+     * @Id @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-    
+
     /**
      * @Column(name="name", type="string")
      */

@@ -44,7 +44,7 @@ class IdentificationVariableDeclaration extends Node
         $this->indexBy = $indexBy;
         $this->joinVariableDeclarations = $joinVariableDecls;
     }
-    
+
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkIdentificationVariableDeclaration($this);

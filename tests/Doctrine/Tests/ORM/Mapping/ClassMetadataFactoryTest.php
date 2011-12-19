@@ -82,7 +82,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFalse($h2);
         $this->assertTrue($h1);
     }
-    
+
     /**
      * @group DDC-1512
      */
@@ -98,13 +98,13 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
                ->method('isTransient')
                ->with($this->equalTo('Doctrine\Tests\Models\CMS\CmsArticle'))
                ->will($this->returnValue(false));
-        
+
         $em = $this->_createEntityManager($driver);
-        
+
         $this->assertTrue($em->getMetadataFactory()->isTransient('Doctrine\Tests\Models\CMS\CmsUser'));
         $this->assertFalse($em->getMetadataFactory()->isTransient('Doctrine\Tests\Models\CMS\CmsArticle'));
     }
-    
+
     /**
      * @group DDC-1512
      */
@@ -120,10 +120,10 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
                ->method('isTransient')
                ->with($this->equalTo('Doctrine\Tests\Models\CMS\CmsArticle'))
                ->will($this->returnValue(false));
-        
+
         $em = $this->_createEntityManager($driver);
         $em->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
-        
+
         $this->assertTrue($em->getMetadataFactory()->isTransient('CMS:CmsUser'));
         $this->assertFalse($em->getMetadataFactory()->isTransient('CMS:CmsArticle'));
     }

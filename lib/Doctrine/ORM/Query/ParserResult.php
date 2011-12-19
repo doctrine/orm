@@ -37,14 +37,14 @@ class ParserResult
 {
     /**
      * The SQL executor used for executing the SQL.
-     * 
+     *
      * @var \Doctrine\ORM\Query\Exec\AbstractSqlExecutor
      */
     private $_sqlExecutor;
 
     /**
      * The ResultSetMapping that describes how to map the SQL result set.
-     * 
+     *
      * @var \Doctrine\ORM\Query\ResultSetMapping
      */
     private $_resultSetMapping;
@@ -55,7 +55,7 @@ class ParserResult
      * @var array
      */
     private $_parameterMappings = array();
-	
+
     /**
      * Initializes a new instance of the <tt>ParserResult</tt> class.
      * The new instance is initialized with an empty <tt>ResultSetMapping</tt>.
@@ -67,7 +67,7 @@ class ParserResult
 
     /**
      * Gets the ResultSetMapping for the parsed query.
-     * 
+     *
      * @return ResultSetMapping The result set mapping of the parsed query or NULL
      *                          if the query is not a SELECT query.
      */
@@ -88,7 +88,7 @@ class ParserResult
 
     /**
      * Sets the SQL executor that should be used for this ParserResult.
-     * 
+     *
      * @param \Doctrine\ORM\Query\Exec\AbstractSqlExecutor $executor
      */
     public function setSqlExecutor($executor)
@@ -98,14 +98,14 @@ class ParserResult
 
     /**
      * Gets the SQL executor used by this ParserResult.
-     * 
+     *
      * @return \Doctrine\ORM\Query\Exec\AbstractSqlExecutor
      */
     public function getSqlExecutor()
     {
         return $this->_sqlExecutor;
     }
-    
+
     /**
      * Adds a DQL to SQL parameter mapping. One DQL parameter name/position can map to
      * several SQL parameter positions.
@@ -117,17 +117,17 @@ class ParserResult
     {
         $this->_parameterMappings[$dqlPosition][] = $sqlPosition;
     }
-    
+
     /**
      * Gets all DQL to SQL parameter mappings.
-     * 
+     *
      * @return array The parameter mappings.
      */
     public function getParameterMappings()
     {
         return $this->_parameterMappings;
     }
-    
+
     /**
      * Gets the SQL parameter positions for a DQL parameter name/position.
      *

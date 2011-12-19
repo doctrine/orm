@@ -45,7 +45,7 @@ class DriverChainTest extends \Doctrine\Tests\OrmTestCase
         $classMetadata = new \Doctrine\ORM\Mapping\ClassMetadata($className);
 
         $chain = new DriverChain();
-        
+
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
         $chain->loadMetadataForClass($className, $classMetadata);
     }
@@ -81,7 +81,7 @@ class DriverChainTest extends \Doctrine\Tests\OrmTestCase
      * @group DDC-706
      */
     public function testIsTransient()
-    {        
+    {
         $chain = new DriverChain();
         $chain->addDriver($this->createAnnotationDriver(), 'Doctrine\Tests\Models\CMS');
 
@@ -92,5 +92,5 @@ class DriverChainTest extends \Doctrine\Tests\OrmTestCase
 
 class DriverChainEntity
 {
-    
+
 }

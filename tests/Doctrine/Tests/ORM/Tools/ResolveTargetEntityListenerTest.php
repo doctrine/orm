@@ -79,7 +79,7 @@ class ResolveTargetEntity implements ResolveTargetInterface
     /**
      * @Id
      * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")  
+     * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
@@ -118,7 +118,7 @@ class TargetEntity implements TargetInterface
     /**
      * @Id
      * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")  
+     * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 

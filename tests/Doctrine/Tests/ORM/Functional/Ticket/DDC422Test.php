@@ -20,14 +20,14 @@ class DDC422Test extends \Doctrine\Tests\OrmFunctionalTestCase
      * @group DDC-422
      */
     public function testIssue()
-    {       
+    {
         $customer = new DDC422Customer;
         $this->_em->persist($customer);
         $this->_em->flush();
         $this->_em->clear();
-        
+
         $customer = $this->_em->find(get_class($customer), $customer->id);
-        
+
         $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $customer->contacts);
         $this->assertFalse($customer->contacts->isInitialized());
         $contact = new DDC422Contact;
@@ -35,7 +35,7 @@ class DDC422Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($customer->contacts->isDirty());
         $this->assertFalse($customer->contacts->isInitialized());
         $this->_em->flush();
-        
+
         $this->assertEquals(1, $this->_em->getConnection()->fetchColumn("select count(*) from ddc422_customers_contacts"));
     }
 }

@@ -41,7 +41,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $this->firstCart->addProduct($this->secondProduct);
         $this->_em->persist($this->firstCart);
         $this->_em->flush();
-        
+
         $this->assertForeignKeysContain($this->firstCart->getId(), $this->firstProduct->getId());
         $this->assertForeignKeysContain($this->firstCart->getId(), $this->secondProduct->getId());
     }
@@ -68,14 +68,14 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $firstCart = $result[0];
         $products = $firstCart->getProducts();
         $secondCart = $result[1];
-        
+
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $products[0]);
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $products[1]);
         $this->assertCollectionEquals($products, $secondCart->getProducts());
         //$this->assertEquals("Doctrine 1.x Manual", $products[0]->getName());
         //$this->assertEquals("Doctrine 2.x Manual", $products[1]->getName());
     }
-    
+
     public function testLazyLoadsCollection()
     {
         $this->_createFixture();
@@ -87,7 +87,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $firstCart = $result[0];
         $products = $firstCart->getProducts();
         $secondCart = $result[1];
-        
+
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $products[0]);
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $products[1]);
         $this->assertCollectionEquals($products, $secondCart->getProducts());
@@ -101,7 +101,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $this->secondCart->addProduct($this->secondProduct);
         $this->_em->persist($this->firstCart);
         $this->_em->persist($this->secondCart);
-        
+
         $this->_em->flush();
         $this->_em->clear();
     }

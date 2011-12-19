@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * WhenClause ::= "WHEN" ConditionalExpression "THEN" ScalarExpression 
+ * WhenClause ::= "WHEN" ConditionalExpression "THEN" ScalarExpression
  *
  * @since   2.2
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -39,8 +39,8 @@ class WhenClause extends Node
     {
         $this->caseConditionExpression = $caseConditionExpression;
         $this->thenScalarExpression = $thenScalarExpression;
-    }    
-    
+    }
+
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkWhenClauseExpression($this);

@@ -56,7 +56,7 @@ abstract class AbstractExporter
      * Converts a single ClassMetadata instance to the exported format
      * and returns it
      *
-     * @param ClassMetadataInfo $metadata 
+     * @param ClassMetadataInfo $metadata
      * @return mixed $exported
      */
     abstract public function exportClassMetadata(ClassMetadataInfo $metadata);
@@ -64,7 +64,7 @@ abstract class AbstractExporter
     /**
      * Set the array of ClassMetadataInfo instances to export
      *
-     * @param array $metadata 
+     * @param array $metadata
      * @return void
      */
     public function setMetadata(array $metadata)
@@ -90,7 +90,7 @@ abstract class AbstractExporter
      *     $exporter->setOutputDir(__DIR__ . '/yaml');
      *     $exporter->export();
      *
-     * @param string $dir 
+     * @param string $dir
      * @return void
      */
     public function setOutputDir($dir)
@@ -127,7 +127,7 @@ abstract class AbstractExporter
     /**
      * Generate the path to write the class for the given ClassMetadataInfo instance
      *
-     * @param ClassMetadataInfo $metadata 
+     * @param ClassMetadataInfo $metadata
      * @return string $path
      */
     protected function _generateOutputPath(ClassMetadataInfo $metadata)
@@ -162,11 +162,11 @@ abstract class AbstractExporter
             case ClassMetadataInfo::INHERITANCE_TYPE_JOINED:
                 return 'JOINED';
             break;
-            
+
             case ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_TABLE:
                 return 'SINGLE_TABLE';
             break;
-            
+
             case ClassMetadataInfo::INHERITANCE_TYPE_TABLE_PER_CLASS:
                 return 'PER_CLASS';
             break;
@@ -180,11 +180,11 @@ abstract class AbstractExporter
             case ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT:
                 return 'DEFERRED_IMPLICIT';
             break;
-            
+
             case ClassMetadataInfo::CHANGETRACKING_DEFERRED_EXPLICIT:
                 return 'DEFERRED_EXPLICIT';
             break;
-            
+
             case ClassMetadataInfo::CHANGETRACKING_NOTIFY:
                 return 'NOTIFY';
             break;
@@ -198,15 +198,15 @@ abstract class AbstractExporter
             case ClassMetadataInfo::GENERATOR_TYPE_AUTO:
                 return 'AUTO';
             break;
-            
+
             case ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE:
                 return 'SEQUENCE';
             break;
-            
+
             case ClassMetadataInfo::GENERATOR_TYPE_TABLE:
                 return 'TABLE';
             break;
-            
+
             case ClassMetadataInfo::GENERATOR_TYPE_IDENTITY:
                 return 'IDENTITY';
             break;

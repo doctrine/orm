@@ -29,7 +29,7 @@ class CmsEmail
     public function getId() {
         return $this->id;
     }
-    
+
     public function getEmail() {
         return $this->email;
     }
@@ -37,7 +37,7 @@ class CmsEmail
     public function setEmail($email) {
         $this->email = $email;
     }
-    
+
     public function getUser() {
         return $this->user;
     }

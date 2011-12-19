@@ -39,7 +39,7 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
     {
         return isset($this->_uowMock) ? $this->_uowMock : parent::getUnitOfWork();
     }
-    
+
     /* Mock API */
 
     /**
@@ -61,7 +61,7 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
     {
         return isset($this->_proxyFactoryMock) ? $this->_proxyFactoryMock : parent::getProxyFactory();
     }
-    
+
     /**
      * Mock factory method to create an EntityManager.
      *
@@ -83,8 +83,8 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
         if (is_null($eventManager)) {
             $eventManager = new \Doctrine\Common\EventManager();
         }
-        
-        return new EntityManagerMock($conn, $config, $eventManager);   
+
+        return new EntityManagerMock($conn, $config, $eventManager);
     }
 /*
     public function setIdGenerator($className, $generator)
@@ -99,7 +99,7 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
         if (isset($this->_idGenerators[$className])) {
             return $this->_idGenerators[$className];
         }
-                
+
         return parent::getIdGenerator($className);
     }
  */

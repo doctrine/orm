@@ -20,17 +20,17 @@ abstract class CompanyEvent {
      * @JoinColumn(name="org_id", referencedColumnName="id")
      */
      private $organization;
-     
+
      public function getId() {
          return $this->id;
      }
-     
+
      public function getOrganization() {
          return $this->organization;
      }
-     
+
      public function setOrganization(CompanyOrganization $org) {
          $this->organization = $org;
      }
-     
+
 }

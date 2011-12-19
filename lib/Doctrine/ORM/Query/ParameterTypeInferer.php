@@ -39,9 +39,9 @@ class ParameterTypeInferer
      * Infer type of a given value, returning a compatible constant:
      * - Type (\Doctrine\DBAL\Types\Type::*)
      * - Connection (\Doctrine\DBAL\Connection::PARAM_*)
-     * 
+     *
      * @param mixed $value Parameter value
-     * 
+     *
      * @return mixed Parameter type constant
      */
     public static function inferType($value)

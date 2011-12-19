@@ -28,7 +28,7 @@ class DDC809Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $conn->insert('variant_test', array('variant_id' => 545208));
         $conn->insert('variant_test', array('variant_id' => 545209));
-        
+
         $conn->insert('var_spec_value_test', array('variant_id' => 545208, 'specification_value_id' => 94606));
         $conn->insert('var_spec_value_test', array('variant_id' => 545208, 'specification_value_id' => 94607));
         $conn->insert('var_spec_value_test', array('variant_id' => 545208, 'specification_value_id' => 94609));

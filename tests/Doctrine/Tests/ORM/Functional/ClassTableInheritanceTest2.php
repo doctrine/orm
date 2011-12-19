@@ -24,30 +24,30 @@ class ClassTableInheritanceTest2 extends \Doctrine\Tests\OrmFunctionalTestCase
             // Swallow all exceptions. We do not test the schema tool here.
         }
     }
-    
+
     public function testOneToOneAssocToBaseTypeBidirectional()
     {
         $child = new CTIChild;
         $child->setData('hello');
-        
+
         $related = new CTIRelated;
         $related->setCTIParent($child);
-        
+
         $this->_em->persist($related);
         $this->_em->persist($child);
-        
+
         $this->_em->flush();
         $this->_em->clear();
-        
+
         $relatedId = $related->getId();
-        
+
         $related2 = $this->_em->find('Doctrine\Tests\ORM\Functional\CTIRelated', $relatedId);
-        
+
         $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\CTIRelated', $related2);
         $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\CTIChild', $related2->getCTIParent());
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $related2->getCTIParent());
         $this->assertEquals('hello', $related2->getCTIParent()->getData());
-        
+
         $this->assertSame($related2, $related2->getCTIParent()->getRelated());
     }
 
@@ -85,18 +85,18 @@ class CTIParent {
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+
     /** @OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent") */
     private $related;
-     
+
     public function getId() {
         return $this->id;
     }
-    
+
     public function getRelated() {
         return $this->related;
-    } 
-    
+    }
+
     public function setRelated($related) {
         $this->related = $related;
         $related->setCTIParent($this);
@@ -111,15 +111,15 @@ class CTIChild extends CTIParent {
      * @Column(type="string")
      */
     private $data;
-     
+
     public function getData() {
         return $this->data;
     }
-     
+
     public function setData($data) {
         $this->data = $data;
     }
-     
+
 }
 
 /** @Entity */
@@ -129,21 +129,21 @@ class CTIRelated {
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+
     /**
      * @OneToOne(targetEntity="CTIParent")
      * @JoinColumn(name="ctiparent_id", referencedColumnName="id")
      */
     private $ctiParent;
-    
+
     public function getId() {
         return $this->id;
     }
-    
+
     public function getCTIParent() {
         return $this->ctiParent;
     }
-    
+
     public function setCTIParent($ctiParent) {
         $this->ctiParent = $ctiParent;
     }

@@ -16,50 +16,50 @@ class DDC1080Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1080Bar'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1080FooBar'),
         ));
-        
+
         $foo1 = new DDC1080Foo();
         $foo1->setFooTitle('foo title 1');
         $foo2 = new DDC1080Foo();
         $foo2->setFooTitle('foo title 2');
-        
+
         $bar1 = new DDC1080Bar();
         $bar1->setBarTitle('bar title 1');
         $bar2 = new DDC1080Bar();
         $bar2->setBarTitle('bar title 2');
         $bar3 = new DDC1080Bar();
         $bar3->setBarTitle('bar title 3');
-        
+
         $foobar1 = new DDC1080FooBar();
         $foobar1->setFoo($foo1);
         $foobar1->setBar($bar1);
         $foobar1->setOrderNr(0);
-        
+
         $foobar2 = new DDC1080FooBar();
         $foobar2->setFoo($foo1);
         $foobar2->setBar($bar2);
         $foobar2->setOrderNr(0);
-        
+
         $foobar3 = new DDC1080FooBar();
         $foobar3->setFoo($foo1);
         $foobar3->setBar($bar3);
         $foobar3->setOrderNr(0);
-        
+
         $this->_em->persist($foo1);
         $this->_em->persist($foo2);
         $this->_em->persist($bar1);
         $this->_em->persist($bar2);
         $this->_em->persist($bar3);
         $this->_em->flush();
-        
+
         $this->_em->persist($foobar1);
         $this->_em->persist($foobar2);
         $this->_em->persist($foobar3);
         $this->_em->flush();
         $this->_em->clear();
-        
+
         $foo = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC1080Foo', $foo1->getFooId());
         $fooBars = $foo->getFooBars();
-        
+
         $this->assertEquals(3, count($fooBars), "Should return three foobars.");
     }
 }
@@ -73,7 +73,7 @@ class DDC1080Foo
 {
 
     /**
-     * @Id 
+     * @Id
      * @Column(name="fooID", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
@@ -151,7 +151,7 @@ class DDC1080Bar
 {
 
     /**
-     * @Id 
+     * @Id
      * @Column(name="barID", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */

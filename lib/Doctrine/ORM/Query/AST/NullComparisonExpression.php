@@ -36,7 +36,7 @@ class NullComparisonExpression extends Node
 {
     public $not;
     public $expression;
-    
+
     public function __construct($expression)
     {
         $this->expression = $expression;

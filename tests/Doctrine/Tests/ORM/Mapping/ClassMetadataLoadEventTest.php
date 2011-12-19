@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 
 require_once __DIR__ . '/../../TestInit.php';
- 
+
 class ClassMetadataLoadEventTest extends \Doctrine\Tests\OrmTestCase
 {
     public function testEvent()

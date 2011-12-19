@@ -640,7 +640,7 @@ final class Query extends AbstractQuery
     public function __clone()
     {
         parent::__clone();
-        
+
         $this->_state = self::STATE_DIRTY;
     }
 }
