@@ -199,7 +199,7 @@ Optional attributes:
 
 
 -  **repositoryClass**: Specifies the FQCN of a subclass of the
-   Doctrine. Use of repositories for entities is encouraged to keep
+   EntityRepository. Use of repositories for entities is encouraged to keep
    specialized DQL and SQL operations separated from the Model/Domain
    Layer.
 -  **readOnly**: (>= 2.1) Specifies that this entity is marked as read only and not
@@ -573,6 +573,29 @@ the Class docblock and has no additional attributes.
 The @MappedSuperclass annotation cannot be used in conjunction with
 @Entity. See the Inheritance Mapping section for
 :doc:`more details on the restrictions of mapped superclasses <inheritance-mapping>`.
+
+Optional attributes:
+
+
+-  **repositoryClass**: (>= 2.2) Specifies the FQCN of a subclass of the EntityRepository.
+   That will be inherited for all subclasses of that Mapped Superclass.
+
+Example:
+
+.. code-block:: php
+
+    <?php
+    /** @MappedSuperclass */
+    class MappedSuperclassBase
+    {
+        // ... fields and methods
+    }
+
+    /** @Entity */
+    class EntitySubClassFoo extends MappedSuperclassBase
+    {
+        // ... fields and methods
+    }
 
 .. _annref_onetoone:
 
