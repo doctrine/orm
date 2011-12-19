@@ -168,9 +168,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                     $this->loadedMetadata[$realClassName] = $cached;
                 } else {
                     foreach ($this->loadMetadata($realClassName) as $loadedClassName) {
-                        $this->cacheDriver->save(
-                            "$loadedClassName\$CLASSMETADATA", $this->loadedMetadata[$loadedClassName], null
-                        );
+                        $this->cacheMetadata($loadedClassName, $this->loadedMetadata[$loadedClassName]);
                     }
                 }
             } else {
@@ -424,17 +422,28 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
         $class->setDiscriminatorMap($map);
 
         // Now we set the discriminator map for the subclasses already loaded
-        foreach ($loadedSubClassesMetadata as $sc) {
-            $sc->setDiscriminatorMap($map);
+        foreach ($loadedSubClassesMetadata as $subClassMetadata) {
+            $subClassMetadata->setDiscriminatorMap($map);
 
             // We need to overwrite the cached version of the metadata, because
             // it was cached without the discriminator map
             if ($this->cacheDriver) {
-                $this->cacheDriver->save(
-                    $sc->getName()."\$CLASSMETADATA", $sc, null
-                );
+                $this->cacheMetadata($subClassMetadata->getName(), $subClassMetadata);
             }
         }
+    }
+
+    /**
+     * Cache the metadata
+     *
+     * @param $className
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata
+     */
+    private function cacheMetadata($className, ClassMetadata $metadata)
+    {
+        $this->cacheDriver->save(
+            "$className\$CLASSMETADATA", $metadata, null
+        );
     }
 
     /**
