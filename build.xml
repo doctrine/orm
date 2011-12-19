@@ -1,11 +1,7 @@
 <?xml version="1.0"?>
-
-<!--
-    Doctrine 2 build file.
--->
-
-<project name="Doctrine2" default="build" basedir=".">
+<project name="DoctrineORM" default="build" basedir=".">
     <taskdef classname="phing.tasks.ext.d51PearPkg2Task" name="d51pearpkg2" />
+    <import file="${project.basedir}/lib/vendor/doctrine-build-common/packaging.xml" />
 
     <property file="build.properties" />
 
@@ -14,6 +10,8 @@
     -->
     <fileset id="shared-artifacts" dir=".">
         <include name="LICENSE"/>
+        <include name="UPGRADE*" />
+        <include name="doctrine-mapping.xsd" />
     </fileset>
 
     <!--
@@ -51,118 +49,34 @@
     -->
     <fileset id="symfony-sources" dir="./lib/vendor">
         <include name="Symfony/Component/**"/>
+        <exclude name="**/.git/**" />
     </fileset>
-
-    <!--
-        Clean the directory for the next build.
-    -->
-    <target name="clean">
-        <available file="./build.properties" property="build_properties_exist" value="true"/>
-        <fail unless="build_properties_exist" message="The build.properties file is missing." />
-
-        <delete dir="${build.dir}" includeemptydirs="true" />
-        <delete dir="${dist.dir}" includeemptydirs="true" />
-        <delete dir="${report.dir}" includeemptydirs="true" />
-    </target>
-
-    <!--
-        Prepare the new build directories after cleaning
-    -->
-    <target name="prepare" depends="clean">
-        <echo msg="Creating build directory: ${build.dir}" />
-        <mkdir dir="${build.dir}" />
-        <echo msg="Creating distribution directory: ${dist.dir}" />
-        <mkdir dir="${dist.dir}" />
-        <echo msg="Creating report directory: ${report.dir}" />
-        <mkdir dir="${report.dir}" />
-        <mkdir dir="${build.dir}/logs"/>
-        <mkdir dir="${report.dir}/tests"/>
-    </target>
 
     <!--
         Builds ORM package, preparing it for distribution.
     -->
-    <target name="build-orm" depends="prepare">
-        <exec command="grep '${version}' ${project.basedir}/lib/Doctrine/ORM/Version.php" checkreturn="true"/>
-        <copy todir="${build.dir}/doctrine-orm">
+    <target name="copy-files" depends="prepare">
+        <copy todir="${build.dir}/${project.name}-${version}">
             <fileset refid="shared-artifacts"/>
         </copy>
-        <copy todir="${build.dir}/doctrine-orm">
+        <copy todir="${build.dir}/${project.name}-${version}">
             <fileset refid="common-sources"/>
             <fileset refid="dbal-sources"/>
             <fileset refid="orm-sources"/>
         </copy>
-        <copy todir="${build.dir}/doctrine-orm/Doctrine">
+        <copy todir="${build.dir}/${project.name}-${version}/Doctrine">
             <fileset refid="symfony-sources"/>
         </copy>
-        <copy todir="${build.dir}/doctrine-orm/bin">
+        <copy todir="${build.dir}/${project.name}-${version}/bin">
             <fileset refid="bin-scripts"/>
         </copy>
-        <exec command="sed 's/${version}-DEV/${version}/' ${build.dir}/doctrine-orm/Doctrine/ORM/Version.php > ${build.dir}/doctrine-orm/Doctrine/ORM/Version2.php" passthru="true" />
-        <exec command="mv ${build.dir}/doctrine-orm/Doctrine/ORM/Version2.php ${build.dir}/doctrine-orm/Doctrine/ORM/Version.php" passthru="true" />
-	<delete dir="${build.dir}/doctrine-orm/Doctrine/Symfony/Component/Yaml/.git" includeemptydirs="true"/>
-        <delete dir="${build.dir}/doctrine-orm/Doctrine/Symfony/Component/Console/.git" includeemptydirs="true"/>
-
-    </target>
-
-    <target name="build" depends="test, build-orm"/>
-
-    <target name="package-phar" depends="build-orm">
-        <pharpackage basedir="${build.dir}/doctrine-orm/" destfile="${dist.dir}/doctrine-orm-${version}.phar" clistub="${build.dir}/doctrine-orm/bin/doctrine.php" signature="sha512">
-            <fileset dir="${build.dir}/doctrine-orm">
-                <include name="**/**" />
-            </fileset>
-            <metadata>
-                <element name="version" value="${version}" />
-                <element name="authors">
-                    <element name="Guilherme Blanco"><element name="e-mail" value="guilhermeblanco@gmail.com" /></element>
-                    <element name="Benjamin Eberlei"><element name="e-mail" value="kontakt@beberlei.de" /></element>
-                    <element name="Jonathan H. Wage"><element name="e-mail" value="jonwage@gmail.com" /></element>
-                    <element name="Roman Borschel"><element name="e-mail" value="roman@code-factory.org" /></element>
-                </element>
-            </metadata>
-        </pharpackage>
-    </target>
-
-    <!--
-        Runs the full test suite.
-    -->
-    <target name="test" depends="prepare">
-        <if><equals arg1="${test.phpunit_generate_coverage}" arg2="1" />
-            <then>
-                <property name="test.phpunit_coverage_file" value="${build.dir}/logs/clover.xml" />
-            </then>
-            <else>
-                <property name="test.phpunit_coverage_file" value="false" />
-            </else>
-        </if>
-
-        <nativephpunit
-            testfile="./tests/Doctrine/Tests/AllTests.php" junitlogfile="${build.dir}/logs/testsuites.xml"
-            testdirectory="./tests"  coverageclover="${test.phpunit_coverage_file}" configuration="${test.phpunit_configuration_file}"
-        />
-        <phpunitreport infile="${build.dir}/logs/testsuites.xml" format="frames" todir="${report.dir}/tests" />
-
-        <nativephpunit testfile="./tests/Doctrine/Tests/ORM/Performance/AllTests.php" testdirectory="./tests" haltonfailure="false" haltonerror="false" />
-        <tstamp/>
-        <copy file="${build.dir}/logs/testsuites.xml" tofile="${log.archive.dir}/latest/log.xml" overwrite="true"/>
-
-        <if><equals arg1="${test.pmd_reports}" arg2="1" />
-            <then>
-                <exec command="${test.pdepend_exec} --jdepend-xml=${build.dir}/logs/jdepend.xml ./lib/Doctrine" />
-                <exec command="${test.phpmd_exec} ./lib/Doctrine xml codesize --reportfile ${build.dir}/logs/phpmd.xml" />
-
-                <copy file="${build.dir}/logs/jdepend.xml" tofile="${log.archive.dir}/latest/jdepend.xml" overwrite="true"/>
-                <copy file="${build.dir}/logs/phpmd.xml" tofile="${log.archive.dir}/latest/phpmd.xml" overwrite="true"/>
-            </then>
-        </if>
     </target>
 
     <!--
         Builds distributable PEAR packages.
     -->
-    <target name="build-packages" depends="build-orm">
-        <d51pearpkg2 baseinstalldir="/" dir="${build.dir}/doctrine-orm">
+    <target name="define-pear-package" depends="copy-files">
+        <d51pearpkg2 baseinstalldir="/" dir="${build.dir}/${project.name}-${version}">
            <name>DoctrineORM</name>
            <summary>Doctrine Object Relational Mapper</summary>
            <channel>pear.doctrine-project.org</channel>
@@ -172,124 +86,29 @@
            <lead user="romanb" name="Roman Borschel" email="roman@code-factory.org" />
            <lead user="beberlei" name="Benjamin Eberlei" email="kontakt@beberlei.de" />
            <license>LGPL</license>
-           <version release="${version}" api="${version}" />
-           <stability release="${stability}" api="${stability}" />
+           <version release="${pear.version}" api="${pear.version}" />
+           <stability release="${pear.stability}" api="${pear.stability}" />
            <notes>-</notes>
            <dependencies>
                <php minimum_version="5.3.0" />
                <pear minimum_version="1.6.0" recommended_version="1.6.1" />
                <package name="DoctrineCommon" channel="pear.doctrine-project.org" minimum_version="${dependencies.common}" />
                <package name="DoctrineDBAL" channel="pear.doctrine-project.org" minimum_version="${dependencies.dbal}" />
-               <package name="DoctrineSymfonyConsole" channel="pear.doctrine-project.org" minimum_version="2.0.0" />
-               <package name="DoctrineSymfonyYaml" channel="pear.doctrine-project.org" minimum_version="2.0.0" />
+               <package name="Console" channel="pear.symfony.org" minimum_version="2.0.0" />
+               <package name="Yaml" channel="pear.symfony.org" minimum_version="2.0.0" />
            </dependencies>
            <dirroles key="bin">script</dirroles>
            <ignore>Doctrine/Common/</ignore>
            <ignore>Doctrine/DBAL/</ignore>
-	   <ignore>Symfony/Component/Yaml/</ignore>
+           <ignore>Symfony/Component/Yaml/</ignore>
            <ignore>Symfony/Component/Console/</ignore>
            <release>
                 <install as="doctrine" name="bin/doctrine" />
                 <install as="doctrine.php" name="bin/doctrine.php" />
                 <install as="doctrine.bat" name="bin/doctrine.bat" />
            </release>
-           <replacement path="bin/doctrine.bat" type="pear-config" from="@php_bin@" to="php_bin" />
+           <replacement path="bin/doctrine" type="pear-config" from="@php_bin@" to="php_bin" />
            <replacement path="bin/doctrine.bat" type="pear-config" from="@bin_dir@" to="bin_dir" />
         </d51pearpkg2>
-        <exec command="pear package" dir="${build.dir}/doctrine-orm" passthru="true" />
-        <exec command="mv DoctrineORM-${version}.tgz ../../dist" dir="${build.dir}/doctrine-orm" passthru="true" />
-        <tar destfile="dist/DoctrineORM-${version}-full.tar.gz" compression="gzip" basedir="${build.dir}">
-            <fileset dir="${build.dir}">
-                <include name="**/**" />
-                <exclude name="logs/" />
-                <exclude name="doctrine-orm/package.xml" />
-            </fileset>
-        </tar>
-    </target>
-
-    <target name="git-tag">
-        <exec command="grep '${version}-DEV' ${project.basedir}/lib/Doctrine/ORM/Version.php" checkreturn="true"/>
-        <exec command="sed 's/${version}-DEV/${version}/' ${project.basedir}/lib/Doctrine/ORM/Version.php > ${project.basedir}/lib/Doctrine/ORM/Version2.php" passthru="true" />
-        <exec command="mv ${project.basedir}/lib/Doctrine/ORM/Version2.php ${project.basedir}/lib/Doctrine/ORM/Version.php" passthru="true" />
-        <exec command="git add ${project.basedir}/lib/Doctrine/ORM/Version.php" passthru="true" />
-        <exec command="git commit -m 'Release ${version}'" />
-        <exec command="git tag -m 'Tag ${version}' -a ${version}" passthru="true" />
-    </target>
-
-    <target name="pirum-release">
-        <exec command="sudo pirum add ${project.pirum_dir} ${project.basedir}/dist/DoctrineORM-${version}.tgz" dir="."  passthru="true" />
-        <exec command="sudo pirum build ${project.pirum_dir}" passthru="true" />
-    </target>
-
-    <target name="distribute-download">
-        <copy file="dist/DoctrineORM-${version}-full.tar.gz" todir="${project.download_dir}" />
-        <copy file="${dist.dir}/doctrine-orm-${version}.phar" todir="${project.download_dir}" />
-    </target>
-
-    <target name="update-dev-version">
-        <exec command="grep '${version}' ${project.basedir}/lib/Doctrine/ORM/Version.php" checkreturn="true"/>
-        <propertyprompt propertyName="next_version" defaultValue="${version}" promptText="Enter next version string (without -DEV)" />
-        <exec command="sed 's/${version}/${next_version}-DEV/' ${project.basedir}/lib/Doctrine/ORM/Version.php > ${project.basedir}/lib/Doctrine/ORM/Version2.php" passthru="true" />
-        <exec command="mv ${project.basedir}/lib/Doctrine/ORM/Version2.php ${project.basedir}/lib/Doctrine/ORM/Version.php" passthru="true" />
-        <exec command="git add ${project.basedir}/lib/Doctrine/ORM/Version.php" passthru="true" />
-        <exec command="git commit -m 'Bump Dev Version to ${next_version}-DEV'" passthru="true" />
-    </target>
-
-    <target name="release" depends="git-tag,build-packages,package-phar,distribute-download,pirum-release,update-dev-version" />
-    
-    <!--
-        Builds distributable PEAR packages for the Symfony Dependencies
-    -->
-    <target name="release-symfony-dependencies" depends="build-orm">
-        <d51pearpkg2 baseinstalldir="/" dir="${build.dir}/doctrine-orm">
-           <name>DoctrineSymfonyConsole</name>
-           <summary>Symfony Console Component</summary>
-           <channel>pear.doctrine-project.org</channel>
-           <description>A command line interface tool from the Symfony project. Packaged for shipping with Doctrine projects using ORM version numbers.</description>
-           <lead user="fabpot" name="Fabien Potencier" email="fabien.potencier@symfony-project.com" />
-           <license>NewBSD License</license>
-           <version release="${version}" api="${version}" />
-           <stability release="${stability}" api="${stability}" />
-           <notes>-</notes>
-           <dependencies>
-               <php minimum_version="5.3.0" />
-               <pear minimum_version="1.6.0" recommended_version="1.6.1" />
-           </dependencies>
-	   <ignore>bin/</ignore>
-           <ignore>Doctrine/Common/</ignore>
-           <ignore>Doctrine/DBAL/</ignore>
-           <ignore>Doctrine/ORM/</ignore>
-           <ignore>Symfony/Component/Yaml/</ignore>
-        </d51pearpkg2>
-        <exec command="pear package" dir="${build.dir}/doctrine-orm" passthru="true" />
-        <exec command="mv DoctrineSymfonyConsole-${version}.tgz ../../dist" dir="${build.dir}/doctrine-orm" passthru="true" />
-        
-        <d51pearpkg2 baseinstalldir="/" dir="${build.dir}/doctrine-orm">
-           <name>DoctrineSymfonyYaml</name>
-           <summary>Symfony Yaml Component</summary>
-           <channel>pear.doctrine-project.org</channel>
-           <description>A YAML Parser from the Symfony project. Packaged for shipping with Doctrine projects using ORM version numbers.</description>
-           <lead user="fabpot" name="Fabien Potencier" email="fabien.potencier@symfony-project.com" />
-           <license>NewBSD License</license>
-           <version release="${version}" api="${version}" />
-           <stability release="${stability}" api="${stability}" />
-           <notes>-</notes>
-           <dependencies>
-               <php minimum_version="5.3.0" />
-               <pear minimum_version="1.6.0" recommended_version="1.6.1" />
-           </dependencies>
-	   <ignore>bin/</ignore>
-           <ignore>Doctrine/Common/</ignore>
-           <ignore>Doctrine/DBAL/</ignore>
-           <ignore>Doctrine/ORM/</ignore>
-           <ignore>Symfony/Component/Console/</ignore>
-        </d51pearpkg2>
-        <exec command="pear package" dir="${build.dir}/doctrine-orm" passthru="true" />
-        <exec command="mv DoctrineSymfonyYaml-${version}.tgz ../../dist" dir="${build.dir}/doctrine-orm" passthru="true" />
-        
-        <exec command="sudo pirum add ${project.pirum_dir} ${project.basedir}/dist/DoctrineSymfonyConsole-${version}.tgz" dir="."  passthru="true" />
-        <exec command="sudo pirum add ${project.pirum_dir} ${project.basedir}/dist/DoctrineSymfonyYaml-${version}.tgz" dir="."  passthru="true" />
-        <exec command="sudo pirum build ${project.pirum_dir}" passthru="true" />
     </target>
 </project>
-
