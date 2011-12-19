@@ -317,6 +317,54 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue(strtotime($arg[0]['add']) > 0);
     }
 
+    /**
+     * @group DDC-1213
+     */
+    public function testBitOrComparison()
+    {
+        $dql    = 'SELECT m, ' .
+                    'BIT_OR(4, 2) AS bit_or,' .
+                    'BIT_OR( (m.salary/100000) , 2 ) AS salary_bit_or ' .
+                    'FROM Doctrine\Tests\Models\Company\CompanyManager m ' .
+                'ORDER BY ' .
+                    'm.id ' ;
+        $result = $this->_em->createQuery($dql)->getArrayResult();
+
+        $this->assertEquals(4 | 2, $result[0]['bit_or']);
+        $this->assertEquals(4 | 2, $result[1]['bit_or']);
+        $this->assertEquals(4 | 2, $result[2]['bit_or']);
+        $this->assertEquals(4 | 2, $result[3]['bit_or']);
+
+        $this->assertEquals(($result[0][0]['salary']/100000) | 2, $result[0]['salary_bit_or']);
+        $this->assertEquals(($result[1][0]['salary']/100000) | 2, $result[1]['salary_bit_or']);
+        $this->assertEquals(($result[2][0]['salary']/100000) | 2, $result[2]['salary_bit_or']);
+        $this->assertEquals(($result[3][0]['salary']/100000) | 2, $result[3]['salary_bit_or']);
+    }
+
+    /**
+    * @group DDC-1213
+    */
+    public function testBitAndComparison()
+    {
+        $dql    = 'SELECT m, ' .
+                    'BIT_AND(4, 2) AS bit_and,' .
+                    'BIT_AND( (m.salary/100000) , 2 ) AS salary_bit_and ' .
+                    'FROM Doctrine\Tests\Models\Company\CompanyManager m ' .
+                'ORDER BY ' .
+                    'm.id ' ;
+        $result = $this->_em->createQuery($dql)->getArrayResult();
+
+        $this->assertEquals(4 & 2, $result[0]['bit_and']);
+        $this->assertEquals(4 & 2, $result[1]['bit_and']);
+        $this->assertEquals(4 & 2, $result[2]['bit_and']);
+        $this->assertEquals(4 & 2, $result[3]['bit_and']);
+
+        $this->assertEquals(($result[0][0]['salary']/100000) & 2, $result[0]['salary_bit_and']);
+        $this->assertEquals(($result[1][0]['salary']/100000) & 2, $result[1]['salary_bit_and']);
+        $this->assertEquals(($result[2][0]['salary']/100000) & 2, $result[2]['salary_bit_and']);
+        $this->assertEquals(($result[3][0]['salary']/100000) & 2, $result[3]['salary_bit_and']);
+    }
+
     protected function generateFixture()
     {
         $manager1 = new CompanyManager();
