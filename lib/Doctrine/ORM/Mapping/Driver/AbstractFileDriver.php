@@ -118,6 +118,9 @@ abstract class AbstractFileDriver implements Driver
     {
         $result = $this->_loadMappingFile($this->_findMappingFile($className));
         
+        if(!isset($result[$className])){
+            throw MappingException::invalidMappingFile($className, str_replace('\\', '.', $className) . $this->_fileExtension);
+        }
         return $result[$className];
     }
 
