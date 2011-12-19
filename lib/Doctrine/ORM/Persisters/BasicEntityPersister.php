@@ -341,7 +341,7 @@ class BasicEntityPersister
         foreach ($updateData as $columnName => $value) {
             $column = $columnName;
             $placeholder = '?';
-            
+
             if (isset($this->_class->fieldNames[$columnName])) {
                 $column = $this->_class->getQuotedColumnName($this->_class->fieldNames[$columnName], $this->_platform);
 
@@ -1307,7 +1307,7 @@ class BasicEntityPersister
 
         foreach ($criteria as $field => $value) {
             $conditionSql .= $conditionSql ? ' AND ' : '';
-            
+
             $placeholder = '?';
 
             if (isset($this->_class->columnNames[$field])) {

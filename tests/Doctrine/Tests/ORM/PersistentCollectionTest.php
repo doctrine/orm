@@ -18,7 +18,7 @@ class PersistentCollectionTest extends \Doctrine\Tests\OrmTestCase
 {
     private $_connectionMock;
     private $_emMock;
-    
+
     protected function setUp()
     {
         parent::setUp();

@@ -67,7 +67,7 @@ class MappingException extends \Doctrine\ORM\ORMException
     {
         return new self("No mapping file found named '$fileName' for class '$entityName'.");
     }
-    
+
     public static function invalidMappingFile($entityName, $fileName)
     {
         return new self("Invalid mapping file '$fileName' for class '$entityName'.");

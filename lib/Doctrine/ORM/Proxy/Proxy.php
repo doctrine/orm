@@ -23,7 +23,7 @@ namespace Doctrine\ORM\Proxy;
 
 /**
  * Interface for proxy classes.
- * 
+ *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */

@@ -26,7 +26,7 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC832Like'),
             ));
         } catch(\Exception $e) {
-            
+
         }
     }
 

@@ -88,7 +88,7 @@ class TestEntity
     {
         return $this->additional;
     }
-    
+
     public function setAdditional($additional)
     {
         $this->additional = $additional;
@@ -123,7 +123,7 @@ class TestAdditionalEntity
     {
         return $this->bool;
     }
-    
+
     public function setBool($bool)
     {
         $this->bool = $bool;

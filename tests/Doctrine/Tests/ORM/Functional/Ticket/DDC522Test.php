@@ -32,7 +32,7 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testJoinColumnWithSameNameAsAssociationField()
     {
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        
+
         $cust = new DDC522Customer;
         $cust->name = "name";
         $cart = new DDC522Cart;
@@ -47,7 +47,7 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $r = $this->_em->createQuery("select ca,c from ".get_class($cart)." ca join ca.customer c")
                 ->getResult();
-        
+
         $this->assertInstanceOf(__NAMESPACE__ . '\DDC522Cart', $r[0]);
         $this->assertInstanceOf(__NAMESPACE__ . '\DDC522Customer', $r[0]->customer);
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $r[0]->customer);

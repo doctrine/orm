@@ -16,8 +16,8 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp() {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(            
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Phrase'), 
+            $this->_schemaTool->createSchema(array(
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Phrase'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\PhraseType'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Definition'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Lemma'),
@@ -33,33 +33,33 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         //setup
         $phrase = new Phrase;
         $phrase->setPhrase('lalala');
-        
+
         $type = new PhraseType;
         $type->setType('nonsense');
         $type->setAbbreviation('non');
-        
+
         $def1 = new Definition;
         $def1->setDefinition('def1');
         $def2 = new Definition;
         $def2->setDefinition('def2');
-                
+
         $phrase->setType($type);
         $phrase->addDefinition($def1);
         $phrase->addDefinition($def2);
-        
+
         $this->_em->persist($phrase);
         $this->_em->persist($type);
-        
+
         $this->_em->flush();
         $this->_em->clear();
         //end setup
-        
+
         // test1 - lazy-loading many-to-one after find()
         $phrase2 = $this->_em->find('Doctrine\Tests\ORM\Functional\Phrase', $phrase->getId());
         $this->assertTrue(is_numeric($phrase2->getType()->getId()));
-        
+
         $this->_em->clear();
-        
+
         // test2 - eager load in DQL query
         $query = $this->_em->createQuery("SELECT p,t FROM Doctrine\Tests\ORM\Functional\Phrase p JOIN p.type t");
         $res = $query->getResult();
@@ -67,9 +67,9 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\PhraseType', $res[0]->getType());
         $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $res[0]->getType()->getPhrases());
         $this->assertFalse($res[0]->getType()->getPhrases()->isInitialized());
-        
+
         $this->_em->clear();
-        
+
         // test2 - eager load in DQL query with double-join back and forth
         $query = $this->_em->createQuery("SELECT p,t,pp FROM Doctrine\Tests\ORM\Functional\Phrase p JOIN p.type t JOIN t.phrases pp");
         $res = $query->getResult();
@@ -77,48 +77,48 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\PhraseType', $res[0]->getType());
         $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $res[0]->getType()->getPhrases());
         $this->assertTrue($res[0]->getType()->getPhrases()->isInitialized());
-        
+
         $this->_em->clear();
-        
+
         // test3 - lazy-loading one-to-many after find()
         $phrase3 = $this->_em->find('Doctrine\Tests\ORM\Functional\Phrase', $phrase->getId());
         $definitions = $phrase3->getDefinitions();
         $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $definitions);
         $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Definition', $definitions[0]);
-        
+
         $this->_em->clear();
-        
+
         // test4 - lazy-loading after DQL query
         $query = $this->_em->createQuery("SELECT p FROM Doctrine\Tests\ORM\Functional\Phrase p");
         $res = $query->getResult();
         $definitions = $res[0]->getDefinitions();
-        
+
         $this->assertEquals(1, count($res));
-        
+
         $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Definition', $definitions[0]);
         $this->assertEquals(2, $definitions->count());
     }
-    
+
     public function testManyToMany()
     {
         $lemma = new Lemma;
         $lemma->setLemma('abu');
-        
+
         $type = new Type();
         $type->setType('nonsense');
         $type->setAbbreviation('non');
-        
+
         $lemma->addType($type);
-        
+
         $this->_em->persist($lemma);
         $this->_em->persist($type);
         $this->_em->flush();
-        
+
         // test5 ManyToMany
         $query = $this->_em->createQuery("SELECT l FROM Doctrine\Tests\ORM\Functional\Lemma l");
         $res = $query->getResult();
         $types = $res[0]->getTypes();
-        
+
         $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Type', $types[0]);
     }
 }
@@ -181,9 +181,9 @@ class Lemma {
 	public function getLemma(){
 		return $this->lemma;
 	}
-	
+
 	/**
-     * 
+     *
      * @param kateglo\application\models\Type $type
      * @return void
      */
@@ -195,7 +195,7 @@ class Lemma {
     }
 
     /**
-     * 
+     *
      * @param kateglo\application\models\Type $type
      * @return void
      */
@@ -208,7 +208,7 @@ class Lemma {
     }
 
     /**
-     * 
+     *
      * @return kateglo\application\helpers\collections\ArrayCollection
      */
     public function getTypes()
@@ -261,7 +261,7 @@ class Type {
 	public function __construct(){
 		$this->lemmas = new \Doctrine\Common\Collections\ArrayCollection();
 	}
-	
+
 	/**
 	 *
 	 * @return int
@@ -305,7 +305,7 @@ class Type {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param kateglo\application\models\Lemma $lemma
 	 * @return void
 	 */
@@ -318,7 +318,7 @@ class Type {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param kateglo\application\models\Lemma $lemma
 	 * @return void
 	 */
@@ -331,7 +331,7 @@ class Type {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return kateglo\application\helpers\collections\ArrayCollection
 	 */
 	public function getCategories()
@@ -367,7 +367,7 @@ class Phrase {
      * @JoinColumn(name="phrase_type_id", referencedColumnName="phrase_type_id")
      */
     private $type;
-    
+
     /**
      * @OneToMany(targetEntity="Definition", mappedBy="phrase", cascade={"persist"})
      */
@@ -376,9 +376,9 @@ class Phrase {
     public function __construct() {
         $this->definitions = new \Doctrine\Common\Collections\ArrayCollection;
     }
-    
+
     /**
-     * 
+     *
      * @param Definition $definition
      * @return void
      */
@@ -386,14 +386,14 @@ class Phrase {
         $this->definitions[] = $definition;
         $definition->setPhrase($this);
     }
-    
+
     /**
      * @return int
      */
     public function getId(){
         return $this->id;
     }
-    
+
     /**
      * @param string $phrase
      * @return void
@@ -401,14 +401,14 @@ class Phrase {
     public function setPhrase($phrase){
         $this->phrase = $phrase;
     }
-    
+
     /**
      * @return string
      */
     public function getPhrase(){
         return $this->phrase;
     }
-    
+
     /**
      *
      * @param PhraseType $type
@@ -417,7 +417,7 @@ class Phrase {
     public function setType(PhraseType $type){
         $this->type = $type;
     }
-    
+
     /**
      *
      * @return PhraseType
@@ -425,9 +425,9 @@ class Phrase {
     public function getType(){
         return $this->type;
     }
-    
+
     /**
-     * 
+     *
      * @return ArrayCollection
      */
     public function getDefinitions(){
@@ -440,42 +440,42 @@ class Phrase {
  * @Table(name="phrase_type")
  */
 class PhraseType {
-    
+
     const CLASS_NAME = __CLASS__;
-    
+
     /**
      * @Id
      * @Column(type="integer", name="phrase_type_id")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+
     /**
      * @Column(type="string", name="phrase_type_name", unique=true)
      */
     private $type;
-    
+
     /**
      * @Column(type="string", name="phrase_type_abbreviation", unique=true)
      */
     private $abbreviation;
-    
+
     /**
      * @OneToMany(targetEntity="Phrase", mappedBy="type")
      */
     private $phrases;
-    
+
     public function __construct() {
         $this->phrases = new \Doctrine\Common\Collections\ArrayCollection;
     }
-    
+
     /**
      * @return int
      */
     public function getId(){
         return $this->id;
     }
-    
+
     /**
      * @param string $type
      * @return void
@@ -483,14 +483,14 @@ class PhraseType {
     public function setType($type){
         $this->type = $type;
     }
-    
+
     /**
      * @return string
      */
     public function getType(){
         return $this->type;
     }
-    
+
     /**
      * @param string $abbreviation
      * @return void
@@ -498,14 +498,14 @@ class PhraseType {
     public function setAbbreviation($abbreviation){
         $this->abbreviation = $abbreviation;
     }
-    
+
     /**
      * @return string
      */
     public function getAbbreviation(){
         return $this->abbreviation;
     }
-    
+
     /**
      * @param ArrayCollection $phrases
      * @return void
@@ -513,15 +513,15 @@ class PhraseType {
     public function setPhrases($phrases){
         $this->phrases = $phrases;
     }
-    
+
     /**
-     * 
+     *
      * @return ArrayCollection
      */
     public function getPhrases(){
         return $this->phrases;
     }
-    
+
 }
 
 /**
@@ -529,34 +529,34 @@ class PhraseType {
  * @Table(name="definition")
  */
 class Definition {
-    
+
     const CLASS_NAME = __CLASS__;
-    
+
     /**
      * @Id
      * @Column(type="integer", name="definition_id")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+
     /**
      * @ManyToOne(targetEntity="Phrase")
      * @JoinColumn(name="definition_phrase_id", referencedColumnName="phrase_id")
      */
     private $phrase;
-    
+
     /**
      * @Column(type="text", name="definition_text")
      */
     private $definition;
-    
+
     /**
      * @return int
      */
     public function getId(){
         return $this->id;
     }
-    
+
     /**
      * @param Phrase $phrase
      * @return void
@@ -564,14 +564,14 @@ class Definition {
     public function setPhrase(Phrase $phrase){
         $this->phrase = $phrase;
     }
-    
+
     /**
      * @return Phrase
      */
     public function getPhrase(){
         return $this->phrase;
     }
-    
+
     public function removePhrase() {
         if ($this->phrase !== null) {
             /*@var $phrase kateglo\application\models\Phrase */
@@ -580,7 +580,7 @@ class Definition {
             $phrase->removeDefinition($this);
         }
     }
-    
+
     /**
      * @param string $definition
      * @return void
@@ -588,7 +588,7 @@ class Definition {
     public function setDefinition($definition){
         $this->definition = $definition;
     }
-    
+
     /**
      * @return string
      */

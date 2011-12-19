@@ -57,7 +57,7 @@ class DDC353Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $fileId = $file->getFileId();
         $pictureId = $picture->getPictureId();
-        
+
         $this->assertTrue($fileId > 0);
 
         $picture = $em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC353Picture', $pictureId);

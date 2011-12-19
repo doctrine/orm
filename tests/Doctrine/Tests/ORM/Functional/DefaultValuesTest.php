@@ -29,26 +29,26 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
         $this->_em->clear();
-        
+
         $userId = $user->id; // e.g. from $_REQUEST
         $user2 = $this->_em->getReference(get_class($user), $userId);
-        
+
         $this->_em->flush();
         $this->assertFalse($user2->__isInitialized__);
-        
+
         $a = new DefaultValueAddress;
         $a->country = 'de';
         $a->zip = '12345';
         $a->city = 'Berlin';
         $a->street = 'Sesamestreet';
-        
+
         $a->user = $user2;
         $this->_em->persist($a);
         $this->_em->flush();
-        
+
         $this->assertFalse($user2->__isInitialized__);
         $this->_em->clear();
-        
+
         $a2 = $this->_em->find(get_class($a), $a->id);
         $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\DefaultValueUser', $a2->getUser());
         $this->assertEquals($userId, $a2->getUser()->getId());
@@ -63,7 +63,7 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = new DefaultValueUser;
         $user->name = 'romanb';
         $user->type = 'Normaluser';
-        
+
         $this->_em->persist($user);
         $this->_em->flush();
         $this->_em->clear();
@@ -103,7 +103,7 @@ class DefaultValueUser
      * @OneToOne(targetEntity="DefaultValueAddress", mappedBy="user", cascade={"persist"})
      */
     public $address;
-    
+
     public function getId() {return $this->id;}
 }
 
@@ -145,6 +145,6 @@ class DefaultValueAddress
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
-    
+
     public function getUser() {return $this->user;}
 }

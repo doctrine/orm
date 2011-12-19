@@ -43,7 +43,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->firstProduct->addCategory($this->secondCategory);
         $this->_em->persist($this->firstProduct);
         $this->_em->flush();
-        
+
         $this->assertForeignKeysContain($this->firstProduct->getId(), $this->firstCategory->getId());
         $this->assertForeignKeysContain($this->firstProduct->getId(), $this->secondCategory->getId());
     }
@@ -59,10 +59,10 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
 
         $this->assertForeignKeysNotContain($this->firstProduct->getId(), $this->firstCategory->getId());
         $this->assertForeignKeysContain($this->firstProduct->getId(), $this->secondCategory->getId());
-        
+
         $this->firstProduct->getCategories()->remove(1);
         $this->_em->flush();
-        
+
         $this->assertForeignKeysNotContain($this->firstProduct->getId(), $this->secondCategory->getId());
     }
 
@@ -90,7 +90,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->secondProduct->addCategory($this->secondCategory);
         $this->_em->persist($this->firstProduct);
         $this->_em->persist($this->secondProduct);
-        
+
         $this->_em->flush();
         $this->_em->clear();
     }
@@ -110,7 +110,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
 
         return $result;
     }
-    
+
     protected function _findCategories()
     {
         $query = $this->_em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\ECommerce\ECommerceCategory c LEFT JOIN c.products p ORDER BY c.id, p.id');
@@ -123,26 +123,26 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $prods2 = $result[1]->getProducts();
         $this->assertTrue($prods1->isInitialized());
         $this->assertTrue($prods2->isInitialized());
-        
+
         $this->assertFalse($prods1[0]->getCategories()->isInitialized());
         $this->assertFalse($prods2[0]->getCategories()->isInitialized());
 
         return $result;
     }
-    
+
     public function assertLazyLoadFromInverseSide($products)
     {
         list ($firstProduct, $secondProduct) = $products;
 
         $firstProductCategories = $firstProduct->getCategories();
         $secondProductCategories = $secondProduct->getCategories();
-        
+
         $this->assertEquals(2, count($firstProductCategories));
         $this->assertEquals(2, count($secondProductCategories));
-        
+
         $this->assertTrue($firstProductCategories[0] === $secondProductCategories[0]);
         $this->assertTrue($firstProductCategories[1] === $secondProductCategories[1]);
-        
+
         $firstCategoryProducts = $firstProductCategories[0]->getProducts();
         $secondCategoryProducts = $firstProductCategories[1]->getProducts();
 
@@ -150,7 +150,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->assertFalse($secondCategoryProducts->isInitialized());
         $this->assertEquals(0, $firstCategoryProducts->unwrap()->count());
         $this->assertEquals(0, $secondCategoryProducts->unwrap()->count());
-        
+
         $this->assertEquals(2, count($firstCategoryProducts)); // lazy-load
         $this->assertTrue($firstCategoryProducts->isInitialized());
         $this->assertFalse($secondCategoryProducts->isInitialized());
@@ -161,7 +161,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $firstCategoryProducts[1]);
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $secondCategoryProducts[0]);
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $secondCategoryProducts[1]);
-        
+
         $this->assertCollectionEquals($firstCategoryProducts, $secondCategoryProducts);
     }
 
@@ -171,13 +171,13 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
 
         $firstCategoryProducts = $firstCategory->getProducts();
         $secondCategoryProducts = $secondCategory->getProducts();
-        
+
         $this->assertEquals(2, count($firstCategoryProducts));
         $this->assertEquals(2, count($secondCategoryProducts));
-        
+
         $this->assertTrue($firstCategoryProducts[0] === $secondCategoryProducts[0]);
         $this->assertTrue($firstCategoryProducts[1] === $secondCategoryProducts[1]);
-        
+
         $firstProductCategories = $firstCategoryProducts[0]->getCategories();
         $secondProductCategories = $firstCategoryProducts[1]->getCategories();
 
@@ -185,7 +185,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->assertFalse($secondProductCategories->isInitialized());
         $this->assertEquals(0, $firstProductCategories->unwrap()->count());
         $this->assertEquals(0, $secondProductCategories->unwrap()->count());
-        
+
         $this->assertEquals(2, count($firstProductCategories)); // lazy-load
         $this->assertTrue($firstProductCategories->isInitialized());
         $this->assertFalse($secondProductCategories->isInitialized());
@@ -196,7 +196,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $firstProductCategories[1]);
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $secondProductCategories[0]);
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $secondProductCategories[1]);
-        
+
         $this->assertCollectionEquals($firstProductCategories, $secondProductCategories);
     }
 }

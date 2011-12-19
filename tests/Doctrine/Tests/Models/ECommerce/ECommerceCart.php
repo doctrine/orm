@@ -44,26 +44,26 @@ class ECommerceCart
     {
         $this->products = new ArrayCollection;
     }
-    
+
     public function getId() {
         return $this->id;
     }
-    
+
     public function getPayment() {
         return $this->payment;
     }
-    
+
     public function setPayment($payment) {
         $this->payment = $payment;
     }
-    
+
     public function setCustomer(ECommerceCustomer $customer) {
         if ($this->customer !== $customer) {
             $this->customer = $customer;
             $customer->setCart($this);
         }
     }
-    
+
     public function removeCustomer() {
         if ($this->customer !== null) {
             $customer = $this->customer;
@@ -71,7 +71,7 @@ class ECommerceCart
             $customer->removeCart();
         }
     }
-    
+
     public function getCustomer() {
         return $this->customer;
     }

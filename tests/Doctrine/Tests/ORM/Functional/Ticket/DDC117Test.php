@@ -349,7 +349,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testLoadInverseManyToManyCollection()
     {
         $editor = $this->loadEditorFixture();
-        
+
         $this->assertInstanceOf('Doctrine\Tests\Models\DDC117\DDC117Translation', $editor->reviewingTranslations[0]);
 
         $reviewedBy = $editor->reviewingTranslations[0]->getReviewedByEditors();

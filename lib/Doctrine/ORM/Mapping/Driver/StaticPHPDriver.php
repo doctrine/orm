@@ -38,21 +38,21 @@ class StaticPHPDriver implements Driver
 {
     /**
      * Paths of entity directories.
-     * 
+     *
      * @var array
      */
     private $_paths = array();
-    
+
     /**
      * Map of all class names.
-     * 
+     *
      * @var array
      */
     private $_classNames;
-    
+
     /**
      * The file extension of mapping documents.
-     * 
+     *
      * @var string
      */
     private $_fileExtension = '.php';

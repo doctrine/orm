@@ -38,7 +38,7 @@ class DDC1276Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $user->id);
         $cloned = clone $user;
-        
+
         $this->assertSame($user->groups, $cloned->groups);
         $this->assertEquals(2, count($user->groups));
         $this->_em->merge($cloned);

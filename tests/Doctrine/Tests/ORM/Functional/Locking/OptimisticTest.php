@@ -52,7 +52,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $test = $q->getSingleResult();
 
         // Manually update/increment the version so we can try and save the same
-        // $test and make sure the exception is thrown saying the record was 
+        // $test and make sure the exception is thrown saying the record was
         // changed or updated since you read it
         $this->_conn->executeQuery('UPDATE optimistic_joined_parent SET version = ? WHERE id = ?', array(2, $test->id));
 
@@ -87,7 +87,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $test = $q->getSingleResult();
 
         // Manually update/increment the version so we can try and save the same
-        // $test and make sure the exception is thrown saying the record was 
+        // $test and make sure the exception is thrown saying the record was
         // changed or updated since you read it
         $this->_conn->executeQuery('UPDATE optimistic_joined_parent SET version = ? WHERE id = ?', array(2, $test->id));
 
@@ -137,7 +137,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $test = $q->getSingleResult();
 
         // Manually update/increment the version so we can try and save the same
-        // $test and make sure the exception is thrown saying the record was 
+        // $test and make sure the exception is thrown saying the record was
         // changed or updated since you read it
         $this->_conn->executeQuery('UPDATE optimistic_standard SET version = ? WHERE id = ?', array(2, $test->id));
 
@@ -249,7 +249,7 @@ class OptimisticStandard
      * @Version @Column(type="integer")
      */
     private $version;
-    
+
     function getVersion() {return $this->version;}
 }
 

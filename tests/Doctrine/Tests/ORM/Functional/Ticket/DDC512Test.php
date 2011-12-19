@@ -24,7 +24,7 @@ class DDC512Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $customer2 = new DDC512Customer();
         $this->_em->persist($customer2);
-        
+
         $this->_em->flush();
         $this->_em->clear();
 

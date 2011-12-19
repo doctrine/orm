@@ -52,9 +52,9 @@ class SqrtFunction extends FunctionNode
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
-        
+
         $this->simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
-        
+
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }

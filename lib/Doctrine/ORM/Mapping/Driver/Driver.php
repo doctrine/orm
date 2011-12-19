@@ -34,18 +34,18 @@ interface Driver
 {
     /**
      * Loads the metadata for the specified class into the provided container.
-     * 
+     *
      * @param string $className
      * @param ClassMetadataInfo $metadata
      */
     function loadMetadataForClass($className, ClassMetadataInfo $metadata);
-    
+
     /**
      * Gets the names of all mapped classes known to this driver.
-     * 
+     *
      * @return array The names of all mapped classes known to this driver.
      */
-    function getAllClassNames(); 
+    function getAllClassNames();
 
     /**
      * Whether the class with the specified name should have its metadata loaded.

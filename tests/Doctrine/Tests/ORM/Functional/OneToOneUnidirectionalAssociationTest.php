@@ -33,7 +33,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $this->product->setShipping($this->shipping);
         $this->_em->persist($this->product);
         $this->_em->flush();
-        
+
         $this->assertForeignKeyIs($this->shipping->getId());
     }
 
@@ -55,11 +55,11 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $query = $this->_em->createQuery('select p, s from Doctrine\Tests\Models\ECommerce\ECommerceProduct p left join p.shipping s');
         $result = $query->getResult();
         $product = $result[0];
-        
+
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceShipping', $product->getShipping());
         $this->assertEquals(1, $product->getShipping()->getDays());
     }
-    
+
     public function testLazyLoadsObjects() {
         $this->_createFixture();
         $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
@@ -68,7 +68,7 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $query = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $result = $query->getResult();
         $product = $result[0];
-        
+
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceShipping', $product->getShipping());
         $this->assertEquals(1, $product->getShipping()->getDays());
     }
@@ -78,10 +78,10 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
 
         $query = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
-        
+
         $result = $query->getResult();
         $product = $result[0];
-        
+
         $this->assertNull($product->getShipping());
     }
 
@@ -92,9 +92,9 @@ class OneToOneUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $shipping = new ECommerceShipping;
         $shipping->setDays('1');
         $product->setShipping($shipping);
-        
+
         $this->_em->persist($product);
-        
+
         $this->_em->flush();
         $this->_em->clear();
     }

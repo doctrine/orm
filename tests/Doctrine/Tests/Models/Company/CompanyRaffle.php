@@ -6,11 +6,11 @@ namespace Doctrine\Tests\Models\Company;
 class CompanyRaffle extends CompanyEvent {
     /** @Column */
     private $data;
-    
+
     public function setData($data) {
         $this->data = $data;
     }
-    
+
     public function getData() {
         return $this->data;
     }

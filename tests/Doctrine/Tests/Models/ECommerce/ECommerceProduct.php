@@ -46,7 +46,7 @@ class ECommerceProduct
     private $categories;
 
     /**
-     * This relation is saved with two records in the association table for 
+     * This relation is saved with two records in the association table for
      * simplicity.
      * @ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
      * @JoinTable(name="ecommerce_products_related",

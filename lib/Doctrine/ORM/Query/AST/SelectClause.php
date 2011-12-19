@@ -42,7 +42,7 @@ class SelectClause extends Node
         $this->isDistinct = $isDistinct;
         $this->selectExpressions = $selectExpressions;
     }
-    
+
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkSelectClause($this);

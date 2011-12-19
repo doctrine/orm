@@ -27,8 +27,8 @@ class DDC869PaymentRepository extends EntityRepository
 
     /**
      * Very complex method
-     * 
-     * @return bool 
+     *
+     * @return bool
      */
     public function isTrue()
     {

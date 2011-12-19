@@ -17,7 +17,7 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC633Appointment'),
             ));
         } catch(\Exception $e) {
-            
+
         }
     }
 
@@ -64,7 +64,7 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $appointments = $this->_em->createQuery("SELECT a FROM " . __NAMESPACE__ . "\DDC633Appointment a")->getResult();
-        
+
         foreach ($appointments AS $eagerAppointment) {
             $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $eagerAppointment->patient);
             $this->assertTrue($eagerAppointment->patient->__isInitialized__, "Proxy should already be initialized due to eager loading!");
@@ -79,7 +79,7 @@ class DDC633Appointment
 {
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
-    
+
     /**
      * @OneToOne(targetEntity="DDC633Patient", inversedBy="appointment", fetch="EAGER")
      */

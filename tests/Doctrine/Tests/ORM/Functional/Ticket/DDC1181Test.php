@@ -15,7 +15,7 @@ class DDC1181Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1181Room'),
         ));
     }
-    
+
     /**
      * @group DDC-1181
      */
@@ -24,12 +24,12 @@ class DDC1181Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $hotel = new DDC1181Hotel();
         $room1 = new DDC1181Room();
         $room2 = new DDC1181Room();
-        
+
         $this->_em->persist($hotel);
         $this->_em->persist($room1);
         $this->_em->persist($room2);
         $this->_em->flush();
-        
+
         $booking1 = new DDC1181Booking;
         $booking1->hotel = $hotel;
         $booking1->room = $room1;
@@ -38,11 +38,11 @@ class DDC1181Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $booking2->room = $room2;
         $hotel->bookings[] = $booking1;
         $hotel->bookings[] = $booking2;
-        
+
         $this->_em->persist($booking1);
         $this->_em->persist($booking2);
         $this->_em->flush();
-        
+
         $this->_em->remove($hotel);
         $this->_em->flush();
     }
@@ -72,7 +72,7 @@ class DDC1181Booking
     /**
      * @var Hotel
      *
-     * @Id 
+     * @Id
      * @ManyToOne(targetEntity="DDC1181Hotel", inversedBy="bookings")
      * @JoinColumns({
      *   @JoinColumn(name="hotel_id", referencedColumnName="id")

@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * SimpleWhenClause ::= "WHEN" ScalarExpression "THEN" ScalarExpression 
+ * SimpleWhenClause ::= "WHEN" ScalarExpression "THEN" ScalarExpression
  *
  * @since   2.2
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -39,8 +39,8 @@ class SimpleWhenClause extends Node
     {
         $this->caseScalarExpression = $caseScalarExpression;
         $this->thenScalarExpression = $thenScalarExpression;
-    }    
-    
+    }
+
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkWhenClauseExpression($this);

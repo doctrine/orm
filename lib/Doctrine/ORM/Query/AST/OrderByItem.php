@@ -36,7 +36,7 @@ class OrderByItem extends Node
 {
     public $expression;
     public $type;
-    
+
     public function __construct($expression)
     {
         $this->expression = $expression;

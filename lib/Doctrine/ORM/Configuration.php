@@ -523,14 +523,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /**
      * Set default repository class.
-     * 
+     *
      * @since 2.2
      * @param string $className
      * @throws ORMException If not is a \Doctrine\ORM\EntityRepository
      */
     public function setDefaultRepositoryClassName($className)
     {
-        if ($className != "Doctrine\ORM\EntityRepository" && 
+        if ($className != "Doctrine\ORM\EntityRepository" &&
            !is_subclass_of($className, 'Doctrine\ORM\EntityRepository')){
             throw ORMException::invalidEntityRepository($className);
         }
@@ -539,7 +539,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /**
      * Get default repository class.
-     * 
+     *
      * @since 2.2
      * @return string
      */

@@ -17,7 +17,7 @@ class CompanyEmployee extends CompanyPerson
      * @Column(type="string", length=255)
      */
     private $department;
-    
+
     /**
      * @Column(type="datetime", nullable=true)
      */

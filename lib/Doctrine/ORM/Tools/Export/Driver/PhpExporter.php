@@ -41,7 +41,7 @@ class PhpExporter extends AbstractExporter
      * Converts a single ClassMetadata instance to the exported format
      * and returns it
      *
-     * @param ClassMetadataInfo $metadata 
+     * @param ClassMetadataInfo $metadata
      * @return mixed $exported
      */
     public function exportClassMetadata(ClassMetadataInfo $metadata)
@@ -108,7 +108,7 @@ class PhpExporter extends AbstractExporter
                 'targetEntity' => $associationMapping['targetEntity'],
                 'cascade'     => $cascade,
             );
-            
+
             if ($associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
                 $method = 'mapOneToOne';
                 $oneToOneMappingArray = array(
@@ -117,10 +117,10 @@ class PhpExporter extends AbstractExporter
                     'joinColumns'   => $associationMapping['joinColumns'],
                     'orphanRemoval' => $associationMapping['orphanRemoval'],
                 );
-                
+
                 $associationMappingArray = array_merge($associationMappingArray, $oneToOneMappingArray);
             } else if ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_MANY) {
-                $method = 'mapOneToMany';                
+                $method = 'mapOneToMany';
                 $potentialAssociationMappingIndexes = array(
                     'mappedBy',
                     'orphanRemoval',
@@ -133,7 +133,7 @@ class PhpExporter extends AbstractExporter
                 }
                 $associationMappingArray = array_merge($associationMappingArray, $oneToManyMappingArray);
             } else if ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
-                $method = 'mapManyToMany';                
+                $method = 'mapManyToMany';
                 $potentialAssociationMappingIndexes = array(
                     'mappedBy',
                     'joinTable',
@@ -146,7 +146,7 @@ class PhpExporter extends AbstractExporter
                 }
                 $associationMappingArray = array_merge($associationMappingArray, $manyToManyMappingArray);
             }
-            
+
             $lines[] = '$metadata->' . $method . '(' . $this->_varExport($associationMappingArray) . ');';
         }
 

@@ -28,7 +28,7 @@ abstract class AbstractContentItem
      * @Id @Column(type="integer") @GeneratedValue
      */
     private $id;
-    
+
     /**
      * @ManyToOne(targetEntity="Directory")
      */

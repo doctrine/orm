@@ -32,22 +32,22 @@ use Doctrine\DBAL\Connection;
  */
 class ScalarHydrator extends AbstractHydrator
 {
-    /** 
+    /**
      * {@inheritdoc}
      */
     protected function hydrateAllData()
     {
         $result = array();
         $cache  = array();
-        
+
         while ($data = $this->_stmt->fetch(\PDO::FETCH_ASSOC)) {
             $this->hydrateRowData($data, $cache, $result);
         }
-        
+
         return $result;
     }
 
-    /** 
+    /**
      * {@inheritdoc}
      */
     protected function hydrateRowData(array $data, array &$cache, array &$result)

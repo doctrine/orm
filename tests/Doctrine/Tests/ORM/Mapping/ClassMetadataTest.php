@@ -7,7 +7,7 @@ use Doctrine\ORM\Events;
 
 require_once __DIR__ . '/../../TestInit.php';
 require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
- 
+
 class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 {
     public function testClassMetadataInstanceSerialization()
@@ -94,7 +94,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals("DoctrineGlobal_User", $cm->associationMappings['author']['targetEntity']);
     }
-    
+
     public function testMapManyToManyJoinTableDefaults()
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
@@ -103,7 +103,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
             'fieldName' => 'groups',
             'targetEntity' => 'CmsGroup'
         ));
-        
+
         $assoc = $cm->associationMappings['groups'];
         //$this->assertInstanceOf('Doctrine\ORM\Mapping\ManyToManyMapping', $assoc);
         $this->assertEquals(array(
@@ -236,7 +236,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
         $cm->mapField(array('fieldName' => 'name', 'columnName' => 'name'));
     }
-    
+
     /**
      * @group DDC-1224
      */
@@ -244,7 +244,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->setTableName('foo.bar');
-        
+
         $this->assertEquals('foo_bar_id_tmp', $cm->getTemporaryIdTableName());
     }
 

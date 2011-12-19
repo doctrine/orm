@@ -210,7 +210,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $result = $this->_em->createQuery('SELECT m, m.salary+2500 AS add FROM Doctrine\Tests\Models\Company\CompanyManager m')
                 ->getResult();
-        
+
         $this->assertEquals(4, count($result));
         $this->assertEquals(102500, $result[0]['add']);
         $this->assertEquals(202500, $result[1]['add']);
@@ -256,7 +256,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(800000, $result[2]['op']);
         $this->assertEquals(1600000, $result[3]['op']);
     }
-    
+
     public function testConcatFunction()
     {
         $arg = $this->_em->createQuery('SELECT CONCAT(m.name, m.department) AS namedep FROM Doctrine\Tests\Models\Company\CompanyManager m order by namedep desc')
@@ -276,12 +276,12 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $query = $this->_em->createQuery("SELECT DATE_DIFF(CURRENT_TIMESTAMP(), DATE_ADD(CURRENT_TIMESTAMP(), 10, 'day')) AS diff FROM Doctrine\Tests\Models\Company\CompanyManager m");
         $arg = $query->getArrayResult();
-        
+
         $this->assertEquals(-10, $arg[0]['diff'], "Should be roughly -10 (or -9)", 1);
-        
+
         $query = $this->_em->createQuery("SELECT DATE_DIFF(DATE_ADD(CURRENT_TIMESTAMP(), 10, 'day'), CURRENT_TIMESTAMP()) AS diff FROM Doctrine\Tests\Models\Company\CompanyManager m");
         $arg = $query->getArrayResult();
-        
+
         $this->assertEquals(10, $arg[0]['diff'], "Should be roughly 10 (or 9)", 1);
     }
 

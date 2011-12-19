@@ -15,7 +15,7 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->markTestSkipped('The ' . __CLASS__ .' requires the use of mysql.');
         }
     }
-    
+
     public function testGetCreateSchemaSql()
     {
         $classes = array(
@@ -38,7 +38,7 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals(9, count($sql));
     }
-    
+
     public function testGetCreateSchemaSql2()
     {
         $classes = array(
@@ -47,11 +47,11 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getCreateSchemaSql($classes);
-        
+
         $this->assertEquals(1, count($sql));
         $this->assertEquals("CREATE TABLE decimal_model (id INT AUTO_INCREMENT NOT NULL, `decimal` NUMERIC(5, 2) NOT NULL, `high_scale` NUMERIC(14, 4) NOT NULL, PRIMARY KEY(id)) ENGINE = InnoDB", $sql[0]);
     }
-    
+
     public function testGetCreateSchemaSql3()
     {
         $classes = array(
@@ -60,7 +60,7 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getCreateSchemaSql($classes);
-        
+
         $this->assertEquals(1, count($sql));
         $this->assertEquals("CREATE TABLE boolean_model (id INT AUTO_INCREMENT NOT NULL, booleanField TINYINT(1) NOT NULL, PRIMARY KEY(id)) ENGINE = InnoDB", $sql[0]);
     }

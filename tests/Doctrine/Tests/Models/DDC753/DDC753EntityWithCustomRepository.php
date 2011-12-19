@@ -27,8 +27,8 @@ class DDC753EntityWithCustomRepository
 {
 
     /**
-     * @Id 
-     * @Column(type="integer") 
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     protected $id;

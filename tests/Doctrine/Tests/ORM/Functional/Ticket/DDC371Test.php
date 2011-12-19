@@ -22,24 +22,24 @@ class DDC371Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $parent = new DDC371Parent;
         $parent->data = 'parent';
         $parent->children = new \Doctrine\Common\Collections\ArrayCollection;
-        
+
         $child = new DDC371Child;
         $child->data = 'child';
-        
+
         $child->parent = $parent;
         $parent->children->add($child);
-        
+
         $this->_em->persist($parent);
         $this->_em->persist($child);
-        
+
         $this->_em->flush();
         $this->_em->clear();
-        
+
         $children = $this->_em->createQuery('select c,p from '.__NAMESPACE__.'\DDC371Child c '
                 . 'left join c.parent p where c.id = 1 and p.id = 1')
                 ->setHint(Query::HINT_REFRESH, true)
                 ->getResult();
-                
+
         $this->assertEquals(1, count($children));
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $children[0]->parent);
         $this->assertFalse($children[0]->parent->children->isInitialized());

@@ -358,7 +358,7 @@ class ClassMetadata extends ClassMetadataInfo implements IClassMetadata
              ($this->reflClass->getMethod($callback)->getModifiers() & \ReflectionMethod::IS_PUBLIC) == 0) {
             throw MappingException::lifecycleCallbackMethodNotFound($this->name, $callback);
         }
-        
+
         return parent::addLifecycleCallback($callback, $event);
     }
 }

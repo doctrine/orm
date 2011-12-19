@@ -106,6 +106,6 @@ class HydratorMockStatement implements \IteratorAggregate, \Doctrine\DBAL\Driver
 
     public function setFetchMode($fetchMode)
     {
-        
+
     }
 }

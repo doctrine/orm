@@ -53,7 +53,7 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
     {
         $this->_mockIdGeneratorType = $genType;
     }
-    
+
     public function update($entity)
     {
         $this->_updates[] = $entity;
@@ -63,27 +63,27 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
     {
         $this->existsCalled = true;
     }
-    
+
     public function delete($entity)
     {
         $this->_deletes[] = $entity;
     }
-    
+
     public function getInserts()
     {
         return $this->_inserts;
     }
-    
+
     public function getUpdates()
     {
         return $this->_updates;
     }
-    
+
     public function getDeletes()
     {
         return $this->_deletes;
     }
-    
+
     public function reset()
     {
         $this->existsCalled = false;

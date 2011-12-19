@@ -30,7 +30,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $person = new CompanyPerson;
         $person->setName('Roman S. Borschel');
-        
+
         $this->_em->persist($person);
 
         $employee = new CompanyEmployee;
@@ -44,7 +44,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->_em->clear();
-        
+
         $query = $this->_em->createQuery("select p from Doctrine\Tests\Models\Company\CompanyPerson p order by p.name desc");
 
         $entities = $query->getResult();
@@ -59,7 +59,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(100000, $entities[1]->getSalary());
 
         $this->_em->clear();
-        
+
         $query = $this->_em->createQuery("select p from Doctrine\Tests\Models\Company\CompanyEmployee p");
 
         $entities = $query->getResult();
@@ -71,13 +71,13 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(100000, $entities[0]->getSalary());
 
         $this->_em->clear();
-        
+
         $guilherme = $this->_em->getRepository(get_class($employee))->findOneBy(array('name' => 'Guilherme Blanco'));
         $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $guilherme);
         $this->assertEquals('Guilherme Blanco', $guilherme->getName());
 
         $this->_em->clear();
-        
+
         $query = $this->_em->createQuery("update Doctrine\Tests\Models\Company\CompanyEmployee p set p.name = ?1, p.department = ?2 where p.name='Guilherme Blanco' and p.salary = ?3");
         $query->setParameter(1, 'NewName', 'string');
         $query->setParameter(2, 'NewDepartment');
@@ -85,12 +85,12 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->getSql();
         $numUpdated = $query->execute();
         $this->assertEquals(1, $numUpdated);
-        
+
         $query = $this->_em->createQuery("delete from Doctrine\Tests\Models\Company\CompanyPerson p");
         $numDeleted = $query->execute();
         $this->assertEquals(2, $numDeleted);
     }
-    
+
     public function testMultiLevelUpdateAndFind() {
     	$manager = new CompanyManager;
         $manager->setName('Roman S. Borschel');
@@ -99,24 +99,24 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $manager->setTitle('CTO');
         $this->_em->persist($manager);
         $this->_em->flush();
-        
+
         $manager->setName('Roman B.');
         $manager->setSalary(119000);
         $manager->setTitle('CEO');
         $this->_em->persist($manager);
         $this->_em->flush();
-        
+
         $this->_em->clear();
-        
+
         $manager = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $manager->getId());
-        
+
         $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyManager', $manager);
         $this->assertEquals('Roman B.', $manager->getName());
         $this->assertEquals(119000, $manager->getSalary());
         $this->assertEquals('CEO', $manager->getTitle());
         $this->assertTrue(is_numeric($manager->getId()));
     }
-    
+
     public function testFindOnBaseClass() {
         $manager = new CompanyManager;
         $manager->setName('Roman S. Borschel');
@@ -125,11 +125,11 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $manager->setTitle('CTO');
         $this->_em->persist($manager);
         $this->_em->flush();
-        
+
         $this->_em->clear();
-        
+
         $person = $this->_em->find('Doctrine\Tests\Models\Company\CompanyPerson', $manager->getId());
-        
+
         $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyManager', $person);
         $this->assertEquals('Roman S. Borschel', $person->getName());
         $this->assertEquals(100000, $person->getSalary());
@@ -137,34 +137,34 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue(is_numeric($person->getId()));
         //$this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyCar', $person->getCar());
     }
-    
+
     public function testSelfReferencingOneToOne() {
     	$manager = new CompanyManager;
         $manager->setName('John Smith');
         $manager->setSalary(100000);
         $manager->setDepartment('IT');
         $manager->setTitle('CTO');
-        
+
         $wife = new CompanyPerson;
         $wife->setName('Mary Smith');
         $wife->setSpouse($manager);
-        
+
         $this->assertSame($manager, $wife->getSpouse());
         $this->assertSame($wife, $manager->getSpouse());
-        
+
         $this->_em->persist($manager);
         $this->_em->persist($wife);
-        
+
         $this->_em->flush();
-        
+
         //var_dump($this->_em->getConnection()->fetchAll('select * from company_persons'));
         //var_dump($this->_em->getConnection()->fetchAll('select * from company_employees'));
         //var_dump($this->_em->getConnection()->fetchAll('select * from company_managers'));
-        
+
         $this->_em->clear();
-        
+
         $query = $this->_em->createQuery('select p, s from Doctrine\Tests\Models\Company\CompanyPerson p join p.spouse s where p.name=\'Mary Smith\'');
-        
+
         $result = $query->getResult();
         $this->assertEquals(1, count($result));
         $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyPerson', $result[0]);
@@ -173,40 +173,40 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('John Smith', $result[0]->getSpouse()->getName());
         $this->assertSame($result[0], $result[0]->getSpouse()->getSpouse());
     }
-    
+
     public function testSelfReferencingManyToMany()
     {
         $person1 = new CompanyPerson;
         $person1->setName('Roman');
-        
+
         $person2 = new CompanyPerson;
         $person2->setName('Jonathan');
-        
+
         $person1->addFriend($person2);
-        
+
         $this->assertEquals(1, count($person1->getFriends()));
         $this->assertEquals(1, count($person2->getFriends()));
-        
-        
+
+
         $this->_em->persist($person1);
         $this->_em->persist($person2);
-        
+
         $this->_em->flush();
-        
+
         $this->_em->clear();
-        
+
         $query = $this->_em->createQuery('select p, f from Doctrine\Tests\Models\Company\CompanyPerson p join p.friends f where p.name=?1');
         $query->setParameter(1, 'Roman');
-        
+
         $result = $query->getResult();
         $this->assertEquals(1, count($result));
         $this->assertEquals(1, count($result[0]->getFriends()));
         $this->assertEquals('Roman', $result[0]->getName());
-        
+
         $friends = $result[0]->getFriends();
         $this->assertEquals('Jonathan', $friends[0]->getName());
     }
-    
+
     public function testLazyLoading1()
     {
         $org = new CompanyOrganization;
@@ -216,27 +216,27 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $event2 = new CompanyRaffle;
         $event2->setData('raffle');
         $org->addEvent($event2);
-        
+
         $this->_em->persist($org);
         $this->_em->flush();
         $this->_em->clear();
-        
+
         $orgId = $org->getId();
-        
+
         $q = $this->_em->createQuery('select a from Doctrine\Tests\Models\Company\CompanyOrganization a where a.id = ?1');
         $q->setParameter(1, $orgId);
-        
+
         $result = $q->getResult();
-        
+
         $this->assertEquals(1, count($result));
         $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyOrganization', $result[0]);
         $this->assertNull($result[0]->getMainEvent());
-        
+
         $events = $result[0]->getEvents();
-        
+
         $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $events);
         $this->assertFalse($events->isInitialized());
-        
+
         $this->assertEquals(2, count($events));
         if ($events[0] instanceof CompanyAuction) {
             $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyRaffle', $events[1]);
@@ -246,7 +246,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
-    
+
     public function testLazyLoading2()
     {
         $org = new CompanyOrganization;
@@ -280,7 +280,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyAuction', $mainEvent);
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $mainEvent);
     }
-    
+
     /**
      * @group DDC-368
      */
@@ -291,9 +291,9 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertTrue(count($this->_em->createQuery(
             'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1')
-            ->getResult()) > 0);   
+            ->getResult()) > 0);
     }
-    
+
     /**
      * @group DDC-1341
      */
@@ -303,7 +303,7 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createQuery($dql)
             ->setParameter(0, new \DateTime())
             ->setParameter(1, 'IT');
-        
+
         $result = $query->execute();
 
     }

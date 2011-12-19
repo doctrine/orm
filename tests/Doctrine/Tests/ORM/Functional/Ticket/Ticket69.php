@@ -58,7 +58,7 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $relation2->setParent($lemma1);
         $relation2->setChild($lemma3);
         $relation2->setType($type1);
-    
+
         $relation3 = new Relation;
         $relation3->setParent($lemma1);
         $relation3->setChild($lemma4);

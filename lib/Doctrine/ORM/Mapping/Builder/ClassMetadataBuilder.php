@@ -62,7 +62,7 @@ class ClassMetadataBuilder
     public function setMappedSuperClass()
     {
         $this->cm->isMappedSuperclass = true;
-        
+
         return $this;
     }
 

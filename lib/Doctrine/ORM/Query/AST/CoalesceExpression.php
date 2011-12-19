@@ -33,13 +33,13 @@ namespace Doctrine\ORM\Query\AST;
 class CoalesceExpression extends Node
 {
     public $scalarExpressions = array();
-    
+
 
     public function __construct(array $scalarExpressions)
     {
         $this->scalarExpressions  = $scalarExpressions;
-    }    
-    
+    }
+
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkCoalesceExpression($this);
