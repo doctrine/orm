@@ -36,7 +36,7 @@ class CmsArticle
      * @Version @column(type="integer")
      */
     public $version;
-    
+
     public function setAuthor(CmsUser $author) {
         $this->user = $author;
     }

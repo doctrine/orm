@@ -21,7 +21,8 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\ORM\PersistentCollection,
+use Doctrine\ORM\Mapping\ClassMetadata,
+    Doctrine\ORM\PersistentCollection,
     Doctrine\ORM\UnitOfWork;
 
 /**
@@ -29,6 +30,7 @@ use Doctrine\ORM\PersistentCollection,
  *
  * @author  Roman Borschel <roman@code-factory.org>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Alexander <iam.asm89@gmail.com>
  * @since   2.0
  */
 class ManyToManyPersister extends AbstractCollectionPersister
@@ -215,10 +217,16 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 ? $id[$class->getFieldForColumn($joinColumns[$joinTableColumn])]
                 : $id[$class->fieldNames[$joinColumns[$joinTableColumn]]];
         }
-        
+
+        list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($mapping);
+        if ($filterSql) {
+            $whereClauses[] = $filterSql;
+        }
+
         $sql = 'SELECT COUNT(*)'
-             . ' FROM ' . $class->getQuotedJoinTableName($mapping, $this->_conn->getDatabasePlatform()) 
-             . ' WHERE ' . implode(' AND ', $whereClauses);
+            . ' FROM ' . $class->getQuotedJoinTableName($mapping, $this->_conn->getDatabasePlatform()) . ' t'
+            . $joinTargetEntitySQL
+            . ' WHERE ' . implode(' AND ', $whereClauses);
 
         return $this->_conn->fetchColumn($sql, $params);
     }
@@ -250,7 +258,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             return false;
         }
 
-        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($coll, $element);
+        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($coll, $element, true);
         
         $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
 
@@ -271,7 +279,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             return false;
         }
 
-        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($coll, $element);
+        list($quotedJoinTable, $whereClauses, $params) = $this->getJoinTableRestrictions($coll, $element, false);
 
         $sql = 'DELETE FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
              
@@ -281,9 +289,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * @param \Doctrine\ORM\PersistentCollection $coll
      * @param object $element
+     * @param boolean $addFilters Whether the filter SQL should be included or not.
      * @return array
      */
-    private function getJoinTableRestrictions(PersistentCollection $coll, $element)
+    private function getJoinTableRestrictions(PersistentCollection $coll, $element, $addFilters)
     {
         $uow     = $this->_em->getUnitOfWork();
         $mapping = $coll->getMapping();
@@ -321,7 +330,73 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 ? $sourceId[$sourceClass->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])]
                 : $sourceId[$sourceClass->fieldNames[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]];
         }
+
+        if ($addFilters) {
+            list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($mapping);
+            if ($filterSql) {
+                $quotedJoinTable .= ' t ' . $joinTargetEntitySQL;
+                $whereClauses[] = $filterSql;
+            }
+        }
         
         return array($quotedJoinTable, $whereClauses, $params);
+    }
+
+    /**
+     * Generates the filter SQL for a given mapping.
+     *
+     * This method is not used for actually grabbing the related entities
+     * but when the extra-lazy collection methods are called on a filtered
+     * association. This is why besides the many to many table we also
+     * have to join in the actual entities table leading to additional
+     * JOIN.
+     *
+     * @param array $targetEntity Array containing mapping information.
+     *
+     * @return string The SQL query part to add to a query.
+     */
+    public function getFilterSql($mapping)
+    {
+        $targetClass = $this->_em->getClassMetadata($mapping['targetEntity']);
+        $targetClass = $this->_em->getClassMetadata($targetClass->rootEntityName);
+
+        // A join is needed if there is filtering on the target entity
+        $joinTargetEntitySQL = '';
+        if ($filterSql = $this->generateFilterConditionSQL($targetClass, 'te')) {
+            $joinTargetEntitySQL = ' JOIN '
+                . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) . ' te'
+                . ' ON';
+
+            $joinTargetEntitySQLClauses = array();
+            foreach ($mapping['relationToTargetKeyColumns'] as $joinTableColumn => $targetTableColumn) {
+                $joinTargetEntitySQLClauses[] = ' t.' . $joinTableColumn . ' = ' . 'te.' . $targetTableColumn;
+            }
+
+            $joinTargetEntitySQL .= implode(' AND ', $joinTargetEntitySQLClauses);
+        }
+
+        return array($joinTargetEntitySQL, $filterSql);
+    }
+
+    /**
+     * Generates the filter SQL for a given entity and table alias.
+     *
+     * @param ClassMetadata $targetEntity Metadata of the target entity.
+     * @param string $targetTableAlias The table alias of the joined/selected table.
+     *
+     * @return string The SQL query part to add to a query.
+     */
+    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    {
+        $filterClauses = array();
+
+        foreach ($this->_em->getFilters()->getEnabledFilters() as $filter) {
+            if ($filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+                $filterClauses[] = '(' . $filterExpr . ')';
+            }
+        }
+
+        $sql = implode(' AND ', $filterClauses);
+        return $sql ? "(" . $sql . ")" : "";
     }
 }

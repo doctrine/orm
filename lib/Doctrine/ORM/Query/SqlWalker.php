@@ -33,6 +33,7 @@ use Doctrine\DBAL\LockMode,
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author Roman Borschel <roman@code-factory.org>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @author Alexander <iam.asm89@gmail.com>
  * @since  2.0
  * @todo Rename: SQLWalker
  */
@@ -267,6 +268,11 @@ class SqlWalker implements TreeWalker
                 $sqlParts[] = $baseTableAlias . '.' . $columnName . ' = ' . $tableAlias . '.' . $columnName;
             }
 
+            // Add filters on the root class
+            if ($filterSql = $this->generateFilterConditionSQL($parentClass, $tableAlias)) {
+                $sqlParts[] = $filterSql;
+            }
+
             $sql .= implode(' AND ', $sqlParts);
         }
 
@@ -352,6 +358,50 @@ class SqlWalker implements TreeWalker
         return (count($sqlParts) > 1) ? '(' . $sql . ')' : $sql;
     }
 
+    /**
+     * Generates the filter SQL for a given entity and table alias.
+     *
+     * @param ClassMetadata $targetEntity Metadata of the target entity.
+     * @param string $targetTableAlias The table alias of the joined/selected table.
+     *
+     * @return string The SQL query part to add to a query.
+     */
+    private function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    {
+        if (!$this->_em->hasFilters()) {
+            return '';
+        }
+
+        switch($targetEntity->inheritanceType) {
+            case ClassMetadata::INHERITANCE_TYPE_NONE:
+                break;
+            case ClassMetadata::INHERITANCE_TYPE_JOINED:
+                // The classes in the inheritance will be added to the query one by one,
+                // but only the root node is getting filtered
+                if ($targetEntity->name !== $targetEntity->rootEntityName) {
+                    return '';
+                }
+                break;
+            case ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE:
+                // With STI the table will only be queried once, make sure that the filters
+                // are added to the root entity
+                $targetEntity = $this->_em->getClassMetadata($targetEntity->rootEntityName);
+                break;
+            default:
+                //@todo: throw exception?
+                return '';
+            break;
+        }
+
+        $filterClauses = array();
+        foreach ($this->_em->getFilters()->getEnabledFilters() as $filter) {
+            if ('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+                $filterClauses[] = '(' . $filterExpr . ')';
+            }
+        }
+
+        return implode(' AND ', $filterClauses);
+    }
     /**
      * Walks down a SelectStatement AST node, thereby generating the appropriate SQL.
      *
@@ -802,6 +852,7 @@ class SqlWalker implements TreeWalker
                     $sql .= $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $targetTableAlias . '.' . $sourceColumn;
                 }
             }
+
         } else if ($assoc['type'] == ClassMetadata::MANY_TO_MANY) {
             // Join relation table
             $joinTable = $assoc['joinTable'];
@@ -867,6 +918,11 @@ class SqlWalker implements TreeWalker
             }
         }
 
+        // Apply the filters
+        if ($filterExpr = $this->generateFilterConditionSQL($targetClass, $targetTableAlias)) {
+            $sql .= ' AND ' . $filterExpr;
+        }
+
         // Handle WITH clause
         if (($condExpr = $join->conditionalExpression) !== null) {
             // Phase 2 AST optimization: Skip processment of ConditionalExpression
@@ -922,17 +978,13 @@ class SqlWalker implements TreeWalker
      */
     public function walkCoalesceExpression($coalesceExpression)
     {
-        $sql = 'COALESCE(';
-
         $scalarExpressions = array();
 
         foreach ($coalesceExpression->scalarExpressions as $scalarExpression) {
             $scalarExpressions[] = $this->walkSimpleArithmeticExpression($scalarExpression);
         }
 
-        $sql .= implode(', ', $scalarExpressions) . ')';
-
-        return $sql;
+        return 'COALESCE(' . implode(', ', $scalarExpressions) . ')';
     }
 
     /**
@@ -1466,6 +1518,26 @@ class SqlWalker implements TreeWalker
     {
         $condSql  = null !== $whereClause ? $this->walkConditionalExpression($whereClause->conditionalExpression) : '';
         $discrSql = $this->_generateDiscriminatorColumnConditionSql($this->_rootAliases);
+
+        if ($this->_em->hasFilters()) {
+            $filterClauses = array();
+            foreach ($this->_rootAliases as $dqlAlias) {
+                $class = $this->_queryComponents[$dqlAlias]['metadata'];
+                $tableAlias = $this->getSQLTableAlias($class->table['name'], $dqlAlias);
+
+                if ($filterExpr = $this->generateFilterConditionSQL($class, $tableAlias)) {
+                    $filterClauses[] = $filterExpr;
+                }
+            }
+
+            if (count($filterClauses)) {
+                if ($condSql) {
+                    $condSql .= ' AND ';
+                }
+
+                $condSql .= implode(' AND ', $filterClauses);
+            }
+        }
 
         if ($condSql) {
             return ' WHERE ' . (( ! $discrSql) ? $condSql : '(' . $condSql . ') AND ' . $discrSql);

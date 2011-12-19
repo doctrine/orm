@@ -67,6 +67,11 @@ class MappingException extends \Doctrine\ORM\ORMException
     {
         return new self("No mapping file found named '$fileName' for class '$entityName'.");
     }
+    
+    public static function invalidMappingFile($entityName, $fileName)
+    {
+        return new self("Invalid mapping file '$fileName' for class '$entityName'.");
+    }
 
     public static function mappingNotFound($className, $fieldName)
     {
@@ -313,5 +318,10 @@ class MappingException extends \Doctrine\ORM\ORMException
     public static function invalidFetchMode($className, $annotation)
     {
         return new self("Entity '" . $className . "' has a mapping with invalid fetch mode '" . $annotation . "'");
+    }
+
+    public static function compositeKeyAssignedIdGeneratorRequired($className)
+    {
+        return new self("Entity '". $className . "' has a composite identifier but uses an ID generator other than manually assigning (Identity, Sequence). This is not supported.");
     }
 }

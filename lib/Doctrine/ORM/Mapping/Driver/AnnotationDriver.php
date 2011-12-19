@@ -192,7 +192,14 @@ class AnnotationDriver implements Driver
         if (isset($classAnnotations['Doctrine\ORM\Mapping\NamedQueries'])) {
             $namedQueriesAnnot = $classAnnotations['Doctrine\ORM\Mapping\NamedQueries'];
 
+            if (!is_array($namedQueriesAnnot->value)) {
+                throw new \UnexpectedValueException("@NamedQueries should contain an array of @NamedQuery annotations.");
+            }
+
             foreach ($namedQueriesAnnot->value as $namedQuery) {
+                if (!($namedQuery instanceof \Doctrine\ORM\Mapping\NamedQuery)) {
+                    throw new \UnexpectedValueException("@NamedQueries should contain an array of @NamedQuery annotations.");
+                }
                 $metadata->addNamedQuery(array(
                     'name'  => $namedQuery->name,
                     'query' => $namedQuery->query

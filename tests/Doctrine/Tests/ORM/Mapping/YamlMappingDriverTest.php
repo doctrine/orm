@@ -43,4 +43,15 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
         $this->assertEquals('Doctrine\Tests\Models\DirectoryTree\Directory', $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
     }
 
+    /**
+     * @group DDC-1468
+     *
+     * @expectedException Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage Invalid mapping file 'Doctrine.Tests.Models.Generic.SerializationModel.dcm.yml' for class 'Doctrine\Tests\Models\Generic\SerializationModel'.
+     */
+    public function testInvalidMappingFileException()
+    {
+        $this->createClassMetadata('Doctrine\Tests\Models\Generic\SerializationModel');
+    }
+
 }

@@ -27,6 +27,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @author Alexander <iam.asm89@gmail.com>
  * @since 2.0
  * @link http://martinfowler.com/eaaCatalog/singleTableInheritance.html
  */
@@ -130,5 +131,15 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
                        . ' IN (' . implode(', ', $values) . ')';
 
         return $conditionSql;
+    }
+
+    /** {@inheritdoc} */
+    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    {
+        // Ensure that the filters are applied to the root entity of the inheritance tree
+        $targetEntity = $this->_em->getClassMetadata($targetEntity->rootEntityName);
+        // we dont care about the $targetTableAlias, in a STI there is only one table.
+
+        return parent::generateFilterConditionSQL($targetEntity, $targetTableAlias);
     }
 }
