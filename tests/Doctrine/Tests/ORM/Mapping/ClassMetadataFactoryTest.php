@@ -8,6 +8,7 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 

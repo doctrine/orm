@@ -409,10 +409,6 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             if ($c === $fqcn || is_subclass_of($c, $fqcn)) {
                 if (isset($this->loadedMetadata[$c])) {
                     $subClassMetadata = $this->loadedMetadata[$c];
-
-                    if (!$subClassMetadata->isMappedSuperclass) {
-                        $loadedSubClassesMetadata[] = $subClassMetadata;
-                    }
                 } else {
                     $subClassMetadata = $this->newClassMetadataInstance($c);
                     $this->driver->loadMetadataForClass($c, $subClassMetadata);
@@ -420,6 +416,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
                 if (!$subClassMetadata->isMappedSuperclass) {
                     $map[str_replace('\\', '.', $subClassMetadata->getName())] = $subClassMetadata->getName();
+                    $loadedSubClassesMetadata[] = $subClassMetadata;
                 }
             }
         }
