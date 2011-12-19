@@ -1392,6 +1392,29 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group DDC-1213
+     */
+    public function testSupportsBitComparison()
+    {
+        $this->assertSqlGeneration(
+            'SELECT BIT_OR(4,2), BIT_AND(4,2), u FROM Doctrine\Tests\Models\CMS\CmsUser u',
+            'SELECT (4 | 2) AS sclr0, (4 & 2) AS sclr1, c0_.id AS id2, c0_.status AS status3, c0_.username AS username4, c0_.name AS name5 FROM cms_users c0_'
+        );
+        $this->assertSqlGeneration(
+            'SELECT BIT_OR(u.id,2), BIT_AND(u.id,2) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE BIT_OR(u.id,2) > 0',
+            'SELECT (c0_.id | 2) AS sclr0, (c0_.id & 2) AS sclr1 FROM cms_users c0_ WHERE (c0_.id | 2) > 0'
+        );
+        $this->assertSqlGeneration(
+            'SELECT BIT_OR(u.id,2), BIT_AND(u.id,2) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE BIT_AND(u.id , 4) > 0',
+            'SELECT (c0_.id | 2) AS sclr0, (c0_.id & 2) AS sclr1 FROM cms_users c0_ WHERE (c0_.id & 4) > 0'
+        );
+        $this->assertSqlGeneration(
+            'SELECT BIT_OR(u.id,2), BIT_AND(u.id,2) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE BIT_OR(u.id , 2) > 0 OR BIT_AND(u.id , 4) > 0',
+            'SELECT (c0_.id | 2) AS sclr0, (c0_.id & 2) AS sclr1 FROM cms_users c0_ WHERE (c0_.id | 2) > 0 OR (c0_.id & 4) > 0'
+        );
+    }
+
     public function testCustomTypeValueSql()
     {
         if (DBALType::hasType('negative_to_positive')) {
