@@ -978,17 +978,13 @@ class SqlWalker implements TreeWalker
      */
     public function walkCoalesceExpression($coalesceExpression)
     {
-        $sql = 'COALESCE(';
-
         $scalarExpressions = array();
 
         foreach ($coalesceExpression->scalarExpressions as $scalarExpression) {
             $scalarExpressions[] = $this->walkSimpleArithmeticExpression($scalarExpression);
         }
 
-        $sql .= implode(', ', $scalarExpressions) . ')';
-
-        return $sql;
+        return 'COALESCE(' . implode(', ', $scalarExpressions) . ')';
     }
 
     /**
