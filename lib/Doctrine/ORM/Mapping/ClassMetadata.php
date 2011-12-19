@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping;
 
 use ReflectionClass, ReflectionProperty;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata AS IClassMetadata;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -39,7 +40,7 @@ use ReflectionClass, ReflectionProperty;
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @since 2.0
  */
-class ClassMetadata extends ClassMetadataInfo
+class ClassMetadata extends ClassMetadataInfo implements IClassMetadata
 {
     /**
      * The ReflectionProperty instances of the mapped class.
