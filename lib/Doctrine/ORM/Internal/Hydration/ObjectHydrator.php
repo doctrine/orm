@@ -257,15 +257,7 @@ class ObjectHydrator extends AbstractHydrator
 
         /* @var $class ClassMetadata */
         if ($class->isIdentifierComposite) {
-            $idHash = '';
-            foreach ($class->identifier as $fieldName) {
-                if (isset($class->associationMappings[$fieldName])) {
-                    $idHash .= $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']] . ' ';
-                } else {
-                    $idHash .= $data[$fieldName] . ' ';
-                }
-            }
-            return $this->_uow->tryGetByIdHash(rtrim($idHash), $class->rootEntityName);
+            return $this->_uow->tryGetById($class->identifier, $class->rootEntityName);
         } else if (isset($class->associationMappings[$class->identifier[0]])) {
             return $this->_uow->tryGetByIdHash($data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']], $class->rootEntityName);
         } else {
