@@ -61,7 +61,6 @@ class SimplifiedYamlDriver extends YamlDriver
         $this->_prefixes[$path] = $prefix;
     }
 
-
     public function getNamespacePrefixes()
     {
         return $this->_prefixes;
