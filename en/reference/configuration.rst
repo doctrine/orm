@@ -495,3 +495,17 @@ correctly if sub-namespaces use different metadata driver
 implementations.
 
 
+Default Repository (***OPTIONAL***)
+-------------------------
+
+Specifies the FQCN of a subclass of the EntityRepository.
+That will be available for all entities without a custom repository class.
+
+.. code-block:: php
+
+    <?php
+    $config->setDefaultRepositoryClassName($fqcn);
+    $config->getDefaultRepositoryClassName();
+
+The default value is ``Doctrine\ORM\EntityRepository``.
+Any repository class must be a subclass of EntityRepository otherwise you got an ORMException
