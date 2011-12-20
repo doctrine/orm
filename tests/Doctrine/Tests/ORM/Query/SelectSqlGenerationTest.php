@@ -1415,6 +1415,25 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group DDC-1539
+     */
+    public function testParenthesesOnTheLeftHandOfComparison()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u where ( (u.id + u.id) * u.id ) > 100',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (c0_.id + c0_.id) * c0_.id > 100'
+        );
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u where (u.id + u.id) * u.id > 100',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (c0_.id + c0_.id) * c0_.id > 100'
+        );
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u where 100 < (u.id + u.id) * u.id ',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE 100 < (c0_.id + c0_.id) * c0_.id'
+        );
+    }
+
     public function testCustomTypeValueSql()
     {
         if (DBALType::hasType('negative_to_positive')) {
