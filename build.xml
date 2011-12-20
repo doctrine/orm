@@ -94,8 +94,8 @@
                <pear minimum_version="1.6.0" recommended_version="1.6.1" />
                <package name="DoctrineCommon" channel="pear.doctrine-project.org" minimum_version="${dependencies.common}" />
                <package name="DoctrineDBAL" channel="pear.doctrine-project.org" minimum_version="${dependencies.dbal}" />
-               <package name="Console" channel="pear.symfony.org" minimum_version="2.0.0" />
-               <package name="Yaml" channel="pear.symfony.org" minimum_version="2.0.0" />
+               <package name="Console" channel="pear.symfony.com" minimum_version="2.0.0" />
+               <package name="Yaml" channel="pear.symfony.com" minimum_version="2.0.0" />
            </dependencies>
            <dirroles key="bin">script</dirroles>
            <ignore>Doctrine/Common/</ignore>
