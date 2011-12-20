@@ -1305,9 +1305,11 @@ class UnitOfWork implements PropertyChangedListener
 
         if ( ! $id) {
             return self::STATE_NEW;
-        } elseif (count($id) && is_object(reset($id))) {
+        } 
+ 
+        if (count($id) && is_object(reset($id))) {
             $state = $this->getEntityState(reset($id));
-            if ($state===self::STATE_NEW) {
+            if ($state === self::STATE_NEW) {
                 return self::STATE_NEW;    
             }
         }
@@ -2612,10 +2614,10 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Compute a hash for the given id. Acept also objects ( for association keys)
+     * Compute a hash for the given id. Accept also objects (for association keys)
      *
      * @param mixed $id The entity identifier to look for.
-     * @return strine Returns the computed hash.
+     * @return string Returns the computed hash.
      */
     private function getHashForEntityIdentifier(array $ids)
     {
@@ -2635,6 +2637,7 @@ class UnitOfWork implements PropertyChangedListener
         }
         return implode(' ', $strings);
     }
+
     /**
      * Tries to find an entity with the given identifier in the identity map of
      * this UnitOfWork.

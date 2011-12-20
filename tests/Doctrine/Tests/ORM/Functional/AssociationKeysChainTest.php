@@ -8,8 +8,10 @@ require_once __DIR__ . '/../../TestInit.php';
  *
  * @author robo
  */
-class AssociationKeysChainTest extends \Doctrine\Tests\OrmFunctionalTestCase{
-    public function setUp(){
+class AssociationKeysChainTest extends \Doctrine\Tests\OrmFunctionalTestCase
+{
+    public function setUp()
+    {
         parent::setUp();
         $this->_schemaTool->createSchema(array(
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\AssociationKeysChain0'),
@@ -18,6 +20,7 @@ class AssociationKeysChainTest extends \Doctrine\Tests\OrmFunctionalTestCase{
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\AssociationKeysChainC'),
         ));
     }
+
     public function testIssue()
     {
 

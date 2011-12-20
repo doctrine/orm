@@ -1455,9 +1455,10 @@ class BasicEntityPersister
         }
         return $type;
     }
+
     /**
-     * Infer (recursivley) field type to be used by parameter type casting.
-     * Used by getType() method.
+     * Infer (recursively) field type to be used by parameter type casting.
+     * @see getType($field, $value)
      * 
      * @param string $field
      * @param mixed $value
@@ -1468,8 +1469,6 @@ class BasicEntityPersister
         switch (true) {
             case (isset($class->fieldMappings[$field])):
                 return $class->fieldMappings[$field]['type'];
-                break;
-
             case (isset($class->associationMappings[$field])):
                 $assoc = $class->associationMappings[$field];
 
@@ -1479,8 +1478,6 @@ class BasicEntityPersister
 
                 $targetClass  = $this->_em->getClassMetadata($assoc['targetEntity']);
                 return $this->getRecursiveType($targetClass->identifier[0], $targetClass);
-                break;
-
             default:
                return null;
         }   
