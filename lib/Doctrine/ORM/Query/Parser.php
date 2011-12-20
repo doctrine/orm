@@ -2151,7 +2151,8 @@ class Parser
         $peek = $this->_peekBeyondClosingParenthesis();
 
         if (in_array($peek['value'], array("=",  "<", "<=", "<>", ">", ">=", "!=")) ||
-            in_array($peek['type'], array(Lexer::T_NOT, Lexer::T_BETWEEN, Lexer::T_LIKE, Lexer::T_IN, Lexer::T_IS, Lexer::T_EXISTS))) {
+            in_array($peek['type'], array(Lexer::T_NOT, Lexer::T_BETWEEN, Lexer::T_LIKE, Lexer::T_IN, Lexer::T_IS, Lexer::T_EXISTS)) ||
+            $this->_isMathOperator($peek)) {
             $condPrimary->simpleConditionalExpression = $this->SimpleConditionalExpression();
 
             return $condPrimary;
