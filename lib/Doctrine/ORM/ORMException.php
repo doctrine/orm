@@ -144,4 +144,9 @@ class ORMException extends Exception
         return new self("Invalid repository class '".$className."'. ".
                 "it must be a Doctrine\ORM\EntityRepository.");
     }
+
+    public static function missingIdentifierField($className, $fieldName)
+    {
+        return new self("The identifier $fieldName is missing for a query of " . $className);
+    }
 }

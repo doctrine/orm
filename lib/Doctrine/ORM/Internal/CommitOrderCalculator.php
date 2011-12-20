@@ -23,20 +23,21 @@ namespace Doctrine\ORM\Internal;
  * The CommitOrderCalculator is used by the UnitOfWork to sort out the
  * correct order in which changes to entities need to be persisted.
  *
- * @since 2.0
- * @author Roman Borschel <roman@code-factory.org> 
+ * @since 	2.0
+ * @author 	Roman Borschel <roman@code-factory.org>
+ * @author	Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class CommitOrderCalculator
 {
     const NOT_VISITED = 1;
     const IN_PROGRESS = 2;
     const VISITED = 3;
-    
+
     private $_nodeStates = array();
     private $_classes = array(); // The nodes to sort
     private $_relatedClasses = array();
     private $_sorted = array();
-    
+
     /**
      * Clears the current graph.
      *
@@ -47,10 +48,10 @@ class CommitOrderCalculator
         $this->_classes =
         $this->_relatedClasses = array();
     }
-    
+
     /**
      * Gets a valid commit order for all current nodes.
-     * 
+     *
      * Uses a depth-first search (DFS) to traverse the graph.
      * The desired topological sorting is the reverse postorder of these searches.
      *
@@ -60,17 +61,16 @@ class CommitOrderCalculator
     {
         // Check whether we need to do anything. 0 or 1 node is easy.
         $nodeCount = count($this->_classes);
-        if ($nodeCount == 0) {
-            return array();
-        } else if ($nodeCount == 1) {
-            return array_values($this->_classes);
+
+        if ($nodeCount <= 1) {
+            return ($nodeCount == 1) ? array_values($this->_classes) : array();
         }
-        
+
         // Init
         foreach ($this->_classes as $node) {
             $this->_nodeStates[$node->name] = self::NOT_VISITED;
         }
-        
+
         // Go
         foreach ($this->_classes as $node) {
             if ($this->_nodeStates[$node->name] == self::NOT_VISITED) {
@@ -100,17 +100,17 @@ class CommitOrderCalculator
         $this->_nodeStates[$node->name] = self::VISITED;
         $this->_sorted[] = $node;
     }
-    
+
     public function addDependency($fromClass, $toClass)
     {
         $this->_relatedClasses[$fromClass->name][] = $toClass;
     }
-    
+
     public function hasClass($className)
     {
         return isset($this->_classes[$className]);
     }
-    
+
     public function addClass($class)
     {
         $this->_classes[$class->name] = $class;

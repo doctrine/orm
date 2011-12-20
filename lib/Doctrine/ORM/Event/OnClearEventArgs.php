@@ -31,7 +31,7 @@ namespace Doctrine\ORM\Event;
 class OnClearEventArgs extends \Doctrine\Common\EventArgs
 {
     /**
-     * @var Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
     private $em;
 
@@ -42,8 +42,8 @@ class OnClearEventArgs extends \Doctrine\Common\EventArgs
 
     /**
      * Constructor.
-     * 
-     * @param Doctrine\ORM\EntityManager $em
+     *
+     * @param \Doctrine\ORM\EntityManager $em
      * @param string $entityClass Optional entity class
      */
     public function __construct($em, $entityClass = null)
@@ -54,8 +54,8 @@ class OnClearEventArgs extends \Doctrine\Common\EventArgs
 
     /**
      * Retrieve associated EntityManager.
-     * 
-     * @return Doctrine\ORM\EntityManager
+     *
+     * @return \Doctrine\ORM\EntityManager
      */
     public function getEntityManager()
     {

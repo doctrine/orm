@@ -385,6 +385,25 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_NONE, $class->generatorType);
     }
+
+    /**
+     * @group DDC-1170
+     */
+    public function testIdentifierColumnDefinition()
+    {
+
+        $class = $this->createClassMetadata(__NAMESPACE__ . '\DDC1170Entity');
+
+
+        $this->assertArrayHasKey('id', $class->fieldMappings);
+        $this->assertArrayHasKey('value', $class->fieldMappings);
+
+        $this->assertArrayHasKey('columnDefinition', $class->fieldMappings['id']);
+        $this->assertArrayHasKey('columnDefinition', $class->fieldMappings['value']);
+
+        $this->assertEquals("INT unsigned NOT NULL", $class->fieldMappings['id']['columnDefinition']);
+        $this->assertEquals("VARCHAR(255) NOT NULL", $class->fieldMappings['value']['columnDefinition']);
+    }
 }
 
 /**
@@ -611,4 +630,65 @@ class Dog extends Animal
     {
 
     }
+}
+
+
+/**
+ * @Entity
+ */
+class DDC1170Entity
+{
+
+    /**
+     * @param string $value
+     */
+    function __construct($value = null)
+    {
+        $this->value = $value;
+    }
+
+    /**
+     * @Id
+     * @GeneratedValue(strategy="NONE")
+     * @Column(type="integer", columnDefinition = "INT unsigned NOT NULL")
+     **/
+    private $id;
+
+    /**
+     * @Column(columnDefinition = "VARCHAR(255) NOT NULL")
+     */
+    private $value;
+
+    /**
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public static function loadMetadata(ClassMetadataInfo $metadata)
+    {
+        $metadata->mapField(array(
+           'id'                 => true,
+           'fieldName'          => 'id',
+           'columnDefinition'   => 'INT unsigned NOT NULL',
+        ));
+
+        $metadata->mapField(array(
+            'fieldName'         => 'value',
+            'columnDefinition'  => 'VARCHAR(255) NOT NULL'
+        ));
+
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+    }
+
 }

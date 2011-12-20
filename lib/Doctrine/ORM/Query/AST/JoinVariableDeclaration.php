@@ -42,7 +42,7 @@ class JoinVariableDeclaration extends Node
         $this->join = $join;
         $this->indexBy = $indexBy;
     }
-    
+
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkJoinVariableDeclaration($this);

@@ -26,7 +26,7 @@ class DDC753CustomRepository extends EntityRepository
 {
 
     /**
-     * @return bool 
+     * @return bool
      */
     public function isCustomRepository()
     {

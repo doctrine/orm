@@ -82,7 +82,7 @@ class DDC501Test extends OrmFunctionalTestCase
         $this->assertEquals(4, count($userFromEntityManager->getPhonenumbers()));
 
         // This works fine as long as cmUser::groups doesn't cascade "merge"
-        // Otherwise group memberships are physically deleted now! 
+        // Otherwise group memberships are physically deleted now!
         $this->assertEquals(2, count($userClone->getGroups()));
     }
 

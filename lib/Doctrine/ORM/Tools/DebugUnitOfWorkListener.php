@@ -54,7 +54,7 @@ class DebugUnitOfWorkListener
 
     /**
      * Dump the contents of the identity map into a stream.
-     * 
+     *
      * @param EntityManager $em
      * @return void
      */

@@ -24,11 +24,11 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $cust = new ECommerceCustomer;
         $cust->setName('roman');
-        
+
         $cart = new ECommerceCart;
         $cart->setPayment('cash');
         $cart->setCustomer($cust);
-        
+
         $this->_em->persist($cust);
         $this->_em->persist($cart);
         $this->_em->flush();
@@ -36,7 +36,7 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $result = $this->_em->createQuery("select c, c.name, ca, ca.payment from Doctrine\Tests\Models\ECommerce\ECommerceCart ca join ca.customer c")
             ->getSingleResult(/*\Doctrine\ORM\Query::HYDRATE_ARRAY*/);
-        
+
         $cart2 = $result[0];
         unset($result[0]);
 

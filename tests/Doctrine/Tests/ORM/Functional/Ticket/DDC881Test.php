@@ -18,7 +18,7 @@ class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC881Phonecall'),
             ));
         } catch (\Exception $e) {
-            
+
         }
     }
 

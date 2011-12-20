@@ -53,7 +53,7 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->name = 'Guilherme';
         $user->username = 'gblanco';
         $user->status = 'developer';
-        
+
         $ph1 = new CmsPhonenumber;
         $ph1->phonenumber = "1234";
         $user->addPhonenumber($ph1);
@@ -62,23 +62,23 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->assertTrue($this->_em->contains($user));
         $this->assertTrue($user->phonenumbers->isInitialized());
-        
+
         $serialized = serialize($user);
         $this->_em->clear();
-        $this->assertFalse($this->_em->contains($user));        
+        $this->assertFalse($this->_em->contains($user));
         unset($user);
-        
+
         $user = unserialize($serialized);
 
         $this->assertEquals(1, count($user->getPhonenumbers()), "Pre-Condition: 1 Phonenumber");
-        
+
         $ph2 = new CmsPhonenumber;
         $ph2->phonenumber = "56789";
         $user->addPhonenumber($ph2);
         $oldPhonenumbers = $user->getPhonenumbers();
         $this->assertEquals(2, count($oldPhonenumbers), "Pre-Condition: 2 Phonenumbers");
         $this->assertFalse($this->_em->contains($user));
-        
+
         $this->_em->persist($ph2);
 
         // Merge back in
@@ -87,7 +87,7 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $user->phonenumbers[1]->user);
         $im = $this->_em->getUnitOfWork()->getIdentityMap();
         $this->_em->flush();
-        
+
         $this->assertTrue($this->_em->contains($user), "Failed to assert that merged user is contained inside EntityManager persistence context.");
         $phonenumbers = $user->getPhonenumbers();
         $this->assertNotSame($oldPhonenumbers, $phonenumbers, "Merge should replace the Detached Collection with a new PersistentCollection.");

@@ -40,7 +40,7 @@ class Comparison
     const LTE = '<=';
     const GT  = '>';
     const GTE = '>=';
-    
+
     private $_leftExpr;
     private $_operator;
     private $_rightExpr;

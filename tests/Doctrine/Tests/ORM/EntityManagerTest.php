@@ -143,7 +143,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         $this->_em->close();
         $this->_em->$methodName(new \stdClass());
     }
-    
+
     /**
      * @group DDC-1125
      */
@@ -152,7 +152,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         $return = $this->_em->transactional(function ($em) {
             return 'foo';
         });
-        
+
         $this->assertEquals('foo', $return);
     }
 }

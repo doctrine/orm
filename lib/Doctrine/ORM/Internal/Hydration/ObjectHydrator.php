@@ -26,7 +26,8 @@ use PDO,
     Doctrine\ORM\Event\LifecycleEventArgs,
     Doctrine\ORM\Events,
     Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\Common\Collections\Collection;
+    Doctrine\Common\Collections\Collection,
+    Doctrine\ORM\Proxy\Proxy;
 
 /**
  * The ObjectHydrator constructs an object graph out of an SQL result set.
@@ -36,11 +37,6 @@ use PDO,
  * @author Guilherme Blanco <guilhermeblanoc@hotmail.com>
  *
  * @internal Highly performance-sensitive code.
- *
- * @todo General behavior is "wrong" if you define an alias to selected IdentificationVariable.
- * Example: SELECT u AS user FROM User u
- * The result should contains an array where each array index is an array: array('user' => [User object])
- * Problem must be solved somehow by removing the isMixed in ResultSetMapping
  */
 class ObjectHydrator extends AbstractHydrator
 {
@@ -237,20 +233,20 @@ class ObjectHydrator extends AbstractHydrator
         }
 
         $this->_hints['fetchAlias'] = $dqlAlias;
-        
+
         $entity = $this->_uow->createEntity($className, $data, $this->_hints);
-        
+
         //TODO: These should be invoked later, after hydration, because associations may not yet be loaded here.
         if (isset($this->_ce[$className]->lifecycleCallbacks[Events::postLoad])) {
             $this->_ce[$className]->invokeLifecycleCallbacks(Events::postLoad, $entity);
         }
-        
+
         $evm = $this->_em->getEventManager();
 
         if ($evm->hasListeners(Events::postLoad)) {
             $evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($entity, $this->_em));
         }
-        
+
         return $entity;
     }
 
@@ -363,6 +359,7 @@ class ObjectHydrator extends AbstractHydrator
                     continue;
                 }
 
+
                 $parentClass = $this->_ce[$this->_rsm->aliasMap[$parentAlias]];
                 $oid = spl_object_hash($parentObject);
                 $relationField = $this->_rsm->relationMap[$dqlAlias];
@@ -417,7 +414,9 @@ class ObjectHydrator extends AbstractHydrator
                 } else {
                     // PATH B: Single-valued association
                     $reflFieldValue = $reflField->getValue($parentObject);
-                    if ( ! $reflFieldValue || isset($this->_hints[Query::HINT_REFRESH])) {
+                    if ( ! $reflFieldValue || isset($this->_hints[Query::HINT_REFRESH]) || ($reflFieldValue instanceof Proxy && !$reflFieldValue->__isInitialized__)) {
+                        // we only need to take action if this value is null,
+                        // we refresh the entity or its an unitialized proxy.
                         if (isset($nonemptyComponents[$dqlAlias])) {
                             $element = $this->_getEntity($data, $dqlAlias);
                             $reflField->setValue($parentObject, $element);
@@ -444,6 +443,8 @@ class ObjectHydrator extends AbstractHydrator
                             }
                             // Update result pointer
                             $this->_resultPointers[$dqlAlias] = $element;
+                        } else {
+                            $this->_uow->setOriginalEntityProperty($oid, $relationField, null);
                         }
                         // else leave $reflFieldValue null for single-valued associations
                     } else {

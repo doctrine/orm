@@ -67,7 +67,7 @@ final class PersistentCollection implements Collection
     /**
      * The EntityManager that manages the persistence of the collection.
      *
-     * @var Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
     private $em;
 
@@ -164,7 +164,7 @@ final class PersistentCollection implements Collection
 
         // If _backRefFieldName is set and its a one-to-many association,
         // we need to set the back reference.
-        if ($this->backRefFieldName && $this->association['type'] == ClassMetadata::ONE_TO_MANY) {
+        if ($this->backRefFieldName && $this->association['type'] === ClassMetadata::ONE_TO_MANY) {
             // Set back reference to owner
             $this->typeClass->reflFields[$this->backRefFieldName]->setValue(
                 $element, $this->owner
@@ -189,7 +189,7 @@ final class PersistentCollection implements Collection
 
         // If _backRefFieldName is set, then the association is bidirectional
         // and we need to set the back reference.
-        if ($this->backRefFieldName && $this->association['type'] == ClassMetadata::ONE_TO_MANY) {
+        if ($this->backRefFieldName && $this->association['type'] === ClassMetadata::ONE_TO_MANY) {
             // Set back reference to owner
             $this->typeClass->reflFields[$this->backRefFieldName]->setValue(
                 $element, $this->owner
@@ -284,7 +284,7 @@ final class PersistentCollection implements Collection
     /**
      * INTERNAL: Gets the association mapping of the collection.
      *
-     * @return Doctrine\ORM\Mapping\AssociationMapping
+     * @return \Doctrine\ORM\Mapping\AssociationMapping
      */
     public function getMapping()
     {
@@ -304,7 +304,7 @@ final class PersistentCollection implements Collection
 
         if ($this->association !== null &&
             $this->association['isOwningSide'] &&
-            $this->association['type'] == ClassMetadata::MANY_TO_MANY &&
+            $this->association['type'] === ClassMetadata::MANY_TO_MANY &&
             $this->em->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()) {
             $this->em->getUnitOfWork()->scheduleForDirtyCheck($this->owner);
         }
@@ -425,7 +425,7 @@ final class PersistentCollection implements Collection
         $this->changed();
 
         if ($this->association !== null &&
-            $this->association['type'] == ClassMetadata::ONE_TO_MANY &&
+            $this->association['type'] === ClassMetadata::ONE_TO_MANY &&
             $this->association['orphanRemoval']) {
             $this->em->getUnitOfWork()->scheduleOrphanRemoval($element);
         }
@@ -448,7 +448,7 @@ final class PersistentCollection implements Collection
      */
     public function contains($element)
     {
-        if ( ! $this->initialized && $this->association['fetch'] == Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {
+        if ( ! $this->initialized && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {
             $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
 
             return $this->coll->contains($element) || $persister->contains($this, $element);
@@ -514,7 +514,7 @@ final class PersistentCollection implements Collection
      */
     public function count()
     {
-        if ( ! $this->initialized && $this->association['fetch'] == Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {
+        if ( ! $this->initialized && $this->association['fetch'] === Mapping\ClassMetadataInfo::FETCH_EXTRA_LAZY) {
             $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
 
             return $persister->count($this) + ($this->isDirty ? $this->coll->count() : 0);
@@ -630,7 +630,7 @@ final class PersistentCollection implements Collection
 
         $uow = $this->em->getUnitOfWork();
 
-        if ($this->association['type'] == ClassMetadata::ONE_TO_MANY && $this->association['orphanRemoval']) {
+        if ($this->association['type'] === ClassMetadata::ONE_TO_MANY && $this->association['orphanRemoval']) {
             // we need to initialize here, as orphan removal acts like implicit cascadeRemove,
             // hence for event listeners we need the objects in memory.
             $this->initialize();
@@ -728,7 +728,7 @@ final class PersistentCollection implements Collection
     /**
      * Retrieves the wrapped Collection instance.
      *
-     * @return Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function unwrap()
     {

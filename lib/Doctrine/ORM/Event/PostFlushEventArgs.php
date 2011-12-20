@@ -35,14 +35,14 @@ use Doctrine\Common\EventArgs;
 class PostFlushEventArgs extends EventArgs
 {
     /**
-     * @var Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
     private $em;
 
     /**
      * Constructor.
-     * 
-     * @param Doctrine\ORM\EntityManager $em
+     *
+     * @param \Doctrine\ORM\EntityManager $em
      */
     public function __construct(EntityManager $em)
     {
@@ -51,8 +51,8 @@ class PostFlushEventArgs extends EventArgs
 
     /**
      * Retrieve associated EntityManager.
-     * 
-     * @return Doctrine\ORM\EntityManager
+     *
+     * @return \Doctrine\ORM\EntityManager
      */
     public function getEntityManager()
     {

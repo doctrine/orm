@@ -33,9 +33,9 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $this->parent->addChild($this->firstChild);
         $this->parent->addChild($this->secondChild);
         $this->_em->persist($this->parent);
-        
+
         $this->_em->flush();
-        
+
         $this->assertForeignKeyIs($this->parent->getId(), $this->firstChild);
         $this->assertForeignKeyIs($this->parent->getId(), $this->secondChild);
     }
@@ -52,7 +52,7 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $this->parent->brokenAddChild($this->firstChild);
         $this->_em->persist($this->parent);
         $this->_em->flush();
-        
+
         $this->assertForeignKeyIs(null, $this->firstChild);
     }
 
@@ -78,7 +78,7 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $this->assertEquals(1, count($result));
         $parent = $result[0];
         $children = $parent->getChildren();
-        
+
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $children[0]);
         $this->assertSame($parent, $children[0]->getParent());
         $this->assertEquals(' books', strstr($children[0]->getName(), ' books'));
@@ -97,7 +97,7 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $result = $query->getResult();
         $parent = $result[0];
         $children = $parent->getChildren();
-        
+
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $children[0]);
         $this->assertSame($parent, $children[0]->getParent());
         $this->assertEquals(' books', strstr($children[0]->getName(), ' books'));
@@ -111,7 +111,7 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $this->parent->addChild($this->firstChild);
         $this->parent->addChild($this->secondChild);
         $this->_em->persist($this->parent);
-        
+
         $this->_em->flush();
         $this->_em->clear();
     }

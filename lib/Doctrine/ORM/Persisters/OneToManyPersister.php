@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -29,6 +27,7 @@ use Doctrine\ORM\PersistentCollection,
  *
  * @author  Roman Borschel <roman@code-factory.org>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Alexander <iam.asm89@gmail.com>
  * @since   2.0
  */
 class OneToManyPersister extends AbstractCollectionPersister
@@ -45,14 +44,14 @@ class OneToManyPersister extends AbstractCollectionPersister
     {
         $mapping = $coll->getMapping();
         $class   = $this->_em->getClassMetadata($mapping['targetEntity']);
-        
+
         return 'DELETE FROM ' . $class->getQuotedTableName($this->_conn->getDatabasePlatform())
              . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
     }
 
     /**
      * {@inheritdoc}
-     * 
+     *
      */
     protected function _getDeleteRowSQLParameters(PersistentCollection $coll, $element)
     {
@@ -111,19 +110,25 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         $whereClauses = array();
         $params       = array();
-        
+
         foreach ($targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'] AS $joinColumn) {
             $whereClauses[] = $joinColumn['name'] . ' = ?';
-            
+
             $params[] = ($targetClass->containsForeignIdentifier)
                 ? $id[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])]
                 : $id[$sourceClass->fieldNames[$joinColumn['referencedColumnName']]];
         }
 
+        foreach ($this->_em->getFilters()->getEnabledFilters() as $filter) {
+            if ($filterExpr = $filter->addFilterConstraint($targetClass, 't')) {
+                $whereClauses[] = '(' . $filterExpr . ')';
+            }
+        }
+
         $sql = 'SELECT count(*)'
-             . ' FROM ' . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) 
+             . ' FROM ' . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) . ' t'
              . ' WHERE ' . implode(' AND ', $whereClauses);
-        
+
         return $this->_conn->fetchColumn($sql, $params);
     }
 
@@ -138,7 +143,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $mapping   = $coll->getMapping();
         $uow       = $this->_em->getUnitOfWork();
         $persister = $uow->getEntityPersister($mapping['targetEntity']);
-        
+
         return $persister->getOneToManyCollection($mapping, $coll->getOwner(), $offset, $length);
     }
 
@@ -151,22 +156,22 @@ class OneToManyPersister extends AbstractCollectionPersister
     {
         $mapping = $coll->getMapping();
         $uow     = $this->_em->getUnitOfWork();
-        
+
         // shortcut for new entities
         if ($uow->getEntityState($element, UnitOfWork::STATE_NEW) == UnitOfWork::STATE_NEW) {
             return false;
         }
 
         $persister = $uow->getEntityPersister($mapping['targetEntity']);
-        
-        // only works with single id identifier entities. Will throw an 
-        // exception in Entity Persisters if that is not the case for the 
+
+        // only works with single id identifier entities. Will throw an
+        // exception in Entity Persisters if that is not the case for the
         // 'mappedBy' field.
         $id = current( $uow->getEntityIdentifier($coll->getOwner()) );
 
         return $persister->exists($element, array($mapping['mappedBy'] => $id));
     }
-    
+
     /**
      * @param PersistentCollection $coll
      * @param object $element
@@ -185,7 +190,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $class   = $this->_em->getClassMetadata($mapping['targetEntity']);
         $sql     = 'DELETE FROM ' . $class->getQuotedTableName($this->_conn->getDatabasePlatform())
                  . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
-               
+
         return (bool) $this->_conn->executeUpdate($sql, $this->_getDeleteRowSQLParameters($coll, $element));
     }
 }

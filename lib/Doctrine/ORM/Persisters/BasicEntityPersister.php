@@ -72,6 +72,7 @@ use PDO,
  * @author Roman Borschel <roman@code-factory.org>
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @author Alexander <iam.asm89@gmail.com>
  * @since 2.0
  */
 class BasicEntityPersister
@@ -79,28 +80,28 @@ class BasicEntityPersister
     /**
      * Metadata object that describes the mapping of the mapped entity class.
      *
-     * @var Doctrine\ORM\Mapping\ClassMetadata
+     * @var \Doctrine\ORM\Mapping\ClassMetadata
      */
     protected $_class;
 
     /**
      * The underlying DBAL Connection of the used EntityManager.
      *
-     * @var Doctrine\DBAL\Connection $conn
+     * @var \Doctrine\DBAL\Connection $conn
      */
     protected $_conn;
 
     /**
      * The database platform.
      *
-     * @var Doctrine\DBAL\Platforms\AbstractPlatform
+     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
      */
     protected $_platform;
 
     /**
      * The EntityManager instance.
      *
-     * @var Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
     protected $_em;
 
@@ -172,8 +173,8 @@ class BasicEntityPersister
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
      * and persists instances of the class described by the given ClassMetadata descriptor.
      *
-     * @param Doctrine\ORM\EntityManager $em
-     * @param Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param \Doctrine\ORM\EntityManager $em
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
      */
     public function __construct(EntityManager $em, ClassMetadata $class)
     {
@@ -184,7 +185,7 @@ class BasicEntityPersister
     }
 
     /**
-     * @return Doctrine\ORM\Mapping\ClassMetadata
+     * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
     public function getClassMetadata()
     {
@@ -272,7 +273,7 @@ class BasicEntityPersister
     /**
      * Fetch the current version value of a versioned entity.
      *
-     * @param Doctrine\ORM\Mapping\ClassMetadata $versionedClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $versionedClass
      * @param mixed $id
      * @return mixed
      */
@@ -340,7 +341,7 @@ class BasicEntityPersister
         foreach ($updateData as $columnName => $value) {
             $column = $columnName;
             $placeholder = '?';
-            
+
             if (isset($this->_class->fieldNames[$columnName])) {
                 $column = $this->_class->getQuotedColumnName($this->_class->fieldNames[$columnName], $this->_platform);
 
@@ -750,7 +751,7 @@ class BasicEntityPersister
      * Load an array of entities from a given dbal statement.
      *
      * @param array $assoc
-     * @param Doctrine\DBAL\Statement $stmt
+     * @param \Doctrine\DBAL\Statement $stmt
      *
      * @return array
      */
@@ -774,7 +775,7 @@ class BasicEntityPersister
      * Hydrate a collection from a given dbal statement.
      *
      * @param array $assoc
-     * @param Doctrine\DBAL\Statement $stmt
+     * @param \Doctrine\DBAL\Statement $stmt
      * @param PersistentCollection $coll
      *
      * @return array
@@ -900,9 +901,19 @@ class BasicEntityPersister
             $lockSql = ' ' . $this->_platform->getWriteLockSql();
         }
 
+        $alias = $this->_getSQLTableAlias($this->_class->name);
+
+        if ($filterSql = $this->generateFilterConditionSQL($this->_class, $alias)) {
+            if ($conditionSql) {
+                $conditionSql .= ' AND ';
+            }
+
+            $conditionSql .= $filterSql;
+        }
+
         return $this->_platform->modifyLimitQuery('SELECT ' . $this->_getSelectColumnListSQL()
              . $this->_platform->appendLockHint(' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' '
-             . $this->_getSQLTableAlias($this->_class->name), $lockMode)
+             . $alias, $lockMode)
              . $this->_selectJoinSql . $joinSql
              . ($conditionSql ? ' WHERE ' . $conditionSql : '')
              . $orderBySql, $limit, $offset)
@@ -1014,13 +1025,19 @@ class BasicEntityPersister
                     $this->_selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($assoc['joinColumns']);
                     $this->_selectJoinSql .= ' ' . $eagerEntity->getQuotedTableName($this->_platform) . ' ' . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) .' ON ';
 
+                    $tableAlias = $this->_getSQLTableAlias($assoc['targetEntity'], $assocAlias);
                     foreach ($assoc['sourceToTargetKeyColumns'] AS $sourceCol => $targetCol) {
                         if ( ! $first) {
                             $this->_selectJoinSql .= ' AND ';
                         }
                         $this->_selectJoinSql .= $this->_getSQLTableAlias($assoc['sourceEntity']) . '.' . $sourceCol . ' = '
-                                               . $this->_getSQLTableAlias($assoc['targetEntity'], $assocAlias) . '.' . $targetCol;
+                                               . $tableAlias . '.' . $targetCol;
                         $first = false;
+                    }
+
+                    // Add filter SQL
+                    if ($filterSql = $this->generateFilterConditionSQL($eagerEntity, $tableAlias)) {
+                        $this->_selectJoinSql .= ' AND ' . $filterSql;
                     }
                 } else {
                     $eagerEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
@@ -1290,7 +1307,7 @@ class BasicEntityPersister
 
         foreach ($criteria as $field => $value) {
             $conditionSql .= $conditionSql ? ' AND ' : '';
-            
+
             $placeholder = '?';
 
             if (isset($this->_class->columnNames[$field])) {
@@ -1368,7 +1385,7 @@ class BasicEntityPersister
      * @param object $sourceEntity
      * @param int|null $offset
      * @param int|null $limit
-     * @return Doctrine\DBAL\Statement
+     * @return \Doctrine\DBAL\Statement
      */
     private function getOneToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
@@ -1433,7 +1450,7 @@ class BasicEntityPersister
     {
         switch (true) {
             case (isset($this->_class->fieldMappings[$field])):
-                $type = Type::getType($this->_class->fieldMappings[$field]['type'])->getBindingType();
+                $type = $this->_class->fieldMappings[$field]['type'];
                 break;
 
             case (isset($this->_class->associationMappings[$field])):
@@ -1448,7 +1465,7 @@ class BasicEntityPersister
                 $type         = null;
 
                 if (isset($targetClass->fieldNames[$targetColumn])) {
-                    $type = Type::getType($targetClass->fieldMappings[$targetClass->fieldNames[$targetColumn]]['type'])->getBindingType();
+                    $type = $targetClass->fieldMappings[$targetClass->fieldNames[$targetColumn]]['type'];
                 }
 
                 break;
@@ -1456,8 +1473,8 @@ class BasicEntityPersister
             default:
                 $type = null;
         }
-
         if (is_array($value)) {
+            $type = Type::getType( $type )->getBindingType();
             $type += Connection::ARRAY_PARAM_OFFSET;
         }
 
@@ -1521,9 +1538,15 @@ class BasicEntityPersister
             $criteria = array_merge($criteria, $extraConditions);
         }
 
+        $alias = $this->_getSQLTableAlias($this->_class->name);
+
         $sql = 'SELECT 1 '
              . $this->getLockTablesSql()
              . ' WHERE ' . $this->_getSelectConditionSQL($criteria);
+
+        if ($filterSql = $this->generateFilterConditionSQL($this->_class, $alias)) {
+            $sql .= ' AND ' . $filterSql;
+        }
 
         list($params, $types) = $this->expandParameters($criteria);
 
@@ -1539,8 +1562,8 @@ class BasicEntityPersister
     protected function getJoinSQLForJoinColumns($joinColumns)
     {
         // if one of the join columns is nullable, return left join
-        foreach($joinColumns as $joinColumn) {
-             if(isset($joinColumn['nullable']) && $joinColumn['nullable']){
+        foreach ($joinColumns as $joinColumn) {
+             if (!isset($joinColumn['nullable']) || $joinColumn['nullable']) {
                  return 'LEFT JOIN';
              }
         }
@@ -1561,5 +1584,27 @@ class BasicEntityPersister
         return $this->_platform->getSQLResultCasing(
             substr($columnName . $this->_sqlAliasCounter++, -$this->_platform->getMaxIdentifierLength())
         );
+    }
+
+    /**
+     * Generates the filter SQL for a given entity and table alias.
+     *
+     * @param ClassMetadata $targetEntity Metadata of the target entity.
+     * @param string $targetTableAlias The table alias of the joined/selected table.
+     *
+     * @return string The SQL query part to add to a query.
+     */
+    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    {
+        $filterClauses = array();
+
+        foreach ($this->_em->getFilters()->getEnabledFilters() as $filter) {
+            if ('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+                $filterClauses[] = '(' . $filterExpr . ')';
+            }
+        }
+
+        $sql = implode(' AND ', $filterClauses);
+        return $sql ? "(" . $sql . ")" : ""; // Wrap again to avoid "X or Y and FilterConditionSQL"
     }
 }

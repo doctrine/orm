@@ -41,21 +41,21 @@ class PreUpdateEventArgs extends LifecycleEventArgs
 
     /**
      * Constructor.
-     * 
+     *
      * @param object $entity
-     * @param Doctrine\ORM\EntityManager $em
+     * @param \Doctrine\ORM\EntityManager $em
      * @param array $changeSet
      */
     public function __construct($entity, EntityManager $em, array &$changeSet)
     {
         parent::__construct($entity, $em);
-        
+
         $this->entityChangeSet = &$changeSet;
     }
 
     /**
      * Retrieve entity changeset.
-     * 
+     *
      * @return array
      */
     public function getEntityChangeSet()
@@ -75,7 +75,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
 
     /**
      * Get the old value of the changeset of the changed field.
-     * 
+     *
      * @param  string $field
      * @return mixed
      */
@@ -101,7 +101,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
 
     /**
      * Set the new value of this field.
-     * 
+     *
      * @param string $field
      * @param mixed $value
      */
@@ -114,8 +114,8 @@ class PreUpdateEventArgs extends LifecycleEventArgs
 
     /**
      * Assert the field exists in changeset.
-     * 
-     * @param string $field 
+     *
+     * @param string $field
      */
     private function assertValidField($field)
     {

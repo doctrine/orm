@@ -28,11 +28,6 @@ use PDO, Doctrine\DBAL\Connection, Doctrine\ORM\Mapping\ClassMetadata;
  * @since  2.0
  * @author Roman Borschel <roman@code-factory.org>
  * @author Guilherme Blanco <guilhermeblanoc@hotmail.com>
- *
- * @todo General behavior is "wrong" if you define an alias to selected IdentificationVariable.
- * Example: SELECT u AS user FROM User u
- * The result should contains an array where each array index is an array: array('user' => [User object])
- * Problem must be solved somehow by removing the isMixed in ResultSetMapping
  */
 class ArrayHydrator extends AbstractHydrator
 {
@@ -281,7 +276,7 @@ class ArrayHydrator extends AbstractHydrator
      *
      * @param string $className
      *
-     * @return Doctrine\ORM\Mapping\ClassMetadata
+     * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
     private function getClassMetadata($className)
     {

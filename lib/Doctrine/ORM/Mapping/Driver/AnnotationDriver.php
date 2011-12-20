@@ -99,7 +99,7 @@ class AnnotationDriver implements Driver
 
     /**
      * Retrieve the current annotation reader
-     * 
+     *
      * @return AnnotationReader
      */
     public function getReader()
@@ -192,7 +192,14 @@ class AnnotationDriver implements Driver
         if (isset($classAnnotations['Doctrine\ORM\Mapping\NamedQueries'])) {
             $namedQueriesAnnot = $classAnnotations['Doctrine\ORM\Mapping\NamedQueries'];
 
+            if (!is_array($namedQueriesAnnot->value)) {
+                throw new \UnexpectedValueException("@NamedQueries should contain an array of @NamedQuery annotations.");
+            }
+
             foreach ($namedQueriesAnnot->value as $namedQuery) {
+                if (!($namedQuery instanceof \Doctrine\ORM\Mapping\NamedQuery)) {
+                    throw new \UnexpectedValueException("@NamedQueries should contain an array of @NamedQuery annotations.");
+                }
                 $metadata->addNamedQuery(array(
                     'name'  => $namedQuery->name,
                     'query' => $namedQuery->query
@@ -517,15 +524,15 @@ class AnnotationDriver implements Driver
                     new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS),
                     \RecursiveIteratorIterator::LEAVES_ONLY
                 ),
-                '/^.+' . str_replace('.', '\.', $this->_fileExtension) . '$/i', 
+                '/^.+' . str_replace('.', '\.', $this->_fileExtension) . '$/i',
                 \RecursiveRegexIterator::GET_MATCH
             );
-            
+
             foreach ($iterator as $file) {
                 $sourceFile = realpath($file[0]);
-                
+
                 require_once $sourceFile;
-                
+
                 $includedFiles[] = $sourceFile;
             }
         }

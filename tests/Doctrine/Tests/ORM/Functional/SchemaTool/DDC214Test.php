@@ -84,7 +84,7 @@ class DDC214Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $sql = $schemaDiff->toSql($this->_em->getConnection()->getDatabasePlatform());
         $sql = array_filter($sql, function($sql) { return strpos($sql, 'DROP') === false; });
-        
+
         $this->assertEquals(0, count($sql), "SQL: " . implode(PHP_EOL, $sql));
     }
 }

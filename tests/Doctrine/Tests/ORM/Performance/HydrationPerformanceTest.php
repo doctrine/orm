@@ -76,7 +76,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         $e = microtime(true);
         echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
     }
-    
+
     /**
      * Times for comparison:
      *
@@ -264,7 +264,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         $e = microtime(true);
         echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
     }
-    
+
     /**
      * [romanb: 10000 rows => 3 seconds]
      *
@@ -392,7 +392,7 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         $e = microtime(true);
         echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
     }
-    
+
     /**
      * [romanb: 2000 rows => 0.6 seconds]
      *

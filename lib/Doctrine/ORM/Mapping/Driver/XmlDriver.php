@@ -216,7 +216,7 @@ class XmlDriver extends AbstractFileDriver
         $associationIds = array();
         foreach ($xmlRoot->id as $idElement) {
             if ((bool)$idElement['association-key'] == true) {
-                $associationIds[(string)$idElement['fieldName']] = true;
+                $associationIds[(string)$idElement['name']] = true;
                 continue;
             }
 
@@ -231,6 +231,10 @@ class XmlDriver extends AbstractFileDriver
 
             if (isset($idElement['column'])) {
                 $mapping['columnName'] = (string)$idElement['column'];
+            }
+
+            if (isset($idElement['column-definition'])) {
+                $mapping['columnDefinition'] = (string)$idElement['column-definition'];
             }
 
             $metadata->mapField($mapping);

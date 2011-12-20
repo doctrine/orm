@@ -38,17 +38,17 @@ class From
      * @var string
      */
     private $_from;
-    
+
     /**
-     * @var string 
+     * @var string
      */
     private $_alias;
-    
+
     /**
-     * @var string 
+     * @var string
      */
     private $_indexBy;
-    
+
     /**
      * @param string $from      The class name.
      * @param string $alias     The alias of the class.
@@ -60,7 +60,7 @@ class From
         $this->_alias   = $alias;
         $this->_indexBy = $indexBy;
     }
-    
+
     /**
      * @return string
      */
@@ -82,7 +82,7 @@ class From
      */
     public function __toString()
     {
-        return $this->_from . ' ' . $this->_alias . 
+        return $this->_from . ' ' . $this->_alias .
                 ($this->_indexBy ? ' INDEX BY ' . $this->_indexBy : '');
     }
 }

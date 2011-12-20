@@ -24,7 +24,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     private $_connectionMock;
     // The EntityManager mock that provides the mock persisters
     private $_emMock;
-    
+
     protected function setUp() {
         parent::setUp();
         $this->_connectionMock = new ConnectionMock(array(), new \Doctrine\Tests\Mocks\DriverMock());
@@ -33,22 +33,22 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
     }
-    
+
     protected function tearDown() {
     }
-    
+
     public function testRegisterRemovedOnNewEntityIsIgnored()
     {
         $user = new ForumUser();
         $user->username = 'romanb';
         $this->assertFalse($this->_unitOfWork->isScheduledForDelete($user));
         $this->_unitOfWork->scheduleForDelete($user);
-        $this->assertFalse($this->_unitOfWork->isScheduledForDelete($user));        
+        $this->assertFalse($this->_unitOfWork->isScheduledForDelete($user));
     }
-    
-    
+
+
     /* Operational tests */
-    
+
     public function testSavingSingleEntityWithIdentityColumnForcesInsert()
     {
         // Setup fake persister and id generator for identity generation
@@ -66,22 +66,22 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         // Check
         $this->assertEquals(0, count($userPersister->getInserts()));
         $this->assertEquals(0, count($userPersister->getUpdates()));
-        $this->assertEquals(0, count($userPersister->getDeletes()));   
+        $this->assertEquals(0, count($userPersister->getDeletes()));
         $this->assertFalse($this->_unitOfWork->isInIdentityMap($user));
         // should no longer be scheduled for insert
         $this->assertTrue($this->_unitOfWork->isScheduledForInsert($user));
-        
+
         // Now lets check whether a subsequent commit() does anything
         $userPersister->reset();
 
         // Test
         $this->_unitOfWork->commit();
-        
+
         // Check.
         $this->assertEquals(1, count($userPersister->getInserts()));
         $this->assertEquals(0, count($userPersister->getUpdates()));
         $this->assertEquals(0, count($userPersister->getDeletes()));
-        
+
         // should have an id
         $this->assertTrue(is_numeric($user->id));
     }
@@ -112,7 +112,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $avatar = new ForumAvatar();
         $user->avatar = $avatar;
         $this->_unitOfWork->persist($user); // save cascaded to avatar
-        
+
         $this->_unitOfWork->commit();
 
         $this->assertTrue(is_numeric($user->id));
@@ -137,7 +137,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $entity = new NotifyChangedEntity;
         $entity->setData('thedata');
         $this->_unitOfWork->persist($entity);
-        
+
         $this->_unitOfWork->commit();
         $this->assertEquals(1, count($persister->getInserts()));
         $persister->reset();
@@ -161,7 +161,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $persister->reset();
         $itemPersister->reset();
 
-        
+
         $entity->getItems()->removeElement($item);
         $item->setOwner(null);
         $this->assertTrue($entity->getItems()->isDirty());

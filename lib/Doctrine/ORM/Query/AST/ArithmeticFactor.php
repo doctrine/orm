@@ -38,7 +38,7 @@ class ArithmeticFactor extends Node
      * @var ArithmeticPrimary
      */
     public $arithmeticPrimary;
-    
+
     /**
      * @var null|boolean NULL represents no sign, TRUE means positive and FALSE means negative sign
      */

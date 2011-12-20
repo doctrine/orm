@@ -120,7 +120,7 @@ class ResultSetMapping
      *                      results or joined entity results within this ResultSetMapping.
      * @param string $resultAlias The result alias with which the entity result should be
      *                            placed in the result structure.
-     *
+     * @return ResultSetMapping This ResultSetMapping instance.
      * @todo Rename: addRootEntity
      */
     public function addEntityResult($class, $alias, $resultAlias = null)
@@ -131,6 +131,8 @@ class ResultSetMapping
         if ($resultAlias !== null) {
             $this->isMixed = true;
         }
+
+        return $this;
     }
 
     /**
@@ -141,13 +143,15 @@ class ResultSetMapping
      * @param string $alias The alias of the entity result or joined entity result the discriminator
      *                      column should be used for.
      * @param string $discrColumn The name of the discriminator column in the SQL result set.
-     *
+     * @return ResultSetMapping This ResultSetMapping instance.
      * @todo Rename: addDiscriminatorColumn
      */
     public function setDiscriminatorColumn($alias, $discrColumn)
     {
         $this->discriminatorColumns[$alias] = $discrColumn;
         $this->columnOwnerMap[$discrColumn] = $alias;
+
+        return $this;
     }
 
     /**
@@ -155,6 +159,7 @@ class ResultSetMapping
      *
      * @param string $alias The alias of an entity result or joined entity result.
      * @param string $fieldName The name of the field to use for indexing.
+     * @return ResultSetMapping This ResultSetMapping instance.
      */
     public function addIndexBy($alias, $fieldName)
     {
@@ -180,17 +185,21 @@ class ResultSetMapping
             throw new \LogicException($message);
         }
         */
+
+        return $this;
     }
 
     /**
      * Set to index by a scalar result column name
      *
      * @param $resultColumnName
-     * @return void
+     * @return ResultSetMapping This ResultSetMapping instance.
      */
     public function addIndexByScalar($resultColumnName)
     {
         $this->indexByMap['scalars'] = $resultColumnName;
+
+        return $this;
     }
 
     /**
@@ -198,11 +207,13 @@ class ResultSetMapping
      *
      * @param $alias
      * @param $resultColumnName
-     * @return void
+     * @return ResultSetMapping This ResultSetMapping instance.
      */
     public function addIndexByColumn($alias, $resultColumnName)
     {
         $this->indexByMap[$alias] = $resultColumnName;
+
+        return $this;
     }
 
     /**
@@ -242,6 +253,7 @@ class ResultSetMapping
      *                               the field $fieldName is defined on a subclass, specify that here.
      *                               If not specified, the field is assumed to belong to the class
      *                               designated by $alias.
+     * @return ResultSetMapping This ResultSetMapping instance.
      * @todo Rename: addField
      */
     public function addFieldResult($alias, $columnName, $fieldName, $declaringClass = null)
@@ -256,6 +268,8 @@ class ResultSetMapping
         if ( ! $this->isMixed && $this->scalarMappings) {
             $this->isMixed = true;
         }
+
+        return $this;
     }
 
     /**
@@ -265,6 +279,7 @@ class ResultSetMapping
      * @param string $alias The unique alias to use for the joined entity.
      * @param string $parentAlias The alias of the entity result that is the parent of this joined result.
      * @param object $relation The association field that connects the parent entity result with the joined entity result.
+     * @return ResultSetMapping This ResultSetMapping instance.
      * @todo Rename: addJoinedEntity
      */
     public function addJoinedEntityResult($class, $alias, $parentAlias, $relation)
@@ -272,6 +287,8 @@ class ResultSetMapping
         $this->aliasMap[$alias]       = $class;
         $this->parentAliasMap[$alias] = $parentAlias;
         $this->relationMap[$alias]    = $relation;
+
+        return $this;
     }
 
     /**
@@ -279,6 +296,7 @@ class ResultSetMapping
      *
      * @param string $columnName The name of the column in the SQL result set.
      * @param string $alias The result alias with which the scalar result should be placed in the result structure.
+     * @return ResultSetMapping This ResultSetMapping instance.
      * @todo Rename: addScalar
      */
     public function addScalarResult($columnName, $alias)
@@ -288,6 +306,8 @@ class ResultSetMapping
         if ( ! $this->isMixed && $this->fieldMappings) {
             $this->isMixed = true;
         }
+
+        return $this;
     }
 
     /**
@@ -439,6 +459,7 @@ class ResultSetMapping
      * @param string $columnName
      * @param string $fieldName
      * @param bool
+     * @return ResultSetMapping This ResultSetMapping instance.
      */
     public function addMetaResult($alias, $columnName, $fieldName, $isIdentifierColumn = false)
     {
@@ -448,5 +469,7 @@ class ResultSetMapping
         if ($isIdentifierColumn) {
             $this->isIdentifierColumn[$alias][$columnName] = true;
         }
+
+        return $this;
     }
 }

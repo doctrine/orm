@@ -32,20 +32,20 @@ use Doctrine\ORM\EntityManager;
 class LoadClassMetadataEventArgs extends EventArgs
 {
     /**
-     * @var Doctrine\ORM\Mapping\ClassMetadata
+     * @var \Doctrine\ORM\Mapping\ClassMetadata
      */
     private $classMetadata;
 
     /**
-     * @var Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
     private $em;
 
     /**
      * Constructor.
-     * 
-     * @param Doctrine\ORM\Mapping\ClassMetadataInfo $classMetadata
-     * @param Doctrine\ORM\EntityManager $em
+     *
+     * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $classMetadata
+     * @param \Doctrine\ORM\EntityManager $em
      */
     public function __construct(ClassMetadataInfo $classMetadata, EntityManager $em)
     {
@@ -55,8 +55,8 @@ class LoadClassMetadataEventArgs extends EventArgs
 
     /**
      * Retrieve associated ClassMetadata.
-     *  
-     * @return Doctrine\ORM\Mapping\ClassMetadataInfo
+     *
+     * @return \Doctrine\ORM\Mapping\ClassMetadataInfo
      */
     public function getClassMetadata()
     {
@@ -65,8 +65,8 @@ class LoadClassMetadataEventArgs extends EventArgs
 
     /**
      * Retrieve associated EntityManager.
-     * 
-     * @return Doctrine\ORM\EntityManager
+     *
+     * @return \Doctrine\ORM\EntityManager
      */
     public function getEntityManager()
     {

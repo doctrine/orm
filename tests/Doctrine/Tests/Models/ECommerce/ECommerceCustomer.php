@@ -33,20 +33,20 @@ class ECommerceCustomer
      * Example of a one-one self referential association. A mentor can follow
      * only one customer at the time, while a customer can choose only one
      * mentor. Not properly appropriate but it works.
-     * 
+     *
      * @OneToOne(targetEntity="ECommerceCustomer", cascade={"persist"}, fetch="EAGER")
      * @JoinColumn(name="mentor_id", referencedColumnName="id")
      */
     private $mentor;
-    
+
     public function getId() {
         return $this->id;
     }
-    
+
     public function getName() {
         return $this->name;
     }
-    
+
     public function setName($name) {
         $this->name = $name;
     }
@@ -55,15 +55,15 @@ class ECommerceCustomer
     {
         if ($this->cart !== $cart) {
             $this->cart = $cart;
-            $cart->setCustomer($this);   
+            $cart->setCustomer($this);
         }
     }
-    
+
     /* Does not properly maintain the bidirectional association! */
     public function brokenSetCart(ECommerceCart $cart) {
         $this->cart = $cart;
     }
-    
+
     public function getCart() {
         return $this->cart;
     }

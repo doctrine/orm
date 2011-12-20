@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * SimpleCaseExpression ::= "CASE" CaseOperand SimpleWhenClause {SimpleWhenClause}* "ELSE" ScalarExpression "END" 
+ * SimpleCaseExpression ::= "CASE" CaseOperand SimpleWhenClause {SimpleWhenClause}* "ELSE" ScalarExpression "END"
  *
  * @since   2.2
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -41,8 +41,8 @@ class SimpleCaseExpression extends Node
         $this->caseOperand = $caseOperand;
         $this->simpleWhenClauses = $simpleWhenClauses;
         $this->elseScalarExpression = $elseScalarExpression;
-    }    
-    
+    }
+
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkSimpleCaseExpression($this);

@@ -31,6 +31,7 @@ use Doctrine\ORM\ORMException,
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @author Alexander <iam.asm89@gmail.com>
  * @since 2.0
  * @see http://martinfowler.com/eaaCatalog/classTableInheritance.html
  */
@@ -67,7 +68,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      * This function finds the ClassMetadata instance in an inheritance hierarchy
      * that is responsible for enabling versioning.
      *
-     * @return Doctrine\ORM\Mapping\ClassMetadata
+     * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
     private function _getVersionedClassMetadata()
     {
@@ -374,6 +375,15 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         $conditionSql = $this->_getSelectConditionSQL($criteria, $assoc);
 
+        // If the current class in the root entity, add the filters
+        if ($filterSql = $this->generateFilterConditionSQL($this->_em->getClassMetadata($this->_class->rootEntityName), $this->_getSQLTableAlias($this->_class->rootEntityName))) {
+            if ($conditionSql) {
+                $conditionSql .= ' AND ';
+            }
+
+            $conditionSql .= $filterSql;
+        }
+
         $orderBy = ($assoc !== null && isset($assoc['orderBy'])) ? $assoc['orderBy'] : $orderBy;
         $orderBySql = $orderBy ? $this->_getOrderBySQL($orderBy, $baseTableAlias) : '';
 
@@ -473,4 +483,5 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $value = $this->fetchVersionValue($this->_getVersionedClassMetadata(), $id);
         $this->_class->setFieldValue($entity, $this->_class->versionField, $value);
     }
+
 }

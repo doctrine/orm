@@ -40,7 +40,14 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
                 $query->setHint($name, $value);
             }
 
-            parent::assertEquals($sqlToBeConfirmed, $query->getSQL());
+            $sqlGenerated = $query->getSQL();
+
+            parent::assertEquals(
+                $sqlToBeConfirmed,
+                $sqlGenerated,
+                sprintf('"%s" is not equal of "%s"', $sqlGenerated, $sqlToBeConfirmed)
+            );
+
             $query->free();
         } catch (\Exception $e) {
             $this->fail($e->getMessage() ."\n".$e->getTraceAsString());
@@ -444,8 +451,8 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testSupportsSingleValuedInExpressionWithoutSpacesInWherePart()
     {
         $this->assertSqlGeneration(
-            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN(46)",
-            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE c0_.id IN (46)"
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE IDENTITY(u.email) IN(46)",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE c0_.email_id IN (46)"
         );
     }
 
@@ -460,8 +467,8 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testSupportsNotInExpressionInWherePart()
     {
         $this->assertSqlGeneration(
-            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN (1)',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.id NOT IN (1)'
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :id NOT IN (1)',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE ? NOT IN (1)'
         );
     }
 
@@ -529,43 +536,71 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-    public function testSupportsMemberOfExpression()
+    public function testSupportsMemberOfExpressionOneToMany()
     {
         // "Get all users who have $phone as a phonenumber." (*cough* doesnt really make sense...)
-        $q1 = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.phonenumbers');
-        $q1->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $q = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.phonenumbers');
+        $q->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
 
         $phone = new \Doctrine\Tests\Models\CMS\CmsPhonenumber;
         $phone->phonenumber = 101;
-        $q1->setParameter('param', $phone);
+        $q->setParameter('param', $phone);
 
         $this->assertEquals(
             'SELECT c0_.id AS id0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_phonenumbers c1_ WHERE c0_.id = c1_.user_id AND c1_.phonenumber = ?)',
-            $q1->getSql()
+            $q->getSql()
         );
+    }
 
+    public function testSupportsMemberOfExpressionManyToMany()
+    {
         // "Get all users who are members of $group."
-        $q2 = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.groups');
-        $q2->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $q = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.groups');
+        $q->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
 
         $group = new \Doctrine\Tests\Models\CMS\CmsGroup;
         $group->id = 101;
-        $q2->setParameter('param', $group);
+        $q->setParameter('param', $group);
 
         $this->assertEquals(
             'SELECT c0_.id AS id0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_users_groups c1_ INNER JOIN cms_groups c2_ ON c1_.group_id = c2_.id WHERE c1_.user_id = c0_.id AND c2_.id = ?)',
-            $q2->getSql()
+            $q->getSql()
         );
+    }
 
+    public function testSupportsMemberOfExpressionSelfReferencing()
+    {
         // "Get all persons who have $person as a friend."
         // Tough one: Many-many self-referencing ("friends") with class table inheritance
-        $q3 = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p WHERE :param MEMBER OF p.friends');
+        $q = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p WHERE :param MEMBER OF p.friends');
         $person = new \Doctrine\Tests\Models\Company\CompanyPerson;
         $this->_em->getClassMetadata(get_class($person))->setIdentifierValues($person, array('id' => 101));
-        $q3->setParameter('param', $person);
+        $q->setParameter('param', $person);
         $this->assertEquals(
             'SELECT c0_.id AS id0, c0_.name AS name1, c1_.title AS title2, c2_.salary AS salary3, c2_.department AS department4, c2_.startDate AS startDate5, c0_.discr AS discr6, c0_.spouse_id AS spouse_id7, c1_.car_id AS car_id8 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id WHERE EXISTS (SELECT 1 FROM company_persons_friends c3_ INNER JOIN company_persons c4_ ON c3_.friend_id = c4_.id WHERE c3_.person_id = c0_.id AND c4_.id = ?)',
-            $q3->getSql()
+            $q->getSql()
+        );
+    }
+
+    public function testSupportsMemberOfWithSingleValuedAssociation()
+    {
+        // Impossible example, but it illustrates the purpose
+        $q = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.email MEMBER OF u.groups');
+
+        $this->assertEquals(
+            'SELECT c0_.id AS id0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_users_groups c1_ INNER JOIN cms_groups c2_ ON c1_.group_id = c2_.id WHERE c1_.user_id = c0_.id AND c2_.id = c0_.email_id)',
+            $q->getSql()
+        );
+    }
+
+    public function testSupportsMemberOfWithIdentificationVariable()
+    {
+        // Impossible example, but it illustrates the purpose
+        $q = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u MEMBER OF u.groups');
+
+        $this->assertEquals(
+            'SELECT c0_.id AS id0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_users_groups c1_ INNER JOIN cms_groups c2_ ON c1_.group_id = c2_.id WHERE c1_.user_id = c0_.id AND c2_.id = c0_.id)',
+            $q->getSql()
         );
     }
 
@@ -1302,7 +1337,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             "SELECT d0_.article_id AS article_id0, d0_.title AS title1 FROM DDC117Article d0_ WHERE EXISTS (SELECT d1_.source_id, d1_.target_id FROM DDC117Reference d1_ WHERE d1_.source_id = d0_.article_id)"
         );
     }
-    
+
     /**
      * @group DDC-1474
      */
@@ -1312,13 +1347,13 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT - e.value AS value, e.id FROM ' . __NAMESPACE__ . '\DDC1474Entity e',
             'SELECT -d0_.value AS sclr0, d0_.id AS id1 FROM DDC1474Entity d0_'
         );
-        
+
         $this->assertSqlGeneration(
             'SELECT e.id, + e.value AS value FROM ' . __NAMESPACE__ . '\DDC1474Entity e',
             'SELECT d0_.id AS id0, +d0_.value AS sclr1 FROM DDC1474Entity d0_'
         );
     }
-    
+
      /**
      * @group DDC-1430
      */
@@ -1328,10 +1363,55 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY u',
             'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ GROUP BY c0_.id, c0_.status, c0_.username, c0_.name, c0_.email_id'
         );
-        
+
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\CMS\CmsEmployee e GROUP BY e',
             'SELECT c0_.id AS id0, c0_.name AS name1 FROM cms_employees c0_ GROUP BY c0_.id, c0_.name, c0_.spouse_id'
+        );
+    }
+
+    /**
+     * @group DDC-1236
+     */
+    public function testGroupBySupportsResultVariable()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u, u.status AS st FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY st',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.status AS status4 FROM cms_users c0_ GROUP BY status4'
+        );
+    }
+
+    /**
+     * @group DDC-1236
+     */
+    public function testGroupBySupportsIdentificationVariable()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u AS user FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY user',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ GROUP BY id0, status1, username2, name3'
+        );
+    }
+
+    /**
+     * @group DDC-1213
+     */
+    public function testSupportsBitComparison()
+    {
+        $this->assertSqlGeneration(
+            'SELECT BIT_OR(4,2), BIT_AND(4,2), u FROM Doctrine\Tests\Models\CMS\CmsUser u',
+            'SELECT (4 | 2) AS sclr0, (4 & 2) AS sclr1, c0_.id AS id2, c0_.status AS status3, c0_.username AS username4, c0_.name AS name5 FROM cms_users c0_'
+        );
+        $this->assertSqlGeneration(
+            'SELECT BIT_OR(u.id,2), BIT_AND(u.id,2) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE BIT_OR(u.id,2) > 0',
+            'SELECT (c0_.id | 2) AS sclr0, (c0_.id & 2) AS sclr1 FROM cms_users c0_ WHERE (c0_.id | 2) > 0'
+        );
+        $this->assertSqlGeneration(
+            'SELECT BIT_OR(u.id,2), BIT_AND(u.id,2) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE BIT_AND(u.id , 4) > 0',
+            'SELECT (c0_.id | 2) AS sclr0, (c0_.id & 2) AS sclr1 FROM cms_users c0_ WHERE (c0_.id & 4) > 0'
+        );
+        $this->assertSqlGeneration(
+            'SELECT BIT_OR(u.id,2), BIT_AND(u.id,2) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE BIT_OR(u.id , 2) > 0 OR BIT_AND(u.id , 4) > 0',
+            'SELECT (c0_.id | 2) AS sclr0, (c0_.id & 2) AS sclr1 FROM cms_users c0_ WHERE (c0_.id | 2) > 0 OR (c0_.id & 4) > 0'
         );
     }
 
@@ -1441,19 +1521,19 @@ class DDC1474Entity
 {
 
     /**
-     * @Id 
+     * @Id
      * @Column(type="integer")
      * @GeneratedValue()
      */
     protected $id;
 
     /**
-     * @column(type="float") 
+     * @column(type="float")
      */
     private $value;
 
     /**
-     * @param string $float 
+     * @param string $float
      */
     public function __construct($float)
     {
@@ -1469,7 +1549,7 @@ class DDC1474Entity
     }
 
     /**
-     * @return float 
+     * @return float
      */
     public function getValue()
     {
@@ -1477,7 +1557,7 @@ class DDC1474Entity
     }
 
     /**
-     * @param float $value 
+     * @param float $value
      */
     public function setValue($value)
     {

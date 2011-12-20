@@ -25,7 +25,7 @@ class DDC531Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($item2);
         $this->_em->flush();
         $this->_em->clear();
-        
+
         $item3 = $this->_em->find(__NAMESPACE__ . '\DDC531Item', $item2->id); // Load child item first (id 2)
         // parent will already be loaded, cannot be lazy because it has mapped subclasses and we would not
         // know which proxy type to put in.

@@ -182,6 +182,10 @@ class YamlDriver extends AbstractFileDriver
                     $mapping['length'] = $idElement['length'];
                 }
 
+                if (isset($idElement['columnDefinition'])) {
+                    $mapping['columnDefinition'] = $idElement['columnDefinition'];
+                }
+
                 $metadata->mapField($mapping);
 
                 if (isset($idElement['generator'])) {

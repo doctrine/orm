@@ -43,7 +43,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      * @var EntityManager
      */
     private $em;
-    
+
     /**
      * @var AbstractPlatform
      */
@@ -73,7 +73,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      * @var bool
      */
     private $initialized = false;
-    
+
     /**
      * @param EntityManager $$em
      */
@@ -85,7 +85,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     /**
      * Sets the cache driver used by the factory to cache ClassMetadata instances.
      *
-     * @param Doctrine\Common\Cache\Cache $cacheDriver
+     * @param \Doctrine\Common\Cache\Cache $cacheDriver
      */
     public function setCacheDriver($cacheDriver)
     {
@@ -95,22 +95,22 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     /**
      * Gets the cache driver used by the factory to cache ClassMetadata instances.
      *
-     * @return Doctrine\Common\Cache\Cache
+     * @return \Doctrine\Common\Cache\Cache
      */
     public function getCacheDriver()
     {
         return $this->cacheDriver;
     }
-    
+
     public function getLoadedMetadata()
     {
         return $this->loadedMetadata;
     }
-    
+
     /**
      * Forces the factory to load the metadata of all classes known to the underlying
      * mapping driver.
-     * 
+     *
      * @return array The ClassMetadata instances of all mapped classes.
      */
     public function getAllMetadata()
@@ -143,7 +143,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      * Gets the class metadata descriptor for a class.
      *
      * @param string $className The name of the class.
-     * @return Doctrine\ORM\Mapping\ClassMetadata
+     * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
     public function getMetadataFor($className)
     {
@@ -188,7 +188,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
     /**
      * Checks whether the factory has the metadata for a class loaded already.
-     * 
+     *
      * @param string $className
      * @return boolean TRUE if the metadata of the class in question is already loaded, FALSE otherwise.
      */
@@ -199,7 +199,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
     /**
      * Sets the metadata descriptor for a specific class.
-     * 
+     *
      * NOTE: This is only useful in very special cases, like when generating proxy classes.
      *
      * @param string $className
@@ -308,11 +308,11 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             if ($parent && $parent->isInheritanceTypeSingleTable()) {
                 $class->setPrimaryTable($parent->table);
             }
-            
+
             if ($parent && $parent->containsForeignIdentifier) {
                 $class->containsForeignIdentifier = true;
             }
-            
+
             if ($parent && !empty ($parent->namedQueries)) {
                 $this->addInheritedNamedQueries($class, $parent);
             }
@@ -325,7 +325,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             }
 
             $this->validateRuntimeMetadata($class, $parent);
-            
+
             $this->loadedMetadata[$className] = $class;
 
             $parent = $class;
@@ -371,13 +371,17 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierachy
             throw MappingException::noInheritanceOnMappedSuperClass($class->name);
         }
+
+        if ($class->usesIdGenerator() && $class->isIdentifierComposite) {
+            throw MappingException::compositeKeyAssignedIdGeneratorRequired($class->name);
+        }
     }
 
     /**
      * Creates a new ClassMetadata instance for the given class name.
      *
      * @param string $className
-     * @return Doctrine\ORM\Mapping\ClassMetadata
+     * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
     protected function newClassMetadataInstance($className)
     {
@@ -387,8 +391,8 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     /**
      * Adds inherited fields to the subclass mapping.
      *
-     * @param Doctrine\ORM\Mapping\ClassMetadata $subClass
-     * @param Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
      */
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
@@ -409,8 +413,8 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     /**
      * Adds inherited association mappings to the subclass mapping.
      *
-     * @param Doctrine\ORM\Mapping\ClassMetadata $subClass
-     * @param Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
      */
     private function addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
@@ -432,13 +436,13 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             $subClass->addInheritedAssociationMapping($mapping);
         }
     }
-    
+
     /**
      * Adds inherited named queries to the subclass mapping.
-     * 
+     *
      * @since 2.2
-     * @param Doctrine\ORM\Mapping\ClassMetadata $subClass
-     * @param Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
      */
     private function addInheritedNamedQueries(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
@@ -456,7 +460,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      * Completes the ID generator mapping. If "auto" is specified we choose the generator
      * most appropriate for the targeted database platform.
      *
-     * @param Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
      */
     private function completeIdGeneratorMapping(ClassMetadataInfo $class)
     {
@@ -533,13 +537,13 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
         if ( ! $this->initialized) {
             $this->initialize();
         }
-        
+
         // Check for namespace alias
         if (strpos($class, ':') !== false) {
             list($namespaceAlias, $simpleClassName) = explode(':', $class);
             $class = $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
         }
-        
+
         return $this->driver->isTransient($class);
     }
 }

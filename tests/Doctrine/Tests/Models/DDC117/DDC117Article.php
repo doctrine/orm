@@ -9,7 +9,7 @@ class DDC117Article
 {
     /** @Id @Column(type="integer", name="article_id") @GeneratedValue */
     private $id;
-    
+
     /** @Column */
     private $title;
 

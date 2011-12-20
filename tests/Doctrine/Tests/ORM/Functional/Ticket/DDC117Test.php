@@ -349,7 +349,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testLoadInverseManyToManyCollection()
     {
         $editor = $this->loadEditorFixture();
-        
+
         $this->assertInstanceOf('Doctrine\Tests\Models\DDC117\DDC117Translation', $editor->reviewingTranslations[0]);
 
         $reviewedBy = $editor->reviewingTranslations[0]->getReviewedByEditors();
@@ -416,5 +416,21 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         return $this->_em->find(get_class($editor), $editor->id);
+    }
+
+    /**
+     * @group DDC-1519
+     */
+    public function testMergeForeignKeyIdentifierEntity()
+    {
+        $idCriteria = array('source' => $this->article1->id(), 'target' => $this->article2->id());
+
+        $refRep = $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Reference", $idCriteria);
+
+        $this->_em->detach($refRep);
+        $refRep = $this->_em->merge($refRep);
+
+        $this->assertEquals($this->article1->id(), $refRep->source()->id());
+        $this->assertEquals($this->article2->id(), $refRep->target()->id());
     }
 }

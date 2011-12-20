@@ -41,8 +41,8 @@ class RangeVariableDeclaration extends Node
     {
         $this->abstractSchemaName = $abstractSchemaName;
         $this->aliasIdentificationVariable = $aliasIdentificationVar;
-    }    
-    
+    }
+
     public function dispatch($walker)
     {
         return $walker->walkRangeVariableDeclaration($this);

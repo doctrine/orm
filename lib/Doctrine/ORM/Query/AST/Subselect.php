@@ -45,8 +45,8 @@ class Subselect extends Node
     {
         $this->simpleSelectClause = $simpleSelectClause;
         $this->subselectFromClause = $subselectFromClause;
-    }    
-    
+    }
+
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkSubselect($this);

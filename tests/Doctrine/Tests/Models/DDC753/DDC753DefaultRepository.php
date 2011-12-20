@@ -25,7 +25,7 @@ use Doctrine\ORM\EntityRepository;
 class DDC753DefaultRepository extends EntityRepository
 {
     /**
-     * @return bool 
+     * @return bool
      */
     public function isDefaultRepository()
     {

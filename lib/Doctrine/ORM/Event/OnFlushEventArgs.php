@@ -38,14 +38,14 @@ class OnFlushEventArgs extends \Doctrine\Common\EventArgs
      * @var Doctirne\ORM\EntityManager
      */
     private $em;
-    
+
     //private $entitiesToPersist = array();
     //private $entitiesToRemove = array();
-    
+
     /**
      * Constructor.
-     * 
-     * @param Doctrine\ORM\EntityManager $em 
+     *
+     * @param \Doctrine\ORM\EntityManager $em
      */
     public function __construct(EntityManager $em)
     {
@@ -54,30 +54,30 @@ class OnFlushEventArgs extends \Doctrine\Common\EventArgs
 
     /**
      * Retrieve associated EntityManager.
-     * 
-     * @return Doctrine\ORM\EntityManager
+     *
+     * @return \Doctrine\ORM\EntityManager
      */
     public function getEntityManager()
     {
         return $this->em;
     }
-    
+
     /*
     public function addEntityToPersist($entity)
     {
-        
+
     }
-    
+
     public function addEntityToRemove($entity)
     {
-        
+
     }
-    
+
     public function addEntityToUpdate($entity)
     {
-        
+
     }
-    
+
     public function getEntitiesToPersist()
     {
         return $this->_entitiesToPersist;

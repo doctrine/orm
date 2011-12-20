@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * GeneralCaseExpression ::= "CASE" WhenClause {WhenClause}* "ELSE" ScalarExpression "END" 
+ * GeneralCaseExpression ::= "CASE" WhenClause {WhenClause}* "ELSE" ScalarExpression "END"
  *
  * @since   2.2
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -39,8 +39,8 @@ class GeneralCaseExpression extends Node
     {
         $this->whenClauses = $whenClauses;
         $this->elseScalarExpression = $elseScalarExpression;
-    }    
-    
+    }
+
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkGeneralCaseExpression($this);

@@ -76,7 +76,7 @@ class DatabaseDriver implements Driver
     /**
      * Initializes a new AnnotationDriver that uses the given AnnotationReader for reading
      * docblock annotations.
-     * 
+     *
      * @param AnnotationReader $reader The AnnotationReader to use.
      */
     public function __construct(AbstractSchemaManager $schemaManager)
@@ -111,7 +111,7 @@ class DatabaseDriver implements Driver
         }
 
         $tables = array();
-                
+
         foreach ($this->_sm->listTableNames() as $tableName) {
             $tables[$tableName] = $this->_sm->listTableDetails($tableName);
         }
@@ -129,7 +129,7 @@ class DatabaseDriver implements Driver
             foreach ($foreignKeys AS $foreignKey) {
                 $allForeignKeyColumns = array_merge($allForeignKeyColumns, $foreignKey->getLocalColumns());
             }
-            
+
             $pkColumns = $table->getPrimaryKey()->getColumns();
             sort($pkColumns);
             sort($allForeignKeyColumns);
@@ -145,7 +145,7 @@ class DatabaseDriver implements Driver
             }
         }
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -169,7 +169,7 @@ class DatabaseDriver implements Driver
         } catch(SchemaException $e) {
             $primaryKeyColumns = array();
         }
-        
+
         if ($this->_sm->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $foreignKeys = $this->tables[$tableName]->getForeignKeys();
         } else {

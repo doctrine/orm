@@ -80,7 +80,7 @@ class ConvertDoctrine1SchemaCommand extends Console\Command\Command
         if ($this->metadataExporter == null) {
             $this->metadataExporter = new ClassMetadataExporter();
         }
-        
+
         return $this->metadataExporter;
     }
 
@@ -91,7 +91,7 @@ class ConvertDoctrine1SchemaCommand extends Console\Command\Command
     {
         $this->metadataExporter = $metadataExporter;
     }
-    
+
     /**
      * @see Console\Command\Command
      */

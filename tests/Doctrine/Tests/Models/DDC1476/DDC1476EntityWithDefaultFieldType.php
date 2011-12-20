@@ -27,8 +27,8 @@ class DDC1476EntityWithDefaultFieldType
 {
 
     /**
-     * @Id 
-     * @Column() 
+     * @Id
+     * @Column()
      * @GeneratedValue("NONE")
      */
     protected $id;
@@ -37,7 +37,7 @@ class DDC1476EntityWithDefaultFieldType
     protected $name;
 
     /**
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -45,7 +45,7 @@ class DDC1476EntityWithDefaultFieldType
     }
 
     /**
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -53,13 +53,13 @@ class DDC1476EntityWithDefaultFieldType
     }
 
     /**
-     * @param string $name 
+     * @param string $name
      */
     public function setName($name)
     {
         $this->name = $name;
     }
-    
+
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
     {
         $metadata->mapField(array(
@@ -69,7 +69,7 @@ class DDC1476EntityWithDefaultFieldType
         $metadata->mapField(array(
            'fieldName'  => 'name',
         ));
-        
+
         $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_NONE);
     }
 

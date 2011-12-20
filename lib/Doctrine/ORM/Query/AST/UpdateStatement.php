@@ -46,4 +46,4 @@ class UpdateStatement extends Node
     {
         return $sqlWalker->walkUpdateStatement($this);
     }
-}    
+}

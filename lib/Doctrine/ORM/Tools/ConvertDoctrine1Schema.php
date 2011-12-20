@@ -101,7 +101,7 @@ class ConvertDoctrine1Schema
     {
         if (isset($model['tableName']) && $model['tableName']) {
             $e = explode('.', $model['tableName']);
-            
+
             if (count($e) > 1) {
                 $metadata->table['schema'] = $e[0];
                 $metadata->table['name'] = $e[1];

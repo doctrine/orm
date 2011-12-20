@@ -34,7 +34,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $this->product->addFeature($this->secondFeature);
         $this->_em->persist($this->product);
         $this->_em->flush();
-        
+
         $this->assertFeatureForeignKeyIs($this->product->getId(), $this->firstFeature);
         $this->assertFeatureForeignKeyIs($this->product->getId(), $this->secondFeature);
     }
@@ -51,7 +51,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $this->product->brokenAddFeature($this->firstFeature);
         $this->_em->persist($this->product);
         $this->_em->flush();
-        
+
         $this->assertFeatureForeignKeyIs(null, $this->firstFeature);
     }
 
@@ -74,9 +74,9 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $query = $this->_em->createQuery('select p, f from Doctrine\Tests\Models\ECommerce\ECommerceProduct p join p.features f');
         $result = $query->getResult();
         $product = $result[0];
-        
+
         $features = $product->getFeatures();
-        
+
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $features[0]);
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $features[0]->getProduct());
         $this->assertSame($product, $features[0]->getProduct());
@@ -86,7 +86,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $features[1]->getProduct());
         $this->assertEquals('Annotations examples', $features[1]->getDescription());
     }
-    
+
     public function testLazyLoadsObjectsOnTheOwningSide()
     {
         $this->_createFixture();
@@ -95,7 +95,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $result = $query->getResult();
         $product = $result[0];
         $features = $product->getFeatures();
-        
+
         $this->assertFalse($features->isInitialized());
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $features[0]);
         $this->assertTrue($features->isInitialized());
@@ -112,7 +112,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
 
         $query = $this->_em->createQuery('select f from Doctrine\Tests\Models\ECommerce\ECommerceFeature f');
         $features = $query->getResult();
-        
+
         $product = $features[0]->getProduct();
         $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $product);
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $product);
@@ -120,7 +120,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $this->assertSame('Doctrine Cookbook', $product->getName());
         $this->assertTrue($product->__isInitialized__);
     }
-    
+
     public function testLazyLoadsObjectsOnTheInverseSide2()
     {
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
@@ -128,22 +128,22 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
 
         $query = $this->_em->createQuery('select f,p from Doctrine\Tests\Models\ECommerce\ECommerceFeature f join f.product p');
         $features = $query->getResult();
-        
+
         $product = $features[0]->getProduct();
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $product);
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $product);
         $this->assertSame('Doctrine Cookbook', $product->getName());
-        
+
         $this->assertFalse($product->getFeatures()->isInitialized());
-        
+
         // This would trigger lazy-load
         //$this->assertEquals(2, $product->getFeatures()->count());
         //$this->assertTrue($product->getFeatures()->contains($features[0]));
         //$this->assertTrue($product->getFeatures()->contains($features[1]));
-        
+
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(null);
     }
-    
+
     public function testJoinFromOwningSide()
     {
         $query = $this->_em->createQuery('select f,p from Doctrine\Tests\Models\ECommerce\ECommerceFeature f join f.product p');
@@ -156,7 +156,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $this->product->addFeature($this->firstFeature);
         $this->product->addFeature($this->secondFeature);
         $this->_em->persist($this->product);
-        
+
         $this->_em->flush();
         $this->_em->clear();
     }

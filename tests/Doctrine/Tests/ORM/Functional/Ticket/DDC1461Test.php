@@ -25,7 +25,7 @@ class DDC1461Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         }
     }
-    
+
     public function testChangeDetectionDeferredExplicit()
     {
         $user = new DDC1461User;

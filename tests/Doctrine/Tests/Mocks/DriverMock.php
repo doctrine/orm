@@ -13,7 +13,7 @@ class DriverMock implements \Doctrine\DBAL\Driver
     {
         return new DriverConnectionMock();
     }
-    
+
     /**
      * Constructs the Sqlite PDO DSN.
      *

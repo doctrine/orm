@@ -44,8 +44,8 @@ class SelectStatement extends Node
     public function __construct($selectClause, $fromClause) {
         $this->selectClause = $selectClause;
         $this->fromClause = $fromClause;
-    }    
-    
+    }
+
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkSelectStatement($this);

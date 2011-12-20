@@ -36,14 +36,14 @@ class AssignedGeneratorTest extends \Doctrine\Tests\OrmTestCase
             $this->fail('Assigned generator did not throw exception even though ID was missing.');
         } catch (\Doctrine\ORM\ORMException $expected) {}
     }
-    
+
     public function testCorrectIdGeneration()
     {
         $entity = new AssignedSingleIdEntity;
         $entity->myId = 1;
         $id = $this->_assignedGen->generate($this->_em, $entity);
         $this->assertEquals(array('myId' => 1), $id);
-        
+
         $entity = new AssignedCompositeIdEntity;
         $entity->myId2 = 2;
         $entity->myId1 = 4;

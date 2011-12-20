@@ -36,8 +36,8 @@ class FromClause extends Node
     public function __construct(array $identificationVariableDeclarations)
     {
         $this->identificationVariableDeclarations = $identificationVariableDeclarations;
-    }    
-    
+    }
+
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkFromClause($this);

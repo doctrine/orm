@@ -30,7 +30,7 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $train = new Train(new TrainOwner("Alexander"));
         $driver = new TrainDriver("Benjamin");
         $waggon = new Waggon();
-        
+
         $train->setDriver($driver);
         $train->addWaggon($waggon);
 
@@ -143,14 +143,27 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testEagerLoadWithNonNullableColumnsGeneratesInnerJoinOnOwningSide()
     {
         $waggon = new Waggon();
-        $this->_em->persist($waggon);
+
+        // It should have a train
+        $train = new Train(new TrainOwner("Alexander"));
+        $train->addWaggon($waggon);
+
+        $this->_em->persist($train);
         $this->_em->flush();
         $this->_em->clear();
 
         $waggon = $this->_em->find(get_class($waggon), $waggon->id);
+
+        // The last query is the eager loading of the owner of the train
+        $this->assertEquals(
+            "SELECT t0.id AS id1, t0.name AS name2, t3.id AS id4, t3.driver_id AS driver_id5, t3.owner_id AS owner_id6 FROM TrainOwner t0 LEFT JOIN Train t3 ON t3.owner_id = t0.id WHERE t0.id IN (?)",
+            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
+        );
+
+        // The one before is the fetching of the waggon and train
         $this->assertEquals(
             "SELECT t0.id AS id1, t0.train_id AS train_id2, t3.id AS id4, t3.driver_id AS driver_id5, t3.owner_id AS owner_id6 FROM Waggon t0 INNER JOIN Train t3 ON t0.train_id = t3.id WHERE t0.id = ?",
-            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
+            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery - 1]['sql']
         );
     }
 
@@ -189,6 +202,7 @@ class Train
     /**
      * Owning side
      * @OneToOne(targetEntity="TrainOwner", inversedBy="train", fetch="EAGER", cascade={"persist"})
+     * @JoinColumn(nullable=false)
      */
     public $owner;
     /**
@@ -280,7 +294,10 @@ class Waggon
 {
     /** @id @generatedValue @column(type="integer") */
     public $id;
-    /** @ManyToOne(targetEntity="Train", inversedBy="waggons", fetch="EAGER") */
+    /**
+     * @ManyToOne(targetEntity="Train", inversedBy="waggons", fetch="EAGER")
+     * @JoinColumn(nullable=false)
+     */
     public $train;
 
     public function setTrain($train)

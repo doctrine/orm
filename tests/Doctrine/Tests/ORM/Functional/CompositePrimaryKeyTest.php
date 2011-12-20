@@ -42,7 +42,7 @@ class CompositePrimaryKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testPersistCompositePkEntity()
     {
         $this->putGermanysBrandenburderTor();
-        
+
         $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('lat' => 100, 'long' => 200));
 
         $this->assertInstanceOf('Doctrine\Tests\Models\Navigation\NavPointOfInterest', $poi);
@@ -71,7 +71,7 @@ class CompositePrimaryKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $tours = $this->_em->createQuery($dql)->getResult();
 
         $this->assertEquals(1, count($tours));
-        
+
         $pois = $tours[0]->getPointOfInterests();
 
         $this->assertEquals(1, count($pois));
@@ -91,5 +91,11 @@ class CompositePrimaryKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
                            ->getResult();
 
         $this->assertEquals(1, count($tours));
+    }
+
+    public function testSpecifiyUnknownIdentifierPrimaryKeyFails()
+    {
+        $this->setExpectedException('Doctrine\ORM\ORMException', 'The identifier long is missing for a query of Doctrine\Tests\Models\Navigation\NavPointOfInterest');
+        $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('key1' => 100));
     }
 }

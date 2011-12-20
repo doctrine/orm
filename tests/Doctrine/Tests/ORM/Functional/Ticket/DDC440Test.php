@@ -28,12 +28,12 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 
         /* The key of the problem is that the first phone is fetched via two association, main_phone and phones.
-         * 
+         *
          * You will notice that the original_entity_datas are not loaded for the first phone. (They are for the second)
-         * 
-         * In the Client entity definition, if you define the main_phone relation after the phones relation, both assertions pass. 
+         *
+         * In the Client entity definition, if you define the main_phone relation after the phones relation, both assertions pass.
          * (for the sake or this test, I defined the main_phone relation before the phones relation)
-         * 
+         *
          */
 
         //Initialize some data
@@ -169,7 +169,7 @@ class DDC440Client
 
     public function __construct()
     {
-        
+
     }
 
     public function setName($value)

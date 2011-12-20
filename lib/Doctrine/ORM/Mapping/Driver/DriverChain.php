@@ -94,7 +94,7 @@ class DriverChain implements Driver
             if (!isset($driverClasses[$oid])) {
                 $driverClasses[$oid] = $driver->getAllClassNames();
             }
-            
+
             foreach ($driverClasses[$oid] AS $className) {
                 if (strpos($className, $namespace) === 0) {
                     $classNames[$className] = true;

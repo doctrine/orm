@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * Performs strict validation of the mapping schema
@@ -28,7 +29,6 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
  * @since       1.0
- * @version     $Revision$
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
  * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Jonathan Wage <jonwage@gmail.com>
@@ -88,6 +88,12 @@ class SchemaValidator
         $ce = array();
         $cmf = $this->em->getMetadataFactory();
 
+        foreach ($class->fieldMappings as $fieldName => $mapping) {
+            if (!Type::hasType($mapping['type'])) {
+                $ce[] = "The field '" . $class->name . "#" . $fieldName."' uses a non-existant type '" . $mapping['type'] . "'.";
+            }
+        }
+
         foreach ($class->associationMappings AS $fieldName => $assoc) {
             if (!$cmf->hasMetadataFor($assoc['targetEntity'])) {
                 $ce[] = "The target entity '" . $assoc['targetEntity'] . "' specified on " . $class->name . '#' . $fieldName . ' is unknown.';
@@ -138,6 +144,19 @@ class SchemaValidator
                     $ce[] = "The mappings " . $class->name . "#" . $fieldName . " and " .
                             $assoc['targetEntity'] . "#" . $assoc['inversedBy'] . " are ".
                             "incosistent with each other.";
+                }
+
+                // Verify inverse side/owning side match each other
+                $targetAssoc = $targetMetadata->associationMappings[$assoc['inversedBy']];
+                if ($assoc['type'] == ClassMetadataInfo::ONE_TO_ONE && $targetAssoc['type'] !== ClassMetadataInfo::ONE_TO_ONE){
+                    $ce[] = "If association " . $class->name . "#" . $fieldName . " is one-to-one, then the inversed " .
+                            "side " . $targetMetadata->name . "#" . $assoc['inversedBy'] . " has to be one-to-one as well.";
+                } else if ($assoc['type'] == ClassMetadataInfo::MANY_TO_ONE && $targetAssoc['type'] !== ClassMetadataInfo::ONE_TO_MANY){
+                    $ce[] = "If association " . $class->name . "#" . $fieldName . " is many-to-one, then the inversed " .
+                            "side " . $targetMetadata->name . "#" . $assoc['inversedBy'] . " has to be one-to-many.";
+                } else if ($assoc['type'] == ClassMetadataInfo::MANY_TO_MANY && $targetAssoc['type'] !== ClassMetadataInfo::MANY_TO_MANY){
+                    $ce[] = "If association " . $class->name . "#" . $fieldName . " is many-to-many, then the inversed " .
+                            "side " . $targetMetadata->name . "#" . $assoc['inversedBy'] . " has to be many-to-many as well.";
                 }
             }
 
