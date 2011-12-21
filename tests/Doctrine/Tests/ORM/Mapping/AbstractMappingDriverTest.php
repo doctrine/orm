@@ -678,3 +678,7 @@ class DDC1170Entity
     }
 
 }
+
+class Address {}
+class Phonenumber {}
+class Group {}

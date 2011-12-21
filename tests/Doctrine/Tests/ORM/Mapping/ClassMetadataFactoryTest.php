@@ -33,12 +33,12 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         // Add a mapped field
         $cm1->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
         // and a mapped association
-        $cm1->mapOneToOne(array('fieldName' => 'other', 'targetEntity' => 'Other', 'mappedBy' => 'this'));
+        $cm1->mapOneToOne(array('fieldName' => 'other', 'targetEntity' => 'TestEntity1', 'mappedBy' => 'this'));
         // and an association on the owning side
         $joinColumns = array(
             array('name' => 'other_id', 'referencedColumnName' => 'id')
         );
-        $cm1->mapOneToOne(array('fieldName' => 'association', 'targetEntity' => 'Other', 'joinColumns' => $joinColumns));
+        $cm1->mapOneToOne(array('fieldName' => 'association', 'targetEntity' => 'TestEntity1', 'joinColumns' => $joinColumns));
         // and an id generator type
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
