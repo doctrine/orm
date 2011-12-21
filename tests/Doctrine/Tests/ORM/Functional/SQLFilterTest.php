@@ -34,7 +34,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     private $userId, $userId2, $articleId, $articleId2;
     private $groupId, $groupId2;
-    private $managerId, $contractId1, $contractId2;
+    private $managerId, $managerId2, $contractId1, $contractId2;
 
     public function setUp()
     {
@@ -553,11 +553,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(2, count($this->_em->createQuery("SELECT cm FROM Doctrine\Tests\Models\Company\CompanyManager cm")->getResult()));
 
         // Enable the filter
-        $conf = $this->_em->getConfiguration();
-        $conf->addFilter("person_name", "\Doctrine\Tests\ORM\Functional\CompanyPersonNameFilter");
-        $this->_em->getFilters()
-            ->enable("person_name")
-            ->setParameter("name", "Guilh%", DBALType::STRING);
+        $this->usePersonNameFilter('Guilh%');
 
         $managers = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyManager')->findAll();
         $this->assertEquals(1, count($managers));
@@ -573,11 +569,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(3, count($this->_em->createQuery("SELECT cp FROM Doctrine\Tests\Models\Company\CompanyPerson cp")->getResult()));
 
         // Enable the filter
-        $conf = $this->_em->getConfiguration();
-        $conf->addFilter("person_name", "\Doctrine\Tests\ORM\Functional\CompanyPersonNameFilter");
-        $this->_em->getFilters()
-            ->enable("person_name")
-            ->setParameter("name", "Guilh%", DBALType::STRING);
+        $this->usePersonNameFilter('Guilh%');
 
         $persons = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyPerson')->findAll();
         $this->assertEquals(1, count($persons));
@@ -662,12 +654,21 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $manager->setDepartment('Doctrine');
         $manager->setTitle('Filterer');
 
+        $manager2 = new CompanyManager;
+        $manager2->setName('Benjamin');
+        $manager2->setSalary(1337);
+        $manager2->setDepartment('Doctrine');
+        $manager2->setTitle('Maintainer');
+
         $contract1->addManager($manager);
         $contract2->addManager($manager);
         $contract3->addManager($manager);
         $contract4->addManager($manager);
 
+        $contract1->addManager($manager2);
+
         $this->_em->persist($manager);
+        $this->_em->persist($manager2);
         $this->_em->persist($contract1);
         $this->_em->persist($contract2);
         $this->_em->persist($contract3);
@@ -676,6 +677,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $this->managerId = $manager->getId();
+        $this->managerId2 = $manager2->getId();
         $this->contractId1 = $contract1->getId();
         $this->contractId2 = $contract2->getId();
     }
@@ -739,6 +741,68 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertFalse($manager->managedContracts->isInitialized());
         $this->assertEquals(2, count($manager->managedContracts->slice(0, 10)));
+    }
+
+    private function usePersonNameFilter($name)
+    {
+        // Enable the filter
+        $conf = $this->_em->getConfiguration();
+        $conf->addFilter("person_name", "\Doctrine\Tests\ORM\Functional\CompanyPersonNameFilter");
+        $this->_em->getFilters()
+            ->enable("person_name")
+            ->setParameter("name", $name, DBALType::STRING);
+    }
+
+    public function testManyToMany_ExtraLazyCountWithFilterOnCTI()
+    {
+        $this->loadCompanySingleTableInheritanceFixtureData();
+
+        $contract = $this->_em->find('Doctrine\Tests\Models\Company\CompanyFlexUltraContract', $this->contractId1);
+
+        $this->assertFalse($contract->managers->isInitialized());
+        $this->assertEquals(2, count($contract->managers));
+
+        // Enable the filter
+        $this->usePersonNameFilter('Benjamin');
+
+        $this->assertFalse($contract->managers->isInitialized());
+        $this->assertEquals(1, count($contract->managers));
+    }
+
+    public function testManyToMany_ExtraLazyContainsWithFilterOnCTI()
+    {
+        $this->loadCompanySingleTableInheritanceFixtureData();
+
+        $contract = $this->_em->find('Doctrine\Tests\Models\Company\CompanyFlexUltraContract', $this->contractId1);
+        $manager1 = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $this->managerId);
+        $manager2 = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $this->managerId2);
+
+        $this->assertFalse($contract->managers->isInitialized());
+        $this->assertTrue($contract->managers->contains($manager1));
+        $this->assertTrue($contract->managers->contains($manager2));
+
+        // Enable the filter
+        $this->usePersonNameFilter('Benjamin');
+
+        $this->assertFalse($contract->managers->isInitialized());
+        $this->assertFalse($contract->managers->contains($manager1));
+        $this->assertTrue($contract->managers->contains($manager2));
+    }
+
+    public function testManyToMany_ExtraLazySliceWithFilterOnCTI()
+    {
+        $this->loadCompanySingleTableInheritanceFixtureData();
+
+        $contract = $this->_em->find('Doctrine\Tests\Models\Company\CompanyFlexUltraContract', $this->contractId1);
+
+        $this->assertFalse($contract->managers->isInitialized());
+        $this->assertEquals(2, count($contract->managers->slice(0, 10)));
+
+        // Enable the filter
+        $this->usePersonNameFilter('Benjamin');
+
+        $this->assertFalse($contract->managers->isInitialized());
+        $this->assertEquals(1, count($contract->managers->slice(0, 10)));
     }
 }
 

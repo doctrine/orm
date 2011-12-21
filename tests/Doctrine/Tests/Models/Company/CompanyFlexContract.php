@@ -19,13 +19,13 @@ class CompanyFlexContract extends CompanyContract
     private $pricePerHour = 0;
 
     /**
-     * @ManyToMany(targetEntity="CompanyManager", inversedBy="managedContracts")
+     * @ManyToMany(targetEntity="CompanyManager", inversedBy="managedContracts", fetch="EXTRA_LAZY")
      * @JoinTable(name="company_contract_managers",
      *    joinColumns={@JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
      *    inverseJoinColumns={@JoinColumn(name="employee_id", referencedColumnName="id")}
      * )
      */
-    private $managers;
+    public $managers;
 
     public function calculatePrice()
     {
