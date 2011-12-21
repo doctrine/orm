@@ -140,10 +140,10 @@ relationships involving types that employ this mapping strategy are
 very performant.
 
 There is a general performance consideration with Single Table
-Inheritance: If you use a STI entity as a many-to-one or one-to-one
-entity you should never use one of the classes at the upper levels
-of the inheritance hierachy as "targetEntity", only those that have
-no subclasses. Otherwise Doctrine *CANNOT* create proxy instances
+Inheritance: If the target-entity of a many-to-one or one-to-one 
+association is an STI entity, it is preferable for performance reasons that it 
+be a leaf entity in the inheritance heirarchy, (ie. have no subclasses). 
+Otherwise Doctrine *CANNOT* create proxy instances
 of this entity and will *ALWAYS* load the entity eagerly.
 
 SQL Schema considerations
@@ -243,10 +243,10 @@ themselves on access of any subtype fields, so accessing fields of
 subtypes after such a query is not safe.
 
 There is a general performance consideration with Class Table
-Inheritance: If you use a CTI entity as a many-to-one or one-to-one
-entity you should never use one of the classes at the upper levels
-of the inheritance hierachy as "targetEntity", only those that have
-no subclasses. Otherwise Doctrine *CANNOT* create proxy instances
+Inheritance: If the target-entity of a many-to-one or one-to-one 
+association is a CTI entity, it is preferable for performance reasons that it 
+be a leaf entity in the inheritance heirarchy, (ie. have no subclasses). 
+Otherwise Doctrine *CANNOT* create proxy instances
 of this entity and will *ALWAYS* load the entity eagerly.
 
 SQL Schema considerations
