@@ -192,7 +192,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function count(PersistentCollection $coll)
     {
-        $mapping = $coll->getMapping();
+        $mapping = $filterMapping = $coll->getMapping();
         $class   = $this->_em->getClassMetadata($mapping['sourceEntity']);
         $id      = $this->_em->getUnitOfWork()->getEntityIdentifier($coll->getOwner());
 
@@ -218,7 +218,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 : $id[$class->fieldNames[$joinColumns[$joinTableColumn]]];
         }
 
-        list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($mapping);
+        list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($filterMapping);
         if ($filterSql) {
             $whereClauses[] = $filterSql;
         }
@@ -295,7 +295,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     private function getJoinTableRestrictions(PersistentCollection $coll, $element, $addFilters)
     {
         $uow     = $this->_em->getUnitOfWork();
-        $mapping = $coll->getMapping();
+        $mapping = $filterMapping = $coll->getMapping();
 
         if ( ! $mapping['isOwningSide']) {
             $sourceClass = $this->_em->getClassMetadata($mapping['targetEntity']);
@@ -332,7 +332,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         if ($addFilters) {
-            list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($mapping);
+            list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($filterMapping);
             if ($filterSql) {
                 $quotedJoinTable .= ' t ' . $joinTargetEntitySQL;
                 $whereClauses[] = $filterSql;
@@ -351,13 +351,21 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * have to join in the actual entities table leading to additional
      * JOIN.
      *
-     * @param array $targetEntity Array containing mapping information.
+     * @param array $mapping Array containing mapping information.
      *
      * @return string The SQL query part to add to a query.
      */
     public function getFilterSql($mapping)
     {
         $targetClass = $this->_em->getClassMetadata($mapping['targetEntity']);
+
+        if ($mapping['isOwningSide']) {
+            $joinColumns = $mapping['relationToTargetKeyColumns'];
+        } else {
+            $mapping = $targetClass->associationMappings[$mapping['mappedBy']];
+            $joinColumns = $mapping['relationToSourceKeyColumns'];
+        }
+
         $targetClass = $this->_em->getClassMetadata($targetClass->rootEntityName);
 
         // A join is needed if there is filtering on the target entity
@@ -368,7 +376,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 . ' ON';
 
             $joinTargetEntitySQLClauses = array();
-            foreach ($mapping['relationToTargetKeyColumns'] as $joinTableColumn => $targetTableColumn) {
+            foreach ($joinColumns as $joinTableColumn => $targetTableColumn) {
                 $joinTargetEntitySQLClauses[] = ' t.' . $joinTableColumn . ' = ' . 'te.' . $targetTableColumn;
             }
 

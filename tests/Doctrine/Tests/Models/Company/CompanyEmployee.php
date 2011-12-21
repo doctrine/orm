@@ -23,6 +23,11 @@ class CompanyEmployee extends CompanyPerson
      */
     private $startDate;
 
+    /**
+     * @ManyToMany(targetEntity="CompanyContract", mappedBy="engineers", fetch="EXTRA_LAZY")
+     */
+    public $contracts;
+
     public function getSalary() {
         return $this->salary;
     }

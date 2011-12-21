@@ -32,7 +32,7 @@ abstract class CompanyContract
     private $completed = false;
 
     /**
-     * @ManyToMany(targetEntity="CompanyEmployee")
+     * @ManyToMany(targetEntity="CompanyEmployee", inversedBy="contracts")
      * @JoinTable(name="company_contract_employees",
      *    joinColumns={@JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
      *    inverseJoinColumns={@JoinColumn(name="employee_id", referencedColumnName="id")}

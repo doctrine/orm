@@ -34,6 +34,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     private $userId, $userId2, $articleId, $articleId2;
     private $groupId, $groupId2;
+    private $managerId, $contractId1, $contractId2;
 
     public function setUp()
     {
@@ -655,12 +656,89 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $contract4 = new CompanyFlexContract;
         $contract4->markCompleted();
 
+        $manager = new CompanyManager;
+        $manager->setName('Alexander');
+        $manager->setSalary(42);
+        $manager->setDepartment('Doctrine');
+        $manager->setTitle('Filterer');
+
+        $contract1->addManager($manager);
+        $contract2->addManager($manager);
+        $contract3->addManager($manager);
+        $contract4->addManager($manager);
+
+        $this->_em->persist($manager);
         $this->_em->persist($contract1);
         $this->_em->persist($contract2);
         $this->_em->persist($contract3);
         $this->_em->persist($contract4);
         $this->_em->flush();
         $this->_em->clear();
+
+        $this->managerId = $manager->getId();
+        $this->contractId1 = $contract1->getId();
+        $this->contractId2 = $contract2->getId();
+    }
+
+    private function useCompletedContractFilter()
+    {
+        $conf = $this->_em->getConfiguration();
+        $conf->addFilter("completed_contract", "\Doctrine\Tests\ORM\Functional\CompletedContractFilter");
+        $this->_em->getFilters()
+            ->enable("completed_contract")
+            ->setParameter("completed", true, DBALType::BOOLEAN);
+    }
+
+    public function testManyToMany_ExtraLazyCountWithFilterOnSTI()
+    {
+        $this->loadCompanySingleTableInheritanceFixtureData();
+
+        $manager = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $this->managerId);
+
+        $this->assertFalse($manager->managedContracts->isInitialized());
+        $this->assertEquals(4, count($manager->managedContracts));
+
+        // Enable the filter
+        $this->useCompletedContractFilter();
+
+        $this->assertFalse($manager->managedContracts->isInitialized());
+        $this->assertEquals(2, count($manager->managedContracts));
+    }
+
+    public function testManyToMany_ExtraLazyContainsWithFilterOnSTI()
+    {
+        $this->loadCompanySingleTableInheritanceFixtureData();
+
+        $manager = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $this->managerId);
+        $contract1 = $this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->contractId1);
+        $contract2 = $this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->contractId2);
+
+        $this->assertFalse($manager->managedContracts->isInitialized());
+        $this->assertTrue($manager->managedContracts->contains($contract1));
+        $this->assertTrue($manager->managedContracts->contains($contract2));
+
+        // Enable the filter
+        $this->useCompletedContractFilter();
+
+        $this->assertFalse($manager->managedContracts->isInitialized());
+        $this->assertFalse($manager->managedContracts->contains($contract1));
+        $this->assertTrue($manager->managedContracts->contains($contract2));
+    }
+
+    public function testManyToMany_ExtraLazySliceWithFilterOnSTI()
+    {
+        $this->loadCompanySingleTableInheritanceFixtureData();
+
+        $manager = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $this->managerId);
+
+        $this->assertFalse($manager->managedContracts->isInitialized());
+        $this->assertEquals(4, count($manager->managedContracts->slice(0, 10)));
+
+        // Enable the filter
+        $this->useCompletedContractFilter();
+
+        $this->assertFalse($manager->managedContracts->isInitialized());
+        $this->assertEquals(2, count($manager->managedContracts->slice(0, 10)));
     }
 }
 
