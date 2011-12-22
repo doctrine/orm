@@ -114,10 +114,10 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
 
     /**
      * @dataProvider dataMethodsAffectedByNoObjectArguments
-     * @expectedException \InvalidArgumentException
-     * @param string $methodName
      */
     public function testThrowsExceptionOnNonObjectValues($methodName) {
+        $this->setExpectedException('Doctrine\ORM\ORMInvalidArgumentException',
+            'EntityManager#'.$methodName.'() expects parameter 1 to be an entity object, NULL given.');
         $this->_em->$methodName(null);
     }
 
