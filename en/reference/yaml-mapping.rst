@@ -35,6 +35,8 @@ of the constructor, like this:
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Mapping\Driver\YamlDriver;
+
     // $config instanceof Doctrine\ORM\Configuration
     $driver = new YamlDriver(array('/path/to/files'));
     $config->setMetadataDriverImpl($driver);
