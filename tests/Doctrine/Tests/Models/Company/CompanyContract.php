@@ -21,7 +21,7 @@ abstract class CompanyContract
     private $id;
 
     /**
-     * @ManyToOne(targetEntity="CompanyEmployee")
+     * @ManyToOne(targetEntity="CompanyEmployee", inversedBy="soldContracts")
      */
     private $salesPerson;
 

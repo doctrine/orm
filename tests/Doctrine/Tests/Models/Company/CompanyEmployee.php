@@ -28,6 +28,11 @@ class CompanyEmployee extends CompanyPerson
      */
     public $contracts;
 
+    /**
+     * @OneToMany(targetEntity="CompanyFlexUltraContract", mappedBy="salesPerson", fetch="EXTRA_LAZY")
+     */
+    public $soldContracts;
+
     public function getSalary() {
         return $this->salary;
     }
