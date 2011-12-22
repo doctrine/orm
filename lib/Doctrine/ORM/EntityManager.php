@@ -488,7 +488,7 @@ class EntityManager implements ObjectManager
     public function persist($entity)
     {
         if ( ! is_object($entity)) {
-            throw new \InvalidArgumentException(gettype($entity));
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#persist()' , $entity);
         }
 
         $this->errorIfClosed();
@@ -507,7 +507,7 @@ class EntityManager implements ObjectManager
     public function remove($entity)
     {
         if ( ! is_object($entity)) {
-            throw new \InvalidArgumentException(gettype($entity));
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#remove()' , $entity);
         }
 
         $this->errorIfClosed();
@@ -524,7 +524,7 @@ class EntityManager implements ObjectManager
     public function refresh($entity)
     {
         if ( ! is_object($entity)) {
-            throw new \InvalidArgumentException(gettype($entity));
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#refresh()' , $entity);
         }
 
         $this->errorIfClosed();
@@ -544,7 +544,7 @@ class EntityManager implements ObjectManager
     public function detach($entity)
     {
         if ( ! is_object($entity)) {
-            throw new \InvalidArgumentException(gettype($entity));
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()' , $entity);
         }
 
         $this->unitOfWork->detach($entity);
@@ -561,7 +561,7 @@ class EntityManager implements ObjectManager
     public function merge($entity)
     {
         if ( ! is_object($entity)) {
-            throw new \InvalidArgumentException(gettype($entity));
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#merge()' , $entity);
         }
 
         $this->errorIfClosed();

@@ -94,6 +94,12 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
         throw new self("A detached entity was found during " . $operation . " " . self::objToStr($entity));
     }
 
+    public static function invalidObject($context, $given, $parameterIndex = 1)
+    {
+        return new self($context .' expects parameter ' . $parameterIndex . 
+                    ' to be an entity object, '. gettype($given) . ' given.');
+    }
+
     /**
      * Helper method to show an object as string.
      *
