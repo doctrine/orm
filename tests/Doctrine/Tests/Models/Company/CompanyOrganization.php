@@ -11,9 +11,9 @@ class CompanyOrganization {
    private $id;
 
     /**
-     * @OneToMany(targetEntity="CompanyEvent", mappedBy="organization", cascade={"persist"})
+     * @OneToMany(targetEntity="CompanyEvent", mappedBy="organization", cascade={"persist"}, fetch="EXTRA_LAZY")
      */
-    private $events;
+    public $events;
 
     public function getId() {
         return $this->id;

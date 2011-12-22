@@ -19,6 +19,8 @@ use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\Models\Company\CompanyOrganization;
+use Doctrine\Tests\Models\Company\CompanyAuction;
 
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
@@ -35,6 +37,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
     private $userId, $userId2, $articleId, $articleId2;
     private $groupId, $groupId2;
     private $managerId, $managerId2, $contractId1, $contractId2;
+    private $organizationId, $eventId1, $eventId2;
 
     public function setUp()
     {
@@ -860,6 +863,91 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($manager->soldContracts->isInitialized());
         $this->assertEquals(1, count($manager->soldContracts->slice(0, 10)));
     }
+    private function loadCompanyOrganizationEventJoinedSubclassFixtureData()
+    {
+        $organization = new CompanyOrganization;
+
+        $event1 = new CompanyAuction;
+        $event1->setData('foo');
+
+        $event2 = new CompanyAuction;
+        $event2->setData('bar');
+
+        $organization->addEvent($event1);
+        $organization->addEvent($event2);
+
+        $this->_em->persist($organization);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $this->organizationId = $organization->getId();
+        $this->eventId1 = $event1->getId();
+        $this->eventId2 = $event2->getId();
+    }
+
+    private function useCompanyEventIdFilter()
+    {
+        // Enable the filter
+        $conf = $this->_em->getConfiguration();
+        $conf->addFilter("event_id", "\Doctrine\Tests\ORM\Functional\CompanyEventFilter");
+        $this->_em->getFilters()
+            ->enable("event_id")
+            ->setParameter("id", $this->eventId2);
+    }
+
+
+    public function testOneToMany_ExtraLazyCountWithFilterOnCTI()
+    {
+        $this->loadCompanyOrganizationEventJoinedSubclassFixtureData();
+
+        $organization = $this->_em->find('Doctrine\Tests\Models\Company\CompanyOrganization', $this->organizationId);
+
+        $this->assertFalse($organization->events->isInitialized());
+        $this->assertEquals(2, count($organization->events));
+
+        // Enable the filter
+        $this->useCompanyEventIdFilter();
+
+        $this->assertFalse($organization->events->isInitialized());
+        $this->assertEquals(1, count($organization->events));
+    }
+
+    public function testOneToMany_ExtraLazyContainsWithFilterOnCTI()
+    {
+        $this->loadCompanyOrganizationEventJoinedSubclassFixtureData();
+
+        $organization = $this->_em->find('Doctrine\Tests\Models\Company\CompanyOrganization', $this->organizationId);
+
+        $event1 = $this->_em->find('Doctrine\Tests\Models\Company\CompanyEvent', $this->eventId1);
+        $event2 = $this->_em->find('Doctrine\Tests\Models\Company\CompanyEvent', $this->eventId2);
+
+        $this->assertFalse($organization->events->isInitialized());
+        $this->assertTrue($organization->events->contains($event1));
+        $this->assertTrue($organization->events->contains($event2));
+
+        // Enable the filter
+        $this->useCompanyEventIdFilter();
+
+        $this->assertFalse($organization->events->isInitialized());
+        $this->assertFalse($organization->events->contains($event1));
+        $this->assertTrue($organization->events->contains($event2));
+    }
+
+    public function testOneToMany_ExtraLazySliceWithFilterOnCTI()
+    {
+        $this->loadCompanyOrganizationEventJoinedSubclassFixtureData();
+
+        $organization = $this->_em->find('Doctrine\Tests\Models\Company\CompanyOrganization', $this->organizationId);
+
+        $this->assertFalse($organization->events->isInitialized());
+        $this->assertEquals(2, count($organization->events->slice(0, 10)));
+
+        // Enable the filter
+        $this->useCompanyEventIdFilter();
+
+        $this->assertFalse($organization->events->isInitialized());
+        $this->assertEquals(1, count($organization->events->slice(0, 10)));
+    }
 }
 
 class MySoftDeleteFilter extends SQLFilter
@@ -943,5 +1031,17 @@ class CompletedContractFilter extends SQLFilter
         }
 
         return $targetTableAlias.'.completed = ' . $this->getParameter('completed');
+    }
+}
+
+class CompanyEventFilter extends SQLFilter
+{
+    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
+    {
+        if ($targetEntity->name != "Doctrine\Tests\Models\Company\CompanyEvent") {
+            return "";
+        }
+
+        return $targetTableAlias.'.id = ' . $this->getParameter('id');
     }
 }
