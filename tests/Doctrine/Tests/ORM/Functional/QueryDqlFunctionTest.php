@@ -167,20 +167,21 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testFunctionSubstring()
     {
         $dql = "SELECT m, SUBSTRING(m.name, 1, 3) AS str1, SUBSTRING(m.name, 5) AS str2 ".
-                "FROM Doctrine\Tests\Models\Company\CompanyManager m";
+                "FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.name";
 
         $result = $this->_em->createQuery($dql)
                          ->getArrayResult();
 
         $this->assertEquals(4, count($result));
-        $this->assertEquals('Rom', $result[0]['str1']);
-        $this->assertEquals('Ben', $result[1]['str1']);
-        $this->assertEquals('Gui', $result[2]['str1']);
-        $this->assertEquals('Jon', $result[3]['str1']);
-        $this->assertEquals('n B.', $result[0]['str2']);
-        $this->assertEquals('amin E.', $result[1]['str2']);
-        $this->assertEquals('herme B.', $result[2]['str2']);
-        $this->assertEquals('than W.', $result[3]['str2']);
+        $this->assertEquals('Ben', $result[0]['str1']);
+        $this->assertEquals('Gui', $result[1]['str1']);
+        $this->assertEquals('Jon', $result[2]['str1']);
+        $this->assertEquals('Rom', $result[3]['str1']);
+        
+        $this->assertEquals('amin E.', $result[0]['str2']);
+        $this->assertEquals('herme B.', $result[1]['str2']);
+        $this->assertEquals('than W.', $result[2]['str2']);
+        $this->assertEquals('n B.', $result[3]['str2']);
     }
 
     public function testFunctionTrim()
