@@ -73,7 +73,7 @@ class Expr
      * Creates an ASCending order expression.
      *
      * @param $sort
-     * @return OrderBy
+     * @return Expr\OrderBy
      */
     public function asc($expr)
     {
@@ -84,7 +84,7 @@ class Expr
      * Creates a DESCending order expression.
      *
      * @param $sort
-     * @return OrderBy
+     * @return Expr\OrderBy
      */
     public function desc($expr)
     {

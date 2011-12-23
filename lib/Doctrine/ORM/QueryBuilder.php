@@ -119,7 +119,7 @@ class QueryBuilder
      * For more complex expression construction, consider storing the expression
      * builder object in a local variable.
      *
-     * @return Expr
+     * @return Query\Expr
      */
     public function expr()
     {
