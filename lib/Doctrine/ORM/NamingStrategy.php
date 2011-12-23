@@ -65,18 +65,17 @@ interface NamingStrategy
     /**
      * Return a join table name
      *
-     * @param string   $ownerEntity
-     * @param string   $associatedEntity
+     * @param string   $sourceEntity
+     * @param string   $targetEntity
      * @param string   $propertyName
      */
-    function joinTableName($ownerEntity, $associatedEntity, $propertyName = null);
+    function joinTableName($sourceEntity, $targetEntity, $propertyName = null);
 
      /**
      * Return the foreign key column name for the given parameters
      *
-     * @param string   $propertyEntityName
+     * @param string   $entityName
      * @param string   $referencedColumnName
-     * @param string   $propertyName
      */
-    function joinKeyColumnName($propertyEntityName, $referencedColumnName = null, $propertyName = null);
+    function joinKeyColumnName($entityName, $referencedColumnName = null);
 }

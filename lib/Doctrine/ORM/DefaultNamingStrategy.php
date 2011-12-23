@@ -69,18 +69,18 @@ class DefaultNamingStrategy implements NamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function joinTableName($ownerEntity, $associatedEntity, $propertyName = null)
+    public function joinTableName($sourceEntity, $targetEntity, $propertyName = null)
     {
-        return strtolower($this->classToTableName($ownerEntity) . '_' .
-                $this->classToTableName($associatedEntity));
+        return strtolower($this->classToTableName($sourceEntity) . '_' .
+                $this->classToTableName($targetEntity));
     }
     
     /**
      * {@inheritdoc}
      */
-    public function joinKeyColumnName($propertyEntityName, $referencedColumnName = null, $propertyName = null)
+    public function joinKeyColumnName($entityName, $referencedColumnName = null)
     {
-        return strtolower($this->classToTableName($propertyEntityName) . '_' .
+        return strtolower($this->classToTableName($entityName) . '_' .
                 ($referencedColumnName ?: $this->referenceColumnName()));
     }
 }
