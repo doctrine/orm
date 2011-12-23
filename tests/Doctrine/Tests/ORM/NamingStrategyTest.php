@@ -39,11 +39,11 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
             array(self::defaultNaming(), 'SomeClassName',
                 'SomeClassName'
             ),
-            array(self::defaultNaming(), 'SOME_CLASS_NAME',
-                'SOME_CLASS_NAME'
+            array(self::defaultNaming(), 'SomeClassName',
+                '\SomeClassName'
             ),
-            array(self::defaultNaming(), 'some_class_name',
-                'some_class_name'
+            array(self::defaultNaming(), 'Name',
+                '\Some\Class\Name'
             ),
         );
     }
@@ -51,7 +51,7 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @dataProvider dataClassToTableName
      */
-    public function testClassToTableName(NamingStrategy $strategy, $className, $expected)
+    public function testClassToTableName(NamingStrategy $strategy, $expected, $className)
     {
         $this->assertEquals($expected, $strategy->classToTableName($className));
     }
@@ -89,103 +89,94 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-     * Data Provider for NamingStrategy#tableName
+     * Data Provider for NamingStrategy#referenceColumnName
      *
      * @return array
      */
-    static public function dataTableName()
+    static public function dataReferenceColumnName()
     {
         return array(
-            array(self::defaultNaming(), 'someTable',
-                'someTable'
-            ),
-            array(self::defaultNaming(), 'SOME_TABLE',
-                'SOME_TABLE'
-            ),
-            array(self::defaultNaming(), 'some_table',
-                'some_table'
-            ),
+            array(self::defaultNaming(), 'id'),
         );
     }
-    
+
     /**
-     * @dataProvider dataTableName
-     * 
+     * @dataProvider dataReferenceColumnName
+     *
      * @param NamingStrategy    $strategy
      * @param string            $expected
-     * @param string            $tableName
+     * @param string            $joinedColumn
+     * @param string            $joinedTable
      */
-    public function testTableName(NamingStrategy $strategy, $expected, $tableName)
+    public function testReferenceColumnName(NamingStrategy $strategy, $expected)
     {
-        $this->assertEquals($expected, $strategy->tableName($tableName));
+        $this->assertEquals($expected, $strategy->referenceColumnName());
     }
 
     /**
-     * Data Provider for NamingStrategy#columnName
+     * Data Provider for NamingStrategy#joinColumnName
      *
      * @return array
      */
-    static public function dataColumnName()
+    static public function dataJoinColumnName()
     {
         return array(
-            array(self::defaultNaming(), 'someColumn',
-                'someColumn'
+            array(self::defaultNaming(), 'someColumn_id',
+                'someColumn', null,
             ),
-            array(self::defaultNaming(), 'SOME_COLUMN',
-                'SOME_COLUMN'
+            array(self::defaultNaming(), 'somecolumn_id',
+                'somecolumn', null,
             ),
-            array(self::defaultNaming(), 'some_column',
-                'some_column'
+            array(self::defaultNaming(), 'some_column_id',
+                'some_column', null,
             ),
         );
     }
-    
+
     /**
-     * @dataProvider dataColumnName
-     * 
+     * @dataProvider dataJoinColumnName
+     *
      * @param NamingStrategy    $strategy
      * @param string            $expected
-     * @param string            $columnName
+     * @param string            $propertyName
      */
-    public function testColumnName(NamingStrategy $strategy, $expected, $columnName)
+    public function testJoinColumnName(NamingStrategy $strategy, $expected, $propertyName)
     {
-        $this->assertEquals($expected, $strategy->columnName($columnName));
+        $this->assertEquals($expected, $strategy->joinColumnName($propertyName));
     }
 
     /**
-     * Data Provider for NamingStrategy#collectionTableName
+     * Data Provider for NamingStrategy#joinTableName
      *
      * @return array
      */
-    static public function dataCollectionTableName()
+    static public function dataJoinTableName()
     {
         return array(
-            array(self::defaultNaming(), 'someColumn',
-                null, null, null, null, 'someColumn',
+            array(self::defaultNaming(), 'someclassname_classname',
+                'SomeClassName', 'Some\ClassName', null,
             ),
-            array(self::defaultNaming(), 'SOME_COLUMN',
-                null, null, null, null, 'SOME_COLUMN'
+            array(self::defaultNaming(), 'someclassname_classname',
+                '\SomeClassName', 'ClassName', null,
             ),
-            array(self::defaultNaming(), 'some_column',
-                null, null, null, null, 'some_column'
+            array(self::defaultNaming(), 'name_classname',
+                '\Some\Class\Name', 'ClassName', null,
             ),
         );
     }
 
     /**
-     * @dataProvider dataCollectionTableName
+     * @dataProvider dataJoinTableName
      *
      * @param NamingStrategy    $strategy
      * @param string            $expected
      * @param string            $ownerEntity
-     * @param string            $ownerEntityTable
      * @param string            $associatedEntity
-     * @param string            $associatedEntityTable
      * @param string            $propertyName
      */
-    public function testCollectionTableName(NamingStrategy $strategy, $expected, $ownerEntity, $ownerEntityTable, $associatedEntity, $associatedEntityTable, $propertyName)
+    public function testJoinTableName(NamingStrategy $strategy, $expected, $ownerEntity, $associatedEntity, $propertyName = null)
     {
-        $this->assertEquals($expected, $strategy->collectionTableName($ownerEntity, $ownerEntityTable, $associatedEntity, $associatedEntityTable, $propertyName));
+        $this->assertEquals($expected, $strategy->joinTableName($ownerEntity, $associatedEntity, $propertyName));
     }
 
     /**
@@ -196,14 +187,11 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     static public function dataJoinKeyColumnName()
     {
         return array(
-            array(self::defaultNaming(), 'someColumn',
-                'someColumn', null,
+            array(self::defaultNaming(), 'someclassname_id',
+                'SomeClassName', null, null,
             ),
-            array(self::defaultNaming(), 'SOME_COLUMN',
-                'SOME_COLUMN', null,
-            ),
-            array(self::defaultNaming(), 'some_column',
-                'some_column', null,
+            array(self::defaultNaming(), 'name_identifier',
+                '\Some\Class\Name', 'identifier', null,
             ),
         );
     }
@@ -213,188 +201,12 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
      *
      * @param NamingStrategy    $strategy
      * @param string            $expected
-     * @param string            $joinedColumn
-     * @param string            $joinedTable
-     */
-    public function testJoinKeyColumnName(NamingStrategy $strategy, $expected, $joinedColumn, $joinedTable)
-    {
-        $this->assertEquals($expected, $strategy->joinKeyColumnName($joinedColumn, $joinedTable));
-    }
-
-    /**
-     * Data Provider for NamingStrategy#foreignKeyColumnName
-     *
-     * @return array
-     */
-    static public function dataForeignKeyColumnName()
-    {
-        return array(
-            array(self::defaultNaming(), 'someColumn',
-                'someColumn', null, null, null,
-            ),
-            array(self::defaultNaming(), 'SOME_COLUMN',
-                'SOME_COLUMN', null, null, null,
-            ),
-            array(self::defaultNaming(), 'some_column',
-                'some_column', null, null, null,
-            ),
-
-            array(self::defaultNaming(), 'someColumn',
-                null, null, 'someColumn', null,
-            ),
-            array(self::defaultNaming(), 'SOME_COLUMN',
-                null, null, 'SOME_COLUMN', null,
-            ),
-            array(self::defaultNaming(), 'some_column',
-                null, null, 'some_column', null,
-            ),
-        );
-    }
-
-    /**
-     * @dataProvider dataForeignKeyColumnName
-     *
-     * @param NamingStrategy    $strategy
-     * @param string            $propertyName
      * @param string            $propertyEntityName
-     * @param string            $propertyTableName
      * @param string            $referencedColumnName
-     */
-    public function testForeignKeyColumnName(NamingStrategy $strategy, $expected, $propertyName, $propertyEntityName, $propertyTableName, $referencedColumnName)
-    {
-        $this->assertEquals($expected, $strategy->foreignKeyColumnName($propertyName, $propertyEntityName, $propertyTableName, $referencedColumnName));
-    }
-
-    /**
-     * Data Provider for NamingStrategy#logicalColumnName
-     *
-     * @return array
-     */
-    static public function dataLogicalColumnName()
-    {
-        return array(
-            array(self::defaultNaming(), 'someColumn',
-                'someColumn', null,
-            ),
-            array(self::defaultNaming(), 'SOME_COLUMN',
-                'SOME_COLUMN', null,
-            ),
-            array(self::defaultNaming(), 'some_column',
-                'some_column', null,
-            ),
-
-            array(self::defaultNaming(), 'someColumn',
-                null, 'someColumn',
-            ),
-            array(self::defaultNaming(), 'SOME_COLUMN',
-                null, 'SOME_COLUMN',
-            ),
-            array(self::defaultNaming(), 'some_column',
-                null, 'some_column',
-            ),
-        );
-    }
-
-    /**
-     * @dataProvider dataLogicalColumnName
-     *
-     * @param NamingStrategy    $strategy
-     * @param string            $columnName
      * @param string            $propertyName
      */
-    public function testLogicalColumnName(NamingStrategy $strategy, $expected, $columnName, $propertyName)
+    public function testJoinKeyColumnName(NamingStrategy $strategy, $expected, $propertyEntityName, $referencedColumnName = null, $propertyName = null)
     {
-        $this->assertEquals($expected, $strategy->logicalColumnName($columnName, $propertyName));
+        $this->assertEquals($expected, $strategy->joinKeyColumnName($propertyEntityName, $referencedColumnName, $propertyName));
     }
-
-
-    /**
-     * Data Provider for NamingStrategy#logicalCollectionTableName
-     *
-     * @return array
-     */
-    static public function dataLogicalCollectionTableName()
-    {
-        return array(
-            array(self::defaultNaming(), 'SomeClassName_SomeAssocClassName',
-                null, 'SomeClassName', 'SomeAssocClassName', null
-            ),
-            array(self::defaultNaming(), 'SOME_CLASS_NAME_SOME_ASSOC_CLASS_NAME',
-                null, 'SOME_CLASS_NAME', 'SOME_ASSOC_CLASS_NAME', null
-            ),
-            array(self::defaultNaming(), 'some_class_name_some_assoc_class_name',
-                null, 'some_class_name', 'some_assoc_class_name', null
-            ),
-
-            array(self::defaultNaming(), 'SomeClassName_someProperty',
-                null, 'SomeClassName', null, 'someProperty',
-            ),
-            array(self::defaultNaming(), 'SOME_CLASS_NAME_SOME_PROPERTY',
-                null, 'SOME_CLASS_NAME', null, 'SOME_PROPERTY',
-            ),
-            array(self::defaultNaming(), 'some_class_name_some_property',
-                null, 'some_class_name', null, 'some_property',
-            ),
-
-        );
-    }
-
-    /**
-     * @dataProvider dataLogicalCollectionTableName
-     *
-     * @param NamingStrategy    $strategy
-     * @param string            $tableName
-     * @param string            $ownerEntityTable
-     * @param string            $associatedEntityTable
-     * @param string            $propertyName
-     */
-    public function testLogicalCollectionTableName(NamingStrategy $strategy, $expected, $tableName, $ownerEntityTable, $associatedEntityTable, $propertyName)
-    {
-        $this->assertEquals($expected, $strategy->logicalCollectionTableName($tableName, $ownerEntityTable, $associatedEntityTable, $propertyName));
-    }
-
-    /**
-     * Data Provider for NamingStrategy#logicalCollectionColumnName
-     *
-     * @return array
-     */
-    static public function dataLogicalCollectionColumnName()
-    {
-        return array(
-            array(self::defaultNaming(), 'someColumn',
-                'someColumn', null, null,
-            ),
-            array(self::defaultNaming(), 'SOME_COLUMN',
-                'SOME_COLUMN', null, null,
-            ),
-            array(self::defaultNaming(), 'some_column',
-                'some_column', null, null,
-            ),
-
-            array(self::defaultNaming(), 'someColumn',
-                'someColumn', 'some', 'Column',
-            ),
-            array(self::defaultNaming(), 'SOME_COLUMN',
-                'SOME_COLUMN', 'SOME', 'COLUMN',
-            ),
-            array(self::defaultNaming(), 'some_column',
-                'some_column', 'some', 'column',
-            ),
-
-        );
-    }
-
-    /**
-     * @dataProvider dataLogicalCollectionColumnName
-     *
-     * @param NamingStrategy    $strategy
-     * @param string            $columnName
-     * @param string            $propertyName
-     * @param string            $referencedColumn
-     */
-    public function testLogicalCollectionColumnName(NamingStrategy $strategy, $expected, $columnName, $propertyName, $referencedColumn)
-    {
-        $this->assertEquals($expected, $strategy->logicalCollectionColumnName($columnName, $propertyName, $referencedColumn));
-    }
-
 }

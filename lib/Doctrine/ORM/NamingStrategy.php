@@ -40,82 +40,43 @@ interface NamingStrategy
     function classToTableName($className);
 
     /**
-     * Return a column name for a property path expression
+     * Return a column name for a property
      *
-     * @param   string  $propertyName   A property path
+     * @param   string  $propertyName   A property
      * @return  string                  A column name
      */
     function propertyToColumnName($propertyName);
 
     /**
-     * Alter the table name given in the mapping document
+     * Return the default reference column name
      *
-     * @param   string  tableName   A table name
-     * @return  string              A table name
-     */
-    function tableName($tableName);
-
-    /**
-     * Alter the column name given in the mapping document
-     * 
-     * @param   string $columnName  A column name
      * @return  string              A column name
      */
-    function columnName($columnName);
+    function referenceColumnName();
+
+     /**
+     * Return a join column name for a property
+     *
+     * @param   string $propertyName    A property
+     * @return  string                  A column name
+     */
+    function joinColumnName($propertyName);
 
     /**
-     * Return a collection table name ie an association having a join table
+     * Return a join table name
      *
      * @param string   $ownerEntity
-     * @param string   $ownerEntityTable        Owner side table name
      * @param string   $associatedEntity
-     * @param string   $associatedEntityTable   Reverse side table name if any
-     * @param string   $propertyName            Collection role
+     * @param string   $propertyName
      */
-    function collectionTableName($ownerEntity, $ownerEntityTable, $associatedEntity, $associatedEntityTable, $propertyName);
+    function joinTableName($ownerEntity, $associatedEntity, $propertyName = null);
 
-    /**
-     * Return the join key column name ie a FK column used in a JOINED strategy or for a secondary table
-     *
-     * @param string   $joinedColumn    Joined column name used to join with
-     * @param string   $joinedTable     Joined table name used to join with
-     */
-    function joinKeyColumnName($joinedColumn, $joinedTable);
-
-    /**
+     /**
      * Return the foreign key column name for the given parameters
      *
-     * @param string   $propertyName            The property name involved
      * @param string   $propertyEntityName
-     * @param string   $propertyTableName       The property table name involved (logical one)
-     * @param string   $referencedColumnName    The referenced column name involved (logical one)
+     * @param string   $referencedColumnName
+     * @param string   $propertyName
      */
-    function foreignKeyColumnName($propertyName, $propertyEntityName, $propertyTableName, $referencedColumnName);
-
-    /**
-     * Return the logical column name used to refer to a column in the metadata
-     *
-     * @param string   $columnName      Given column name if any
-     * @param string   $propertyName    Property name of this column
-     */
-    function logicalColumnName($columnName, $propertyName);
-
-    /**
-     * Returns the logical collection table name used to refer to a table in the mapping metadata
-     *
-     * @param string   $tableName               The metadata explicit name
-     * @param string   $ownerEntityTable        Owner table entity table name (logical one)
-     * @param string   $associatedEntityTable   Reverse side table name if any (logical one)
-     * @param string   $propertyName            Collection role
-     */
-    function logicalCollectionTableName($tableName, $ownerEntityTable, $associatedEntityTable, $propertyName);
-
-    /**
-     * Returns the logical foreign key column name used to refer to this column in the mapping metadata
-     *
-     * @param string   $columnName          Given column name in the metadata if any
-     * @param string   $propertyName        Property name
-     * @param string   $referencedColumn    Referenced column name in the join
-     */
-    function logicalCollectionColumnName($columnName, $propertyName, $referencedColumn);
+    function joinKeyColumnName($propertyEntityName, $referencedColumnName = null, $propertyName = null);
 }

@@ -30,12 +30,15 @@ namespace Doctrine\ORM;
  */
 class DefaultNamingStrategy implements NamingStrategy
 {
-
     /**
      * {@inheritdoc}
      */
     public function classToTableName($className)
     {
+        if (strpos($className, '\\') !== false) {
+            return substr($className, strrpos($className, '\\') + 1);
+        }
+
         return $className;
     }
 
@@ -50,64 +53,34 @@ class DefaultNamingStrategy implements NamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function tableName($tableName)
+    public function referenceColumnName()
     {
-        return $tableName;
+        return 'id';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function columnName($columnName)
+    public function joinColumnName($propertyName)
     {
-        return $columnName;
+        return $propertyName . '_' . $this->referenceColumnName();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function collectionTableName($ownerEntity, $ownerEntityTable, $associatedEntity, $associatedEntityTable, $propertyName)
+    public function joinTableName($ownerEntity, $associatedEntity, $propertyName = null)
     {
-        return $propertyName;
+        return strtolower($this->classToTableName($ownerEntity) . '_' .
+                $this->classToTableName($associatedEntity));
     }
-
+    
     /**
      * {@inheritdoc}
      */
-    public function joinKeyColumnName($joinedColumn, $joinedTable)
+    public function joinKeyColumnName($propertyEntityName, $referencedColumnName = null, $propertyName = null)
     {
-        return $joinedColumn;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function foreignKeyColumnName($propertyName, $propertyEntityName, $propertyTableName, $referencedColumnName)
-    {
-        return $propertyName ?: $propertyTableName;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function logicalColumnName($columnName, $propertyName)
-    {
-        return $columnName ?: $propertyName;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function logicalCollectionTableName($tableName, $ownerEntityTable, $associatedEntityTable, $propertyName)
-    {
-        return $ownerEntityTable . '_' . ( $associatedEntityTable ?: $propertyName );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function logicalCollectionColumnName($columnName, $propertyName, $referencedColumn)
-    {
-        return $columnName ?: ($propertyName . '_' . $referencedColumn);
+        return strtolower($this->classToTableName($propertyEntityName) . '_' .
+                ($referencedColumnName ?: $this->referenceColumnName()));
     }
 }
