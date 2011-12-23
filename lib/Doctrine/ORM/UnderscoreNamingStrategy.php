@@ -19,7 +19,6 @@
  */
 
 namespace Doctrine\ORM;
-use Doctrine\Common\Util\Inflector;
 
 /**
  * The default NamingStrategy
@@ -122,12 +121,12 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     private function underscore($string)
     {
-        $string = Inflector::tableize($string);
+        $string = preg_replace('/(?<=[a-z])([A-Z])/', '_$1', $string);
 
         if ($this->case == self::CASE_UPPER) {
             return strtoupper($string);
         }
         
-        return $string;
+        return strtolower($string);
     }
 }

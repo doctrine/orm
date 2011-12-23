@@ -106,6 +106,12 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
             array(self::underscoreNamingUpper(), 'SOME_PROPERTY',
                 'someProperty'
             ),
+            array(self::underscoreNamingUpper(), 'SOME_PROPERTY',
+                'some_property'
+            ),
+            array(self::underscoreNamingUpper(), 'SOME_PROPERTY',
+                'SOME_PROPERTY'
+            ),
         );
     }
     
