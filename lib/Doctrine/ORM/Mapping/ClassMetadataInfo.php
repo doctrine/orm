@@ -21,6 +21,8 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\DBAL\Types\Type;
 use ReflectionClass;
+use Doctrine\ORM\DefaultNamingStrategy;
+use Doctrine\ORM\NamingStrategy;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -512,7 +514,7 @@ class ClassMetadataInfo
     {
         $this->name = $entityName;
         $this->rootEntityName = $entityName;
-        $this->namingStrategy = $namingStrategy ?: new \Doctrine\ORM\DefaultNamingStrategy();
+        $this->namingStrategy = $namingStrategy ?: new DefaultNamingStrategy();
     }
 
     /**
