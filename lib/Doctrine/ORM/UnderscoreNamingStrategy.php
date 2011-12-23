@@ -1,0 +1,133 @@
+<?php
+
+/*
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
+
+namespace Doctrine\ORM;
+use Doctrine\Common\Util\Inflector;
+
+/**
+ * The default NamingStrategy
+ *
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.3
+ * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
+ */
+class UnderscoreNamingStrategy implements NamingStrategy
+{
+    const CASE_LOWER = 'lower';
+    const CASE_UPPER = 'upper';
+
+    /**
+     * @var string
+     */
+    private $case;
+
+    /**
+     * @param string $case
+     */
+    public function __construct($case = self::CASE_LOWER)
+    {
+        $this->case = $case;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCase()
+    {
+        return $this->case;
+    }
+
+    /**
+     * @param string $case
+     */
+    public function setCase($case)
+    {
+        $this->case = $case;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function classToTableName($className)
+    {
+        if (strpos($className, '\\') !== false) {
+            $className = substr($className, strrpos($className, '\\') + 1);
+        }
+
+        return $this->underscore($className);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function propertyToColumnName($propertyName)
+    {
+        return $this->underscore($propertyName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function referenceColumnName()
+    {
+        return $this->case == self::CASE_UPPER ?  'ID' : 'id';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function joinColumnName($propertyName)
+    {
+        return $this->underscore($propertyName) . '_' . $this->referenceColumnName();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function joinTableName($sourceEntity, $targetEntity, $propertyName = null)
+    {
+        return $this->classToTableName($sourceEntity) . '_' . $this->classToTableName($targetEntity);
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function joinKeyColumnName($entityName, $referencedColumnName = null)
+    {
+        return $this->classToTableName($entityName) . '_' .
+                ($referencedColumnName ?: $this->referenceColumnName());
+    }
+    
+    /**
+     * @param   string $string
+     * @return  string
+     */
+    private function underscore($string)
+    {
+        $string = Inflector::tableize($string);
+
+        if ($this->case == self::CASE_UPPER) {
+            return strtoupper($string);
+        }
+        
+        return $string;
+    }
+}

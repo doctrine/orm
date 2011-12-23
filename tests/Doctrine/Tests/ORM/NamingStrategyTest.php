@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\ORM\UnderscoreNamingStrategy;
 use Doctrine\ORM\DefaultNamingStrategy;
 use Doctrine\ORM\NamingStrategy;
 
@@ -13,19 +14,27 @@ require_once __DIR__ . '/../TestInit.php';
 class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
 {
     /**
-     * @var DefaultNamingStrategy
-     */
-    private static $defaultNamingStrategy;
-    
-    /**
      * @return DefaultNamingStrategy
      */
     static private function defaultNaming()
     {
-        if (self::$defaultNamingStrategy == null) {
-           self::$defaultNamingStrategy = new DefaultNamingStrategy();
-        }
-        return self::$defaultNamingStrategy;
+        return new DefaultNamingStrategy();
+    }
+
+    /**
+     * @return UnderscoreNamingStrategy
+     */
+    static private function underscoreNamingLower()
+    {
+        return new UnderscoreNamingStrategy(UnderscoreNamingStrategy::CASE_LOWER);
+    }
+
+    /**
+     * @return UnderscoreNamingStrategy
+     */
+    static private function underscoreNamingUpper()
+    {
+        return new UnderscoreNamingStrategy(UnderscoreNamingStrategy::CASE_UPPER);
     }
 
     /**
@@ -36,6 +45,7 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     static public function dataClassToTableName()
     {
         return array(
+            // DefaultNamingStrategy
             array(self::defaultNaming(), 'SomeClassName',
                 'SomeClassName'
             ),
@@ -43,6 +53,20 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
                 '\SomeClassName'
             ),
             array(self::defaultNaming(), 'Name',
+                '\Some\Class\Name'
+            ),
+
+            // UnderscoreNamingStrategy
+            array(self::underscoreNamingLower(), 'some_class_name',
+                '\Name\Space\SomeClassName'
+            ),
+            array(self::underscoreNamingLower(), 'name',
+                '\Some\Class\Name'
+            ),
+            array(self::underscoreNamingUpper(), 'SOME_CLASS_NAME',
+                '\Name\Space\SomeClassName'
+            ),
+            array(self::underscoreNamingUpper(), 'NAME',
                 '\Some\Class\Name'
             ),
         );
@@ -64,6 +88,7 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     static public function dataPropertyToColumnName()
     {
         return array(
+            // DefaultNamingStrategy
             array(self::defaultNaming(), 'someProperty',
                 'someProperty'
             ),
@@ -72,6 +97,14 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
             ),
             array(self::defaultNaming(), 'some_property',
                 'some_property'
+            ),
+
+            // UnderscoreNamingStrategy
+            array(self::underscoreNamingLower(), 'some_property',
+                'someProperty'
+            ),
+            array(self::underscoreNamingUpper(), 'SOME_PROPERTY',
+                'someProperty'
             ),
         );
     }
@@ -96,7 +129,12 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     static public function dataReferenceColumnName()
     {
         return array(
+            // DefaultNamingStrategy
             array(self::defaultNaming(), 'id'),
+
+            // UnderscoreNamingStrategy
+            array(self::underscoreNamingLower(), 'id'),
+            array(self::underscoreNamingUpper(), 'ID'),
         );
     }
 
@@ -121,14 +159,20 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     static public function dataJoinColumnName()
     {
         return array(
+            // DefaultNamingStrategy
             array(self::defaultNaming(), 'someColumn_id',
                 'someColumn', null,
             ),
-            array(self::defaultNaming(), 'somecolumn_id',
-                'somecolumn', null,
-            ),
             array(self::defaultNaming(), 'some_column_id',
                 'some_column', null,
+            ),
+
+            // UnderscoreNamingStrategy
+            array(self::underscoreNamingLower(), 'some_column_id',
+                'someColumn', null,
+            ),
+            array(self::underscoreNamingUpper(), 'SOME_COLUMN_ID',
+                'someColumn', null,
             ),
         );
     }
@@ -153,6 +197,7 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     static public function dataJoinTableName()
     {
         return array(
+            // DefaultNamingStrategy
             array(self::defaultNaming(), 'someclassname_classname',
                 'SomeClassName', 'Some\ClassName', null,
             ),
@@ -160,6 +205,27 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
                 '\SomeClassName', 'ClassName', null,
             ),
             array(self::defaultNaming(), 'name_classname',
+                '\Some\Class\Name', 'ClassName', null,
+            ),
+
+            // UnderscoreNamingStrategy
+            array(self::underscoreNamingLower(), 'some_class_name_class_name',
+                'SomeClassName', 'Some\ClassName', null,
+            ),
+            array(self::underscoreNamingLower(), 'some_class_name_class_name',
+                '\SomeClassName', 'ClassName', null,
+            ),
+            array(self::underscoreNamingLower(), 'name_class_name',
+                '\Some\Class\Name', 'ClassName', null,
+            ),
+
+            array(self::underscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME',
+                'SomeClassName', 'Some\ClassName', null,
+            ),
+            array(self::underscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME',
+                '\SomeClassName', 'ClassName', null,
+            ),
+            array(self::underscoreNamingUpper(), 'NAME_CLASS_NAME',
                 '\Some\Class\Name', 'ClassName', null,
             ),
         );
@@ -187,11 +253,27 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     static public function dataJoinKeyColumnName()
     {
         return array(
+            // DefaultNamingStrategy
             array(self::defaultNaming(), 'someclassname_id',
                 'SomeClassName', null, null,
             ),
             array(self::defaultNaming(), 'name_identifier',
                 '\Some\Class\Name', 'identifier', null,
+            ),
+
+            // UnderscoreNamingStrategy
+            array(self::underscoreNamingLower(), 'some_class_name_id',
+                'SomeClassName', null, null,
+            ),
+            array(self::underscoreNamingLower(), 'class_name_identifier',
+                '\Some\Class\ClassName', 'identifier', null,
+            ),
+
+            array(self::underscoreNamingUpper(), 'SOME_CLASS_NAME_ID',
+                'SomeClassName', null, null,
+            ),
+            array(self::underscoreNamingUpper(), 'CLASS_NAME_IDENTIFIER',
+                '\Some\Class\ClassName', 'IDENTIFIER', null,
             ),
         );
     }
