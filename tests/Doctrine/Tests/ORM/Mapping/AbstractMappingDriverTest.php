@@ -373,22 +373,22 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_NONE, $class->generatorType);
     }
-    
+
     /**
      * @group DDC-1170
      */
     public function testIdentifierColumnDefinition()
     {
-        
+
         $class = $this->createClassMetadata(__NAMESPACE__ . '\DDC1170Entity');
 
-        
+
         $this->assertArrayHasKey('id', $class->fieldMappings);
         $this->assertArrayHasKey('value', $class->fieldMappings);
-        
+
         $this->assertArrayHasKey('columnDefinition', $class->fieldMappings['id']);
         $this->assertArrayHasKey('columnDefinition', $class->fieldMappings['value']);
-                
+
         $this->assertEquals("INT unsigned NOT NULL", $class->fieldMappings['id']['columnDefinition']);
         $this->assertEquals("VARCHAR(255) NOT NULL", $class->fieldMappings['value']['columnDefinition']);
     }
@@ -626,13 +626,13 @@ class DDC1170Entity
 {
 
     /**
-     * @param string $value 
+     * @param string $value
      */
     function __construct($value = null)
     {
         $this->value = $value;
     }
-    
+
     /**
      * @Id
      * @GeneratedValue(strategy="NONE")
@@ -644,7 +644,7 @@ class DDC1170Entity
      * @Column(columnDefinition = "VARCHAR(255) NOT NULL")
      */
     private $value;
-    
+
     /**
      * @return integer
      */
@@ -660,7 +660,7 @@ class DDC1170Entity
     {
         return $this->value;
     }
-    
+
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
         $metadata->mapField(array(
@@ -678,3 +678,7 @@ class DDC1170Entity
     }
 
 }
+
+class Address {}
+class Phonenumber {}
+class Group {}

@@ -16,7 +16,7 @@ class DDC656Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC656Entity')
             ));
         } catch(\Exception $e) {
-            
+
         }
     }
 

@@ -35,7 +35,7 @@ class UnitOfWorkPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         }
         $this->_em->flush();
 
-        
+
         foreach ($users AS $user) {
             $user->status = 'other';
             $user->username = $user->username . '++';

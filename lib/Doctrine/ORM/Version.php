@@ -16,7 +16,7 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
  */
- 
+
 namespace Doctrine\ORM;
 
 /**
@@ -36,13 +36,13 @@ class Version
     /**
      * Current Doctrine Version
      */
-    const VERSION = '2.2.0-DEV';
+    const VERSION = '2.2.01-DEV';
 
     /**
      * Compares a Doctrine version with the current one.
      *
      * @param string $version Doctrine version to compare.
-     * @return int Returns -1 if older, 0 if it is the same, 1 if version 
+     * @return int Returns -1 if older, 0 if it is the same, 1 if version
      *             passed as argument is newer.
      */
     public static function compare($version)

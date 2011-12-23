@@ -32,7 +32,7 @@ class CompanyPerson
      * @JoinColumn(name="spouse_id", referencedColumnName="id")
      */
     private $spouse;
-    
+
     /**
      * @ManyToMany(targetEntity="CompanyPerson")
      * @JoinTable(name="company_persons_friends",
@@ -40,7 +40,7 @@ class CompanyPerson
             inverseJoinColumns={@JoinColumn(name="friend_id", referencedColumnName="id")})
      */
     private $friends;
-    
+
     public function __construct() {
         $this->friends = new \Doctrine\Common\Collections\ArrayCollection;
     }
@@ -60,11 +60,11 @@ class CompanyPerson
     public function getSpouse() {
         return $this->spouse;
     }
-    
+
     public function getFriends() {
         return $this->friends;
     }
-    
+
     public function addFriend(CompanyPerson $friend) {
         if ( ! $this->friends->contains($friend)) {
             $this->friends->add($friend);

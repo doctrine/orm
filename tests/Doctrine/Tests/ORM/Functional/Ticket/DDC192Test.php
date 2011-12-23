@@ -20,13 +20,13 @@ class DDC192Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @Entity @Table(name="ddc192_users")
  */
 class DDC192User
-{ 
+{
     /**
-     * @Id @Column(name="id", type="integer") 
+     * @Id @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-    
+
     /**
      * @Column(name="name", type="string")
      */
@@ -43,23 +43,23 @@ class DDC192Phonenumber
      * @Id @Column(name="phone", type="string", length=40)
      */
     protected $phone;
-    
+
     /**
      * @Id
      * @ManyToOne(targetEntity="DDC192User")
      * @JoinColumn(name="userId", referencedColumnName="id")
      */
     protected $User;
-    
-    
+
+
     public function setPhone($value) { $this->phone = $value; }
-    
+
     public function getPhone() { return $this->phone; }
-    
-    public function setUser(User $user) 
+
+    public function setUser(User $user)
     {
         $this->User = $user;
     }
-    
+
     public function getUser() { return $this->User; }
 }

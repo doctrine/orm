@@ -170,7 +170,7 @@ class FieldBuilder
 
     /**
      * Set Sequence Generator
-     * 
+     *
      * @param string $sequenceName
      * @param int $allocationSize
      * @param int $initialValue
@@ -188,7 +188,7 @@ class FieldBuilder
 
     /**
      * Set column definition.
-     * 
+     *
      * @param string $def
      * @return FieldBuilder
      */

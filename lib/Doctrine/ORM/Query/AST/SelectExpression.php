@@ -44,8 +44,8 @@ class SelectExpression extends Node
         $this->expression = $expression;
         $this->fieldIdentificationVariable = $fieldIdentificationVariable;
         $this->hiddenAliasResultVariable = $hiddenAliasResultVariable;
-    }    
-    
+    }
+
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkSelectExpression($this);

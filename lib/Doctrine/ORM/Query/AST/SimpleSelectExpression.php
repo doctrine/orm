@@ -41,8 +41,8 @@ class SimpleSelectExpression extends Node
     public function __construct($expression)
     {
         $this->expression = $expression;
-    }    
-    
+    }
+
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkSimpleSelectExpression($this);

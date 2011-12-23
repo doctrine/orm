@@ -51,7 +51,7 @@ class GearmanLockTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->asyncFindWithLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_WRITE);
         $this->asyncFindWithLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_WRITE);
-        
+
         $this->assertLockWorked();
     }
 

@@ -74,7 +74,7 @@ class DDC1514EntityA
     public $entitiesB;
     /** @ManyToOne(targetEntity="DDC1514EntityC") */
     public $entityC;
-    
+
     public function __construct()
     {
         $this->entitiesB = new ArrayCollection();

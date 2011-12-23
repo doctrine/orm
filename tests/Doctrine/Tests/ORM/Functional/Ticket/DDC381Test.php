@@ -55,9 +55,9 @@ class DDC381Entity
     {
         return $this->id;
     }
-    
+
     public function getOtherMethod()
     {
-        
+
     }
 }

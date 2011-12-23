@@ -42,13 +42,13 @@ class IdentityFunction extends FunctionNode
         $platform   = $sqlWalker->getConnection()->getDatabasePlatform();
         $dqlAlias   = $this->pathExpression->identificationVariable;
         $assocField = $this->pathExpression->field;
-        
+
         $qComp = $sqlWalker->getQueryComponent($dqlAlias);
         $class = $qComp['metadata'];
         $assoc = $class->associationMappings[$assocField];
-        
+
         $tableAlias = $sqlWalker->getSQLTableAlias($class->getTableName(), $dqlAlias);
-        
+
         return $tableAlias . '.' . reset($assoc['targetToSourceKeyColumns']);;
     }
 
@@ -59,9 +59,9 @@ class IdentityFunction extends FunctionNode
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
-        
+
         $this->pathExpression = $parser->SingleValuedAssociationPathExpression();
-        
+
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }

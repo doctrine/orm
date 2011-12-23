@@ -43,7 +43,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      * @var EntityManager
      */
     private $em;
-    
+
     /**
      * @var AbstractPlatform
      */
@@ -73,7 +73,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      * @var bool
      */
     private $initialized = false;
-    
+
     /**
      * @param EntityManager $$em
      */
@@ -101,16 +101,16 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     {
         return $this->cacheDriver;
     }
-    
+
     public function getLoadedMetadata()
     {
         return $this->loadedMetadata;
     }
-    
+
     /**
      * Forces the factory to load the metadata of all classes known to the underlying
      * mapping driver.
-     * 
+     *
      * @return array The ClassMetadata instances of all mapped classes.
      */
     public function getAllMetadata()
@@ -188,7 +188,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
     /**
      * Checks whether the factory has the metadata for a class loaded already.
-     * 
+     *
      * @param string $className
      * @return boolean TRUE if the metadata of the class in question is already loaded, FALSE otherwise.
      */
@@ -199,7 +199,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
     /**
      * Sets the metadata descriptor for a specific class.
-     * 
+     *
      * NOTE: This is only useful in very special cases, like when generating proxy classes.
      *
      * @param string $className
@@ -308,11 +308,11 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             if ($parent && $parent->isInheritanceTypeSingleTable()) {
                 $class->setPrimaryTable($parent->table);
             }
-            
+
             if ($parent && $parent->containsForeignIdentifier) {
                 $class->containsForeignIdentifier = true;
             }
-            
+
             if ($parent && !empty ($parent->namedQueries)) {
                 $this->addInheritedNamedQueries($class, $parent);
             }
@@ -325,7 +325,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             }
 
             $this->validateRuntimeMetadata($class, $parent);
-            
+
             $this->loadedMetadata[$className] = $class;
 
             $parent = $class;
@@ -436,10 +436,10 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             $subClass->addInheritedAssociationMapping($mapping);
         }
     }
-    
+
     /**
      * Adds inherited named queries to the subclass mapping.
-     * 
+     *
      * @since 2.2
      * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
      * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
@@ -524,13 +524,13 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
         if ( ! $this->initialized) {
             $this->initialize();
         }
-        
+
         // Check for namespace alias
         if (strpos($class, ':') !== false) {
             list($namespaceAlias, $simpleClassName) = explode(':', $class);
             $class = $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
         }
-        
+
         return $this->driver->isTransient($class);
     }
 }

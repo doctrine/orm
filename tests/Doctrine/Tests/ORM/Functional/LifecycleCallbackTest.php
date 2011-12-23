@@ -19,30 +19,30 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
             // Swallow all exceptions. We do not test the schema tool here.
         }
     }
-    
+
     public function testPreSavePostSaveCallbacksAreInvoked()
-    {        
+    {
         $entity = new LifecycleCallbackTestEntity;
         $entity->value = 'hello';
         $this->_em->persist($entity);
         $this->_em->flush();
-        
+
         $this->assertTrue($entity->prePersistCallbackInvoked);
         $this->assertTrue($entity->postPersistCallbackInvoked);
-        
+
         $this->_em->clear();
-        
+
         $query = $this->_em->createQuery("select e from Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity e");
         $result = $query->getResult();
         $this->assertTrue($result[0]->postLoadCallbackInvoked);
-        
+
         $result[0]->value = 'hello again';
-        
+
         $this->_em->flush();
-        
+
         $this->assertEquals('changed from preUpdate callback!', $result[0]->value);
     }
-    
+
     public function testPreFlushCallbacksAreInvoked()
     {
         $entity = new LifecycleCallbackTestEntity;
@@ -73,14 +73,14 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->setValue('value');
         $this->_em->persist($user);
         $this->_em->flush();
-        
+
         $user->setName('Alice');
         $this->_em->flush(); // Triggers preUpdate
-        
+
         $this->_em->clear();
-        
+
         $user2 = $this->_em->find(get_class($user), $user->getId());
-        
+
         $this->assertEquals('Alice', $user2->getName());
         $this->assertEquals('Hello World', $user2->getValue());
     }
@@ -132,25 +132,25 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testCascadedEntitiesCallsPrePersist()
     {
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        
+
         $e1 = new LifecycleCallbackTestEntity;
         $e2 = new LifecycleCallbackTestEntity;
 
         $c = new LifecycleCallbackCascader();
         $this->_em->persist($c);
-        
+
         $c->entities[] = $e1;
         $c->entities[] = $e2;
         $e1->cascader = $c;
         $e2->cascader = $c;
-        
+
         //$this->_em->persist($c);
         $this->_em->flush();
 
         $this->assertTrue($e1->prePersistCallbackInvoked);
         $this->assertTrue($e2->prePersistCallbackInvoked);
     }
-    
+
     public function testLifecycleCallbacksGetInherited()
     {
         $childMeta = $this->_em->getClassMetadata(__NAMESPACE__ . '\LifecycleCallbackChildEntity');
@@ -212,7 +212,7 @@ class LifecycleCallbackTestEntity
     public $prePersistCallbackInvoked = false;
     public $postPersistCallbackInvoked = false;
     public $postLoadCallbackInvoked = false;
-    
+
     public $preFlushCallbackInvoked = false;
 
     /**
@@ -234,26 +234,26 @@ class LifecycleCallbackTestEntity
     public function getId() {
         return $this->id;
     }
-    
+
     public function getValue() {
         return $this->value;
     }
-    
+
     /** @PrePersist */
     public function doStuffOnPrePersist() {
         $this->prePersistCallbackInvoked = true;
     }
-    
+
     /** @PostPersist */
     public function doStuffOnPostPersist() {
         $this->postPersistCallbackInvoked = true;
     }
-    
+
     /** @PostLoad */
     public function doStuffOnPostLoad() {
         $this->postLoadCallbackInvoked = true;
     }
-    
+
     /** @PreUpdate */
     public function doStuffOnPreUpdate() {
         $this->value = 'changed from preUpdate callback!';
@@ -292,7 +292,7 @@ class LifecycleCallbackCascader
 class LifecycleCallbackParentEntity {
     /** @PrePersist */
     function doStuff() {
-        
+
     }
 }
 

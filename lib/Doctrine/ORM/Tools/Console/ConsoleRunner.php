@@ -26,7 +26,7 @@ class ConsoleRunner
 {
     /**
      * Run console with the given helperset.
-     * 
+     *
      * @param \Symfony\Component\Console\Helper\HelperSet $helperSet
      * @return void
      */

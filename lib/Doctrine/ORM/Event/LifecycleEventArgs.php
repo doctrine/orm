@@ -42,10 +42,10 @@ class LifecycleEventArgs extends EventArgs
      * @var object
      */
     private $entity;
-    
+
     /**
      * Constructor
-     * 
+     *
      * @param object $entity
      * @param \Doctrine\ORM\EntityManager $em
      */
@@ -54,11 +54,11 @@ class LifecycleEventArgs extends EventArgs
         $this->entity = $entity;
         $this->em     = $em;
     }
-    
+
     /**
      * Retireve associated Entity.
-     * 
-     * @return object 
+     *
+     * @return object
      */
     public function getEntity()
     {
@@ -67,7 +67,7 @@ class LifecycleEventArgs extends EventArgs
 
     /**
      * Retrieve associated EntityManager.
-     * 
+     *
      * @return \Doctrine\ORM\EntityManager
      */
     public function getEntityManager()

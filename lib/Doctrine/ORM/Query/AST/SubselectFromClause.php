@@ -39,8 +39,8 @@ class SubselectFromClause extends Node
     public function __construct(array $identificationVariableDeclarations)
     {
         $this->identificationVariableDeclarations = $identificationVariableDeclarations;
-    }    
-    
+    }
+
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkSubselectFromClause($this);

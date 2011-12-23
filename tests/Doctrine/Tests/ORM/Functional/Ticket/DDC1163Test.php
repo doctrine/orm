@@ -61,7 +61,7 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         /* @var $proxyHolder ProxyHolder */
         $proxyHolder = $this->_em->find(__NAMESPACE__ . '\\DDC1163ProxyHolder', $this->proxyHolderId);
-        
+
         $this->assertInstanceOf(__NAMESPACE__.'\\DDC1163SpecialProduct', $proxyHolder->getSpecialProduct());
     }
 
@@ -72,9 +72,9 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertInstanceOf(__NAMESPACE__.'\\DDC1163SpecialProduct', $specialProduct);
         $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $specialProduct);
-        
+
         $specialProduct->setSubclassProperty('foobar');
-        
+
         // this screams violation of law of demeter ;)
         $this->assertEquals(
             __NAMESPACE__.'\\DDC1163SpecialProduct',
@@ -115,7 +115,7 @@ class DDC1163ProxyHolder
     {
         $this->specialProduct = $specialProduct;
     }
-    
+
     public function getSpecialProduct()
     {
         return $this->specialProduct;

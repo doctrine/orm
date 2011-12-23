@@ -37,7 +37,7 @@ class DDC425Entity {
      * @GeneratedValue
      */
     public $id;
-    
+
     /** @Column(type="datetime") */
     public $someDatetimeField;
 }

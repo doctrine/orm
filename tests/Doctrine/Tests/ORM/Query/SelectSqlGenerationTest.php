@@ -1392,6 +1392,48 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group DDC-1213
+     */
+    public function testSupportsBitComparison()
+    {
+        $this->assertSqlGeneration(
+            'SELECT BIT_OR(4,2), BIT_AND(4,2), u FROM Doctrine\Tests\Models\CMS\CmsUser u',
+            'SELECT (4 | 2) AS sclr0, (4 & 2) AS sclr1, c0_.id AS id2, c0_.status AS status3, c0_.username AS username4, c0_.name AS name5 FROM cms_users c0_'
+        );
+        $this->assertSqlGeneration(
+            'SELECT BIT_OR(u.id,2), BIT_AND(u.id,2) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE BIT_OR(u.id,2) > 0',
+            'SELECT (c0_.id | 2) AS sclr0, (c0_.id & 2) AS sclr1 FROM cms_users c0_ WHERE (c0_.id | 2) > 0'
+        );
+        $this->assertSqlGeneration(
+            'SELECT BIT_OR(u.id,2), BIT_AND(u.id,2) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE BIT_AND(u.id , 4) > 0',
+            'SELECT (c0_.id | 2) AS sclr0, (c0_.id & 2) AS sclr1 FROM cms_users c0_ WHERE (c0_.id & 4) > 0'
+        );
+        $this->assertSqlGeneration(
+            'SELECT BIT_OR(u.id,2), BIT_AND(u.id,2) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE BIT_OR(u.id , 2) > 0 OR BIT_AND(u.id , 4) > 0',
+            'SELECT (c0_.id | 2) AS sclr0, (c0_.id & 2) AS sclr1 FROM cms_users c0_ WHERE (c0_.id | 2) > 0 OR (c0_.id & 4) > 0'
+        );
+    }
+
+    /**
+     * @group DDC-1539
+     */
+    public function testParenthesesOnTheLeftHandOfComparison()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u where ( (u.id + u.id) * u.id ) > 100',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (c0_.id + c0_.id) * c0_.id > 100'
+        );
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u where (u.id + u.id) * u.id > 100',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE (c0_.id + c0_.id) * c0_.id > 100'
+        );
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u where 100 < (u.id + u.id) * u.id ',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE 100 < (c0_.id + c0_.id) * c0_.id'
+        );
+    }
+
     public function testCustomTypeValueSql()
     {
         if (DBALType::hasType('negative_to_positive')) {

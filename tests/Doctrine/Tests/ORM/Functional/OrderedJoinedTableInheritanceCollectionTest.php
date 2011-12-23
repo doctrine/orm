@@ -61,7 +61,7 @@ class OrderedJoinedTableInheritanceCollectionTest extends \Doctrine\Tests\OrmFun
 
         $this->assertEquals(1, count($result));
         $poofy = $result[0];
-        
+
         $this->assertEquals('Aari', $poofy->children[0]->getName());
         $this->assertEquals('Zampa', $poofy->children[1]->getName());
     }
@@ -121,7 +121,7 @@ abstract class OJTIC_Pet
  */
 class OJTIC_Cat extends OJTIC_Pet
 {
-    
+
 }
 
 /**
@@ -129,5 +129,5 @@ class OJTIC_Cat extends OJTIC_Pet
  */
 class OJTIC_Dog extends OJTIC_Pet
 {
-    
+
 }

@@ -44,7 +44,7 @@ class AnnotationExporter extends AbstractExporter
      * Converts a single ClassMetadata instance to the exported format
      * and returns it
      *
-     * @param ClassMetadataInfo $metadata 
+     * @param ClassMetadataInfo $metadata
      * @return string $exported
      */
     public function exportClassMetadata(ClassMetadataInfo $metadata)

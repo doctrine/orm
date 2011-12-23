@@ -232,7 +232,7 @@ class XmlDriver extends AbstractFileDriver
             if (isset($idElement['column'])) {
                 $mapping['columnName'] = (string)$idElement['column'];
             }
-            
+
             if (isset($idElement['column-definition'])) {
                 $mapping['columnDefinition'] = (string)$idElement['column-definition'];
             }

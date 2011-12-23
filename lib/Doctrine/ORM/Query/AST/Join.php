@@ -39,7 +39,7 @@ class Join extends Node
     const JOIN_TYPE_LEFTOUTER = 2;
     const JOIN_TYPE_INNER = 3;
 
-    public $joinType = self::JOIN_TYPE_INNER;    
+    public $joinType = self::JOIN_TYPE_INNER;
     public $joinAssociationPathExpression = null;
     public $aliasIdentificationVariable = null;
     public $conditionalExpression = null;
@@ -50,7 +50,7 @@ class Join extends Node
         $this->joinAssociationPathExpression = $joinAssocPathExpr;
         $this->aliasIdentificationVariable = $aliasIdentVar;
     }
-    
+
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkJoin($this);

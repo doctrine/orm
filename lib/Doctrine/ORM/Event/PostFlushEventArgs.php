@@ -41,7 +41,7 @@ class PostFlushEventArgs extends EventArgs
 
     /**
      * Constructor.
-     * 
+     *
      * @param \Doctrine\ORM\EntityManager $em
      */
     public function __construct(EntityManager $em)
@@ -51,7 +51,7 @@ class PostFlushEventArgs extends EventArgs
 
     /**
      * Retrieve associated EntityManager.
-     * 
+     *
      * @return \Doctrine\ORM\EntityManager
      */
     public function getEntityManager()

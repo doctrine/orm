@@ -44,14 +44,14 @@ class OneToManyPersister extends AbstractCollectionPersister
     {
         $mapping = $coll->getMapping();
         $class   = $this->_em->getClassMetadata($mapping['targetEntity']);
-        
+
         return 'DELETE FROM ' . $class->getQuotedTableName($this->_conn->getDatabasePlatform())
              . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
     }
 
     /**
      * {@inheritdoc}
-     * 
+     *
      */
     protected function _getDeleteRowSQLParameters(PersistentCollection $coll, $element)
     {
@@ -110,10 +110,10 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         $whereClauses = array();
         $params       = array();
-        
+
         foreach ($targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'] AS $joinColumn) {
             $whereClauses[] = $joinColumn['name'] . ' = ?';
-            
+
             $params[] = ($targetClass->containsForeignIdentifier)
                 ? $id[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])]
                 : $id[$sourceClass->fieldNames[$joinColumn['referencedColumnName']]];
@@ -143,7 +143,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $mapping   = $coll->getMapping();
         $uow       = $this->_em->getUnitOfWork();
         $persister = $uow->getEntityPersister($mapping['targetEntity']);
-        
+
         return $persister->getOneToManyCollection($mapping, $coll->getOwner(), $offset, $length);
     }
 
@@ -156,22 +156,22 @@ class OneToManyPersister extends AbstractCollectionPersister
     {
         $mapping = $coll->getMapping();
         $uow     = $this->_em->getUnitOfWork();
-        
+
         // shortcut for new entities
         if ($uow->getEntityState($element, UnitOfWork::STATE_NEW) == UnitOfWork::STATE_NEW) {
             return false;
         }
 
         $persister = $uow->getEntityPersister($mapping['targetEntity']);
-        
-        // only works with single id identifier entities. Will throw an 
-        // exception in Entity Persisters if that is not the case for the 
+
+        // only works with single id identifier entities. Will throw an
+        // exception in Entity Persisters if that is not the case for the
         // 'mappedBy' field.
         $id = current( $uow->getEntityIdentifier($coll->getOwner()) );
 
         return $persister->exists($element, array($mapping['mappedBy'] => $id));
     }
-    
+
     /**
      * @param PersistentCollection $coll
      * @param object $element
@@ -190,7 +190,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $class   = $this->_em->getClassMetadata($mapping['targetEntity']);
         $sql     = 'DELETE FROM ' . $class->getQuotedTableName($this->_conn->getDatabasePlatform())
                  . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
-               
+
         return (bool) $this->_conn->executeUpdate($sql, $this->_getDeleteRowSQLParameters($coll, $element));
     }
 }

@@ -124,7 +124,7 @@ class AssociationBuilder
 
     /**
      * Add Join Columns
-     * 
+     *
      * @param string $columnName
      * @param string $referencedColumnName
      * @param bool $nullable

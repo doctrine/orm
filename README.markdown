@@ -1,7 +1,8 @@
 # Doctrine 2 ORM
 
 Master: [![Build Status](https://secure.travis-ci.org/doctrine/doctrine2.png?branch=master)](http://travis-ci.org/doctrine/doctrine2)
-2.1.x: [![Build Status](https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.1.x)](http://travis-ci.org/doctrine/doctrine2)
+2.2: [![Build Status](https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.2)](http://travis-ci.org/doctrine/doctrine2)
+2.1: [![Build Status](https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.1.x)](http://travis-ci.org/doctrine/doctrine2)
 
 Doctrine 2 is an object-relational mapper (ORM) for PHP 5.3.2+ that provides transparent persistence
 for PHP objects. It sits on top of a powerful database abstraction layer (DBAL). One of its key features

@@ -131,7 +131,7 @@ class ResultSetMapping
         if ($resultAlias !== null) {
             $this->isMixed = true;
         }
-        
+
         return $this;
     }
 
@@ -150,7 +150,7 @@ class ResultSetMapping
     {
         $this->discriminatorColumns[$alias] = $discrColumn;
         $this->columnOwnerMap[$discrColumn] = $alias;
-        
+
         return $this;
     }
 
@@ -185,7 +185,7 @@ class ResultSetMapping
             throw new \LogicException($message);
         }
         */
-        
+
         return $this;
     }
 
@@ -198,7 +198,7 @@ class ResultSetMapping
     public function addIndexByScalar($resultColumnName)
     {
         $this->indexByMap['scalars'] = $resultColumnName;
-        
+
         return $this;
     }
 
@@ -212,7 +212,7 @@ class ResultSetMapping
     public function addIndexByColumn($alias, $resultColumnName)
     {
         $this->indexByMap[$alias] = $resultColumnName;
-        
+
         return $this;
     }
 
@@ -268,7 +268,7 @@ class ResultSetMapping
         if ( ! $this->isMixed && $this->scalarMappings) {
             $this->isMixed = true;
         }
-        
+
         return $this;
     }
 
@@ -287,7 +287,7 @@ class ResultSetMapping
         $this->aliasMap[$alias]       = $class;
         $this->parentAliasMap[$alias] = $parentAlias;
         $this->relationMap[$alias]    = $relation;
-        
+
         return $this;
     }
 
@@ -306,7 +306,7 @@ class ResultSetMapping
         if ( ! $this->isMixed && $this->fieldMappings) {
             $this->isMixed = true;
         }
-        
+
         return $this;
     }
 
@@ -469,7 +469,7 @@ class ResultSetMapping
         if ($isIdentifierColumn) {
             $this->isIdentifierColumn[$alias][$columnName] = true;
         }
-        
+
         return $this;
     }
 }

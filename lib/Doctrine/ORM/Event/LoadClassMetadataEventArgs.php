@@ -43,7 +43,7 @@ class LoadClassMetadataEventArgs extends EventArgs
 
     /**
      * Constructor.
-     * 
+     *
      * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $classMetadata
      * @param \Doctrine\ORM\EntityManager $em
      */
@@ -55,7 +55,7 @@ class LoadClassMetadataEventArgs extends EventArgs
 
     /**
      * Retrieve associated ClassMetadata.
-     *  
+     *
      * @return \Doctrine\ORM\Mapping\ClassMetadataInfo
      */
     public function getClassMetadata()
@@ -65,7 +65,7 @@ class LoadClassMetadataEventArgs extends EventArgs
 
     /**
      * Retrieve associated EntityManager.
-     * 
+     *
      * @return \Doctrine\ORM\EntityManager
      */
     public function getEntityManager()

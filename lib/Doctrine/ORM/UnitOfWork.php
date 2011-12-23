@@ -705,18 +705,12 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($unwrappedValue as $key => $entry) {
             $state = $this->getEntityState($entry, self::STATE_NEW);
+            $oid   = spl_object_hash($entry);
 
             switch ($state) {
                 case self::STATE_NEW:
                     if ( ! $assoc['isCascadePersist']) {
-                        $message = "A new entity was found through the relationship '%s#%s' that was not configured " .
-                            ' to cascade persist operations for entity: %s. Explicitly persist the new entity or ' .
-                            'configure cascading persist operations on the relationship. If you cannot find out ' .
-                            'which entity causes the problem, implement %s#__toString() to get a clue.';
-
-                        throw new InvalidArgumentException(sprintf(
-                            $message, $assoc['sourceEntity'], $assoc['fieldName'], self::objToStr($entry), $assoc['targetEntity']
-                        ));
+                        throw ORMInvalidArgumentException::newEntityFoundThroughRelationship($assoc, $entry);
                     }
 
                     $this->persistNew($targetClass, $entry);
@@ -734,9 +728,7 @@ class UnitOfWork implements PropertyChangedListener
                 case self::STATE_DETACHED:
                     // Can actually not happen right now as we assume STATE_NEW,
                     // so the exception will be raised from the DBAL layer (constraint violation).
-                    $message = 'A detached entity was found through a relationship during cascading a persist operation.';
-
-                    throw new InvalidArgumentException($message);
+                    throw ORMInvalidArgumentException::detachedEntityFoundThroughRelationship($assoc, $entry);
                     break;
 
                 default:
@@ -796,7 +788,7 @@ class UnitOfWork implements PropertyChangedListener
         $oid = spl_object_hash($entity);
 
         if ( ! isset($this->entityStates[$oid]) || $this->entityStates[$oid] != self::STATE_MANAGED) {
-            throw new InvalidArgumentException('Entity must be managed.');
+            throw ORMInvalidArgumentException::entityNotManaged($entity);
         }
 
         // skip if change tracking is "NOTIFY"
@@ -1076,11 +1068,14 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if (isset($this->entityDeletions[$oid])) {
-            throw new InvalidArgumentException("Removed entity can not be scheduled for insertion.");
+            throw ORMInvalidArgumentException::scheduleInsertForRemovedEntity($entity);
+        }
+        if (isset($this->originalEntityData[$oid]) && ! isset($this->entityInsertions[$oid])) {
+            throw ORMInvalidArgumentException::scheduleInsertForManagedEntity($entity);
         }
 
         if (isset($this->entityInsertions[$oid])) {
-            throw new InvalidArgumentException("Entity can not be scheduled for insertion twice.");
+            throw ORMInvalidArgumentException::scheduleInsertTwice($entity);
         }
 
         $this->entityInsertions[$oid] = $entity;
@@ -1111,11 +1106,11 @@ class UnitOfWork implements PropertyChangedListener
         $oid = spl_object_hash($entity);
 
         if ( ! isset($this->entityIdentifiers[$oid])) {
-            throw new InvalidArgumentException("Entity has no identity.");
+            throw ORMInvalidArgumentException::entityHasNoIdentity($entity, "scheduling for update");
         }
 
         if (isset($this->entityDeletions[$oid])) {
-            throw new InvalidArgumentException("Entity is removed.");
+            throw ORMInvalidArgumentException::entityIsRemoved($entity, "schedule for update");
         }
 
         if ( ! isset($this->entityUpdates[$oid]) && ! isset($this->entityInsertions[$oid])) {
@@ -1255,7 +1250,7 @@ class UnitOfWork implements PropertyChangedListener
         $idHash        = implode(' ', $this->entityIdentifiers[spl_object_hash($entity)]);
 
         if ($idHash === '') {
-            throw new InvalidArgumentException('The given entity has no identity.');
+            throw ORMInvalidArgumentException::entityWithoutIdentity($classMetadata->name, $entity);
         }
 
         $className = $classMetadata->rootEntityName;
@@ -1365,7 +1360,7 @@ class UnitOfWork implements PropertyChangedListener
         $idHash        = implode(' ', $this->entityIdentifiers[$oid]);
 
         if ($idHash === '') {
-            throw new InvalidArgumentException('The given entity has no identity.');
+            throw ORMInvalidArgumentException::entityHasNoIdentity($entity, "remove from identity map");
         }
 
         $className = $classMetadata->rootEntityName;
@@ -1512,10 +1507,10 @@ class UnitOfWork implements PropertyChangedListener
 
             case self::STATE_DETACHED:
                 // Can actually not happen right now since we assume STATE_NEW.
-                throw new InvalidArgumentException('Detached entity passed to persist().');
+                throw ORMInvalidArgumentException::detachedEntityCannot($entity, "persisted");
 
             default:
-                throw new UnexpectedValueException(sprintf('Unexpected entity state: %s', $entityState));
+                throw new UnexpectedValueException("Unexpected entity state: $entityState." . self::objToStr($entity));
         }
 
         $this->cascadePersist($entity, $visited);
@@ -1579,10 +1574,9 @@ class UnitOfWork implements PropertyChangedListener
                 break;
 
             case self::STATE_DETACHED:
-                throw new InvalidArgumentException('A detached entity can not be removed.');
-
+                throw ORMInvalidArgumentException::detachedEntityCannot($entity, "removed");
             default:
-                throw new UnexpectedValueException(sprintf('Unexpected entity state: %s', $entityState));
+                throw new UnexpectedValueException("Unexpected entity state: $entityState." . self::objToStr($entity));
         }
 
     }
@@ -1664,8 +1658,7 @@ class UnitOfWork implements PropertyChangedListener
                 if ($managedCopy) {
                     // We have the entity in-memory already, just make sure its not removed.
                     if ($this->getEntityState($managedCopy) == self::STATE_REMOVED) {
-                        throw new InvalidArgumentException('Removed entity detected during merge.'
-                                . ' Can not merge with a removed entity.');
+                        throw ORMInvalidArgumentException::entityIsRemoved($managedCopy, "merge");
                     }
                 } else {
                     // We need to fetch the managed copy in order to merge.
@@ -1882,7 +1875,7 @@ class UnitOfWork implements PropertyChangedListener
         $class = $this->em->getClassMetadata(get_class($entity));
 
         if ($this->getEntityState($entity) !== self::STATE_MANAGED) {
-            throw new InvalidArgumentException("Entity is not MANAGED.");
+            throw ORMInvalidArgumentException::entityNotManaged($entity);
         }
 
         $this->getEntityPersister($class->name)->refresh(
@@ -2106,7 +2099,7 @@ class UnitOfWork implements PropertyChangedListener
     public function lock($entity, $lockMode, $lockVersion = null)
     {
         if ($this->getEntityState($entity, self::STATE_DETACHED) != self::STATE_MANAGED) {
-            throw new InvalidArgumentException("Entity is not MANAGED.");
+            throw ORMInvalidArgumentException::entityNotManaged($entity);
         }
 
         $entityName = get_class($entity);
@@ -2292,14 +2285,13 @@ class UnitOfWork implements PropertyChangedListener
             $id = array($class->identifier[0] => $idHash);
         }
 
-        $overrideLocalValues = true;
-
         if (isset($this->identityMap[$class->rootEntityName][$idHash])) {
             $entity = $this->identityMap[$class->rootEntityName][$idHash];
             $oid = spl_object_hash($entity);
 
             if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
                 $entity->__isInitialized__ = true;
+                $overrideLocalValues = true;
 
                 if ($entity instanceof NotifyPropertyChanged) {
                     $entity->addPropertyChangedListener($this);
@@ -2308,7 +2300,7 @@ class UnitOfWork implements PropertyChangedListener
                 $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
 
                 // If only a specific entity is set to refresh, check that it's the one
-                if (isset($hints[Query::HINT_REFRESH_ENTITY])) {
+                if(isset($hints[Query::HINT_REFRESH_ENTITY])) {
                     $overrideLocalValues = $hints[Query::HINT_REFRESH_ENTITY] === $entity;
 
                     // inject ObjectManager into just loaded proxies.
@@ -2333,6 +2325,8 @@ class UnitOfWork implements PropertyChangedListener
             if ($entity instanceof NotifyPropertyChanged) {
                 $entity->addPropertyChangedListener($this);
             }
+
+            $overrideLocalValues = true;
         }
 
         if ( ! $overrideLocalValues) {
@@ -2360,10 +2354,6 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($class->associationMappings as $field => $assoc) {
             // Check if the association is not among the fetch-joined associations already.
             if (isset($hints['fetchAlias']) && isset($hints['fetched'][$hints['fetchAlias']][$field])) {
-                // DDC-1545: Fetched associations must have original entity data set.
-                // Define NULL value right now, since next iteration may fill it with actual value.
-                $this->originalEntityData[$oid][$field] = null;
-
                 continue;
             }
 
@@ -2384,15 +2374,12 @@ class UnitOfWork implements PropertyChangedListener
                     foreach ($assoc['targetToSourceKeyColumns'] as $targetColumn => $srcColumn) {
                         $joinColumnValue = isset($data[$srcColumn]) ? $data[$srcColumn] : null;
 
-                        // Skip is join column value is null
-                        if ($joinColumnValue === null) {
-                            continue;
-                        }
-
-                        if ($targetClass->containsForeignIdentifier) {
-                            $associatedId[$targetClass->getFieldForColumn($targetColumn)] = $joinColumnValue;
-                        } else {
-                            $associatedId[$targetClass->fieldNames[$targetColumn]] = $joinColumnValue;
+                        if ($joinColumnValue !== null) {
+                            if ($targetClass->containsForeignIdentifier) {
+                                $associatedId[$targetClass->getFieldForColumn($targetColumn)] = $joinColumnValue;
+                            } else {
+                                $associatedId[$targetClass->fieldNames[$targetColumn]] = $joinColumnValue;
+                            }
                         }
                     }
 
@@ -2886,7 +2873,7 @@ class UnitOfWork implements PropertyChangedListener
     public function markReadOnly($object)
     {
         if ( ! is_object($object) || ! $this->isInIdentityMap($object)) {
-            throw new InvalidArgumentException("Managed entity required");
+            throw ORMInvalidArgumentException::readOnlyRequiresManagedEntity($object);
         }
 
         $this->readOnlyObjects[spl_object_hash($object)] = true;
@@ -2902,7 +2889,7 @@ class UnitOfWork implements PropertyChangedListener
     public function isReadOnly($object)
     {
         if ( ! is_object($object) ) {
-            throw new InvalidArgumentException("Managed entity required");
+            throw ORMInvalidArgumentException::readOnlyRequiresManagedEntity($object);
         }
 
         return isset($this->readOnlyObjects[spl_object_hash($object)]);

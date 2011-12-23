@@ -127,7 +127,7 @@ EOT
 
             $output->writeln(sprintf('The Schema-Tool would execute <info>"%s"</info> queries to update the database.', count($sqls)));
             $output->writeln('Please run the operation by passing one of the following options:');
-            
+
             $output->writeln(sprintf('    <info>%s --force</info> to execute the command', $this->getName()));
             $output->writeln(sprintf('    <info>%s --dump-sql</info> to dump the SQL statements to the screen', $this->getName()));
         }

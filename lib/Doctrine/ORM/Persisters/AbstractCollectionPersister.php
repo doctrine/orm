@@ -65,11 +65,11 @@ abstract class AbstractCollectionPersister
     public function delete(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
-        
+
         if ( ! $mapping['isOwningSide']) {
             return; // ignore inverse side
         }
-        
+
         $sql = $this->_getDeleteSQL($coll);
         $this->_conn->executeUpdate($sql, $this->_getDeleteSQLParameters($coll));
     }
@@ -98,34 +98,34 @@ abstract class AbstractCollectionPersister
     public function update(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
-        
+
         if ( ! $mapping['isOwningSide']) {
             return; // ignore inverse side
         }
-        
+
         $this->deleteRows($coll);
         //$this->updateRows($coll);
         $this->insertRows($coll);
     }
-    
+
     public function deleteRows(PersistentCollection $coll)
-    {        
+    {
         $deleteDiff = $coll->getDeleteDiff();
         $sql = $this->_getDeleteRowSQL($coll);
-        
+
         foreach ($deleteDiff as $element) {
             $this->_conn->executeUpdate($sql, $this->_getDeleteRowSQLParameters($coll, $element));
         }
     }
-    
+
     //public function updateRows(PersistentCollection $coll)
     //{}
-    
+
     public function insertRows(PersistentCollection $coll)
     {
         $insertDiff = $coll->getInsertDiff();
         $sql = $this->_getInsertRowSQL($coll);
-        
+
         foreach ($insertDiff as $element) {
             $this->_conn->executeUpdate($sql, $this->_getInsertRowSQLParameters($coll, $element));
         }
@@ -168,7 +168,7 @@ abstract class AbstractCollectionPersister
 
     /**
      * Gets the SQL statement used for deleting a row from the collection.
-     * 
+     *
      * @param PersistentCollection $coll
      */
     abstract protected function _getDeleteRowSQL(PersistentCollection $coll);

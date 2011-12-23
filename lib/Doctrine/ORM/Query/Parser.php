@@ -53,6 +53,8 @@ class Parser
         'mod'       => 'Doctrine\ORM\Query\AST\Functions\ModFunction',
         'size'      => 'Doctrine\ORM\Query\AST\Functions\SizeFunction',
         'date_diff' => 'Doctrine\ORM\Query\AST\Functions\DateDiffFunction',
+        'bit_and'   => 'Doctrine\ORM\Query\AST\Functions\BitAndFunction',
+        'bit_or'    => 'Doctrine\ORM\Query\AST\Functions\BitOrFunction',
     );
 
     /** READ-ONLY: Maps BUILT-IN datetime function names to AST class names. */
@@ -2149,7 +2151,8 @@ class Parser
         $peek = $this->_peekBeyondClosingParenthesis();
 
         if (in_array($peek['value'], array("=",  "<", "<=", "<>", ">", ">=", "!=")) ||
-            in_array($peek['type'], array(Lexer::T_NOT, Lexer::T_BETWEEN, Lexer::T_LIKE, Lexer::T_IN, Lexer::T_IS, Lexer::T_EXISTS))) {
+            in_array($peek['type'], array(Lexer::T_NOT, Lexer::T_BETWEEN, Lexer::T_LIKE, Lexer::T_IN, Lexer::T_IS, Lexer::T_EXISTS)) ||
+            $this->_isMathOperator($peek)) {
             $condPrimary->simpleConditionalExpression = $this->SimpleConditionalExpression();
 
             return $condPrimary;

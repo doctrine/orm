@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping;
 
 use ReflectionClass, ReflectionProperty;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata AS IClassMetadata;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -39,7 +40,7 @@ use ReflectionClass, ReflectionProperty;
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @since 2.0
  */
-class ClassMetadata extends ClassMetadataInfo
+class ClassMetadata extends ClassMetadataInfo implements IClassMetadata
 {
     /**
      * The ReflectionProperty instances of the mapped class.
@@ -120,6 +121,25 @@ class ClassMetadata extends ClassMetadataInfo
         $refProp = $this->reflClass->getProperty($mapping['fieldName']);
         $refProp->setAccessible(true);
         $this->reflFields[$mapping['fieldName']] = $refProp;
+    }
+
+    /**
+     * Validates & completes the basic mapping information that is common to all
+     * association mappings (one-to-one, many-ot-one, one-to-many, many-to-many).
+     *
+     * @param array $mapping The mapping.
+     * @return array The updated mapping.
+     * @throws MappingException If something is wrong with the mapping.
+     */
+    protected function _validateAndCompleteAssociationMapping(array $mapping)
+    {
+        $mapping = parent::_validateAndCompleteAssociationMapping($mapping);
+
+        if ( ! \Doctrine\Common\ClassLoader::classExists($mapping['targetEntity']) ) {
+            throw MappingException::invalidTargetEntityClass($mapping['targetEntity'], $this->name, $mapping['fieldName']);
+        }
+
+        return $mapping;
     }
 
     /**
@@ -357,7 +377,7 @@ class ClassMetadata extends ClassMetadataInfo
              ($this->reflClass->getMethod($callback)->getModifiers() & \ReflectionMethod::IS_PUBLIC) == 0) {
             throw MappingException::lifecycleCallbackMethodNotFound($this->name, $callback);
         }
-        
+
         return parent::addLifecycleCallback($callback, $event);
     }
 }

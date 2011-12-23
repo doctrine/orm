@@ -9,27 +9,27 @@ class DDC144Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp() {
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        
+
         $this->_schemaTool->createSchema(array(
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC144FlowElement'),
         //    $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC144Expression'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC144Operand'),
         ));
-        
+
     }
-    
+
     /**
      * @group DDC-144
      */
     public function testIssue()
     {
-        
+
         $operand = new DDC144Operand;
         $operand->property = 'flowValue';
         $operand->operandProperty = 'operandValue';
         $this->_em->persist($operand);
         $this->_em->flush();
-        
+
     }
 }
 

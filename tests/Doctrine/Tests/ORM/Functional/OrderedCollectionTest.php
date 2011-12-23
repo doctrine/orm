@@ -87,7 +87,7 @@ class OrderedCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->persist($booking1);
         $this->_em->persist($booking2);
-        
+
         $this->_em->flush();
         $this->_em->clear();
 

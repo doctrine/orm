@@ -16,7 +16,7 @@ class DDC1050Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->useModelSet('cms');
         parent::setUp();
     }
-    
+
     public function testPerformance()
     {
         for ($i = 2; $i < 10000; ++$i) {
@@ -28,7 +28,7 @@ class DDC1050Test extends \Doctrine\Tests\OrmFunctionalTestCase
         }
         $this->_em->flush();
         $this->_em->clear();
-        
+
         $s = microtime(true);
         $users = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')->findAll();
         $e = microtime(true);

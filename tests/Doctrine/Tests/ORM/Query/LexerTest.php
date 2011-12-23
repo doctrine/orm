@@ -16,7 +16,7 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
     public function testScannerRecognizesIdentifierWithLengthOfOneCharacter()
     {
         $lexer = new Lexer('u');
-        
+
         $lexer->moveNext();
         $token = $lexer->lookahead;
 

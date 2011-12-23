@@ -136,7 +136,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     public function testExportedMetadataCanBeReadBackIn()
     {
         $type = $this->_getType();
-        
+
         $metadataDriver = $this->_createMetadataDriver($type, __DIR__ . '/export/' . $type);
         $em = $this->_createEntityManager($metadataDriver);
         $cmf = $this->_createClassMetadataFactory($em, $type);
@@ -145,7 +145,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertEquals(1, count($metadata));
 
         $class = current($metadata);
-    
+
         $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\ExportedUser', $class->name);
 
         return $class;
@@ -251,7 +251,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
         $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
-        
+
         return $class;
     }
 
@@ -339,14 +339,14 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
 
             $this->assertEquals('cascade-all', $nodes[0]->getName());
         } elseif ($type == 'yaml') {
-            
+
             $yaml = new \Symfony\Component\Yaml\Parser();
             $value = $yaml->parse(file_get_contents(__DIR__ . '/export/'.$type.'/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.yml'));
-            
+
             $this->assertTrue(isset($value['Doctrine\Tests\ORM\Tools\Export\ExportedUser']['oneToMany']['interests']['cascade']));
             $this->assertEquals(1, count($value['Doctrine\Tests\ORM\Tools\Export\ExportedUser']['oneToMany']['interests']['cascade']));
             $this->assertEquals('all', $value['Doctrine\Tests\ORM\Tools\Export\ExportedUser']['oneToMany']['interests']['cascade'][0]);
-           
+
         } else {
             $this->markTestSkipped('Test aviable only for '.$type.' dirver');
         }
@@ -368,4 +368,17 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
             return rmdir($path);
         }
     }
+}
+
+class Address
+{
+
+}
+class Phonenumber
+{
+
+}
+class Group
+{
+    
 }

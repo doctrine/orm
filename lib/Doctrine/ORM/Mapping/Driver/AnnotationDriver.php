@@ -99,7 +99,7 @@ class AnnotationDriver implements Driver
 
     /**
      * Retrieve the current annotation reader
-     * 
+     *
      * @return AnnotationReader
      */
     public function getReader()
@@ -519,15 +519,15 @@ class AnnotationDriver implements Driver
                     new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS),
                     \RecursiveIteratorIterator::LEAVES_ONLY
                 ),
-                '/^.+' . str_replace('.', '\.', $this->_fileExtension) . '$/i', 
+                '/^.+' . str_replace('.', '\.', $this->_fileExtension) . '$/i',
                 \RecursiveRegexIterator::GET_MATCH
             );
-            
+
             foreach ($iterator as $file) {
                 $sourceFile = realpath($file[0]);
-                
+
                 require_once $sourceFile;
-                
+
                 $includedFiles[] = $sourceFile;
             }
         }

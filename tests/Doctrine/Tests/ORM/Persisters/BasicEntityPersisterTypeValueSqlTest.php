@@ -18,13 +18,13 @@ class BasicEntityPersisterTypeValueSqlTest extends \Doctrine\Tests\OrmTestCase
     protected function setUp()
     {
         parent::setUp();
-        
+
         if (DBALType::hasType('negative_to_positive')) {
             DBALType::overrideType('negative_to_positive', '\Doctrine\Tests\DbalTypes\NegativeToPositiveType');
         } else {
             DBALType::addType('negative_to_positive', '\Doctrine\Tests\DbalTypes\NegativeToPositiveType');
         }
-        
+
         if (DBALType::hasType('upper_case_string')) {
             DBALType::overrideType('upper_case_string', '\Doctrine\Tests\DbalTypes\UpperCaseStringType');
         } else {

@@ -120,7 +120,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertValidQueryBuilder($qb, 'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a');
     }
-    
+
     public function testComplexInnerJoin()
     {
         $qb = $this->_em->createQueryBuilder()
@@ -129,7 +129,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->innerJoin('u.articles', 'a', 'ON', 'u.id = a.author_id');
 
         $this->assertValidQueryBuilder(
-            $qb, 
+            $qb,
             'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id'
         );
     }
@@ -153,17 +153,17 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertValidQueryBuilder($qb, 'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a INDEX BY a.name');
     }
-    
+
     public function testMultipleFrom()
     {
         $qb = $this->_em->createQueryBuilder()
             ->select('u', 'g')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->from('Doctrine\Tests\Models\CMS\CmsGroup', 'g');
-        
+
         $this->assertValidQueryBuilder($qb, 'SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsGroup g');
     }
-    
+
     public function testMultipleFromWithJoin()
     {
         $qb = $this->_em->createQueryBuilder()
@@ -171,10 +171,10 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->from('Doctrine\Tests\Models\CMS\CmsGroup', 'g')
             ->innerJoin('u.articles', 'a', 'ON', 'u.id = a.author_id');
-        
+
         $this->assertValidQueryBuilder($qb, 'SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id, Doctrine\Tests\Models\CMS\CmsGroup g');
     }
-    
+
     public function testMultipleFromWithMultipleJoin()
     {
         $qb = $this->_em->createQueryBuilder()
@@ -184,7 +184,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->innerJoin('u.groups', 'g')
             ->leftJoin('u.address', 'ad')
             ->innerJoin('a.comments', 'c');
-        
+
         $this->assertValidQueryBuilder($qb, 'SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.groups g LEFT JOIN u.address ad, Doctrine\Tests\Models\CMS\CmsArticle a INNER JOIN a.comments c');
     }
 
@@ -197,7 +197,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid');
     }
-    
+
     public function testComplexAndWhere()
     {
         $qb = $this->_em->createQueryBuilder()
@@ -205,7 +205,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :uid OR u.id = :uid2 OR u.id = :uid3')
             ->andWhere('u.name = :name');
-            
+
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id = :uid OR u.id = :uid2 OR u.id = :uid3) AND u.name = :name');
     }
 
@@ -345,7 +345,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC');
     }
-    
+
     public function testOrderByWithExpression()
     {
         $qb = $this->_em->createQueryBuilder();
@@ -466,21 +466,21 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid3 OR u.id IN(1)');
     }
-    
+
     public function testWhereInWithStringLiterals()
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')
            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
            ->where($qb->expr()->in('u.name', array('one', 'two', 'three')));
-           
+
         $this->assertValidQueryBuilder($qb, "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IN('one', 'two', 'three')");
-        
+
         $qb->where($qb->expr()->in('u.name', array("O'Reilly", "O'Neil", 'Smith')));
-           
+
         $this->assertValidQueryBuilder($qb, "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IN('O''Reilly', 'O''Neil', 'Smith')");
     }
-    
+
     public function testWhereInWithObjectLiterals()
     {
         $qb = $this->_em->createQueryBuilder();
@@ -488,14 +488,14 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $qb->select('u')
            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
            ->where($expr->in('u.name', array($expr->literal('one'), $expr->literal('two'), $expr->literal('three'))));
-           
+
         $this->assertValidQueryBuilder($qb, "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IN('one', 'two', 'three')");
-        
+
         $qb->where($expr->in('u.name', array($expr->literal("O'Reilly"), $expr->literal("O'Neil"), $expr->literal('Smith'))));
-           
+
         $this->assertValidQueryBuilder($qb, "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IN('O''Reilly', 'O''Neil', 'Smith')");
     }
-    
+
     public function testNegation()
     {
         $expr = $this->_em->getExpressionBuilder();
@@ -510,7 +510,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid3 OR NOT(u.id IN(1))');
     }
-    
+
     public function testSomeAllAny()
     {
         $qb = $this->_em->createQueryBuilder();
@@ -521,30 +521,30 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $qb->select('u')
            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
            ->where($expr->gt('u.id', $expr->all('select a.id from Doctrine\Tests\Models\CMS\CmsArticle a')));
-       
+
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id > ALL(select a.id from Doctrine\Tests\Models\CMS\CmsArticle a)');
 
     }
-    
+
     public function testMultipleIsolatedQueryConstruction()
     {
         $qb = $this->_em->createQueryBuilder();
         $expr = $this->_em->getExpressionBuilder();
-        
+
         $qb->select('u')->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $qb->where($expr->eq('u.name', ':name'));
         $qb->setParameter('name', 'romanb');
-        
+
         $q1 = $qb->getQuery();
         $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name', $q1->getDql());
         $this->assertEquals(1, count($q1->getParameters()));
-        
+
         // add another condition and construct a second query
         $qb->andWhere($expr->eq('u.id', ':id'));
         $qb->setParameter('id', 42);
-        
+
         $q2 = $qb->getQuery();
-        
+
         $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name AND u.id = :id', $q2->getDql());
         $this->assertTrue($q1 !== $q2); // two different, independent queries
         $this->assertEquals(2, count($q2->getParameters()));
@@ -638,61 +638,61 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $expr = $qb->getDQLPart('where');
         $this->assertEquals(2, $expr->count(), "Modifying the second query should affect the first one.");
-        
+
         $qb2 = clone $qb;
         $qb2->andWhere('u.name = ?3');
 
         $this->assertEquals(2, $expr->count(), "Modifying the second query should affect the first one.");
     }
-    
+
     public function testGetRootAlias()
     {
         $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
-        
+
         $this->assertEquals('u', $qb->getRootAlias());
     }
-    
+
     public function testGetRootAliases()
     {
         $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
-        
+
         $this->assertEquals(array('u'), $qb->getRootAliases());
     }
-    
+
     public function testGetRootEntities()
     {
         $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
-        
+
         $this->assertEquals(array('Doctrine\Tests\Models\CMS\CmsUser'), $qb->getRootEntities());
     }
-    
+
     public function testGetSeveralRootAliases()
     {
         $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u2');
-        
+
         $this->assertEquals(array('u', 'u2'), $qb->getRootAliases());
         $this->assertEquals('u', $qb->getRootAlias());
     }
-    
+
     public function testBCAddJoinWithoutRootAlias()
     {
         $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->add('join', array('INNER JOIN u.groups g'), true);
-        
+
         $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.groups g', $qb->getDQL());
     }
-    
+
     /**
      * @group DDC-1211
      */
@@ -703,10 +703,10 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where($expr->eq('u.username', $expr->literal("")));
-        
+
         $this->assertEquals("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = ''", $qb->getDQL());
     }
-    
+
     /**
      * @group DDC-1211
      */
@@ -717,10 +717,10 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where($expr->eq('u.username', $expr->literal(0)));
-        
+
         $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 0', $qb->getDQL());
     }
-    
+
     /**
      * @group DDC-1227
      */
@@ -729,7 +729,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $qb = $this->_em->createQueryBuilder()
             ->add('select', 'u')
             ->add('from', 'Doctrine\Tests\Models\CMS\CmsUser u');
-        
+
         $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $qb->getDQL());
     }
 }
