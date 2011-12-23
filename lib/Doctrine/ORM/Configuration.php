@@ -117,6 +117,16 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
+     * Sets default cache driver for metadata caching.
+     *
+     * @param array $paths
+     */
+    public function setDefaultMetadataDriverImpl($paths = array())
+    {
+        $this->setMetadataDriverImpl($this->newDefaultAnnotationDriver($paths));
+    }
+
+    /**
      * Add a new default annotation driver with a correctly configured annotation reader.
      *
      * @param array $paths
