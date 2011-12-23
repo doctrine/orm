@@ -548,4 +548,29 @@ class Configuration extends \Doctrine\DBAL\Configuration
         return isset($this->_attributes['defaultRepositoryClassName']) ?
                 $this->_attributes['defaultRepositoryClassName'] : 'Doctrine\ORM\EntityRepository';
     }
+
+    /**
+     * Set naming strategy.
+     *
+     * @since 2.3
+     * @param NamingStrategy $namingStrategy
+     */
+    public function setNamingStrategy(NamingStrategy $namingStrategy)
+    {
+        $this->_attributes['namingStrategy'] = $namingStrategy;
+    }
+
+    /**
+     * Get naming strategy..
+     *
+     * @since 2.3
+     * @return NamingStrategy
+     */
+    public function getNamingStrategy()
+    {
+        if (!isset($this->_attributes['namingStrategy'])) {
+            $this->_attributes['namingStrategy'] = new DefaultNamingStrategy();
+        }
+        return $this->_attributes['namingStrategy'];
+    }
 }
