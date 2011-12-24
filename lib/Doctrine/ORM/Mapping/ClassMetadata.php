@@ -61,13 +61,15 @@ class ClassMetadata extends ClassMetadataInfo implements IClassMetadata
      * metadata of the class with the given name.
      *
      * @param string $entityName The name of the entity class the new instance is used for.
+     * @param NamingStrategy $namingStrategy
      */
-    public function __construct($entityName)
+    public function __construct($entityName, NamingStrategy $namingStrategy = null)
     {
+        $namingStrategy  = $namingStrategy ?: new DefaultNamingStrategy();
         $this->reflClass = new ReflectionClass($entityName);
         $this->namespace = $this->reflClass->getNamespaceName();
-        $this->table['name'] = $this->reflClass->getShortName();
-        parent::__construct($this->reflClass->getName()); // do not use $entityName, possible case-problems
+        $this->table['name'] = $namingStrategy->classToTableName($this->reflClass->getShortName());
+        parent::__construct($this->reflClass->getName(),$namingStrategy); // do not use $entityName, possible case-problems
     }
 
     /**
