@@ -53,7 +53,7 @@ interface NamingStrategy
      */
     function referenceColumnName();
 
-     /**
+    /**
      * Return a join column name for a property
      *
      * @param string $propertyName A property
@@ -71,7 +71,7 @@ interface NamingStrategy
      */
     function joinTableName($sourceEntity, $targetEntity, $propertyName = null);
 
-     /**
+    /**
      * Return the foreign key column name for the given parameters
      *
      * @param string $entityName A entity
