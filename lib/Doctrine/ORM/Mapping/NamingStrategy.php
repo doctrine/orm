@@ -18,7 +18,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM;
+namespace Doctrine\ORM\Mapping;
 
 /**
  * A set of rules for determining the physical column and table names

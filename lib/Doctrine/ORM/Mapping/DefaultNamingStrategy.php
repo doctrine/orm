@@ -18,7 +18,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM;
+namespace Doctrine\ORM\Mapping;
 
 /**
  * The default NamingStrategy
@@ -28,52 +28,18 @@ namespace Doctrine\ORM;
  * @since   2.3
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-class UnderscoreNamingStrategy implements NamingStrategy
+class DefaultNamingStrategy implements NamingStrategy
 {
-    /**
-     * @var string
-     */
-    private $case;
-
-    /**
-     * Underscore naming strategy construct
-     *
-     * @param integer $case CASE_LOWER | CASE_UPPER
-     */
-    public function __construct($case = CASE_LOWER)
-    {
-        $this->case = $case;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getCase()
-    {
-        return $this->case;
-    }
-
-    /**
-     * Sets string case CASE_LOWER | CASE_UPPER
-     * Alphabetic characters converted to lowercase or uppercase
-     * 
-     * @param integer $case
-     */
-    public function setCase($case)
-    {
-        $this->case = $case;
-    }
-
     /**
      * {@inheritdoc}
      */
     public function classToTableName($className)
     {
         if (strpos($className, '\\') !== false) {
-            $className = substr($className, strrpos($className, '\\') + 1);
+            return substr($className, strrpos($className, '\\') + 1);
         }
 
-        return $this->underscore($className);
+        return $className;
     }
 
     /**
@@ -81,7 +47,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function propertyToColumnName($propertyName)
     {
-        return $this->underscore($propertyName);
+        return $propertyName;
     }
 
     /**
@@ -89,7 +55,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function referenceColumnName()
     {
-        return $this->case === CASE_UPPER ?  'ID' : 'id';
+        return 'id';
     }
 
     /**
@@ -97,7 +63,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function joinColumnName($propertyName)
     {
-        return $this->underscore($propertyName) . '_' . $this->referenceColumnName();
+        return $propertyName . '_' . $this->referenceColumnName();
     }
 
     /**
@@ -105,7 +71,8 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function joinTableName($sourceEntity, $targetEntity, $propertyName = null)
     {
-        return $this->classToTableName($sourceEntity) . '_' . $this->classToTableName($targetEntity);
+        return strtolower($this->classToTableName($sourceEntity) . '_' .
+                $this->classToTableName($targetEntity));
     }
     
     /**
@@ -113,22 +80,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function joinKeyColumnName($entityName, $referencedColumnName = null)
     {
-        return $this->classToTableName($entityName) . '_' .
-                ($referencedColumnName ?: $this->referenceColumnName());
-    }
-    
-    /**
-     * @param string $string
-     * @return string
-     */
-    private function underscore($string)
-    {
-        $string = preg_replace('/(?<=[a-z])([A-Z])/', '_$1', $string);
-
-        if ($this->case === CASE_UPPER) {
-            return strtoupper($string);
-        }
-
-        return strtolower($string);
+        return strtolower($this->classToTableName($entityName) . '_' .
+                ($referencedColumnName ?: $this->referenceColumnName()));
     }
 }

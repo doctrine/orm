@@ -298,7 +298,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testUnderscoreNamingStrategyDefaults()
     {
-        $namingStrategy     = new \Doctrine\ORM\UnderscoreNamingStrategy(CASE_UPPER);
+        $namingStrategy     = new \Doctrine\ORM\Mapping\UnderscoreNamingStrategy(CASE_UPPER);
         $oneToOneMetadata   = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', $namingStrategy);
         $manyToManyMetadata = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', $namingStrategy);
 

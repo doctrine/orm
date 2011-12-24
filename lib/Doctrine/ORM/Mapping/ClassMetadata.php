@@ -21,8 +21,6 @@ namespace Doctrine\ORM\Mapping;
 
 use ReflectionClass, ReflectionProperty;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata AS IClassMetadata;
-use Doctrine\ORM\DefaultNamingStrategy;
-use Doctrine\ORM\NamingStrategy;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata

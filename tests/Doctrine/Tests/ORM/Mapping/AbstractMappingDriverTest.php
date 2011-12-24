@@ -405,9 +405,9 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $factory->setEntityManager($em);
 
 
-        $this->assertInstanceOf('Doctrine\ORM\DefaultNamingStrategy', $em->getConfiguration()->getNamingStrategy());
-        $em->getConfiguration()->setNamingStrategy(new \Doctrine\ORM\UnderscoreNamingStrategy(CASE_UPPER));
-        $this->assertInstanceOf('Doctrine\ORM\UnderscoreNamingStrategy', $em->getConfiguration()->getNamingStrategy());
+        $this->assertInstanceOf('Doctrine\ORM\Mapping\DefaultNamingStrategy', $em->getConfiguration()->getNamingStrategy());
+        $em->getConfiguration()->setNamingStrategy(new \Doctrine\ORM\Mapping\UnderscoreNamingStrategy(CASE_UPPER));
+        $this->assertInstanceOf('Doctrine\ORM\Mapping\UnderscoreNamingStrategy', $em->getConfiguration()->getNamingStrategy());
 
         $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType');
 

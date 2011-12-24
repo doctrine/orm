@@ -24,7 +24,9 @@ use Doctrine\Common\Cache\Cache,
     Doctrine\Common\Annotations\AnnotationRegistry,
     Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\ORM\Mapping\Driver\Driver,
-    Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+    Doctrine\ORM\Mapping\Driver\AnnotationDriver,
+    Doctrine\ORM\Mapping\NamingStrategy,
+    Doctrine\ORM\Mapping\DefaultNamingStrategy;
 
 /**
  * Configuration container for all configuration options of Doctrine.

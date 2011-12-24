@@ -1,12 +1,12 @@
 <?php
 
-namespace Doctrine\Tests\ORM;
+namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\ORM\UnderscoreNamingStrategy;
-use Doctrine\ORM\DefaultNamingStrategy;
-use Doctrine\ORM\NamingStrategy;
+use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
+use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\NamingStrategy;
 
-require_once __DIR__ . '/../TestInit.php';
+require_once __DIR__ . '/../../TestInit.php';
 
 /**
  * @group DDC-559
