@@ -30,24 +30,23 @@ namespace Doctrine\ORM;
  */
 class UnderscoreNamingStrategy implements NamingStrategy
 {
-    const CASE_LOWER = 'lower';
-    const CASE_UPPER = 'upper';
-
     /**
      * @var string
      */
     private $case;
 
     /**
-     * @param string $case
+     * Underscore naming strategy construct
+     *
+     * @param integer $case CASE_LOWER | CASE_UPPER
      */
-    public function __construct($case = self::CASE_LOWER)
+    public function __construct($case = CASE_LOWER)
     {
         $this->case = $case;
     }
 
     /**
-     * @return string
+     * @return integer
      */
     public function getCase()
     {
@@ -55,7 +54,10 @@ class UnderscoreNamingStrategy implements NamingStrategy
     }
 
     /**
-     * @param string $case
+     * Sets string case CASE_LOWER | CASE_UPPER
+     * Alphabetic characters converted to lowercase or uppercase
+     * 
+     * @param integer $case
      */
     public function setCase($case)
     {
@@ -87,7 +89,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function referenceColumnName()
     {
-        return $this->case == self::CASE_UPPER ?  'ID' : 'id';
+        return $this->case === CASE_UPPER ?  'ID' : 'id';
     }
 
     /**
@@ -116,17 +118,17 @@ class UnderscoreNamingStrategy implements NamingStrategy
     }
     
     /**
-     * @param   string $string
-     * @return  string
+     * @param string $string
+     * @return string
      */
     private function underscore($string)
     {
         $string = preg_replace('/(?<=[a-z])([A-Z])/', '_$1', $string);
 
-        if ($this->case == self::CASE_UPPER) {
+        if ($this->case === CASE_UPPER) {
             return strtoupper($string);
         }
-        
+
         return strtolower($string);
     }
 }

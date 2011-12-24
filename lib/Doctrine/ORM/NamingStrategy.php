@@ -30,52 +30,53 @@ namespace Doctrine\ORM;
  */
 interface NamingStrategy
 {
-
     /**
      * Return a table name for an entity class
      *
-     * @param   string  $className  The fully-qualified class name
-     * @return  string              A table name
+     * @param string $className The fully-qualified class name
+     * @return string A table name
      */
     function classToTableName($className);
 
     /**
      * Return a column name for a property
      *
-     * @param   string  $propertyName   A property
-     * @return  string                  A column name
+     * @param string $propertyName A property
+     * @return string A column name
      */
     function propertyToColumnName($propertyName);
 
     /**
      * Return the default reference column name
      *
-     * @return  string              A column name
+     * @return string A column name
      */
     function referenceColumnName();
 
      /**
      * Return a join column name for a property
      *
-     * @param   string $propertyName    A property
-     * @return  string                  A column name
+     * @param string $propertyName A property
+     * @return string A join column name
      */
     function joinColumnName($propertyName);
 
     /**
      * Return a join table name
      *
-     * @param string   $sourceEntity
-     * @param string   $targetEntity
-     * @param string   $propertyName
+     * @param string $sourceEntity The source entity
+     * @param string $targetEntity The target entity
+     * @param string $propertyName A property
+     * @return string A join table name
      */
     function joinTableName($sourceEntity, $targetEntity, $propertyName = null);
 
      /**
      * Return the foreign key column name for the given parameters
      *
-     * @param string   $entityName
-     * @param string   $referencedColumnName
+     * @param string $entityName A entity
+     * @param string $referencedColumnName A property
+     * @return string A join column name
      */
     function joinKeyColumnName($entityName, $referencedColumnName = null);
 }

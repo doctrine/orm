@@ -26,7 +26,7 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
      */
     static private function underscoreNamingLower()
     {
-        return new UnderscoreNamingStrategy(UnderscoreNamingStrategy::CASE_LOWER);
+        return new UnderscoreNamingStrategy(CASE_LOWER);
     }
 
     /**
@@ -34,7 +34,7 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
      */
     static private function underscoreNamingUpper()
     {
-        return new UnderscoreNamingStrategy(UnderscoreNamingStrategy::CASE_UPPER);
+        return new UnderscoreNamingStrategy(CASE_UPPER);
     }
 
     /**
@@ -118,9 +118,9 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @dataProvider dataPropertyToColumnName
      *
-     * @param NamingStrategy    $strategy
-     * @param string            $expected
-     * @param string            $propertyName
+     * @param NamingStrategy $strategy
+     * @param string $expected
+     * @param string $propertyName
      */
     public function testPropertyToColumnName(NamingStrategy $strategy, $expected, $propertyName)
     {
@@ -147,10 +147,8 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @dataProvider dataReferenceColumnName
      *
-     * @param NamingStrategy    $strategy
-     * @param string            $expected
-     * @param string            $joinedColumn
-     * @param string            $joinedTable
+     * @param NamingStrategy $strategy
+     * @param string $expected
      */
     public function testReferenceColumnName(NamingStrategy $strategy, $expected)
     {
@@ -186,9 +184,9 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @dataProvider dataJoinColumnName
      *
-     * @param NamingStrategy    $strategy
-     * @param string            $expected
-     * @param string            $propertyName
+     * @param NamingStrategy $strategy
+     * @param string $expected
+     * @param string $propertyName
      */
     public function testJoinColumnName(NamingStrategy $strategy, $expected, $propertyName)
     {
@@ -240,11 +238,11 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @dataProvider dataJoinTableName
      *
-     * @param NamingStrategy    $strategy
-     * @param string            $expected
-     * @param string            $ownerEntity
-     * @param string            $associatedEntity
-     * @param string            $propertyName
+     * @param NamingStrategy $strategy
+     * @param string $expected
+     * @param string $ownerEntity
+     * @param string $associatedEntity
+     * @param string $propertyName
      */
     public function testJoinTableName(NamingStrategy $strategy, $expected, $ownerEntity, $associatedEntity, $propertyName = null)
     {
@@ -287,11 +285,11 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @dataProvider dataJoinKeyColumnName
      *
-     * @param NamingStrategy    $strategy
-     * @param string            $expected
-     * @param string            $propertyEntityName
-     * @param string            $referencedColumnName
-     * @param string            $propertyName
+     * @param NamingStrategy $strategy
+     * @param string $expected
+     * @param string $propertyEntityName
+     * @param string $referencedColumnName
+     * @param string $propertyName
      */
     public function testJoinKeyColumnName(NamingStrategy $strategy, $expected, $propertyEntityName, $referencedColumnName = null, $propertyName = null)
     {
