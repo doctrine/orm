@@ -400,11 +400,11 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     {
         $allClasses = $this->driver->getAllClassNames();
         $loadedSubClassesMetadata = array();
-        $map = array();
         $fqcn = $class->getName();
+        $map = array(str_replace('\\', '.', $fqcn) => $fqcn);
 
         foreach ($allClasses as $c) {
-            if ($c === $fqcn || is_subclass_of($c, $fqcn)) {
+            if (is_subclass_of($c, $fqcn)) {
                 if (isset($this->loadedMetadata[$c])) {
                     $subClassMetadata = $this->loadedMetadata[$c];
                 } else {

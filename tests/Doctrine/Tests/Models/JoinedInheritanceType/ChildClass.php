@@ -3,8 +3,8 @@
 namespace Doctrine\Tests\Models\JoinedInheritanceType;
 
 /**
- * @Entity
+ * @MappedSuperclass
  */
-class ChildClass extends RootClass
+abstract class ChildClass extends RootClass
 {
 }

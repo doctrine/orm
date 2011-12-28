@@ -151,7 +151,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $anotherChildClassKey = array_search($anotherChildClass, $rootDiscriminatorMap);
 
         $this->assertEquals(str_replace('\\', '.', $rootClass), $rootClassKey);
-        $this->assertEquals(str_replace('\\', '.', $childClassKey), $childClassKey);
+        $this->assertFalse($childClassKey);
         $this->assertEquals(str_replace('\\', '.', $anotherChildClassKey), $anotherChildClassKey);
 
         $this->assertEquals($childDiscriminatorMap, $rootDiscriminatorMap);
