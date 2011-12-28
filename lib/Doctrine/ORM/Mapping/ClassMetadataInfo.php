@@ -1376,7 +1376,7 @@ class ClassMetadataInfo
     {
         if (isset($table['name'])) {
             if ($table['name'][0] == '`') {
-                $this->table['name'] = trim($table['name'], '`');
+                $this->table['name'] = str_replace("`", "", $table['name']);
                 $this->table['quoted'] = true;
             } else {
                 $this->table['name'] = $table['name'];
