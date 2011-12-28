@@ -21,7 +21,8 @@
 namespace Doctrine\ORM\Mapping;
 
 /**
- * The default NamingStrategy
+ * Naming strategy implementing the underscore naming convention.
+ * Converts 'MyEntity' to 'my_entity' or 'MY_ENTITY'.
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -31,7 +32,7 @@ namespace Doctrine\ORM\Mapping;
 class UnderscoreNamingStrategy implements NamingStrategy
 {
     /**
-     * @var string
+     * @var integer
      */
     private $case;
 
