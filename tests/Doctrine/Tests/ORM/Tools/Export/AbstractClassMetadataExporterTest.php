@@ -369,3 +369,16 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         }
     }
 }
+
+class Address
+{
+
+}
+class Phonenumber
+{
+
+}
+class Group
+{
+    
+}
