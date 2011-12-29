@@ -1981,9 +1981,10 @@ class Parser
     }
 
     /**
-     * SimpleSelectExpression ::=
-     *      StateFieldPathExpression | IdentificationVariable |
-     *      ((AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable])
+     * SimpleSelectExpression ::= (
+     *      StateFieldPathExpression | IdentificationVariable | FunctionDeclaration |
+     *      AggregateExpression | "(" Subselect ")" | ScalarExpression
+     * ) [["AS"] AliasResultVariable]
      *
      * @return \Doctrine\ORM\Query\AST\SimpleSelectExpression
      */
