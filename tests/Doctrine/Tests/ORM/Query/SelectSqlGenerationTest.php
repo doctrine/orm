@@ -1434,6 +1434,25 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group DDC-1557
+     */
+    public function testSupportsSubSqlFunction()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u1 FROM Doctrine\Tests\Models\CMS\CmsUser u1 WHERE u1.name IN ( SELECT TRIM(u2.name) FROM Doctrine\Tests\Models\CMS\CmsUser u2 )',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.name IN (SELECT TRIM(c1_.name) AS sclr4 FROM cms_users c1_)'
+        );
+        $this->assertSqlGeneration(
+            'SELECT u1 FROM Doctrine\Tests\Models\CMS\CmsUser u1 WHERE u1.name IN ( SELECT TRIM(u2.name) FROM Doctrine\Tests\Models\CMS\CmsUser u2  WHERE LOWER(u2.name) LIKE \'%fabio%\')',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.name IN (SELECT TRIM(c1_.name) AS sclr4 FROM cms_users c1_ WHERE LOWER(c1_.name) LIKE \'%fabio%\')'
+        );
+        $this->assertSqlGeneration(
+            'SELECT u1 FROM Doctrine\Tests\Models\CMS\CmsUser u1 WHERE u1.email IN ( SELECT TRIM(IDENTITY(u2.email)) FROM Doctrine\Tests\Models\CMS\CmsUser u2 )',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.email_id IN (SELECT TRIM(c1_.email_id) AS sclr4 FROM cms_users c1_)'
+        );
+    }
+
     public function testCustomTypeValueSql()
     {
         if (DBALType::hasType('negative_to_positive')) {
