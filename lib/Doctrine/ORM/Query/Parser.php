@@ -1981,9 +1981,10 @@ class Parser
     }
 
     /**
-     * SimpleSelectExpression ::=
-     *      StateFieldPathExpression | IdentificationVariable |
-     *      ((AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable])
+     * SimpleSelectExpression ::= (
+     *      StateFieldPathExpression | IdentificationVariable | FunctionDeclaration |
+     *      AggregateExpression | "(" Subselect ")" | ScalarExpression
+     * ) [["AS"] AliasResultVariable]
      *
      * @return \Doctrine\ORM\Query\AST\SimpleSelectExpression
      */
@@ -2003,6 +2004,18 @@ class Parser
                         $expression = $this->IdentificationVariable();
 
                         return new AST\SimpleSelectExpression($expression);
+
+                    case ($this->_isFunction()):
+                        // SUM(u.id) + COUNT(u.id)
+                        if ($this->_isMathOperator($this->_peekBeyondClosingParenthesis())) {
+                            return new AST\SimpleSelectExpression($this->ScalarExpression());
+                        }
+                        // COUNT(u.id)
+                        if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
+                            return new AST\SimpleSelectExpression($this->AggregateExpression());
+                        }
+                        // IDENTITY(u)
+                        return new AST\SimpleSelectExpression($this->FunctionDeclaration());
 
                     default:
                         // Do nothing
