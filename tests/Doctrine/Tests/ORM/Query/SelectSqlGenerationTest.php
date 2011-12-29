@@ -1451,6 +1451,18 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT u1 FROM Doctrine\Tests\Models\CMS\CmsUser u1 WHERE u1.email IN ( SELECT TRIM(IDENTITY(u2.email)) FROM Doctrine\Tests\Models\CMS\CmsUser u2 )',
             'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.email_id IN (SELECT TRIM(c1_.email_id) AS sclr4 FROM cms_users c1_)'
         );
+        $this->assertSqlGeneration(
+            'SELECT u1 FROM Doctrine\Tests\Models\CMS\CmsUser u1 WHERE u1.email IN ( SELECT IDENTITY(u2.email) FROM Doctrine\Tests\Models\CMS\CmsUser u2 )',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE c0_.email_id IN (SELECT c1_.email_id AS sclr4 FROM cms_users c1_)'
+        );
+        $this->assertSqlGeneration(
+            'SELECT u1 FROM Doctrine\Tests\Models\CMS\CmsUser u1 WHERE COUNT(u1.id) = ( SELECT SUM(u2.id) FROM Doctrine\Tests\Models\CMS\CmsUser u2 )',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE COUNT(c0_.id) = (SELECT SUM(c1_.id) AS dctrn__1 FROM cms_users c1_)'
+        );
+        $this->assertSqlGeneration(
+            'SELECT u1 FROM Doctrine\Tests\Models\CMS\CmsUser u1 WHERE COUNT(u1.id) <= ( SELECT SUM(u2.id) + COUNT(u2.email) FROM Doctrine\Tests\Models\CMS\CmsUser u2 )',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE COUNT(c0_.id) <= (SELECT SUM(c1_.id) + COUNT(c1_.email_id) AS sclr4 FROM cms_users c1_)'
+        );
     }
 
     public function testCustomTypeValueSql()
