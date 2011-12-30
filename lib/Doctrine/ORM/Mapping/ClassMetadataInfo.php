@@ -422,7 +422,7 @@ class ClassMetadataInfo
     /**
      * READ-ONLY: The ID generator used for generating IDs for this class.
      *
-     * @var AbstractIdGenerator
+     * @var \Doctrine\ORM\Id\AbstractIdGenerator
      * @todo Remove!
      */
     public $idGenerator;
