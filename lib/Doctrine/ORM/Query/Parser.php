@@ -2826,7 +2826,7 @@ class Parser
     }
 
     /**
-     * LikeExpression ::= StringExpression ["NOT"] "LIKE" (string | input_parameter) ["ESCAPE" char]
+     * LikeExpression ::= StringExpression ["NOT"] "LIKE" StringPrimary ["ESCAPE" char]
      *
      * @return \Doctrine\ORM\Query\AST\LikeExpression
      */
@@ -2846,8 +2846,7 @@ class Parser
             $this->match(Lexer::T_INPUT_PARAMETER);
             $stringPattern = new AST\InputParameter($this->_lexer->token['value']);
         } else {
-            $this->match(Lexer::T_STRING);
-            $stringPattern = $this->_lexer->token['value'];
+            $stringPattern = $this->StringPrimary();
         }
 
         $escapeChar = null;
