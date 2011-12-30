@@ -208,8 +208,8 @@ class ObjectHydrator extends AbstractHydrator
     /**
      * Gets an entity instance.
      *
-     * @param $data The instance data.
-     * @param $dqlAlias The DQL alias of the entity's class.
+     * @param array $data The instance data.
+     * @param string $dqlAlias The DQL alias of the entity's class.
      * @return object The entity.
      */
     private function _getEntity(array $data, $dqlAlias)
