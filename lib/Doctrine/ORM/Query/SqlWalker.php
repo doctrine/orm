@@ -1947,6 +1947,10 @@ class SqlWalker implements TreeWalker
             $dqlParamKey = $inputParam->name;
             $this->_parserResult->addParameterMapping($dqlParamKey, $this->_sqlParamIndex++);
             $sql .= '?';
+        } elseif ($likeExpr->stringPattern instanceof AST\Functions\FunctionNode ) {
+            $sql .= $this->walkFunction($likeExpr->stringPattern);
+        } elseif ($likeExpr->stringPattern instanceof AST\PathExpression) {
+            $sql .= $this->walkPathExpression($likeExpr->stringPattern);
         } else {
             $sql .= $this->_conn->quote($likeExpr->stringPattern);
         }
