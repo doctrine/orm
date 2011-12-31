@@ -49,7 +49,7 @@ entities:
         const STATUS_VISIBLE = 'visible';
         const STATUS_INVISIBLE = 'invisible';
 
-        /** @Column(type="varchar") */
+        /** @Column(type="string") */
         private $status;
 
         public function setStatus($status)
@@ -70,7 +70,7 @@ the **columnDefinition** attribute.
     /** @Entity */
     class Article
     {
-        /** @Column(type="varchar", columnDefinition="ENUM('visible', 'invisible')") */
+        /** @Column(type="string", columnDefinition="ENUM('visible', 'invisible')") */
         private $status;
     }
 

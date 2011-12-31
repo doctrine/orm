@@ -348,7 +348,7 @@ This is an **execute one-time** command. It should not be necessary for
 you to call this method multiple times, escpecially when using the ``--from-database``
 flag.
 
-Converting an existing databsae schema into mapping files only solves about 70-80%
+Converting an existing database schema into mapping files only solves about 70-80%
 of the necessary mapping information. Additionally the detection from an existing
 database cannot detect inverse associations, inheritance types,
 entities with foreign keys as primary keys and many of the
