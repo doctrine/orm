@@ -1630,6 +1630,35 @@ class Parser
     }
 
     /**
+     * NewObjectExpression ::= "NEW" IdentificationVariable "(" SimpleSelectExpression {"," SimpleSelectExpression}* ")"
+     * @return \Doctrine\ORM\Query\AST\NewObjectExpression
+     */
+    public function NewObjectExpression()
+    {
+        $this->match(Lexer::T_NEW);
+        $this->match(Lexer::T_IDENTIFIER);
+
+        $identificationVariable = $this->_lexer->token['value'];
+
+        $this->match(Lexer::T_OPEN_PARENTHESIS);
+        
+        $fieldSet[] = $this->SimpleSelectExpression();
+        while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
+            $this->match(Lexer::T_COMMA);
+
+            $fieldSet[] = $this->SimpleSelectExpression();
+        }
+
+        $this->match(Lexer::T_CLOSE_PARENTHESIS);
+
+        $expression = new AST\NewObjectExpression($identificationVariable, $fieldSet);
+
+        // @TODO : Defer NewObjectExpression validation
+        throw new \BadMethodCallException("Not complete yet !");
+        return $expression;
+    }
+
+    /**
      * IndexBy ::= "INDEX" "BY" StateFieldPathExpression
      *
      * @return \Doctrine\ORM\Query\AST\IndexBy
@@ -1953,6 +1982,12 @@ class Parser
                 $expression = $this->SimpleArithmeticExpression();
                 break;
 
+            // NewObjectExpression (New ClassName(id, name))
+            case ($lookaheadType === Lexer::T_NEW):
+                $expression    = $this->NewObjectExpression();
+                //$identVariable = $expression->identificationVariable;
+                break;
+            
             default:
                 $this->syntaxError(
                     'IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression',
