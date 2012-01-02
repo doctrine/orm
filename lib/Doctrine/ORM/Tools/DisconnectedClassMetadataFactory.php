@@ -70,4 +70,9 @@ class DisconnectedClassMetadataFactory extends ClassMetadataFactory
     {
         return array();
     }
+
+    public function getReflectionService()
+    {
+        return new \Doctrine\Common\Persistence\Mapping\StaticReflectionService;
+    }
 }

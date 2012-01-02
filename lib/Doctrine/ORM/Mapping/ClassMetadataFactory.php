@@ -172,6 +172,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
             if ($this->cacheDriver) {
                 if (($cached = $this->cacheDriver->fetch("$realClassName\$CLASSMETADATA")) !== false) {
+                    $this->wakeupReflection($cached, $this->getReflectionService());
                     $this->loadedMetadata[$realClassName] = $cached;
                 } else {
                     foreach ($this->loadMetadata($realClassName) as $loadedClassName) {
@@ -575,6 +576,22 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      */
     protected function wakeupReflection(ClassMetadataInfo $class, ReflectionService $reflService)
     {
+        // Restore ReflectionClass and properties
+        $class->reflClass = $reflService->getClass($class->name);
+
+        foreach ($class->fieldMappings as $field => $mapping) {
+            $reflField = isset($mapping['declared'])
+                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
+                : $reflService->getAccessibleProperty($class->name, $field);
+            $class->reflFields[$field] = $reflField;
+        }
+
+        foreach ($class->associationMappings as $field => $mapping) {
+            $reflField = isset($mapping['declared'])
+                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
+                : $reflService->getAccessibleProperty($class->name, $field);
+            $class->reflFields[$field] = $reflField;
+        }
     }
 
     /**
