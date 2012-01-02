@@ -68,7 +68,7 @@ class ClassMetadata extends ClassMetadataInfo implements IClassMetadata
         $namingStrategy  = $namingStrategy ?: new DefaultNamingStrategy();
         $this->reflClass = new ReflectionClass($entityName);
         $this->namespace = $this->reflClass->getNamespaceName();
-        $this->table['name'] = $namingStrategy->classToTableName($this->reflClass->getShortName());
+        $this->table['name'] = $namingStrategy->classToTableName($this->reflClass->getName());
         parent::__construct($this->reflClass->getName(),$namingStrategy); // do not use $entityName, possible case-problems
     }
 
