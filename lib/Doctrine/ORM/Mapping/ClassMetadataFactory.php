@@ -24,6 +24,8 @@ use ReflectionException,
     Doctrine\ORM\EntityManager,
     Doctrine\DBAL\Platforms,
     Doctrine\ORM\Events,
+    Doctrine\Common\Persistence\Mapping\RuntimeReflectionService,
+    Doctrine\Common\Persistence\Mapping\ReflectionService,
     Doctrine\Common\Persistence\Mapping\ClassMetadataFactory as ClassMetadataFactoryInterface;
 
 /**
@@ -73,6 +75,11 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      * @var bool
      */
     private $initialized = false;
+
+    /**
+     * @var ReflectionException
+     */
+    private $reflectionService;
 
     /**
      * @param EntityManager $$em
@@ -220,7 +227,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     {
         // Collect parent classes, ignoring transient (not-mapped) classes.
         $parentClasses = array();
-        foreach (array_reverse(class_parents($name)) as $parentClass) {
+        foreach (array_reverse($this->getReflectionService()->getParentClasses($name)) as $parentClass) {
             if ( ! $this->driver->isTransient($parentClass)) {
                 $parentClasses[] = $parentClass;
             }
@@ -532,5 +539,28 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
         }
 
         return $this->driver->isTransient($class);
+    }
+
+    /**
+     * Get reflectionService.
+     *
+     * @return \Doctrine\Common\Persistence\Mapping\ReflectionService
+     */
+    public function getReflectionService()
+    {
+        if ($this->reflectionService === null) {
+            $this->reflectionService = new RuntimeReflectionService();
+        }
+        return $this->reflectionService;
+    }
+
+    /**
+     * Set reflectionService.
+     *
+     * @param reflectionService the value to set.
+     */
+    public function setReflectionService(ReflectionService $reflectionService)
+    {
+        $this->reflectionService = $reflectionService;
     }
 }
