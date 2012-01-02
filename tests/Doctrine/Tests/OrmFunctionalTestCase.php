@@ -158,6 +158,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         if (isset($this->_usedModelSets['company'])) {
             $conn->executeUpdate('DELETE FROM company_contract_employees');
+            $conn->executeUpdate('DELETE FROM company_contract_managers');
             $conn->executeUpdate('DELETE FROM company_contracts');
             $conn->executeUpdate('DELETE FROM company_persons_friends');
             $conn->executeUpdate('DELETE FROM company_managers');

@@ -119,8 +119,9 @@ class OneToManyPersister extends AbstractCollectionPersister
                 : $id[$sourceClass->fieldNames[$joinColumn['referencedColumnName']]];
         }
 
+        $filterTargetClass = $this->_em->getClassMetadata($targetClass->rootEntityName);
         foreach ($this->_em->getFilters()->getEnabledFilters() as $filter) {
-            if ($filterExpr = $filter->addFilterConstraint($targetClass, 't')) {
+            if ($filterExpr = $filter->addFilterConstraint($filterTargetClass, 't')) {
                 $whereClauses[] = '(' . $filterExpr . ')';
             }
         }

@@ -19,6 +19,11 @@ class CompanyManager extends CompanyEmployee
      */
     private $car;
 
+    /**
+     * @ManyToMany(targetEntity="CompanyFlexContract", mappedBy="managers", fetch="EXTRA_LAZY")
+     */
+    public $managedContracts;
+
     public function getTitle() {
         return $this->title;
     }
