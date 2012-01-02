@@ -268,6 +268,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             }
 
             $class = $this->newClassMetadataInstance($className);
+            $this->initializeReflection($class, $this->getReflectionService());
 
             if ($parent) {
                 $class->setInheritanceType($parent->inheritanceType);
@@ -289,6 +290,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             // Invoke driver
             try {
                 $this->driver->loadMetadataForClass($className, $class);
+                $this->wakeupReflection($class, $this->getReflectionService());
             } catch (ReflectionException $e) {
                 throw MappingException::reflectionFailure($className, $e);
             }
@@ -562,5 +564,27 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     public function setReflectionService(ReflectionService $reflectionService)
     {
         $this->reflectionService = $reflectionService;
+    }
+
+    /**
+     * Wakeup reflection after ClassMetadata gets unserialized from cache.
+     *
+     * @param ClassMetadata $class
+     * @param ReflectionService $reflService
+     * @return void
+     */
+    protected function wakeupReflection(ClassMetadataInfo $class, ReflectionService $reflService)
+    {
+    }
+
+    /**
+     * Initialize Reflection after ClassMetadata was constructed.
+     *
+     * @param ClassMetadata $class
+     * @param ReflectionSErvice $reflService
+     * @return void
+     */
+    protected function initializeReflection(ClassMetadataInfo $class, ReflectionService $reflService)
+    {
     }
 }
