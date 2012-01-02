@@ -15,6 +15,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testLoadMetadataForNonEntityThrowsException()
     {
         $cm = new ClassMetadata('stdClass');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
         $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache());
         $annotationDriver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
 
@@ -28,6 +29,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testColumnWithMissingTypeDefaultsToString()
     {
         $cm = new ClassMetadata('Doctrine\Tests\ORM\Mapping\ColumnWithoutType');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
         $annotationDriver = $this->_loadDriver();
 
         $annotationDriver->loadMetadataForClass('Doctrine\Tests\ORM\Mapping\InvalidColumn', $cm);

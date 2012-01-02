@@ -359,10 +359,14 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      */
     protected function validateRuntimeMetadata($class, $parent)
     {
-        // Verify & complete identifier mapping
-        if ( ! $class->identifier && ! $class->isMappedSuperclass) {
-            throw MappingException::identifierRequired($class->name);
+        if ( ! $class->reflClass ) {
+            // only validate if there is a reflection class instance
+            return;
         }
+
+        $class->validateIdentifier();
+        $class->validateAssocations();
+        $class->validateLifecycleCallbacks($this->getReflectionService());
 
         // verify inheritance
         if (!$class->isMappedSuperclass && !$class->isInheritanceTypeNone()) {
@@ -380,10 +384,6 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
         } else if ($class->isMappedSuperclass && $class->name == $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierachy
             throw MappingException::noInheritanceOnMappedSuperClass($class->name);
-        }
-
-        if ($class->usesIdGenerator() && $class->isIdentifierComposite) {
-            throw MappingException::compositeKeyAssignedIdGeneratorRequired($class->name);
         }
     }
 

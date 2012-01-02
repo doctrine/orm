@@ -532,10 +532,10 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
-
+        $cm->addLifecycleCallback('notfound', 'postLoad');
 
         $this->setExpectedException("Doctrine\ORM\Mapping\MappingException", "Entity 'Doctrine\Tests\Models\CMS\CmsUser' has no method 'notfound' to be registered as lifecycle callback.");
-        $cm->addLifecycleCallback('notfound', 'postLoad');
+        $cm->validateLifecycleCallbacks(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
     }
 
     /**
@@ -545,9 +545,9 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
-
+        $cm->mapManyToOne(array('fieldName' => 'address', 'targetEntity' => 'UnknownClass'));
 
         $this->setExpectedException("Doctrine\ORM\Mapping\MappingException", "The target-entity Doctrine\Tests\Models\CMS\UnknownClass cannot be found in 'Doctrine\Tests\Models\CMS\CmsUser#address'.");
-        $cm->mapManyToOne(array('fieldName' => 'address', 'targetEntity' => 'UnknownClass'));
+        $cm->validateAssocations();
     }
 }
