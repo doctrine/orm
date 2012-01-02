@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 
 require_once __DIR__ . '/../../TestInit.php';
 require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
@@ -339,6 +340,32 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group DDC-984
+     * @group DDC-559
+     */
+    public function testFullyQualifiedClassNameShouldBeGivenToNamingStrategy()
+    {
+        $namingStrategy     = new MyNamespacedNamingStrategy();
+        $addressMetadata    = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', $namingStrategy);
+        $articleMetadata    = new ClassMetadata('DoctrineGlobal_Article', $namingStrategy);
+        $routingMetadata    = new ClassMetadata('Doctrine\Tests\Models\Routing\RoutingLeg',$namingStrategy);
+
+        $addressMetadata->mapManyToMany(array(
+            'fieldName'     => 'user',
+            'targetEntity'  => 'CmsUser'
+        ));
+
+        $articleMetadata->mapManyToMany(array(
+            'fieldName'     => 'author',
+            'targetEntity'  => 'Doctrine\Tests\Models\CMS\CmsUser'
+        ));
+
+        $this->assertEquals('doctrine_tests_models_routing_routingleg', $routingMetadata->table['name']);
+        $this->assertEquals('doctrine_tests_models_cms_cmsaddress_doctrine_tests_models_cms_cmsuser', $addressMetadata->associationMappings['user']['joinTable']['name']);
+        $this->assertEquals('doctrineglobal_article_doctrine_tests_models_cms_cmsuser', $articleMetadata->associationMappings['author']['joinTable']['name']);
+    }
+
+    /**
      * @group DDC-886
      */
     public function testSetMultipleIdentifierSetsComposite()
@@ -537,5 +564,20 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->setExpectedException("Doctrine\ORM\Mapping\MappingException", "The target-entity Doctrine\Tests\Models\CMS\UnknownClass cannot be found in 'Doctrine\Tests\Models\CMS\CmsUser#address'.");
         $cm->mapManyToOne(array('fieldName' => 'address', 'targetEntity' => 'UnknownClass'));
+    }
+}
+
+class MyNamespacedNamingStrategy extends DefaultNamingStrategy
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function classToTableName($className)
+    {
+        if (strpos($className, '\\') !== false) {
+            $className = str_replace('\\', '_', $className);
+        }
+
+        return strtolower($className);
     }
 }
