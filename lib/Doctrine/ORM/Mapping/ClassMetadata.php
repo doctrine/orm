@@ -62,12 +62,15 @@ class ClassMetadata extends ClassMetadataInfo implements IClassMetadata
      *
      * @param string $entityName The name of the entity class the new instance is used for.
      */
-    public function __construct($entityName)
+    public function initializeReflection($reflService)
     {
-        $this->reflClass = new ReflectionClass($entityName);
-        $this->namespace = $this->reflClass->getNamespaceName();
-        $this->table['name'] = $this->reflClass->getShortName();
-        parent::__construct($this->reflClass->getName()); // do not use $entityName, possible case-problems
+        $this->reflClass = $reflService->getClass($this->name);
+        $this->namespace = $reflService->getClassNamespace($this->name);
+        $this->table['name'] = $reflService->getClassShortName($this->name);
+
+        if ($this->reflClass) {
+            $this->name = $this->rootEntityName = $this->reflClass->getName();
+        }
     }
 
     /**
@@ -322,37 +325,6 @@ class ClassMetadata extends ClassMetadataInfo implements IClassMetadata
         }
 
         return $serialized;
-    }
-
-    /**
-     * Restores some state that can not be serialized/unserialized.
-     *
-     * @param ReflectionService $reflService
-     * @return void
-     */
-    public function wakeupReflection($reflService)
-    {
-        // Restore ReflectionClass and properties
-        $this->reflClass = $reflService->getClass($this->name);
-
-        foreach ($this->fieldMappings as $field => $mapping) {
-            $reflField = isset($mapping['declared'])
-                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
-                : $reflService->getAccessibleProperty($this->name, $field);
-            $this->reflFields[$field] = $reflField;
-        }
-
-        foreach ($this->associationMappings as $field => $mapping) {
-            $reflField = isset($mapping['declared'])
-                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
-                : $reflService->getAccessibleProperty($this->name, $field);
-            $this->reflFields[$field] = $reflField;
-        }
-    }
-
-    public function initializeReflection($reflService)
-    {
-
     }
 
     /**

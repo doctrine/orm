@@ -588,5 +588,6 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      */
     protected function initializeReflection(ClassMetadataInfo $class, ReflectionService $reflService)
     {
+        $class->initializeReflection($reflService);
     }
 }
