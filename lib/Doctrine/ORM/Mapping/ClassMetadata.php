@@ -327,30 +327,32 @@ class ClassMetadata extends ClassMetadataInfo implements IClassMetadata
     /**
      * Restores some state that can not be serialized/unserialized.
      *
+     * @param ReflectionService $reflService
      * @return void
      */
-    public function __wakeup()
+    public function wakeupReflection($reflService)
     {
         // Restore ReflectionClass and properties
-        $this->reflClass = new ReflectionClass($this->name);
+        $this->reflClass = $reflService->getClass($this->name);
 
         foreach ($this->fieldMappings as $field => $mapping) {
             $reflField = isset($mapping['declared'])
-                ? new ReflectionProperty($mapping['declared'], $field)
-                : $this->reflClass->getProperty($field);
-
-            $reflField->setAccessible(true);
+                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
+                : $reflService->getAccessibleProperty($this->name, $field);
             $this->reflFields[$field] = $reflField;
         }
 
         foreach ($this->associationMappings as $field => $mapping) {
             $reflField = isset($mapping['declared'])
-                ? new ReflectionProperty($mapping['declared'], $field)
-                : $this->reflClass->getProperty($field);
-
-            $reflField->setAccessible(true);
+                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
+                : $reflService->getAccessibleProperty($this->name, $field);
             $this->reflFields[$field] = $reflField;
         }
+    }
+
+    public function initializeReflection($reflService)
+    {
+
     }
 
     /**

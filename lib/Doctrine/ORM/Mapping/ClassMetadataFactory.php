@@ -576,22 +576,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      */
     protected function wakeupReflection(ClassMetadataInfo $class, ReflectionService $reflService)
     {
-        // Restore ReflectionClass and properties
-        $class->reflClass = $reflService->getClass($class->name);
-
-        foreach ($class->fieldMappings as $field => $mapping) {
-            $reflField = isset($mapping['declared'])
-                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
-                : $reflService->getAccessibleProperty($class->name, $field);
-            $class->reflFields[$field] = $reflField;
-        }
-
-        foreach ($class->associationMappings as $field => $mapping) {
-            $reflField = isset($mapping['declared'])
-                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
-                : $reflService->getAccessibleProperty($class->name, $field);
-            $class->reflFields[$field] = $reflField;
-        }
+        $class->wakeupReflection($reflService);
     }
 
     /**

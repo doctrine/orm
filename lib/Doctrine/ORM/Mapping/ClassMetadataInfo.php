@@ -507,6 +507,36 @@ class ClassMetadataInfo
     }
 
     /**
+     * Restores some state that can not be serialized/unserialized.
+     *
+     * @param ReflectionService $reflService
+     * @return void
+     */
+    public function wakeupReflection($reflService)
+    {
+        // Restore ReflectionClass and properties
+        $this->reflClass = $reflService->getClass($this->name);
+
+        foreach ($this->fieldMappings as $field => $mapping) {
+            $this->reflFields[$field] = isset($mapping['declared'])
+                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
+                : $reflService->getAccessibleProperty($this->name, $field);
+        }
+
+        foreach ($this->associationMappings as $field => $mapping) {
+            $this->reflFields[$field] = isset($mapping['declared'])
+                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
+                : $reflService->getAccessibleProperty($this->name, $field);
+        }
+    }
+
+    public function initializeReflection($reflService)
+    {
+
+    }
+
+
+    /**
      * Gets the ReflectionClass instance of the mapped class.
      *
      * @return ReflectionClass

@@ -36,6 +36,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $serialized = serialize($cm);
         $cm = unserialize($serialized);
+        $cm->wakeupReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
 
         // Check state
         $this->assertTrue(count($cm->getReflectionProperties()) > 0);
