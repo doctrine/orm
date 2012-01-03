@@ -127,6 +127,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $className = "\DoctrineOrmTestEntity";
         $proxyName = "DoctrineOrmTestEntityProxy";
         $classMetadata = new \Doctrine\ORM\Mapping\ClassMetadata($className);
+        $classMetadata->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
         $classMetadata->mapField(array('fieldName' => 'id', 'type' => 'integer'));
         $classMetadata->setIdentifier(array('id'));
 
@@ -143,6 +144,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $className = "\Doctrine\Tests\ORM\Proxy\SleepClass";
         $proxyName = "DoctrineTestsORMProxySleepClassProxy";
         $classMetadata = new \Doctrine\ORM\Mapping\ClassMetadata($className);
+        $classMetadata->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
         $classMetadata->mapField(array('fieldName' => 'id', 'type' => 'integer'));
         $classMetadata->setIdentifier(array('id'));
 

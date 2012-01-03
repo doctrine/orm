@@ -91,6 +91,7 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\EntitySubClass2');
 
         $class2 = unserialize(serialize($class));
+        $class2->wakeupReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
 
         $this->assertTrue(isset($class2->reflFields['mapped1']));
         $this->assertTrue(isset($class2->reflFields['mapped2']));
