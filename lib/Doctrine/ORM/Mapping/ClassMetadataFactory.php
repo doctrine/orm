@@ -77,7 +77,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     private $initialized = false;
 
     /**
-     * @var ReflectionException
+     * @var ReflectionService
      */
     private $reflectionService;
 
@@ -570,7 +570,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     /**
      * Wakeup reflection after ClassMetadata gets unserialized from cache.
      *
-     * @param ClassMetadata $class
+     * @param ClassMetadataInfo $class
      * @param ReflectionService $reflService
      * @return void
      */
@@ -582,8 +582,8 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     /**
      * Initialize Reflection after ClassMetadata was constructed.
      *
-     * @param ClassMetadata $class
-     * @param ReflectionSErvice $reflService
+     * @param ClassMetadataInfo $class
+     * @param ReflectionService $reflService
      * @return void
      */
     protected function initializeReflection(ClassMetadataInfo $class, ReflectionService $reflService)
