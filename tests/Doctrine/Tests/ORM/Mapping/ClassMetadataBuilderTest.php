@@ -40,6 +40,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
     public function setUp()
     {
         $this->cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $this->cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
         $this->builder = new ClassMetadataBuilder($this->cm);
     }
 

@@ -24,6 +24,8 @@ use ReflectionException,
     Doctrine\ORM\EntityManager,
     Doctrine\DBAL\Platforms,
     Doctrine\ORM\Events,
+    Doctrine\Common\Persistence\Mapping\RuntimeReflectionService,
+    Doctrine\Common\Persistence\Mapping\ReflectionService,
     Doctrine\Common\Persistence\Mapping\ClassMetadataFactory as ClassMetadataFactoryInterface;
 
 /**
@@ -73,6 +75,11 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      * @var bool
      */
     private $initialized = false;
+
+    /**
+     * @var ReflectionService
+     */
+    private $reflectionService;
 
     /**
      * @param EntityManager $$em
@@ -165,6 +172,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
             if ($this->cacheDriver) {
                 if (($cached = $this->cacheDriver->fetch("$realClassName\$CLASSMETADATA")) !== false) {
+                    $this->wakeupReflection($cached, $this->getReflectionService());
                     $this->loadedMetadata[$realClassName] = $cached;
                 } else {
                     foreach ($this->loadMetadata($realClassName) as $loadedClassName) {
@@ -220,7 +228,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     {
         // Collect parent classes, ignoring transient (not-mapped) classes.
         $parentClasses = array();
-        foreach (array_reverse(class_parents($name)) as $parentClass) {
+        foreach (array_reverse($this->getReflectionService()->getParentClasses($name)) as $parentClass) {
             if ( ! $this->driver->isTransient($parentClass)) {
                 $parentClasses[] = $parentClass;
             }
@@ -261,6 +269,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             }
 
             $class = $this->newClassMetadataInstance($className);
+            $this->initializeReflection($class, $this->getReflectionService());
 
             if ($parent) {
                 $class->setInheritanceType($parent->inheritanceType);
@@ -282,6 +291,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             // Invoke driver
             try {
                 $this->driver->loadMetadataForClass($className, $class);
+                $this->wakeupReflection($class, $this->getReflectionService());
             } catch (ReflectionException $e) {
                 throw MappingException::reflectionFailure($className, $e);
             }
@@ -349,10 +359,14 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      */
     protected function validateRuntimeMetadata($class, $parent)
     {
-        // Verify & complete identifier mapping
-        if ( ! $class->identifier && ! $class->isMappedSuperclass) {
-            throw MappingException::identifierRequired($class->name);
+        if ( ! $class->reflClass ) {
+            // only validate if there is a reflection class instance
+            return;
         }
+
+        $class->validateIdentifier();
+        $class->validateAssocations();
+        $class->validateLifecycleCallbacks($this->getReflectionService());
 
         // verify inheritance
         if (!$class->isMappedSuperclass && !$class->isInheritanceTypeNone()) {
@@ -370,10 +384,6 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
         } else if ($class->isMappedSuperclass && $class->name == $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierachy
             throw MappingException::noInheritanceOnMappedSuperClass($class->name);
-        }
-
-        if ($class->usesIdGenerator() && $class->isIdentifierComposite) {
-            throw MappingException::compositeKeyAssignedIdGeneratorRequired($class->name);
         }
     }
 
@@ -532,5 +542,52 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
         }
 
         return $this->driver->isTransient($class);
+    }
+
+    /**
+     * Get reflectionService.
+     *
+     * @return \Doctrine\Common\Persistence\Mapping\ReflectionService
+     */
+    public function getReflectionService()
+    {
+        if ($this->reflectionService === null) {
+            $this->reflectionService = new RuntimeReflectionService();
+        }
+        return $this->reflectionService;
+    }
+
+    /**
+     * Set reflectionService.
+     *
+     * @param reflectionService the value to set.
+     */
+    public function setReflectionService(ReflectionService $reflectionService)
+    {
+        $this->reflectionService = $reflectionService;
+    }
+
+    /**
+     * Wakeup reflection after ClassMetadata gets unserialized from cache.
+     *
+     * @param ClassMetadataInfo $class
+     * @param ReflectionService $reflService
+     * @return void
+     */
+    protected function wakeupReflection(ClassMetadataInfo $class, ReflectionService $reflService)
+    {
+        $class->wakeupReflection($reflService);
+    }
+
+    /**
+     * Initialize Reflection after ClassMetadata was constructed.
+     *
+     * @param ClassMetadataInfo $class
+     * @param ReflectionService $reflService
+     * @return void
+     */
+    protected function initializeReflection(ClassMetadataInfo $class, ReflectionService $reflService)
+    {
+        $class->initializeReflection($reflService);
     }
 }

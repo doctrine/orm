@@ -18,6 +18,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $mappingDriver = $this->_loadDriver();
 
         $class = new ClassMetadata($entityClassName);
+        $class->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
         $mappingDriver->loadMetadataForClass($entityClassName, $class);
 
         return $class;
