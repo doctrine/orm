@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\DBAL\Types\Type;
 use ReflectionClass;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -40,7 +41,7 @@ use ReflectionClass;
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @since 2.0
  */
-class ClassMetadataInfo
+class ClassMetadataInfo implements ClassMetadata
 {
     /* The inheritance mapping types */
     /**
@@ -495,6 +496,20 @@ class ClassMetadataInfo
     public $isReadOnly = false;
 
     /**
+     * The ReflectionProperty instances of the mapped class.
+     *
+     * @var array
+     */
+    public $reflFields = array();
+
+    /**
+     * The prototype from which new instances of the mapped class are created.
+     *
+     * @var object
+     */
+    private $_prototype;
+
+    /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
      *
@@ -507,15 +522,314 @@ class ClassMetadataInfo
     }
 
     /**
+     * Gets the ReflectionPropertys of the mapped class.
+     *
+     * @return array An array of ReflectionProperty instances.
+     */
+    public function getReflectionProperties()
+    {
+        return $this->reflFields;
+    }
+
+    /**
+     * Gets a ReflectionProperty for a specific field of the mapped class.
+     *
+     * @param string $name
+     * @return ReflectionProperty
+     */
+    public function getReflectionProperty($name)
+    {
+        return $this->reflFields[$name];
+    }
+
+    /**
+     * Gets the ReflectionProperty for the single identifier field.
+     *
+     * @return ReflectionProperty
+     * @throws BadMethodCallException If the class has a composite identifier.
+     */
+    public function getSingleIdReflectionProperty()
+    {
+        if ($this->isIdentifierComposite) {
+            throw new \BadMethodCallException("Class " . $this->name . " has a composite identifier.");
+        }
+        return $this->reflFields[$this->identifier[0]];
+    }
+
+    /**
+     * Extracts the identifier values of an entity of this class.
+     *
+     * For composite identifiers, the identifier values are returned as an array
+     * with the same order as the field order in {@link identifier}.
+     *
+     * @param object $entity
+     * @return array
+     */
+    public function getIdentifierValues($entity)
+    {
+        if ($this->isIdentifierComposite) {
+            $id = array();
+
+            foreach ($this->identifier as $idField) {
+                $value = $this->reflFields[$idField]->getValue($entity);
+
+                if ($value !== null) {
+                    $id[$idField] = $value;
+                }
+            }
+
+            return $id;
+        }
+
+        $value = $this->reflFields[$this->identifier[0]]->getValue($entity);
+
+        if ($value !== null) {
+            return array($this->identifier[0] => $value);
+        }
+
+        return array();
+    }
+
+    /**
+     * Populates the entity identifier of an entity.
+     *
+     * @param object $entity
+     * @param mixed $id
+     * @todo Rename to assignIdentifier()
+     */
+    public function setIdentifierValues($entity, array $id)
+    {
+        foreach ($id as $idField => $idValue) {
+            $this->reflFields[$idField]->setValue($entity, $idValue);
+        }
+    }
+
+    /**
+     * Sets the specified field to the specified value on the given entity.
+     *
+     * @param object $entity
+     * @param string $field
+     * @param mixed $value
+     */
+    public function setFieldValue($entity, $field, $value)
+    {
+        $this->reflFields[$field]->setValue($entity, $value);
+    }
+
+    /**
+     * Gets the specified field's value off the given entity.
+     *
+     * @param object $entity
+     * @param string $field
+     */
+    public function getFieldValue($entity, $field)
+    {
+        return $this->reflFields[$field]->getValue($entity);
+    }
+
+    /**
+     * Creates a string representation of this instance.
+     *
+     * @return string The string representation of this instance.
+     * @todo Construct meaningful string representation.
+     */
+    public function __toString()
+    {
+        return __CLASS__ . '@' . spl_object_hash($this);
+    }
+
+    /**
+     * Determines which fields get serialized.
+     *
+     * It is only serialized what is necessary for best unserialization performance.
+     * That means any metadata properties that are not set or empty or simply have
+     * their default value are NOT serialized.
+     *
+     * Parts that are also NOT serialized because they can not be properly unserialized:
+     *      - reflClass (ReflectionClass)
+     *      - reflFields (ReflectionProperty array)
+     *
+     * @return array The names of all the fields that should be serialized.
+     */
+    public function __sleep()
+    {
+        // This metadata is always serialized/cached.
+        $serialized = array(
+            'associationMappings',
+            'columnNames', //TODO: Not really needed. Can use fieldMappings[$fieldName]['columnName']
+            'fieldMappings',
+            'fieldNames',
+            'identifier',
+            'isIdentifierComposite', // TODO: REMOVE
+            'name',
+            'namespace', // TODO: REMOVE
+            'table',
+            'rootEntityName',
+            'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.
+        );
+
+        // The rest of the metadata is only serialized if necessary.
+        if ($this->changeTrackingPolicy != self::CHANGETRACKING_DEFERRED_IMPLICIT) {
+            $serialized[] = 'changeTrackingPolicy';
+        }
+
+        if ($this->customRepositoryClassName) {
+            $serialized[] = 'customRepositoryClassName';
+        }
+
+        if ($this->inheritanceType != self::INHERITANCE_TYPE_NONE) {
+            $serialized[] = 'inheritanceType';
+            $serialized[] = 'discriminatorColumn';
+            $serialized[] = 'discriminatorValue';
+            $serialized[] = 'discriminatorMap';
+            $serialized[] = 'parentClasses';
+            $serialized[] = 'subClasses';
+        }
+
+        if ($this->generatorType != self::GENERATOR_TYPE_NONE) {
+            $serialized[] = 'generatorType';
+            if ($this->generatorType == self::GENERATOR_TYPE_SEQUENCE) {
+                $serialized[] = 'sequenceGeneratorDefinition';
+            }
+        }
+
+        if ($this->isMappedSuperclass) {
+            $serialized[] = 'isMappedSuperclass';
+        }
+
+        if ($this->containsForeignIdentifier) {
+            $serialized[] = 'containsForeignIdentifier';
+        }
+
+        if ($this->isVersioned) {
+            $serialized[] = 'isVersioned';
+            $serialized[] = 'versionField';
+        }
+
+        if ($this->lifecycleCallbacks) {
+            $serialized[] = 'lifecycleCallbacks';
+        }
+
+        if ($this->namedQueries) {
+            $serialized[] = 'namedQueries';
+        }
+
+        if ($this->isReadOnly) {
+            $serialized[] = 'isReadOnly';
+        }
+
+        return $serialized;
+    }
+
+    /**
+     * Creates a new instance of the mapped class, without invoking the constructor.
+     *
+     * @return object
+     */
+    public function newInstance()
+    {
+        if ($this->_prototype === null) {
+            $this->_prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
+        }
+
+        return clone $this->_prototype;
+    }
+    /**
+     * Restores some state that can not be serialized/unserialized.
+     *
+     * @param ReflectionService $reflService
+     * @return void
+     */
+    public function wakeupReflection($reflService)
+    {
+        // Restore ReflectionClass and properties
+        $this->reflClass = $reflService->getClass($this->name);
+
+        foreach ($this->fieldMappings as $field => $mapping) {
+            $this->reflFields[$field] = isset($mapping['declared'])
+                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
+                : $reflService->getAccessibleProperty($this->name, $field);
+        }
+
+        foreach ($this->associationMappings as $field => $mapping) {
+            $this->reflFields[$field] = isset($mapping['declared'])
+                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
+                : $reflService->getAccessibleProperty($this->name, $field);
+        }
+    }
+
+    /**
+     * Initializes a new ClassMetadata instance that will hold the object-relational mapping
+     * metadata of the class with the given name.
+     *
+     * @param string $entityName The name of the entity class the new instance is used for.
+     */
+    public function initializeReflection($reflService)
+    {
+        $this->reflClass = $reflService->getClass($this->name);
+        $this->namespace = $reflService->getClassNamespace($this->name);
+        $this->table['name'] = $reflService->getClassShortName($this->name);
+
+        if ($this->reflClass) {
+            $this->name = $this->rootEntityName = $this->reflClass->getName();
+        }
+    }
+
+    /**
+     * Validate Identifier
+     *
+     * @return void
+     */
+    public function validateIdentifier()
+    {
+        // Verify & complete identifier mapping
+        if ( ! $this->identifier && ! $this->isMappedSuperclass) {
+            throw MappingException::identifierRequired($this->name);
+        }
+
+        if ($this->usesIdGenerator() && $this->isIdentifierComposite) {
+            throw MappingException::compositeKeyAssignedIdGeneratorRequired($this->name);
+        }
+    }
+
+    /**
+     * Validate association targets actually exist.
+     *
+     * @return void
+     */
+    public function validateAssocations()
+    {
+        foreach ($this->associationMappings as $field => $mapping) {
+            if ( ! \Doctrine\Common\ClassLoader::classExists($mapping['targetEntity']) ) {
+                throw MappingException::invalidTargetEntityClass($mapping['targetEntity'], $this->name, $mapping['fieldName']);
+            }
+        }
+    }
+
+    /**
+     * Validate lifecycle callbacks
+     *
+     * @param ReflectionService $reflService
+     * @return void
+     */
+    public function validateLifecycleCallbacks($reflService)
+    {
+        foreach ($this->lifecycleCallbacks as $event => $callbacks) {
+            foreach ($callbacks as $callbackFuncName) {
+                if ( ! $reflService->hasPublicMethod($this->name, $callbackFuncName)) {
+                    throw MappingException::lifecycleCallbackMethodNotFound($this->name, $callbackFuncName);
+                }
+            }
+        }
+    }
+
+    /**
      * Gets the ReflectionClass instance of the mapped class.
      *
      * @return ReflectionClass
      */
     public function getReflectionClass()
     {
-        if ( ! $this->reflClass) {
-            $this->reflClass = new ReflectionClass($this->name);
-        }
         return $this->reflClass;
     }
 
