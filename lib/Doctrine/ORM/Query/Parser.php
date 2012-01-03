@@ -1642,19 +1642,18 @@ class Parser
 
         $this->match(Lexer::T_OPEN_PARENTHESIS);
         
-        $fieldSet[] = $this->SimpleSelectExpression();
+        $fieldSet[] = $this->SelectExpression();
         while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
             $this->match(Lexer::T_COMMA);
 
-            $fieldSet[] = $this->SimpleSelectExpression();
+            $fieldSet[] = $this->SelectExpression();
         }
 
         $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
         $expression = new AST\NewObjectExpression($identificationVariable, $fieldSet);
 
-        // @TODO : Defer NewObjectExpression validation
-        throw new \BadMethodCallException("Not complete yet !");
+        // @TODO : Defer NewObjectExpression validation ?
         return $expression;
     }
 

@@ -1221,6 +1221,12 @@ class SqlWalker implements TreeWalker
                 }
                 break;
 
+            case ($expr instanceof AST\NewObjectExpression):
+                $sqlSelectExpressions = array_filter(array_map(array($this, 'walkSelectExpression'), $expr->fieldSet));
+                $sql .= implode(', ', $sqlSelectExpressions);
+
+                break;
+
             default:
                 // IdentificationVariable or PartialObjectExpression
                 if ($expr instanceof AST\PartialObjectExpression) {
