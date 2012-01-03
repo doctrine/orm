@@ -777,11 +777,12 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $this->reflClass = $reflService->getClass($this->name);
         $this->namespace = $reflService->getClassNamespace($this->name);
-        $this->table['name'] = $this->namingStrategy->classToTableName($this->name);
 
         if ($this->reflClass) {
             $this->name = $this->rootEntityName = $this->reflClass->getName();
         }
+
+        $this->table['name'] = $this->namingStrategy->classToTableName($this->name);
     }
 
     /**
