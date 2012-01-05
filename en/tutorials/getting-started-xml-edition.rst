@@ -100,6 +100,7 @@ following set of classes. Put them into `entities/Bug.php`,
 .. code-block:: php
 
     <?php
+    // Bug.php
     class Bug
     {
         protected $id;
@@ -107,6 +108,11 @@ following set of classes. Put them into `entities/Bug.php`,
         protected $created;
         protected $status;
     }
+
+.. code-block:: php
+
+    <?php
+    // Product.php
     class Product
     {
         protected $id;
@@ -127,6 +133,9 @@ following set of classes. Put them into `entities/Bug.php`,
             $this->name = $name;
         }
     }
+
+.. code-block:: php
+    // User.php
     class User
     {
         protected $id;
@@ -210,6 +219,7 @@ with the assumptions about related collections:
 
     <?php
     // entities/User.php
+    use Doctrine\Common\Collections\ArrayCollection;
     class User
     {
         protected $reportedBugs = null;
