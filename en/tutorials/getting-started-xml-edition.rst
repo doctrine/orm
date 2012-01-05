@@ -1009,7 +1009,7 @@ the first read-only use-case:
     $bugs = $query->getResult();
     
     foreach($bugs AS $bug) {
-        echo $bug->description." - ".$bug->created->format('d.m.Y')."\n";
+        echo $bug->getDescription()." - ".$bug->getCreated()->format('d.m.Y')."\n";
         echo "    Reported by: ".$bug->getReporter()->name."\n";
         echo "    Assigned to: ".$bug->getEngineer()->name."\n";
         foreach($bug->getProducts() AS $product) {
