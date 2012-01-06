@@ -324,4 +324,9 @@ class MappingException extends \Doctrine\ORM\ORMException
     {
         return new self("Entity '". $className . "' has a composite identifier but uses an ID generator other than manually assigning (Identity, Sequence). This is not supported.");
     }
+
+    public static function invalidTargetEntityClass($targetEntity, $sourceEntity, $associationName)
+    {
+        return new self("The target-entity " . $targetEntity . " cannot be found in '" . $sourceEntity."#".$associationName."'.");
+    }
 }

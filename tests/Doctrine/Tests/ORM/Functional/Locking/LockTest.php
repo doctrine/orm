@@ -71,7 +71,7 @@ class LockTest extends \Doctrine\Tests\OrmFunctionalTestCase {
     public function testLockUnmanagedEntity_ThrowsException() {
         $article = new CmsArticle();
 
-        $this->setExpectedException('InvalidArgumentException', 'Entity is not MANAGED.');
+        $this->setExpectedException('InvalidArgumentException', 'Entity Doctrine\Tests\Models\CMS\CmsArticle');
         $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
     }
 

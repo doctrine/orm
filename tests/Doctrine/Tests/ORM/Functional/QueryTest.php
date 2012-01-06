@@ -87,7 +87,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $query = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u join u.articles a");
+        $query = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u join u.articles a ORDER BY a.topic");
         $users = $query->getResult();
         $this->assertEquals(1, count($users));
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);

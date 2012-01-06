@@ -27,9 +27,9 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $cm1 = $this->_createValidClassMetadata();
 
         // SUT
-        $cmf = new ClassMetadataFactoryTestSubject();
+        $cmf = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
         $cmf->setEntityManager($entityManager);
-        $cmf->setMetadataForClass($cm1->name, $cm1);
+        $cmf->setMetadataFor($cm1->name, $cm1);
 
         // Prechecks
         $this->assertEquals(array(), $cm1->parentClasses);
@@ -37,15 +37,16 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($cm1->hasField('name'));
         $this->assertEquals(2, count($cm1->associationMappings));
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $cm1->generatorType);
+        $this->assertEquals('group', $cm1->table['name']);
 
         // Go
-        $cm1 = $cmf->getMetadataFor($cm1->name);
+        $cmMap1 = $cmf->getMetadataFor($cm1->name);
 
-        $this->assertEquals('group', $cm1->table['name']);
-        $this->assertTrue($cm1->table['quoted']);
-        $this->assertEquals(array(), $cm1->parentClasses);
-        $this->assertTrue($cm1->hasField('name'));
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_SEQUENCE, $cm1->generatorType);
+        $this->assertSame($cm1, $cmMap1);
+        $this->assertEquals('group', $cmMap1->table['name']);
+        $this->assertTrue($cmMap1->table['quoted']);
+        $this->assertEquals(array(), $cmMap1->parentClasses);
+        $this->assertTrue($cmMap1->hasField('name'));
     }
 
     public function testGetMetadataFor_ReturnsLoadedCustomIdGenerator()
@@ -202,6 +203,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
      */
     protected function _createValidClassMetadata()
     {
+        // Self-made metadata
         $cm1 = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
         $cm1->setPrimaryTable(array('name' => '`group`'));
         // Add a mapped field

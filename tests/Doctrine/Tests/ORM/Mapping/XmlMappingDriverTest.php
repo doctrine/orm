@@ -21,6 +21,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $mappingDriver = $this->_loadDriver();
 
         $class = new ClassMetadata($className);
+        $class->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
         $mappingDriver->loadMetadataForClass($className, $class);
 
         $expectedMap = array(

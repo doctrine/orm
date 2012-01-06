@@ -111,16 +111,18 @@ abstract class AbstractExporter
         }
 
         foreach ($this->_metadata as $metadata) {
-            $output = $this->exportClassMetadata($metadata);
-            $path = $this->_generateOutputPath($metadata);
-            $dir = dirname($path);
-            if ( ! is_dir($dir)) {
-                mkdir($dir, 0777, true);
+            //In case output is returned, write it to a file, skip otherwise
+            if($output = $this->exportClassMetadata($metadata)){
+                $path = $this->_generateOutputPath($metadata);
+                $dir = dirname($path);
+                if ( ! is_dir($dir)) {
+                    mkdir($dir, 0777, true);
+                }
+                if (file_exists($path) && !$this->_overwriteExistingFiles) {
+                    throw ExportException::attemptOverwriteExistingFile($path);
+                }
+                file_put_contents($path, $output);
             }
-            if (file_exists($path) && !$this->_overwriteExistingFiles) {
-                throw ExportException::attemptOverwriteExistingFile($path);
-            }
-            file_put_contents($path, $output);
         }
     }
 

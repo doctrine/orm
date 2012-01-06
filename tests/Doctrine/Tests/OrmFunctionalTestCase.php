@@ -158,6 +158,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         if (isset($this->_usedModelSets['company'])) {
             $conn->executeUpdate('DELETE FROM company_contract_employees');
+            $conn->executeUpdate('DELETE FROM company_contract_managers');
             $conn->executeUpdate('DELETE FROM company_contracts');
             $conn->executeUpdate('DELETE FROM company_persons_friends');
             $conn->executeUpdate('DELETE FROM company_managers');
@@ -294,7 +295,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         // the actual database platform used during execution has effect on some
         // metadata mapping behaviors (like the choice of the ID generation).
         if (is_null(self::$_metadataCacheImpl)) {
-            self::$_metadataCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
+            if (isset($GLOBALS['DOCTRINE_CACHE_IMPL'])) {
+                self::$_metadataCacheImpl = new $GLOBALS['DOCTRINE_CACHE_IMPL'];
+            } else {
+                self::$_metadataCacheImpl = new \Doctrine\Common\Cache\ArrayCache;
+            }
         }
 
         if (is_null(self::$_queryCacheImpl)) {

@@ -46,6 +46,7 @@ class DDC1548E1
      */
     public $rel;
 }
+
 /**
  * @Entity
  */
