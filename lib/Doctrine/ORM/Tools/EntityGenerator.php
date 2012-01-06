@@ -86,6 +86,8 @@ class EntityGenerator
     /** Whether or not to re-generate entity class if it exists already */
     private $_regenerateEntityIfExists = false;
 
+	private $_fieldVisibility = 'private';
+	
     private static $_classTemplate =
 '<?php
 
@@ -148,7 +150,7 @@ public function <methodName>()
 {
 <spaces><collections>
 }
-';
+';	
 
     public function __construct()
     {
@@ -297,6 +299,22 @@ public function <methodName>()
         $this->_generateAnnotations = $bool;
     }
 
+    /**
+     * Set whether or not to generate annotations for the entity
+     *
+     * @param bool $bool
+     * @return void
+     */
+    public function setFieldVisibility($visibility)
+    {
+		if($visibility != 'private' && $visibility != 'protected')
+		{
+			throw new \InvalidArgumentException('Invalid provided visibilty (only private and protected are allowed): ' . $visibility);
+		}
+		
+        $this->_fieldVisibility = $visibility;
+    }
+	
     /**
      * Set an annotation prefix.
      *
@@ -699,7 +717,7 @@ public function <methodName>()
             }
 
             $lines[] = $this->_generateAssociationMappingPropertyDocBlock($associationMapping, $metadata);
-            $lines[] = $this->_spaces . 'private $' . $associationMapping['fieldName']
+            $lines[] = $this->_spaces . $this->_fieldVisibility . ' $' . $associationMapping['fieldName']
                      . ($associationMapping['type'] == 'manyToMany' ? ' = array()' : null) . ";\n";
         }
 
@@ -717,7 +735,7 @@ public function <methodName>()
             }
 
             $lines[] = $this->_generateFieldMappingPropertyDocBlock($fieldMapping, $metadata);
-            $lines[] = $this->_spaces . 'private $' . $fieldMapping['fieldName']
+            $lines[] = $this->_spaces . $this->_fieldVisibility . ' $' . $fieldMapping['fieldName']
                      . (isset($fieldMapping['default']) ? ' = ' . var_export($fieldMapping['default'], true) : null) . ";\n";
         }
 
