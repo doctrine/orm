@@ -32,12 +32,23 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($datetime->time instanceof \DateTime);
         $this->assertTrue($datetime->date instanceof \DateTime);
     }
+    
+    public function testEntityArrayResult()
+    {
+        $query      = $this->_em->createQuery('SELECT d FROM ' . self::NS . '\DateTimeModel d');
+        $result     = $query->getArrayResult();
+        $datetime   = $result[0];
+
+        $this->assertTrue(is_array($datetime));
+
+        $this->assertTrue($datetime['datetime'] instanceof \DateTime);
+        $this->assertTrue($datetime['time'] instanceof \DateTime);
+        $this->assertTrue($datetime['date'] instanceof \DateTime);
+    }
 
     public function testTicketSingleResult()
     {
-        $this->markTestIncomplete();
-        
-        $query      = $this->_em->createQuery('SELECT d.id, d.datetime FROM ' . self::NS . '\DateTimeModel d');
+        $query      = $this->_em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . self::NS . '\DateTimeModel d');
         $datetime   = $query->getSingleResult();
 
         $this->assertTrue(is_array($datetime));

@@ -296,15 +296,19 @@ class ResultSetMapping
      *
      * @param string $columnName The name of the column in the SQL result set.
      * @param string $alias The result alias with which the scalar result should be placed in the result structure.
+     * @param string $declaringClass The name of the class that declares/owns the specified field.
      * @return ResultSetMapping This ResultSetMapping instance.
      * @todo Rename: addScalar
      */
-    public function addScalarResult($columnName, $alias)
+    public function addScalarResult($columnName, $alias, $declaringClass = null)
     {
         $this->scalarMappings[$columnName] = $alias;
 
         if ( ! $this->isMixed && $this->fieldMappings) {
             $this->isMixed = true;
+        }
+        if ($declaringClass !== null) {
+            $this->declaringClasses[$columnName] = $declaringClass;
         }
 
         return $this;

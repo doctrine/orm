@@ -1094,7 +1094,11 @@ class SqlWalker implements TreeWalker
                 $this->_scalarResultAliasMap[$resultAlias] = $columnAlias;
 
                 if ( ! $hidden) {
-                    $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+                    if (isset ($class->fieldMappings[$fieldName])) {
+                        $this->_rsm->addScalarResult($columnAlias, $resultAlias, $class->name);
+                    } else {
+                        $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+                    }                    
                     $this->_scalarFields[$dqlAlias][$fieldName] = $columnAlias;
                 }
                 break;
