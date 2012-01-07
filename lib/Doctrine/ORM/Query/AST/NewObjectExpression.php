@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * NewObjectExpression ::= "NEW" IdentificationVariable "(" SimpleSelectExpression {"," SimpleSelectExpression}* ")"
+ * NewObjectExpression ::= "NEW" IdentificationVariable "(" SelectExpression {"," SelectExpression}* ")"
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
@@ -32,21 +32,21 @@ class NewObjectExpression extends Node
     /**
      * @var string
      */
-    public $identificationVariable;
+    public $className;
 
     /**
      * @var array
      */
-    public $fieldSet;
+    public $args;
 
     /**
-     * @param type $identificationVariable
-     * @param array $fieldSet
+     * @param type $className
+     * @param array $args
      */
-    public function __construct($identificationVariable, array $fieldSet)
+    public function __construct($className, array $args)
     {
-        $this->identificationVariable = $identificationVariable;
-        $this->fieldSet = $fieldSet;
+        $this->className = $className;
+        $this->args = $args;
     }
 
     /**

@@ -1561,7 +1561,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testSupportsNewOperator()
     {
         $this->assertSqlGeneration(
-            'SELECT new Doctrine\Tests\Models\CMS\CmsUser(u.name, e.email, a.city) FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.email e JOIN u.address a',
+            'SELECT new Doctrine\Tests\Models\CMS\CmsUserDTO(u.name, e.email, a.city) FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.email e JOIN u.address a',
             'SELECT c0_.name AS name0, c1_.email AS email1, c2_.city AS city2 FROM cms_users c0_ INNER JOIN cms_emails c1_ ON c0_.email_id = c1_.id INNER JOIN cms_addresses c2_ ON c0_.id = c2_.user_id'
         );
     }

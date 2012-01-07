@@ -1222,7 +1222,7 @@ class SqlWalker implements TreeWalker
                 break;
 
             case ($expr instanceof AST\NewObjectExpression):
-                $sqlSelectExpressions = array_filter(array_map(array($this, 'walkSelectExpression'), $expr->fieldSet));
+                $sqlSelectExpressions = array_filter(array_map(array($this, 'walkSelectExpression'), $expr->args));
                 $sql .= implode(', ', $sqlSelectExpressions);
 
                 break;

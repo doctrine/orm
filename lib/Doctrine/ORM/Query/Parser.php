@@ -1630,7 +1630,7 @@ class Parser
     }
 
     /**
-     * NewObjectExpression ::= "NEW" IdentificationVariable "(" SimpleSelectExpression {"," SimpleSelectExpression}* ")"
+     * NewObjectExpression ::= "NEW" IdentificationVariable "(" SelectExpression {"," SelectExpression}* ")"
      * @return \Doctrine\ORM\Query\AST\NewObjectExpression
      */
     public function NewObjectExpression()
@@ -1638,20 +1638,33 @@ class Parser
         $this->match(Lexer::T_NEW);
         $this->match(Lexer::T_IDENTIFIER);
 
-        $identificationVariable = $this->_lexer->token['value'];
+        $className = $this->_lexer->token['value'];
+
+        if ( ! class_exists($className, true)) {
+            $this->semanticalError("Class '$className' is not defined.", $this->_lexer->token);
+        }
+        
+        $class = new \ReflectionClass($className);
+        if($class->getConstructor() === null) {
+            $this->semanticalError("Class '$className' has not a valid contructor.", $this->_lexer->token);
+        }
 
         $this->match(Lexer::T_OPEN_PARENTHESIS);
         
-        $fieldSet[] = $this->SelectExpression();
+        $args[] = $this->SelectExpression();
         while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
             $this->match(Lexer::T_COMMA);
 
-            $fieldSet[] = $this->SelectExpression();
+            $args[] = $this->SelectExpression();
         }
 
         $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
-        $expression = new AST\NewObjectExpression($identificationVariable, $fieldSet);
+        if($class->getConstructor()->getNumberOfRequiredParameters() > sizeof($args)) {
+            $this->semanticalError("Number of arguments does not match definition.", $this->_lexer->token);
+        }
+
+        $expression = new AST\NewObjectExpression($className, $args);
 
         // @TODO : Defer NewObjectExpression validation ?
         return $expression;
@@ -1984,7 +1997,6 @@ class Parser
             // NewObjectExpression (New ClassName(id, name))
             case ($lookaheadType === Lexer::T_NEW):
                 $expression    = $this->NewObjectExpression();
-                //$identVariable = $expression->identificationVariable;
                 break;
             
             default:
