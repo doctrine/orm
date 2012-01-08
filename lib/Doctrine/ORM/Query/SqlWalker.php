@@ -1222,9 +1222,16 @@ class SqlWalker implements TreeWalker
                 break;
 
             case ($expr instanceof AST\NewObjectExpression):
-                $sqlSelectExpressions = array_filter(array_map(array($this, 'walkSelectExpression'), $expr->args));
-                $sql .= implode(', ', $sqlSelectExpressions);
+                $sqlSelectExpressions = array();
+                $this->_rsm->newObjectMappings['className'] = $expr->className;
 
+                foreach ($expr->args as $e) {
+                    $resultAliasMap = $this->scalarResultAliasMap;
+                    $sqlSelectExpressions[] = $this->walkSelectExpression($e);
+                    $this->_rsm->newObjectMappings['resultAliasMap'][] = array_diff($this->scalarResultAliasMap, $resultAliasMap);
+                }
+
+                $sql .= implode(', ', $sqlSelectExpressions);
                 break;
 
             default:
