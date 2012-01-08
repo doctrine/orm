@@ -276,13 +276,7 @@
 
   <xs:complexType name="custom-id-generator">
     <xs:sequence>
-      <xs:element name="args" minOccurs="0" maxOccurs="1">
-          <xs:complexType>
-              <xs:sequence>
-                  <xs:element name="arg" type="xs:string" minOccurs="1" maxOccurs="unbounded" />
-              </xs:sequence>
-          </xs:complexType>
-      </xs:element>
+      <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="class" type="xs:NMTOKEN" use="required" />
   </xs:complexType>

@@ -520,16 +520,11 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 break;
             case ClassMetadata::GENERATOR_TYPE_CUSTOM:
                 $definition = $class->customGeneratorDefinition;
-                try {
-                    $reflection = new \ReflectionClass($definition['class']);
-                    $args = isset($definition['args']) ?
-                        $definition['args'] : array();
-                    $generator = $reflection->newInstanceArgs($args);
-                    $class->setIdGenerator($generator);
-                } catch (ReflectionException $e) {
+                if (!class_exists($definition['class'])) {
                     throw new ORMException("Can't instantiate custom generator : " .
                         $definition['class']);
                 }
+                $class->setIdGenerator(new $definition['class']);
                 break;
             default:
                 throw new ORMException("Unknown generator type: " . $class->generatorType);

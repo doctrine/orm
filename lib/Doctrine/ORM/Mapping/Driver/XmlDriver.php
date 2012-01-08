@@ -256,13 +256,8 @@ class XmlDriver extends AbstractFileDriver
                 ));
             } else if (isset($idElement->{'custom-id-generator'})) {
                 $customGenerator = $idElement->{'custom-id-generator'};
-                $args = array();
-                foreach ($customGenerator->args->children() as $argument) {
-                    $args[] = (string) $argument;
-                }
                 $metadata->setCustomGeneratorDefinition(array(
-                    'class' => (string) $customGenerator['class'],
-                    'args' => $args
+                    'class' => (string) $customGenerator['class']
                 ));
             } else if (isset($idElement->{'table-generator'})) {
                 throw MappingException::tableIdGeneratorNotImplemented($className);

@@ -11,4 +11,3 @@ Doctrine\Tests\ORM\Mapping\Animal:
         strategy: CUSTOM
       customIdGenerator:
         class: stdClass
-        args: [ par1, par2 ]

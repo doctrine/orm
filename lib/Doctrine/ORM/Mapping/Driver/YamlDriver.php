@@ -198,8 +198,7 @@ class YamlDriver extends AbstractFileDriver
                 } else if (isset($idElement['customIdGenerator'])) {
                     $customGenerator = $idElement['customIdGenerator'];
                     $metadata->setCustomGeneratorDefinition(array(
-                        'class' => (string) $customGenerator['class'],
-                        'args' => $customGenerator['args']
+                        'class' => (string) $customGenerator['class']
                     ));
                 } else if (isset($idElement['tableGenerator'])) {
                     throw MappingException::tableIdGeneratorNotImplemented($className);

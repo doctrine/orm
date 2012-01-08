@@ -97,7 +97,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM,
             $class->generatorType, "Generator Type");
         $this->assertEquals(
-            array("class" => "stdClass", "args" => array("par1", "par2")),
+            array("class" => "stdClass"),
             $class->customGeneratorDefinition,
             "Custom Generator Definition");
     }
@@ -627,14 +627,14 @@ abstract class Animal
 {
     /**
      * @Id @Column(type="string") @GeneratedValue(strategy="CUSTOM")
-     * @CustomIdGenerator(class="stdClass", args={"par1", "par2"})
+     * @CustomIdGenerator(class="stdClass")
      */
     public $id;
 
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_CUSTOM);
-        $metadata->setCustomGeneratorDefinition(array("class" => "stdClass", "args" => array("par1", "par2")));
+        $metadata->setCustomGeneratorDefinition(array("class" => "stdClass"));
     }
 }
 

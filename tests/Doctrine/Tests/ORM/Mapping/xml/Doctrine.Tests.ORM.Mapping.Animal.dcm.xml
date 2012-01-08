@@ -9,13 +9,8 @@
             <discriminator-mapping value="dog" class="Dog" />
         </discriminator-map>
         <id name="id" type="integer" column="id">
-            <generator strategy="CUSTOM"/>
-            <custom-id-generator class="stdClass">
-                <args>
-                    <arg>par1</arg>
-                    <arg>par2</arg>
-                </args>
-            </custom-id-generator>
+            <generator strategy="CUSTOM" />
+            <custom-id-generator class="stdClass" />
         </id>
     </entity>
 </doctrine-mapping>

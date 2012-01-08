@@ -188,7 +188,6 @@ class ClassMetadataInfo implements ClassMetadata
      * <code>
      * array(
      *     'class' => 'ClassName',
-     *     'args' => array("constructor", "arguments")
      * )
      * </code>
      *

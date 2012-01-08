@@ -328,8 +328,7 @@ class AnnotationDriver implements Driver
                     throw MappingException::tableIdGeneratorNotImplemented($className);
                 } else if ($customGeneratorAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\CustomIdGenerator')) {
                     $metadata->setCustomGeneratorDefinition(array(
-                        'class' => $customGeneratorAnnot->class,
-                        'args' => $customGeneratorAnnot->args
+                        'class' => $customGeneratorAnnot->class
                     ));
                 }
             } else if ($oneToOneAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OneToOne')) {
