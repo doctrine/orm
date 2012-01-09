@@ -316,7 +316,7 @@ abstract class AbstractQuery
 
         $this->_queryCacheProfile = $this->_queryCacheProfile
             ? $this->_queryCacheProfile->setLifetime($lifetime)
-            : new QueryCacheProfile($lifetime);
+            : new QueryCacheProfile($lifetime, null, $this->_em->getConfiguration()->getResultCacheImpl());
 
         return $this;
     }
@@ -615,7 +615,7 @@ abstract class AbstractQuery
     {
         $this->_queryCacheProfile = $this->_queryCacheProfile
             ? $this->_queryCacheProfile->setCacheKey($id)
-            : new QueryCacheProfile(0, $id);
+            : new QueryCacheProfile(0, $id, $this->_em->getConfiguration()->getResultCacheImpl());
 
         return $this;
     }
