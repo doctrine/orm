@@ -12,15 +12,11 @@ Installation
 ~~~~~~~~~~~~
 
 If you installed Doctrine 2 through PEAR, the ``doctrine`` command
-line tool should already be available to you.
+line tool should already be available to you. Y
 
-If you use Doctrine through SVN or a release package you need to
-copy the ``doctrine`` and ``doctrine.php`` files from the
-``tools/sandbox`` or ``bin`` folder, respectively, to a location of
-your choice, for example a ``tools`` folder of your project. You
-probably need to edit ``doctrine.php`` to adjust some paths to the
-new environment, most importantly the first line that includes the
-``Doctrine\Common\ClassLoader``.
+In any other case you should create a project specific doctrine command
+on your own. This is a combination of the PEAR ``doctrine`` commands
+code and some of your own bootstrap code.
 
 Getting Help
 ~~~~~~~~~~~~
@@ -52,21 +48,23 @@ In general the required code looks like this:
         Doctrine\ORM\Tools\Console\ConsoleRunner::addCommands($cli);
         $cli->run();
 
-Configuration
-~~~~~~~~~~~~~
+Configuration (PEAR)
+~~~~~~~~~~~~~~~~~~~~
 
 Whenever the ``doctrine`` command line tool is invoked, it can
 access alls Commands that were registered by developer. There is no
-auto-detection mechanism at work. The ``bin\doctrine.php`` file
+auto-detection mechanism at work. The Doctrine binary
 already registers all the commands that currently ship with
 Doctrine DBAL and ORM. If you want to use additional commands you
 have to register them yourself.
 
-All the commands of the Doctrine Console require either the ``db``
+All the commands of the Doctrine Console require access to the EntityManager
+or DBAL Connection. You have to inject them into the console application
+using so called Helper-Sets. This requires either the ``db``
 or the ``em`` helpers to be defined in order to work correctly.
-Doctrine Console requires the definition of a HelperSet that is the
-DI tool to be injected in the Console. In case of a project that is
-dealing exclusively with DBAL, the ConnectionHelper is required:
+
+Whenever you invoke the Doctrine binary the current folder is searched for a
+``cli-config.php`` file. This file contains the project specific configuration:
 
 .. code-block:: php
 
@@ -90,49 +88,108 @@ required:
 The HelperSet instance has to be generated in a separate file (i.e.
 ``cli-config.php``) that contains typical Doctrine bootstrap code
 and predefines the needed HelperSet attributes mentioned above. A
-typical ``cli-config.php`` file looks as follows:
+sample ``cli-config.php`` file looks as follows:
 
 .. code-block:: php
 
     <?php
-    require_once __DIR__ . '/../../lib/Doctrine/Common/ClassLoader.php';
-    
-    $classLoader = new \Doctrine\Common\ClassLoader('Entities', __DIR__);
-    $classLoader->register();
-    
-    $classLoader = new \Doctrine\Common\ClassLoader('Proxies', __DIR__);
-    $classLoader->register();
-    
-    $config = new \Doctrine\ORM\Configuration();
-    $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache);
-    $config->setProxyDir(__DIR__ . '/Proxies');
-    $config->setProxyNamespace('Proxies');
-    
-    $connectionOptions = array(
-        'driver' => 'pdo_sqlite',
-        'path' => 'database.sqlite'
-    );
-    
-    $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);
+    // cli-config.php
+    use Doctrine\ORM\Tools\Setup;
+    use Doctrine\ORM\EntityManager;
+
+    require 'Doctrine/ORM/Tools/Setup.php';
+
+    Doctrine\ORM\Tools\Setup::registerAutoloadPEAR();
+
+    $paths = array("/path/to/entities-or-mapping-files");
+    $isDevMode = false;
+
+    $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
+    $em = EntityManager::create($dbParams, $config);
     
     $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
         'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
         'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
     ));
 
-It is important to define a correct HelperSet that doctrine.php
+It is important to define a correct HelperSet that Doctrine binary
 script will ultimately use. The Doctrine Binary will automatically
 find the first instance of HelperSet in the global variable
 namespace and use this.
 
-You can also add your own commands on-top of the Doctrine supported
-tools. To include a new command on Doctrine Console, you need to
-do:
+
+.. note:: 
+
+    You have to adjust this snippet for your specific application or framework
+    and use their facilities to access the Doctrine EntityManager and
+    Connection Resources.
+
+Configuration (Non-PEAR)
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you do not use a PEAR installation of Doctrine you have to define your own
+Doctrine binary. Put this file into the application root and invoke it from
+there whenever you want to access the Doctrine console.
 
 .. code-block:: php
 
     <?php
-    $cli->addCommand(new \MyProject\Tools\Console\Commands\MyCustomCommand());
+    // doctrine.php - Put in your application root
+
+    use Doctrine\ORM\Tools\Setup;
+    use Doctrine\ORM\EntityManager;
+    use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
+    use Doctrine\DBAL\Tools\Console\Helper\EntityManagerHelper;
+    use Doctrine\ORM\Tools\Console\ConsoleRunner;
+    use Symfony\Component\Console\Helper\HelperSet;
+
+    $lib = "/path/to/doctrine2-orm/lib";
+    require $lib . '/Doctrine/ORM/Tools/Setup.php';
+    Setup::registerAutoloadDirectory($lib);
+
+    $paths = array("/path/to/entities-or-mapping-files");
+    $isDevMode = false;
+
+    $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
+    $em = EntityManager::create($dbParams, $config);
+    
+    $helperSet = new HelperSet(array(
+        'db' => new ConnectionHelper($em->getConnection()),
+        'em' => new EntityManagerHelper($em)
+    ));
+
+    ConsoleRunner::run($helperSet);
+ 
+Adding own commands
+~~~~~~~~~~~~~~~~~~~
+
+You can also add your own commands on-top of the Doctrine supported
+tools if you are using a manually built (Non-PEAR) binary.
+
+To include a new command on Doctrine Console, you need to do modify the
+``doctrine.php`` file a little:
+
+.. code-block:: php
+
+    <?php
+    // doctrine.php
+    use Symfony\Component\Console\Helper\Application;
+
+    // as before ...
+
+    // replace the ConsoleRunner::run() statement with:
+    $cli = new Application('Doctrine Command Line Interface', \Doctrine\ORM\Version::VERSION);
+    $cli->setCatchExceptions(true);
+    $cli->setHelperSet($helperSet);
+
+    // Register All Doctrine Commands
+    ConsoleRunner::addCommands($cli);
+
+    // Register your own command
+    $cli->addCommand(new \MyProject\Tools\Console\Commands\MyCustomCommand);
+
+    // Runs console application
+    $cli->run();
 
 Additionally, include multiple commands (and overriding previously
 defined ones) is possible through the command:
@@ -140,6 +197,7 @@ defined ones) is possible through the command:
 .. code-block:: php
 
     <?php
+
     $cli->addCommands(array(
         new \MyProject\Tools\Console\Commands\MyCustomCommand(),
         new \MyProject\Tools\Console\Commands\SomethingCommand(),
