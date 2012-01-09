@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Query;
 
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Common\Cache\ArrayCache;
 
 class QueryTest extends \Doctrine\Tests\OrmTestCase
 {
@@ -89,5 +89,16 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('bar', $q->getHint('foo'));
         $this->assertEquals('baz', $q->getHint('bar'));
         $this->assertEquals(array('foo' => 'bar', 'bar' => 'baz'), $q->getHints());
+    }
+
+    /**
+     * @group DDC-1588
+     */
+    public function testQueryDefaultResultCache()
+    {
+        $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
+        $q = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a");
+        $q->useResultCache(true);
+        $this->assertSame($this->_em->getConfiguration()->getResultCacheImpl(), $q->getQueryCacheProfile()->getResultCacheDriver());
     }
 }
