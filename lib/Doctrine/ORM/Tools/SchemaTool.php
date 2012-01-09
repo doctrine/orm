@@ -340,6 +340,12 @@ class SchemaTool
         $options['platformOptions'] = array();
         $options['platformOptions']['version'] = $class->isVersioned && $class->versionField == $mapping['fieldName'] ? true : false;
 
+        if (isset($mapping['options'])) {
+            foreach ($mapping['options'] as $key => $value) {
+                $options['platformOptions'][$key] = $value;
+            }
+        }
+
         if(strtolower($columnType) == 'string' && $options['length'] === null) {
             $options['length'] = 255;
         }
