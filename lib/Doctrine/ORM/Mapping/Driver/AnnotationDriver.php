@@ -134,6 +134,11 @@ class AnnotationDriver implements Driver
     public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
     {
         $class = $metadata->getReflectionClass();
+        if (!$class) {
+            // this happens when running annotation driver in combination with
+            // static reflection services. This is not the nicest fix
+            $class = new \ReflectionClass($metadata->name);
+        }
 
         $classAnnotations = $this->_reader->getClassAnnotations($class);
 
