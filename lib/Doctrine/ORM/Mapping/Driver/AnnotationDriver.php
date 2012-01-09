@@ -137,7 +137,7 @@ class AnnotationDriver implements Driver
         if (!$class) {
             // this happens when running annotation driver in combination with
             // static reflection services. This is not the nicest fix
-            $class = new \ReflectionClass($class->name);
+            $class = new \ReflectionClass($metadata->name);
         }
 
         $classAnnotations = $this->_reader->getClassAnnotations($class);
