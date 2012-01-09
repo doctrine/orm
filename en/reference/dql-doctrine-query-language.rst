@@ -1187,7 +1187,15 @@ Result Cache API:
     $query->useResultCache(true, $seconds = 3600, 'my_query_result');
     $result = $query->getResult(); // cache hit!
 
-    **TIP!** You can set the Result Cache Driver globally on the
+    // Introspection
+    $queryCacheProfile = $query->getQueryCacheProfile();
+    $cacheDriver = $query->getResultCacheDriver();
+    $lifetime = $query->getLifetime();
+    $key = $query->getCacheKey();
+
+.. note::
+
+    You can set the Result Cache Driver globally on the
     ``Doctrine\ORM\Configuration`` instance so that it is passed to
     every ``Query`` and ``NativeQuery`` instance.
 
