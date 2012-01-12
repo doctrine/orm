@@ -70,14 +70,14 @@ class DebugUnitOfWorkListener
         }
 
         fwrite($fh, "Flush Operation [".$this->context."] - Dumping identity map:\n");
-        foreach ($identityMap AS $className => $map) {
+        foreach ($identityMap as $className => $map) {
             fwrite($fh, "Class: ". $className . "\n");
-            foreach ($map AS $idHash => $entity) {
+            foreach ($map as $entity) {
                 fwrite($fh, " Entity: " . $this->getIdString($entity, $uow) . " " . spl_object_hash($entity)."\n");
                 fwrite($fh, "  Associations:\n");
 
                 $cm = $em->getClassMetadata($className);
-                foreach ($cm->associationMappings AS $field => $assoc) {
+                foreach ($cm->associationMappings as $field => $assoc) {
                     fwrite($fh, "   " . $field . " ");
                     $value = $cm->reflFields[$field]->getValue($entity);
 
@@ -97,12 +97,12 @@ class DebugUnitOfWorkListener
                             fwrite($fh, " NULL\n");
                         } else if ($initialized) {
                             fwrite($fh, "[INITIALIZED] " . $this->getType($value). " " . count($value) . " elements\n");
-                            foreach ($value AS $obj) {
+                            foreach ($value as $obj) {
                                 fwrite($fh, "    " . $this->getIdString($obj, $uow) . " " . spl_object_hash($obj)."\n");
                             }
                         } else {
                             fwrite($fh, "[PROXY] " . $this->getType($value) . " unknown element size\n");
-                            foreach ($value->unwrap() AS $obj) {
+                            foreach ($value->unwrap() as $obj) {
                                 fwrite($fh, "    " . $this->getIdString($obj, $uow) . " " . spl_object_hash($obj)."\n");
                             }
                         }
@@ -128,7 +128,7 @@ class DebugUnitOfWorkListener
         if ($uow->isInIdentityMap($entity)) {
             $ids = $uow->getEntityIdentifier($entity);
             $idstring = "";
-            foreach ($ids AS $k => $v) {
+            foreach ($ids as $k => $v) {
                 $idstring .= $k."=".$v;
             }
         } else {
