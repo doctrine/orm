@@ -705,7 +705,6 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($unwrappedValue as $key => $entry) {
             $state = $this->getEntityState($entry, self::STATE_NEW);
-            $oid   = spl_object_hash($entry);
 
             switch ($state) {
                 case self::STATE_NEW:
@@ -1001,7 +1000,7 @@ class UnitOfWork implements PropertyChangedListener
         // are not yet available.
         $newNodes = array();
 
-        foreach ($entityChangeSet as $oid => $entity) {
+        foreach ($entityChangeSet as $entity) {
             $className = get_class($entity);
 
             if ($calc->hasClass($className)) {
@@ -1135,7 +1134,7 @@ class UnitOfWork implements PropertyChangedListener
         $extraUpdate = array($entity, $changeset);
 
         if (isset($this->extraUpdates[$oid])) {
-            list($ignored, $changeset2) = $this->extraUpdates[$oid];
+            list(, $changeset2) = $this->extraUpdates[$oid];
 
             $extraUpdate = array($entity, $changeset + $changeset2);
         }
