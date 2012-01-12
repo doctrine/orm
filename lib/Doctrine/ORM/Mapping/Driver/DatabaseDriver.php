@@ -23,6 +23,7 @@ use Doctrine\Common\Cache\ArrayCache,
     Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\DBAL\Schema\AbstractSchemaManager,
     Doctrine\DBAL\Schema\SchemaException,
+    Doctrine\Common\Persistence\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\MappingException,
     Doctrine\Common\Util\Inflector;
@@ -156,7 +157,7 @@ class DatabaseDriver implements Driver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         $this->reverseEngineerMappingFromDatabase();
 

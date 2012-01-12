@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Mapping\Driver;
 use Doctrine\Common\Cache\ArrayCache,
     Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\Common\Annotations\AnnotationRegistry,
-    Doctrine\ORM\Mapping\ClassMetadataInfo,
+    Doctrine\Common\Persistence\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\MappingException;
 
 /**
@@ -131,7 +131,7 @@ class AnnotationDriver implements Driver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         $class = $metadata->getReflectionClass();
         if (!$class) {
