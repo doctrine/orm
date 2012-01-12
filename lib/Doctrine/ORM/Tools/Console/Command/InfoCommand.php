@@ -68,7 +68,7 @@ EOT
 
         foreach ($entityClassNames as $entityClassName) {
             try {
-                $cm = $entityManager->getClassMetadata($entityClassName);
+                $entityManager->getClassMetadata($entityClassName);
                 $output->writeln(sprintf("<info>[OK]</info>   %s", $entityClassName));
             } catch (MappingException $e) {
                 $output->writeln("<error>[FAIL]</error> ".$entityClassName);
