@@ -115,7 +115,7 @@ class YamlExporter extends AbstractExporter
         }
 
         if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-            $ids[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $this->_getIdGeneratorTypeString($metadata->generatorType);
+            $ids[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
         }
 
         if ($ids) {
@@ -129,7 +129,6 @@ class YamlExporter extends AbstractExporter
             $array['fields'] = array_merge($array['fields'], $fieldMappings);
         }
 
-        $associations = array();
         foreach ($metadata->associationMappings as $name => $associationMapping) {
             $cascade = array();
             if ($associationMapping['isCascadeRemove']) {
