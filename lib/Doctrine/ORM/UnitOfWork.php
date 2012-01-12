@@ -567,7 +567,7 @@ class UnitOfWork implements PropertyChangedListener
                 $orgValue = $originalData[$propName];
 
                 // skip if value havent changed
-                if ($orgValue === $actualValue) {
+                if ($orgValue === $actualValue && (!$actualValue instanceof PersistentCollection || !$actualValue->isDirty() ) ) {
                     continue;
                 }
 
@@ -585,16 +585,22 @@ class UnitOfWork implements PropertyChangedListener
                 $assoc = $class->associationMappings[$propName];
 
                 if ($orgValue instanceof PersistentCollection) {
-                    // A PersistentCollection was de-referenced, so delete it.
-                    $coid = spl_object_hash($orgValue);
-
-                    if (isset($this->collectionDeletions[$coid])) {
-                        continue;
+                    if ($orgValue->isDirty()) {
+                        if ($assoc['isOwningSide'] && $assoc['type'] == ClassMetadata::MANY_TO_MANY) {
+                            $changeSet[$propName] = $orgValue;
+                        }
                     }
+                    else {
+                        // A PersistentCollection was de-referenced, so delete it.
+                        $coid = spl_object_hash($orgValue);
 
-                    $this->collectionDeletions[$coid] = $orgValue;
-                    $changeSet[$propName] = $orgValue; // Signal changeset, to-many assocs will be ignored.
+                        if (isset($this->collectionDeletions[$coid])) {
+                            continue;
+                        }
 
+                        $this->collectionDeletions[$coid] = $orgValue;
+                        $changeSet[$propName] = $orgValue; // Signal changeset, to-many assocs will be ignored.
+                    }
                     continue;
                 }
 
