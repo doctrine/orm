@@ -823,7 +823,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function validateLifecycleCallbacks($reflService)
     {
-        foreach ($this->lifecycleCallbacks as $event => $callbacks) {
+        foreach ($this->lifecycleCallbacks as $callbacks) {
             foreach ($callbacks as $callbackFuncName) {
                 if ( ! $reflService->hasPublicMethod($this->name, $callbackFuncName)) {
                     throw MappingException::lifecycleCallbackMethodNotFound($this->name, $callbackFuncName);
@@ -1215,7 +1215,7 @@ class ClassMetadataInfo implements ClassMetadata
             }
 
             $uniqueContraintColumns = array();
-            foreach ($mapping['joinColumns'] as $key => &$joinColumn) {
+            foreach ($mapping['joinColumns'] as &$joinColumn) {
                 if ($mapping['type'] === self::ONE_TO_ONE) {
                     if (count($mapping['joinColumns']) == 1) {
                         $joinColumn['unique'] = true;
@@ -2097,7 +2097,7 @@ class ClassMetadataInfo implements ClassMetadata
         if (isset($this->fieldNames[$columnName])) {
             return $this->fieldNames[$columnName];
         } else {
-            foreach ($this->associationMappings AS $assocName => $mapping) {
+            foreach ($this->associationMappings as $assocName => $mapping) {
                 if ($this->isAssociationWithSingleJoinColumn($assocName) &&
                     $this->associationMappings[$assocName]['joinColumns'][0]['name'] == $columnName) {
 
