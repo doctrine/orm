@@ -414,26 +414,6 @@ class Parser
     }
 
     /**
-     * Peeks beyond the specified token and returns the first token after that one.
-     *
-     * @param array $token
-     * @return array
-     */
-    private function _peekBeyond($token)
-    {
-        $peek = $this->_lexer->peek();
-
-        while ($peek['value'] != $token) {
-            $peek = $this->_lexer->peek();
-        }
-
-        $peek = $this->_lexer->peek();
-        $this->_lexer->resetPeek();
-
-        return $peek;
-    }
-
-    /**
      * Peek beyond the matched closing parenthesis and return the first token after that one.
      *
      * @return array
