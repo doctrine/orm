@@ -528,6 +528,15 @@ class UnitOfWork implements PropertyChangedListener
             $val = $class->reflFields[$field]->getValue($entity);
             if ($val !== null) {
                 $this->computeAssociationChanges($assoc, $val);
+                if (!isset($this->entityChangeSets[$oid]) &&
+                    $assoc['isOwningSide'] &&
+                    $assoc['type'] == ClassMetadata::MANY_TO_MANY &&
+                    $val instanceof PersistentCollection &&
+                    $val->isDirty()) {
+                    $this->entityChangeSets[$oid]   = array();
+                    $this->originalEntityData[$oid] = $actualData;
+                    $this->entityUpdates[$oid]      = $entity;
+                }
             }
         }
     }
