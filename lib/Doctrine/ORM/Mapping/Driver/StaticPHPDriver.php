@@ -103,7 +103,7 @@ class StaticPHPDriver implements Driver
             );
 
             foreach ($iterator as $file) {
-                if (($fileName = $file->getBasename($this->_fileExtension)) == $file->getBasename()) {
+                if ($file->getBasename($this->_fileExtension) == $file->getBasename()) {
                     continue;
                 }
 
