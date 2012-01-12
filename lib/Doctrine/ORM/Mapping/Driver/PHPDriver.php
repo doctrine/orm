@@ -22,13 +22,13 @@ namespace Doctrine\ORM\Mapping\Driver;
 use Doctrine\Common\Cache\ArrayCache,
     Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\DBAL\Schema\AbstractSchemaManager,
-    Doctrine\ORM\Mapping\ClassMetadataInfo,
+    Doctrine\Common\Persistence\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\MappingException,
     Doctrine\Common\Util\Inflector,
     Doctrine\ORM\Mapping\Driver\AbstractFileDriver;
 
 /**
- * The PHPDriver includes php files which just populate ClassMetadataInfo
+ * The PHPDriver includes php files which just populate ClassMetadata
  * instances with plain php code
  *
  * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -52,7 +52,7 @@ class PHPDriver extends AbstractFileDriver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         $this->_metadata = $metadata;
         $this->_loadMappingFile($this->_findMappingFile($className));

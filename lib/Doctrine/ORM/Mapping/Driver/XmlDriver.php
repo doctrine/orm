@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use SimpleXMLElement,
-    Doctrine\ORM\Mapping\ClassMetadataInfo,
+    Doctrine\Common\Persistence\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\MappingException;
 
 /**
@@ -44,7 +44,7 @@ class XmlDriver extends AbstractFileDriver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         $xmlRoot = $this->getElement($className);
         

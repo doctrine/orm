@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\ORM\Mapping\Driver\Driver,
-    Doctrine\ORM\Mapping\ClassMetadataInfo,
+    Doctrine\Common\Persistence\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\MappingException;
 
 /**
@@ -93,9 +93,9 @@ class DriverChain implements Driver
      * Loads the metadata for the specified class into the provided container.
      *
      * @param string $className
-     * @param ClassMetadataInfo $metadata
+     * @param ClassMetadata $metadata
      */
-    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         foreach ($this->drivers as $namespace => $driver) {
             if (strpos($className, $namespace) === 0) {

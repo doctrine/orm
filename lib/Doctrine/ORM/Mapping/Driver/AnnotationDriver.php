@@ -22,10 +22,10 @@ namespace Doctrine\ORM\Mapping\Driver;
 use Doctrine\Common\Cache\ArrayCache,
     Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\Common\Annotations\AnnotationRegistry,
-    Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\MappingException,
     Doctrine\ORM\Mapping\JoinColumn,
-    Doctrine\ORM\Mapping\Column;
+    Doctrine\ORM\Mapping\Column,
+    Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -133,7 +133,7 @@ class AnnotationDriver implements Driver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         $class = $metadata->getReflectionClass();
         if ( ! $class) {
