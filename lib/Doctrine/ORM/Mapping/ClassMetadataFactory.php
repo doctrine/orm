@@ -406,7 +406,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      */
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
-        foreach ($parentClass->fieldMappings as $fieldName => $mapping) {
+        foreach ($parentClass->fieldMappings as $mapping) {
             if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
