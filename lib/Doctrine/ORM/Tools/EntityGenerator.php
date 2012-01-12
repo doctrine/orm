@@ -430,7 +430,7 @@ public function <methodName>()
 
         $collections = array();
 
-        foreach ($metadata->associationMappings AS $mapping) {
+        foreach ($metadata->associationMappings as $mapping) {
             if ($mapping['type'] & ClassMetadataInfo::TO_MANY) {
                 $collections[] = '$this->'.$mapping['fieldName'].' = new \Doctrine\Common\Collections\ArrayCollection();';
             }
