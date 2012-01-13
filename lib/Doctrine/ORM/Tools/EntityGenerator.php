@@ -48,6 +48,15 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo,
 class EntityGenerator
 {
     /**
+     * Specifies class fields should be protected
+     */
+    const FIELD_VISIBLE_PROTECTED = 'protected';
+    /**
+     * Specifies class fields should be private
+     */
+    const FIELD_VISIBLE_PRIVATE = 'private';
+
+    /**
      * @var bool
      */
     private $_backupExisting = true;
@@ -86,8 +95,8 @@ class EntityGenerator
     /** Whether or not to re-generate entity class if it exists already */
     private $_regenerateEntityIfExists = false;
 
-	private $_fieldVisibility = 'private';
-	
+    private $_fieldVisibility = 'private';
+
     private static $_classTemplate =
 '<?php
 
@@ -150,7 +159,7 @@ public function <methodName>()
 {
 <spaces><collections>
 }
-';	
+';
 
     public function __construct()
     {
@@ -300,21 +309,21 @@ public function <methodName>()
     }
 
     /**
-     * Set whether or not to generate annotations for the entity
+     * Set the class fields visibility for the entity (can either be private or protected)
      *
      * @param bool $bool
      * @return void
      */
     public function setFieldVisibility($visibility)
     {
-		if($visibility != 'private' && $visibility != 'protected')
-		{
-			throw new \InvalidArgumentException('Invalid provided visibilty (only private and protected are allowed): ' . $visibility);
-		}
-		
+        if($visibility != 'private' && $visibility != 'protected')
+        {
+            throw new \InvalidArgumentException('Invalid provided visibilty (only private and protected are allowed): ' . $visibility);
+        }
+
         $this->_fieldVisibility = $visibility;
     }
-	
+
     /**
      * Set an annotation prefix.
      *

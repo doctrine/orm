@@ -26,7 +26,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->_generator->setGenerateStubMethods(true);
         $this->_generator->setRegenerateEntityIfExists(false);
         $this->_generator->setUpdateEntityIfExists(true);
-		$this->_generator->setFieldVisibility('protected');
+        $this->_generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
     }
 
     public function tearDown()
