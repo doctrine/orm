@@ -771,17 +771,18 @@ class ClassMetadataInfo implements ClassMetadata
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
      *
-     * @param string $entityName The name of the entity class the new instance is used for.
+     * @param ReflectionService $reflService The reflection service.
      */
     public function initializeReflection($reflService)
     {
         $this->reflClass = $reflService->getClass($this->name);
         $this->namespace = $reflService->getClassNamespace($this->name);
-        $this->table['name'] = $this->namingStrategy->classToTableName($reflService->getClassShortName($this->name));
 
         if ($this->reflClass) {
             $this->name = $this->rootEntityName = $this->reflClass->getName();
         }
+
+        $this->table['name'] = $this->namingStrategy->classToTableName($this->name);
     }
 
     /**
