@@ -316,7 +316,7 @@ public function <methodName>()
      */
     public function setFieldVisibility($visibility)
     {
-        if ($visibility !== EntityGenerator::FIELD_VISIBLE_PRIVATE && $visibility !== EntityGenerator::FIELD_VISIBLE_PROTECTED) {
+        if ($visibility !== self::FIELD_VISIBLE_PRIVATE && $visibility !== self::FIELD_VISIBLE_PROTECTED) {
             throw new \InvalidArgumentException('Invalid provided visibilty (only private and protected are allowed): ' . $visibility);
         }
 
