@@ -316,8 +316,7 @@ public function <methodName>()
      */
     public function setFieldVisibility($visibility)
     {
-        if($visibility != 'private' && $visibility != 'protected')
-        {
+        if ($visibility != 'private' && $visibility != 'protected') {
             throw new \InvalidArgumentException('Invalid provided visibilty (only private and protected are allowed): ' . $visibility);
         }
 
