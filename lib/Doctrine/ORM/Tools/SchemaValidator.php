@@ -68,7 +68,7 @@ class SchemaValidator
         $cmf = $this->em->getMetadataFactory();
         $classes = $cmf->getAllMetadata();
 
-        foreach ($classes AS $class) {
+        foreach ($classes as $class) {
             if ($ce = $this->validateClass($class)) {
                 $errors[$class->name] = $ce;
             }
@@ -94,7 +94,7 @@ class SchemaValidator
             }
         }
 
-        foreach ($class->associationMappings AS $fieldName => $assoc) {
+        foreach ($class->associationMappings as $fieldName => $assoc) {
             if (!$cmf->hasMetadataFor($assoc['targetEntity'])) {
                 $ce[] = "The target entity '" . $assoc['targetEntity'] . "' specified on " . $class->name . '#' . $fieldName . ' is unknown.';
                 return $ce;
@@ -162,7 +162,7 @@ class SchemaValidator
 
             if ($assoc['isOwningSide']) {
                 if ($assoc['type'] == ClassMetadataInfo::MANY_TO_MANY) {
-                    foreach ($assoc['joinTable']['joinColumns'] AS $joinColumn) {
+                    foreach ($assoc['joinTable']['joinColumns'] as $joinColumn) {
                         if (!isset($class->fieldNames[$joinColumn['referencedColumnName']])) {
                             $ce[] = "The referenced column name '" . $joinColumn['referencedColumnName'] . "' does not " .
                                     "have a corresponding field with this column name on the class '" . $class->name . "'.";
@@ -175,7 +175,7 @@ class SchemaValidator
                                     "has to be a primary key column.";
                         }
                     }
-                    foreach ($assoc['joinTable']['inverseJoinColumns'] AS $inverseJoinColumn) {
+                    foreach ($assoc['joinTable']['inverseJoinColumns'] as $inverseJoinColumn) {
                         if (!isset($targetMetadata->fieldNames[$inverseJoinColumn['referencedColumnName']])) {
                             $ce[] = "The inverse referenced column name '" . $inverseJoinColumn['referencedColumnName'] . "' does not " .
                                     "have a corresponding field with this column name on the class '" . $targetMetadata->name . "'.";
@@ -204,7 +204,7 @@ class SchemaValidator
                     }
 
                 } else if ($assoc['type'] & ClassMetadataInfo::TO_ONE) {
-                    foreach ($assoc['joinColumns'] AS $joinColumn) {
+                    foreach ($assoc['joinColumns'] as $joinColumn) {
                         if (!isset($targetMetadata->fieldNames[$joinColumn['referencedColumnName']])) {
                             $ce[] = "The referenced column name '" . $joinColumn['referencedColumnName'] . "' does not " .
                                     "have a corresponding field with this column name on the class '" . $targetMetadata->name . "'.";
@@ -220,7 +220,7 @@ class SchemaValidator
 
                     if (count($class->getIdentifierColumnNames()) != count($assoc['joinColumns'])) {
                         $ids = array();
-                        foreach ($assoc['joinColumns'] AS $joinColumn) {
+                        foreach ($assoc['joinColumns'] as $joinColumn) {
                             $ids[] = $joinColumn['name'];
                         }
 
@@ -233,10 +233,10 @@ class SchemaValidator
             }
 
             if (isset($assoc['orderBy']) && $assoc['orderBy'] !== null) {
-                foreach ($assoc['orderBy'] AS $orderField => $orientation) {
+                foreach ($assoc['orderBy'] as $orderField => $orientation) {
                     if (!$targetMetadata->hasField($orderField)) {
-                        $ce[] = "The association " . $class->name."#".$fieldName." is ordered by a foreign field " .
-                                $orderField . " that is not a field on the target entity " . $targetMetadata->name;
+                        $ce[] = 'The association ' . $class->name.'#'.$fieldName.' is ordered by a foreign field ' .
+                                $orderField . ' that is not a field on the target entity ' . $targetMetadata->name;
                     }
                 }
             }
@@ -250,7 +250,7 @@ class SchemaValidator
                     "or protected. Public fields may break lazy-loading.";
         }
 
-        foreach ($class->subClasses AS $subClass) {
+        foreach ($class->subClasses as $subClass) {
             if (!in_array($class->name, class_parents($subClass))) {
                 $ce[] = "According to the discriminator map class '" . $subClass . "' has to be a child ".
                         "of '" . $class->name . "' but these entities are not related through inheritance.";

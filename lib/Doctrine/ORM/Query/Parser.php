@@ -414,26 +414,6 @@ class Parser
     }
 
     /**
-     * Peeks beyond the specified token and returns the first token after that one.
-     *
-     * @param array $token
-     * @return array
-     */
-    private function _peekBeyond($token)
-    {
-        $peek = $this->_lexer->peek();
-
-        while ($peek['value'] != $token) {
-            $peek = $this->_lexer->peek();
-        }
-
-        $peek = $this->_lexer->peek();
-        $this->_lexer->resetPeek();
-
-        return $peek;
-    }
-
-    /**
      * Peek beyond the matched closing parenthesis and return the first token after that one.
      *
      * @return array
@@ -601,7 +581,7 @@ class Parser
             // Check if queryComponent points to an AbstractSchemaName or a ResultVariable
             if ( ! isset($qComp['resultVariable'])) {
                 $this->semanticalError(
-                    "'$identVariable' does not point to a ResultVariable.", $deferredItem['token']
+                    "'$resultVariable' does not point to a ResultVariable.", $deferredItem['token']
                 );
             }
 
@@ -652,8 +632,8 @@ class Parser
                 $assoc = $class->associationMappings[$field];
 
                 $fieldType = ($assoc['type'] & ClassMetadata::TO_ONE)
-                	? AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION
-                	: AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION;
+                    ? AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION
+                    : AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION;
             }
 
             // Validate if PathExpression is one of the expected types
@@ -700,7 +680,7 @@ class Parser
 
         $foundRootEntity = false;
 
-        foreach ($this->_identVariableExpressions AS $dqlAlias => $expr) {
+        foreach ($this->_identVariableExpressions as $dqlAlias => $expr) {
             if (isset($this->_queryComponents[$dqlAlias]) && $this->_queryComponents[$dqlAlias]['parent'] === null) {
                 $foundRootEntity = true;
             }
@@ -905,7 +885,6 @@ class Parser
      */
     public function JoinAssociationPathExpression()
     {
-        $token         = $this->_lexer->lookahead;
         $identVariable = $this->IdentificationVariable();
 
         if ( ! isset($this->_queryComponents[$identVariable])) {
@@ -941,7 +920,6 @@ class Parser
      */
     public function PathExpression($expectedTypes)
     {
-        $token = $this->_lexer->lookahead;
         $identVariable = $this->IdentificationVariable();
         $field = null;
 
@@ -1426,7 +1404,7 @@ class Parser
      */
     public function SubselectIdentificationVariableDeclaration()
     {
-        $glimpse = $this->_lexer->glimpse();
+        $this->_lexer->glimpse();
 
         /* NOT YET IMPLEMENTED!
 
@@ -2718,7 +2696,7 @@ class Parser
      */
     public function ComparisonExpression()
     {
-        $peek = $this->_lexer->glimpse();
+        $this->_lexer->glimpse();
 
         $leftExpr  = $this->ArithmeticExpression();
         $operator  = $this->ComparisonOperator();

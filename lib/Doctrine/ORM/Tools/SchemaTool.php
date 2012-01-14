@@ -206,13 +206,13 @@ class SchemaTool
             }
 
             $pkColumns = array();
-            foreach ($class->identifier AS $identifierField) {
+            foreach ($class->identifier as $identifierField) {
                 if (isset($class->fieldMappings[$identifierField])) {
                     $pkColumns[] = $class->getQuotedColumnName($identifierField, $this->_platform);
                 } else if (isset($class->associationMappings[$identifierField])) {
                     /* @var $assoc \Doctrine\ORM\Mapping\OneToOne */
                     $assoc = $class->associationMappings[$identifierField];
-                    foreach ($assoc['joinColumns'] AS $joinColumn) {
+                    foreach ($assoc['joinColumns'] as $joinColumn) {
                         $pkColumns[] = $joinColumn['name'];
                     }
                 }
@@ -222,13 +222,13 @@ class SchemaTool
             }
 
             if (isset($class->table['indexes'])) {
-                foreach ($class->table['indexes'] AS $indexName => $indexData) {
+                foreach ($class->table['indexes'] as $indexName => $indexData) {
                     $table->addIndex($indexData['columns'], $indexName);
                 }
             }
 
             if (isset($class->table['uniqueConstraints'])) {
-                foreach ($class->table['uniqueConstraints'] AS $indexName => $indexData) {
+                foreach ($class->table['uniqueConstraints'] as $indexName => $indexData) {
                     $table->addUniqueIndex($indexData['columns'], $indexName);
                 }
             }
@@ -296,12 +296,10 @@ class SchemaTool
         $columns = array();
         $pkColumns = array();
 
-        foreach ($class->fieldMappings as $fieldName => $mapping) {
+        foreach ($class->fieldMappings as $mapping) {
             if ($class->isInheritanceTypeSingleTable() && isset($mapping['inherited'])) {
                 continue;
             }
-
-            $column = $this->_gatherColumn($class, $mapping, $table);
 
             if ($class->isIdentifier($mapping['fieldName'])) {
                 $pkColumns[] = $class->getQuotedColumnName($mapping['fieldName'], $this->_platform);
@@ -391,7 +389,7 @@ class SchemaTool
      */
     private function _gatherRelationsSql($class, $table, $schema)
     {
-        foreach ($class->associationMappings as $fieldName => $mapping) {
+        foreach ($class->associationMappings as $mapping) {
             if (isset($mapping['inherited'])) {
                 continue;
             }
@@ -403,7 +401,7 @@ class SchemaTool
 
                 $this->_gatherRelationJoinColumns($mapping['joinColumns'], $table, $foreignClass, $mapping, $primaryKeyColumns, $uniqueConstraints);
 
-                foreach($uniqueConstraints AS $indexName => $unique) {
+                foreach($uniqueConstraints as $indexName => $unique) {
                     $table->addUniqueIndex($unique['columns'], is_numeric($indexName) ? null : $indexName);
                 }
             } else if ($mapping['type'] == ClassMetadata::ONE_TO_MANY && $mapping['isOwningSide']) {
@@ -425,7 +423,7 @@ class SchemaTool
 
                 $theJoinTable->setPrimaryKey($primaryKeyColumns);
 
-                foreach($uniqueConstraints AS $indexName => $unique) {
+                foreach($uniqueConstraints as $indexName => $unique) {
                     $theJoinTable->addUniqueIndex($unique['columns'], is_numeric($indexName) ? null : $indexName);
                 }
             }
@@ -453,7 +451,7 @@ class SchemaTool
             return array($class, $referencedFieldName);
         } else if (in_array($referencedColumnName, $class->getIdentifierColumnNames())) {
             // it seems to be an entity as foreign key
-            foreach ($class->getIdentifierFieldNames() AS $fieldName) {
+            foreach ($class->getIdentifierFieldNames() as $fieldName) {
                 if ($class->hasAssociation($fieldName) && $class->getSingleAssociationJoinColumnName($fieldName) == $referencedColumnName) {
                     return $this->getDefiningClass(
                         $this->_em->getClassMetadata($class->associationMappings[$fieldName]['targetEntity']),
@@ -606,9 +604,9 @@ class SchemaTool
 
         $sm = $this->_em->getConnection()->getSchemaManager();
         $fullSchema = $sm->createSchema();
-        foreach ($fullSchema->getTables() AS $table) {
+        foreach ($fullSchema->getTables() as $table) {
             if (!$schema->hasTable($table->getName())) {
-                foreach ($table->getForeignKeys() AS $foreignKey) {
+                foreach ($table->getForeignKeys() as $foreignKey) {
                     /* @var $foreignKey \Doctrine\DBAL\Schema\ForeignKeyConstraint */
                     if ($schema->hasTable($foreignKey->getForeignTableName())) {
                         $visitor->acceptForeignKey($table, $foreignKey);
@@ -616,17 +614,17 @@ class SchemaTool
                 }
             } else {
                 $visitor->acceptTable($table);
-                foreach ($table->getForeignKeys() AS $foreignKey) {
+                foreach ($table->getForeignKeys() as $foreignKey) {
                     $visitor->acceptForeignKey($table, $foreignKey);
                 }
             }
         }
 
         if ($this->_platform->supportsSequences()) {
-            foreach ($schema->getSequences() AS $sequence) {
+            foreach ($schema->getSequences() as $sequence) {
                 $visitor->acceptSequence($sequence);
             }
-            foreach ($schema->getTables() AS $table) {
+            foreach ($schema->getTables() as $table) {
                 /* @var $sequence Table */
                 if ($table->hasPrimaryKey()) {
                     $columns = $table->getPrimaryKey()->getColumns();

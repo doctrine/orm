@@ -109,8 +109,6 @@ class SizeFunction extends FunctionNode
      */
     public function parse(\Doctrine\ORM\Query\Parser $parser)
     {
-        $lexer = $parser->getLexer();
-
         $parser->match(Lexer::T_SIZE);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
 

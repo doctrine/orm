@@ -304,13 +304,13 @@ class SqlWalker implements TreeWalker
     {
         $sqlParts = array();
 
-        foreach ($this->_selectedClasses AS $selectedClass) {
+        foreach ($this->_selectedClasses as $selectedClass) {
             $dqlAlias = $selectedClass['dqlAlias'];
             $qComp    = $this->_queryComponents[$dqlAlias];
 
             if ( ! isset($qComp['relation']['orderBy'])) continue;
 
-            foreach ($qComp['relation']['orderBy'] AS $fieldName => $orientation) {
+            foreach ($qComp['relation']['orderBy'] as $fieldName => $orientation) {
                 $columnName = $qComp['metadata']->getQuotedColumnName($fieldName, $this->_platform);
                 $tableName  = ($qComp['metadata']->isInheritanceTypeJoined())
                     ? $this->_em->getUnitOfWork()->getEntityPersister($qComp['metadata']->name)->getOwningTable($fieldName)
@@ -415,7 +415,7 @@ class SqlWalker implements TreeWalker
         $sql .= $AST->groupByClause ? $this->walkGroupByClause($AST->groupByClause) : '';
         $sql .= $AST->havingClause ? $this->walkHavingClause($AST->havingClause) : '';
 
-        if (($orderByClause = $AST->orderByClause) !== null) {
+        if ($AST->orderByClause !== null) {
             $sql .= $AST->orderByClause ? $this->walkOrderByClause($AST->orderByClause) : '';
         } else if (($orderBySql = $this->_generateOrderedCollectionOrderByItems()) !== '') {
             $sql .= ' ORDER BY ' . $orderBySql;
@@ -436,8 +436,8 @@ class SqlWalker implements TreeWalker
                     break;
 
                 case LockMode::PESSIMISTIC_OPTIMISTIC:
-                    foreach ($this->_selectedClasses AS $selectedClass) {
-                        if ( ! $class->isVersioned) {
+                    foreach ($this->_selectedClasses as $selectedClass) {
+                        if ( ! $selectedClass->isVersioned) {
                             throw \Doctrine\ORM\OptimisticLockException::lockFailed($selectedClass['class']->name);
                         }
                     }
@@ -1397,7 +1397,7 @@ class SqlWalker implements TreeWalker
     {
         $sqlParts = array();
 
-        foreach ($groupByClause->groupByItems AS $groupByItem) {
+        foreach ($groupByClause->groupByItems as $groupByItem) {
             $sqlParts[] = $this->walkGroupByItem($groupByItem);
         }
 
@@ -1425,14 +1425,14 @@ class SqlWalker implements TreeWalker
         // IdentificationVariable
         $sqlParts = array();
 
-        foreach ($this->_queryComponents[$groupByItem]['metadata']->fieldNames AS $field) {
+        foreach ($this->_queryComponents[$groupByItem]['metadata']->fieldNames as $field) {
             $item       = new AST\PathExpression(AST\PathExpression::TYPE_STATE_FIELD, $groupByItem, $field);
             $item->type = AST\PathExpression::TYPE_STATE_FIELD;
 
             $sqlParts[] = $this->walkPathExpression($item);
         }
 
-        foreach ($this->_queryComponents[$groupByItem]['metadata']->associationMappings AS $mapping) {
+        foreach ($this->_queryComponents[$groupByItem]['metadata']->associationMappings as $mapping) {
             if ($mapping['isOwningSide'] && $mapping['type'] & ClassMetadataInfo::TO_ONE) {
                 $item       = new AST\PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $groupByItem, $mapping['fieldName']);
                 $item->type = AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
@@ -1664,7 +1664,6 @@ class SqlWalker implements TreeWalker
             // InputParameter
             case ($entityExpr instanceof AST\InputParameter):
                 $dqlParamKey = $entityExpr->name;
-                $entity      = $this->_query->getParameter($dqlParamKey);
                 $entitySql   = '?';
                 break;
 
@@ -1830,7 +1829,6 @@ class SqlWalker implements TreeWalker
 
         $dqlAlias = $instanceOfExpr->identificationVariable;
         $discrClass = $class = $this->_queryComponents[$dqlAlias]['metadata'];
-        $fieldName = null;
 
         if ($class->discriminatorColumn) {
             $discrClass = $this->_em->getClassMetadata($class->rootEntityName);
