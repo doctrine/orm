@@ -1084,8 +1084,10 @@ class SqlWalker implements TreeWalker
 
                 $col = $sqlTableAlias . '.' . $columnName;
 
+                $fieldType = $class->getTypeOfField($fieldName);
+
                 if (isset($class->fieldMappings[$fieldName]['requireSQLConversion'])) {
-                    $type = Type::getType($class->getTypeOfField($fieldName));
+                    $type = Type::getType($fieldType);
                     $col  = $type->convertToPHPValueSQL($col, $this->_conn->getDatabasePlatform());
                 }
 
@@ -1094,7 +1096,7 @@ class SqlWalker implements TreeWalker
                 $this->_scalarResultAliasMap[$resultAlias] = $columnAlias;
 
                 if ( ! $hidden) {
-                    $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+                    $this->_rsm->addScalarResult($columnAlias, $resultAlias, $fieldType);
                     $this->_scalarFields[$dqlAlias][$fieldName] = $columnAlias;
                 }
                 break;
@@ -1118,7 +1120,8 @@ class SqlWalker implements TreeWalker
                 $this->_scalarResultAliasMap[$resultAlias] = $columnAlias;
 
                 if ( ! $hidden) {
-                    $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+                    // We cannot resolve field type here; assume 'string'.
+                    $this->_rsm->addScalarResult($columnAlias, $resultAlias, 'string');
                 }
                 break;
 
@@ -1131,7 +1134,8 @@ class SqlWalker implements TreeWalker
                 $this->_scalarResultAliasMap[$resultAlias] = $columnAlias;
 
                 if ( ! $hidden) {
-                    $this->_rsm->addScalarResult($columnAlias, $resultAlias);
+                    // We cannot resolve field type here; assume 'string'.
+                    $this->_rsm->addScalarResult($columnAlias, $resultAlias, 'string');
                 }
                 break;
 
