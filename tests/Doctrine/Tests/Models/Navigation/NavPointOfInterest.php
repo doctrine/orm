@@ -26,7 +26,7 @@ class NavPointOfInterest
     private $name;
 
     /**
-     * @ManyToOne(targetEntity="NavCountry")
+     * @ManyToOne(targetEntity="NavCountry", inversedBy="pois")
      */
     private $country;
 
