@@ -1453,6 +1453,15 @@ class UnitOfWork implements PropertyChangedListener
                     } else {
                         throw new EntityNotFoundException;
                     }
+
+                    $managedCopy = $this->newInstance($class);
+                    $class->setIdentifierValues($managedCopy, $id);
+
+                    $this->persistNew($class, $managedCopy);
+                } else {
+                    if ($managedCopy instanceof Proxy && ! $managedCopy->__isInitialized__) {
+                        $managedCopy->__load();
+                    }
                 }
             }
 
