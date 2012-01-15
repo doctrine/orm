@@ -32,6 +32,21 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($schema->getTable('cms_users')->columnsAreIndexed(array('username')), "username column should be indexed.");
     }
 
+    public function testColumnAnnotationOptionsAttribute()
+    {
+        $em = $this->_getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+
+        $classes = array(
+            $em->getClassMetadata(__NAMESPACE__ . '\\TestEntityWithColumnAnnotationOptionsAttribute'),
+        );
+
+        $schema = $schemaTool->getSchemaFromMetadata($classes);
+
+        $expected = array('foo' => 'bar', 'baz' => array('key' => 'val'));
+        $this->assertEquals($expected, $schema->getTable('TestEntityWithColumnAnnotationOptionsAttribute')->getColumn('test')->getCustomSchemaOptions(), "options annotation are passed to the columns customSchemaOptions");
+    }
+
     /**
      * @group DDC-200
      */
@@ -84,6 +99,20 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(count($classes), $listener->tableCalls);
         $this->assertTrue($listener->schemaCalled);
     }
+}
+
+/**
+ * @Entity
+ */
+class TestEntityWithColumnAnnotationOptionsAttribute
+{
+    /** @Id @Column */
+    private $id;
+
+    /**
+     * @Column(type="string", options={"foo": "bar", "baz": {"key": "val"}})
+     */
+    private $test;
 }
 
 class GenerateSchemaEventListener
