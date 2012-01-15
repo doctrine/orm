@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Functional;
+namespace Doctrine\Tests\ORM\Persisters;
 
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Persisters\BasicEntityPersister;
