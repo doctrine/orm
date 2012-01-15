@@ -1197,4 +1197,21 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user2 = $this->_em->find(get_class($user2), $user2->id);
         $this->assertEquals('developer', $user2->status);
     }
+
+    /**
+     * @group DDC-1585
+     */
+    public function testWrongAssocationInstance()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+        $user->address = $user;
+
+        $this->_em->persist($user);
+
+        $this->setExpectedException("Doctrine\ORM\ORMException", "Found entity of type Doctrine\Tests\Models\CMS\CmsUser on association Doctrine\Tests\Models\CMS\CmsUser#address, but expecting Doctrine\Tests\Models\CMS\CmsAddress");
+        $this->_em->flush();
+    }
 }
