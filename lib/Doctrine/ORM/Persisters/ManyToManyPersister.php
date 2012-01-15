@@ -254,7 +254,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $uow = $this->_em->getUnitOfWork();
 
         // shortcut for new entities
-        if ($uow->getEntityState($element, UnitOfWork::STATE_NEW) == UnitOfWork::STATE_NEW) {
+        $entityState = $uow->getEntityState($element, UnitOfWork::STATE_NEW);
+        if ($entityState == UnitOfWork::STATE_NEW || 
+            ($entityState == UnitOfWork::STATE_MANAGED && $uow->isScheduledForInsert($element))) {
             return false;
         }
 
