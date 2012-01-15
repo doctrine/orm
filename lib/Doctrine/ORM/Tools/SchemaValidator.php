@@ -246,28 +246,6 @@ class SchemaValidator
     }
 
     /**
-     * @param string $columnName
-     * @param ClassMetadataInfo $class
-     * @return bool
-     */
-    private function columnExistsOnEntity($columnName, $class)
-    {
-        if (isset($class->fieldNames[$columnName])) {
-            return true;
-        }
-        foreach ($class->associationMappings as $assoc) {
-            if ($assoc['isOwningSide']) {
-                foreach ($assoc['joinColumns'] as $columnMapping) {
-                    if ($columnMapping['name'] == $columnName) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
      * Check if the Database Schema is in sync with the current metadata state.
      *
      * @return bool
