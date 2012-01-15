@@ -360,6 +360,12 @@ class SchemaTool
             $options['columnDefinition'] = $mapping['columnDefinition'];
         }
 
+        if (isset($mapping['options'])) {
+            foreach ($mapping['options'] as $key => $value) {
+                $options[$key] = $value;
+            }
+        }
+
         if ($class->isIdGeneratorIdentity() && $class->getIdentifierFieldNames() == array($mapping['fieldName'])) {
             $options['autoincrement'] = true;
         }
