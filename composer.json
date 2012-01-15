@@ -14,8 +14,8 @@
     "require": {
         "php": ">=5.3.2",
         "ext-pdo": "*",
-        "doctrine/common": "master-dev",
-        "doctrine/dbal": "master-dev"
+        "doctrine/common": ">=2.2-dev,<2.3-dev",
+        "doctrine/dbal": ">=2.2-dev,<2.3-dev"
     },
     "autoload": {
         "psr-0": { "Doctrine\\ORM": "lib/" }
