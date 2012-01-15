@@ -16,7 +16,7 @@ class DDC117Reference
 
     /**
      * @Id
-     * @ManyToOne(targetEntity="DDC117Article", inversedBy="references")
+     * @ManyToOne(targetEntity="DDC117Article")
      * @JoinColumn(name="target_id", referencedColumnName="article_id")
      */
     private $target;

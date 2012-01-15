@@ -28,7 +28,7 @@ class CompanyPerson
      */
     private $name;
     /**
-     * @OneToOne(targetEntity="CompanyPerson", mappedBy="spouse")
+     * @OneToOne(targetEntity="CompanyPerson")
      * @JoinColumn(name="spouse_id", referencedColumnName="id")
      */
     private $spouse;
