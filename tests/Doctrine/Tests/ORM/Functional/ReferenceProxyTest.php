@@ -195,4 +195,28 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Doctrine Cookbook', $entity->getName());
         $this->assertTrue($entity->__isInitialized__, "Getting something other than the identifier initializes the proxy.");
     }
+
+    /**
+     * @group DDC-1604
+     */
+    public function testCommonPersistenceProxy()
+    {
+        $id = $this->createProduct();
+
+        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
+        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+        $className = \Doctrine\Common\Util\ClassUtils::getClass($entity);
+
+        $this->assertInstanceOf('Doctrine\Common\Persistence\Proxy', $entity);
+        $this->assertFalse($entity->__isInitialized());
+        $this->assertEquals('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $className);
+
+        $restName = str_replace($this->_em->getConfiguration()->getProxyNamespace(), "", get_class($entity));
+        $restName = substr(get_class($entity), strlen($this->_em->getConfiguration()->getProxyNamespace()) +1);
+        $proxyFileName = $this->_em->getConfiguration()->getProxyDir() . DIRECTORY_SEPARATOR . str_replace("\\", "", $restName) . ".php";
+        $this->assertTrue(file_exists($proxyFileName), "Proxy file name cannot be found generically.");
+
+        $entity->__load();
+        $this->assertTrue($entity->__isInitialized());
+    }
 }
