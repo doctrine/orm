@@ -26,11 +26,11 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $query      = $this->_em->createQuery('SELECT d FROM ' . self::NS . '\DateTimeModel d');
         $datetime   = $query->setMaxResults(1)->getSingleResult();
 
-        $this->assertTrue($datetime instanceof DateTimeModel);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Generic\DateTimeModel', $datetime);
 
-        $this->assertTrue($datetime->datetime instanceof \DateTime);
-        $this->assertTrue($datetime->time instanceof \DateTime);
-        $this->assertTrue($datetime->date instanceof \DateTime);
+        $this->assertInstanceOf('DateTime', $datetime->datetime);
+        $this->assertInstanceOf('DateTime', $datetime->time);
+        $this->assertInstanceOf('DateTime', $datetime->date);
     }
 
     public function testScalarResult()
@@ -56,13 +56,13 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertCount(2,$result);
 
-        $this->assertTrue($result[0]['datetime'] instanceof \DateTime);
-        $this->assertTrue($result[0]['time'] instanceof \DateTime);
-        $this->assertTrue($result[0]['date'] instanceof \DateTime);
+        $this->assertInstanceOf('DateTime', $result[0]['datetime']);
+        $this->assertInstanceOf('DateTime', $result[0]['time']);
+        $this->assertInstanceOf('DateTime', $result[0]['date']);
 
-        $this->assertTrue($result[1]['datetime'] instanceof \DateTime);
-        $this->assertTrue($result[1]['time'] instanceof \DateTime);
-        $this->assertTrue($result[1]['date'] instanceof \DateTime);
+        $this->assertInstanceOf('DateTime', $result[1]['datetime']);
+        $this->assertInstanceOf('DateTime', $result[1]['time']);
+        $this->assertInstanceOf('DateTime', $result[1]['date']);
     }
 
     public function testTicketSingleResult()
@@ -72,9 +72,9 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertTrue(is_array($datetime));
 
-        $this->assertTrue($datetime['datetime'] instanceof \DateTime);
-        $this->assertTrue($datetime['time'] instanceof \DateTime);
-        $this->assertTrue($datetime['date'] instanceof \DateTime);
+        $this->assertInstanceOf('DateTime', $datetime['datetime']);
+        $this->assertInstanceOf('DateTime', $datetime['time']);
+        $this->assertInstanceOf('DateTime', $datetime['date']);
     }
 
     public function testTicketResult()
@@ -84,14 +84,16 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertCount(2,$result);
 
-        $this->assertTrue($result[0]['time'] instanceof \DateTime);
-        $this->assertTrue($result[0]['date'] instanceof \DateTime);
-        $this->assertTrue($result[0]['datetime'] instanceof \DateTime);
+        $this->assertInstanceOf('DateTime', $result[0]['time']);
+        $this->assertInstanceOf('DateTime', $result[0]['date']);
+        $this->assertInstanceOf('DateTime', $result[0]['datetime']);
+
         $this->assertEquals('2010-01-01 11:11:11', $result[0]['datetime']->format('Y-m-d G:i:s'));
 
-        $this->assertTrue($result[1]['time'] instanceof \DateTime);
-        $this->assertTrue($result[1]['date'] instanceof \DateTime);
-        $this->assertTrue($result[1]['datetime'] instanceof \DateTime);
+        $this->assertInstanceOf('DateTime', $result[1]['time']);
+        $this->assertInstanceOf('DateTime', $result[1]['date']);
+        $this->assertInstanceOf('DateTime', $result[1]['datetime']);
+
         $this->assertEquals('2010-02-02 12:12:12', $result[1]['datetime']->format('Y-m-d G:i:s'));
     }
 
