@@ -304,10 +304,10 @@ of products purchased and maybe even the current price.
         /** @Id @Column(type="integer") @GeneratedValue */
         private $id;
 
-        /** @Column(type="string")
+        /** @Column(type="string") */
         private $name;
 
-        /** @Column(type="decimal")
+        /** @Column(type="decimal") */
         private $currentPrice;
 
         public function getCurrentPrice()
