@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -21,10 +19,12 @@
 
 namespace Doctrine\ORM\Proxy;
 
+use Doctrine\Common\Persistence\Proxy as BaseProxy;
+
 /**
  * Interface for proxy classes.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-interface Proxy {}
+interface Proxy extends BaseProxy {}

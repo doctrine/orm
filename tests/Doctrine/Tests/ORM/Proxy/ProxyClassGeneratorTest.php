@@ -52,7 +52,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
     public function testReferenceProxyDelegatesLoadingToThePersister()
     {
         $identifier = array('id' => 42);
-        $proxyClass = 'Proxies\DoctrineTestsModelsECommerceECommerceFeatureProxy';
+        $proxyClass = 'Proxies\__CG__\Doctrine\Tests\Models\ECommerce\ECommerceFeature';
         $persister = $this->_getMockPersister();
         $this->_uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
 
@@ -69,7 +69,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
     public function testReferenceProxyExecutesLoadingOnlyOnce()
     {
         $identifier = array('id' => 42);
-        $proxyClass = 'Proxies\DoctrineTestsModelsECommerceECommerceFeatureProxy';
+        $proxyClass = 'Proxies\__CG__\Doctrine\Tests\Models\ECommerce\ECommerceFeature';
         $persister = $this->_getMockPersister();
         $this->_uowMock->setEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $persister);
         $proxy = $this->_proxyFactory->getProxy('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $identifier);
@@ -108,7 +108,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
     public function testCreatesAssociationProxyAsSubclassOfTheOriginalOne()
     {
-        $proxyClass = 'Proxies\DoctrineTestsModelsECommerceECommerceFeatureProxy';
+        $proxyClass = 'Proxies\__CG__\Doctrine\Tests\Models\ECommerce\ECommerceFeature';
         $this->assertTrue(is_subclass_of($proxyClass, 'Doctrine\Tests\Models\ECommerce\ECommerceFeature'));
     }
 
@@ -125,7 +125,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         require_once dirname(__FILE__)."/fixtures/NonNamespacedProxies.php";
 
         $className = "\DoctrineOrmTestEntity";
-        $proxyName = "DoctrineOrmTestEntityProxy";
+        $proxyName = "DoctrineOrmTestEntity";
         $classMetadata = new \Doctrine\ORM\Mapping\ClassMetadata($className);
         $classMetadata->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
         $classMetadata->mapField(array('fieldName' => 'id', 'type' => 'integer'));
@@ -133,16 +133,16 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $this->_proxyFactory->generateProxyClasses(array($classMetadata));
 
-        $classCode = file_get_contents(dirname(__FILE__)."/generated/".$proxyName.".php");
+        $classCode = file_get_contents(dirname(__FILE__)."/generated/__CG__".$proxyName.".php");
 
-        $this->assertNotContains("class DoctrineOrmTestEntityProxy extends \\\\DoctrineOrmTestEntity", $classCode);
-        $this->assertContains("class DoctrineOrmTestEntityProxy extends \\DoctrineOrmTestEntity", $classCode);
+        $this->assertNotContains("class DoctrineOrmTestEntity extends \\\\DoctrineOrmTestEntity", $classCode);
+        $this->assertContains("class DoctrineOrmTestEntity extends \\DoctrineOrmTestEntity", $classCode);
     }
 
     public function testClassWithSleepProxyGeneration()
     {
         $className = "\Doctrine\Tests\ORM\Proxy\SleepClass";
-        $proxyName = "DoctrineTestsORMProxySleepClassProxy";
+        $proxyName = "DoctrineTestsORMProxySleepClass";
         $classMetadata = new \Doctrine\ORM\Mapping\ClassMetadata($className);
         $classMetadata->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
         $classMetadata->mapField(array('fieldName' => 'id', 'type' => 'integer'));
@@ -150,7 +150,7 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $this->_proxyFactory->generateProxyClasses(array($classMetadata));
 
-        $classCode = file_get_contents(dirname(__FILE__)."/generated/".$proxyName.".php");
+        $classCode = file_get_contents(dirname(__FILE__)."/generated/__CG__".$proxyName.".php");
 
         $this->assertEquals(1, substr_count($classCode, 'function __sleep'));
     }
