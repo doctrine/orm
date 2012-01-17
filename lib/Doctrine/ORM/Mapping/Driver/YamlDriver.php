@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata,
+    Doctrine\Common\Persistence\Mapping\Driver\FileDriver,
     Doctrine\ORM\Mapping\MappingException,
     Symfony\Component\Yaml\Yaml;
 
@@ -32,7 +33,7 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata,
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @author Roman Borschel <roman@code-factory.org>
  */
-class YamlDriver extends AbstractFileDriver
+class YamlDriver extends FileDriver
 {
     const DEFAULT_FILE_EXTENSION = '.dcm.yml';
 

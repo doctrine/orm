@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\Driver\AbstractFileDriver;
+    Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 
 /**
  * The PHPDriver includes php files which just populate ClassMetadata
@@ -36,7 +36,7 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata,
  * @author      Roman Borschel <roman@code-factory.org>
  * @todo Rename: PHPDriver
  */
-class PHPDriver extends AbstractFileDriver
+class PHPDriver extends FileDriver
 {
     const DEFAULT_FILE_EXTENSION = '.php';
 
