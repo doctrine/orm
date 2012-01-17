@@ -43,6 +43,8 @@ use Doctrine\Common\Cache\ArrayCache,
  */
 class PHPDriver extends AbstractFileDriver
 {
+    const DEFAULT_FILE_EXTENSION = '.php';
+
     /**
      * {@inheritdoc}
      */
@@ -52,16 +54,24 @@ class PHPDriver extends AbstractFileDriver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadata $metadata)
+    public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
-        $this->_metadata = $metadata;
-        $this->_loadMappingFile($this->_findMappingFile($className));
+        parent::__construct($locator, $fileExtension);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function _loadMappingFile($file)
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
+    {
+        $this->_metadata = $metadata;
+        $this->loadMappingFile($this->findMappingFile($className));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function loadMappingFile($file)
     {
         $metadata = $this->_metadata;
         include $file;

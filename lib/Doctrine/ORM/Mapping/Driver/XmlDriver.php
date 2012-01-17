@@ -39,10 +39,15 @@ use SimpleXMLElement,
  */
 class XmlDriver extends AbstractFileDriver
 {
+    const DEFAULT_FILE_EXTENSION = '.dcm.xml';
+
     /**
      * {@inheritdoc}
      */
-    protected $_fileExtension = '.dcm.xml';
+    public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
+    {
+        parent::__construct($locator, $fileExtension);
+    }
 
     /**
      * {@inheritdoc}
@@ -510,7 +515,7 @@ class XmlDriver extends AbstractFileDriver
     /**
      * {@inheritdoc}
      */
-    protected function _loadMappingFile($file)
+    protected function loadMappingFile($file)
     {
         $result = array();
         $xmlElement = simplexml_load_file($file);
