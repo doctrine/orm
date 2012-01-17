@@ -32,7 +32,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
         ));
 
         touch($filename = $this->dir.'/Foo'.$this->getFileExtension());
-        $this->assertEquals($filename, $this->invoke($driver, '_findMappingFile', array('MyNamespace\MySubnamespace\Entity\Foo')));
+        $this->assertEquals($filename, $this->invoke($driver, 'findMappingFile', array('MyNamespace\MySubnamespace\Entity\Foo')));
     }
 
     public function testFindMappingFileInSubnamespace()
@@ -42,7 +42,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
         ));
 
         touch($filename = $this->dir.'/Foo.Bar'.$this->getFileExtension());
-        $this->assertEquals($filename, $this->invoke($driver, '_findMappingFile', array('MyNamespace\MySubnamespace\Entity\Foo\Bar')));
+        $this->assertEquals($filename, $this->invoke($driver, 'findMappingFile', array('MyNamespace\MySubnamespace\Entity\Foo\Bar')));
     }
 
     public function testFindMappingFileNamespacedFoundFileNotFound()
