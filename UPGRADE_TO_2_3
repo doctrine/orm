@@ -30,3 +30,11 @@ Also, related functions were affected:
 
 Internal changes were made to DQL and SQL generation. If you have implemented your own TreeWalker,
 you probably need to update it. The method walkJoinVariableDeclaration is now named walkJoin.
+
+# Metadata Drivers
+
+Metadata drivers have been rewritten to reuse code from Doctrine\Common.
+Anyone who is using the `Doctrine\ORM\Mapping\Driver\Driver` interface
+explicitly should instead refer to `Doctrine\Common\Persistence\Mapping\Driver\MappingDriver`.
+Same applies to `Doctrine\ORM\Mapping\Driver\AbstractFileDriver`: you should now refer to
+`Doctrine\Common\Persistence\Mapping\Driver\FileDriver`.
