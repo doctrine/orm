@@ -19,12 +19,7 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Cache\ArrayCache,
-    Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\DBAL\Schema\AbstractSchemaManager,
-    Doctrine\Common\Persistence\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\MappingException,
-    Doctrine\Common\Util\Inflector,
+use Doctrine\Common\Persistence\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\Driver\AbstractFileDriver;
 
 /**
@@ -46,11 +41,11 @@ class PHPDriver extends AbstractFileDriver
     const DEFAULT_FILE_EXTENSION = '.php';
 
     /**
-     * {@inheritdoc}
+     *
+     * @var ClassMetadata
      */
-    protected $_fileExtension = '.php';
     protected $_metadata;
-
+    
     /**
      * {@inheritdoc}
      */
@@ -65,7 +60,7 @@ class PHPDriver extends AbstractFileDriver
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         $this->_metadata = $metadata;
-        $this->loadMappingFile($this->findMappingFile($className));
+        $this->getElement($className);
     }
 
     /**
@@ -73,7 +68,12 @@ class PHPDriver extends AbstractFileDriver
      */
     protected function loadMappingFile($file)
     {
+        $result = array();
         $metadata = $this->_metadata;
         include $file;
+        // @todo cannot assume that the only loaded metadata is $metadata. Some
+        // decision about the preferred approach should be taken
+        $result[$metadata->getName()] = $metadata;
+        return $result;
     }
 }
