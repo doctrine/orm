@@ -30,7 +30,7 @@ use Doctrine\ORM\Mapping\MappingException;
  */
 class SimplifiedYamlDriver extends YamlDriver
 {
-    const DEFAULT_FILE_EXTENSION = '.orm.xml';
+    const DEFAULT_FILE_EXTENSION = '.orm.yml';
 
     protected $_prefixes = array();
     protected $_globalBasename;
@@ -59,7 +59,7 @@ class SimplifiedYamlDriver extends YamlDriver
     public function addNamespacePrefixes($prefixes)
     {
         $this->_prefixes = array_merge($this->_prefixes, $prefixes);
-        $this->addPaths(array_flip($prefixes));
+        $this->locator->addPaths(array_flip($prefixes));
     }
 
     public function addNamespacePrefix($prefix, $path)
@@ -100,8 +100,8 @@ class SimplifiedYamlDriver extends YamlDriver
 
         $classes = array();
 
-        if ($this->_paths) {
-            foreach ((array) $this->_paths as $path) {
+        if ($this->locator->getPaths()) {
+            foreach ($this->locator->getPaths() as $path) {
                 if (!is_dir($path)) {
                     throw MappingException::fileMappingDriversRequireConfiguredDirectoryPath($path);
                 }
@@ -148,7 +148,7 @@ class SimplifiedYamlDriver extends YamlDriver
     {
         $this->_classCache = array();
         if (null !== $this->_globalBasename) {
-            foreach ($this->_paths as $path) {
+            foreach ($this->locator->getPaths() as $path) {
                 if (is_file($file = $path.'/'.$this->_globalBasename.$this->_fileExtension)) {
                     $this->_classCache = array_merge($this->_classCache, $this->loadMappingFile($file));
                 }
@@ -159,7 +159,7 @@ class SimplifiedYamlDriver extends YamlDriver
     protected function findMappingFile($className)
     {
         $defaultFileName = str_replace('\\', '.', $className).$this->_fileExtension;
-        foreach ($this->_paths as $path) {
+        foreach ($this->locator->getPaths() as $path) {
             if (!isset($this->_prefixes[$path])) {
                 if (is_file($path.DIRECTORY_SEPARATOR.$defaultFileName)) {
                     return $path.DIRECTORY_SEPARATOR.$defaultFileName;

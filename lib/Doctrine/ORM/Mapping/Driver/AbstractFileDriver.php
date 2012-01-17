@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\Common\Persistence\Mapping\Driver\FileLocator;
 
 /**
  * Base driver for file-based metadata drivers.
@@ -41,26 +42,6 @@ use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 abstract class AbstractFileDriver extends FileDriver implements Driver
 {
     /**
-     * Append lookup paths to metadata driver.
-     *
-     * @param array $paths
-     */
-    public function addPaths(array $paths)
-    {
-        $this->locator->addPaths($paths);
-    }
-
-    /**
-     * Retrieve the defined metadata lookup paths.
-     *
-     * @return array
-     */
-    public function getPaths()
-    {
-        return $this->locator->getPaths();
-    }
-
-    /**
      * Get the element of schema meta data for the class from the mapping file.
      * This will lazily load the mapping file if it is not loaded yet
      *
@@ -75,18 +56,5 @@ abstract class AbstractFileDriver extends FileDriver implements Driver
             throw MappingException::invalidMappingFile($className, str_replace('\\', '.', $className) . $this->locator->getFileExtension());
         }
         return $result;
-    }
-
-    /**
-     * Finds the mapping file for the class with the given name by searching
-     * through the configured paths.
-     *
-     * @param $className
-     * @return string The (absolute) file name.
-     * @throws MappingException
-     */
-    protected function findMappingFile($className)
-    {
-        return $this->locator->findMappingFile($className);
     }
 }

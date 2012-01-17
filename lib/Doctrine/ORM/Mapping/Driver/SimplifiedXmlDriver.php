@@ -59,7 +59,7 @@ class SimplifiedXmlDriver extends XmlDriver
     public function addNamespacePrefixes($prefixes)
     {
         $this->_prefixes = array_merge($this->_prefixes, $prefixes);
-        $this->addPaths(array_flip($prefixes));
+        $this->locator->addPaths(array_flip($prefixes));
     }
 
     public function getNamespacePrefixes()
@@ -95,8 +95,8 @@ class SimplifiedXmlDriver extends XmlDriver
 
         $classes = array();
 
-        if ($this->_paths) {
-            foreach ((array) $this->_paths as $path) {
+        if ($this->locator->getPaths()) {
+            foreach ($this->locator->getPaths() as $path) {
                 if (!is_dir($path)) {
                     throw MappingException::fileMappingDriversRequireConfiguredDirectoryPath($path);
                 }
@@ -143,7 +143,7 @@ class SimplifiedXmlDriver extends XmlDriver
     {
         $this->_classCache = array();
         if (null !== $this->_globalBasename) {
-            foreach ($this->_paths as $path) {
+            foreach ($this->locator->getPaths() as $path) {
                 if (is_file($file = $path.'/'.$this->_globalBasename.$this->_fileExtension)) {
                     $this->_classCache = array_merge($this->_classCache, $this->loadMappingFile($file));
                 }
@@ -154,7 +154,7 @@ class SimplifiedXmlDriver extends XmlDriver
     protected function findMappingFile($className)
     {
         $defaultFileName = str_replace('\\', '.', $className).$this->_fileExtension;
-        foreach ($this->_paths as $path) {
+        foreach ($this->locator->getPaths() as $path) {
             if (!isset($this->_prefixes[$path])) {
                 if (is_file($path.DIRECTORY_SEPARATOR.$defaultFileName)) {
                     return $path.DIRECTORY_SEPARATOR.$defaultFileName;
