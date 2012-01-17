@@ -19,9 +19,7 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Cache\ArrayCache,
-    Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\Common\Annotations\AnnotationRegistry,
+use Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\Common\Persistence\Mapping\ClassMetadata,
     Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver,
     Doctrine\ORM\Mapping\MappingException;

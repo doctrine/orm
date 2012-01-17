@@ -19,13 +19,10 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Cache\ArrayCache,
-    Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\DBAL\Schema\AbstractSchemaManager,
+use Doctrine\DBAL\Schema\AbstractSchemaManager,
     Doctrine\DBAL\Schema\SchemaException,
     Doctrine\Common\Persistence\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Mapping\MappingException,
     Doctrine\Common\Util\Inflector;
 
 /**
@@ -75,10 +72,8 @@ class DatabaseDriver implements Driver
     private $namespace;
 
     /**
-     * Initializes a new AnnotationDriver that uses the given AnnotationReader for reading
-     * docblock annotations.
      *
-     * @param AnnotationReader $reader The AnnotationReader to use.
+     * @param AbstractSchemaManager $schemaManager
      */
     public function __construct(AbstractSchemaManager $schemaManager)
     {
