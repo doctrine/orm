@@ -61,6 +61,23 @@ abstract class AbstractFileDriver extends FileDriver implements Driver
     }
 
     /**
+     * Get the element of schema meta data for the class from the mapping file.
+     * This will lazily load the mapping file if it is not loaded yet
+     *
+     * @return array $element  The element of schema meta data
+     * @throws MappingException
+     * @todo move behavior to FileDriver
+     */
+    public function getElement($className)
+    {
+        $result = parent::getElement($className);
+        if($result === null) {
+            throw MappingException::invalidMappingFile($className, str_replace('\\', '.', $className) . $this->locator->getFileExtension());
+        }
+        return $result;
+    }
+
+    /**
      * Finds the mapping file for the class with the given name by searching
      * through the configured paths.
      *
