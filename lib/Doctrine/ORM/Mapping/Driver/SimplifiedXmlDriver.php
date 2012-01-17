@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\Common\Persistence\Mapping\Driver\SymfonyFileLocator;
 
 /**
  * XmlDriver that additionally looks for mapping information in a global file.
@@ -32,151 +32,12 @@ class SimplifiedXmlDriver extends XmlDriver
 {
     const DEFAULT_FILE_EXTENSION = '.orm.xml';
 
-    protected $_prefixes = array();
-    protected $_globalBasename;
-    protected $_classCache;
-    protected $_fileExtension = '.orm.xml';
-
     /**
      * {@inheritdoc}
      */
     public function __construct($prefixes, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
-        parent::__construct(array(), $fileExtension);
-        $this->addNamespacePrefixes($prefixes);
-    }
-
-    public function setGlobalBasename($file)
-    {
-        $this->_globalBasename = $file;
-    }
-
-    public function getGlobalBasename()
-    {
-        return $this->_globalBasename;
-    }
-
-    public function addNamespacePrefixes($prefixes)
-    {
-        $this->_prefixes = array_merge($this->_prefixes, $prefixes);
-        $this->locator->addPaths(array_flip($prefixes));
-    }
-
-    public function getNamespacePrefixes()
-    {
-        return $this->_prefixes;
-    }
-
-    public function isTransient($className)
-    {
-        if (null === $this->_classCache) {
-            $this->initialize();
-        }
-
-        // The mapping is defined in the global mapping file
-        if (isset($this->_classCache[$className])) {
-            return false;
-        }
-
-        try {
-            $this->findMappingFile($className);
-
-            return false;
-        } catch (MappingException $e) {
-            return true;
-        }
-    }
-
-    public function getAllClassNames()
-    {
-        if (null === $this->_classCache) {
-            $this->initialize();
-        }
-
-        $classes = array();
-
-        if ($this->locator->getPaths()) {
-            foreach ($this->locator->getPaths() as $path) {
-                if (!is_dir($path)) {
-                    throw MappingException::fileMappingDriversRequireConfiguredDirectoryPath($path);
-                }
-
-                $iterator = new \RecursiveIteratorIterator(
-                    new \RecursiveDirectoryIterator($path),
-                    \RecursiveIteratorIterator::LEAVES_ONLY
-                );
-
-                foreach ($iterator as $file) {
-                    $fileName = $file->getBasename($this->_fileExtension);
-
-                    if ($fileName == $file->getBasename() || $fileName == $this->_globalBasename) {
-                        continue;
-                    }
-
-                    // NOTE: All files found here means classes are not transient!
-                    if (isset($this->_prefixes[$path])) {
-                        $classes[] = $this->_prefixes[$path].'\\'.str_replace('.', '\\', $fileName);
-                    } else {
-                        $classes[] = str_replace('.', '\\', $fileName);
-                    }
-                }
-            }
-        }
-
-        return array_merge($classes, array_keys($this->_classCache));
-    }
-
-    public function getElement($className)
-    {
-        if (null === $this->_classCache) {
-            $this->initialize();
-        }
-
-        if (!isset($this->_classCache[$className])) {
-            $this->_classCache[$className] = parent::getElement($className);
-        }
-
-        return $this->_classCache[$className];
-    }
-
-    protected function initialize()
-    {
-        $this->_classCache = array();
-        if (null !== $this->_globalBasename) {
-            foreach ($this->locator->getPaths() as $path) {
-                if (is_file($file = $path.'/'.$this->_globalBasename.$this->_fileExtension)) {
-                    $this->_classCache = array_merge($this->_classCache, $this->loadMappingFile($file));
-                }
-            }
-        }
-    }
-
-    protected function findMappingFile($className)
-    {
-        $defaultFileName = str_replace('\\', '.', $className).$this->_fileExtension;
-        foreach ($this->locator->getPaths() as $path) {
-            if (!isset($this->_prefixes[$path])) {
-                if (is_file($path.DIRECTORY_SEPARATOR.$defaultFileName)) {
-                    return $path.DIRECTORY_SEPARATOR.$defaultFileName;
-                }
-
-                continue;
-            }
-
-            $prefix = $this->_prefixes[$path];
-
-            if (0 !== strpos($className, $prefix.'\\')) {
-                continue;
-            }
-
-            $filename = $path.'/'.strtr(substr($className, strlen($prefix)+1), '\\', '.').$this->_fileExtension;
-            if (is_file($filename)) {
-                return $filename;
-            }
-
-            throw MappingException::mappingFileNotFound($className, $filename);
-        }
-
-        throw MappingException::mappingFileNotFound($className, substr($className, strrpos($className, '\\') + 1).$this->_fileExtension);
+        $locator = new SymfonyFileLocator((array) $prefixes, $fileExtension);
+        parent::__construct($locator, $fileExtension);
     }
 }
