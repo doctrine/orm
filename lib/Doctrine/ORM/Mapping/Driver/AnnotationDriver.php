@@ -19,9 +19,7 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Cache\ArrayCache,
-    Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\Common\Annotations\AnnotationRegistry,
+use Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\ORM\Mapping\MappingException,
     Doctrine\ORM\Mapping\JoinColumn,
     Doctrine\ORM\Mapping\Column,
