@@ -22,6 +22,7 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use SimpleXMLElement,
+    Doctrine\Common\Persistence\Mapping\Driver\FileDriver,
     Doctrine\Common\Persistence\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\MappingException;
 
@@ -37,7 +38,7 @@ use SimpleXMLElement,
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class XmlDriver extends AbstractFileDriver
+class XmlDriver extends FileDriver
 {
     const DEFAULT_FILE_EXTENSION = '.dcm.xml';
 
