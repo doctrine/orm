@@ -223,13 +223,13 @@ class SchemaTool
 
             if (isset($class->table['indexes'])) {
                 foreach ($class->table['indexes'] AS $indexName => $indexData) {
-                    $table->addIndex($indexData['columns'], $indexName);
+                    $table->addIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName);
                 }
             }
 
             if (isset($class->table['uniqueConstraints'])) {
                 foreach ($class->table['uniqueConstraints'] AS $indexName => $indexData) {
-                    $table->addUniqueIndex($indexData['columns'], $indexName);
+                    $table->addUniqueIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName);
                 }
             }
 
