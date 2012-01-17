@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\DBAL\Schema\AbstractSchemaManager,
     Doctrine\DBAL\Schema\SchemaException,
+    Doctrine\Common\Persistence\Mapping\Driver\MappingDriver,
     Doctrine\Common\Persistence\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\Common\Util\Inflector;
@@ -35,7 +36,7 @@ use Doctrine\DBAL\Schema\AbstractSchemaManager,
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
-class DatabaseDriver implements Driver
+class DatabaseDriver implements MappingDriver
 {
     /**
      * @var AbstractSchemaManager

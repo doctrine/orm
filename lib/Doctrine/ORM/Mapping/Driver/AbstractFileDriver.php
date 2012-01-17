@@ -22,7 +22,6 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
-use Doctrine\Common\Persistence\Mapping\Driver\FileLocator;
 
 /**
  * Base driver for file-based metadata drivers.
@@ -41,6 +40,6 @@ use Doctrine\Common\Persistence\Mapping\Driver\FileLocator;
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-abstract class AbstractFileDriver extends FileDriver implements Driver
+abstract class AbstractFileDriver extends FileDriver
 {
 }

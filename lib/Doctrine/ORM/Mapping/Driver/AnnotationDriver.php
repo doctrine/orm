@@ -33,7 +33,7 @@ use Doctrine\Common\Annotations\AnnotationReader,
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @author Roman Borschel <roman@code-factory.org>
  */
-class AnnotationDriver extends AbstractAnnotationDriver implements Driver
+class AnnotationDriver extends AbstractAnnotationDriver
 {
     /**
      * {@inheritdoc}
