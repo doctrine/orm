@@ -53,7 +53,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     private $targetPlatform;
 
     /**
-     * @var \Doctrine\ORM\Mapping\Driver\Driver
+     * @var \Doctrine\Common\Persistence\Mapping\Driver\MappingDriver
      */
     private $driver;
 

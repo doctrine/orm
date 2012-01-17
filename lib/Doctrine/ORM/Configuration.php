@@ -23,7 +23,7 @@ use Doctrine\Common\Cache\Cache,
     Doctrine\Common\Cache\ArrayCache,
     Doctrine\Common\Annotations\AnnotationRegistry,
     Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\ORM\Mapping\Driver\Driver,
+    Doctrine\Common\Persistence\Mapping\Driver\MappingDriver,
     Doctrine\ORM\Mapping\Driver\AnnotationDriver,
     Doctrine\ORM\Mapping\QuoteStrategy,
     Doctrine\ORM\Mapping\DefaultQuoteStrategy,
@@ -114,11 +114,11 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Sets the cache driver implementation that is used for metadata caching.
      *
-     * @param Driver $driverImpl
+     * @param MappingDriver $driverImpl
      * @todo Force parameter to be a Closure to ensure lazy evaluation
      *       (as soon as a metadata cache is in effect, the driver never needs to initialize).
      */
-    public function setMetadataDriverImpl(Driver $driverImpl)
+    public function setMetadataDriverImpl(MappingDriver $driverImpl)
     {
         $this->_attributes['metadataDriverImpl'] = $driverImpl;
     }
@@ -217,7 +217,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Gets the cache driver implementation that is used for the mapping metadata.
      *
      * @throws ORMException
-     * @return Mapping\Driver\Driver
+     * @return MappingDriver
      */
     public function getMetadataDriverImpl()
     {
