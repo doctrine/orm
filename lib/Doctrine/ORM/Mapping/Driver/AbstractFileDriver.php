@@ -74,15 +74,5 @@ abstract class AbstractFileDriver extends FileDriver implements Driver
     protected function findMappingFile($className)
     {
         return $this->locator->findMappingFile($className);
-        $fileName = str_replace('\\', '.', $className) . $this->_fileExtension;
-
-        // Check whether file exists
-        foreach ((array) $this->_paths as $path) {
-            if (file_exists($path . DIRECTORY_SEPARATOR . $fileName)) {
-                return $path . DIRECTORY_SEPARATOR . $fileName;
-            }
-        }
-
-        throw MappingException::mappingFileNotFound($className, $fileName);
     }
 }
