@@ -30,13 +30,19 @@ use Doctrine\ORM\Mapping\MappingException;
  */
 class SimplifiedYamlDriver extends YamlDriver
 {
+    const DEFAULT_FILE_EXTENSION = '.orm.xml';
+
     protected $_prefixes = array();
     protected $_globalBasename;
     protected $_classCache;
     protected $_fileExtension = '.orm.yml';
 
-    public function __construct($prefixes)
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct($prefixes, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
+        parent::__construct(array(), $fileExtension);
         $this->addNamespacePrefixes($prefixes);
     }
 
@@ -78,7 +84,7 @@ class SimplifiedYamlDriver extends YamlDriver
         }
 
         try {
-            $this->_findMappingFile($className);
+            $this->findMappingFile($className);
 
             return false;
         } catch (MappingException $e) {
@@ -144,13 +150,13 @@ class SimplifiedYamlDriver extends YamlDriver
         if (null !== $this->_globalBasename) {
             foreach ($this->_paths as $path) {
                 if (is_file($file = $path.'/'.$this->_globalBasename.$this->_fileExtension)) {
-                    $this->_classCache = array_merge($this->_classCache, $this->_loadMappingFile($file));
+                    $this->_classCache = array_merge($this->_classCache, $this->loadMappingFile($file));
                 }
             }
         }
     }
 
-    protected function _findMappingFile($className)
+    protected function findMappingFile($className)
     {
         $defaultFileName = str_replace('\\', '.', $className).$this->_fileExtension;
         foreach ($this->_paths as $path) {
