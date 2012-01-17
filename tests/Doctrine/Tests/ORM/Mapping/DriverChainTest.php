@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\Driver\Driver;
 use Doctrine\ORM\Mapping\Driver\DriverChain;
 
 require_once __DIR__ . '/../../TestInit.php';
@@ -16,13 +15,13 @@ class DriverChainTest extends \Doctrine\Tests\OrmTestCase
 
         $chain = new DriverChain();
 
-        $driver1 = $this->getMock('Doctrine\ORM\Mapping\Driver\Driver');
+        $driver1 = $this->getMock('Doctrine\Common\Persistence\Mapping\Driver\MappingDriver');
         $driver1->expects($this->never())
                 ->method('loadMetadataForClass');
         $driver1->expectS($this->never())
                 ->method('isTransient');
 
-        $driver2 = $this->getMock('Doctrine\ORM\Mapping\Driver\Driver');
+        $driver2 = $this->getMock('Doctrine\Common\Persistence\Mapping\Driver\MappingDriver');
         $driver2->expects($this->at(0))
                 ->method('loadMetadataForClass')
                 ->with($this->equalTo($className), $this->equalTo($classMetadata));
@@ -57,12 +56,12 @@ class DriverChainTest extends \Doctrine\Tests\OrmTestCase
 
         $chain = new DriverChain();
 
-        $driver1 = $this->getMock('Doctrine\ORM\Mapping\Driver\Driver');
+        $driver1 = $this->getMock('Doctrine\Common\Persistence\Mapping\Driver\MappingDriver');
         $driver1->expects($this->once())
                 ->method('getAllClassNames')
                 ->will($this->returnValue(array('Doctrine\Tests\Models\Company\Foo')));
 
-        $driver2 = $this->getMock('Doctrine\ORM\Mapping\Driver\Driver');
+        $driver2 = $this->getMock('Doctrine\Common\Persistence\Mapping\Driver\MappingDriver');
         $driver2->expects($this->once())
                 ->method('getAllClassNames')
                 ->will($this->returnValue(array('Doctrine\Tests\ORM\Mapping\Bar', 'Doctrine\Tests\ORM\Mapping\Baz', 'FooBarBaz')));
