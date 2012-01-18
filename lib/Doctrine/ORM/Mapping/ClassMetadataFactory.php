@@ -332,6 +332,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             if ($this->evm->hasListeners(Events::loadClassMetadata)) {
                 $eventArgs = new \Doctrine\ORM\Event\LoadClassMetadataEventArgs($class, $this->em);
                 $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
+                $this->wakeupReflection($class, $this->getReflectionService());
             }
 
             $this->validateRuntimeMetadata($class, $parent);
