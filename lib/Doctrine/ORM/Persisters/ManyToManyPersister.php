@@ -253,8 +253,15 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $uow = $this->_em->getUnitOfWork();
 
-        // shortcut for new entities
-        if ($uow->getEntityState($element, UnitOfWork::STATE_NEW) == UnitOfWork::STATE_NEW) {
+        // Shortcut for new entities
+        $entityState = $uow->getEntityState($element, UnitOfWork::STATE_NEW);
+
+        if ($entityState === UnitOfWork::STATE_NEW) {
+            return false;
+        }
+
+        // Entity is scheduled for inclusion
+        if ($entityState === UnitOfWork::STATE_MANAGED && $uow->isScheduledForInsert($element)) {
             return false;
         }
 
@@ -275,7 +282,15 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $uow = $this->_em->getUnitOfWork();
 
         // shortcut for new entities
-        if ($uow->getEntityState($element, UnitOfWork::STATE_NEW) == UnitOfWork::STATE_NEW) {
+        $entityState = $uow->getEntityState($element, UnitOfWork::STATE_NEW);
+
+        if ($entityState === UnitOfWork::STATE_NEW) {
+            return false;
+        }
+
+        // If Entity is scheduled for inclusion, it is not in this collection.
+        // We can assure that because it would have return true before on array check
+        if ($entityState === UnitOfWork::STATE_MANAGED && $uow->isScheduledForInsert($element)) {
             return false;
         }
 
