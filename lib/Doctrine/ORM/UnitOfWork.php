@@ -2518,7 +2518,9 @@ class UnitOfWork implements PropertyChangedListener
         $this->eagerLoadingEntities = array();
 
         foreach ($eagerLoadingEntities as $entityName => $ids) {
-            if ( ! $ids) continue;
+            if ( ! $ids) {
+                continue;
+            }
 
             $class = $this->em->getClassMetadata($entityName);
 
