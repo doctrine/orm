@@ -1535,6 +1535,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT c0_.id AS id0, -(c0_.customInteger) AS customInteger1 FROM customtype_parents c0_'
         );
     }
+
+    /**
+     * @group DDC-1529
+     */
+    public function testMultipleFromAndInheritanceCondition()
+    {
+        $this->assertSqlGeneration(
+            'SELECT fix, flex FROM Doctrine\Tests\Models\Company\CompanyFixContract fix, Doctrine\Tests\Models\Company\CompanyFlexContract flex',
+            "SELECT c0_.id AS id0, c0_.completed AS completed1, c0_.fixPrice AS fixPrice2, c1_.id AS id3, c1_.completed AS completed4, c1_.hoursWorked AS hoursWorked5, c1_.pricePerHour AS pricePerHour6, c1_.maxPrice AS maxPrice7, c0_.discr AS discr8, c1_.discr AS discr9 FROM company_contracts c0_, company_contracts c1_ WHERE (c0_.discr IN ('fix') AND c1_.discr IN ('flexible', 'flexultra'))"
+        );
+    }
 }
 
 
