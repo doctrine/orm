@@ -192,6 +192,13 @@ class ClassMetadataInfo implements ClassMetadata
     public $isMappedSuperclass = false;
 
     /**
+     * READ-ONLY: Whether this class describes the mapping of a mapped embeddable.
+     *
+     * @var boolean
+     */
+    public $isEmbeddable = false;
+
+    /**
      * READ-ONLY: The names of the parent classes (ancestors).
      *
      * @var array
@@ -403,6 +410,23 @@ class ClassMetadataInfo implements ClassMetadata
      * @var array
      */
     public $associationMappings = array();
+
+    /**
+     * READ-ONLY: The embedded mappings of this class.
+     * Keys are field names and value are mapping definitions.
+     * The mapping definition array supports the following keys:
+     *
+     * - <b>fieldName</b> (string)
+     * The name of the field in the entity the embeddable is mapped to.
+     *
+     * = <b>class</b> (string)
+     * The class name of the embeddable class. If it is fully-qualified it is used as is.
+     * If it is a simple, unqualified class name the namespace is assumed to be the same
+     * as the namespace of the source entity.
+     *
+     * @var array
+     */
+    public $embeddedMappings = array();
 
     /**
      * READ-ONLY: Flag indicating whether the identifier/primary key of the class is composite.
@@ -664,6 +688,7 @@ class ClassMetadataInfo implements ClassMetadata
     {
         // This metadata is always serialized/cached.
         $serialized = array(
+            'embeddedMappings',
             'associationMappings',
             'columnNames', //TODO: Not really needed. Can use fieldMappings[$fieldName]['columnName']
             'fieldMappings',
@@ -765,6 +790,12 @@ class ClassMetadataInfo implements ClassMetadata
                 ? $reflService->getAccessibleProperty($mapping['declared'], $field)
                 : $reflService->getAccessibleProperty($this->name, $field);
         }
+
+        foreach ($this->embeddedMappings as $field => $mapping) {
+            $this->reflFields[$field] = isset($mapping['declared'])
+                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
+                : $reflService->getAccessibleProperty($this->name, $field);
+        }
     }
 
     /**
@@ -799,6 +830,20 @@ class ClassMetadataInfo implements ClassMetadata
 
         if ($this->usesIdGenerator() && $this->isIdentifierComposite) {
             throw MappingException::compositeKeyAssignedIdGeneratorRequired($this->name);
+        }
+    }
+
+    /**
+     * Validate that emdeddables actually exist.
+     *
+     * @return void
+     */
+    public function validateEmdeddeds()
+    {
+        foreach ($this->embeddedMappings as $field => $mapping) {
+            if ( ! \Doctrine\Common\ClassLoader::classExists($mapping['class']) ) {
+                throw MappingException::invalidEmbeddedClass($mapping['class'], $this->name, $mapping['fieldName']);
+            }
         }
     }
 
@@ -958,6 +1003,32 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Gets the mapping of an embeddable.
+     *
+     * @see ClassMetadataInfo::$embeddedMappings
+     * @param string $fieldName  The field name that represents the embeddable in
+     *                           the object model.
+     * @return array The mapping.
+     */
+    public function getEmbeddedMapping($fieldName)
+    {
+        if ( ! isset($this->embeddedMappings[$fieldName])) {
+            throw MappingException::mappingNotFound($this->name, $fieldName);
+        }
+        return $this->embeddedMappings[$fieldName];
+    }
+
+    /**
+     * Gets all embedded mappings of the class.
+     *
+     * @return array
+     */
+    public function getEmbeddedMappings()
+    {
+        return $this->embeddedMappings;
+    }
+
+    /**
      * Gets the mapping of an association.
      *
      * @see ClassMetadataInfo::$associationMappings
@@ -1034,6 +1105,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! isset($mapping['fieldName']) || strlen($mapping['fieldName']) == 0) {
             throw MappingException::missingFieldName($this->name);
         }
+
         if ( ! isset($mapping['type'])) {
             // Default to string
             $mapping['type'] = 'string';
@@ -1050,6 +1122,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         $this->columnNames[$mapping['fieldName']] = $mapping['columnName'];
+
         if (isset($this->fieldNames[$mapping['columnName']]) || ($this->discriminatorColumn != null && $this->discriminatorColumn['name'] == $mapping['columnName'])) {
             throw MappingException::duplicateColumnName($this->name, $mapping['columnName']);
         }
@@ -1078,6 +1151,34 @@ class ClassMetadataInfo implements ClassMetadata
 
             $mapping['requireSQLConversion'] = true;
         }
+
+        return $mapping;
+    }
+
+    /**
+     * Validates & completes the given embedded mapping.
+     *
+     * @param array $mapping  The embedded mapping to validated & complete.
+     * @return array  The validated and completed embedded mapping.
+     */
+    protected function _validateAndCompleteEmbeddedMapping(array $mapping)
+    {
+        // Check mandatory fields
+        if ( ! isset($mapping['fieldName']) || strlen($mapping['fieldName']) == 0) {
+            throw MappingException::missingFieldName($this->name);
+        }
+
+        if ( ! isset($mapping['class'])) {
+            throw MappingException::missingEmbeddedClass($mapping['fieldName']);
+        }
+
+        if (strlen($this->namespace) > 0 && strpos($mapping['class'], '\\') === false) {
+            $mapping['class'] = $this->namespace . '\\' . $mapping['class'];
+        }
+
+        $mapping['class'] = ltrim($mapping['class'], '\\');
+
+        return $mapping;
     }
 
     /**
@@ -1093,13 +1194,15 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! isset($mapping['mappedBy'])) {
             $mapping['mappedBy'] = null;
         }
+
         if ( ! isset($mapping['inversedBy'])) {
             $mapping['inversedBy'] = null;
         }
+
         $mapping['isOwningSide'] = true; // assume owning side until we hit mappedBy
 
         // unset optional indexBy attribute if its empty
-        if (!isset($mapping['indexBy']) || !$mapping['indexBy']) {
+        if ( ! isset($mapping['indexBy']) || ! $mapping['indexBy']) {
             unset($mapping['indexBy']);
         }
 
@@ -1115,10 +1218,7 @@ class ClassMetadataInfo implements ClassMetadata
             $mapping['targetEntity'] = ltrim($mapping['targetEntity'], '\\');
         }
 
-        if ( ($mapping['type'] & (self::MANY_TO_ONE|self::MANY_TO_MANY)) > 0 &&
-                isset($mapping['orphanRemoval']) &&
-                $mapping['orphanRemoval'] == true) {
-
+        if (($mapping['type'] & (self::MANY_TO_ONE|self::MANY_TO_MANY)) > 0 && isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'] == true) {
             throw MappingException::illegalOrphanRemoval($this->name, $mapping['fieldName']);
         }
 
@@ -1138,6 +1238,7 @@ class ClassMetadataInfo implements ClassMetadata
                 $this->identifier[] = $mapping['fieldName'];
                 $this->containsForeignIdentifier = true;
             }
+
             // Check for composite key
             if ( ! $this->isIdentifierComposite && count($this->identifier) > 1) {
                 $this->isIdentifierComposite = true;
@@ -1149,6 +1250,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! isset($mapping['fieldName']) || strlen($mapping['fieldName']) == 0) {
             throw MappingException::missingFieldName($this->name);
         }
+
         if ( ! isset($mapping['targetEntity'])) {
             throw MappingException::missingTargetEntity($mapping['fieldName']);
         }
@@ -1566,8 +1668,9 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getTypeOfField($fieldName)
     {
-        return isset($this->fieldMappings[$fieldName]) ?
-                $this->fieldMappings[$fieldName]['type'] : null;
+        return isset($this->fieldMappings[$fieldName])
+            ? $this->fieldMappings[$fieldName]['type']
+            : null;
     }
 
     /**
@@ -1654,6 +1757,17 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Checks whether a mapped embedded field is inherited from a superclass.
+     *
+     * @param string $fieldName
+     * @return boolean TRUE if the field is inherited, FALSE otherwise.
+     */
+    public function isInheritedEmbedded($fieldName)
+    {
+        return isset($this->embeddedMappings[$fieldName]['inherited']);
+    }
+
+    /**
      * Checks whether a mapped association field is inherited from a superclass.
      *
      * @param string $fieldName
@@ -1722,20 +1836,6 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Adds a mapped field to the class.
-     *
-     * @param array $mapping The field mapping.
-     */
-    public function mapField(array $mapping)
-    {
-        $this->_validateAndCompleteFieldMapping($mapping);
-        if (isset($this->fieldMappings[$mapping['fieldName']]) || isset($this->associationMappings[$mapping['fieldName']])) {
-            throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
-        }
-        $this->fieldMappings[$mapping['fieldName']] = $mapping;
-    }
-
-    /**
      * INTERNAL:
      * Adds an association mapping without completing/validating it.
      * This is mainly used to add inherited association mappings to derived classes.
@@ -1748,6 +1848,21 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::duplicateAssociationMapping($this->name, $mapping['fieldName']);
         }
         $this->associationMappings[$mapping['fieldName']] = $mapping;
+    }
+
+    /**
+     * INTERNAL:
+     * Adds an embedded mapping without completing/validating it.
+     * This is mainly used to add inherited enbedded mappings to derived classes.
+     *
+     * @param array $mapping
+     */
+    public function addInheritedEmbeddedMapping(array $mapping/*, $owningClassName = null*/)
+    {
+        if (isset($this->embeddedMappings[$mapping['fieldName']])) {
+            throw MappingException::duplicateEmbeddedMapping($this->name, $mapping['fieldName']);
+        }
+        $this->embeddedMappings[$mapping['fieldName']] = $mapping;
     }
 
     /**
@@ -1788,6 +1903,44 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Adds a mapped field to the class.
+     *
+     * @param array $mapping The field mapping.
+     */
+    public function mapField(array $mapping)
+    {
+        $mapping         = $this->_validateAndCompleteFieldMapping($mapping);
+        $sourceFieldName = $mapping['fieldName'];
+
+        if (isset($this->fieldMappings[$sourceFieldName]) ||
+            isset($this->associationMappings[$sourceFieldName]) ||
+            isset($this->embeddedMappings[$sourceFieldName])) {
+            throw MappingException::duplicateFieldMapping($this->name, $sourceFieldName);
+        }
+
+        $this->fieldMappings[$sourceFieldName] = $mapping;
+    }
+
+    /**
+     * Adds a mapped embedded to the class.
+     *
+     * @param array $mapping The embedded mapping.
+     */
+    public function mapEmbedded(array $mapping)
+    {
+        $mapping         = $this->_validateAndCompleteEmbeddedMapping($mapping);
+        $sourceFieldName = $mapping['fieldName'];
+
+        if (isset($this->fieldMappings[$sourceFieldName]) ||
+            isset($this->associationMappings[$sourceFieldName]) ||
+            isset($this->embeddedMappings[$sourceFieldName])) {
+            throw MappingException::duplicateFieldMapping($this->name, $sourceFieldName);
+        }
+
+        $this->embeddedMappings[$sourceFieldName] = $mapping;
+    }
+
+    /**
      * Adds a one-to-one mapping.
      *
      * @param array $mapping The mapping.
@@ -1795,7 +1948,9 @@ class ClassMetadataInfo implements ClassMetadata
     public function mapOneToOne(array $mapping)
     {
         $mapping['type'] = self::ONE_TO_ONE;
+
         $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+
         $this->_storeAssociationMapping($mapping);
     }
 
@@ -1807,7 +1962,9 @@ class ClassMetadataInfo implements ClassMetadata
     public function mapOneToMany(array $mapping)
     {
         $mapping['type'] = self::ONE_TO_MANY;
+
         $mapping = $this->_validateAndCompleteOneToManyMapping($mapping);
+
         $this->_storeAssociationMapping($mapping);
     }
 
@@ -1819,8 +1976,10 @@ class ClassMetadataInfo implements ClassMetadata
     public function mapManyToOne(array $mapping)
     {
         $mapping['type'] = self::MANY_TO_ONE;
+
         // A many-to-one mapping is essentially a one-one backreference
         $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+
         $this->_storeAssociationMapping($mapping);
     }
 
@@ -1832,24 +1991,28 @@ class ClassMetadataInfo implements ClassMetadata
     public function mapManyToMany(array $mapping)
     {
         $mapping['type'] = self::MANY_TO_MANY;
+
         $mapping = $this->_validateAndCompleteManyToManyMapping($mapping);
+
         $this->_storeAssociationMapping($mapping);
     }
 
     /**
      * Stores the association mapping.
      *
-     * @param array $assocMapping
+     * @param array $mapping
      */
-    protected function _storeAssociationMapping(array $assocMapping)
+    protected function _storeAssociationMapping(array $mapping)
     {
-        $sourceFieldName = $assocMapping['fieldName'];
+        $sourceFieldName = $mapping['fieldName'];
 
-        if (isset($this->fieldMappings[$sourceFieldName]) || isset($this->associationMappings[$sourceFieldName])) {
+        if (isset($this->fieldMappings[$sourceFieldName]) ||
+            isset($this->associationMappings[$sourceFieldName]) ||
+            isset($this->embeddedMappings[$sourceFieldName])) {
             throw MappingException::duplicateFieldMapping($this->name, $sourceFieldName);
         }
 
-        $this->associationMappings[$sourceFieldName] = $assocMapping;
+        $this->associationMappings[$sourceFieldName] = $mapping;
     }
 
     /**
@@ -1859,10 +2022,12 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
-        if ($repositoryClassName !== null && strpos($repositoryClassName, '\\') === false
-                && strlen($this->namespace) > 0) {
+        if ($repositoryClassName !== null &&
+            strpos($repositoryClassName, '\\') === false &&
+            strlen($this->namespace) > 0) {
             $repositoryClassName = $this->namespace . '\\' . $repositoryClassName;
         }
+
         $this->customRepositoryClassName = $repositoryClassName;
     }
 
@@ -2003,6 +2168,17 @@ class ClassMetadataInfo implements ClassMetadata
     public function hasNamedQuery($queryName)
     {
         return isset($this->namedQueries[$queryName]);
+    }
+
+    /**
+     * Checks whether the class has a mapped embeddedable with the given field name.
+     *
+     * @param string $fieldName
+     * @return boolean
+     */
+    public function hasEmbedded($fieldName)
+    {
+        return isset($this->embeddedMappings[$fieldName]);
     }
 
     /**
@@ -2202,6 +2378,18 @@ class ClassMetadataInfo implements ClassMetadata
     public function getFieldNames()
     {
         return array_keys($this->fieldMappings);
+    }
+
+    /**
+     * A numerically indexed list of embedded names of this persistent class.
+     *
+     * This array includes identifier embeddedables if present on this class.
+     *
+     * @return array
+     */
+    public function getEmbeddedNames()
+    {
+        return array_keys($this->embeddedMappings);
     }
 
     /**

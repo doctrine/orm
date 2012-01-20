@@ -53,6 +53,11 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self("The field or association mapping misses the 'fieldName' attribute in entity '$entity'.");
     }
 
+    public static function missingEmbeddedClass($fieldName)
+    {
+        return new self("The embedded mapping '$fieldName' misses the 'class' attribute.");
+    }
+
     public static function missingTargetEntity($fieldName)
     {
         return new self("The association mapping '$fieldName' misses the 'targetEntity' attribute.");
@@ -163,6 +168,10 @@ class MappingException extends \Doctrine\ORM\ORMException
      * @param string $fieldName The name of the field that was already declared
      */
     public static function duplicateFieldMapping($entity, $fieldName) {
+        return new self('Property "'.$fieldName.'" in "'.$entity.'" was already declared, but it must be declared only once');
+    }
+
+    public static function duplicateEmbeddedMapping($entity, $fieldName) {
         return new self('Property "'.$fieldName.'" in "'.$entity.'" was already declared, but it must be declared only once');
     }
 
@@ -327,6 +336,11 @@ class MappingException extends \Doctrine\ORM\ORMException
 
     public static function invalidTargetEntityClass($targetEntity, $sourceEntity, $associationName)
     {
-        return new self("The target-entity " . $targetEntity . " cannot be found in '" . $sourceEntity."#".$associationName."'.");
+        return new self("The target-entity " . $targetEntity . " cannot be found in '" . $sourceEntity . "#" . $associationName . "'.");
+    }
+
+    public static function invalidEmbeddedClass($embeddedClass, $sourceEntity, $fieldName)
+    {
+        return new self("The embedded " . $embeddedClass . " cannot be found in '" . $sourceEntity . "#" . $fieldName . "'.");
     }
 }

@@ -31,6 +31,10 @@ class CmsUser
      */
     public $name;
     /**
+     * @Embedded(class="CmsParents")
+     */
+    public $parents;
+    /**
      * @OneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"persist", "merge"}, orphanRemoval=true)
      */
     public $phonenumbers;

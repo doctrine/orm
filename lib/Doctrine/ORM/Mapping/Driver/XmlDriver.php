@@ -63,6 +63,9 @@ class XmlDriver extends AbstractFileDriver
                 isset($xmlRoot['repository-class']) ? (string)$xmlRoot['repository-class'] : null
             );
             $metadata->isMappedSuperclass = true;
+        } else if ($xmlRoot->getName() == 'embeddable') {
+            $metadata->markReadOnly();
+            $metadata->isEmbeddable = true;
         } else {
             throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
         }
@@ -214,6 +217,7 @@ class XmlDriver extends AbstractFileDriver
 
         // Evaluate <id ...> mappings
         $associationIds = array();
+
         foreach ($xmlRoot->id as $idElement) {
             if ((bool)$idElement['association-key'] == true) {
                 $associationIds[(string)$idElement['name']] = true;
@@ -256,6 +260,18 @@ class XmlDriver extends AbstractFileDriver
                 ));
             } else if (isset($idElement->{'table-generator'})) {
                 throw MappingException::tableIdGeneratorNotImplemented($className);
+            }
+        }
+
+        // Evaluate <embedded ...> mappings
+        if (isset($xmlRoot->embedded)) {
+            foreach ($xmlRoot->embedded as $fieldMapping) {
+                $mapping = array(
+                    'fieldName' => (string) $fieldMapping['name'],
+                    'class'     => (string) $fieldMapping['class'],
+                );
+
+                $metadata->mapEmbedded($mapping);
             }
         }
 
