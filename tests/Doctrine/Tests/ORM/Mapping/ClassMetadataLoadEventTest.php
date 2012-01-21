@@ -9,6 +9,9 @@ require_once __DIR__ . '/../../TestInit.php';
 
 class ClassMetadataLoadEventTest extends \Doctrine\Tests\OrmTestCase
 {
+    /**
+     * @group DDC-1610
+     */
     public function testEvent()
     {
         $em = $this->_getTestEntityManager();
@@ -17,6 +20,8 @@ class ClassMetadataLoadEventTest extends \Doctrine\Tests\OrmTestCase
         $evm->addEventListener(Events::loadClassMetadata, $this);
         $classMetadata = $metadataFactory->getMetadataFor('Doctrine\Tests\ORM\Mapping\LoadEventTestEntity');
         $this->assertTrue($classMetadata->hasField('about'));
+        $this->assertArrayHasKey('about', $classMetadata->reflFields);
+        $this->assertInstanceOf('ReflectionProperty', $classMetadata->reflFields['about']);
     }
 
     public function loadClassMetadata(\Doctrine\ORM\Event\LoadClassMetadataEventArgs $eventArgs)
