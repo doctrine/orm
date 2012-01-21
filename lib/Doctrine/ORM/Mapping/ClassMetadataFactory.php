@@ -291,7 +291,6 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             // Invoke driver
             try {
                 $this->driver->loadMetadataForClass($className, $class);
-                $this->wakeupReflection($class, $this->getReflectionService());
             } catch (ReflectionException $e) {
                 throw MappingException::reflectionFailure($className, $e);
             }
@@ -333,6 +332,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 $eventArgs = new \Doctrine\ORM\Event\LoadClassMetadataEventArgs($class, $this->em);
                 $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
             }
+            $this->wakeupReflection($class, $this->getReflectionService());
 
             $this->validateRuntimeMetadata($class, $parent);
 
