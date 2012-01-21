@@ -1143,6 +1143,21 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     /**
      * @group DDC-720
+     * @group DDC-1612
+     */
+    public function testFlushSingleNewEntity()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+
+        $this->_em->persist($user);
+        $this->_em->flush($user);
+    }
+
+    /**
+     * @group DDC-720
      */
     public function testProxyIsIgnored()
     {

@@ -390,7 +390,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function computeSingleEntityChangeSet($entity)
     {
-        if ( ! $this->isInIdentityMap($entity) ) {
+        if ( $this->getEntityState($entity) !== self::STATE_MANAGED) {
             throw new \InvalidArgumentException("Entity has to be managed for single computation " . self::objToStr($entity));
         }
 
