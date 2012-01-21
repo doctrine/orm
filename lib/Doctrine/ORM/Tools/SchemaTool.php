@@ -21,6 +21,8 @@ namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\ORMException,
     Doctrine\DBAL\Types\Type,
+    Doctrine\DBAL\Schema\Schema,
+    Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets,
     Doctrine\ORM\EntityManager,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Internal\CommitOrderCalculator,
@@ -127,7 +129,7 @@ class SchemaTool
         $sm = $this->_em->getConnection()->getSchemaManager();
         $metadataSchemaConfig = $sm->createSchemaConfig();
         $metadataSchemaConfig->setExplicitForeignKeyIndexes(false);
-        $schema = new \Doctrine\DBAL\Schema\Schema(array(), array(), $metadataSchemaConfig);
+        $schema = new Schema(array(), array(), $metadataSchemaConfig);
 
         $evm = $this->_em->getEventManager();
 
@@ -250,6 +252,10 @@ class SchemaTool
             if ($evm->hasListeners(ToolEvents::postGenerateSchemaTable)) {
                 $evm->dispatchEvent(ToolEvents::postGenerateSchemaTable, new GenerateSchemaTableEventArgs($class, $schema, $table));
             }
+        }
+
+        if ( ! $this->_platform->supportsSchemas() && ! $this->_platform->canEmulateSchemas() ) {
+            $schema->visit(new RemoveNamespacedAssets());
         }
 
         if ($evm->hasListeners(ToolEvents::postGenerateSchema)) {
