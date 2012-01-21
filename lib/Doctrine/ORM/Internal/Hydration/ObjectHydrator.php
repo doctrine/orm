@@ -550,12 +550,11 @@ class ObjectHydrator extends AbstractHydrator
             }
 
             foreach ($newObjects as $newObject) {
-                $args       = array();
-                $className  = $newObject['className'];
+                $args   = array();
+                $class  = $newObject['class'];
                 foreach ($newObject['args'] as $index => $name) {
                     $args[$index] = $result[$resultKey][$name];
                 }
-                $class = new \ReflectionClass($className);
                 $result[$resultKey] = $class->newInstanceArgs($args);
             }
         }

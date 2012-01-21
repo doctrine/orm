@@ -237,15 +237,17 @@ abstract class AbstractHydrator
 
                 if (isset ($this->_rsm->newObjectMappings[$key])) {
                     $cache[$key]['isNewObjectParameter'] = true;
+                    $cache[$key]['argIndex']    = $this->_rsm->newObjectMappings[$key]['argIndex'];
+                    $cache[$key]['objIndex']    = $this->_rsm->newObjectMappings[$key]['objIndex'];
+                    $cache[$key]['class']       = new \ReflectionClass($this->_rsm->newObjectMappings[$key]['className']);
                 }
             }
 
             if (isset ($cache[$key]['isNewObjectParameter'])) {
-                $argIndex   = $this->_rsm->newObjectMappings[$key]['argIndex'];
-                $objIndex   = $this->_rsm->newObjectMappings[$key]['objIndex'];
-                $className  = $this->_rsm->newObjectMappings[$key]['className'];
-                $rowData['newObjects'][$objIndex]['className']          = $className;
-                $rowData['newObjects'][$objIndex]['args'][$argIndex]    = $cache[$key]['fieldName'];
+                $argIndex = $cache[$key]['argIndex'];
+                $objIndex = $cache[$key]['objIndex'];
+                $rowData['newObjects'][$objIndex]['class'] = $cache[$key]['class'];
+                $rowData['newObjects'][$objIndex]['args'][$argIndex] = $cache[$key]['fieldName'];
             }
 
             if (isset($cache[$key]['isScalar'])) {
