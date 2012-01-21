@@ -78,6 +78,13 @@ class SqlWalker implements TreeWalker
     private $sqlParamIndex = 0;
 
     /**
+     * Counters for generating indexes.
+     *
+     * @var integer
+     */
+    private $newObjectCounter;
+
+    /**
      * @var ParserResult
      */
     private $parserResult;
@@ -1225,10 +1232,19 @@ class SqlWalker implements TreeWalker
                 $sqlSelectExpressions = array();
                 $this->_rsm->newObjectMappings['className'] = $expr->className;
 
-                foreach ($expr->args as $e) {
-                    $resultAliasMap = $this->scalarResultAliasMap;
+                $sqlSelectExpressions   = array();
+                $objIndex               = $this->newObjectCounter ++;
+                foreach ($expr->args as $key => $e) {
+                    $resultAliasMap         = $this->scalarResultAliasMap;
                     $sqlSelectExpressions[] = $this->walkSelectExpression($e);
-                    $this->_rsm->newObjectMappings['resultAliasMap'][] = array_diff($this->scalarResultAliasMap, $resultAliasMap);
+                    $scalarResultAliasMap   = array_diff($this->scalarResultAliasMap, $resultAliasMap);
+                    foreach ($scalarResultAliasMap as $aliasMap) {
+                        $this->_rsm->newObjectMappings[$aliasMap] = array(
+                            'className' => $expr->className,
+                            'objIndex'  => $objIndex,
+                            'argIndex'  => $key
+                        );
+                    }
                 }
 
                 $sql .= implode(', ', $sqlSelectExpressions);

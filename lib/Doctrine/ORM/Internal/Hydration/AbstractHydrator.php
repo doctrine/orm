@@ -234,6 +234,18 @@ abstract class AbstractHydrator
                         // maybe from an additional column that has not been defined in a NativeQuery ResultSetMapping.
                         continue 2;
                 }
+
+                if (isset ($this->_rsm->newObjectMappings[$key])) {
+                    $cache[$key]['isNewObjectParameter'] = true;
+                }
+            }
+
+            if (isset ($cache[$key]['isNewObjectParameter'])) {
+                $argIndex   = $this->_rsm->newObjectMappings[$key]['argIndex'];
+                $objIndex   = $this->_rsm->newObjectMappings[$key]['objIndex'];
+                $className  = $this->_rsm->newObjectMappings[$key]['className'];
+                $rowData['newObjects'][$objIndex]['className']          = $className;
+                $rowData['newObjects'][$objIndex]['args'][$argIndex]    = $cache[$key]['fieldName'];
             }
 
             if (isset($cache[$key]['isScalar'])) {

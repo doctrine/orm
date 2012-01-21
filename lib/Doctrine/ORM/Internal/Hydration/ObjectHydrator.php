@@ -330,6 +330,17 @@ class ObjectHydrator extends AbstractHydrator
             }
         }
 
+        // Extract "new" object constructor arguments. They're appended at the end.
+        if (isset($rowData['newObjects'])) {
+            $newObjects = $rowData['newObjects'];
+
+            unset($rowData['newObjects']);
+
+            if (empty($rowData)) {
+                ++$this->_resultCounter;
+            }
+        }
+
         // Hydrate the data chunks
         foreach ($rowData as $dqlAlias => $data) {
             $entityName = $this->_rsm->aliasMap[$dqlAlias];
@@ -531,6 +542,24 @@ class ObjectHydrator extends AbstractHydrator
                 $result[$resultKey][$name] = $value;
             }
         }
+
+        // Append new object to mixed result sets
+        if (isset($newObjects)) {
+            if ( ! isset($resultKey) ) {
+                $resultKey = $this->_resultCounter - 1;
+            }
+
+            foreach ($newObjects as $newObject) {
+                $args       = array();
+                $className  = $newObject['className'];
+                foreach ($newObject['args'] as $index => $name) {
+                    $args[$index] = $result[$resultKey][$name];
+                }
+                $class = new \ReflectionClass($className);
+                $result[$resultKey] = $class->newInstanceArgs($args);
+            }
+        }
+
     }
 
     /**

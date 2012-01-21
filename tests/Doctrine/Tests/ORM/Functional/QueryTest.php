@@ -833,7 +833,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query  = $this->_em->createQuery("SELECT new Doctrine\Tests\Models\CMS\CmsUserDTO(u.name, e.email, a.city) FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.email e JOIN u.address a ORDER BY u.name");
         $result = $query->getResult();
 
-        $this->assertEquals(3, count($result));
+        $this->assertCount(3, $result);
 
         $this->markTestIncomplete();
         
