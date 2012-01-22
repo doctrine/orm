@@ -116,10 +116,14 @@
         HAS_SOURCE:  {{ has_source|lower }}
       };
     </script>
-    {%- for scriptfile in script_files %}
-    <script type="text/javascript" src="{{ pathto(scriptfile, 1) }}"></script>
-    <script type="text/javascript" src="{{ pathto('_static/configurationblock.js', 1) }}"></script>
-    {%- endfor %}
+
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/configurationblock.js"></script>
+
     {%- if use_opensearch %}
     <link rel="search" type="application/opensearchdescription+xml"
           title="{% trans docstitle=docstitle|e %}Search within {{ docstitle }}{% endtrans %}"
@@ -167,14 +171,14 @@
           <div class="tl cls">
             <ul>
               <li><a target="_top" href="/">home</a></li>
-              <li><a class="" target="_top" href="/about">about</a></li>
-              <li><a class="" target="_top" href="/projects">projects</a></li>
-              <li><a class="" target="_top" href="/projects/orm">orm</a></li>
-              <li><a class="" target="_top" href="/projects/dbal">dbal</a></li>
-              <li><a class="" target="_top" href="/blog">blog</a></li>
+              <li><a class="" target="_top" href="http://www.doctrine-project.org/about">about</a></li>
+              <li><a class="" target="_top" href="http://www.doctrine-project.org/projects">projects</a></li>
+              <li><a class="" target="_top" href="http://www.doctrine-project.org/projects/orm">orm</a></li>
+              <li><a class="" target="_top" href="http://www.doctrine-project.org/projects/dbal">dbal</a></li>
+              <li><a class="" target="_top" href="http://www.doctrine-project.org/blog">blog</a></li>
               <li><a class="" target="_top" href="http://www.doctrine-project.org/jira">development</a></li>
-              <li><a class="" target="_top" href="/contribute">contribute</a></li>
-              <li><a class="" target="_top" href="/community">community</a></li>
+              <li><a class="" target="_top" href="http://www.doctrine-project.org/contribute">contribute</a></li>
+              <li><a class="" target="_top" href="http://www.doctrine-project.org/community">community</a></li>
               <li><a class="" target="_top" href="http://wiki.doctrine-project.org">wiki</a></li>
             </ul>
           </div>
