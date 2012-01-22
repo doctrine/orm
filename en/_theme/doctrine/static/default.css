@@ -80,6 +80,8 @@ abbr,acronym { border:0; }
 
 div.document {
     margin-right: 30px;
+    font-size: 12pt;
+    text-align: left !important;
 }
 
 div.documentwrapper {
@@ -94,6 +96,14 @@ div.bodywrapper {
 div.body {
     background-color: #ffffff;
     color: #000000;
+}
+
+div.body ul {
+    margin-left: 30px
+}
+
+div.body ul, div.body ul li {
+    list-style-type: square;
 }
 
 div.footer {
@@ -251,8 +261,11 @@ a.headerlink:hover {
 }
 
 div.body p, div.body dd, div.body li {
-    text-align: justify;
-    line-height: 130%;
+    /*text-align: justify;*/
+}
+#content div.body p {
+    font-size: 100%;
+    line-height: 120%;
 }
 
 div.highlight {
@@ -319,7 +332,8 @@ pre {
 tt {
     background-color: #ecf0f3;
     padding: 0 1px 0 1px;
-    font-size: 1.4em;
+    /*font-size: 1.4em;*/
+    font-weight: bold;
 }
 
 th {
