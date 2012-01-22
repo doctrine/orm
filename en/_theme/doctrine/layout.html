@@ -104,7 +104,7 @@
     <title>{{ title|striptags }}{{ titlesuffix }}</title>
     <link rel="stylesheet" href="{{ pathto('_static/' + style, 1) }}" type="text/css" />
     <link rel="stylesheet" href="{{ pathto('_static/pygments.css', 1) }}" type="text/css" />
-    <link rel="stylesheet" href="http://www.doctrine-project.org/css/layout.css" type="text/css" />
+    <link rel="stylesheet" href="{{ pathto('_static/layout.css', 1) }}" type="text/css" />
     <link rel="stylesheet" href="{{ pathto('_static/configurationblock.css', 1) }}" type="text/css" />
     {%- if not embedded %}
     <script type="text/javascript">

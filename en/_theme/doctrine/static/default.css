@@ -410,27 +410,27 @@ div.admonition
 
 div.note
 {
-  background: #fff url(http://www.doctrine-project.org/images/note.png) no-repeat -5px -5px;
+  background: #fff url(note.png) no-repeat -5px -5px;
 }
 
 div.caution
 {
-  background: #fff url(http://www.doctrine-project.org/images/caution.png) no-repeat -5px -5px;
+  background: #fff url(caution.png) no-repeat -5px -5px;
 }
 
 div.warning
 {
-  background: #fff url(http://www.doctrine-project.org/images/caution.png) no-repeat -5px -5px;
+  background: #fff url(caution.png) no-repeat -5px -5px;
 }
 
 div.tip
 {
-  background: #fff url(http://www.doctrine-project.org/images/tip.png) no-repeat -5px -5px;
+  background: #fff url(tip.png) no-repeat -5px -5px;
 }
 
 div.seealso
 {
-    background: #fff url(http://www.doctrine-project.org/images/tip.png) no-repeat -5px -5px;
+    background: #fff url(tip.png) no-repeat -5px -5px;
 }
 
 /* Note/Caution/Tip Boxes */
@@ -440,7 +440,7 @@ div.seealso
 div.note {
   padding: 5px 20px 5px 45px;
   margin: 10px 0;
-  background: #ffd url(http://www.doctrine-project.org/images/note.png) no-repeat 5px 10px;
+  background: #ffd url(note.png) no-repeat 5px 10px;
 }
 
 /* Caution */
@@ -448,7 +448,7 @@ div.note {
 div.caution, div.warning {
   padding: 5px 20px 5px 45px;
   margin: 10px 0;
-  background: #ffd url(http://www.doctrine-project.org/images/caution.png) no-repeat 5px 10px;
+  background: #ffd url(caution.png) no-repeat 5px 10px;
 }
 
 /* Tip */
@@ -456,7 +456,7 @@ div.caution, div.warning {
 div.tip {
   padding: 5px 20px 5px 45px;
   margin: 10px 0;
-  background: #ffd url(http://www.doctrine-project.org/images/tip.png) no-repeat 5px 10px;
+  background: #ffd url(tip.png) no-repeat 5px 10px;
 }
 
 /* Sidebar */
