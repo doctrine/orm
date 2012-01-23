@@ -261,15 +261,19 @@ class YamlDriver extends AbstractFileDriver
             }
         }
 
-        // Evaluate embedded fields
-        if (isset($element['embedded'])) {
-            foreach ($element['embedded'] as $name => $embeddedMapping) {
+        // Evaluate embedOne fields
+        if (isset($element['embedOne'])) {
+            foreach ($element['embedOne'] as $name => $embedOneMapping) {
                 $mapping = array(
                     'fieldName' => $name,
-                    'class'     => $embeddedMapping['class'],
+                    'class'     => $embedOneMapping['class'],
                 );
 
-                $metadata->mapEmbedded($mapping);
+                if (isset($embedOneMapping['prefix'])) {
+                    $mapping['prefix'] = $embedOneMapping['prefix'];
+                }
+
+                $metadata->mapEmbedOne($mapping);
             }
         }
 

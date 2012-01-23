@@ -1136,37 +1136,29 @@ class BasicEntityPersister
      */
     protected function _getInsertSQL()
     {
-        if ($this->_insertSql === null) {
-            $insertSql = '';
-            $columns = $this->_getInsertColumnList();
+        if ($this->_insertSql !== null) {
+            return $this->_insertSql;
+        }
 
-            if (empty($columns)) {
-                $insertSql = $this->_platform->getEmptyIdentityInsertSQL(
-                    $this->_class->getQuotedTableName($this->_platform),
-                    $this->_class->getQuotedColumnName($this->_class->identifier[0], $this->_platform)
-                );
-            } else {
-                $columns = array_unique($columns);
+        $insertSql = '';
+        $columns = $this->_getInsertColumnList();
 
-                $values = array();
-                foreach ($columns AS $column) {
-                    $placeholder = '?';
-
-                    if (isset($this->_columnTypes[$column]) &&
-                        isset($this->_class->fieldMappings[$this->_class->fieldNames[$column]]['requireSQLConversion'])) {
-                        $type = Type::getType($this->_columnTypes[$column]);
-                        $placeholder = $type->convertToDatabaseValueSQL('?', $this->_platform);
-                    }
-
-                    $values[] = $placeholder;
-                }
-
-                $insertSql = 'INSERT INTO ' . $this->_class->getQuotedTableName($this->_platform)
-                        . ' (' . implode(', ', $columns) . ') VALUES (' . implode(', ', $values) . ')';
-            }
+        if (empty($columns)) {
+            $insertSql = $this->_platform->getEmptyIdentityInsertSQL(
+                $this->_class->getQuotedTableName($this->_platform),
+                $this->_class->getQuotedColumnName($this->_class->identifier[0], $this->_platform)
+            );
 
             $this->_insertSql = $insertSql;
+
+            return $this->_insertSql;
         }
+
+        $insertSql = 'INSERT INTO ' . $this->_class->getQuotedTableName($this->_platform)
+                . ' (' . implode(', ', array_keys($columns)) . ') VALUES'
+                . ' (' . implode(', ', array_values($columns)) . ')';
+
+        $this->_insertSql = $insertSql;
 
         return $this->_insertSql;
     }
@@ -1183,24 +1175,108 @@ class BasicEntityPersister
     {
         $columns = array();
 
-        foreach ($this->_class->reflFields as $name => $field) {
-            if ($this->_class->isVersioned && $this->_class->versionField == $name) {
+        return $this->_getClassMetadataInsertColumnList($this->_class, $columns);
+    }
+
+    /**
+     * Retrieve the list of columns to put in the INSERT SQL statement of a ClassMetadata.
+     *
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param array $columns
+     *
+     * @return array
+     */
+    private function _getClassMetadataInsertColumnList($class, $columns)
+    {
+        foreach (array_keys($class->reflFields) as $name) {
+            if ($class->isVersioned && $class->versionField == $name) {
                 continue;
             }
 
-            if (isset($this->_class->associationMappings[$name])) {
-                $assoc = $this->_class->associationMappings[$name];
+            switch (true) {
+                case (isset($class->associationMappings[$name])):
+                    $columns = $this->_getInsertAssociationColumnList(
+                        $class, $class->associationMappings[$name], $columns
+                    );
+                    break;
 
-                if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
-                    foreach ($assoc['targetToSourceKeyColumns'] as $sourceCol) {
-                        $columns[] = $sourceCol;
-                    }
-                }
-            } else if ($this->_class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $this->_class->identifier[0] != $name) {
-                $columns[] = $this->_class->getQuotedColumnName($name, $this->_platform);
-                $this->_columnTypes[$name] = $this->_class->fieldMappings[$name]['type'];
+                case (isset($class->embeddedMappings[$name])):
+                    $columns = $this->_getInsertEmbeddedColumnList(
+                        $class, $class->embeddedMappings[$name], $columns
+                    );
+                    break;
+
+                case ($class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $class->identifier[0] != $name):
+                    $columns = $this->_getInsertFieldColumnList(
+                        $class, $class->fieldMappings[$name], $columns
+                    );
+                    break;
+
+                default:
+                    // Do nothing
             }
         }
+
+        return $columns;
+    }
+
+    /**
+     * Gets the list of columns to put in the INSERT SQL statement of an embedded field.
+     *
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param array $mapping
+     * @param array $columns
+     * @return array
+     */
+    private function _getInsertEmbeddedColumnList($class, $mapping, $columns)
+    {
+        $embedded   = $class->embeddedMappings[$mapping['fieldName']];
+        $embeddable = $this->_em->getClassMetadata($embedded['class']);
+
+        return $this->_getClassMetadataInsertColumnList($embeddable, $columns);
+    }
+
+    /**
+     * Gets the list of columns to put in the INSERT SQL statement of an association.
+     *
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param array $mapping
+     * @param array $columns
+     * @return array
+     */
+    private function _getInsertAssociationColumnList($class, $mapping, $columns)
+    {
+        if ($mapping['isOwningSide'] && $mapping['type'] & ClassMetadata::TO_ONE) {
+            foreach ($mapping['targetToSourceKeyColumns'] as $sourceCol) {
+                $columns[$sourceCol] = '?';
+            }
+        }
+
+        return $columns;
+    }
+
+    /**
+     * Gets the list of columns to put in the INSERT SQL statement of a field.
+     *
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param array $mapping
+     * @param array $columns
+     * @return array
+     */
+    private function _getInsertFieldColumnList($class, $mapping, $columns)
+    {
+        $name        = $mapping['fieldName'];
+        $quotedName  = $class->getQuotedColumnName($name, $this->_platform);
+        $placeholder = '?';
+
+        if (isset($mapping['requireSQLConversion'])) {
+            $type = Type::getType($mapping['type']);
+            $placeholder = $type->convertToDatabaseValueSQL($placeholder, $this->_platform);
+        }
+
+        $columns[$quotedName] = $placeholder;
+
+        $this->_columnTypes[$name] = $mapping['type'];
 
         return $columns;
     }

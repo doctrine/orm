@@ -34,7 +34,7 @@
         <field name="name" column="name" type="string" length="50" nullable="true" unique="true" />
         <field name="email" column="user_email" type="string" column-definition="CHAR(32) NOT NULL" />
 
-        <embedded name="parents" class="Parents" />
+        <embed-one name="parents" class="Parents" />
 
         <one-to-one field="address" target-entity="Address" inversed-by="user">
             <cascade><cascade-remove /></cascade>

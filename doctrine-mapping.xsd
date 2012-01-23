@@ -95,7 +95,7 @@
       <xs:element name="named-queries" type="orm:named-queries" minOccurs="0" maxOccurs="1" />
       <xs:element name="id" type="orm:id" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="field" type="orm:field" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="embedded" type="orm:embedded" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="embed-one" type="orm:embed-one" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="one-to-one" type="orm:one-to-one" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="one-to-many" type="orm:one-to-many" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="many-to-one" type="orm:many-to-one" minOccurs="0" maxOccurs="unbounded" />
@@ -192,12 +192,13 @@
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
 
-  <xs:complexType name="embedded">
+  <xs:complexType name="embed-one">
     <xs:sequence>
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="class" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="prefix" type="xs:NMTOKEN" />
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
 

@@ -31,7 +31,7 @@ class CmsUser
      */
     public $name;
     /**
-     * @Embedded(class="CmsParents")
+     * @EmbedOne(class="CmsParents", prefix="parents")
      */
     public $parents;
     /**

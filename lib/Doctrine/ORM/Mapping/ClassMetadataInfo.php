@@ -114,6 +114,20 @@ class ClassMetadataInfo implements ClassMetadata
      * the <tt>NotifyPropertyChanged</tt> interface.
      */
     const CHANGETRACKING_NOTIFY = 3;
+
+    /* The Entity types */
+    /**
+     * Specifies that current mapping points to an entity class.
+     */
+    const TYPE_ENTITY = 1;
+    /**
+     * Specifies that current mapping points to a mapped superclass.
+     */
+    const TYPE_MAPPEDSUPERCLASS = 2;
+    /**
+     * Specifies that current mapping points to an embeddable class.
+     */
+    const TYPE_EMBEDDABLE = 3;
     /**
      * Specifies that an association is to be fetched when it is first accessed.
      */
@@ -158,6 +172,12 @@ class ClassMetadataInfo implements ClassMetadata
      * READ-ONLY: The name of the entity class.
      */
     public $name;
+
+    /**
+     * READ-ONLY: The type of the class. Can be any of ClassMetadata::TYPE_* constants.
+     * @var type
+     */
+    public $type = self::TYPE_ENTITY;
 
     /**
      * READ-ONLY: The namespace the entity class is contained in.
@@ -522,7 +542,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * NamingStrategy determining the default column and table names
      *
-     * @var \Doctrine\ORM\NamingStrategy
+     * @var \Doctrine\ORM\Mapping\NamingStrategy
      */
     protected $namingStrategy;
 
@@ -824,7 +844,7 @@ class ClassMetadataInfo implements ClassMetadata
     public function validateIdentifier()
     {
         // Verify & complete identifier mapping
-        if ( ! $this->identifier && ! $this->isMappedSuperclass) {
+        if ( ! $this->identifier && ! $this->isMappedSuperclass && ! $this->isEmbeddable) {
             throw MappingException::identifierRequired($this->name);
         }
 
@@ -1177,6 +1197,10 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         $mapping['class'] = ltrim($mapping['class'], '\\');
+
+        if ( ! isset($mapping['prefix'])) {
+            $mapping['prefix'] = $this->namingStrategy->propertyToColumnName($mapping['fieldName']);
+        }
 
         return $mapping;
     }
@@ -1926,7 +1950,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array $mapping The embedded mapping.
      */
-    public function mapEmbedded(array $mapping)
+    public function mapEmbedOne(array $mapping)
     {
         $mapping         = $this->_validateAndCompleteEmbeddedMapping($mapping);
         $sourceFieldName = $mapping['fieldName'];

@@ -23,8 +23,11 @@ namespace Doctrine\ORM\Mapping;
  * @Annotation
  * @Target("PROPERTY")
  */
-final class Embedded implements Annotation
+final class EmbedOne implements Annotation
 {
      /** @var string */
     public $class;
+
+    /** @var string */
+    public $prefix;
 }

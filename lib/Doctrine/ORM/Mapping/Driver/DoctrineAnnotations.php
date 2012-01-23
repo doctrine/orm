@@ -30,7 +30,7 @@ require_once __DIR__.'/../Version.php';
 require_once __DIR__.'/../JoinColumn.php';
 require_once __DIR__.'/../JoinColumns.php';
 require_once __DIR__.'/../Column.php';
-require_once __DIR__.'/../Embedded.php';
+require_once __DIR__.'/../EmbedOne.php';
 require_once __DIR__.'/../OneToOne.php';
 require_once __DIR__.'/../OneToMany.php';
 require_once __DIR__.'/../ManyToOne.php';

@@ -289,7 +289,7 @@ class AnnotationDriver implements Driver
             }
 
             // Field can only be annotated with one of:
-            // @Column, @Embedded, @OneToOne, @OneToMany, @ManyToOne, @ManyToMany
+            // @Column, @EmbedOne, @OneToOne, @OneToMany, @ManyToOne, @ManyToMany
             if ($columnAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Column')) {
                 if ($columnAnnot->type == null) {
                     throw MappingException::propertyTypeIsRequired($className, $property->getName());
@@ -338,10 +338,14 @@ class AnnotationDriver implements Driver
                 } else if ($tblGeneratorAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\TableGenerator')) {
                     throw MappingException::tableIdGeneratorNotImplemented($className);
                 }
-            } else if ($embeddedAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Embedded')) {
-                $mapping['class'] = $embeddedAnnot->class;
+            } else if ($embedOneAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\EmbedOne')) {
+                $mapping['class']  = $embedOneAnnot->class;
 
-                $metadata->mapEmbedded($mapping);
+                if (isset($embedOneAnnot->prefix)) {
+                    $mapping['prefix'] = $embedOneAnnot->prefix;
+                }
+                
+                $metadata->mapEmbedOne($mapping);
             } else if ($oneToOneAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OneToOne')) {
                 if ($idAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Id')) {
                     $mapping['id'] = true;
