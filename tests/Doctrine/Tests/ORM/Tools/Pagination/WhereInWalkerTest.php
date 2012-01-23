@@ -107,5 +107,19 @@ class WhereInWalkerTest extends PaginationTestCase
                 "SELECT u0_.id AS id0, g1_.id AS id1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE (1 = 1 AND 2 = 2 OR 3 = 3) AND u0_.id IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", $whereInQuery->getSql()
         );
     }
+
+    public function testWhereInQuery_WhereNot()
+    {
+        $query = $this->entityManager->createQuery(
+                        'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g WHERE NOT 1 = 2'
+        );
+        $whereInQuery = clone $query;
+        $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
+        $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
+
+        $this->assertEquals(
+                "SELECT u0_.id AS id0, g1_.id AS id1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE (NOT 1 = 2) AND u0_.id IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", $whereInQuery->getSql()
+        );
+    }
 }
 
