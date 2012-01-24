@@ -40,6 +40,11 @@ use Doctrine\DBAL\LockMode,
 class SqlWalker implements TreeWalker
 {
     /**
+     * @var string
+     */
+    const HINT_DISTINCT = 'doctrine.distinct';
+  
+    /**
      * @var ResultSetMapping
      */
     private $_rsm;
@@ -591,7 +596,7 @@ class SqlWalker implements TreeWalker
         $sqlSelectExpressions = array_filter(array_map(array($this, 'walkSelectExpression'), $selectClause->selectExpressions));
 
         if ($this->_query->getHint(Query::HINT_INTERNAL_ITERATION) == true && $selectClause->isDistinct) {
-            $this->_query->setHint('doctrine.distinct', true);
+            $this->_query->setHint(self::HINT_DISTINCT, true);
         }
 
         $addMetaColumns = ! $this->_query->getHint(Query::HINT_FORCE_PARTIAL_LOAD) &&
@@ -815,7 +820,7 @@ class SqlWalker implements TreeWalker
 
         // Ensure we got the owning side, since it has all mapping info
         $assoc = ( ! $relation['isOwningSide']) ? $targetClass->associationMappings[$relation['mappedBy']] : $relation;
-        if ($this->_query->getHint(Query::HINT_INTERNAL_ITERATION) == true && (!$this->_query->getHint('doctrine.distinct') || isset($this->_selectedClasses[$joinedDqlAlias]))) {
+        if ($this->_query->getHint(Query::HINT_INTERNAL_ITERATION) == true && (!$this->_query->getHint(self::HINT_DISTINCT) || isset($this->_selectedClasses[$joinedDqlAlias]))) {
             if ($relation['type'] == ClassMetadata::ONE_TO_MANY || $relation['type'] == ClassMetadata::MANY_TO_MANY) {
                 throw QueryException::iterateWithFetchJoinNotAllowed($assoc);
             }
