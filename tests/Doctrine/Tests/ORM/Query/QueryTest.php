@@ -90,4 +90,28 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('baz', $q->getHint('bar'));
         $this->assertEquals(array('foo' => 'bar', 'bar' => 'baz'), $q->getHints());
     }
+    
+    /**
+     * @expectedException Doctrine\ORM\Query\QueryException
+     **/
+    public function testIterateWithNoDistinctAndWrongSelectClause()
+    {
+        $q = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
+        $q->iterate();
+    }
+    
+    /**
+     * @expectedException Doctrine\ORM\Query\QueryException
+     **/
+    public function testIterateWithNoDistinctAndWithValidSelectClause()
+    {
+        $q = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
+        $q->iterate();
+    }
+    
+    public function testIterateWithDistinct()
+    {
+        $q = $this->_em->createQuery("SELECT DISTINCT u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
+        $q->iterate();
+    }
 }
