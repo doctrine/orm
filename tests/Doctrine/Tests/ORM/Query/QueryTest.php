@@ -101,4 +101,28 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
         $q->useResultCache(true);
         $this->assertSame($this->_em->getConfiguration()->getResultCacheImpl(), $q->getQueryCacheProfile()->getResultCacheDriver());
     }
+
+    /**
+     * @expectedException Doctrine\ORM\Query\QueryException
+     **/
+    public function testIterateWithNoDistinctAndWrongSelectClause()
+    {
+        $q = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
+        $q->iterate();
+    }
+
+    /**
+     * @expectedException Doctrine\ORM\Query\QueryException
+     **/
+    public function testIterateWithNoDistinctAndWithValidSelectClause()
+    {
+        $q = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
+        $q->iterate();
+    }
+
+    public function testIterateWithDistinct()
+    {
+        $q = $this->_em->createQuery("SELECT DISTINCT u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
+        $q->iterate();
+    }
 }
