@@ -128,10 +128,12 @@ public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
  * <description>
  *
  * @param <variableType>$<variableName>
+ * @return <entity>
  */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
 <spaces>$this-><fieldName>[] = $<variableName>;
+<spaces>return $this;
 }';
 
     private static $_lifecycleCallbackMethodTemplate =
