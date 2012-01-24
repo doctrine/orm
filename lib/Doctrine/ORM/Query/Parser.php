@@ -42,6 +42,7 @@ class Parser
         'lower'     => 'Doctrine\ORM\Query\AST\Functions\LowerFunction',
         'upper'     => 'Doctrine\ORM\Query\AST\Functions\UpperFunction',
         'identity'  => 'Doctrine\ORM\Query\AST\Functions\IdentityFunction',
+        'date_format' => 'Doctrine\ORM\Query\AST\Functions\DateFormatFunction',
     );
 
     /** READ-ONLY: Maps BUILT-IN numeric function names to AST class names. */
