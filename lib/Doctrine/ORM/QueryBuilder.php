@@ -50,6 +50,7 @@ class QueryBuilder
      * @var array The array of DQL parts collected.
      */
     private $_dqlParts = array(
+        'distinct' => false,
         'select'  => array(),
         'from'    => array(),
         'join'    => array(),
@@ -342,8 +343,8 @@ class QueryBuilder
      *         ->from('User', 'u')
      *         ->where('u.id = :user_id1 OR u.id = :user_id2')
      *         ->setParameters(array(
-     *             ':user_id1' => 1,
-     *             ':user_id2' => 2
+     *             'user_id1' => 1,
+     *             'user_id2' => 2
      *         ));
      * </code>
      *
@@ -500,6 +501,25 @@ class QueryBuilder
         $selects = is_array($select) ? $select : func_get_args();
 
         return $this->add('select', new Expr\Select($selects), false);
+    }
+
+    /**
+     * Add a DISTINCT flag to this query.
+     *
+     * <code>
+     *     $qb = $em->createQueryBuilder()
+     *         ->select('u')
+     *         ->distinct()
+     *         ->from('User', 'u');
+     * </code>
+     *
+     * @param bool
+     * @return QueryBuilder
+     */
+    public function distinct($flag = true)
+    {
+        $this->_dqlParts['distinct'] = (bool) $flag;
+        return $this;
     }
 
     /**
@@ -973,8 +993,10 @@ class QueryBuilder
 
     private function _getDQLForSelect()
     {
-        $dql = 'SELECT' . $this->_getReducedDQLQueryPart('select', array('pre' => ' ', 'separator' => ', '));
-        
+        $dql = 'SELECT'
+              . ($this->_dqlParts['distinct']===true ? ' DISTINCT' : '')
+              . $this->_getReducedDQLQueryPart('select', array('pre' => ' ', 'separator' => ', '));
+
         $fromParts   = $this->getDQLPart('from');
         $joinParts   = $this->getDQLPart('join');
         $fromClauses = array();
