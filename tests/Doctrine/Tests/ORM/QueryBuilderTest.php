@@ -732,4 +732,17 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         
         $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $qb->getDQL());
     }
+
+    /**
+     * @group DDC-1619
+     */
+    public function testAddDistinct()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->distinct()
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+
+        $this->assertEquals('SELECT DISTINCT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $qb->getDQL());
+    }
 }
