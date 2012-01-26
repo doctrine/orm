@@ -642,7 +642,7 @@ The last missing definition is that of the User entity:
         {
             /**
              * @Id @GeneratedValue @Column(type="integer")
-             * @var string
+             * @var int
              */
             protected $id;
 
