@@ -1705,6 +1705,10 @@ class ClassMetadataInfo implements ClassMetadata
         if (isset($table['uniqueConstraints'])) {
             $this->table['uniqueConstraints'] = $table['uniqueConstraints'];
         }
+
+        if (isset($table['options'])) {
+            $this->table['options'] = $table['options'];
+        }
     }
 
     /**

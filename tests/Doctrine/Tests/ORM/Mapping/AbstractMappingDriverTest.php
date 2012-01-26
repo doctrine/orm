@@ -77,6 +77,21 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      * @depends testEntityTableNameAndInheritance
      * @param ClassMetadata $class
      */
+    public function testEntityOptions($class)
+    {
+        $this->assertArrayHasKey('options', $class->table, 'ClassMetadata should have options key in table property.');
+
+        $this->assertEquals(array(
+            'foo' => 'bar', 'baz' => array('key' => 'val')
+        ), $class->table['options']);
+
+        return $class;
+    }
+
+    /**
+     * @depends testEntityOptions
+     * @param ClassMetadata $class
+     */
     public function testEntitySequence($class)
     {
         $this->assertInternalType('array', $class->sequenceGeneratorDefinition, 'No Sequence Definition set on this driver.');
@@ -424,7 +439,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
  * @Table(
  *  name="cms_users",
  *  uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"})},
- *  indexes={@Index(name="name_idx", columns={"name"}), @Index(name="0", columns={"user_email"})}
+ *  indexes={@Index(name="name_idx", columns={"name"}), @Index(name="0", columns={"user_email"})},
+ *  options={"foo": "bar", "baz": {"key": "val"}}
  * )
  */
 class User
@@ -495,6 +511,7 @@ class User
         $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable(array(
            'name' => 'cms_users',
+           'options' => array('foo' => 'bar', 'baz' => array('key' => 'val')),
           ));
         $metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);
         $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');

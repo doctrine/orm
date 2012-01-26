@@ -235,6 +235,12 @@ class SchemaTool
                 }
             }
 
+            if (isset($class->table['options'])) {
+                foreach ($class->table['options'] AS $key => $val) {
+                    $table->addOption($key, $val);
+                }
+            }
+
             $processedClasses[$class->name] = true;
 
             if ($class->isIdGeneratorSequence() && $class->name == $class->rootEntityName) {

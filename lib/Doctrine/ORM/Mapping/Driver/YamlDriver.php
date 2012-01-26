@@ -156,6 +156,10 @@ class YamlDriver extends AbstractFileDriver
             }
         }
 
+        if (isset($element['options'])) {
+            $metadata->table['options'] = $element['options'];
+        }
+
         $associationIds = array();
         if (isset($element['id'])) {
             // Evaluate identifier settings
