@@ -22,6 +22,10 @@ Doctrine\Tests\ORM\Mapping\User:
       length: 50
       nullable: true
       unique: true
+      options:
+        foo: bar
+        baz:
+          key: val
     email:
       type: string
       column: user_email

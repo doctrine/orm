@@ -196,10 +196,6 @@ class XmlDriver extends AbstractFileDriver
                     $mapping['unique'] = ((string)$fieldMapping['unique'] == "false") ? false : true;
                 }
 
-                if (isset($fieldMapping['options'])) {
-                    $mapping['options'] = (array)$fieldMapping['options'];
-                }
-
                 if (isset($fieldMapping['nullable'])) {
                     $mapping['nullable'] = ((string)$fieldMapping['nullable'] == "false") ? false : true;
                 }
@@ -210,6 +206,10 @@ class XmlDriver extends AbstractFileDriver
 
                 if (isset($fieldMapping['column-definition'])) {
                     $mapping['columnDefinition'] = (string)$fieldMapping['column-definition'];
+                }
+
+                if (isset($fieldMapping->options)) {
+                    $mapping['options'] = $this->_parseOptions($fieldMapping->options->children());
                 }
 
                 $metadata->mapField($mapping);

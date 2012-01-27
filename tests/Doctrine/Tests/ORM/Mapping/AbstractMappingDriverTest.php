@@ -144,6 +144,9 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($class->fieldMappings['name']['nullable']);
         $this->assertTrue($class->fieldMappings['name']['unique']);
 
+        $expected = array('foo' => 'bar', 'baz' => array('key' => 'val'));
+        $this->assertEquals($expected, $class->fieldMappings['name']['options']);
+
         return $class;
     }
 
@@ -454,7 +457,7 @@ class User
     public $id;
 
     /**
-     * @Column(length=50, nullable=true, unique=true)
+     * @Column(length=50, nullable=true, unique=true, options={"foo": "bar", "baz": {"key": "val"}})
      */
     public $name;
 
@@ -530,6 +533,7 @@ class User
            'unique' => true,
            'nullable' => true,
            'columnName' => 'name',
+           'options' => array('foo' => 'bar', 'baz' => array('key' => 'val')),
           ));
         $metadata->mapField(array(
            'fieldName' => 'email',
