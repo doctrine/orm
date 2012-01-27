@@ -39,9 +39,9 @@ Mapping Objects onto a Database
 -------------------------------
 
 * **Basic Reference**:
-  :doc:`Mapping Objects and Fields <reference/basic-mapping>` |
-  :doc:`Mapping Associations <reference/association-mapping>` |
-  :doc:`Inheritance Mapping <reference/inheritance-mapping>`
+  :doc:`Objects and Fields <reference/basic-mapping>` |
+  :doc:`Associations <reference/association-mapping>` |
+  :doc:`Inheritance <reference/inheritance-mapping>`
 
 * **Mapping Driver References**:
   :doc:`XML <reference/xml-mapping>` |
@@ -54,17 +54,17 @@ Working with Objects
 --------------------
 
 * **Basic Reference**:
-  :doc:`Working with Objects <reference/working-with-objects>` |
-  :doc:`Working with Assocations <reference/working-with-associations>` |
+  :doc:`Entities <reference/working-with-objects>` |
+  :doc:`Assocations <reference/working-with-associations>` |
   :doc:`Events <reference/events>`
 
 * **Querying Objects**:
-  :doc:`DQL - Doctrine Query Language <reference/dql-doctrine-query-language>` |
+  :doc:`Doctrine Query Language (DQL) <reference/dql-doctrine-query-language>` |
   :doc:`QueryBuilder <reference/query-builder>` |
   :doc:`Native SQL Queries <reference/native-sql>`
 
 * **Tutorials**:
-  :doc:`Working with indexed associations <tutorials/working-with-indexed-associations>` |
+  :doc:`Indexed associations <tutorials/working-with-indexed-associations>` |
   :doc:`Extra Lazy Assocations <tutorials/extra-lazy-associations>` |
   :doc:`Composite Primary Keys <tutorials/composite-primary-keys>` 
 
