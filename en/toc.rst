@@ -11,6 +11,7 @@ Tutorials
    tutorials/working-with-indexed-associations
    tutorials/extra-lazy-associations
    tutorials/composite-primary-keys
+   tutorials/ordered-associations
 
 Reference Guide
 ---------------
@@ -28,8 +29,10 @@ Reference Guide
    reference/inheritance-mapping
    reference/working-with-objects
    reference/working-with-associations
-   reference/transactions-and-concurrency
    reference/events
+   reference/unitofwork
+   reference/unitofwork-associations
+   reference/transactions-and-concurrency
    reference/batch-processing
    reference/dql-doctrine-query-language
    reference/query-builder
@@ -46,7 +49,6 @@ Reference Guide
    reference/metadata-drivers
    reference/best-practices
    reference/limitations-and-known-issues
-
 
 
 Cookbook

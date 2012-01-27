@@ -1,402 +1,23 @@
 Association Mapping
 ===================
 
-This chapter explains how associations between entities are mapped
-with Doctrine. We start out with an explanation of the concept of
-owning and inverse sides which is important to understand when
-working with bidirectional associations. Please read these
-explanations carefully.
+This chapter introduces association mappings which are used to explain
+references between objects and are mapped to a relational database using
+foreign keys.
 
-.. _association-mapping-owning-inverse:
+Instead of working with the foreign keys directly you will always work with
+references to objects:
 
-Owning Side and Inverse Side
-----------------------------
+- A reference to a single object is represented by a foreign key.
+- A collection of objects is represented by many foreign keys pointing to the object holding the collection
 
-When mapping bidirectional associations it is important to
-understand the concept of the owning and inverse sides. The
-following general rules apply:
+This chapter is split into three different sections.
 
+- A list of all the possible association mapping use-cases is given.
+- :ref:`association_mapping_defaults` are explained that simplify the use-case examples.
+- :ref:`collections` are introduced that contain entities in assoactions.
 
--  Relationships may be bidirectional or unidirectional.
--  A bidirectional relationship has both an owning side and an
-   inverse side.
--  A unidirectional relationship only has an owning side.
--  The owning side of a relationship determines the updates to the
-   relationship in the database.
-
-The following rules apply to *bidirectional* associations:
-
-
--  The inverse side of a bidirectional relationship must refer to
-   its owning side by use of the mappedBy attribute of the OneToOne,
-   OneToMany, or ManyToMany mapping declaration. The mappedBy
-   attribute designates the field in the entity that is the owner of
-   the relationship.
--  The owning side of a bidirectional relationship must refer to
-   its inverse side by use of the inversedBy attribute of the
-   OneToOne, ManyToOne, or ManyToMany mapping declaration. The
-   inversedBy attribute designates the field in the entity that is the
-   inverse side of the relationship.
--  The many side of OneToMany/ManyToOne bidirectional relationships
-   *must* be the owning side, hence the mappedBy element can not be
-   specified on the ManyToOne side.
--  For OneToOne bidirectional relationships, the owning side
-   corresponds to the side that contains the corresponding foreign key
-   (@JoinColumn(s)).
--  For ManyToMany bidirectional relationships either side may be
-   the owning side (the side that defines the @JoinTable and/or does
-   not make use of the mappedBy attribute, thus using a default join
-   table).
-
-Especially important is the following:
-
-**The owning side of a relationship determines the updates to the relationship in the database**.
-
-To fully understand this, remember how bidirectional associations
-are maintained in the object world. There are 2 references on each
-side of the association and these 2 references both represent the
-same association but can change independently of one another. Of
-course, in a correct application the semantics of the bidirectional
-association are properly maintained by the application developer
-(that's his responsibility). Doctrine needs to know which of these
-two in-memory references is the one that should be persisted and
-which not. This is what the owning/inverse concept is mainly used
-for.
-
-**Changes made only to the inverse side of an association are ignored. Make sure to update both sides of a bidirectional association (or at least the owning side, from Doctrine's point of view)**
-
-The owning side of a bidirectional association is the side Doctrine
-"looks at" when determining the state of the association, and
-consequently whether there is anything to do to update the
-association in the database.
-
-.. note::
-
-    "Owning side" and "inverse side" are technical concepts of
-    the ORM technology, not concepts of your domain model. What you
-    consider as the owning side in your domain model can be different
-    from what the owning side is for Doctrine. These are unrelated.
-
-
-Collections
------------
-
-In all the examples of many-valued associations in this manual we
-will make use of a ``Collection`` interface and a corresponding
-default implementation ``ArrayCollection`` that are defined in the
-``Doctrine\Common\Collections`` namespace. Why do we need that?
-Doesn't that couple my domain model to Doctrine? Unfortunately, PHP
-arrays, while being great for many things, do not make up for good
-collections of business objects, especially not in the context of
-an ORM. The reason is that plain PHP arrays can not be
-transparently extended / instrumented in PHP code, which is
-necessary for a lot of advanced ORM features. The classes /
-interfaces that come closest to an OO collection are ArrayAccess
-and ArrayObject but until instances of these types can be used in
-all places where a plain array can be used (something that may
-happen in PHP6) their usability is fairly limited. You "can"
-type-hint on ``ArrayAccess`` instead of ``Collection``, since the
-Collection interface extends ``ArrayAccess``, but this will
-severely limit you in the way you can work with the collection,
-because the ``ArrayAccess`` API is (intentionally) very primitive
-and more importantly because you can not pass this collection to
-all the useful PHP array functions, which makes it very hard to
-work with.
-
-.. warning::
-
-    The Collection interface and ArrayCollection class,
-    like everything else in the Doctrine namespace, are neither part of
-    the ORM, nor the DBAL, it is a plain PHP class that has no outside
-    dependencies apart from dependencies on PHP itself (and the SPL).
-    Therefore using this class in your domain classes and elsewhere
-    does not introduce a coupling to the persistence layer. The
-    Collection class, like everything else in the Common namespace, is
-    not part of the persistence layer. You could even copy that class
-    over to your project if you want to remove Doctrine from your
-    project and all your domain classes will work the same as before.
-
-
-Mapping Defaults
-----------------
-
-Before we introduce all the association mappings in detail, you
-should note that the @JoinColumn and @JoinTable definitions are
-usually optional and have sensible default values. The defaults for
-a join column in a one-to-one/many-to-one association is as
-follows:
-
-::
-
-    name: "<fieldname>_id"
-    referencedColumnName: "id"
-
-As an example, consider this mapping:
-
-.. configuration-block::
-
-    .. code-block:: php
-
-        <?php
-        /** @OneToOne(targetEntity="Shipping") */
-        private $shipping;
-
-    .. code-block:: xml
-    
-        <doctrine-mapping>
-            <entity class="Product">
-                <one-to-one field="shipping" target-entity="Shipping" />
-            </entity>
-        </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Product:
-          type: entity
-          oneToOne:
-            shipping:
-              targetEntity: Shipping
-
-This is essentially the same as the following, more verbose,
-mapping:
-
-.. configuration-block::
-
-    .. code-block:: php
-
-        <?php
-        /**
-         * @OneToOne(targetEntity="Shipping")
-         * @JoinColumn(name="shipping_id", referencedColumnName="id")
-         */
-        private $shipping;
-
-    .. code-block:: xml
-    
-        <doctrine-mapping>
-            <entity class="Product">
-                <one-to-one field="shipping" target-entity="Shipping">
-                    <join-column name="shipping_id" referenced-column-name="id" />
-                </one-to-one>
-            </entity>
-        </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Product:
-          type: entity
-          oneToOne:
-            shipping:
-              targetEntity: Shipping
-              joinColumn:
-                name: shipping_id
-                referencedColumnName: id
-
-The @JoinTable definition used for many-to-many mappings has
-similar defaults. As an example, consider this mapping:
-
-.. configuration-block::
-
-    .. code-block:: php
-
-        <?php
-        class User
-        {
-            //...
-            /** @ManyToMany(targetEntity="Group") */
-            private $groups;
-            //...
-        }
-
-    .. code-block:: xml
-    
-        <doctrine-mapping>
-            <entity class="User">
-                <many-to-many field="groups" target-entity="Group" />
-            </entity>
-        </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          manyToMany:
-            groups:
-              targetEntity: Group
-
-This is essentially the same as the following, more verbose,
-mapping:
-
-.. configuration-block::
-
-    .. code-block:: php
-
-        <?php
-        class User
-        {
-            //...
-            /**
-             * @ManyToMany(targetEntity="Group")
-             * @JoinTable(name="User_Group",
-             *      joinColumns={@JoinColumn(name="User_id", referencedColumnName="id")},
-             *      inverseJoinColumns={@JoinColumn(name="Group_id", referencedColumnName="id")}
-             *      )
-             */
-            private $groups;
-            //...
-        }
-
-    .. code-block:: xml
-    
-        <doctrine-mapping>
-            <entity class="User">
-                <many-to-many field="groups" target-entity="Group">
-                    <join-table name="User_Group">
-                        <join-columns>
-                            <join-column id="User_id" referenced-column-name="id" />
-                        </join-columns>
-                        <inverse-join-columns>
-                            <join-column id="Group_id" referenced-column-name="id" />
-                        </inverse-join-columns>
-                    </join-table>
-                </many-to-many>
-            </entity>
-        </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          manyToMany:
-            groups:
-              targetEntity: Group
-              joinTable:
-                name: User_Group
-                joinColumns:
-                  User_id:
-                    referencedColumnName: id
-                inverseJoinColumns:
-                  Group_id:
-                    referencedColumnName: id                  
-
-In that case, the name of the join table defaults to a combination
-of the simple, unqualified class names of the participating
-classes, separated by an underscore character. The names of the
-join columns default to the simple, unqualified class name of the
-targeted class followed by "\_id". The referencedColumnName always
-defaults to "id", just as in one-to-one or many-to-one mappings.
-
-If you accept these defaults, you can reduce the mapping code to a
-minimum.
-
-Initializing Collections
-------------------------
-
-You have to be careful when using entity fields that contain a
-collection of related entities. Say we have a User entity that
-contains a collection of groups:
-
-.. code-block:: php
-
-    <?php
-    /** @Entity */
-    class User
-    {
-        /** @ManyToMany(targetEntity="Group") */
-        private $groups;
-    
-        public function getGroups()
-        {
-            return $this->groups;
-        }
-    }
-
-With this code alone the ``$groups`` field only contains an
-instance of ``Doctrine\Common\Collections\Collection`` if the user
-is retrieved from Doctrine, however not after you instantiated a
-fresh instance of the User. When your user entity is still new
-``$groups`` will obviously be null.
-
-This is why we recommend to initialize all collection fields to an
-empty ``ArrayCollection`` in your entities constructor:
-
-.. code-block:: php
-
-    <?php
-    use Doctrine\Common\Collections\ArrayCollection;
-    
-    /** @Entity */
-    class User
-    {
-        /** @ManyToMany(targetEntity="Group") */
-        private $groups;
-    
-        public function __construct()
-        {
-            $this->groups = new ArrayCollection();
-        }
-    
-        public function getGroups()
-        {
-            return $this->groups;
-        }
-    }
-
-Now the following code will be working even if the Entity hasn't
-been associated with an EntityManager yet:
-
-.. code-block:: php
-
-    <?php
-    $group = $entityManager->find('Group', $groupId);
-    $user = new User();
-    $user->getGroups()->add($group);
-
-Runtime vs Development Mapping Validation
------------------------------------------
-
-For performance reasons Doctrine 2 has to skip some of the
-necessary validation of association mappings. You have to execute
-this validation in your development workflow to verify the
-associations are correctly defined.
-
-You can either use the Doctrine Command Line Tool:
-
-.. code-block:: php
-
-    doctrine orm:validate-schema
-
-Or you can trigger the validation manually:
-
-.. code-block:: php
-
-    <?php
-    use Doctrine\ORM\Tools\SchemaValidator;
-    
-    $validator = new SchemaValidator($entityManager);
-    $errors = $validator->validateMapping();
-    
-    if (count($errors) > 0) {
-        // Lots of errors!
-        echo implode("\n\n", $errors);
-    }
-
-If the mapping is invalid the errors array contains a positive
-number of elements with error messages.
-
-.. warning::
-
-    One mapping option that is not validated is the use of the referenced column name.
-    It has to point to the equivalent primary key otherwise Doctrine will not work.
-
-.. note::
-
-    One common error is to use a backlash in front of the
-    fully-qualified class-name. Whenever a FQCN is represented inside a
-    string (such as in your mapping definitions) you have to drop the
-    prefix backslash. PHP does this with ``get_class()`` or Reflection
-    methods for backwards compatibility reasons.
-
+To master assocations you should also learn about :doc:`owning and inverse sides of associations <unitofwork-associations>`
 
 One-To-One, Unidirectional
 --------------------------
@@ -411,7 +32,7 @@ the ``Product`` so it is unidirectional.
     .. code-block:: php
 
         <?php
-        /** @Entity */
+        /** @Entity **/
         class Product
         {
             // ...
@@ -419,13 +40,13 @@ the ``Product`` so it is unidirectional.
             /**
              * @OneToOne(targetEntity="Shipping")
              * @JoinColumn(name="shipping_id", referencedColumnName="id")
-             */
+             **/
             private $shipping;
 
             // ...
         }
 
-        /** @Entity */
+        /** @Entity **/
         class Shipping
         {
             // ...
@@ -482,20 +103,20 @@ it is bidirectional.
     .. code-block:: php
 
         <?php
-        /** @Entity */
+        /** @Entity **/
         class Customer
         {
             // ...
 
             /**
              * @OneToOne(targetEntity="Cart", mappedBy="customer")
-             */
+             **/
             private $cart;
 
             // ...
         }
 
-        /** @Entity */
+        /** @Entity **/
         class Cart
         {
             // ...
@@ -503,7 +124,7 @@ it is bidirectional.
             /**
              * @OneToOne(targetEntity="Customer", inversedBy="cart")
              * @JoinColumn(name="customer_id", referencedColumnName="id")
-             */
+             **/
             private $customer;
 
             // ...
@@ -568,7 +189,7 @@ below.
 .. code-block:: php
 
     <?php
-    /** @Entity */
+    /** @Entity **/
     class Student
     {
         // ...
@@ -576,7 +197,7 @@ below.
         /**
          * @OneToOne(targetEntity="Student")
          * @JoinColumn(name="mentor_id", referencedColumnName="id")
-         */
+         **/
         private $mentor;
     
         // ...
@@ -611,7 +232,7 @@ association:
     .. code-block:: php
 
         <?php
-        /** @Entity */
+        /** @Entity **/
         class User
         {
             // ...
@@ -622,7 +243,7 @@ association:
              *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
              *      inverseJoinColumns={@JoinColumn(name="phonenumber_id", referencedColumnName="id", unique=true)}
              *      )
-             */
+             **/
             private $phonenumbers;
 
             public function __construct() {
@@ -632,7 +253,7 @@ association:
             // ...
         }
 
-        /** @Entity */
+        /** @Entity **/
         class Phonenumber
         {
             // ...
@@ -713,7 +334,7 @@ with the following:
     .. code-block:: php
 
         <?php
-        /** @Entity */
+        /** @Entity **/
         class User
         {
             // ...
@@ -721,11 +342,11 @@ with the following:
             /**
              * @ManyToOne(targetEntity="Address")
              * @JoinColumn(name="address_id", referencedColumnName="id")
-             */
+             **/
             private $address;
         }
 
-        /** @Entity */
+        /** @Entity **/
         class Address
         {
             // ...
@@ -784,13 +405,13 @@ class:
     .. code-block:: php
 
         <?php
-        /** @Entity */
+        /** @Entity **/
         class Product
         {
             // ...
             /**
              * @OneToMany(targetEntity="Feature", mappedBy="product")
-             */
+             **/
             private $features;
             // ...
 
@@ -799,14 +420,14 @@ class:
             }
         }
 
-        /** @Entity */
+        /** @Entity **/
         class Feature
         {
             // ...
             /**
              * @ManyToOne(targetEntity="Product", inversedBy="features")
              * @JoinColumn(name="product_id", referencedColumnName="id")
-             */
+             **/
             private $product;
             // ...
         }
@@ -857,19 +478,19 @@ database perspective is known as an adjacency list approach.
     .. code-block:: php
 
         <?php
-        /** @Entity */
+        /** @Entity **/
         class Category
         {
             // ...
             /**
              * @OneToMany(targetEntity="Category", mappedBy="parent")
-             */
+             **/
             private $children;
 
             /**
              * @ManyToOne(targetEntity="Category", inversedBy="children")
              * @JoinColumn(name="parent_id", referencedColumnName="id")
-             */
+             **/
             private $parent;
             // ...
 
@@ -926,7 +547,7 @@ entities:
     .. code-block:: php
 
         <?php
-        /** @Entity */
+        /** @Entity **/
         class User
         {
             // ...
@@ -937,7 +558,7 @@ entities:
              *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
              *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
              *      )
-             */
+             **/
             private $groups;
 
             // ...
@@ -947,7 +568,7 @@ entities:
             }
         }
 
-        /** @Entity */
+        /** @Entity **/
         class Group
         {
             // ...
@@ -1026,7 +647,7 @@ one is bidirectional.
     .. code-block:: php
 
         <?php
-        /** @Entity */
+        /** @Entity **/
         class User
         {
             // ...
@@ -1034,7 +655,7 @@ one is bidirectional.
             /**
              * @ManyToMany(targetEntity="Group", inversedBy="users")
              * @JoinTable(name="users_groups")
-             */
+             **/
             private $groups;
 
             public function __construct() {
@@ -1044,13 +665,13 @@ one is bidirectional.
             // ...
         }
 
-        /** @Entity */
+        /** @Entity **/
         class Group
         {
             // ...
             /**
              * @ManyToMany(targetEntity="User", mappedBy="groups")
-             */
+             **/
             private $users;
 
             public function __construct() {
@@ -1173,14 +794,14 @@ field named ``$friendsWithMe`` and ``$myFriends``.
 .. code-block:: php
 
     <?php
-    /** @Entity */
+    /** @Entity **/
     class User
     {
         // ...
     
         /**
          * @ManyToMany(targetEntity="User", mappedBy="myFriends")
-         */
+         **/
         private $friendsWithMe;
     
         /**
@@ -1189,7 +810,7 @@ field named ``$friendsWithMe`` and ``$myFriends``.
          *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
          *      inverseJoinColumns={@JoinColumn(name="friend_user_id", referencedColumnName="id")}
          *      )
-         */
+         **/
         private $myFriends;
     
         public function __construct() {
@@ -1216,82 +837,328 @@ Generated MySQL Schema:
     ALTER TABLE friends ADD FOREIGN KEY (user_id) REFERENCES User(id);
     ALTER TABLE friends ADD FOREIGN KEY (friend_user_id) REFERENCES User(id);
 
-Ordering To-Many Collections
-----------------------------
+.. _association_mapping_defaults:
 
-In many use-cases you will want to sort collections when they are
-retrieved from the database. In userland you do this as long as you
-haven't initially saved an entity with its associations into the
-database. To retrieve a sorted collection from the database you can
-use the ``@OrderBy`` annotation with an collection that specifies
-an DQL snippet that is appended to all queries with this
-collection.
+Mapping Defaults
+----------------
 
-Additional to any ``@OneToMany`` or ``@ManyToMany`` annotation you
-can specify the ``@OrderBy`` in the following way:
+Before we introduce all the association mappings in detail, you
+should note that the @JoinColumn and @JoinTable definitions are
+usually optional and have sensible default values. The defaults for
+a join column in a one-to-one/many-to-one association is as
+follows:
+
+::
+
+    name: "<fieldname>_id"
+    referencedColumnName: "id"
+
+As an example, consider this mapping:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+        /** @OneToOne(targetEntity="Shipping") **/
+        private $shipping;
+
+    .. code-block:: xml
+    
+        <doctrine-mapping>
+            <entity class="Product">
+                <one-to-one field="shipping" target-entity="Shipping" />
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        Product:
+          type: entity
+          oneToOne:
+            shipping:
+              targetEntity: Shipping
+
+This is essentially the same as the following, more verbose,
+mapping:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+        /**
+         * @OneToOne(targetEntity="Shipping")
+         * @JoinColumn(name="shipping_id", referencedColumnName="id")
+         **/
+        private $shipping;
+
+    .. code-block:: xml
+    
+        <doctrine-mapping>
+            <entity class="Product">
+                <one-to-one field="shipping" target-entity="Shipping">
+                    <join-column name="shipping_id" referenced-column-name="id" />
+                </one-to-one>
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        Product:
+          type: entity
+          oneToOne:
+            shipping:
+              targetEntity: Shipping
+              joinColumn:
+                name: shipping_id
+                referencedColumnName: id
+
+The @JoinTable definition used for many-to-many mappings has
+similar defaults. As an example, consider this mapping:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+        class User
+        {
+            //...
+            /** @ManyToMany(targetEntity="Group") **/
+            private $groups;
+            //...
+        }
+
+    .. code-block:: xml
+    
+        <doctrine-mapping>
+            <entity class="User">
+                <many-to-many field="groups" target-entity="Group" />
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        User:
+          type: entity
+          manyToMany:
+            groups:
+              targetEntity: Group
+
+This is essentially the same as the following, more verbose,
+mapping:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+        class User
+        {
+            //...
+            /**
+             * @ManyToMany(targetEntity="Group")
+             * @JoinTable(name="User_Group",
+             *      joinColumns={@JoinColumn(name="User_id", referencedColumnName="id")},
+             *      inverseJoinColumns={@JoinColumn(name="Group_id", referencedColumnName="id")}
+             *      )
+             **/
+            private $groups;
+            //...
+        }
+
+    .. code-block:: xml
+    
+        <doctrine-mapping>
+            <entity class="User">
+                <many-to-many field="groups" target-entity="Group">
+                    <join-table name="User_Group">
+                        <join-columns>
+                            <join-column id="User_id" referenced-column-name="id" />
+                        </join-columns>
+                        <inverse-join-columns>
+                            <join-column id="Group_id" referenced-column-name="id" />
+                        </inverse-join-columns>
+                    </join-table>
+                </many-to-many>
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        User:
+          type: entity
+          manyToMany:
+            groups:
+              targetEntity: Group
+              joinTable:
+                name: User_Group
+                joinColumns:
+                  User_id:
+                    referencedColumnName: id
+                inverseJoinColumns:
+                  Group_id:
+                    referencedColumnName: id                  
+
+In that case, the name of the join table defaults to a combination
+of the simple, unqualified class names of the participating
+classes, separated by an underscore character. The names of the
+join columns default to the simple, unqualified class name of the
+targeted class followed by "\_id". The referencedColumnName always
+defaults to "id", just as in one-to-one or many-to-one mappings.
+
+If you accept these defaults, you can reduce the mapping code to a
+minimum.
+
+.. _collections:
+
+Collections
+-----------
+
+In all the examples of many-valued associations in this manual we
+will make use of a ``Collection`` interface and a corresponding
+default implementation ``ArrayCollection`` that are defined in the
+``Doctrine\Common\Collections`` namespace. Why do we need that?
+Doesn't that couple my domain model to Doctrine? Unfortunately, PHP
+arrays, while being great for many things, do not make up for good
+collections of business objects, especially not in the context of
+an ORM. The reason is that plain PHP arrays can not be
+transparently extended / instrumented in PHP code, which is
+necessary for a lot of advanced ORM features. The classes /
+interfaces that come closest to an OO collection are ArrayAccess
+and ArrayObject but until instances of these types can be used in
+all places where a plain array can be used (something that may
+happen in PHP6) their usability is fairly limited. You "can"
+type-hint on ``ArrayAccess`` instead of ``Collection``, since the
+Collection interface extends ``ArrayAccess``, but this will
+severely limit you in the way you can work with the collection,
+because the ``ArrayAccess`` API is (intentionally) very primitive
+and more importantly because you can not pass this collection to
+all the useful PHP array functions, which makes it very hard to
+work with.
+
+.. warning::
+
+    The Collection interface and ArrayCollection class,
+    like everything else in the Doctrine namespace, are neither part of
+    the ORM, nor the DBAL, it is a plain PHP class that has no outside
+    dependencies apart from dependencies on PHP itself (and the SPL).
+    Therefore using this class in your domain classes and elsewhere
+    does not introduce a coupling to the persistence layer. The
+    Collection class, like everything else in the Common namespace, is
+    not part of the persistence layer. You could even copy that class
+    over to your project if you want to remove Doctrine from your
+    project and all your domain classes will work the same as before.
+
+
+
+Initializing Collections
+------------------------
+
+You have to be careful when using entity fields that contain a
+collection of related entities. Say we have a User entity that
+contains a collection of groups:
 
 .. code-block:: php
 
     <?php
-    /** @Entity */
+    /** @Entity **/
     class User
     {
-        // ...
-    
-        /**
-         * @ManyToMany(targetEntity="Group")
-         * @OrderBy({"name" = "ASC"})
-         */
+        /** @ManyToMany(targetEntity="Group") **/
         private $groups;
+    
+        public function getGroups()
+        {
+            return $this->groups;
+        }
     }
 
-The DQL Snippet in OrderBy is only allowed to consist of
-unqualified, unquoted field names and of an optional ASC/DESC
-positional statement. Multiple Fields are separated by a comma (,).
-The referenced field names have to exist on the ``targetEntity``
-class of the ``@ManyToMany`` or ``@OneToMany`` annotation.
+With this code alone the ``$groups`` field only contains an
+instance of ``Doctrine\Common\Collections\Collection`` if the user
+is retrieved from Doctrine, however not after you instantiated a
+fresh instance of the User. When your user entity is still new
+``$groups`` will obviously be null.
 
-The semantics of this feature can be described as follows.
+This is why we recommend to initialize all collection fields to an
+empty ``ArrayCollection`` in your entities constructor:
 
+.. code-block:: php
 
--  ``@OrderBy`` acts as an implicit ORDER BY clause for the given
-   fields, that is appended to all the explicitly given ORDER BY
-   items.
--  All collections of the ordered type are always retrieved in an
-   ordered fashion.
--  To keep the database impact low, these implicit ORDER BY items
-   are only added to an DQL Query if the collection is fetch joined in
-   the DQL query.
+    <?php
+    use Doctrine\Common\Collections\ArrayCollection;
+    
+    /** @Entity **/
+    class User
+    {
+        /** @ManyToMany(targetEntity="Group") **/
+        private $groups;
+    
+        public function __construct()
+        {
+            $this->groups = new ArrayCollection();
+        }
+    
+        public function getGroups()
+        {
+            return $this->groups;
+        }
+    }
 
-Given our previously defined example, the following would not add
-ORDER BY, since g is not fetch joined:
+Now the following code will be working even if the Entity hasn't
+been associated with an EntityManager yet:
 
-.. code-block:: sql
+.. code-block:: php
 
-    SELECT u FROM User u JOIN u.groups g WHERE SIZE(g) > 10
+    <?php
+    $group = $entityManager->find('Group', $groupId);
+    $user = new User();
+    $user->getGroups()->add($group);
 
-However the following:
+Runtime vs Development Mapping Validation
+-----------------------------------------
 
-.. code-block:: sql
+For performance reasons Doctrine 2 has to skip some of the
+necessary validation of association mappings. You have to execute
+this validation in your development workflow to verify the
+associations are correctly defined.
 
-    SELECT u, g FROM User u JOIN u.groups g WHERE u.id = 10
+You can either use the Doctrine Command Line Tool:
 
-...would internally be rewritten to:
+.. code-block:: php
 
-.. code-block:: sql
+    doctrine orm:validate-schema
 
-    SELECT u, g FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name ASC
+Or you can trigger the validation manually:
 
-You can't reverse the order with an explicit DQL ORDER BY:
+.. code-block:: php
 
-.. code-block:: sql
+    <?php
+    use Doctrine\ORM\Tools\SchemaValidator;
+    
+    $validator = new SchemaValidator($entityManager);
+    $errors = $validator->validateMapping();
+    
+    if (count($errors) > 0) {
+        // Lots of errors!
+        echo implode("\n\n", $errors);
+    }
 
-    SELECT u, g FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name DESC
+If the mapping is invalid the errors array contains a positive
+number of elements with error messages.
 
-...is internally rewritten to:
+.. warning::
 
-.. code-block:: sql
+    One mapping option that is not validated is the use of the referenced column name.
+    It has to point to the equivalent primary key otherwise Doctrine will not work.
 
-    SELECT u, g FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name DESC, g.name ASC
+.. note::
+
+    One common error is to use a backlash in front of the
+    fully-qualified class-name. Whenever a FQCN is represented inside a
+    string (such as in your mapping definitions) you have to drop the
+    prefix backslash. PHP does this with ``get_class()`` or Reflection
+    methods for backwards compatibility reasons.
 
 

@@ -76,47 +76,6 @@ objects using ``serialize()/deserialize()`` which the DBAL Type
 The feature request for full value-object support
 `is described in the DDC-93 ticket <http://www.doctrine-project.org/jira/browse/DDC-93>`_.
 
-Applying Filter Rules to any Query
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-There are scenarios in many applications where you want to apply
-additional filter rules to each query implicitly. Examples
-include:
-
-
--  In I18N Applications restrict results to a entities annotated
-   with a specific locale
--  For a large collection always only return objects in a specific
-   date range/where condition applied.
--  Soft-Delete
-
-There is currently no way to achieve this consistently across both
-DQL and Repository/Persister generated queries, but as this is a
-pretty important feature we plan to add support for it in the
-future.
-
-Restricing Associations
-~~~~~~~~~~~~~~~~~~~~~~~
-
-There is currently no way to restrict associations to a subset of entities matching a given condition.
-You should use a DQL query to retrieve a subset of associated entities. For example
-if you need all visible articles in a certain category you could have the following code
-in an entity repository:
-
-.. code-block:: php
-
-    <?php
-    class ArticleRepository extends EntityRepository
-    {
-        public function getVisibleByCategory(Category $category)
-        {
-            $dql = "SELECT a FROM Article a WHERE a.category = ?1 and a.visible = true";
-            return $this->getEntityManager()
-                        ->createQuery($dql)
-                        ->setParameter(1, $category)
-                        ->getResult();
-        }
-    }
 
 Cascade Merge with Bi-directional Associations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -162,7 +121,7 @@ to the same entity.
 Behaviors
 ~~~~~~~~~
 
-Doctrine 2 *will never* include a behavior system like Doctrine 1
+Doctrine 2 will **never** include a behavior system like Doctrine 1
 in the core library. We don't think behaviors add more value than
 they cost pain and debugging hell. Please see the many different
 blog posts we have written on this topics:
@@ -173,7 +132,7 @@ blog posts we have written on this topics:
 -  `Doctrine 2 Behavioral Extensions <http://www.doctrine-project.org/blog/doctrine2-behavioral-extensions>`_
 -  `Doctrator <https://github.com/pablodip/doctrator`>_
 
-Doctrine 2 has enough hooks and extension points so that *you* can
+Doctrine 2 has enough hooks and extension points so that **you** can
 add whatever you want on top of it. None of this will ever become
 core functionality of Doctrine2 however, you will have to rely on
 third party extensions for magical behaviors.
@@ -199,11 +158,15 @@ backwards compatibility issues or where no simple fix exists (yet).
 We don't plan to add every bug in the tracker there, just those
 issues that can potentially cause nightmares or pain of any sort.
 
+See the Open Bugs on Jira for more details on `bugs, improvement and feature
+requests
+<http://www.doctrine-project.org/jira/secure/IssueNavigator.jspa?reset=true&mode=hide&pid=10032&resolution=-1&sorter/field=updated&sorter/order=DESC>`_.
+
 Identifier Quoting and Legacy Databases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For compatibility reasons between all the supported vendors and
-edge case problems Doctrine 2 does *NOT* do automatic identifier
+edge case problems Doctrine 2 does **NOT** do automatic identifier
 quoting. This can lead to problems when trying to get
 legacy-databases to work with Doctrine 2.
 
@@ -222,5 +185,5 @@ tables and column names to avoid the legacy quoting nightmare.
 Microsoft SQL Server and Doctrine "datetime"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Doctrine assumes that you use DateTime2 data-types. If your legacy database contains DateTime
+Doctrine assumes that you use ``DateTime2`` data-types. If your legacy database contains DateTime
 datatypes then you have to add your own data-type (see Basic Mapping for an example).

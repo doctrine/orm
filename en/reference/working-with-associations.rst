@@ -7,7 +7,7 @@ collections of objects. When it comes to persistence, it is
 important to understand three main things:
 
 
--  The :ref:`concept of owning and inverse sides <association-mapping-owning-inverse>`
+-  The :doc:`concept of owning and inverse sides <unitofwork-associations>`
    in bidirectional associations.
 -  If an entity is removed from a collection, the association is
    removed, not the entity itself. A collection of entities always

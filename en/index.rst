@@ -63,10 +63,15 @@ Working with Objects
   :doc:`QueryBuilder <reference/query-builder>` |
   :doc:`Native SQL Queries <reference/native-sql>`
 
+* **UnitOfWork dissected**:
+  :doc:`Doctrine Internals explained <reference/unitofwork>` |
+  :doc:`Owning and Inverse Side Associations <reference/unitofwork-associations>` 
+
 * **Tutorials**:
   :doc:`Indexed associations <tutorials/working-with-indexed-associations>` |
   :doc:`Extra Lazy Assocations <tutorials/extra-lazy-associations>` |
-  :doc:`Composite Primary Keys <tutorials/composite-primary-keys>` 
+  :doc:`Composite Primary Keys <tutorials/composite-primary-keys>` |
+  :doc:`Ordered associations <tutorials/ordered-associations>`
 
 Advanced Topics
 ---------------
