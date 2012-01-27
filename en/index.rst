@@ -1,72 +1,115 @@
 Welcome to Doctrine 2 ORM's documentation!
 ==========================================
 
-Reference Guide
+The Doctrine documentation is comprised of tutorials, a reference section and
+cookbook articles that explain different parts of the Object Relational mapper.
+
+Doctrine DBAL and Doctrine Common both have their own documentation.
+
+Getting Help
+------------
+
+If this documentation is not helping to answer questions you have about
+Doctrine ORM don't panic. You can get help from different sources:
+
+-  There is a :doc:`FAQ <reference/faq>` with answers to frequent questions.
+-  The `Doctrine Mailing List <http://groups.google.com/group/doctrine-user>`_
+-  Internet Relay Chat (IRC) in `#doctrine on Freenode <irc://irc.freenode.net/doctrine>`_
+-  Report a bug on `JIRA <http://www.doctrine-project.org/jira>`_.
+-  On `Twitter <https://twitter.com/search/%23doctrine2>`_ with ``#doctrine2``
+-  On `StackOverflow <http://stackoverflow.com/questions/tagged/doctrine2>`_
+
+If you need more structure over the different topics you can browse the :doc:`table
+of contents <toc>`.
+
+Getting Started
 ---------------
 
-.. toctree::
-   :maxdepth: 1
-   :numbered:
+* **Tutorial**: 
+  :doc:`Getting Started <tutorials/getting-started-xml-edition>`
 
-   reference/introduction
-   reference/architecture
-   reference/configuration
-   reference/faq
-   reference/basic-mapping
-   reference/association-mapping
-   reference/inheritance-mapping
-   reference/working-with-objects
-   reference/working-with-associations
-   reference/transactions-and-concurrency
-   reference/events
-   reference/batch-processing
-   reference/dql-doctrine-query-language
-   reference/query-builder
-   reference/native-sql
-   reference/change-tracking-policies
-   reference/partial-objects
-   reference/xml-mapping
-   reference/yaml-mapping
-   reference/annotations-reference
-   reference/php-mapping
-   reference/caching
-   reference/improving-performance
-   reference/tools
-   reference/metadata-drivers
-   reference/best-practices
-   reference/limitations-and-known-issues
+* **Reference**:
+  :doc:`Introduction <reference/introduction>` |
+  :doc:`Architecture <reference/architecture>` |
+  :doc:`Configuration <reference/configuration>` |
+  :doc:`Tools <reference/tools>` |
+  :doc:`Limitations and knowns issues <reference/limitations-and-known-issues>`
 
-Tutorials
----------
+Mapping Objects onto a Database
+-------------------------------
 
-.. toctree::
-   :maxdepth: 1
+* **Basic Reference**:
+  :doc:`Mapping Objects and Fields <reference/basic-mapping>` |
+  :doc:`Mapping Associations <reference/association-mapping>` |
+  :doc:`Inheritance Mapping <reference/inheritance-mapping>`
 
-   tutorials/getting-started-xml-edition
-   tutorials/working-with-indexed-associations
-   tutorials/extra-lazy-associations
-   tutorials/composite-primary-keys
+* **Mapping Driver References**:
+  :doc:`XML <reference/xml-mapping>` |
+  :doc:`YAML <reference/yaml-mapping>` |
+  :doc:`Docblock Annotations <reference/annotations-reference>` |
+  :doc:`PHP Mapping <reference/php-mapping>` |
+  :doc:`Metadata Drivers <reference/metadata-drivers>`
 
+Working with Objects
+--------------------
+
+* **Basic Reference**:
+  :doc:`Working with Objects <reference/working-with-objects>` |
+  :doc:`Working with Assocations <reference/working-with-associations>` |
+  :doc:`Events <reference/events>`
+
+* **Querying Objects**:
+  :doc:`DQL - Doctrine Query Language <reference/dql-doctrine-query-language>` |
+  :doc:`QueryBuilder <reference/query-builder>` |
+  :doc:`Native SQL Queries <reference/native-sql>`
+
+* **Tutorials**:
+  :doc:`Working with indexed associations <tutorials/working-with-indexed-associations>` |
+  :doc:`Extra Lazy Assocations <tutorials/extra-lazy-associations>` |
+  :doc:`Composite Primary Keys <tutorials/composite-primary-keys>` 
+
+Advanced Topics
+---------------
+
+* **Database Integration**:
+  :doc:`Transactions and Concurrency <reference/transactions-and-concurrency>`
+
+* **Performance**:
+  :doc:`Improving Performance <reference/improving-performance>` |
+  :doc:`Caching <reference/caching>` |
+  :doc:`Partial Objects <reference/partial-objects>` |
+  :doc:`Change Tracking Policies <reference/change-tracking-policies>`
+
+* **Best Practices**:
+  :doc:`Best Practices <reference/best-practices>`
 
 Cookbook
 --------
 
-.. toctree::
-   :maxdepth: 1
+* **Patterns**:
+  :doc:`Aggregate Fields <cookbook/aggregate-fields>` |
+  :doc:`Decorator Pattern <cookbook/decorator-pattern>` |
+  :doc:`Strategy Pattern <cookbook/strategy-cookbook-introduction>` |
 
-   cookbook/aggregate-fields
-   cookbook/decorator-pattern
-   cookbook/dql-custom-walkers
-   cookbook/dql-user-defined-functions
-   cookbook/implementing-arrayaccess-for-domain-objects
-   cookbook/implementing-the-notify-changetracking-policy
-   cookbook/implementing-wakeup-or-clone
-   cookbook/integrating-with-codeigniter
-   cookbook/sql-table-prefixes
-   cookbook/strategy-cookbook-introduction
-   cookbook/validation-of-entities
-   cookbook/working-with-datetime
-   cookbook/mysql-enums
-   cookbook/advanced-field-value-conversion-using-custom-mapping-types
-   cookbook/entities-in-session
+* **DQL Extension Points**:
+  :doc:`DQL Custom Walkers <cookbook/dql-custom-walkers>` |
+  :doc:`DQL User-Defined-Functions <cookbook/dql-user-defined-functions>`
+
+* **Implementation**:
+  :doc:`Array Access <cookbook/implementing-arrayaccess-for-domain-objects>` |
+  :doc:`Notify ChangeTracking Example <cookbook/implementing-the-notify-changetracking-policy>` |
+  :doc:`Using Wakeup Or Clone <cookbook/implementing-wakeup-or-clone>` |
+  :doc:`Working with DateTime <cookbook/working-with-datetime>` |
+  :doc:`Validation <cookbook/validation-of-entities>` |
+  :doc:`Entities in the Session <cookbook/entities-in-session>`
+
+* **Integration into Frameworks/Libraries**
+  :doc:`CodeIgniter <cookbook/integrating-with-codeigniter>`
+
+* **Hidden Gems**
+  :doc:`Prefixing Table Name <cookbook/sql-table-prefixes>`
+
+* **Custom Datatypes**
+  :doc:`MySQL Enums <cookbook/mysql-enums>`
+  :doc:`Advanced Field Value Conversion <cookbook/advanced-field-value-conversion-using-custom-mapping-types>`
 
