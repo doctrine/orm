@@ -448,9 +448,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $columns = $this->_class->parentClasses ? $this->_class->getIdentifierColumnNames() : array();
 
         foreach ($this->_class->reflFields as $name => $field) {
-            if (isset($this->_class->fieldMappings[$name]['inherited']) && ! isset($this->_class->fieldMappings[$name]['id'])
-                    || isset($this->_class->associationMappings[$name]['inherited'])
-                    || ($this->_class->isVersioned && $this->_class->versionField == $name)) {
+            if (isset($this->_class->fieldMappings[$name]['inherited']) &&
+                 ! isset($this->_class->fieldMappings[$name]['id']) ||
+                isset($this->_class->associationMappings[$name]['inherited']) ||
+                isset($this->_class->embeddedMappings[$name]['inherited']) ||
+                ($this->_class->isVersioned && $this->_class->versionField == $name)) {
                 continue;
             }
 

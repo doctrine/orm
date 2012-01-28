@@ -261,10 +261,13 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
         foreach ($parentClasses as $className) {
             if (isset($this->loadedMetadata[$className])) {
                 $parent = $this->loadedMetadata[$className];
-                if ( ! $parent->isMappedSuperclass) {
+
+                if ( ! $parent->isMappedSuperclass && ! $parent->isEmbeddable) {
                     $rootEntityFound = true;
+
                     array_unshift($visited, $className);
                 }
+
                 continue;
             }
 
@@ -275,8 +278,11 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 $class->setInheritanceType($parent->inheritanceType);
                 $class->setDiscriminatorColumn($parent->discriminatorColumn);
                 $class->setIdGeneratorType($parent->generatorType);
+
                 $this->addInheritedFields($class, $parent);
+                $this->addInheritedEmbeddeds($class, $parent);
                 $this->addInheritedRelations($class, $parent);
+
                 $class->setIdentifier($parent->identifier);
                 $class->setVersioned($parent->isVersioned);
                 $class->setVersionField($parent->versionField);
@@ -340,8 +346,9 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
             $parent = $class;
 
-            if ( ! $class->isMappedSuperclass) {
+            if ( ! $class->isMappedSuperclass && ! $class->isEmbeddable) {
                 $rootEntityFound = true;
+
                 array_unshift($visited, $className);
             }
 
@@ -365,19 +372,21 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
         }
 
         $class->validateIdentifier();
+        $class->validateEmdeddeds();
         $class->validateAssocations();
         $class->validateLifecycleCallbacks($this->getReflectionService());
 
         // verify inheritance
-        if (!$class->isMappedSuperclass && !$class->isInheritanceTypeNone()) {
-            if (!$parent) {
+        if ( ! $class->isMappedSuperclass && ! $class->isEmbeddable && ! $class->isInheritanceTypeNone()) {
+            if ( ! $parent) {
                 if (count($class->discriminatorMap) == 0) {
                     throw MappingException::missingDiscriminatorMap($class->name);
                 }
-                if (!$class->discriminatorColumn) {
+
+                if ( ! $class->discriminatorColumn) {
                     throw MappingException::missingDiscriminatorColumn($class->name);
                 }
-            } else if ($parent && !$class->reflClass->isAbstract() && !in_array($class->name, array_values($class->discriminatorMap))) {
+            } else if ($parent && ! $class->reflClass->isAbstract() && ! in_array($class->name, array_values($class->discriminatorMap))) {
                 // enforce discriminator map for all entities of an inheritance hierachy, otherwise problems will occur.
                 throw MappingException::mappedClassNotPartOfDiscriminatorMap($class->name, $class->rootEntityName);
             }
@@ -407,16 +416,40 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->fieldMappings as $fieldName => $mapping) {
-            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
+            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass && ! $parentClass->isEmbeddable) {
                 $mapping['inherited'] = $parentClass->name;
             }
+
             if ( ! isset($mapping['declared'])) {
                 $mapping['declared'] = $parentClass->name;
             }
+
             $subClass->addInheritedFieldMapping($mapping);
         }
+
         foreach ($parentClass->reflFields as $name => $field) {
             $subClass->reflFields[$name] = $field;
+        }
+    }
+
+    /**
+     * Adds inherited fields to the subclass mapping.
+     *
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     */
+    private function addInheritedEmbeddeds(ClassMetadata $subClass, ClassMetadata $parentClass)
+    {
+        foreach ($parentClass->embeddedMappings as $fieldName => $mapping) {
+            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass && ! $parentClass->isEmbeddable) {
+                $mapping['inherited'] = $parentClass->name;
+            }
+
+            if ( ! isset($mapping['declared'])) {
+                $mapping['declared'] = $parentClass->name;
+            }
+
+            $subClass->addInheritedEmbeddedMapping($mapping);
         }
     }
 
@@ -429,20 +462,23 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     private function addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->associationMappings as $field => $mapping) {
-            if ($parentClass->isMappedSuperclass) {
+            if ($parentClass->isMappedSuperclass || $parentClass->isEmbeddable) {
                 if ($mapping['type'] & ClassMetadata::TO_MANY && !$mapping['isOwningSide']) {
                     throw MappingException::illegalToManyAssocationOnMappedSuperclass($parentClass->name, $field);
                 }
+
                 $mapping['sourceEntity'] = $subClass->name;
             }
 
             //$subclassMapping = $mapping;
-            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
+            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass && ! $parentClass->isEmbeddable) {
                 $mapping['inherited'] = $parentClass->name;
             }
+
             if ( ! isset($mapping['declared'])) {
                 $mapping['declared'] = $parentClass->name;
             }
+
             $subClass->addInheritedAssociationMapping($mapping);
         }
     }
