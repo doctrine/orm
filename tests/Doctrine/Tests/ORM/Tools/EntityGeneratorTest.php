@@ -26,6 +26,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->_generator->setGenerateStubMethods(true);
         $this->_generator->setRegenerateEntityIfExists(false);
         $this->_generator->setUpdateEntityIfExists(true);
+        $this->_generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
     }
 
     public function tearDown()
@@ -135,7 +136,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($reflClass->hasProperty('id'), "Regenerating keeps property 'id'.");
 
         $this->assertTrue($reflClass->hasProperty('test'), "Check for property test failed.");
-        $this->assertTrue($reflClass->getProperty('test')->isPrivate(), "Check for private property test failed.");
+        $this->assertTrue($reflClass->getProperty('test')->isProtected(), "Check for protected property test failed.");
         $this->assertTrue($reflClass->hasMethod('getTest'), "Check for method 'getTest' failed.");
         $this->assertTrue($reflClass->getMethod('getTest')->isPublic(), "Check for public visibility of method 'getTest' failed.");
         $this->assertTrue($reflClass->hasMethod('setTest'), "Check for method 'getTest' failed.");
