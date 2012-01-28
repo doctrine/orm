@@ -47,6 +47,8 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $metadata->customRepositoryClassName = $this->_namespace  . '\EntityGeneratorBookRepository';
 
         $metadata->table['name'] = 'book';
+        $metadata->table['uniqueConstraints']['name_uniq'] = array('columns' => array('name'));
+        $metadata->table['indexes']['status_idx'] = array('columns' => array('status'));
         $metadata->mapField(array('fieldName' => 'name', 'type' => 'string'));
         $metadata->mapField(array('fieldName' => 'status', 'type' => 'string', 'default' => 'published'));
         $metadata->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));

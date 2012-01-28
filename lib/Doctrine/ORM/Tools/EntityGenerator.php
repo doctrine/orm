@@ -583,7 +583,30 @@ public function <methodName>()
             $table[] = 'name="' . $metadata->table['name'] . '"';
         }
 
+        if (isset($metadata->table['uniqueConstraints']) && $metadata->table['uniqueConstraints']) {
+            $constraints = $this->_generateTableConstraints('UniqueConstraint', $metadata->table['uniqueConstraints']);
+            $table[] = 'uniqueConstraints={' . $constraints . '}';
+        }
+
+        if (isset($metadata->table['indexes']) && $metadata->table['indexes']) {
+            $constraints = $this->_generateTableConstraints('Index', $metadata->table['indexes']);
+            $table[] = 'indexes={' . $constraints . '}';
+        }
+
         return '@' . $this->_annotationsPrefix . 'Table(' . implode(', ', $table) . ')';
+    }
+
+    private function _generateTableConstraints($constraintName, $constraints)
+    {
+        $annotations = array();
+        foreach ($constraints as $name => $constraint) {
+            $columns = array();
+            foreach ($constraint['columns'] as $column) {
+                $columns[] = '"' . $column . '"';
+            }
+            $annotations[] = '@' . $this->_annotationsPrefix . $constraintName . '(name="' . $name . '", columns={' . implode(', ', $columns) . '})';
+        }
+        return implode(', ', $annotations);
     }
 
     private function _generateInheritanceAnnotation($metadata)
