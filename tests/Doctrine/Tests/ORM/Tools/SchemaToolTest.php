@@ -32,19 +32,21 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($schema->getTable('cms_users')->columnsAreIndexed(array('username')), "username column should be indexed.");
     }
 
-    public function testColumnAnnotationOptionsAttribute()
+    public function testAnnotationOptionsAttribute()
     {
         $em = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
         $classes = array(
-            $em->getClassMetadata(__NAMESPACE__ . '\\TestEntityWithColumnAnnotationOptionsAttribute'),
+            $em->getClassMetadata(__NAMESPACE__ . '\\TestEntityWithAnnotationOptionsAttribute'),
         );
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
         $expected = array('foo' => 'bar', 'baz' => array('key' => 'val'));
-        $this->assertEquals($expected, $schema->getTable('TestEntityWithColumnAnnotationOptionsAttribute')->getColumn('test')->getCustomSchemaOptions(), "options annotation are passed to the columns customSchemaOptions");
+ 
+        $this->assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getOptions(), "options annotation are passed to the tables optionss");
+        $this->assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getColumn('test')->getCustomSchemaOptions(), "options annotation are passed to the columns customSchemaOptions");
     }
 
     /**
@@ -103,8 +105,9 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
 
 /**
  * @Entity
+ * @Table(options={"foo": "bar", "baz": {"key": "val"}})
  */
-class TestEntityWithColumnAnnotationOptionsAttribute
+class TestEntityWithAnnotationOptionsAttribute
 {
     /** @Id @Column */
     private $id;
