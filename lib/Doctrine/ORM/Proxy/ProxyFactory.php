@@ -31,7 +31,7 @@ use Doctrine\ORM\EntityManager,
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @since 2.0
  */
-class ProxyFactory
+class ProxyFactory implements ProxyFactoryInterface
 {
     /** The EntityManager this factory is bound to. */
     private $_em;
