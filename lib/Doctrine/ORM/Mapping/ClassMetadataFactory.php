@@ -164,7 +164,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             }
 
             if ($this->cacheDriver) {
-                if (($cached = $this->cacheDriver->fetch("$realClassName\$CLASSMETADATA")) !== false) {
+                if (($cached = $this->fetchMetadataFromCache($realClassName)) !== false) {
                     $this->loadedMetadata[$realClassName] = $cached;
                 } else {
                     foreach ($this->loadMetadata($realClassName) as $loadedClassName) {
@@ -399,7 +399,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     private function addDefaultDiscriminatorMap(ClassMetadata $class)
     {
         $allClasses = $this->driver->getAllClassNames();
-        $loadedSubClassesMetadata = array();
+        $subClassesMetadata = array();
         $fqcn = $class->getName();
         $map = array(str_replace('\\', '.', $fqcn) => $fqcn);
 
@@ -413,8 +413,8 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 }
 
                 if (!$subClassMetadata->isMappedSuperclass) {
-                    $map[str_replace('\\', '.', $subClassMetadata->getName())] = $subClassMetadata->getName();
-                    $loadedSubClassesMetadata[] = $subClassMetadata;
+                    $map[str_replace('\\', '.', $c)] = $c;
+                    $subClassesMetadata[$c] = $subClassMetadata;
                 }
             }
         }
@@ -422,13 +422,20 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
         $class->setDiscriminatorMap($map);
 
         // Now we set the discriminator map for the subclasses already loaded
-        foreach ($loadedSubClassesMetadata as $subClassMetadata) {
+        foreach ($subClassesMetadata as $subClassFqcn => $subClassMetadata) {
             $subClassMetadata->setDiscriminatorMap($map);
 
             // We need to overwrite the cached version of the metadata, because
             // it was cached without the discriminator map
-            if ($this->cacheDriver) {
-                $this->cacheMetadata($subClassMetadata->getName(), $subClassMetadata);
+            if ($this->cacheDriver && $this->cacheContainsMetadata($subClassFqcn)) {
+                // If subclass metadata is not already loaded, it's incomplete so
+                // we reload it again from cache
+                if (!isset($this->loadedMetadata[$subClassFqcn])) {
+                    $subClassMetadata = $this->fetchMetadataFromCache($subClassFqcn);
+                    $subClassMetadata->setDiscriminatorMap($map);
+                }
+
+                $this->cacheMetadata($subClassFqcn, $subClassMetadata);
             }
         }
     }
@@ -444,6 +451,27 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
         $this->cacheDriver->save(
             "$className\$CLASSMETADATA", $metadata, null
         );
+    }
+
+    /**
+     * Verify if metadata is cached
+     *
+     * @param $className
+     * @return bool
+     */
+    private function cacheContainsMetadata($className)
+    {
+        return $this->cacheDriver->contains("$className\$CLASSMETADATA");
+    }
+
+    /**
+     * Fetch metadata from cache
+     *
+     * @param $className
+     */
+    private function fetchMetadataFromCache($className)
+    {
+        return $this->cacheDriver->fetch("$className\$CLASSMETADATA");
     }
 
     /**
