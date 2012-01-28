@@ -176,9 +176,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                     $this->loadedMetadata[$realClassName] = $cached;
                 } else {
                     foreach ($this->loadMetadata($realClassName) as $loadedClassName) {
-                        $this->cacheDriver->save(
-                            "$loadedClassName\$CLASSMETADATA", $this->loadedMetadata[$loadedClassName], null
-                        );
+                        $this->cacheMetadata($loadedClassName, $this->loadedMetadata[$loadedClassName]);
                     }
                 }
             } else {
@@ -328,6 +326,11 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
             $class->setParentClasses($visited);
 
+            // Calculate Discriminator Map if needed and if no discriminator map is set
+            if ($class->isInheritanceTypeJoined() && empty($class->discriminatorMap)) {
+                $this->addDefaultDiscriminatorMap($class);
+            }
+
             if ($this->evm->hasListeners(Events::loadClassMetadata)) {
                 $eventArgs = new \Doctrine\ORM\Event\LoadClassMetadataEventArgs($class, $this->em);
                 $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
@@ -396,6 +399,61 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     protected function newClassMetadataInstance($className)
     {
         return new ClassMetadata($className, $this->em->getConfiguration()->getNamingStrategy());
+    }
+
+    /**
+     * Adds a default discriminator map if no one is given
+     *
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     */
+    private function addDefaultDiscriminatorMap(ClassMetadata $class)
+    {
+        $allClasses = $this->driver->getAllClassNames();
+        $loadedSubClassesMetadata = array();
+        $fqcn = $class->getName();
+        $map = array(str_replace('\\', '.', $fqcn) => $fqcn);
+
+        foreach ($allClasses as $c) {
+            if (is_subclass_of($c, $fqcn)) {
+                if (isset($this->loadedMetadata[$c])) {
+                    $subClassMetadata = $this->loadedMetadata[$c];
+                } else {
+                    $subClassMetadata = $this->newClassMetadataInstance($c);
+                    $this->driver->loadMetadataForClass($c, $subClassMetadata);
+                }
+
+                if (!$subClassMetadata->isMappedSuperclass) {
+                    $map[str_replace('\\', '.', $subClassMetadata->getName())] = $subClassMetadata->getName();
+                    $loadedSubClassesMetadata[] = $subClassMetadata;
+                }
+            }
+        }
+
+        $class->setDiscriminatorMap($map);
+
+        // Now we set the discriminator map for the subclasses already loaded
+        foreach ($loadedSubClassesMetadata as $subClassMetadata) {
+            $subClassMetadata->setDiscriminatorMap($map);
+
+            // We need to overwrite the cached version of the metadata, because
+            // it was cached without the discriminator map
+            if ($this->cacheDriver) {
+                $this->cacheMetadata($subClassMetadata->getName(), $subClassMetadata);
+            }
+        }
+    }
+
+    /**
+     * Cache the metadata
+     *
+     * @param $className
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata
+     */
+    private function cacheMetadata($className, ClassMetadata $metadata)
+    {
+        $this->cacheDriver->save(
+            "$className\$CLASSMETADATA", $metadata, null
+        );
     }
 
     /**
