@@ -33,4 +33,6 @@ final class Table implements Annotation
     public $indexes;
     /** @var array<\Doctrine\ORM\Mapping\UniqueConstraint> */
     public $uniqueConstraints;
+    /** @var array */
+    public $options = array();
 }

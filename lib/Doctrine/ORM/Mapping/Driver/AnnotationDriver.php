@@ -190,6 +190,10 @@ class AnnotationDriver implements Driver
                 }
             }
 
+            if ($tableAnnot->options !== null) {
+                $primaryTable['options'] = $tableAnnot->options;
+            }
+
             $metadata->setPrimaryTable($primaryTable);
         }
 

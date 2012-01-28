@@ -27,6 +27,7 @@ $metadata->mapField(array(
    'unique' => true,
    'nullable' => true,
    'columnName' => 'name',
+   'options' => array('foo' => 'bar', 'baz' => array('key' => 'val')),
   ));
 $metadata->mapField(array(
    'fieldName' => 'email',
@@ -106,6 +107,10 @@ $metadata->mapManyToMany(array(
    ),
    'orderBy' => NULL,
   ));
+$metadata->table['options'] = array(
+    'foo' => 'bar', 
+    'baz' => array('key' => 'val')
+);
 $metadata->table['uniqueConstraints'] = array(
     'search_idx' => array('columns' => array('name', 'user_email')),
 );
