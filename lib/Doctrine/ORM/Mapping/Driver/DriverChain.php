@@ -39,7 +39,34 @@ class DriverChain implements Driver
     /**
      * @var array
      */
-    private $_drivers = array();
+    private $drivers = array();
+
+    /**
+     * The default driver
+     *
+     * @var Driver
+     */
+    private $defaultDriver;
+
+    /**
+     * Get the default driver.
+     *
+     * @return Driver
+     */
+    public function getDefaultDriver()
+    {
+        return $this->defaultDriver;
+    }
+
+    /**
+     * Set the default driver.
+     *
+     * @param Driver $driver
+     */
+    public function setDefaultDriver(Driver $driver)
+    {
+        $this->defaultDriver = $driver;
+    }
 
     /**
      * Add a nested driver.
@@ -49,7 +76,7 @@ class DriverChain implements Driver
      */
     public function addDriver(Driver $nestedDriver, $namespace)
     {
-        $this->_drivers[$namespace] = $nestedDriver;
+        $this->drivers[$namespace] = $nestedDriver;
     }
 
     /**
@@ -59,7 +86,7 @@ class DriverChain implements Driver
      */
     public function getDrivers()
     {
-        return $this->_drivers;
+        return $this->drivers;
     }
 
     /**
@@ -70,11 +97,16 @@ class DriverChain implements Driver
      */
     public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
     {
-        foreach ($this->_drivers as $namespace => $driver) {
+        foreach ($this->drivers as $namespace => $driver) {
             if (strpos($className, $namespace) === 0) {
                 $driver->loadMetadataForClass($className, $metadata);
                 return;
             }
+        }
+
+        if ($this->defaultDriver !== null) {
+            $this->defaultDriver->loadMetadataForClass($className, $metadata);
+            return;
         }
 
         throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
@@ -89,7 +121,7 @@ class DriverChain implements Driver
     {
         $classNames = array();
         $driverClasses = array();
-        foreach ($this->_drivers AS $namespace => $driver) {
+        foreach ($this->drivers AS $namespace => $driver) {
             $oid = spl_object_hash($driver);
             if (!isset($driverClasses[$oid])) {
                 $driverClasses[$oid] = $driver->getAllClassNames();
@@ -114,10 +146,14 @@ class DriverChain implements Driver
      */
     public function isTransient($className)
     {
-        foreach ($this->_drivers AS $namespace => $driver) {
+        foreach ($this->drivers AS $namespace => $driver) {
             if (strpos($className, $namespace) === 0) {
                 return $driver->isTransient($className);
             }
+        }
+
+        if ($this->defaultDriver !== null) {
+            return $this->defaultDriver->isTransient($className);
         }
 
         // class isTransient, i.e. not an entity or mapped superclass
