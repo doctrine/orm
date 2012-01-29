@@ -12,6 +12,7 @@ Tutorials
    tutorials/extra-lazy-associations
    tutorials/composite-primary-keys
    tutorials/ordered-associations
+   tutorials/in-ten-quick-steps
 
 Reference Guide
 ---------------

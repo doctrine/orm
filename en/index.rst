@@ -26,7 +26,8 @@ Getting Started
 ---------------
 
 * **Tutorial**: 
-  :doc:`Getting Started <tutorials/getting-started>`
+  :doc:`Getting Started <tutorials/getting-started>` |
+  :doc:`In 10 quick steps <tutorials/in-ten-quick-steps>`
 
 * **Reference**:
   :doc:`Introduction <reference/introduction>` |
