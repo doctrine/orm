@@ -92,8 +92,8 @@
            <dependencies>
                <php minimum_version="5.3.0" />
                <pear minimum_version="1.6.0" recommended_version="1.6.1" />
-               <package name="DoctrineCommon" channel="pear.doctrine-project.org" minimum_version="${dependencies.common}" />
-               <package name="DoctrineDBAL" channel="pear.doctrine-project.org" minimum_version="${dependencies.dbal}" />
+               <package name="DoctrineCommon" channel="pear.doctrine-project.org" minimum_version="${dependencies.common}" maximum_version="2.2.99" />
+               <package name="DoctrineDBAL" channel="pear.doctrine-project.org" minimum_version="${dependencies.dbal}" maximum_version="2.2.99" />
                <package name="Console" channel="pear.symfony.com" minimum_version="2.0.0" />
                <package name="Yaml" channel="pear.symfony.com" minimum_version="2.0.0" />
            </dependencies>
