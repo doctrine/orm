@@ -7,7 +7,7 @@ Tutorials
 .. toctree::
    :maxdepth: 1
 
-   tutorials/getting-started-xml-edition
+   tutorials/getting-started
    tutorials/working-with-indexed-associations
    tutorials/extra-lazy-associations
    tutorials/composite-primary-keys

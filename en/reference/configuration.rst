@@ -496,7 +496,7 @@ implementations.
 
 
 Default Repository (***OPTIONAL***)
--------------------------
+-----------------------------------
 
 Specifies the FQCN of a subclass of the EntityRepository.
 That will be available for all entities without a custom repository class.
