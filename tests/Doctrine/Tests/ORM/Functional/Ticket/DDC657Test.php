@@ -40,13 +40,13 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertCount(2,$result);
 
-        $this->assertEquals('11:11:11', $result[0]['time']);
-        $this->assertEquals('2010-01-01', $result[0]['date']);
-        $this->assertEquals('2010-01-01 11:11:11', $result[0]['datetime']);
+        $this->assertContains('11:11:11', $result[0]['time']);
+        $this->assertContains('2010-01-01', $result[0]['date']);
+        $this->assertContains('2010-01-01 11:11:11', $result[0]['datetime']);
 
-        $this->assertEquals('12:12:12', $result[1]['time']);
-        $this->assertEquals('2010-02-02', $result[1]['date']);
-        $this->assertEquals('2010-02-02 12:12:12', $result[1]['datetime']);
+        $this->assertContains('12:12:12', $result[1]['time']);
+        $this->assertContains('2010-02-02', $result[1]['date']);
+        $this->assertContains('2010-02-02 12:12:12', $result[1]['datetime']);
     }
 
     public function testaTicketEntityArrayResult()
