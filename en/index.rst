@@ -26,7 +26,7 @@ Getting Started
 ---------------
 
 * **Tutorial**: 
-  :doc:`Getting Started <tutorials/getting-started-xml-edition>`
+  :doc:`Getting Started <tutorials/getting-started>`
 
 * **Reference**:
   :doc:`Introduction <reference/introduction>` |
