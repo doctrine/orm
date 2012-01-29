@@ -908,7 +908,7 @@ Products can also be created:
 
 Now call:
 
-..
+::
 
     $ php create_user.php beberlei
     $ php create_product.php MyProduct
@@ -979,7 +979,7 @@ code for this scenario may look like this:
 
 Since we only have one user and product, probably with the ID of 1, we can call this script with:
 
-..
+::
 
     php create_bug.php 1 1 1
 
