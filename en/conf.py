@@ -38,14 +38,14 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Doctrine 2 ORM'
-copyright = u'2010-11, Doctrine Project Team'
+copyright = u'2010-12, Doctrine Project Team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '2.1'
+version = '2.2'
 # The full version, including alpha/beta/rc tags.
 release = '2.1'
 
