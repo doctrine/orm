@@ -114,4 +114,9 @@ abstract class OrmTestCase extends DoctrineTestCase
 
         return self::$_queryCacheImpl;
     }
+
+    public function assertSQLEquals($expectedSQL, $actualSQL, $failureMessage = null)
+    {
+        return $this->assertEquals(strtolower($expectedSQL), strtolower($actualSQL), $failureMessage);
+    }
 }
