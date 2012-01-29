@@ -317,7 +317,8 @@ Restricting a JOIN clause by additional conditions:
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery("SELECT u FROM CmsUser u LEFT JOIN u.articles a WITH a.topic LIKE '%foo%'");
+    $query = $em->createQuery("SELECT u FROM CmsUser u LEFT JOIN u.articles a WITH a.topic LIKE :foo");
+    $query->setParameter('foo', '%foo%');
     $users = $query->getResult();
 
 Using several Fetch JOINs:
