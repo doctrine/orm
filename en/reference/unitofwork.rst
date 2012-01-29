@@ -133,3 +133,69 @@ optimize the performance of the Flush Operation:
 - Use :doc:`Change Tracking Policies <change-tracking-policies>` to use more
   explicit strategies of notifying the UnitOfWork what objects/properties
   changed.
+
+
+Query Internals
+---------------
+
+The different ORM Layers
+------------------------
+
+Doctrine ships with a set of layers with different responsibilities. This
+section gives a short explanation of each layer.
+
+Hydration
+~~~~~~~~~
+
+Responsible for creating a final result from a raw database statement and a
+result-set mapping object. The developer can choose which kind of result he
+wishes to be hydrated. Default result-types include:
+
+- SQL to Entities
+- SQL to structured Arrays
+- SQL to simple scalar result arrays
+- SQL to a single result variable
+
+Hydration to entities and arrays is one of most complex parts of Doctrine
+algorithm-wise. It can built results with for example:
+
+- Single table selects
+- Joins with n:1 or 1:n cardinality, grouping belonging to the same parent.
+- Mixed results of objects and scalar values
+- Hydration of results by a given scalar value as key.
+
+Persisters
+~~~~~~~~~~
+
+tbr
+
+UnitOfWork
+~~~~~~~~~~
+
+tbr
+
+ResultSetMapping
+~~~~~~~~~~~~~~~~
+
+tbr
+
+DQL Parser
+~~~~~~~~~~
+
+tbr
+
+SQLWalker
+~~~~~~~~~
+
+tbr
+
+EntityManager
+~~~~~~~~~~~~~
+
+tbr
+
+ClassMetadataFactory
+~~~~~~~~~~~~~~~~~~~~
+
+tbr
+
