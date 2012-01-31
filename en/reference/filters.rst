@@ -14,20 +14,18 @@ By adding SQL to the conditional clauses of queries, the filter system filters
 out rows belonging to the entities at the level of the SQL result set. This
 means that the filtered entities are never hydrated (which can be expensive).
 
-To give you an idea on how it works, the next section contains an example of a
-filter.
 
 Example filter class
 --------------------
 Throughout this document the example ``MyLocaleFilter`` class will be used to
-illustrate how the filter feature works. A filter class should extend the base
+illustrate how the filter feature works. A filter class must extend the base
 ``Doctrine\ORM\Query\Filter\SQLFilter`` class and implement the ``addFilterConstraint``
 method. The method receives the ``ClassMetadata`` of the filtered entity and the
 table alias of the SQL table of the entity.
 
 Parameters for the query should be set on the filter object by
-``SQLFilter::setParameter()``. Only parameters set via this function used in
-the filters.  The ``SQLFilter::getParameter()`` function takes care of the
+``SQLFilter#setParameter()``. Only parameters set via this function used in
+the filters.  The ``SQLFilter#getParameter()`` function takes care of the
 proper quoting of parameters.
 
 .. code-block:: php
@@ -45,7 +43,7 @@ proper quoting of parameters.
                 return "";
             }
 
-            return $targetTableAlias.'.locale = ' . $this->getParameter('locale'); // Automatically quoted
+            return $targetTableAlias.'.locale = ' . $this->getParameter('locale'); // getParameter applies quoting automatically
         }
     }
 
@@ -59,28 +57,27 @@ Filter classes are added to the configuration as following:
     $config->addFilter("locale", "\Doctrine\Tests\ORM\Functional\MyLocaleFilter");
 
 
-The ``addFilter()`` method takes a name for the filter and the name of the
+The ``Configuration#addFilter()`` method takes a name for the filter and the name of the
 class responsible for the actual filtering.
 
 
-Enabling Filters and Setting Parameters
+Disabling/Enabling Filters and Setting Parameters
 ---------------------------------------------------
-Filters can be enabled via the ``FilterCollection`` that is available in the
-``EntityManager``. The ``enable`` function will return the filter object. This
-object can be used to set certain parameters for the filter.
+Filters can be disabled and enabled via the ``FilterCollection`` which is
+stored in the ``EntityManager``. The ``FilterCollection#enable($name)`` method
+will retrieve the filter object. You can set the filter parameters on that
+object.
 
 .. code-block:: php
     <?php
     $filter = $em->getFilters()->enable("locale");
     $filter->setParameter('locale', 'en');
 
-.. warning::
-    Disabling and enabling filters does not have effect on objects that you
-    already have. If you want to reload an object after you disabled, enabled
-    or changed a filter, then you should clear the EM and re-fetch the object
-    so the appropriate SQL will be executed.
-
-Disabling Filters
------------------
-.. code-block:: php
+    // Disable it
     $filter = $em->getFilters()->disable("locale");
+
+.. warning::
+    Disabling and enabling filters has no effect on managed entities. If you
+    want to refresh or reload an object after having modified a filter or the
+    FilterCollection, then you should clear the EntityManager and re-fetch your
+    entities, having the new rules for filtering applied.
