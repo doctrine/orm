@@ -80,6 +80,9 @@ Advanced Topics
 * **Database Integration**:
   :doc:`Transactions and Concurrency <reference/transactions-and-concurrency>`
 
+* **Filtering entities**:
+  :doc:`Filters <reference/filters>`
+
 * **Performance**:
   :doc:`Improving Performance <reference/improving-performance>` |
   :doc:`Caching <reference/caching>` |
