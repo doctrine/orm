@@ -29,6 +29,7 @@ the filters.  The ``SQLFilter#getParameter()`` function takes care of the
 proper quoting of parameters.
 
 .. code-block:: php
+
     <?php
     namespace Example;
     use Doctrine\ORM\Mapping\ClassMetaData,
@@ -53,6 +54,7 @@ Configuration
 Filter classes are added to the configuration as following:
 
 .. code-block:: php
+
     <?php
     $config->addFilter("locale", "\Doctrine\Tests\ORM\Functional\MyLocaleFilter");
 
@@ -69,6 +71,7 @@ will retrieve the filter object. You can set the filter parameters on that
 object.
 
 .. code-block:: php
+
     <?php
     $filter = $em->getFilters()->enable("locale");
     $filter->setParameter('locale', 'en');
