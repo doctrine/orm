@@ -2292,6 +2292,18 @@ class UnitOfWork implements PropertyChangedListener
                     : $data[$fieldName];
             }
 
+            //convert objects to strings
+            foreach ($id as $fieldName => $value) {
+                if (is_object($value)) {
+                    if (method_exists($value, '__toString'))
+                         $id[$fieldName] = $value->__toString();
+                    else if ($value instanceof \DateTime)
+                        $id[$fieldName] = $value->getTimestamp();
+                    else
+                        throw new \Exception(get_class($value)." does not implement a __toString() method");
+                }
+            }
+
             $idHash = implode(' ', $id);
         } else {
             $idHash = isset($class->associationMappings[$class->identifier[0]])
