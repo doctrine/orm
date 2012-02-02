@@ -478,11 +478,6 @@ class ClassMetadataInfo implements ClassMetadata
     public $associationMappings = array();
 
     /**
-     * @var array
-     */
-    public $overrideAssociationMappings = array();
-
-    /**
      * READ-ONLY: Flag indicating whether the identifier/primary key of the class is composite.
      *
      * @var boolean
@@ -576,7 +571,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * NamingStrategy determining the default column and table names
      *
-     * @var \Doctrine\ORM\NamingStrategy
+     * @var Doctrine\ORM\Mapping\NamingStrategy
      */
     protected $namingStrategy;
 
@@ -1808,9 +1803,12 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Sets the association to override association mapping of property for an entity relationship.
+     *
      * @param string $fieldName
+     * @param array $overrideMapping
      */
-    public function setAssociationOverride($fieldName, $overrideMapping)
+    public function setAssociationOverride($fieldName, array $overrideMapping)
     {
         if (!isset($this->associationMappings[$fieldName])) {
             throw MappingException::invalidOverrideFieldName($this->name, $fieldName);
