@@ -9,6 +9,8 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class DDC964Guest extends DDC964User
 {
+    public static function loadMetadata($metadata)
+    {
 
-
+    }
 }

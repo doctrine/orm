@@ -294,10 +294,10 @@ class XmlDriver extends AbstractFileDriver
                     $joinColumns = array();
 
                     if (isset($oneToOneElement->{'join-column'})) {
-                        $joinColumns[] = $this->_getJoinColumnMapping($oneToOneElement->{'join-column'});
+                        $joinColumns[] = $this->joinColumnToArray($oneToOneElement->{'join-column'});
                     } else if (isset($oneToOneElement->{'join-columns'})) {
                         foreach ($oneToOneElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
-                            $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
+                            $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
                         }
                     }
 
@@ -378,10 +378,10 @@ class XmlDriver extends AbstractFileDriver
                 $joinColumns = array();
 
                 if (isset($manyToOneElement->{'join-column'})) {
-                    $joinColumns[] = $this->_getJoinColumnMapping($manyToOneElement->{'join-column'});
+                    $joinColumns[] = $this->joinColumnToArray($manyToOneElement->{'join-column'});
                 } else if (isset($manyToOneElement->{'join-columns'})) {
                     foreach ($manyToOneElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
-                        $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
+                        $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
                     }
                 }
 
@@ -428,11 +428,11 @@ class XmlDriver extends AbstractFileDriver
                     }
 
                     foreach ($joinTableElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
-                        $joinTable['joinColumns'][] = $this->_getJoinColumnMapping($joinColumnElement);
+                        $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumnElement);
                     }
 
                     foreach ($joinTableElement->{'inverse-join-columns'}->{'join-column'} as $joinColumnElement) {
-                        $joinTable['inverseJoinColumns'][] = $this->_getJoinColumnMapping($joinColumnElement);
+                        $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumnElement);
                     }
 
                     $mapping['joinTable'] = $joinTable;
@@ -457,6 +457,50 @@ class XmlDriver extends AbstractFileDriver
                 }
 
                 $metadata->mapManyToMany($mapping);
+            }
+        }
+
+        // Evaluate association-overrides
+        if (isset($xmlRoot->{'association-overrides'})) {
+            foreach ($xmlRoot->{'association-overrides'}->{'association-override'} as $associationOverrideElement) {
+                $fieldName  = (string) $associationOverrideElement['name'];
+                $override   = array();
+
+                // Check for join-columns
+                if (isset($associationOverrideElement->{'join-columns'})) {
+                    $joinColumns = array();
+                    foreach ($associationOverrideElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
+                        $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
+                    }
+                    $override['joinColumns'] = $joinColumns;
+                }
+
+                // Check for join-table
+                if ($associationOverrideElement->{'join-table'}) {
+                    $joinTable          = null;
+                    $joinTableElement   = $associationOverrideElement->{'join-table'};
+
+                    $joinTable = array(
+                        'name'      => (string) $joinTableElement['name'],
+                        'schema'    => (string) $joinTableElement['schema']
+                    );
+
+                    if (isset($joinTableElement->{'join-columns'})) {
+                        foreach ($joinTableElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
+                            $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumnElement);
+                        }
+                    }
+
+                    if (isset($joinTableElement->{'inverse-join-columns'})) {
+                        foreach ($joinTableElement->{'inverse-join-columns'}->{'join-column'} as $joinColumnElement) {
+                            $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumnElement);
+                        }
+                    }
+
+                    $override['joinTable'] = $joinTable;
+                }
+
+                $metadata->setAssociationOverride($fieldName, $override);
             }
         }
 
@@ -504,7 +548,7 @@ class XmlDriver extends AbstractFileDriver
      * @param $joinColumnElement The XML element.
      * @return array The mapping array.
      */
-    private function _getJoinColumnMapping(SimpleXMLElement $joinColumnElement)
+    private function joinColumnToArray(SimpleXMLElement $joinColumnElement)
     {
         $joinColumn = array(
             'name' => (string)$joinColumnElement['name'],

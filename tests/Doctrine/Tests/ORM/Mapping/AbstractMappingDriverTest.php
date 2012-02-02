@@ -376,11 +376,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testDefaultFieldType()
     {
-        $em         = $this->_getTestEntityManager();
-        $factory    = $this->createClassMetadataFactory($em);
-
-
-        $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType');
+        $factory    = $this->createClassMetadataFactory();
+        $class      = $factory->getMetadataFor('Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType');
 
 
         $this->assertArrayHasKey('id', $class->fieldMappings);
@@ -417,7 +414,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testIdentifierColumnDefinition()
     {
-
         $class = $this->createClassMetadata(__NAMESPACE__ . '\DDC1170Entity');
 
 
@@ -487,6 +483,89 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $factory = $this->createClassMetadataFactory();
         
         $factory->getMetadataFor('Doctrine\Tests\Models\DDC889\DDC889Entity');
+    }
+
+    /**
+     * @group DDC-964
+     */
+    public function testAssociationOverridesMapping()
+    {
+
+        $factory        = $this->createClassMetadataFactory();
+        $adminMetadata  = $factory->getMetadataFor('Doctrine\Tests\Models\DDC964\DDC964Admin');
+        $guestMetadata  = $factory->getMetadataFor('Doctrine\Tests\Models\DDC964\DDC964Guest');
+
+        
+        // assert groups association mappings
+        $this->assertArrayHasKey('groups', $guestMetadata->associationMappings);
+        $this->assertArrayHasKey('groups', $adminMetadata->associationMappings);
+
+        $guestGroups = $guestMetadata->associationMappings['groups'];
+        $adminGroups = $adminMetadata->associationMappings['groups'];
+
+        // assert not override attributes
+        $this->assertEquals($guestGroups['fieldName'], $adminGroups['fieldName']);
+        $this->assertEquals($guestGroups['type'], $adminGroups['type']);
+        $this->assertEquals($guestGroups['mappedBy'], $adminGroups['mappedBy']);
+        $this->assertEquals($guestGroups['inversedBy'], $adminGroups['inversedBy']);
+        $this->assertEquals($guestGroups['isOwningSide'], $adminGroups['isOwningSide']);
+        $this->assertEquals($guestGroups['fetch'], $adminGroups['fetch']);
+        $this->assertEquals($guestGroups['isCascadeRemove'], $adminGroups['isCascadeRemove']);
+        $this->assertEquals($guestGroups['isCascadePersist'], $adminGroups['isCascadePersist']);
+        $this->assertEquals($guestGroups['isCascadeRefresh'], $adminGroups['isCascadeRefresh']);
+        $this->assertEquals($guestGroups['isCascadeMerge'], $adminGroups['isCascadeMerge']);
+        $this->assertEquals($guestGroups['isCascadeDetach'], $adminGroups['isCascadeDetach']);
+
+         // assert not override attributes
+        $this->assertEquals('ddc964_users_groups', $guestGroups['joinTable']['name']);
+        $this->assertEquals('user_id', $guestGroups['joinTable']['joinColumns'][0]['name']);
+        $this->assertEquals('group_id', $guestGroups['joinTable']['inverseJoinColumns'][0]['name']);
+
+        $this->assertEquals(array('user_id'=>'id'), $guestGroups['relationToSourceKeyColumns']);
+        $this->assertEquals(array('group_id'=>'id'), $guestGroups['relationToTargetKeyColumns']);
+        $this->assertEquals(array('user_id','group_id'), $guestGroups['joinTableColumns']);
+
+
+        $this->assertEquals('ddc964_users_admingroups', $adminGroups['joinTable']['name']);
+        $this->assertEquals('adminuser_id', $adminGroups['joinTable']['joinColumns'][0]['name']);
+        $this->assertEquals('admingroup_id', $adminGroups['joinTable']['inverseJoinColumns'][0]['name']);
+
+        $this->assertEquals(array('adminuser_id'=>'id'), $adminGroups['relationToSourceKeyColumns']);
+        $this->assertEquals(array('admingroup_id'=>'id'), $adminGroups['relationToTargetKeyColumns']);
+        $this->assertEquals(array('adminuser_id','admingroup_id'), $adminGroups['joinTableColumns']);
+
+
+        // assert address association mappings
+        $this->assertArrayHasKey('address', $guestMetadata->associationMappings);
+        $this->assertArrayHasKey('address', $adminMetadata->associationMappings);
+
+        $guestAddress = $guestMetadata->associationMappings['address'];
+        $adminAddress = $adminMetadata->associationMappings['address'];
+
+        // assert not override attributes
+        $this->assertEquals($guestAddress['fieldName'], $adminAddress['fieldName']);
+        $this->assertEquals($guestAddress['type'], $adminAddress['type']);
+        $this->assertEquals($guestAddress['mappedBy'], $adminAddress['mappedBy']);
+        $this->assertEquals($guestAddress['inversedBy'], $adminAddress['inversedBy']);
+        $this->assertEquals($guestAddress['isOwningSide'], $adminAddress['isOwningSide']);
+        $this->assertEquals($guestAddress['fetch'], $adminAddress['fetch']);
+        $this->assertEquals($guestAddress['isCascadeRemove'], $adminAddress['isCascadeRemove']);
+        $this->assertEquals($guestAddress['isCascadePersist'], $adminAddress['isCascadePersist']);
+        $this->assertEquals($guestAddress['isCascadeRefresh'], $adminAddress['isCascadeRefresh']);
+        $this->assertEquals($guestAddress['isCascadeMerge'], $adminAddress['isCascadeMerge']);
+        $this->assertEquals($guestAddress['isCascadeDetach'], $adminAddress['isCascadeDetach']);
+        
+        // assert override
+        $this->assertEquals('address_id', $guestAddress['joinColumns'][0]['name']);
+        $this->assertEquals(array('address_id'=>'id'), $guestAddress['sourceToTargetKeyColumns']);
+        $this->assertEquals(array('address_id'=>'address_id'), $guestAddress['joinColumnFieldNames']);
+        $this->assertEquals(array('id'=>'address_id'), $guestAddress['targetToSourceKeyColumns']);
+
+
+        $this->assertEquals('adminaddress_id', $adminAddress['joinColumns'][0]['name']);
+        $this->assertEquals(array('adminaddress_id'=>'id'), $adminAddress['sourceToTargetKeyColumns']);
+        $this->assertEquals(array('adminaddress_id'=>'adminaddress_id'), $adminAddress['joinColumnFieldNames']);
+        $this->assertEquals(array('id'=>'adminaddress_id'), $adminAddress['targetToSourceKeyColumns']);
     }
 }
 

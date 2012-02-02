@@ -430,6 +430,11 @@ class ClassMetadataInfo implements ClassMetadata
     public $associationMappings = array();
 
     /**
+     * @var array
+     */
+    public $overrideAssociationMappings = array();
+
+    /**
      * READ-ONLY: Flag indicating whether the identifier/primary key of the class is composite.
      *
      * @var boolean
@@ -1690,6 +1695,49 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::invalidInheritanceType($this->name, $type);
         }
         $this->inheritanceType = $type;
+    }
+
+    /**
+     * @param string $fieldName
+     */
+    public function setAssociationOverride($fieldName, $overrideMapping)
+    {
+        if (!isset($this->associationMappings[$fieldName])) {
+            throw MappingException::invalidOverrideFieldName($this->name, $fieldName);
+        }
+
+        $mapping = $this->associationMappings[$fieldName];
+
+        if (isset($overrideMapping['joinColumns'])) {
+            $mapping['joinColumns'] = $overrideMapping['joinColumns'];
+        }
+
+        if (isset($overrideMapping['joinTable'])) {
+            $mapping['joinTable'] = $overrideMapping['joinTable'];
+        }
+
+        $mapping['joinColumnFieldNames']        = null;
+        $mapping['joinTableColumns']            = null;
+        $mapping['sourceToTargetKeyColumns']    = null;
+        $mapping['relationToSourceKeyColumns']  = null;
+        $mapping['relationToTargetKeyColumns']  = null;
+        
+        switch ($mapping['type']) {
+            case self::ONE_TO_ONE:
+                $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+                break;
+            case self::ONE_TO_MANY:
+                $mapping = $this->_validateAndCompleteOneToManyMapping($mapping);
+                break;
+            case self::MANY_TO_ONE:
+                $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+                break;
+            case self::MANY_TO_MANY:
+                $mapping = $this->_validateAndCompleteManyToManyMapping($mapping);
+                break;
+        }
+
+        $this->associationMappings[$fieldName] = $mapping;
     }
 
     /**
