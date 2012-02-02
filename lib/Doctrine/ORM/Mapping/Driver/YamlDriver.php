@@ -465,13 +465,13 @@ class YamlDriver extends AbstractFileDriver
             }
         }
 
-        // Evaluate association-overrides
+        // Evaluate associationOverride
         if (isset($element['associationOverride'])) {
 
             foreach ($element['associationOverride'] as $fieldName => $associationOverride) {
                 $override   = array();
 
-                // Check for join-columns
+                // Check for joinColumn
                 if (isset($associationOverride['joinColumn'])) {
                     $joinColumns = array();
                     foreach ($associationOverride['joinColumn'] as $name => $joinColumnElement) {
@@ -483,7 +483,7 @@ class YamlDriver extends AbstractFileDriver
                     $override['joinColumns'] = $joinColumns;
                 }
 
-                // Check for join-table
+                // Check for joinTable
                 if (isset($associationOverride['joinTable'])) {
 
                     $joinTableElement   = $associationOverride['joinTable'];

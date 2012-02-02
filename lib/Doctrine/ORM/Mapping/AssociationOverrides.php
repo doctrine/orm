@@ -23,7 +23,7 @@ namespace Doctrine\ORM\Mapping;
  * This annotation is used to override association mappings of relationship properties.
  *
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since   2.2
+ * @since   2.3
  *
  * @Annotation
  * @Target("CLASS")
