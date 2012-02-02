@@ -363,9 +363,7 @@ class AnnotationDriver implements Driver
             // Check for JoinColummn/JoinColumns annotations
             $joinColumns = array();
 
-            if (isset($associationOverrides[$property->name]['joinColumns'])) {
-                $joinColumns = $associationOverrides[$property->name]['joinColumns'];
-            } else if ($joinColumnAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinColumn')) {
+            if ($joinColumnAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinColumn')) {
                 $joinColumns[] = $this->joinColumnToArray($joinColumnAnnot);
             } else if ($joinColumnsAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinColumns')) {
                 foreach ($joinColumnsAnnot->value as $joinColumn) {
@@ -466,9 +464,7 @@ class AnnotationDriver implements Driver
             } else if ($manyToManyAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\ManyToMany')) {
                 $joinTable = array();
 
-                if (isset($associationOverrides[$property->name]['joinTable'])) {
-                    $joinTable = $associationOverrides[$property->name]['joinTable'];
-                } else if ($joinTableAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinTable')) {
+                if ($joinTableAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinTable')) {
                     $joinTable = array(
                         'name' => $joinTableAnnot->name,
                         'schema' => $joinTableAnnot->schema
@@ -497,6 +493,47 @@ class AnnotationDriver implements Driver
                 }
 
                 $metadata->mapManyToMany($mapping);
+            }
+        }
+
+        // Evaluate AssociationOverrides annotation
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\AssociationOverrides'])) {
+            $associationOverridesAnnot = $classAnnotations['Doctrine\ORM\Mapping\AssociationOverrides'];
+
+            foreach ($associationOverridesAnnot->value as $associationOverride) {
+                $override   = array();
+                $fieldName  = $associationOverride->name;
+
+                // Check for JoinColummn/JoinColumns annotations
+                if ($associationOverride->joinColumns) {
+                    $joinColumns = array();
+                    foreach ($associationOverride->joinColumns as $joinColumn) {
+                        $joinColumns[] = $this->joinColumnToArray($joinColumn);
+                    }
+                    $override['joinColumns'] = $joinColumns;
+                }
+
+                // Check for JoinTable annotations
+                if ($associationOverride->joinTable) {
+                    $joinTable      = null;
+                    $joinTableAnnot = $associationOverride->joinTable;
+                    $joinTable = array(
+                        'name'      => $joinTableAnnot->name,
+                        'schema'    => $joinTableAnnot->schema
+                    );
+
+                    foreach ($joinTableAnnot->joinColumns as $joinColumn) {
+                        $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
+                    }
+
+                    foreach ($joinTableAnnot->inverseJoinColumns as $joinColumn) {
+                        $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumn);
+                    }
+
+                    $override['joinTable'] = $joinTable;
+                }
+
+                $metadata->setAssociationOverride($fieldName, $override);
             }
         }
 
@@ -667,7 +704,7 @@ class AnnotationDriver implements Driver
             'referencedColumnName' => $joinColumn->referencedColumnName,
         );
     }
-    
+
     /**
      * Factory method for the Annotation Driver
      *

@@ -932,6 +932,20 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->setExpectedException("Doctrine\ORM\Mapping\MappingException", "Invalid cascade option(s) specified: 'invalid'. Only 'remove', 'persist', 'refresh', 'merge' and 'detach' are allowed.");
         $cm->mapManyToOne(array('fieldName' => 'address', 'targetEntity' => 'UnknownClass', 'cascade' => array('invalid')));
+     }
+
+    /**
+     * @group DDC-964
+     * @expectedException        Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage Invalid field override named 'invalidPropertyName' for class 'Doctrine\Tests\Models\DDC964\DDC964Admin
+     */
+    public function testInvalidPropertyOverrideNameException()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\DDC964\DDC964Admin');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->mapManyToOne(array('fieldName' => 'address', 'targetEntity' => 'DDC964Address'));
+
+        $cm->setAssociationOverride('invalidPropertyName', array());
     }
 }
 

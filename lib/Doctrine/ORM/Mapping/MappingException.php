@@ -83,6 +83,17 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self("Invalid mapping file '$fileName' for class '$entityName'.");
     }
 
+     /**
+     * Exception for invalid property name override.
+     *
+     * @param string $className The entity's name
+     * @param string $fieldName
+     */
+    public static function invalidOverrideFieldName($className, $fieldName)
+    {
+        return new self("Invalid field override named '$fieldName' for class '$className'.");
+    }
+
     public static function mappingNotFound($className, $fieldName)
     {
         return new self("No mapping found for field '$fieldName' on class '$className'.");

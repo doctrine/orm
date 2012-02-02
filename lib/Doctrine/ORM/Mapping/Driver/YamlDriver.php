@@ -356,14 +356,14 @@ class YamlDriver extends AbstractFileDriver
                     $joinColumns = array();
 
                     if (isset($oneToOneElement['joinColumn'])) {
-                        $joinColumns[] = $this->_getJoinColumnMapping($oneToOneElement['joinColumn']);
+                        $joinColumns[] = $this->joinColumnToArray($oneToOneElement['joinColumn']);
                     } else if (isset($oneToOneElement['joinColumns'])) {
                         foreach ($oneToOneElement['joinColumns'] as $name => $joinColumnElement) {
                             if (!isset($joinColumnElement['name'])) {
                                 $joinColumnElement['name'] = $name;
                             }
 
-                            $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
+                            $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
                         }
                     }
 
@@ -438,14 +438,14 @@ class YamlDriver extends AbstractFileDriver
                 $joinColumns = array();
 
                 if (isset($manyToOneElement['joinColumn'])) {
-                    $joinColumns[] = $this->_getJoinColumnMapping($manyToOneElement['joinColumn']);
+                    $joinColumns[] = $this->joinColumnToArray($manyToOneElement['joinColumn']);
                 } else if (isset($manyToOneElement['joinColumns'])) {
                     foreach ($manyToOneElement['joinColumns'] as $name => $joinColumnElement) {
                         if (!isset($joinColumnElement['name'])) {
                             $joinColumnElement['name'] = $name;
                         }
 
-                        $joinColumns[] = $this->_getJoinColumnMapping($joinColumnElement);
+                        $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
                     }
                 }
 
@@ -489,7 +489,7 @@ class YamlDriver extends AbstractFileDriver
                             $joinColumnElement['name'] = $name;
                         }
 
-                        $joinTable['joinColumns'][] = $this->_getJoinColumnMapping($joinColumnElement);
+                        $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumnElement);
                     }
 
                     foreach ($joinTableElement['inverseJoinColumns'] as $name => $joinColumnElement) {
@@ -497,7 +497,7 @@ class YamlDriver extends AbstractFileDriver
                             $joinColumnElement['name'] = $name;
                         }
 
-                        $joinTable['inverseJoinColumns'][] = $this->_getJoinColumnMapping($joinColumnElement);
+                        $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumnElement);
                     }
 
                     $mapping['joinTable'] = $joinTable;
@@ -527,6 +527,59 @@ class YamlDriver extends AbstractFileDriver
             }
         }
 
+        // Evaluate association-overrides
+        if (isset($element['associationOverride'])) {
+
+            foreach ($element['associationOverride'] as $fieldName => $associationOverride) {
+                $override   = array();
+
+                // Check for join-columns
+                if (isset($associationOverride['joinColumn'])) {
+                    $joinColumns = array();
+                    foreach ($associationOverride['joinColumn'] as $name => $joinColumnElement) {
+                        if (!isset($joinColumnElement['name'])) {
+                            $joinColumnElement['name'] = $name;
+                        }
+                        $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
+                    }
+                    $override['joinColumns'] = $joinColumns;
+                }
+
+                // Check for join-table
+                if (isset($associationOverride['joinTable'])) {
+
+                    $joinTableElement   = $associationOverride['joinTable'];
+                    $joinTable          =  array(
+                        'name' => $joinTableElement['name']
+                    );
+
+                    if (isset($joinTableElement['schema'])) {
+                        $joinTable['schema'] = $joinTableElement['schema'];
+                    }
+
+                    foreach ($joinTableElement['joinColumns'] as $name => $joinColumnElement) {
+                        if (!isset($joinColumnElement['name'])) {
+                            $joinColumnElement['name'] = $name;
+                        }
+
+                        $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumnElement);
+                    }
+
+                    foreach ($joinTableElement['inverseJoinColumns'] as $name => $joinColumnElement) {
+                        if (!isset($joinColumnElement['name'])) {
+                            $joinColumnElement['name'] = $name;
+                        }
+
+                        $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumnElement);
+                    }
+
+                    $override['joinTable'] = $joinTable;
+                }
+
+                $metadata->setAssociationOverride($fieldName, $override);
+            }
+        }
+
         // Evaluate lifeCycleCallbacks
         if (isset($element['lifecycleCallbacks'])) {
             foreach ($element['lifecycleCallbacks'] as $type => $methods) {
@@ -544,7 +597,7 @@ class YamlDriver extends AbstractFileDriver
      * @param $joinColumnElement The array join column element
      * @return array The mapping array.
      */
-    private function _getJoinColumnMapping($joinColumnElement)
+    private function joinColumnToArray($joinColumnElement)
     {
         $joinColumn = array();
         if (isset($joinColumnElement['referencedColumnName'])) {
