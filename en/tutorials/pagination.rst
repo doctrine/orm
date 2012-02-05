@@ -13,9 +13,9 @@ vendors is not sufficient to get the correct results.
 By default the pagination extension does the following steps to compute the
 correct result:
 
-1. Perform a Count query using `DISTINCT` keyword.
-2. Perform a Limit Subquery with `DISTINCT` to find all ids of the entity in from on the current page.
-3. Perform a WHERE IN query to get all results for the current page.
+- Perform a Count query using `DISTINCT` keyword.
+- Perform a Limit Subquery with `DISTINCT` to find all ids of the entity in from on the current page.
+- Perform a WHERE IN query to get all results for the current page.
 
 This behavior is only necessary if you actually fetch join a to-many
 collection. You can disable this behavior by setting the
