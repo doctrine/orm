@@ -25,7 +25,7 @@ of contents <toc>`.
 Getting Started
 ---------------
 
-* **Tutorial**: 
+* **Tutorial**:
   :doc:`Getting Started <tutorials/getting-started>` |
   :doc:`In 10 quick steps <tutorials/in-ten-quick-steps>`
 
@@ -59,20 +59,21 @@ Working with Objects
   :doc:`Assocations <reference/working-with-associations>` |
   :doc:`Events <reference/events>`
 
-* **Querying Objects**:
+* **Query Reference**:
   :doc:`Doctrine Query Language (DQL) <reference/dql-doctrine-query-language>` |
   :doc:`QueryBuilder <reference/query-builder>` |
   :doc:`Native SQL Queries <reference/native-sql>`
 
 * **UnitOfWork dissected**:
   :doc:`Doctrine Internals explained <reference/unitofwork>` |
-  :doc:`Owning and Inverse Side Associations <reference/unitofwork-associations>` 
+  :doc:`Owning and Inverse Side Associations <reference/unitofwork-associations>`
 
 * **Tutorials**:
   :doc:`Indexed associations <tutorials/working-with-indexed-associations>` |
   :doc:`Extra Lazy Assocations <tutorials/extra-lazy-associations>` |
   :doc:`Composite Primary Keys <tutorials/composite-primary-keys>` |
-  :doc:`Ordered associations <tutorials/ordered-associations>`
+  :doc:`Ordered associations <tutorials/ordered-associations>` |
+  :doc:`Pagination <tutorials/pagination>`
 
 Advanced Topics
 ---------------
