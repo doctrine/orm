@@ -275,7 +275,7 @@ class ProxyFactory
         );
 
         if ($cheapCheck) {
-            $code = file($class->reflClass->getFileName());
+            $code = file($method->getDeclaringClass()->getFileName());
             $code = trim(implode(" ", array_slice($code, $method->getStartLine() - 1, $method->getEndLine() - $method->getStartLine() + 1)));
 
             $pattern = sprintf(self::PATTERN_MATCH_ID_METHOD, $method->getName(), $identifier);
