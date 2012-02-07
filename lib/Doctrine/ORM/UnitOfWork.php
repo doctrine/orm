@@ -1454,7 +1454,7 @@ class UnitOfWork implements PropertyChangedListener
                         throw new EntityNotFoundException;
                     }
 
-                    $managedCopy = $this->newInstance($class);
+                    $managedCopy = $class->newInstance();
                     $class->setIdentifierValues($managedCopy, $id);
 
                     $this->persistNew($class, $managedCopy);
