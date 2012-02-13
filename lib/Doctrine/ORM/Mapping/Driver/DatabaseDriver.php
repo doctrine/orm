@@ -193,7 +193,6 @@ class DatabaseDriver implements Driver
         foreach ($columns as $column) {
             $fieldMapping = array();
             
-            
             if (in_array($column->getName(), $allForeignKeyColumns)) {
                 continue;
             } else if ($primaryKeyColumns && in_array($column->getName(), $primaryKeyColumns)) {
@@ -312,7 +311,7 @@ class DatabaseDriver implements Driver
             }
             
             //Here we need to check if $cols are the same as $primaryKeyColums
-            if(!array_diff($cols,$primaryKeyColumns)) {
+            if (!array_diff($cols,$primaryKeyColumns)) {
                 $metadata->mapOneToOne($associationMapping);
             }
             else {
