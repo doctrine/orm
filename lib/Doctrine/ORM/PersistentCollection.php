@@ -119,6 +119,17 @@ final class PersistentCollection implements Collection
         $this->em        = $em;
         $this->typeClass = $class;
     }
+    
+    /**
+     * Performs a deep clone of this persistent collection
+     * 
+     */
+    public function __clone()
+    {
+        if(is_object($this->coll)) {
+            $this->coll = clone $this->coll;
+        }
+    }
 
     /**
      * INTERNAL:
