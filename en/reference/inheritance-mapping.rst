@@ -35,14 +35,14 @@ Example:
     class MappedSuperclassBase
     {
         /** @Column(type="integer") */
-        private $mapped1;
+        protected $mapped1;
         /** @Column(type="string") */
-        private $mapped2;
+        protected $mapped2;
         /**
          * @OneToOne(targetEntity="MappedSuperclassRelated1")
          * @JoinColumn(name="related1_id", referencedColumnName="id")
          */
-        private $mappedRelated1;
+        protected $mappedRelated1;
     
         // ... more fields and methods
     }
