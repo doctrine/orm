@@ -293,10 +293,9 @@ class DatabaseDriver implements Driver
             $associationMapping['fieldName'] = $this->getFieldNameForColumn($tableName, $localColumn, true);
             $associationMapping['targetEntity'] = $this->getClassNameForTable($foreignTable);
             
-            if ($primaryKeyColumns && in_array($localColumn, $primaryKeyColumns))
-                    {
-                         $associationMapping['id'] = true;
-                    }
+            if ($primaryKeyColumns && in_array($localColumn, $primaryKeyColumns)) {
+                $associationMapping['id'] = true;
+            }
 
             for ($i = 0; $i < count($cols); $i++) {
                 $associationMapping['joinColumns'][] = array(
@@ -305,15 +304,13 @@ class DatabaseDriver implements Driver
                 );
             }
             
-            
             //Here we need to check if $cols are the same as $primaryKeyColums
-            if(!array_diff($cols,$primaryKeyColumns))
+            if(!array_diff($cols,$primaryKeyColumns)) {
                 $metadata->mapOneToOne($associationMapping);
-            else
+            }
+            else {
                 $metadata->mapManyToOne($associationMapping);
-            
-
-
+            }
         }
     }
 

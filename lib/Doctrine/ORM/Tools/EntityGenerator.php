@@ -812,10 +812,8 @@ public function <methodName>()
                 $lines[] = $this->_spaces . ' * @' . $this->_annotationsPrefix . 'Id';
             
                 if ($generatorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-                    $lines[] = $this->_spaces.' * @' . $this->_annotationsPrefix . 'GeneratedValue(strategy="' . $generatorType . '")';
+                    $lines[] = $this->_spaces . ' * @' . $this->_annotationsPrefix . 'GeneratedValue(strategy="' . $generatorType . '")';
                 }
-            
-
             }
 
             $type = null;
