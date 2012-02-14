@@ -272,7 +272,7 @@ class ProxyFactory
      * @param ClassMetadata $class
      * @return bool
      */
-    private function isShortIdentifierGetter($method, $class)
+    private function isShortIdentifierGetter($method, ClassMetadata $class)
     {
         $identifier = lcfirst(substr($method->getName(), 3));
         $cheapCheck = (
