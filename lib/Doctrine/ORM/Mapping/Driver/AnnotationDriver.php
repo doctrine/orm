@@ -228,7 +228,8 @@ class AnnotationDriver implements Driver
                     $metadata->setDiscriminatorColumn(array(
                         'name' => $discrColumnAnnot->name,
                         'type' => $discrColumnAnnot->type,
-                        'length' => $discrColumnAnnot->length
+                        'length' => $discrColumnAnnot->length,
+                        'columnDefinition'    => $discrColumnAnnot->columnDefinition
                     ));
                 } else {
                     $metadata->setDiscriminatorColumn(array('name' => 'dtype', 'type' => 'string', 'length' => 255));

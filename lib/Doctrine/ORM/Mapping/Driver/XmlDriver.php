@@ -99,9 +99,10 @@ class XmlDriver extends AbstractFileDriver
                 if (isset($xmlRoot->{'discriminator-column'})) {
                     $discrColumn = $xmlRoot->{'discriminator-column'};
                     $metadata->setDiscriminatorColumn(array(
-                        'name' => (string)$discrColumn['name'],
-                        'type' => (string)$discrColumn['type'],
-                        'length' => (string)$discrColumn['length']
+                        'name' => isset($discrColumn['name']) ? (string)$discrColumn['name'] : null,
+                        'type' => isset($discrColumn['type']) ? (string)$discrColumn['type'] : null,
+                        'length' => isset($discrColumn['length']) ? (string)$discrColumn['length'] : null,
+                        'columnDefinition' => isset($discrColumn['column-definition']) ? (string)$discrColumn['column-definition'] : null
                     ));
                 } else {
                     $metadata->setDiscriminatorColumn(array('name' => 'dtype', 'type' => 'string', 'length' => 255));

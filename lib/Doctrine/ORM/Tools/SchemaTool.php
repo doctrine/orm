@@ -288,11 +288,16 @@ class SchemaTool
             $discrColumn['length'] = 255;
         }
 
-        $table->addColumn(
-            $discrColumn['name'],
-            $discrColumn['type'],
-            array('length' => $discrColumn['length'], 'notnull' => true)
+        $options = array(
+            'length'    => isset($discrColumn['length']) ? $discrColumn['length'] : null,
+            'notnull'   => true
         );
+
+        if (isset($discrColumn['columnDefinition'])) {
+            $options['columnDefinition'] = $discrColumn['columnDefinition'];
+        }
+
+        $table->addColumn($discrColumn['name'], $discrColumn['type'], $options);
     }
 
     /**
