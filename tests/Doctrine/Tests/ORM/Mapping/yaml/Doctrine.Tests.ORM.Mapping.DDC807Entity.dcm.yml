@@ -1,0 +1,13 @@
+Doctrine\Tests\ORM\Mapping\DDC807Entity:
+  type: entity
+  inheritanceType: SINGLE_TABLE
+  discriminatorMap:
+    ONE: DDC807SubClasse1
+    TWO: DDC807SubClasse2
+  discriminatorColumn:
+    name: dtype
+    columnDefinition: ENUM('ONE','TWO')
+  id:
+    id: 
+      generator:
+        strategy: NONE
