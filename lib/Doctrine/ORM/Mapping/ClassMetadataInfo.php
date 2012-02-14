@@ -1938,7 +1938,7 @@ class ClassMetadataInfo implements ClassMetadata
     {
         if ($columnDef !== null) {
             if ( ! isset($columnDef['name'])) {
-                throw MappingException::nameIsMandatoryForDiscriminatorColumns($this->name, $columnDef);
+                throw MappingException::nameIsMandatoryForDiscriminatorColumns($this->name);
             }
 
             if (isset($this->fieldNames[$columnDef['name']])) {
