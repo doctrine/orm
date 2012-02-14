@@ -139,9 +139,9 @@ class ProxyFactory
     /**
      * Generates a proxy class file.
      *
-     * @param $class
-     * @param $proxyClassName
-     * @param $file The path of the file to write to.
+     * @param ClassMetadata $class Metadata for the original class
+     * @param string $fileName Filename (full path) for the generated class
+     * @param string $file The proxy class template data
      */
     private function _generateProxyClass(ClassMetadata $class, $fileName, $file)
     {
