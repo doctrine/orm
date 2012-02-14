@@ -96,9 +96,10 @@ class YamlDriver extends AbstractFileDriver
                 if (isset($element['discriminatorColumn'])) {
                     $discrColumn = $element['discriminatorColumn'];
                     $metadata->setDiscriminatorColumn(array(
-                        'name' => $discrColumn['name'],
-                        'type' => $discrColumn['type'],
-                        'length' => $discrColumn['length']
+                        'name' => isset($discrColumn['name']) ? (string)$discrColumn['name'] : null,
+                        'type' => isset($discrColumn['type']) ? (string)$discrColumn['type'] : null,
+                        'length' => isset($discrColumn['length']) ? (string)$discrColumn['length'] : null,
+                        'columnDefinition' => isset($discrColumn['columnDefinition']) ? (string)$discrColumn['columnDefinition'] : null
                     ));
                 } else {
                     $metadata->setDiscriminatorColumn(array('name' => 'dtype', 'type' => 'string', 'length' => 255));
