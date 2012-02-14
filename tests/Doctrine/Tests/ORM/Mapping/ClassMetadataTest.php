@@ -597,6 +597,17 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @expectedException \Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage Discriminator column name on entity class 'Doctrine\Tests\Models\CMS\CmsUser' is not defined.
+     */
+    public function testNameIsMandatoryForDiscriminatorColumnsMappingException()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->setDiscriminatorColumn(array());
+    }
+
+    /**
      * @group DDC-984
      * @group DDC-559
      * @group DDC-1575
