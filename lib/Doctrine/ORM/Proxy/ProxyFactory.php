@@ -143,7 +143,7 @@ class ProxyFactory
      * @param $proxyClassName
      * @param $file The path of the file to write to.
      */
-    private function _generateProxyClass($class, $fileName, $file)
+    private function _generateProxyClass(ClassMetadata $class, $fileName, $file)
     {
         $methods = $this->_generateMethods($class);
         $sleepImpl = $this->_generateSleep($class);
