@@ -786,6 +786,10 @@ class SqlWalker implements TreeWalker
             case ($expr instanceof AST\AggregateExpression):
             case ($expr instanceof AST\Functions\FunctionNode):
             case ($expr instanceof AST\SimpleArithmeticExpression):
+            case ($expr instanceof AST\NullIfExpression):
+            case ($expr instanceof AST\CoalesceExpression):
+            case ($expr instanceof AST\SimpleCaseExpression):
+            case ($expr instanceof AST\GeneralCaseExpression):
                 $sql = $expr->dispatch($this);
                 break;
             default:

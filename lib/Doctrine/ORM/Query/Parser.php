@@ -1347,6 +1347,14 @@ class Parser
                 $expr = $this->SingleValuedPathExpression();
                 break;
 
+            case ($this->_lexer->lookahead['type'] === Lexer::T_CASE):
+            case ($this->_lexer->lookahead['type'] === Lexer::T_COALESCE):
+            case ($this->_lexer->lookahead['type'] === Lexer::T_NULLIF):
+                // Since NULLIF and COALESCE can be identified as a function,
+                // we need to check if before check for FunctionDeclaration
+                $expr = $this->CaseExpression();
+                break;
+
             case ($this->_isFunction()):
                 $this->_lexer->peek(); // "("
                 

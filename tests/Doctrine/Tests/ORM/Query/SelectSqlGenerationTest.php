@@ -1608,15 +1608,20 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testOrderByClauseSupportNullIfAndCoalesce()
     {
-        $this->markTestIncomplete();
+
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY NULLIF(u.name, u.username)',
             'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY NULLIF(c0_.name, c0_.username) ASC'
         );
 
         $this->assertSqlGeneration(
-            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY NULLIF(u.name, u.username)',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY COALESCE(NULLIF(u.name, \'\'), u.username) ASC'
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY COALESCE(NULLIF(u.name, u.username), u.id)',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY COALESCE(NULLIF(c0_.name, c0_.username), c0_.id) ASC'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY CASE u.id WHEN 1 THEN 1 ELSE 0 END',
+            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY CASE c0_.id WHEN 1 THEN 1 ELSE 0 END ASC'
         );
     }
 }
