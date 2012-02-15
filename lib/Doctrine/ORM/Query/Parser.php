@@ -1339,12 +1339,37 @@ class Parser
      */
     public function OrderByItem()
     {
-        $type = 'ASC';
-
         // We need to check if we are in a ResultVariable or StateFieldPathExpression
         $glimpse = $this->_lexer->glimpse();
-        $expr    = ($glimpse['type'] != Lexer::T_DOT) ? $this->ResultVariable() : $this->SingleValuedPathExpression();
 
+        switch (true) {
+            case ($glimpse['type'] === Lexer::T_DOT):
+                $expr = $this->SingleValuedPathExpression();
+                break;
+
+            case ($this->_isFunction()):
+                $this->_lexer->peek(); // "("
+                
+                // SUM(u.id) + COUNT(u.id)
+                if ($this->_isMathOperator($this->_peekBeyondClosingParenthesis())) {
+                    $expr = $this->ScalarExpression();
+                    break;
+                }
+                // COUNT(u.id)
+                if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
+                    $expr = $this->AggregateExpression();
+                    break;
+                }
+                // IDENTITY(u)
+                $expr = $this->FunctionDeclaration();
+                break;
+
+            default:
+                $expr = $this->ResultVariable();
+                break;
+        }
+
+        $type = 'ASC';
         $item = new AST\OrderByItem($expr);
 
         switch (true) {
@@ -2166,10 +2191,10 @@ class Parser
         if (in_array($peek['value'], array("=",  "<", "<=", "<>", ">", ">=", "!=")) ||
             in_array($peek['type'], array(Lexer::T_NOT, Lexer::T_BETWEEN, Lexer::T_LIKE, Lexer::T_IN, Lexer::T_IS, Lexer::T_EXISTS)) ||
             $this->_isMathOperator($peek)) {
-            $condPrimary->simpleConditionalExpression = $this->SimpleConditionalExpression();
+                $condPrimary->simpleConditionalExpression = $this->SimpleConditionalExpression();
 
-            return $condPrimary;
-        }
+                return $condPrimary;
+            }
 
         $this->match(Lexer::T_OPEN_PARENTHESIS);
         $condPrimary->conditionalExpression = $this->ConditionalExpression();

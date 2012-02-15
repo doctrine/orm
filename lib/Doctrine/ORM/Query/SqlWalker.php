@@ -780,9 +780,18 @@ class SqlWalker implements TreeWalker
     public function walkOrderByItem($orderByItem)
     {
         $expr = $orderByItem->expression;
-        $sql  = ($expr instanceof AST\PathExpression)
-            ? $this->walkPathExpression($expr)
-            : $this->walkResultVariable($this->_queryComponents[$expr]['token']['value']);
+
+        switch (true) {
+            case ($expr instanceof AST\PathExpression):
+            case ($expr instanceof AST\AggregateExpression):
+            case ($expr instanceof AST\Functions\FunctionNode):
+            case ($expr instanceof AST\SimpleArithmeticExpression):
+                $sql = $expr->dispatch($this);
+                break;
+            default:
+                $sql = $this->walkResultVariable($this->_queryComponents[$expr]['token']['value']);
+                break;
+        }
 
         return $sql . ' ' . strtoupper($orderByItem->type);
     }
