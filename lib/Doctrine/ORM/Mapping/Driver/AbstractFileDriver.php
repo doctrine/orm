@@ -57,6 +57,13 @@ abstract class AbstractFileDriver implements Driver
     protected $_fileExtension;
 
     /**
+     * Mapping files for specific entities.
+     *
+     * @var array
+     */
+    protected $mappingFiles = array();
+
+    /**
      * Initializes a new FileDriver that looks in the given path(s) for mapping
      * documents and operates in the specified operating mode.
      *
@@ -90,7 +97,7 @@ abstract class AbstractFileDriver implements Driver
     /**
      * Get the file extension used to look for mapping files under
      *
-     * @return void
+     * @return string
      */
     public function getFileExtension()
     {
@@ -106,6 +113,31 @@ abstract class AbstractFileDriver implements Driver
     public function setFileExtension($fileExtension)
     {
         $this->_fileExtension = $fileExtension;
+    }
+
+    /**
+     * Get mapping files for specific entities
+     *
+     * @return array
+     */
+    public function getMappingFiles()
+    {
+        return $this->mappingFiles;
+    }
+
+    /**
+     * Sets the mapping file for a specific entity
+     *
+     * @param string $className
+     * @param string $fileName
+     */
+    public function setMappingFile($className, $fileName)
+    {
+        if(!is_file($fileName)){
+            throw MappingException::invalidMappingFile($className, $fileName);
+        }
+
+        return $this->mappingFiles[$className] = realpath($fileName);
     }
 
     /**
@@ -134,6 +166,10 @@ abstract class AbstractFileDriver implements Driver
      */
     public function isTransient($className)
     {
+        if (isset($this->mappingFiles[$className])) {
+            return false;
+        }
+
         $fileName = str_replace('\\', '.', $className) . $this->_fileExtension;
 
         // Check whether file exists
@@ -171,10 +207,18 @@ abstract class AbstractFileDriver implements Driver
                         continue;
                     }
 
+                    if (in_array($file->getRealPath(), $this->mappingFiles)) {
+                        continue;
+                    }
+
                     // NOTE: All files found here means classes are not transient!
                     $classes[] = str_replace('.', '\\', $fileName);
                 }
             }
+        }
+
+        foreach ($this->mappingFiles as $className => $file) {
+            $classes[] = $className;
         }
 
         return $classes;
@@ -190,6 +234,10 @@ abstract class AbstractFileDriver implements Driver
      */
     protected function _findMappingFile($className)
     {
+        if (isset($this->mappingFiles[$className])) {
+            return $this->mappingFiles[$className];
+        }
+
         $fileName = str_replace('\\', '.', $className) . $this->_fileExtension;
 
         // Check whether file exists
