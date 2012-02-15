@@ -449,6 +449,50 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals("ENUM('ONE','TWO')", $class->discriminatorColumn['columnDefinition']);
         $this->assertEquals("dtype", $class->discriminatorColumn['name']);
     }
+
+    /**
+     * @group DDC-1373
+     *
+     * @expectedException Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage Invalid mapping file '/tmp/invalid-file.xml' for class 'Doctrine\Tests\Models\Generic\BooleanModel'.
+     */
+    public function testInvalidSpecificMappingFileException()
+    {
+        $dirver = $this->_loadDriver();
+        if (!$dirver instanceof \Doctrine\ORM\Mapping\Driver\AbstractFileDriver){
+            $this->markTestSkipped(get_class($dirver).' does not support mapping files.');
+        }
+ 
+        $dirver->setMappingFile('Doctrine\Tests\Models\Generic\BooleanModel', '/tmp/invalid-file.xml');
+    }
+    
+    /**
+     * @group DDC-1373
+     */
+    public function testSpecificMappingFile()
+    {
+        $dirver = $this->_loadDriver();
+        if (!$dirver instanceof \Doctrine\ORM\Mapping\Driver\AbstractFileDriver){
+            $this->markTestSkipped(get_class($dirver).' does not support mapping files.');
+        }
+
+        $paths      = $dirver->getPaths();
+        $path       = reset($paths);
+        $className  = 'Doctrine\Tests\Models\Generic\BooleanModel';
+        $metadata   = new ClassMetadata($className);
+        $fileName   = $path . DIRECTORY_SEPARATOR . 'boolean-model' . $dirver->getFileExtension();
+
+        $dirver->setMappingFile($className, $fileName);
+        $classes = $dirver->getAllClassNames();
+
+        $metadata->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $dirver->loadMetadataForClass($className, $metadata);
+
+        $this->assertContains($className, $classes);
+        $this->assertNotContains('boolean-model', $classes);
+        $this->assertEquals($className, $metadata->name);
+        $this->assertEquals(array('id'=>'id', 'booleanField'=>'booleanField'), $metadata->fieldNames);
+    }
 }
 
 /**
