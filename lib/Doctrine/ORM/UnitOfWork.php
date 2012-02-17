@@ -2498,6 +2498,17 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
+        if ($overrideLocalValues) {
+            if (isset($class->lifecycleCallbacks[Events::postLoad])) {
+                $class->invokeLifecycleCallbacks(Events::postLoad, $entity);
+            }
+
+
+            if ($this->evm->hasListeners(Events::postLoad)) {
+                $this->evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($entity, $this->em));
+            }
+        }
+
         return $entity;
     }
 
