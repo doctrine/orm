@@ -130,17 +130,6 @@ class SimpleObjectHydrator extends AbstractHydrator
         $uow    = $this->_em->getUnitOfWork();
         $entity = $uow->createEntity($entityName, $data, $this->_hints);
 
-        //TODO: These should be invoked later, after hydration, because associations may not yet be loaded here.
-        if (isset($this->class->lifecycleCallbacks[Events::postLoad])) {
-            $this->class->invokeLifecycleCallbacks(Events::postLoad, $entity);
-        }
-
-        $evm = $this->_em->getEventManager();
-
-        if ($evm->hasListeners(Events::postLoad)) {
-            $evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($entity, $this->_em));
-        }
-
         $result[] = $entity;
     }
 
