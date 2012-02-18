@@ -208,6 +208,7 @@ abstract class AbstractQuery
     {
         $key = trim($key, ':');
 
+        $value = $this->processParameterValue($value);
         if ($type === null) {
             $type = Query\ParameterTypeInferer::inferType($value);
         }
@@ -216,6 +217,53 @@ abstract class AbstractQuery
         $this->_params[$key] = $value;
 
         return $this;
+    }
+
+    /**
+     * Process an individual parameter value
+     *
+     * @param mixed $value
+     * @return array
+     */
+    private function processParameterValue($value)
+    {
+        switch (true) {
+            case is_array($value):
+                for ($i = 0, $l = count($value); $i < $l; $i++) {
+                    $paramValue = $this->processParameterValue($value[$i]);
+                    $value[$i] = is_array($paramValue) ? $paramValue[key($paramValue)] : $paramValue;
+                }
+
+                return $value;
+
+            case is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(get_class($value)):
+                return $this->convertObjectParameterToScalarValue($value);
+
+            default:
+                return $value;
+        }
+    }
+
+    protected function convertObjectParameterToScalarValue($value)
+    {
+        $class = $this->_em->getClassMetadata(get_class($value));
+
+        if ($class->isIdentifierComposite) {
+            throw new \InvalidArgumentException("Binding an entity with a composite primary key to a query is not supported. You should split the parameter into the explicit fields and bind them seperately.");
+        }
+
+        if ($this->_em->getUnitOfWork()->getEntityState($value) === UnitOfWork::STATE_MANAGED) {
+            $values = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
+        } else {
+            $values = $class->getIdentifierValues($value);
+        }
+
+        $value = $values[$class->getSingleIdentifierFieldName()];
+        if (!$value) {
+            throw new \InvalidArgumentException("Binding entities to query parameters only allowed for entities that have an identifier.");
+        }
+
+        return $value;
     }
 
     /**
