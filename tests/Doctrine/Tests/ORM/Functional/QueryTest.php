@@ -599,4 +599,24 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(3, count($users));
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
     }
+
+    /**
+     * @group DDC-1651
+     */
+    public function testSetParameterBindingSingleIdentifierObjectConverted()
+    {
+        $userC = new CmsUser;
+        $userC->name = 'Jonathan';
+        $userC->username = 'jwage';
+        $userC->status = 'developer';
+        $this->_em->persist($userC);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $q = $this->_em->createQuery("SELECT DISTINCT u from Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1");
+        $q->setParameter(1, $userC);
+
+        $this->assertEquals($userC->id, $q->getParameter(1));
+    }
 }
