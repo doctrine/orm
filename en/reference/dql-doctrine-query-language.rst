@@ -208,7 +208,7 @@ Retrieve the Username and Name of a CmsUser:
 
     <?php
     $query = $em->createQuery('SELECT u.username, u.name FROM CmsUser u');
-    $users = $query->getResults(); // array of CmsUser username and name values
+    $users = $query->getResult(); // array of CmsUser username and name values
     echo $users[0]['username'];
 
 Retrieve a ForumUser and his single associated entity:
