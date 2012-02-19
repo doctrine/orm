@@ -707,6 +707,9 @@ public function <methodName>()
 
     private function _isAssociationIsNullable($associationMapping)
     {
+        if (isset($associationMapping['id']) && $associationMapping['id']) {
+            return false;
+        }
         if (isset($associationMapping['joinColumns'])) {
             $joinColumns = $associationMapping['joinColumns'];
         } else {
