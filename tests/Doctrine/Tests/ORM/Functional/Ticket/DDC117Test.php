@@ -433,4 +433,32 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($this->article1->id(), $refRep->source()->id());
         $this->assertEquals($this->article2->id(), $refRep->target()->id());
     }
+
+    /**
+     * @group DDC-1652
+     */
+    public function testArrayHydrationWithCompositeKey()
+    {
+        $dql = "SELECT r,s,t FROM Doctrine\Tests\Models\DDC117\DDC117Reference r INNER JOIN r.source s INNER JOIN r.target t";
+        $before = count($this->_em->createQuery($dql)->getResult());
+
+        $this->article1 = $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Article", $this->article1->id());
+        $this->article2 = $this->_em->find("Doctrine\Tests\Models\DDC117\DDC117Article", $this->article2->id());
+
+        $this->reference = new DDC117Reference($this->article2, $this->article1, "Test-Description");
+        $this->_em->persist($this->reference);
+
+        $this->reference = new DDC117Reference($this->article1, $this->article1, "Test-Description");
+        $this->_em->persist($this->reference);
+
+        $this->reference = new DDC117Reference($this->article2, $this->article2, "Test-Description");
+        $this->_em->persist($this->reference);
+
+        $this->_em->flush();
+
+        $dql = "SELECT r,s,t FROM Doctrine\Tests\Models\DDC117\DDC117Reference r INNER JOIN r.source s INNER JOIN r.target t";
+        $data = $this->_em->createQuery($dql)->getArrayResult();
+
+        $this->assertEquals($before + 3, count($data));
+    }
 }
