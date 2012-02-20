@@ -1187,6 +1187,8 @@ class UnitOfWork implements PropertyChangedListener
         $className = $classMetadata->rootEntityName;
         if (isset($this->identityMap[$className][$idHash])) {
             unset($this->identityMap[$className][$idHash]);
+            unset($this->readOnlyObjects[$oid]);
+
             //$this->entityStates[$oid] = self::STATE_DETACHED;
             return true;
         }
@@ -1884,6 +1886,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->collectionDeletions =
         $this->collectionUpdates =
         $this->extraUpdates =
+        $this->readOnlyObjects =
         $this->orphanRemovals = array();
         if ($this->commitOrderCalculator !== null) {
             $this->commitOrderCalculator->clear();
