@@ -446,6 +446,10 @@ class YamlDriver extends AbstractFileDriver
                     $mapping['indexBy'] = $manyToManyElement['indexBy'];
                 }
 
+                if (isset($manyToManyElement['orphanRemoval'])) {
+                    $mapping['orphanRemoval'] = (bool)$manyToManyElement['orphanRemoval'];
+                }
+
                 $metadata->mapManyToMany($mapping);
             }
         }

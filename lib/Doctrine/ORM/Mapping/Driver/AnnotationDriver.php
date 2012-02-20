@@ -407,6 +407,7 @@ class AnnotationDriver implements Driver
                 $mapping['inversedBy'] = $manyToManyAnnot->inversedBy;
                 $mapping['cascade'] = $manyToManyAnnot->cascade;
                 $mapping['indexBy'] = $manyToManyAnnot->indexBy;
+                $mapping['orphanRemoval'] = $manyToManyAnnot->orphanRemoval;
                 $mapping['fetch'] = $this->getFetchMode($className, $manyToManyAnnot->fetch);
 
                 if ($orderByAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OrderBy')) {
