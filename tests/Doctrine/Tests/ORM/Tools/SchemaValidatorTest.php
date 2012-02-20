@@ -122,6 +122,20 @@ class SchemaValidatorTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(array(), $ce);
     }
+
+    /**
+     * @group DDC-1649
+     */
+    public function testInvalidTripleAssociationAsKeyMapping()
+    {
+        $classThree = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC1649Three');
+        $ce = $this->validator->validateClass($classThree);
+
+        $this->assertEquals(Array(
+            "Cannot map association 'Doctrine\Tests\ORM\Tools\DDC1649Three#two as identifier, because the target entity 'Doctrine\Tests\ORM\Tools\DDC1649Two' also maps an association as identifier.",
+            "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\DDC1649Two'."
+        ), $ce);
+    }
 }
 
 /**
@@ -219,5 +233,35 @@ class DDC1587ValidEntity2
      * @Column(name="num", type="string", length=16, nullable=true)
      */
     private $num;
+}
+
+/**
+ * @Entity
+ */
+class DDC1649One
+{
+    /**
+     * @Id @Column @GeneratedValue
+     */
+    public $id;
+}
+
+/**
+ * @Entity
+ */
+class DDC1649Two
+{
+    /** @Id @ManyToOne(targetEntity="DDC1649One")@JoinColumn(name="id", referencedColumnName="id")  */
+    public $one;
+}
+
+/**
+ * @Entity
+ */
+class DDC1649Three
+{
+    /** @Id @ManyToOne(targetEntity="DDC1649Two") @JoinColumn(name="id",
+     * referencedColumnName="id") */
+    private $two;
 }
 
