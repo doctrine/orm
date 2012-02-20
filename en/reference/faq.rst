@@ -204,3 +204,21 @@ No, it is not supported to sort by function in DQL. If you need this functionali
 use a native-query or come up with another solution. As a side note: Sorting with ORDER BY RAND() is painfully slow
 starting with 1000 rows.
 
+A Query fails, how can I debug it?
+----------------------------------
+
+First, if you are using the QueryBuilder you can use
+``$queryBuilder->getDQL()`` to get the DQL string of this query. The
+corresponding SQL you can get from the Query instance by calling
+``$query->getSQL()``.
+
+.. code-block:: php
+
+    <?php
+    $dql = "SELECT u FROM User u";
+    $query = $entityManager->createQuery($dql);
+    var_dump($query->getSQL());
+
+    $qb = $entityManager->createQueryBuilder();
+    $qb->select('u')->from('User', 'u');
+    var_dump($qb->getDQL());
