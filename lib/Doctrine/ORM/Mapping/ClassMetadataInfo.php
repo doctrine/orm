@@ -1115,7 +1115,7 @@ class ClassMetadataInfo implements ClassMetadata
             $mapping['targetEntity'] = ltrim($mapping['targetEntity'], '\\');
         }
 
-        if ( ($mapping['type'] & (self::MANY_TO_ONE|self::MANY_TO_MANY)) > 0 &&
+        if ( ($mapping['type'] & self::MANY_TO_ONE) > 0 &&
                 isset($mapping['orphanRemoval']) &&
                 $mapping['orphanRemoval'] == true) {
 
@@ -1334,6 +1334,8 @@ class ClassMetadataInfo implements ClassMetadata
                 $mapping['joinTableColumns'][] = $inverseJoinColumn['name'];
             }
         }
+
+        $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) ? (bool) $mapping['orphanRemoval'] : false;
 
         if (isset($mapping['orderBy'])) {
             if ( ! is_array($mapping['orderBy'])) {
