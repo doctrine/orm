@@ -54,21 +54,6 @@ class ReadOnlyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
     }
-
-    /**
-     * @group DDC-1659
-     */
-    public function testClearEntitiesReadOnly()
-    {
-        $readOnly = new ReadOnlyEntity("Test1", 1234);
-        $this->_em->persist($readOnly);
-        $this->_em->flush();
-        $this->_em->getUnitOfWork()->markReadOnly($readOnly);
-
-        $this->_em->clear(get_class($readOnly));
-
-        $this->assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
-    }
 }
 
 /**
