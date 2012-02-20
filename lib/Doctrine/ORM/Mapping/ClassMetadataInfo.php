@@ -1217,7 +1217,7 @@ class ClassMetadataInfo implements ClassMetadata
 
             $uniqueContraintColumns = array();
             foreach ($mapping['joinColumns'] as $key => &$joinColumn) {
-                if ($mapping['type'] === self::ONE_TO_ONE) {
+                if ($mapping['type'] === self::ONE_TO_ONE && ! $this->isInheritanceTypeSingleTable()) {
                     if (count($mapping['joinColumns']) == 1) {
                         $joinColumn['unique'] = true;
                     } else {
