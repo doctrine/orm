@@ -397,6 +397,10 @@ class XmlDriver extends AbstractFileDriver
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string)$manyToManyElement['fetch']);
                 }
 
+                if (isset($manyToManyElement['orphan-removal'])) {
+                    $mapping['orphanRemoval'] = (bool)$manyToManyElement['orphan-removal'];
+                }
+
                 if (isset($manyToManyElement['mapped-by'])) {
                     $mapping['mappedBy'] = (string)$manyToManyElement['mapped-by'];
                 } else if (isset($manyToManyElement->{'join-table'})) {

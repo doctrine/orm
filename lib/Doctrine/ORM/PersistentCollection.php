@@ -388,7 +388,7 @@ final class PersistentCollection implements Collection
         $this->changed();
 
         if ($this->association !== null &&
-            $this->association['type'] == ClassMetadata::ONE_TO_MANY &&
+            $this->association['type'] & ClassMetadata::TO_MANY &&
             $this->association['orphanRemoval']) {
             $this->em->getUnitOfWork()->scheduleOrphanRemoval($removed);
         }
@@ -426,7 +426,7 @@ final class PersistentCollection implements Collection
         $this->changed();
 
         if ($this->association !== null &&
-            $this->association['type'] === ClassMetadata::ONE_TO_MANY &&
+            $this->association['type'] & ClassMetadata::TO_MANY &&
             $this->association['orphanRemoval']) {
             $this->em->getUnitOfWork()->scheduleOrphanRemoval($element);
         }
@@ -631,7 +631,7 @@ final class PersistentCollection implements Collection
 
         $uow = $this->em->getUnitOfWork();
 
-        if ($this->association['type'] === ClassMetadata::ONE_TO_MANY && $this->association['orphanRemoval']) {
+        if ($this->association['type'] & ClassMetadata::TO_MANY && $this->association['orphanRemoval']) {
             // we need to initialize here, as orphan removal acts like implicit cascadeRemove,
             // hence for event listeners we need the objects in memory.
             $this->initialize();

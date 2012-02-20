@@ -377,6 +377,7 @@ class ClassMetadataBuilderTest extends \Doctrine\Tests\OrmTestCase
                 array(
                     'user_id' => 'id',
                 ),
+                'orphanRemoval' => false,
             ),
                 ), $this->cm->associationMappings);
     }
