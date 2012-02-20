@@ -15,9 +15,12 @@ class ReadOnlyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\ReadOnlyEntity'),
-        ));
+        try {
+            $this->_schemaTool->createSchema(array(
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\ReadOnlyEntity'),
+            ));
+        } catch(\Exception $e) {
+        }
     }
 
     public function testReadOnlyEntityNeverChangeTracked()
@@ -35,6 +38,21 @@ class ReadOnlyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $dbReadOnly = $this->_em->find('Doctrine\Tests\ORM\Functional\ReadOnlyEntity', $readOnly->id);
         $this->assertEquals("Test1", $dbReadOnly->name);
         $this->assertEquals(1234, $dbReadOnly->number);
+    }
+
+    /**
+     * @group DDC-1659
+     */
+    public function testClearReadOnly()
+    {
+        $readOnly = new ReadOnlyEntity("Test1", 1234);
+        $this->_em->persist($readOnly);
+        $this->_em->flush();
+        $this->_em->getUnitOfWork()->markReadOnly($readOnly);
+
+        $this->_em->clear();
+
+        $this->assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
     }
 }
 
