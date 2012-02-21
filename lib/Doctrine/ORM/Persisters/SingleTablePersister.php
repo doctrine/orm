@@ -48,12 +48,13 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
         $columnList = parent::_getSelectColumnListSQL();
 
-        // Append discriminator column
-        $discrColumn = $this->_class->discriminatorColumn['name'];
-        $columnList .= ', ' . $discrColumn;
-
         $rootClass  = $this->_em->getClassMetadata($this->_class->rootEntityName);
         $tableAlias = $this->_getSQLTableAlias($rootClass->name);
+
+         // Append discriminator column
+        $discrColumn = $this->_class->discriminatorColumn['name'];
+        $columnList .= ', ' . $tableAlias . '.' . $discrColumn;
+
         $resultColumnName = $this->_platform->getSQLResultCasing($discrColumn);
 
         $this->_rsm->setDiscriminatorColumn('r', $resultColumnName);

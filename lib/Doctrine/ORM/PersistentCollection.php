@@ -305,6 +305,7 @@ final class PersistentCollection implements Collection
         if ($this->association !== null &&
             $this->association['isOwningSide'] &&
             $this->association['type'] === ClassMetadata::MANY_TO_MANY &&
+            $this->owner &&
             $this->em->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()) {
             $this->em->getUnitOfWork()->scheduleForDirtyCheck($this->owner);
         }
@@ -387,7 +388,7 @@ final class PersistentCollection implements Collection
         $this->changed();
 
         if ($this->association !== null &&
-            $this->association['type'] == ClassMetadata::ONE_TO_MANY &&
+            $this->association['type'] & ClassMetadata::TO_MANY &&
             $this->association['orphanRemoval']) {
             $this->em->getUnitOfWork()->scheduleOrphanRemoval($removed);
         }
@@ -425,7 +426,7 @@ final class PersistentCollection implements Collection
         $this->changed();
 
         if ($this->association !== null &&
-            $this->association['type'] === ClassMetadata::ONE_TO_MANY &&
+            $this->association['type'] & ClassMetadata::TO_MANY &&
             $this->association['orphanRemoval']) {
             $this->em->getUnitOfWork()->scheduleOrphanRemoval($element);
         }
@@ -630,7 +631,7 @@ final class PersistentCollection implements Collection
 
         $uow = $this->em->getUnitOfWork();
 
-        if ($this->association['type'] === ClassMetadata::ONE_TO_MANY && $this->association['orphanRemoval']) {
+        if ($this->association['type'] & ClassMetadata::TO_MANY && $this->association['orphanRemoval']) {
             // we need to initialize here, as orphan removal acts like implicit cascadeRemove,
             // hence for event listeners we need the objects in memory.
             $this->initialize();
@@ -758,5 +759,28 @@ final class PersistentCollection implements Collection
         $this->initialize();
 
         return $this->coll->slice($offset, $length);
+    }
+
+    /**
+     * Cleanup internal state of cloned persistent collection.
+     *
+     * The following problems have to be prevented:
+     * 1. Added entities are added to old PC
+     * 2. New collection is not dirty, if reused on other entity nothing
+     * changes.
+     * 3. Snapshot leads to invalid diffs being generated.
+     * 4. Lazy loading grabs entities from old owner object.
+     * 5. New collection is connected to old owner and leads to duplicate keys.
+     */
+    public function __clone()
+    {
+        $this->initialize();
+        $this->owner = null;
+
+        if (is_object($this->coll)) {
+            $this->coll = clone $this->coll;
+        }
+        $this->snapshot = array();
+        $this->changed();
     }
 }

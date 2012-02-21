@@ -8,6 +8,9 @@ require_once __DIR__ . '/../../../TestInit.php';
 
 class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
+    private $userCm;
+    private $commentCm;
+
     protected function setUp()
     {
         parent::setUp();
@@ -15,6 +18,7 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
         if (\extension_loaded('memcache')) {
             $memcache = new \Memcache();
             $memcache->addServer('localhost');
+            $memcache->flush();
 
             $cacheDriver = new \Doctrine\Common\Cache\MemcacheCache();
             $cacheDriver->setMemcache($memcache);

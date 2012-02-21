@@ -9,7 +9,7 @@ class DDC117Translation
 {
     /**
      * @Id
-     * @ManyToOne(targetEntity="DDC117Article")
+     * @ManyToOne(targetEntity="DDC117Article", inversedBy="translations")
      * @JoinColumn(name="article_id", referencedColumnName="article_id")
      */
     private $article;

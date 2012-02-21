@@ -22,6 +22,21 @@ class SetupTest extends \Doctrine\Tests\OrmTestCase
         $this->originalIncludePath = get_include_path();
     }
 
+    public function tearDown()
+    {
+        if ( ! $this->originalIncludePath) {
+            return;
+        }
+
+        set_include_path($this->originalIncludePath);
+        $loaders = spl_autoload_functions();
+        for ($i = 0; $i < count($loaders); $i++) {
+            if ($i > $this->originalAutoloaderCount+1) {
+                spl_autoload_unregister($loaders[$i]);
+            }
+        }
+    }
+
     public function testGitAutoload()
     {
         Setup::registerAutoloadGit(__DIR__ . "/../../../../../");
@@ -91,16 +106,5 @@ class SetupTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSame($cache, $config->getResultCacheImpl());
         $this->assertSame($cache, $config->getMetadataCacheImpl());
         $this->assertSame($cache, $config->getQueryCacheImpl());
-    }
-
-    public function tearDown()
-    {
-        set_include_path($this->originalIncludePath);
-        $loaders = spl_autoload_functions();
-        for ($i = 0; $i < count($loaders); $i++) {
-            if ($i > $this->originalAutoloaderCount+1) {
-                spl_autoload_unregister($loaders[$i]);
-            }
-        }
     }
 }

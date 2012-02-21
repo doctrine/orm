@@ -134,6 +134,11 @@ class AnnotationDriver implements Driver
     public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
     {
         $class = $metadata->getReflectionClass();
+        if (!$class) {
+            // this happens when running annotation driver in combination with
+            // static reflection services. This is not the nicest fix
+            $class = new \ReflectionClass($metadata->name);
+        }
 
         $classAnnotations = $this->_reader->getClassAnnotations($class);
 
@@ -185,6 +190,10 @@ class AnnotationDriver implements Driver
                 }
             }
 
+            if ($tableAnnot->options !== null) {
+                $primaryTable['options'] = $tableAnnot->options;
+            }
+
             $metadata->setPrimaryTable($primaryTable);
         }
 
@@ -219,7 +228,8 @@ class AnnotationDriver implements Driver
                     $metadata->setDiscriminatorColumn(array(
                         'name' => $discrColumnAnnot->name,
                         'type' => $discrColumnAnnot->type,
-                        'length' => $discrColumnAnnot->length
+                        'length' => $discrColumnAnnot->length,
+                        'columnDefinition'    => $discrColumnAnnot->columnDefinition
                     ));
                 } else {
                     $metadata->setDiscriminatorColumn(array('name' => 'dtype', 'type' => 'string', 'length' => 255));
@@ -406,6 +416,7 @@ class AnnotationDriver implements Driver
                 $mapping['inversedBy'] = $manyToManyAnnot->inversedBy;
                 $mapping['cascade'] = $manyToManyAnnot->cascade;
                 $mapping['indexBy'] = $manyToManyAnnot->indexBy;
+                $mapping['orphanRemoval'] = $manyToManyAnnot->orphanRemoval;
                 $mapping['fetch'] = $this->getFetchMode($className, $manyToManyAnnot->fetch);
 
                 if ($orderByAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OrderBy')) {

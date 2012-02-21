@@ -698,16 +698,6 @@ class BasicEntityPersister
 
         $hydrator = $this->_em->newHydrator(Query::HYDRATE_OBJECT);
         $hydrator->hydrateAll($stmt, $this->_rsm, array(Query::HINT_REFRESH => true));
-
-        if (isset($this->_class->lifecycleCallbacks[Events::postLoad])) {
-            $this->_class->invokeLifecycleCallbacks(Events::postLoad, $entity);
-        }
-
-        $evm = $this->_em->getEventManager();
-
-        if ($evm->hasListeners(Events::postLoad)) {
-            $evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($entity, $this->_em));
-        }
     }
 
     /**
@@ -1152,9 +1142,10 @@ class BasicEntityPersister
                 foreach ($columns AS $column) {
                     $placeholder = '?';
 
-                    if (isset($this->_columnTypes[$column]) &&
+                    if (isset($this->_class->fieldNames[$column]) &&
+                        isset($this->_columnTypes[$this->_class->fieldNames[$column]]) &&
                         isset($this->_class->fieldMappings[$this->_class->fieldNames[$column]]['requireSQLConversion'])) {
-                        $type = Type::getType($this->_columnTypes[$column]);
+                        $type = Type::getType($this->_columnTypes[$this->_class->fieldNames[$column]]);
                         $placeholder = $type->convertToDatabaseValueSQL('?', $this->_platform);
                     }
 

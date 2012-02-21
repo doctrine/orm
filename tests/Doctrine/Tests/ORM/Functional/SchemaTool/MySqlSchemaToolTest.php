@@ -64,4 +64,31 @@ class MySqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(1, count($sql));
         $this->assertEquals("CREATE TABLE boolean_model (id INT AUTO_INCREMENT NOT NULL, booleanField TINYINT(1) NOT NULL, PRIMARY KEY(id)) ENGINE = InnoDB", $sql[0]);
     }
+
+    /**
+     * @group DBAL-204
+     */
+    public function testGetCreateSchemaSql4()
+    {
+        $classes = array(
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\\MysqlSchemaNamespacedEntity')
+        );
+
+        $tool = new SchemaTool($this->_em);
+        $sql = $tool->getCreateSchemaSql($classes);
+
+        $this->assertEquals(0, count($sql));
+    }
+
 }
+
+/**
+ * @Entity
+ * @Table("namespace.entity")
+ */
+class MysqlSchemaNamespacedEntity
+{
+    /** @Column(type="integer") @Id @GeneratedValue */
+    public $id;
+}
+

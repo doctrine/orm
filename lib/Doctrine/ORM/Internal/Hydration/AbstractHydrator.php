@@ -210,6 +210,7 @@ abstract class AbstractHydrator
 
                     case (isset($this->_rsm->scalarMappings[$key])):
                         $cache[$key]['fieldName'] = $this->_rsm->scalarMappings[$key];
+                        $cache[$key]['type']      = Type::getType($this->_rsm->typeMappings[$key]);
                         $cache[$key]['isScalar']  = true;
                         break;
 
@@ -232,6 +233,8 @@ abstract class AbstractHydrator
             }
 
             if (isset($cache[$key]['isScalar'])) {
+                $value = $cache[$key]['type']->convertToPHPValue($value, $this->_platform);
+
                 $rowData['scalars'][$cache[$key]['fieldName']] = $value;
 
                 continue;

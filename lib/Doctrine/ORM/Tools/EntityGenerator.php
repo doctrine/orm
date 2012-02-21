@@ -48,6 +48,15 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo,
 class EntityGenerator
 {
     /**
+     * Specifies class fields should be protected
+     */
+    const FIELD_VISIBLE_PROTECTED = 'protected';
+    /**
+     * Specifies class fields should be private
+     */
+    const FIELD_VISIBLE_PRIVATE = 'private';
+
+    /**
      * @var bool
      */
     private $_backupExisting = true;
@@ -85,6 +94,8 @@ class EntityGenerator
 
     /** Whether or not to re-generate entity class if it exists already */
     private $_regenerateEntityIfExists = false;
+
+    private $_fieldVisibility = 'private';
 
     private static $_classTemplate =
 '<?php
@@ -128,10 +139,12 @@ public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
  * <description>
  *
  * @param <variableType>$<variableName>
+ * @return <entity>
  */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
 <spaces>$this-><fieldName>[] = $<variableName>;
+<spaces>return $this;
 }';
 
     private static $_lifecycleCallbackMethodTemplate =
@@ -191,6 +204,8 @@ public function <methodName>()
 
         if ( ! $this->_isNew) {
             $this->_parseTokensInEntityFile(file_get_contents($path));
+        } else {
+            $this->_staticReflection[$metadata->name] = array('properties' => array(), 'methods' => array());
         }
 
         if ($this->_backupExisting && file_exists($path)) {
@@ -295,6 +310,21 @@ public function <methodName>()
     public function setGenerateAnnotations($bool)
     {
         $this->_generateAnnotations = $bool;
+    }
+
+    /**
+     * Set the class fields visibility for the entity (can either be private or protected)
+     *
+     * @param bool $bool
+     * @return void
+     */
+    public function setFieldVisibility($visibility)
+    {
+        if ($visibility !== self::FIELD_VISIBLE_PRIVATE && $visibility !== self::FIELD_VISIBLE_PROTECTED) {
+            throw new \InvalidArgumentException('Invalid provided visibilty (only private and protected are allowed): ' . $visibility);
+        }
+
+        $this->_fieldVisibility = $visibility;
     }
 
     /**
@@ -581,7 +611,30 @@ public function <methodName>()
             $table[] = 'name="' . $metadata->table['name'] . '"';
         }
 
+        if (isset($metadata->table['uniqueConstraints']) && $metadata->table['uniqueConstraints']) {
+            $constraints = $this->_generateTableConstraints('UniqueConstraint', $metadata->table['uniqueConstraints']);
+            $table[] = 'uniqueConstraints={' . $constraints . '}';
+        }
+
+        if (isset($metadata->table['indexes']) && $metadata->table['indexes']) {
+            $constraints = $this->_generateTableConstraints('Index', $metadata->table['indexes']);
+            $table[] = 'indexes={' . $constraints . '}';
+        }
+
         return '@' . $this->_annotationsPrefix . 'Table(' . implode(', ', $table) . ')';
+    }
+
+    private function _generateTableConstraints($constraintName, $constraints)
+    {
+        $annotations = array();
+        foreach ($constraints as $name => $constraint) {
+            $columns = array();
+            foreach ($constraint['columns'] as $column) {
+                $columns[] = '"' . $column . '"';
+            }
+            $annotations[] = '@' . $this->_annotationsPrefix . $constraintName . '(name="' . $name . '", columns={' . implode(', ', $columns) . '})';
+        }
+        return implode(', ', $annotations);
     }
 
     private function _generateInheritanceAnnotation($metadata)
@@ -656,6 +709,9 @@ public function <methodName>()
 
     private function _isAssociationIsNullable($associationMapping)
     {
+        if (isset($associationMapping['id']) && $associationMapping['id']) {
+            return false;
+        }
         if (isset($associationMapping['joinColumns'])) {
             $joinColumns = $associationMapping['joinColumns'];
         } else {
@@ -699,7 +755,7 @@ public function <methodName>()
             }
 
             $lines[] = $this->_generateAssociationMappingPropertyDocBlock($associationMapping, $metadata);
-            $lines[] = $this->_spaces . 'private $' . $associationMapping['fieldName']
+            $lines[] = $this->_spaces . $this->_fieldVisibility . ' $' . $associationMapping['fieldName']
                      . ($associationMapping['type'] == 'manyToMany' ? ' = array()' : null) . ";\n";
         }
 
@@ -717,7 +773,7 @@ public function <methodName>()
             }
 
             $lines[] = $this->_generateFieldMappingPropertyDocBlock($fieldMapping, $metadata);
-            $lines[] = $this->_spaces . 'private $' . $fieldMapping['fieldName']
+            $lines[] = $this->_spaces . $this->_fieldVisibility . ' $' . $fieldMapping['fieldName']
                      . (isset($fieldMapping['default']) ? ' = ' . var_export($fieldMapping['default'], true) : null) . ";\n";
         }
 

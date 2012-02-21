@@ -1074,7 +1074,7 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             "SELECT t, s, l FROM Doctrine\Tests\Models\DDC117\DDC117Link l INNER JOIN l.target t INNER JOIN l.source s",
-            "SELECT d0_.article_id AS article_id0, d0_.title AS title1, d1_.article_id AS article_id2, d1_.title AS title3 FROM DDC117Link d2_ INNER JOIN DDC117Article d0_ ON d2_.target_id = d0_.article_id INNER JOIN DDC117Article d1_ ON d2_.source_id = d1_.article_id"
+            "SELECT d0_.article_id AS article_id0, d0_.title AS title1, d1_.article_id AS article_id2, d1_.title AS title3, d2_.source_id AS source_id4, d2_.target_id AS target_id5 FROM DDC117Link d2_ INNER JOIN DDC117Article d0_ ON d2_.target_id = d0_.article_id INNER JOIN DDC117Article d1_ ON d2_.source_id = d1_.article_id"
         );
     }
 
@@ -1533,6 +1533,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT partial p.{id, customInteger} FROM Doctrine\Tests\Models\CustomType\CustomTypeParent p',
             'SELECT c0_.id AS id0, -(c0_.customInteger) AS customInteger1 FROM customtype_parents c0_'
+        );
+    }
+
+    /**
+     * @group DDC-1529
+     */
+    public function testMultipleFromAndInheritanceCondition()
+    {
+        $this->assertSqlGeneration(
+            'SELECT fix, flex FROM Doctrine\Tests\Models\Company\CompanyFixContract fix, Doctrine\Tests\Models\Company\CompanyFlexContract flex',
+            "SELECT c0_.id AS id0, c0_.completed AS completed1, c0_.fixPrice AS fixPrice2, c1_.id AS id3, c1_.completed AS completed4, c1_.hoursWorked AS hoursWorked5, c1_.pricePerHour AS pricePerHour6, c1_.maxPrice AS maxPrice7, c0_.discr AS discr8, c1_.discr AS discr9 FROM company_contracts c0_, company_contracts c1_ WHERE (c0_.discr IN ('fix') AND c1_.discr IN ('flexible', 'flexultra'))"
         );
     }
 }

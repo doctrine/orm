@@ -77,6 +77,21 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      * @depends testEntityTableNameAndInheritance
      * @param ClassMetadata $class
      */
+    public function testEntityOptions($class)
+    {
+        $this->assertArrayHasKey('options', $class->table, 'ClassMetadata should have options key in table property.');
+
+        $this->assertEquals(array(
+            'foo' => 'bar', 'baz' => array('key' => 'val')
+        ), $class->table['options']);
+
+        return $class;
+    }
+
+    /**
+     * @depends testEntityOptions
+     * @param ClassMetadata $class
+     */
     public function testEntitySequence($class)
     {
         $this->assertInternalType('array', $class->sequenceGeneratorDefinition, 'No Sequence Definition set on this driver.');
@@ -140,6 +155,9 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(50, $class->fieldMappings['name']['length']);
         $this->assertTrue($class->fieldMappings['name']['nullable']);
         $this->assertTrue($class->fieldMappings['name']['unique']);
+
+        $expected = array('foo' => 'bar', 'baz' => array('key' => 'val'));
+        $this->assertEquals($expected, $class->fieldMappings['name']['options']);
 
         return $class;
     }
@@ -428,6 +446,21 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('NAME', $class->columnNames['name']);
         $this->assertEquals('DDC1476ENTITY_WITH_DEFAULT_FIELD_TYPE', $class->table['name']);
     }
+
+    /**
+     * @group DDC-807
+     * @group DDC-553
+     */
+    public function testDiscriminatorColumnDefinition()
+    {
+        $class = $this->createClassMetadata(__NAMESPACE__ . '\DDC807Entity');
+
+        $this->assertArrayHasKey('columnDefinition', $class->discriminatorColumn);
+        $this->assertArrayHasKey('name', $class->discriminatorColumn);
+
+        $this->assertEquals("ENUM('ONE','TWO')", $class->discriminatorColumn['columnDefinition']);
+        $this->assertEquals("dtype", $class->discriminatorColumn['name']);
+    }
 }
 
 /**
@@ -436,7 +469,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
  * @Table(
  *  name="cms_users",
  *  uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"})},
- *  indexes={@Index(name="name_idx", columns={"name"}), @Index(name="0", columns={"user_email"})}
+ *  indexes={@Index(name="name_idx", columns={"name"}), @Index(name="0", columns={"user_email"})},
+ *  options={"foo": "bar", "baz": {"key": "val"}}
  * )
  */
 class User
@@ -450,7 +484,7 @@ class User
     public $id;
 
     /**
-     * @Column(length=50, nullable=true, unique=true)
+     * @Column(length=50, nullable=true, unique=true, options={"foo": "bar", "baz": {"key": "val"}})
      */
     public $name;
 
@@ -507,6 +541,7 @@ class User
         $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
         $metadata->setPrimaryTable(array(
            'name' => 'cms_users',
+           'options' => array('foo' => 'bar', 'baz' => array('key' => 'val')),
           ));
         $metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);
         $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
@@ -525,6 +560,7 @@ class User
            'unique' => true,
            'nullable' => true,
            'columnName' => 'name',
+           'options' => array('foo' => 'bar', 'baz' => array('key' => 'val')),
           ));
         $metadata->mapField(array(
            'fieldName' => 'email',
@@ -716,6 +752,42 @@ class DDC1170Entity
     }
 
 }
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorMap({"ONE" = "DDC807SubClasse1", "TWO" = "DDC807SubClasse2"})
+ * @DiscriminatorColumn(name = "dtype", columnDefinition="ENUM('ONE','TWO')")
+ */
+class DDC807Entity
+{
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="NONE")
+     **/
+   public $id;
+   
+   public static function loadMetadata(ClassMetadataInfo $metadata)
+    {
+         $metadata->mapField(array(
+           'id'                 => true,
+           'fieldName'          => 'id',
+        ));
+
+        $metadata->setDiscriminatorColumn(array(
+            'name'              => "dtype",
+            'type'              => "string",
+            'columnDefinition'  => "ENUM('ONE','TWO')"
+        ));
+
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+    }
+}
+
+
+class DDC807SubClasse1 {}
+class DDC807SubClasse2 {}
 
 class Address {}
 class Phonenumber {}

@@ -6,6 +6,7 @@ use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Proxy\ProxyClassGenerator;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
+use Doctrine\Tests\Models\Company\CompanyAuction;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -37,6 +38,18 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         return $product->getId();
+    }
+
+    public function createAuction()
+    {
+        $event = new CompanyAuction();
+        $event->setData('Doctrine Cookbook');
+        $this->_em->persist($event);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        return $event->getId();
     }
 
     public function testLazyLoadsFieldValuesFromDatabase()
@@ -161,6 +174,21 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy.");
     }
 
+    /**
+     * @group DDC-1625
+     */
+    public function testDoNotInitializeProxyOnGettingTheIdentifier_DDC_1625()
+    {
+        $id = $this->createAuction();
+
+        /* @var $entity Doctrine\Tests\Models\Company\CompanyAuction */
+        $entity = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyAuction' , $id);
+
+        $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
+        $this->assertEquals($id, $entity->getId());
+        $this->assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy when extending.");
+    }
+    
     public function testDoNotInitializeProxyOnGettingTheIdentifierAndReturnTheRightType()
     {
         $product = new ECommerceProduct();
@@ -194,5 +222,29 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
         $this->assertEquals('Doctrine Cookbook', $entity->getName());
         $this->assertTrue($entity->__isInitialized__, "Getting something other than the identifier initializes the proxy.");
+    }
+
+    /**
+     * @group DDC-1604
+     */
+    public function testCommonPersistenceProxy()
+    {
+        $id = $this->createProduct();
+
+        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
+        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+        $className = \Doctrine\Common\Util\ClassUtils::getClass($entity);
+
+        $this->assertInstanceOf('Doctrine\Common\Persistence\Proxy', $entity);
+        $this->assertFalse($entity->__isInitialized());
+        $this->assertEquals('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $className);
+
+        $restName = str_replace($this->_em->getConfiguration()->getProxyNamespace(), "", get_class($entity));
+        $restName = substr(get_class($entity), strlen($this->_em->getConfiguration()->getProxyNamespace()) +1);
+        $proxyFileName = $this->_em->getConfiguration()->getProxyDir() . DIRECTORY_SEPARATOR . str_replace("\\", "", $restName) . ".php";
+        $this->assertTrue(file_exists($proxyFileName), "Proxy file name cannot be found generically.");
+
+        $entity->__load();
+        $this->assertTrue($entity->__isInitialized());
     }
 }

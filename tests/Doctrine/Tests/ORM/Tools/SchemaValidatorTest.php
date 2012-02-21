@@ -103,11 +103,38 @@ class SchemaValidatorTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(
             array(
-                "The referenced column name 'id' does not have a corresponding field with this column name on the class 'Doctrine\Tests\ORM\Tools\InvalidEntity1'.",
-                "The join columns of the association 'assoc' have to match to ALL identifier columns of the source entity 'Doctrine\Tests\ORM\Tools\InvalidEntity2', however 'key3, key4' are missing."
+                "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\InvalidEntity1'.",
+                "The join columns of the association 'assoc' have to match to ALL identifier columns of the target entity 'Doctrine\Tests\ORM\Tools\InvalidEntity2', however 'key1, key2' are missing."
             ),
             $ce
         );
+    }
+
+    /**
+     * @group DDC-1587
+     */
+    public function testValidOneToOneAsIdentifierSchema()
+    {
+        $class1 = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC1587ValidEntity2');
+        $class2 = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC1587ValidEntity1');
+
+        $ce = $this->validator->validateClass($class1);
+
+        $this->assertEquals(array(), $ce);
+    }
+
+    /**
+     * @group DDC-1649
+     */
+    public function testInvalidTripleAssociationAsKeyMapping()
+    {
+        $classThree = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC1649Three');
+        $ce = $this->validator->validateClass($classThree);
+
+        $this->assertEquals(Array(
+            "Cannot map association 'Doctrine\Tests\ORM\Tools\DDC1649Three#two as identifier, because the target entity 'Doctrine\Tests\ORM\Tools\DDC1649Two' also maps an association as identifier.",
+            "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\DDC1649Two'."
+        ), $ce);
     }
 }
 
@@ -154,3 +181,87 @@ class InvalidEntity2
      */
     protected $assoc;
 }
+
+/**
+ * @Entity(repositoryClass="Entity\Repository\Agent")
+ * @Table(name="agent")
+ */
+class DDC1587ValidEntity1
+{
+    /**
+     * @var int
+     *
+     * @Id @GeneratedValue
+     * @Column(name="pk", type="integer")
+     */
+    private $pk;
+
+    /**
+     * @var string
+     *
+     * @Column(name="name", type="string", length=32)
+     */
+    private $name;
+
+    /**
+     * @var Identifier
+     *
+     * @OneToOne(targetEntity="DDC1587ValidEntity2", cascade={"all"}, mappedBy="agent")
+     * @JoinColumn(name="pk", referencedColumnName="pk_agent")
+     */
+    private $identifier;
+}
+
+/**
+ * @Entity
+ * @Table
+ */
+class DDC1587ValidEntity2
+{
+    /**
+     * @var DDC1587ValidEntity1
+     *
+     * @Id
+     * @OneToOne(targetEntity="DDC1587ValidEntity1", inversedBy="identifier")
+     * @JoinColumn(name="pk_agent", referencedColumnName="pk", nullable=false)
+     */
+    private $agent;
+
+    /**
+     * @var string
+     *
+     * @Column(name="num", type="string", length=16, nullable=true)
+     */
+    private $num;
+}
+
+/**
+ * @Entity
+ */
+class DDC1649One
+{
+    /**
+     * @Id @Column @GeneratedValue
+     */
+    public $id;
+}
+
+/**
+ * @Entity
+ */
+class DDC1649Two
+{
+    /** @Id @ManyToOne(targetEntity="DDC1649One")@JoinColumn(name="id", referencedColumnName="id")  */
+    public $one;
+}
+
+/**
+ * @Entity
+ */
+class DDC1649Three
+{
+    /** @Id @ManyToOne(targetEntity="DDC1649Two") @JoinColumn(name="id",
+     * referencedColumnName="id") */
+    private $two;
+}
+

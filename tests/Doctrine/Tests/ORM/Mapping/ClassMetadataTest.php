@@ -595,4 +595,61 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->setExpectedException("Doctrine\ORM\Mapping\MappingException", "The target-entity Doctrine\Tests\Models\CMS\UnknownClass cannot be found in 'Doctrine\Tests\Models\CMS\CmsUser#address'.");
         $cm->validateAssocations();
     }
+
+    /**
+     * @expectedException \Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage Discriminator column name on entity class 'Doctrine\Tests\Models\CMS\CmsUser' is not defined.
+     */
+    public function testNameIsMandatoryForDiscriminatorColumnsMappingException()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->setDiscriminatorColumn(array());
+    }
+
+    /**
+     * @group DDC-984
+     * @group DDC-559
+     * @group DDC-1575
+     */
+    public function testFullyQualifiedClassNameShouldBeGivenToNamingStrategy()
+    {
+        $namingStrategy     = new MyNamespacedNamingStrategy();
+        $addressMetadata    = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', $namingStrategy);
+        $articleMetadata    = new ClassMetadata('DoctrineGlobal_Article', $namingStrategy);
+        $routingMetadata    = new ClassMetadata('Doctrine\Tests\Models\Routing\RoutingLeg',$namingStrategy);
+
+        $addressMetadata->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $articleMetadata->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $routingMetadata->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+
+        $addressMetadata->mapManyToMany(array(
+            'fieldName'     => 'user',
+            'targetEntity'  => 'CmsUser'
+        ));
+
+        $articleMetadata->mapManyToMany(array(
+            'fieldName'     => 'author',
+            'targetEntity'  => 'Doctrine\Tests\Models\CMS\CmsUser'
+        ));
+
+        $this->assertEquals('routing_routingleg', $routingMetadata->table['name']);
+        $this->assertEquals('cms_cmsaddress_cms_cmsuser', $addressMetadata->associationMappings['user']['joinTable']['name']);
+        $this->assertEquals('doctrineglobal_article_cms_cmsuser', $articleMetadata->associationMappings['author']['joinTable']['name']);
+    }
+}
+
+class MyNamespacedNamingStrategy extends \Doctrine\ORM\Mapping\DefaultNamingStrategy
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function classToTableName($className)
+    {
+        if (strpos($className, '\\') !== false) {
+            $className = str_replace('\\', '_', str_replace('Doctrine\Tests\Models\\', '', $className));
+        }
+
+        return strtolower($className);
+    }
 }

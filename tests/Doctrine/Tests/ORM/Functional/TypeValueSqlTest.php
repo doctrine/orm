@@ -47,6 +47,43 @@ class TypeValueSqlTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('FOO', $this->_em->getConnection()->fetchColumn("select lowerCaseString from customtype_uppercases where id=".$entity->id.""), 'Database holds uppercase string');
     }
 
+    /**
+     * @group DDC-1642
+     */
+    public function testUpperCaseStringTypeWhenColumnNameIsDefined()
+    {
+ 
+        $entity = new CustomTypeUpperCase();
+        $entity->lowerCaseString        = 'Some Value';
+        $entity->namedLowerCaseString   = 'foo';
+
+        $this->_em->persist($entity);
+        $this->_em->flush();
+
+        $id = $entity->id;
+
+        $this->_em->clear();
+
+        $entity = $this->_em->find('\Doctrine\Tests\Models\CustomType\CustomTypeUpperCase', $id);
+        $this->assertEquals('foo', $entity->namedLowerCaseString, 'Entity holds lowercase string');
+        $this->assertEquals('FOO', $this->_em->getConnection()->fetchColumn("select named_lower_case_string from customtype_uppercases where id=".$entity->id.""), 'Database holds uppercase string');
+
+
+        $entity->namedLowerCaseString   = 'bar';
+
+        $this->_em->persist($entity);
+        $this->_em->flush();
+
+        $id = $entity->id;
+
+        $this->_em->clear();
+
+
+        $entity = $this->_em->find('\Doctrine\Tests\Models\CustomType\CustomTypeUpperCase', $id);
+        $this->assertEquals('bar', $entity->namedLowerCaseString, 'Entity holds lowercase string');
+        $this->assertEquals('BAR', $this->_em->getConnection()->fetchColumn("select named_lower_case_string from customtype_uppercases where id=".$entity->id.""), 'Database holds uppercase string');
+    }
+
     public function testTypeValueSqlWithAssociations()
     {
         $parent = new CustomTypeParent();

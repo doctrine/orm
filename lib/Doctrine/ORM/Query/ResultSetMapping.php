@@ -73,6 +73,12 @@ class ResultSetMapping
 
     /**
      * @ignore
+     * @var array Maps column names in the result set to the alias/field type to use in the mapped result.
+     */
+    public $typeMappings = array();
+
+    /**
+     * @ignore
      * @var array Maps entities in the result set to the alias name to use in the mapped result.
      */
     public $entityMappings = array();
@@ -296,12 +302,16 @@ class ResultSetMapping
      *
      * @param string $columnName The name of the column in the SQL result set.
      * @param string $alias The result alias with which the scalar result should be placed in the result structure.
+     * @param string $type The column type
+     *
      * @return ResultSetMapping This ResultSetMapping instance.
+     *
      * @todo Rename: addScalar
      */
-    public function addScalarResult($columnName, $alias)
+    public function addScalarResult($columnName, $alias, $type = 'string')
     {
         $this->scalarMappings[$columnName] = $alias;
+        $this->typeMappings[$columnName]   = $type;
 
         if ( ! $this->isMixed && $this->fieldMappings) {
             $this->isMixed = true;
