@@ -65,12 +65,12 @@ EOT
 
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
     {
-        $output->write('ATTENTION: This operation should not be executed in a production environment.' . PHP_EOL . PHP_EOL);
-
         if ($input->getOption('dump-sql') === true) {
             $sqls = $schemaTool->getCreateSchemaSql($metadatas);
-            $output->write(implode(';' . PHP_EOL, $sqls) . PHP_EOL);
+            $output->write(implode(';' . PHP_EOL, $sqls) . ';' . PHP_EOL);
         } else {
+            $output->write('ATTENTION: This operation should not be executed in a production environment.' . PHP_EOL . PHP_EOL);
+
             $output->write('Creating database schema...' . PHP_EOL);
             $schemaTool->createSchema($metadatas);
             $output->write('Database schema created successfully!' . PHP_EOL);
