@@ -93,12 +93,17 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self("No query found named '$queryName' on class '$className'.");
     }
 
+    public static function resultMappingNotFound($className, $resultName)
+    {
+        return new self("No result set mapping found named '$resultName' on class '$className'.");
+    }
+
     public static function emptyQueryMapping($entity, $queryName)
     {
         return new self('Query named "'.$queryName.'" in "'.$entity.'" could not be empty.');
     }
 
-    public static function nameIsMandatoryQueryMapping($className)
+    public static function nameIsMandatoryForQueryMapping($className)
     {
         return new self("Query name on entity class '$className' is not defined.");
     }
@@ -106,6 +111,16 @@ class MappingException extends \Doctrine\ORM\ORMException
     public static function missingQueryMapping($entity, $queryName)
     {
         return new self('Query named "'.$queryName.'" in "'.$entity.' requires a result class or result set mapping.');
+    }
+
+    public static function missingResultSetMappingEntity($entity, $resultName)
+    {
+        return new self('Result set mapping named "'.$resultName.'" in "'.$entity.' requires a entity class name.');
+    }
+
+    public static function nameIsMandatoryForSqlResultSetMapping($className)
+    {
+        return new self("Result set mapping name on entity class '$className' is not defined.");
     }
 
     public static function oneToManyRequiresMappedBy($fieldName)
@@ -209,6 +224,11 @@ class MappingException extends \Doctrine\ORM\ORMException
     public static function duplicateQueryMapping($entity, $queryName)
     {
         return new self('Query named "'.$queryName.'" in "'.$entity.'" was already declared, but it must be declared only once');
+    }
+
+    public static function duplicateResultSetMapping($entity, $resultName)
+    {
+        return new self('Result set mapping named "'.$resultName.'" in "'.$entity.'" was already declared, but it must be declared only once');
     }
 
     public static function singleIdNotAllowedOnCompositePrimaryKey($entity)

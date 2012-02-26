@@ -20,44 +20,23 @@
 namespace Doctrine\ORM\Mapping;
 
 /**
- * Is used to specify a native SQL named query.
- * The NamedNativeQuery annotation can be applied to an entity or mapped superclass.
+ * References name of a column in the SELECT clause of a SQL query.
+ * Scalar result types can be included in the query result by specifying this annotation in the metadata.
  *
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since   2.3
  *
  * @Annotation
- * @Target("CLASS")
+ * @Target("ANNOTATION")
  */
-final class NamedNativeQuery implements Annotation
+final class ColumnResult implements Annotation
 {
 
     /**
-     * The name used to refer to the query with the EntityManager methods that create query objects.
+     * The name of a column in the SELECT clause of a SQL query
      *
      * @var string
      */
     public $name;
-
-    /**
-     * The SQL query string.
-     *
-     * @var string 
-     */
-    public $query;
-
-    /**
-     * The class of the result.
-     *
-     * @var string
-     */
-    public $resultClass;
-
-    /**
-     * The name of a SqlResultSetMapping, as defined in metadata.
-     * 
-     * @var string
-     */
-    public $resultSetMapping;
 
 }
