@@ -93,6 +93,21 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self("No query found named '$queryName' on class '$className'.");
     }
 
+    public static function emptyQueryMapping($entity, $queryName)
+    {
+        return new self('Query named "'.$queryName.'" in "'.$entity.'" could not be empty.');
+    }
+
+    public static function nameIsMandatoryQueryMapping($className)
+    {
+        return new self("Query name on entity class '$className' is not defined.");
+    }
+
+    public static function missingQueryMapping($entity, $queryName)
+    {
+        return new self('Query named "'.$queryName.'" in "'.$entity.' requires a result class or result set mapping.');
+    }
+
     public static function oneToManyRequiresMappedBy($fieldName)
     {
         return new self("OneToMany mapping on field '$fieldName' requires the 'mappedBy' attribute.");
@@ -178,27 +193,31 @@ class MappingException extends \Doctrine\ORM\ORMException
     }
 
     /**
-     *
      * @param string $entity The entity's name
      * @param string $fieldName The name of the field that was already declared
      */
-    public static function duplicateFieldMapping($entity, $fieldName) {
+    public static function duplicateFieldMapping($entity, $fieldName)
+    {
         return new self('Property "'.$fieldName.'" in "'.$entity.'" was already declared, but it must be declared only once');
     }
 
-    public static function duplicateAssociationMapping($entity, $fieldName) {
+    public static function duplicateAssociationMapping($entity, $fieldName)
+    {
         return new self('Property "'.$fieldName.'" in "'.$entity.'" was already declared, but it must be declared only once');
     }
 
-    public static function duplicateQueryMapping($entity, $queryName) {
+    public static function duplicateQueryMapping($entity, $queryName)
+    {
         return new self('Query named "'.$queryName.'" in "'.$entity.'" was already declared, but it must be declared only once');
     }
 
-    public static function singleIdNotAllowedOnCompositePrimaryKey($entity) {
+    public static function singleIdNotAllowedOnCompositePrimaryKey($entity)
+    {
         return new self('Single id is not allowed on composite primary key in entity '.$entity);
     }
 
-    public static function unsupportedOptimisticLockingType($entity, $fieldName, $unsupportedType) {
+    public static function unsupportedOptimisticLockingType($entity, $fieldName, $unsupportedType)
+    {
         return new self('Locking type "'.$unsupportedType.'" (specified in "'.$entity.'", field "'.$fieldName.'") '
                         .'is not supported by Doctrine.'
         );
@@ -224,7 +243,8 @@ class MappingException extends \Doctrine\ORM\ORMException
      * @param string $owningClass The class that declares the discriminator map.
      * @return self
      */
-    public static function invalidClassInDiscriminatorMap($className, $owningClass) {
+    public static function invalidClassInDiscriminatorMap($className, $owningClass)
+    {
         return new self(
             "Entity class '$className' used in the discriminator map of class '$owningClass' ".
             "does not exist."

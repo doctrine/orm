@@ -49,16 +49,19 @@ class ClassMetadataInfo implements ClassMetadata
      * and therefore does not need an inheritance mapping type.
      */
     const INHERITANCE_TYPE_NONE = 1;
+
     /**
      * JOINED means the class will be persisted according to the rules of
      * <tt>Class Table Inheritance</tt>.
      */
     const INHERITANCE_TYPE_JOINED = 2;
+
     /**
      * SINGLE_TABLE means the class will be persisted according to the rules of
      * <tt>Single Table Inheritance</tt>.
      */
     const INHERITANCE_TYPE_SINGLE_TABLE = 3;
+
     /**
      * TABLE_PER_CLASS means the class will be persisted according to the rules
      * of <tt>Concrete Table Inheritance</tt>.
@@ -71,17 +74,20 @@ class ClassMetadataInfo implements ClassMetadata
      * Offers full portability.
      */
     const GENERATOR_TYPE_AUTO = 1;
+
     /**
      * SEQUENCE means a separate sequence object will be used. Platforms that do
      * not have native sequence support may emulate it. Full portability is currently
      * not guaranteed.
      */
     const GENERATOR_TYPE_SEQUENCE = 2;
+
     /**
      * TABLE means a separate table is used for id generation.
      * Offers full portability.
      */
     const GENERATOR_TYPE_TABLE = 3;
+
     /**
      * IDENTITY means an identity column is used for id generation. The database
      * will fill in the id column on insertion. Platforms that do not support
@@ -89,11 +95,13 @@ class ClassMetadataInfo implements ClassMetadata
      * not guaranteed.
      */
     const GENERATOR_TYPE_IDENTITY = 4;
+
     /**
      * NONE means the class does not have a generated id. That means the class
      * must have a natural, manually assigned id.
      */
     const GENERATOR_TYPE_NONE = 5;
+
     /**
      * UUID means that a UUID/GUID expression is used for id generation. Full
      * portability is currently not guaranteed.
@@ -111,53 +119,64 @@ class ClassMetadataInfo implements ClassMetadata
      * This is the default change tracking policy.
      */
     const CHANGETRACKING_DEFERRED_IMPLICIT = 1;
+
     /**
      * DEFERRED_EXPLICIT means that changes of entities are calculated at commit-time
      * by doing a property-by-property comparison with the original data. This will
      * be done only for entities that were explicitly saved (through persist() or a cascade).
      */
     const CHANGETRACKING_DEFERRED_EXPLICIT = 2;
+
     /**
      * NOTIFY means that Doctrine relies on the entities sending out notifications
      * when their properties change. Such entity classes must implement
      * the <tt>NotifyPropertyChanged</tt> interface.
      */
     const CHANGETRACKING_NOTIFY = 3;
+
     /**
      * Specifies that an association is to be fetched when it is first accessed.
      */
     const FETCH_LAZY = 2;
+
     /**
      * Specifies that an association is to be fetched when the owner of the
      * association is fetched.
      */
     const FETCH_EAGER = 3;
+
     /**
      * Specifies that an association is to be fetched lazy (on first access) and that
      * commands such as Collection#count, Collection#slice are issued directly against
      * the database if the collection is not yet initialized.
      */
     const FETCH_EXTRA_LAZY = 4;
+
     /**
      * Identifies a one-to-one association.
      */
     const ONE_TO_ONE = 1;
+
     /**
      * Identifies a many-to-one association.
      */
     const MANY_TO_ONE = 2;
+
     /**
      * Identifies a one-to-many association.
      */
     const ONE_TO_MANY = 4;
+
     /**
      * Identifies a many-to-many association.
      */
     const MANY_TO_MANY = 8;
+
     /**
      * Combined bitmask for to-one (single-valued) associations.
      */
     const TO_ONE = 3;
+
     /**
      * Combined bitmask for to-many (collection-valued) associations.
      */
@@ -236,6 +255,21 @@ class ClassMetadataInfo implements ClassMetadata
      * @var array
      */
     public $namedQueries = array();
+
+    /**
+     * READ-ONLY: The named native queries allowed to be called directly from Repository.
+     *
+     * A native SQL named query definition has the following structure:
+     * <pre>
+     * array(
+     *     'name'                => <query name>,
+     *     'query'               => <sql query>,
+     *     'resultClass'         => <class of the result>,
+     *     'resultSetMapping'    => <name of a SqlResultSetMapping>
+     * )
+     * </pre>
+     */
+    public $namedNativeQueries = array();
 
     /**
      * READ-ONLY: The field names of all fields that are part of the identifier/primary key
@@ -1052,6 +1086,33 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Gets the named native query.
+     *
+     * @see ClassMetadataInfo::$namedNativeQueries
+     * @throws  MappingException
+     * @param   string $queryName The query name
+     * @return  array
+     */
+    public function getNamedNativeQuery($queryName)
+    {
+        if ( ! isset($this->namedNativeQueries[$queryName])) {
+            throw MappingException::queryNotFound($this->name, $queryName);
+        }
+
+        return $this->namedNativeQueries[$queryName];
+    }
+
+    /**
+     * Gets all named native queries of the class.
+     *
+     * @return array
+     */
+    public function getNamedNativeQueries()
+    {
+        return $this->namedNativeQueries;
+    }
+
+    /**
      * Validates & completes the given field mapping.
      *
      * @param array $mapping  The field mapping to validated & complete.
@@ -1826,8 +1887,16 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function addNamedQuery(array $queryMapping)
     {
+        if (!isset($queryMapping['name'])) {
+            throw MappingException::nameIsMandatoryQueryMapping($this->name);
+        }
+
         if (isset($this->namedQueries[$queryMapping['name']])) {
             throw MappingException::duplicateQueryMapping($this->name, $queryMapping['name']);
+        }
+
+        if (!isset($queryMapping['query'])) {
+            throw MappingException::emptyQueryMapping($this->name, $queryMapping['name']);
         }
 
         $name   = $queryMapping['name'];
@@ -1838,6 +1907,38 @@ class ClassMetadataInfo implements ClassMetadata
             'query' => $query,
             'dql'   => $dql
         );
+    }
+
+    /**
+     * INTERNAL:
+     * Adds a named native query to this class.
+     *
+     * @throws MappingException
+     * @param array $queryMapping
+     */
+    public function addNamedNativeQuery(array $queryMapping)
+    {
+        if (!isset($queryMapping['name'])) {
+            throw MappingException::nameIsMandatoryQueryMapping($this->name);
+        }
+
+        if (isset($this->namedNativeQueries[$queryMapping['name']])) {
+            throw MappingException::duplicateQueryMapping($this->name, $queryMapping['name']);
+        }
+
+        if (!isset($queryMapping['query'])) {
+            throw MappingException::emptyQueryMapping($this->name, $queryMapping['name']);
+        }
+
+        if (!isset($queryMapping['resultClass']) && !isset($queryMapping['resultSetMapping'])) {
+            throw MappingException::missingQueryMapping($this->name, $queryMapping['name']);
+        }
+
+        if (isset($queryMapping['resultClass']) && $queryMapping['resultClass'] === '__CLASS__') {
+            $queryMapping['resultClass'] = $this->name;
+        }
+
+        $this->namedNativeQueries[$queryMapping['name']] = $queryMapping;
     }
 
     /**
@@ -2059,6 +2160,17 @@ class ClassMetadataInfo implements ClassMetadata
     public function hasNamedQuery($queryName)
     {
         return isset($this->namedQueries[$queryName]);
+    }
+
+    /**
+     * Checks whether the class has a named native query with the given query name.
+     *
+     * @param string $fieldName
+     * @return boolean
+     */
+    public function hasNamedNativeQuery($queryName)
+    {
+        return isset($this->namedNativeQueries[$queryName]);
     }
 
     /**
