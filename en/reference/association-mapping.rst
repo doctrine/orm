@@ -53,7 +53,7 @@ the ``Product`` so it is unidirectional.
         }
 
     .. code-block:: xml
-    
+
         <doctrine-mapping>
             <entity class="Product">
                 <one-to-one field="shipping" target-entity="Shipping">
@@ -98,7 +98,7 @@ Here is a one-to-one relationship between a ``Customer`` and a
 ``Cart``. The ``Cart`` has a reference back to the ``Customer`` so
 it is bidirectional.
 
-.. configuration-block:: 
+.. configuration-block::
 
     .. code-block:: php
 
@@ -193,13 +193,13 @@ below.
     class Student
     {
         // ...
-    
+
         /**
          * @OneToOne(targetEntity="Student")
          * @JoinColumn(name="mentor_id", referencedColumnName="id")
          **/
         private $mentor;
-    
+
         // ...
     }
 
@@ -307,19 +307,19 @@ Generates the following MySQL Schema:
         id INT AUTO_INCREMENT NOT NULL,
         PRIMARY KEY(id)
     ) ENGINE = InnoDB;
-    
+
     CREATE TABLE users_phonenumbers (
         user_id INT NOT NULL,
         phonenumber_id INT NOT NULL,
         UNIQUE INDEX users_phonenumbers_phonenumber_id_uniq (phonenumber_id),
         PRIMARY KEY(user_id, phonenumber_id)
     ) ENGINE = InnoDB;
-    
+
     CREATE TABLE Phonenumber (
         id INT AUTO_INCREMENT NOT NULL,
         PRIMARY KEY(id)
     ) ENGINE = InnoDB;
-    
+
     ALTER TABLE users_phonenumbers ADD FOREIGN KEY (user_id) REFERENCES User(id);
     ALTER TABLE users_phonenumbers ADD FOREIGN KEY (phonenumber_id) REFERENCES Phonenumber(id);
 
@@ -385,12 +385,12 @@ Generated MySQL Schema:
         address_id INT DEFAULT NULL,
         PRIMARY KEY(id)
     ) ENGINE = InnoDB;
-    
+
     CREATE TABLE Address (
         id INT AUTO_INCREMENT NOT NULL,
         PRIMARY KEY(id)
     ) ENGINE = InnoDB;
-    
+
     ALTER TABLE User ADD FOREIGN KEY (address_id) REFERENCES Address(id);
 
 One-To-Many, Bidirectional
@@ -400,7 +400,7 @@ Bidirectional one-to-many associations are very common. The
 following code shows an example with a Product and a Feature
 class:
 
-.. configuration-block:: 
+.. configuration-block::
 
     .. code-block:: php
 
@@ -432,7 +432,7 @@ class:
             // ...
         }
 
-   .. code-block:: xml
+    .. code-block:: xml
 
         <doctrine-mapping>
             <entity name="Product">
@@ -444,6 +444,24 @@ class:
                 </many-to-one>
             </entity>
         </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        Product:
+          type: entity
+          oneToMany:
+            features:
+              targetEntity: Feature
+              mappedBy: product
+        Feature:
+          type: entity
+          manyToOne:
+            product:
+              targetEntity: Product
+              inversedBy: features
+              joinColumn:
+                name: product_id
+                referencedColumnName: id
 
 
 Note that the @JoinColumn is not really necessary in this example,
@@ -628,7 +646,7 @@ Generated MySQL Schema:
     ALTER TABLE users_groups ADD FOREIGN KEY (group_id) REFERENCES Group(id);
 
 .. note::
-    
+
     Why are many-to-many associations less common? Because
     frequently you want to associate additional attributes with an
     association, in which case you introduce an association class.
@@ -754,18 +772,18 @@ understandable:
     class Article
     {
         private $tags;
-    
+
         public function addTag(Tag $tag)
         {
             $tag->addArticle($this); // synchronously updating inverse side
             $this->tags[] = $tag;
         }
     }
-    
+
     class Tag
     {
         private $articles;
-    
+
         public function addArticle(Article $article)
         {
             $this->articles[] = $article;
@@ -798,12 +816,12 @@ field named ``$friendsWithMe`` and ``$myFriends``.
     class User
     {
         // ...
-    
+
         /**
          * @ManyToMany(targetEntity="User", mappedBy="myFriends")
          **/
         private $friendsWithMe;
-    
+
         /**
          * @ManyToMany(targetEntity="User", inversedBy="friendsWithMe")
          * @JoinTable(name="friends",
@@ -812,12 +830,12 @@ field named ``$friendsWithMe`` and ``$myFriends``.
          *      )
          **/
         private $myFriends;
-    
+
         public function __construct() {
             $this->friendsWithMe = new \Doctrine\Common\Collections\ArrayCollection();
             $this->myFriends = new \Doctrine\Common\Collections\ArrayCollection();
         }
-    
+
         // ...
     }
 
@@ -864,7 +882,7 @@ As an example, consider this mapping:
         private $shipping;
 
     .. code-block:: xml
-    
+
         <doctrine-mapping>
             <entity class="Product">
                 <one-to-one field="shipping" target-entity="Shipping" />
@@ -894,7 +912,7 @@ mapping:
         private $shipping;
 
     .. code-block:: xml
-    
+
         <doctrine-mapping>
             <entity class="Product">
                 <one-to-one field="shipping" target-entity="Shipping">
@@ -931,7 +949,7 @@ similar defaults. As an example, consider this mapping:
         }
 
     .. code-block:: xml
-    
+
         <doctrine-mapping>
             <entity class="User">
                 <many-to-many field="groups" target-entity="Group" />
@@ -969,7 +987,7 @@ mapping:
         }
 
     .. code-block:: xml
-    
+
         <doctrine-mapping>
             <entity class="User">
                 <many-to-many field="groups" target-entity="Group">
@@ -999,7 +1017,7 @@ mapping:
                     referencedColumnName: id
                 inverseJoinColumns:
                   Group_id:
-                    referencedColumnName: id                  
+                    referencedColumnName: id
 
 In that case, the name of the join table defaults to a combination
 of the simple, unqualified class names of the participating
@@ -1068,7 +1086,7 @@ contains a collection of groups:
     {
         /** @ManyToMany(targetEntity="Group") **/
         private $groups;
-    
+
         public function getGroups()
         {
             return $this->groups;
@@ -1088,18 +1106,18 @@ empty ``ArrayCollection`` in your entities constructor:
 
     <?php
     use Doctrine\Common\Collections\ArrayCollection;
-    
+
     /** @Entity **/
     class User
     {
         /** @ManyToMany(targetEntity="Group") **/
         private $groups;
-    
+
         public function __construct()
         {
             $this->groups = new ArrayCollection();
         }
-    
+
         public function getGroups()
         {
             return $this->groups;
@@ -1136,10 +1154,10 @@ Or you can trigger the validation manually:
 
     <?php
     use Doctrine\ORM\Tools\SchemaValidator;
-    
+
     $validator = new SchemaValidator($entityManager);
     $errors = $validator->validateMapping();
-    
+
     if (count($errors) > 0) {
         // Lots of errors!
         echo implode("\n\n", $errors);
