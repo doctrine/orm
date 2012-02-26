@@ -109,34 +109,57 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
 
     /**
-     * @param array $mapping
+     * Adds a the mappings of the results of native SQL queries to the result set.
+     *
+     * @param   ClassMetadataInfo $class
+     * @param   array $queryMapping
+     * @return  ResultSetMappingBuilder
      */
-    public function addSqlResultSetMapping(array $mapping)
+    public function addNamedNativeQueryMapping(ClassMetadataInfo $class, array $queryMapping)
     {
-        if (isset($mapping['entities'])) {
-            foreach ($mapping['entities'] as $key => $map) {
-                $simpleName = $map['entityClass'];
-                if (strpos($simpleName, '\\') !== false) {
-                    $simpleName = substr($simpleName, strrpos($simpleName, '\\') + 1);
-                }
+        if (isset($queryMapping['resultClass'])) {
+            $classMetadata  = $this->em->getClassMetadata($queryMapping['resultClass']);
+            $shortName      = $classMetadata->reflClass->getShortName();
+            $alias          = strtolower($shortName[0]).'0';
 
-                $className  = $map['entityClass'];
-                $alias      = strtolower($simpleName[0]) . $key;
+            $this->addEntityResult($class->name, $alias);
+
+            foreach ($classMetadata->getColumnNames() as $key => $columnName) {
+                $propertyName   = $classMetadata->getFieldName($columnName);
+                $this->addFieldResult($alias, $columnName, $propertyName);
+            }
+
+            return $this;
+        }
+
+        $resultMapping = $class->getSqlResultSetMapping($queryMapping['resultSetMapping']);
+        if (isset($resultMapping['entities'])) {
+            foreach ($resultMapping['entities'] as $key => $entityMapping) {
+                $classMetadata  = $this->em->getClassMetadata($entityMapping['entityClass']);
+                $shortName      = $classMetadata->reflClass->getShortName();
+                $alias          = strtolower($shortName[0]) . $key;
                 
-                $this->addEntityResult($className, $alias);
+                $this->addEntityResult($classMetadata->name, $alias);
 
-                if (isset($map['fields'])) {
-                    foreach ($map['fields'] as $field) {
-                        $this->addFieldResult($alias, $field['column'], $field['name'], $className);
+                if (isset($entityMapping['fields']) && !empty($entityMapping['fields'])) {
+                    foreach ($entityMapping['fields'] as $field) {
+                        $this->addFieldResult($alias, $field['column'], $field['name'], $classMetadata->name);
+                    }
+                } else {
+                    foreach ($classMetadata->getColumnNames() as $columnName) {
+                        $propertyName   = $classMetadata->getFieldName($columnName);
+                        $this->addFieldResult($alias, $columnName, $propertyName);
                     }
                 }
             }
         }
 
-        if (isset($mapping['columns'])) {
-            foreach ($mapping['columns'] as $map) {
-                $this->addScalarResult($map['name'], $map['name']);
+        if (isset($resultMapping['columns'])) {
+            foreach ($resultMapping['columns'] as $entityMapping) {
+                $this->addScalarResult($entityMapping['name'], $entityMapping['name']);
             }
         }
+
+        return $this;
     }
 }
