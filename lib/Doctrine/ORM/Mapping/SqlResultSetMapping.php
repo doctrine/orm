@@ -27,7 +27,7 @@ namespace Doctrine\ORM\Mapping;
  * @since   2.3
  *
  * @Annotation
- * @Target("CLASS")
+ * @Target("ANNOTATION")
  */
 final class SqlResultSetMapping implements Annotation
 {
@@ -44,13 +44,13 @@ final class SqlResultSetMapping implements Annotation
      * 
      * @var array<\Doctrine\ORM\Mapping\EntityResult>
      */
-    public $entities;
+    public $entities = array();
 
     /**
      * Specifies the result set mapping to scalar values.
      *
      * @var array<\Doctrine\ORM\Mapping\ColumnResult>
      */
-    public $columns;
+    public $columns = array();
 
 }

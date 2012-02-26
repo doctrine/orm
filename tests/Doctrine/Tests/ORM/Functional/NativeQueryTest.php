@@ -329,5 +329,41 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         );
         $users = $query->getResult();
     }
+
+
+    /**
+     * @group DDC-1663
+     */
+    public function testBasicNativeNamedQuery()
+    {
+        $user           = new CmsUser;
+        $user->name     = 'Fabio B. Silva';
+        $user->username = 'FabioBatSilva';
+        $user->status   = 'dev';
+
+        $addr           = new CmsAddress;
+        $addr->country  = 'Brazil';
+        $addr->zip      = 10827;
+        $addr->city     = 'São Paulo';
+
+        $user->setAddress($addr);
+
+        $this->_em->clear();
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
+        $query      = $repository->createNativeNamedQuery('find-all');
+        $result     = $query->getResult();
+        
+        $this->assertCount(1, $result);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress', $result[0]);
+        $this->assertEquals($addr->id,  $result[0]->id);
+        $this->assertEquals($addr->city,  $result[0]->city);
+        $this->assertEquals($addr->country, $result[0]->country);
+    }
 }
 

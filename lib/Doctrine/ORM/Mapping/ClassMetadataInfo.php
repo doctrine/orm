@@ -1983,8 +1983,15 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::missingQueryMapping($this->name, $queryMapping['name']);
         }
 
-        if (isset($queryMapping['resultClass']) && $queryMapping['resultClass'] === '__CLASS__') {
-            $queryMapping['resultClass'] = $this->name;
+        if (isset($queryMapping['resultClass'])) {
+
+            if($queryMapping['resultClass'] === '__CLASS__') {
+                $queryMapping['resultClass'] = $this->name;
+            } else if (strlen($this->namespace) > 0 && strpos($queryMapping['resultClass'], '\\') === false) {
+                $queryMapping['resultClass'] = $this->namespace . '\\' . $queryMapping['resultClass'];
+            }
+
+            $mapping['targetEntity'] = ltrim($queryMapping['resultClass'], '\\');
         }
 
         $this->namedNativeQueries[$queryMapping['name']] = $queryMapping;
@@ -2013,9 +2020,13 @@ class ClassMetadataInfo implements ClassMetadata
                     throw MappingException::missingResultSetMappingEntity($this->name, $resultMapping['name']);
                 }
 
-                if ($entityResult['entityClass'] === '__CLASS__') {
-                    $resultMapping['entities'][$key]['entityClass'] = $this->name;
+                if($entityResult['entityClass'] === '__CLASS__') {
+                    $entityResult['entityClass'] = $this->name;
+                } else if (strlen($this->namespace) > 0 && strpos($entityResult['entityClass'], '\\') === false) {
+                    $entityResult['entityClass'] = $this->namespace . '\\' . $entityResult['entityClass'];
                 }
+
+                $resultMapping['entities'][$key]['entityClass'] = ltrim($entityResult['entityClass'], '\\');
             }
         }
 

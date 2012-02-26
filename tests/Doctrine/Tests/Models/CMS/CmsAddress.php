@@ -8,6 +8,31 @@ namespace Doctrine\Tests\Models\CMS;
  * @author Roman S. Borschel
  * @Entity
  * @Table(name="cms_addresses")
+ *
+ * @NamedNativeQueries({
+ *      @NamedNativeQuery(
+ *          name                = "find-all",
+ *          resultSetMapping    = "mapping-find-all",
+ *          query               = "SELECT id, country, city FROM cms_addresses"
+ *      )
+ * })
+ *
+ * @SqlResultSetMappings({
+ *      @SqlResultSetMapping(
+ *          name    = "mapping-find-all",
+ *          entities= {
+ *              @EntityResult(
+ *                  entityClass = "CmsAddress",
+ *                  fields      = {
+ *                      @FieldResult(name = "id",       column="id"),
+ *                      @FieldResult(name = "city",     column="city"),
+ *                      @FieldResult(name = "country",  column="country")
+ *                  }
+ *              )
+ *          }
+ *      )
+ * })
+ *
  */
 class CmsAddress
 {

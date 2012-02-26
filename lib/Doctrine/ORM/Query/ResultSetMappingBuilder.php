@@ -106,4 +106,37 @@ class ResultSetMappingBuilder extends ResultSetMapping
             }
         }
     }
+
+
+    /**
+     * @param array $mapping
+     */
+    public function addSqlResultSetMapping(array $mapping)
+    {
+        if (isset($mapping['entities'])) {
+            foreach ($mapping['entities'] as $key => $map) {
+                $simpleName = $map['entityClass'];
+                if (strpos($simpleName, '\\') !== false) {
+                    $simpleName = substr($simpleName, strrpos($simpleName, '\\') + 1);
+                }
+
+                $className  = $map['entityClass'];
+                $alias      = strtolower($simpleName[0]) . $key;
+                
+                $this->addEntityResult($className, $alias);
+
+                if (isset($map['fields'])) {
+                    foreach ($map['fields'] as $field) {
+                        $this->addFieldResult($alias, $field['column'], $field['name'], $className);
+                    }
+                }
+            }
+        }
+
+        if (isset($mapping['columns'])) {
+            foreach ($mapping['columns'] as $map) {
+                $this->addScalarResult($map['name'], $map['name']);
+            }
+        }
+    }
 }

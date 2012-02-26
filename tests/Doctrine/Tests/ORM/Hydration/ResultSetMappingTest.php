@@ -93,5 +93,70 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($rms->hasParentAlias('p'));
         $this->assertTrue($rms->isMixedResult());
     }
+
+    /**
+     * @group DDC-1663
+     */
+    public function testAddSqlResultSetMapping()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+
+        $cm->addSqlResultSetMapping(array(
+            'name'      => 'find-all',
+            'entities'  => array(
+                array(
+                    'entityClass'   => '__CLASS__',
+                    'fields'        => array(
+                        array(
+                            'name'  => 'id',
+                            'column'=> 'user_id'
+                        ),
+                        array(
+                            'name'  => 'name',
+                            'column'=> 'user_name'
+                        )
+                    )
+                ),
+                array(
+                    'entityClass'   => 'CmsEmail',
+                    'fields'        => array(
+                        array(
+                            'name'  => 'id',
+                            'column'=> 'email_id'
+                        ),
+                        array(
+                            'name'  => 'email',
+                            'column'=> 'email_email'
+                        )
+                    )
+                )
+            ),
+            'columns'   => array(
+                array(
+                    'name' => 'scalarColumn'
+                )
+            )
+        ));
+
+
+        $rsm = new \Doctrine\ORM\Query\ResultSetMappingBuilder($this->_em);
+        $rsm->addSqlResultSetMapping($cm->getSqlResultSetMapping('find-all'));
+
+        $this->assertEquals('scalarColumn', $rsm->getScalarAlias('scalarColumn'));
+
+        $this->assertEquals('c0', $rsm->getEntityAlias('user_id'));
+        $this->assertEquals('c0', $rsm->getEntityAlias('user_name'));
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getClassName('c0'));
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getDeclaringClass('user_id'));
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getDeclaringClass('user_name'));
+
+
+        $this->assertEquals('c1', $rsm->getEntityAlias('email_id'));
+        $this->assertEquals('c1', $rsm->getEntityAlias('email_email'));
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsEmail', $rsm->getClassName('c1'));
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsEmail', $rsm->getDeclaringClass('email_id'));
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsEmail', $rsm->getDeclaringClass('email_email'));
+    }
 }
 

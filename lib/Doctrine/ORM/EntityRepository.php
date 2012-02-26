@@ -90,6 +90,22 @@ class EntityRepository implements ObjectRepository
     }
 
     /**
+     * Creates a native SQL query.
+     *
+     * @param string $queryName
+     * @return NativeQuery
+     */
+    public function createNativeNamedQuery($queryName)
+    {
+        $queryMapping   = $this->_class->getNamedNativeQuery($queryName);
+        $resultMapping  = $this->_class->getSqlResultSetMapping($queryMapping['resultSetMapping']);
+        $rsm            = new Query\ResultSetMappingBuilder($this->_em);
+        $rsm->addSqlResultSetMapping($resultMapping);
+        
+        return $this->_em->createNativeQuery($queryMapping['query'], $rsm);
+    }
+
+    /**
      * Clears the repository, causing all managed entities to become detached.
      */
     public function clear()
