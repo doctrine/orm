@@ -56,7 +56,7 @@ Working with Objects
 
 * **Basic Reference**:
   :doc:`Entities <reference/working-with-objects>` |
-  :doc:`Assocations <reference/working-with-associations>` |
+  :doc:`Associations <reference/working-with-associations>` |
   :doc:`Events <reference/events>`
 
 * **Query Reference**:
