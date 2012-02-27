@@ -467,6 +467,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+<<<<<<< HEAD
      * @group DDC-889
      * @expectedException Doctrine\ORM\Mapping\MappingException
      * @expectedExceptionMessage Class "Doctrine\Tests\Models\DDC889\DDC889Class" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass" is not a valid entity or mapped super class.
@@ -487,6 +488,82 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $factory = $this->createClassMetadataFactory();
         
         $factory->getMetadataFor('Doctrine\Tests\Models\DDC889\DDC889Entity');
+    }
+
+    /**
+     * @group DDC-1663
+     */
+    public function testNamedNativeQuery()
+    {
+        if (!$this instanceof AnnotationDriverTest) {
+            $this->markTestIncomplete();
+        }
+        
+        $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+
+        $this->assertCount(3, $class->namedNativeQueries);
+        $this->assertArrayHasKey('find-all', $class->namedNativeQueries);
+        $this->assertArrayHasKey('find-by-id', $class->namedNativeQueries);
+
+        $findAllQuery = $class->namedNativeQueries['find-all'];
+        $this->assertEquals('find-all', $findAllQuery['name']);
+        $this->assertEquals('mapping-find-all', $findAllQuery['resultSetMapping']);
+        $this->assertEquals('SELECT id, country, city FROM cms_addresses', $findAllQuery['query']);
+
+        $findByIdQuery = $class->namedNativeQueries['find-by-id'];
+        $this->assertEquals('find-by-id', $findByIdQuery['name']);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddress',$findByIdQuery['resultClass']);
+        $this->assertEquals('SELECT * FROM cms_addresses WHERE id = ?',  $findByIdQuery['query']);
+
+        $countQuery = $class->namedNativeQueries['count'];
+        $this->assertEquals('count', $countQuery['name']);
+        $this->assertEquals('mapping-count', $countQuery['resultSetMapping']);
+        $this->assertEquals('SELECT COUNT(*) AS count FROM cms_addresses',  $countQuery['query']);
+
+    }
+
+    /**
+     * @group DDC-1663
+     */
+    public function testSqlResultSetMapping()
+    {
+        if (!$this instanceof AnnotationDriverTest) {
+            $this->markTestIncomplete();
+        }
+
+        $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+
+        $this->assertCount(3, $class->sqlResultSetMappings);
+        $this->assertArrayHasKey('mapping-find-all', $class->sqlResultSetMappings);
+        $this->assertArrayHasKey('mapping-without-fields', $class->sqlResultSetMappings);
+
+        // empty fields select all fields
+        $withoutFieldsMapping = $class->sqlResultSetMappings['mapping-without-fields'];
+        $this->assertEquals('mapping-without-fields', $withoutFieldsMapping['name']);
+        $this->assertCount(1, $withoutFieldsMapping['entities']);
+        $this->assertCount(0, $withoutFieldsMapping['columns']);
+        $this->assertEquals(array(), $withoutFieldsMapping['entities'][0]['fields']);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddress', $withoutFieldsMapping['entities'][0]['entityClass']);
+
+
+        $findAllMapping = $class->sqlResultSetMappings['mapping-find-all'];
+        $this->assertEquals('mapping-find-all', $findAllMapping['name']);
+        $this->assertCount(1, $findAllMapping['entities']);
+        $this->assertCount(0, $findAllMapping['columns']);
+        $this->assertEquals(array(
+            array('name'=>'id','column'=>'id'),
+            array('name'=>'city','column'=>'city'),
+            array('name'=>'country','column' => 'country')
+        ), $findAllMapping['entities'][0]['fields']);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddress', $findAllMapping['entities'][0]['entityClass']);
+
+        
+        $countMapping = $class->sqlResultSetMappings['mapping-count'];
+        $this->assertEquals('mapping-count', $countMapping['name']);
+        $this->assertCount(0, $countMapping['entities']);
+        $this->assertCount(1, $countMapping['columns']);
+        $this->assertEquals(array(array('name'=>'count')),$countMapping['columns']);
+
     }
 }
 

@@ -14,6 +14,16 @@ namespace Doctrine\Tests\Models\CMS;
  *          name                = "find-all",
  *          resultSetMapping    = "mapping-find-all",
  *          query               = "SELECT id, country, city FROM cms_addresses"
+ *      ),
+ *      @NamedNativeQuery(
+ *          name           = "find-by-id",
+ *          resultClass    = "CmsAddress",
+ *          query          = "SELECT * FROM cms_addresses WHERE id = ?"
+ *      ),
+ *      @NamedNativeQuery(
+ *          name            = "count",
+ *          resultSetMapping= "mapping-count",
+ *          query           = "SELECT COUNT(*) AS count FROM cms_addresses"
  *      )
  * })
  *
@@ -28,6 +38,22 @@ namespace Doctrine\Tests\Models\CMS;
  *                      @FieldResult(name = "city",     column="city"),
  *                      @FieldResult(name = "country",  column="country")
  *                  }
+ *              )
+ *          }
+ *      ),
+ *      @SqlResultSetMapping(
+ *          name    = "mapping-without-fields",
+ *          entities= {
+ *              @EntityResult(
+ *                  entityClass = "__CLASS__"
+ *              )
+ *          }
+ *      ),
+ *      @SqlResultSetMapping(
+ *          name    = "mapping-count",
+ *          columns = {
+ *              @ColumnResult(
+ *                  name = "count"
  *              )
  *          }
  *      )

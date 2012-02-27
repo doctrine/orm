@@ -244,7 +244,7 @@ class AnnotationDriver implements Driver
                 $columns = array();
                 foreach ($resultSetMapping->columns as $columnResultAnnot) {
                     $columns[] = array(
-                        'name' => $resultSetMapping->name,
+                        'name' => $columnResultAnnot->name,
                     );
                 }
 
