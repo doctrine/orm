@@ -7,6 +7,7 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 
@@ -334,7 +335,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-1663
      */
-    public function testBasicNativeNamedQuery()
+    public function testBasicNativeNamedQueryWithSqlResultSetMapping()
     {
         $user           = new CmsUser;
         $user->name     = 'Fabio B. Silva';
@@ -364,6 +365,60 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($addr->id,  $result[0]->id);
         $this->assertEquals($addr->city,  $result[0]->city);
         $this->assertEquals($addr->country, $result[0]->country);
+    }
+
+    /**
+     * @group DDC-1663
+     */
+    public function testBasicNativeQueryWithResultClass()
+    {
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        
+        $user           = new CmsUser;
+        $user->name     = 'Fabio B. Silva';
+        $user->username = 'FabioBatSilva';
+        $user->status   = 'dev';
+
+        $email          = new CmsEmail();
+        $email->email   = 'fabio.bat.silva@gmail.com';
+
+        $user->setEmail($email);
+
+        $this->_em->clear();
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+
+        $result     = $repository->createNativeNamedQuery('fetchIdAndUsernameWithResultClass')
+                        ->setParameter(1, 'FabioBatSilva')->getResult();
+        $this->assertEquals(1, count($result));
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
+        $this->assertNull($result[0]->name);
+        $this->assertNull($result[0]->email);
+        $this->assertEquals($user->id, $result[0]->id);
+        $this->assertEquals('FabioBatSilva', $result[0]->username);
+
+        $this->_em->clear();
+
+
+        $result     = $repository->createNativeNamedQuery('fetchAllColumnsWithResultClass')
+                        ->setParameter(1, 'FabioBatSilva')->getResult();
+
+        $this->assertEquals(1, count($result));
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
+        $this->assertEquals($user->id, $result[0]->id);
+        $this->assertEquals('Fabio B. Silva', $result[0]->name);
+        $this->assertEquals('FabioBatSilva', $result[0]->username);
+        $this->assertEquals('dev', $result[0]->status);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsEmail', $result[0]->email);
+
+
+        $this->_em->clear();
+
     }
 }
 

@@ -10,6 +10,19 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @NamedQueries({
  *     @NamedQuery(name="all", query="SELECT u FROM __CLASS__ u")
  * })
+ *
+ * @NamedNativeQueries({
+ *      @NamedNativeQuery(
+ *          name           = "fetchIdAndUsernameWithResultClass",
+ *          resultClass    = "CmsUser",
+ *          query          = "SELECT id, username FROM cms_users WHERE username = ?"
+ *      ),
+ *      @NamedNativeQuery(
+ *          name           = "fetchAllColumnsWithResultClass",
+ *          resultClass    = "CmsUser",
+ *          query          = "SELECT * FROM cms_users WHERE username = ?"
+ *      ),
+ * })
  */
 class CmsUser
 {

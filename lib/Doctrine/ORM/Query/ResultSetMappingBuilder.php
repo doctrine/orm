@@ -129,6 +129,15 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 $this->addFieldResult($alias, $columnName, $propertyName);
             }
 
+            foreach ($classMetadata->associationMappings as $associationMapping) {
+                if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
+                    foreach ($associationMapping['joinColumns'] as $joinColumn) {
+                        $columnName = $joinColumn['name'];
+                        $this->addMetaResult($alias, $columnName, $columnName, $classMetadata->isIdentifier($columnName));
+                    }
+                }
+            }
+
             return $this;
         }
 
