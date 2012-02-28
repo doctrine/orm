@@ -149,11 +149,31 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 $alias          = strtolower($shortName[0]) . $key;
                 
                 $this->addEntityResult($classMetadata->name, $alias);
-
                 if (isset($entityMapping['fields']) && !empty($entityMapping['fields'])) {
                     foreach ($entityMapping['fields'] as $field) {
-                        $this->addFieldResult($alias, $field['column'], $field['name'], $classMetadata->name);
+                        $fieldName = $field['name'];
+                        $relation  = null;
+
+                        if(strpos($fieldName, '.')){
+                            list($relation, $fieldName) = explode('.', $fieldName);
+                        }
+
+                        if (isset($classMetadata->associationMappings[$relation])) {
+                            if($relation) {
+                                $associationMapping = $classMetadata->associationMappings[$relation];
+                                $joinAlias          = $alias.$relation;
+                                $parentAlias        = $alias;
+
+                                $this->addJoinedEntityResult($associationMapping['targetEntity'], $joinAlias, $parentAlias, $relation);
+                                $this->addFieldResult($joinAlias, $field['column'], $fieldName);
+                            }else {
+                                $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
+                            }
+                        } else {
+                            $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
+                        }
                     }
+
                 } else {
                     foreach ($classMetadata->getColumnNames() as $columnName) {
                         $propertyName   = $classMetadata->getFieldName($columnName);

@@ -117,6 +117,11 @@ class MappingException extends \Doctrine\ORM\ORMException
     {
         return new self('Result set mapping named "'.$resultName.'" in "'.$entity.' requires a entity class name.');
     }
+
+    public static function missingResultSetMappingFieldName($entity, $resultName)
+    {
+        return new self('Result set mapping named "'.$resultName.'" in "'.$entity.' requires a field name.');
+    }
     
     public static function nameIsMandatoryForSqlResultSetMapping($className)
     {

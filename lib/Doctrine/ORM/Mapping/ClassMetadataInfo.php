@@ -1991,7 +1991,7 @@ class ClassMetadataInfo implements ClassMetadata
                 $queryMapping['resultClass'] = $this->namespace . '\\' . $queryMapping['resultClass'];
             }
 
-            $mapping['targetEntity'] = ltrim($queryMapping['resultClass'], '\\');
+            $queryMapping['resultClass'] = ltrim($queryMapping['resultClass'], '\\');
         }
 
         $this->namedNativeQueries[$queryMapping['name']] = $queryMapping;
@@ -2027,6 +2027,23 @@ class ClassMetadataInfo implements ClassMetadata
                 }
 
                 $resultMapping['entities'][$key]['entityClass'] = ltrim($entityResult['entityClass'], '\\');
+
+                if (isset($entityResult['fields'])) {
+                    foreach ($entityResult['fields'] as $k => $field) {
+                        if (!isset($field['name'])) {
+                            throw MappingException::missingResultSetMappingFieldName($this->name, $resultMapping['name']);
+                        }
+
+                        if (!isset($field['column'])) {
+                            $fieldName = $field['name'];
+                            if(strpos($fieldName, '.')){
+                                list(, $fieldName) = explode('.', $fieldName);
+                            }
+
+                            $resultMapping['entities'][$key]['fields'][$k]['column'] = $fieldName;
+                        }
+                    }
+                }
             }
         }
 

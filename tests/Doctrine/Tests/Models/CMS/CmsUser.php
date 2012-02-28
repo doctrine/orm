@@ -22,6 +22,50 @@ use Doctrine\Common\Collections\ArrayCollection;
  *          resultClass    = "CmsUser",
  *          query          = "SELECT * FROM cms_users WHERE username = ?"
  *      ),
+ *      @NamedNativeQuery(
+ *          name            = "fetchJoinedAddressWithResultSetMapping",
+ *          resultSetMapping= "mappingJoinedAddress",
+ *          query           = "SELECT u.id, u.name, u.status, a.id AS a_id, a.country, a.zip, a.city FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?"
+ *      ),
+ *      @NamedNativeQuery(
+ *          name            = "fetchJoinedPhonenumberWithResultSetMapping",
+ *          resultSetMapping= "mappingJoinedPhonenumber",
+ *          query           = "SELECT id, name, status, phonenumber AS number FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?"
+ *      ),
+ * })
+ *
+ * @SqlResultSetMappings({
+ *      @SqlResultSetMapping(
+ *          name    = "mappingJoinedAddress",
+ *          entities= {
+ *              @EntityResult(
+ *                  entityClass = "__CLASS__",
+ *                  fields      = {
+ *                      @FieldResult(name = "id"),
+ *                      @FieldResult(name = "name"),
+ *                      @FieldResult(name = "status"),
+ *                      @FieldResult(name = "address.zip"),
+ *                      @FieldResult(name = "address.city"),
+ *                      @FieldResult(name = "address.country"),
+ *                      @FieldResult(name = "address.id", column = "a_id"),
+ *                  }
+ *              )
+ *          }
+ *      ),
+ *      @SqlResultSetMapping(
+ *          name    = "mappingJoinedPhonenumber",
+ *          entities= {
+ *              @EntityResult(
+ *                  entityClass = "CmsUser",
+ *                  fields      = {
+ *                      @FieldResult(name = "id"),
+ *                      @FieldResult(name = "name"),
+ *                      @FieldResult(name = "status"),
+ *                      @FieldResult(name = "phonenumbers.phonenumber" , column = "number"),
+ *                  }
+ *              )
+ *          }
+ *      )
  * })
  */
 class CmsUser
