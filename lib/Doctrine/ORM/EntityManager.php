@@ -457,10 +457,12 @@ class EntityManager implements ObjectManager
      * by this EntityManager become detached.
      *
      * @param string $entityName if given, only entities of this type will get detached
+     * @return EntityManager This EntityManager instance.
      */
     public function clear($entityName = null)
     {
         $this->unitOfWork->clear($entityName);
+        return $this;
     }
 
     /**
@@ -484,6 +486,7 @@ class EntityManager implements ObjectManager
      * this EntityManager as NEW. Do not pass detached entities to the persist operation.
      *
      * @param object $object The instance to make managed and persistent.
+     * @return EntityManager This EntityManager instance.
      */
     public function persist($entity)
     {
@@ -494,6 +497,8 @@ class EntityManager implements ObjectManager
         $this->errorIfClosed();
 
         $this->unitOfWork->persist($entity);
+
+        return $this;
     }
 
     /**
@@ -503,6 +508,7 @@ class EntityManager implements ObjectManager
      * or as a result of the flush operation.
      *
      * @param object $entity The entity instance to remove.
+     * @return EntityManager This EntityManager instance.
      */
     public function remove($entity)
     {
@@ -513,6 +519,8 @@ class EntityManager implements ObjectManager
         $this->errorIfClosed();
 
         $this->unitOfWork->remove($entity);
+
+        return $this;
     }
 
     /**
@@ -520,6 +528,7 @@ class EntityManager implements ObjectManager
      * overriding any local changes that have not yet been persisted.
      *
      * @param object $entity The entity to refresh.
+     * @return EntityManager This EntityManager instance.
      */
     public function refresh($entity)
     {
@@ -530,6 +539,8 @@ class EntityManager implements ObjectManager
         $this->errorIfClosed();
 
         $this->unitOfWork->refresh($entity);
+
+        return $this;
     }
 
     /**
@@ -540,6 +551,7 @@ class EntityManager implements ObjectManager
      * reference it.
      *
      * @param object $entity The entity to detach.
+     * @return EntityManager This EntityManager instance.
      */
     public function detach($entity)
     {
@@ -548,6 +560,8 @@ class EntityManager implements ObjectManager
         }
 
         $this->unitOfWork->detach($entity);
+
+        return $this;
     }
 
     /**
