@@ -10,6 +10,7 @@ use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\Models\Company\CompanyPerson;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -24,6 +25,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     protected function setUp() {
         $this->useModelSet('cms');
+        $this->useModelSet('company');
         parent::setUp();
         $this->platform = $this->_em->getConnection()->getDatabasePlatform();
     }
@@ -544,6 +546,54 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][0]);
         $this->assertEquals('test tester', $result[1][0]->name);
         $this->assertEquals(1, $result[1]['numPhones']);
+    }
+
+    /**
+     * @group DDC-1663
+     */
+    public function testNativeNamedQueryInheritance()
+    {
+        $person = new CompanyPerson;
+        $person->setName('Fabio B. Silva');
+
+        $employee = new CompanyEmployee;
+        $employee->setName('Fabio Silva');
+        $employee->setSalary(100000);
+        $employee->setDepartment('IT');
+
+        $this->_em->persist($person);
+        $this->_em->persist($employee);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyPerson');
+
+        $result = $repository->createNativeNamedQuery('fetchAllWithSqlResultSetMapping')
+                        ->getResult();
+
+        $this->assertEquals(2, count($result));
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyPerson', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $result[1]);
+        $this->assertTrue(is_numeric($result[0]->getId()));
+        $this->assertTrue(is_numeric($result[1]->getId()));
+        $this->assertEquals('Fabio B. Silva', $result[0]->getName());
+        $this->assertEquals('Fabio Silva', $result[1]->getName());
+
+
+        $this->_em->clear();
+        
+
+        $result = $repository->createNativeNamedQuery('fetchAllWithResultClass')
+                        ->getResult();
+
+        $this->assertEquals(2, count($result));
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyPerson', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $result[1]);
+        $this->assertTrue(is_numeric($result[0]->getId()));
+        $this->assertTrue(is_numeric($result[1]->getId()));
+        $this->assertEquals('Fabio B. Silva', $result[0]->getName());
+        $this->assertEquals('Fabio Silva', $result[1]->getName());
     }
 
 }

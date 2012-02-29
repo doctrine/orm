@@ -124,6 +124,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
             $this->addEntityResult($class->name, $alias);
 
+            if ($classMetadata->discriminatorColumn) {
+                $discriminatorColumn = $classMetadata->discriminatorColumn;
+                $this->setDiscriminatorColumn($alias, $discriminatorColumn['name']);
+                $this->addMetaResult($alias, $discriminatorColumn['name'], $discriminatorColumn['fieldName']);
+            }
+
             foreach ($classMetadata->getColumnNames() as $key => $columnName) {
                 $propertyName   = $classMetadata->getFieldName($columnName);
                 $this->addFieldResult($alias, $columnName, $propertyName);
@@ -147,6 +153,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 $classMetadata  = $this->em->getClassMetadata($entityMapping['entityClass']);
                 $shortName      = $classMetadata->reflClass->getShortName();
                 $alias          = strtolower($shortName[0]) . $key;
+
+                if (isset($entityMapping['discriminatorColumn']) && $entityMapping['discriminatorColumn']) {
+                    $discriminatorColumn = $entityMapping['discriminatorColumn'];
+                    $this->setDiscriminatorColumn($alias, $discriminatorColumn);
+                    $this->addMetaResult($alias, $discriminatorColumn, $discriminatorColumn);
+                }
                 
                 $this->addEntityResult($classMetadata->name, $alias);
                 if (isset($entityMapping['fields']) && !empty($entityMapping['fields'])) {
@@ -191,7 +203,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 $this->addScalarResult($entityMapping['name'], $entityMapping['name']);
             }
         }
-
+        
         return $this;
     }
 }

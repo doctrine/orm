@@ -11,9 +11,39 @@ namespace Doctrine\Tests\Models\Company;
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({
- *      "person" = "CompanyPerson",
- *      "manager" = "CompanyManager",
- *      "employee" = "CompanyEmployee"})
+ *      "person"    = "CompanyPerson",
+ *      "manager"   = "CompanyManager",
+ *      "employee"  = "CompanyEmployee"
+ * })
+ *
+ * @NamedNativeQueries({
+ *      @NamedNativeQuery(
+ *          name           = "fetchAllWithResultClass",
+ *          resultClass    = "__CLASS__",
+ *          query          = "SELECT id, name, discr FROM company_persons ORDER BY name"
+ *      ),
+ *      @NamedNativeQuery(
+ *          name            = "fetchAllWithSqlResultSetMapping",
+ *          resultSetMapping= "mappingFetchAll",
+ *          query           = "SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name"
+ *      )
+ * })
+ *
+ * @SqlResultSetMappings({
+ *      @SqlResultSetMapping(
+ *          name    = "mappingFetchAll",
+ *          entities= {
+ *              @EntityResult(
+ *                  entityClass         = "__CLASS__",
+ *                  discriminatorColumn = "discriminator",
+ *                  fields              = {
+ *                      @FieldResult("id"),
+ *                      @FieldResult("name"),
+ *                  }
+ *              )
+ *          }
+ *      )
+ * })
  */
 class CompanyPerson
 {
