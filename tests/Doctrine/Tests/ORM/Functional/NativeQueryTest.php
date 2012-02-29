@@ -372,8 +372,6 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testBasicNativeNamedQueryWithResultClass()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        
         $user           = new CmsUser;
         $user->name     = 'Fabio B. Silva';
         $user->username = 'FabioBatSilva';
@@ -406,7 +404,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
 
-        $result = $repository->createNativeNamedQuery('fetchAllColumnsWithResultClass')
+        $result = $repository->createNativeNamedQuery('fetchAllColumns')
                         ->setParameter(1, 'FabioBatSilva')->getResult();
 
         $this->assertEquals(1, count($result));
@@ -419,6 +417,9 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
 
+    /**
+     * @group DDC-1663
+     */
     public function testJoinedOneToOneNativeNamedQueryWithResultSetMapping()
     {
         $user           = new CmsUser;
@@ -442,7 +443,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
 
 
-        $result = $repository->createNativeNamedQuery('fetchJoinedAddressWithResultSetMapping')
+        $result = $repository->createNativeNamedQuery('fetchJoinedAddress')
                         ->setParameter(1, 'FabioBatSilva')->getResult();
 
         $this->assertEquals(1, count($result));
@@ -457,7 +458,9 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('São Paulo', $result[0]->getAddress()->getCity());
     }
 
-
+    /**
+     * @group DDC-1663
+     */
     public function testJoinedOneToManyNativeNamedQueryWithResultSetMapping()
     {
         $user               = new CmsUser;
@@ -477,7 +480,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
 
-        $result = $repository->createNativeNamedQuery('fetchJoinedPhonenumberWithResultSetMapping')
+        $result = $repository->createNativeNamedQuery('fetchJoinedPhonenumber')
                         ->setParameter(1, 'FabioBatSilva')->getResult();
 
         $this->assertEquals(1, count($result));
@@ -491,7 +494,56 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($phones[0]->getUser() === $result[0]);
     }
 
+    /**
+     * @group DDC-1663
+     */
+    public function testMixedNativeNamedQueryNormalJoin()
+    {
+        $user1                  = new CmsUser;
+        $user1->name            = 'Fabio B. Silva';
+        $user1->username        = 'FabioBatSilva';
+        $user1->status          = 'dev';
 
+        $user2                  = new CmsUser;
+        $user2->name            = 'test tester';
+        $user2->username        = 'test';
+        $user2->status          = 'tester';
+        
+        $phone1                 = new CmsPhonenumber;
+        $phone2                 = new CmsPhonenumber;
+        $phone3                 = new CmsPhonenumber;
+        $phone1->phonenumber    = 11111111;
+        $phone2->phonenumber    = 22222222;
+        $phone3->phonenumber    = 33333333;
+
+        $user1->addPhonenumber($phone1);
+        $user1->addPhonenumber($phone2);
+        $user2->addPhonenumber($phone3);
+
+        $this->_em->persist($user1);
+        $this->_em->persist($user2);
+        $this->_em->flush();
+
+        $this->_em->clear();
+        
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $result = $repository->createNativeNamedQuery('fetchUserPhonenumberCount')
+                        ->setParameter(1, array('test','FabioBatSilva'))->getResult();
+
+        $this->assertEquals(2, count($result));
+        $this->assertTrue(is_array($result[0]));
+        $this->assertTrue(is_array($result[1]));
+
+        // first user => 2 phonenumbers
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]);
+        $this->assertEquals('Fabio B. Silva', $result[0][0]->name);
+        $this->assertEquals(2, $result[0]['numPhones']);
+
+        // second user => 1 phonenumbers
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][0]);
+        $this->assertEquals('test tester', $result[1][0]->name);
+        $this->assertEquals(1, $result[1]['numPhones']);
+    }
 
 }
-

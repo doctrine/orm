@@ -18,19 +18,24 @@ use Doctrine\Common\Collections\ArrayCollection;
  *          query          = "SELECT id, username FROM cms_users WHERE username = ?"
  *      ),
  *      @NamedNativeQuery(
- *          name           = "fetchAllColumnsWithResultClass",
+ *          name           = "fetchAllColumns",
  *          resultClass    = "CmsUser",
  *          query          = "SELECT * FROM cms_users WHERE username = ?"
  *      ),
  *      @NamedNativeQuery(
- *          name            = "fetchJoinedAddressWithResultSetMapping",
+ *          name            = "fetchJoinedAddress",
  *          resultSetMapping= "mappingJoinedAddress",
  *          query           = "SELECT u.id, u.name, u.status, a.id AS a_id, a.country, a.zip, a.city FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?"
  *      ),
  *      @NamedNativeQuery(
- *          name            = "fetchJoinedPhonenumberWithResultSetMapping",
+ *          name            = "fetchJoinedPhonenumber",
  *          resultSetMapping= "mappingJoinedPhonenumber",
  *          query           = "SELECT id, name, status, phonenumber AS number FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?"
+ *      ),
+ *      @NamedNativeQuery(
+ *          name            = "fetchUserPhonenumberCount",
+ *          resultSetMapping= "mappingUserPhonenumberCount",
+ *          query           = "SELECT id, name, status, COUNT(phonenumber) AS numPhones FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username IN (?) GROUP BY status, user_id ORDER BY username"
  *      ),
  * })
  *
@@ -58,12 +63,28 @@ use Doctrine\Common\Collections\ArrayCollection;
  *              @EntityResult(
  *                  entityClass = "CmsUser",
  *                  fields      = {
+ *                      @FieldResult("id"),
+ *                      @FieldResult("name"),
+ *                      @FieldResult("status"),
+ *                      @FieldResult("phonenumbers.phonenumber" , column = "number"),
+ *                  }
+ *              )
+ *          }
+ *      ),
+ *      @SqlResultSetMapping(
+ *          name    = "mappingUserPhonenumberCount",
+ *          entities= {
+ *              @EntityResult(
+ *                  entityClass = "CmsUser",
+ *                  fields      = {
  *                      @FieldResult(name = "id"),
  *                      @FieldResult(name = "name"),
  *                      @FieldResult(name = "status"),
- *                      @FieldResult(name = "phonenumbers.phonenumber" , column = "number"),
  *                  }
  *              )
+ *          },
+ *          columns = {
+ *              @ColumnResult("numPhones")
  *          }
  *      )
  * })
