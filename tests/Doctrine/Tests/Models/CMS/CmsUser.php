@@ -35,7 +35,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  *      @NamedNativeQuery(
  *          name            = "fetchUserPhonenumberCount",
  *          resultSetMapping= "mappingUserPhonenumberCount",
- *          query           = "SELECT id, name, status, COUNT(phonenumber) AS numPhones FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username IN (?) GROUP BY id, name, status ORDER BY username"
+ *          query           = "SELECT id, name, status, COUNT(phonenumber) AS numphones FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username IN (?) GROUP BY id, name, status, username ORDER BY username"
  *      ),
  * })
  *
@@ -84,7 +84,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  *              )
  *          },
  *          columns = {
- *              @ColumnResult("numPhones")
+ *              @ColumnResult("numphones")
  *          }
  *      )
  * })

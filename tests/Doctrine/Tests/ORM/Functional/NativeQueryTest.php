@@ -540,12 +540,12 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // first user => 2 phonenumbers
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]);
         $this->assertEquals('Fabio B. Silva', $result[0][0]->name);
-        $this->assertEquals(2, $result[0]['numPhones']);
+        $this->assertEquals(2, $result[0]['numphones']);
 
         // second user => 1 phonenumbers
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][0]);
         $this->assertEquals('test tester', $result[1][0]->name);
-        $this->assertEquals(1, $result[1]['numPhones']);
+        $this->assertEquals(1, $result[1]['numphones']);
     }
 
     /**
