@@ -108,7 +108,8 @@ use Doctrine\ORM\Mapping as ORM;
 <entityClassName>
 {
 <entityBody>
-}';
+}
+';
 
     private static $_getMethodTemplate =
 '/**
