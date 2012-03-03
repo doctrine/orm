@@ -233,7 +233,7 @@ abstract class AbstractHydrator
 
             if (isset($cache[$key]['isScalar'])) {
                 $value = $cache[$key]['type']->convertToPHPValue($value, $this->_platform);
-                
+
                 $rowData['scalars'][$cache[$key]['fieldName']] = $value;
 
                 continue;
