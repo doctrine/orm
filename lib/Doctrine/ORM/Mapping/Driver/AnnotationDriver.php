@@ -142,8 +142,7 @@ class AnnotationDriver implements Driver
 
         $classAnnotations = $this->_reader->getClassAnnotations($class);
 
-        // Compatibility with Doctrine Common 3.x
-        if ($classAnnotations && is_int(key($classAnnotations))) {
+        if ($classAnnotations && is_numeric(key($classAnnotations))) {
             foreach ($classAnnotations as $annot) {
                 $classAnnotations[get_class($annot)] = $annot;
             }
@@ -438,8 +437,7 @@ class AnnotationDriver implements Driver
                 if ($method->isPublic() && $method->getDeclaringClass()->getName() == $class->name) {
                     $annotations = $this->_reader->getMethodAnnotations($method);
 
-                    // Compatibility with Doctrine Common 3.x
-                    if ($annotations && is_int(key($annotations))) {
+                    if ($annotations && is_numeric(key($annotations))) {
                         foreach ($annotations as $annot) {
                             $annotations[get_class($annot)] = $annot;
                         }
@@ -494,8 +492,7 @@ class AnnotationDriver implements Driver
     {
         $classAnnotations = $this->_reader->getClassAnnotations(new \ReflectionClass($className));
 
-        // Compatibility with Doctrine Common 3.x
-        if ($classAnnotations && is_int(key($classAnnotations))) {
+        if ($classAnnotations && is_numeric(key($classAnnotations))) {
             foreach ($classAnnotations as $annot) {
                 if ($annot instanceof \Doctrine\ORM\Mapping\Entity) {
                     return false;
