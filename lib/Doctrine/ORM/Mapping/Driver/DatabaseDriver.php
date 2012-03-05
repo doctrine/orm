@@ -298,7 +298,7 @@ class DatabaseDriver implements Driver
             $associationMapping = array();
             $associationMapping['fieldName'] = $this->getFieldNameForColumn($tableName, $localColumn, true);
             $associationMapping['targetEntity'] = $this->getClassNameForTable($foreignTable);
-            
+
             if ($primaryKeyColumns && in_array($localColumn, $primaryKeyColumns)) {
                 $associationMapping['id'] = true;
             }
@@ -313,8 +313,7 @@ class DatabaseDriver implements Driver
             //Here we need to check if $cols are the same as $primaryKeyColums
             if (!array_diff($cols,$primaryKeyColumns)) {
                 $metadata->mapOneToOne($associationMapping);
-            }
-            else {
+            } else {
                 $metadata->mapManyToOne($associationMapping);
             }
         }
