@@ -21,9 +21,12 @@ namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Tools\Pagination\WhereInWalker;
+use Doctrine\ORM\Tools\Pagination\WhereInSqlWalker;
 use Doctrine\ORM\Tools\Pagination\CountWalker;
+use Doctrine\ORM\Tools\Pagination\CountSqlWalker;
 use Countable;
 use IteratorAggregate;
 use ArrayIterator;
@@ -48,6 +51,11 @@ class Paginator implements \Countable, \IteratorAggregate
      * @var bool
      */
     private $fetchJoinCollection;
+
+    /**
+     * @var bool|null
+     */
+    private $useSqlWalkers;
 
     /**
      * @var int
@@ -91,6 +99,28 @@ class Paginator implements \Countable, \IteratorAggregate
     }
 
     /**
+     * Returns whether the paginator will use an SQL TreeWalker
+     *
+     * @return bool|null
+     */
+    public function getUseSqlWalkers()
+    {
+        return $this->useSqlWalkers;
+    }
+
+    /**
+     * Set whether the paginator will use an SQL TreeWalker
+     *
+     * @param bool|null $useSqlWalkers
+     * @return $this
+     */
+    public function setUseSqlWalkers($useSqlWalkers)
+    {
+        $this->useSqlWalkers = $useSqlWalkers;
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function count()
@@ -103,7 +133,16 @@ class Paginator implements \Countable, \IteratorAggregate
                 $countQuery->setHint(CountWalker::HINT_DISTINCT, true);
             }
 
-            $countQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\CountWalker'));
+            if ($this->useSqlWalker($countQuery)) {
+                $rsm = new ResultSetMapping();
+                $rsm->addScalarResult('_dctrn_count', 'count');
+
+                $countQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\CountSqlWalker');
+                $countQuery->setResultSetMapping($rsm);
+            } else {
+                $countQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\CountWalker'));
+            }
+
             $countQuery->setFirstResult(null)->setMaxResults(null);
 
             try {
@@ -127,9 +166,14 @@ class Paginator implements \Countable, \IteratorAggregate
 
         if ($this->fetchJoinCollection) {
             $subQuery = $this->cloneQuery($this->query);
-            $subQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker'))
-                ->setFirstResult($offset)
-                ->setMaxResults($length);
+
+            if ($this->useSqlWalker($subQuery)) {
+                $subQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubquerySqlWalker');
+            } else {
+                $subQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker'));
+            }
+
+            $subQuery->setFirstResult($offset)->setMaxResults($length);
 
             $ids = array_map('current', $subQuery->getScalarResult());
 
@@ -175,6 +219,22 @@ class Paginator implements \Countable, \IteratorAggregate
         }
 
         return $cloneQuery;
+    }
+
+    /**
+     * Determine whether to use an SQL TreeWalker for the query
+     *
+     * @param Query $query The query.
+     *
+     * @return bool
+     */
+    private function useSqlWalker(Query $query)
+    {
+        if ($this->useSqlWalkers === null) {
+            return (Boolean) $query->getHint(Query::HINT_CUSTOM_OUTPUT_WALKER) == false;
+        }
+
+        return $this->useSqlWalkers;
     }
 }
 

@@ -30,6 +30,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query);
+        $paginator->setUseSqlWalkers(false);
         $this->assertEquals(3, count($paginator));
     }
 
@@ -39,7 +40,18 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query);
+        $paginator->setUseSqlWalkers(false);
         $this->assertEquals(3, count($paginator));
+    }
+
+    public function testCountComplexWithSqlWalker()
+    {
+        $dql = "SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g.id HAVING userCount > 0";
+        $query = $this->_em->createQuery($dql);
+
+        $paginator = new Paginator($query);
+        $paginator->setUseSqlWalkers(true);
+        $this->assertEquals(9, count($paginator));
     }
 
     public function testIterateSimpleWithoutJoinFetchJoinHandlingOff()
@@ -48,6 +60,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query, false);
+        $paginator->setUseSqlWalkers(false);
 
         $data = array();
         foreach ($paginator as $user) {
@@ -62,6 +75,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query, true);
+        $paginator->setUseSqlWalkers(false);
 
         $data = array();
         foreach ($paginator as $user) {
@@ -76,12 +90,47 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query, true);
+        $paginator->setUseSqlWalkers(false);
 
         $data = array();
         foreach ($paginator as $user) {
             $data[] = $user;
         }
         $this->assertEquals(3, count($data));
+    }
+
+    public function testIterateComplexWithSqlWalker()
+    {
+        $dql = "SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g.id HAVING userCount > 0";
+        $query = $this->_em->createQuery($dql);
+
+        $paginator = new Paginator($query);
+        $paginator->setUseSqlWalkers(true);
+
+        $data = array();
+        foreach ($paginator as $user) {
+            $data[] = $user;
+        }
+        $this->assertEquals(9, count($data));
+    }
+
+    public function testDetectSqlWalker()
+    {
+        // This query works using the SQL walkers but causes an exception using the TreeWalker
+        $dql = "SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g.id HAVING userCount > 0";
+        $query = $this->_em->createQuery($dql);
+
+        // If the Paginator detects the custom SQL walker it should fall back to using the
+        // Tree walkers for pagination, which leads to an exception. If the query works, the SQL walkers were used
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Query\SqlWalker');
+        $paginator = new Paginator($query);
+
+        try {
+            count($paginator);
+            $this->fail('Paginator did not detect custom SQL walker');
+        } catch (\PHPUnit_Framework_Error_Notice $e) {
+            $this->assertEquals('Undefined index: userCount', $e->getMessage());
+        }
     }
 
     public function populate()
