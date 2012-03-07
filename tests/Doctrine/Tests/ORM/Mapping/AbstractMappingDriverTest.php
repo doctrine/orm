@@ -501,24 +501,48 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         
         $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
 
+        //named native query
         $this->assertCount(3, $class->namedNativeQueries);
         $this->assertArrayHasKey('find-all', $class->namedNativeQueries);
         $this->assertArrayHasKey('find-by-id', $class->namedNativeQueries);
 
-        $findAllQuery = $class->namedNativeQueries['find-all'];
+
+        $findAllQuery = $class->getNamedNativeQuery('find-all');
         $this->assertEquals('find-all', $findAllQuery['name']);
         $this->assertEquals('mapping-find-all', $findAllQuery['resultSetMapping']);
         $this->assertEquals('SELECT id, country, city FROM cms_addresses', $findAllQuery['query']);
 
-        $findByIdQuery = $class->namedNativeQueries['find-by-id'];
+        $findByIdQuery = $class->getNamedNativeQuery('find-by-id');
         $this->assertEquals('find-by-id', $findByIdQuery['name']);
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddress',$findByIdQuery['resultClass']);
         $this->assertEquals('SELECT * FROM cms_addresses WHERE id = ?',  $findByIdQuery['query']);
 
-        $countQuery = $class->namedNativeQueries['count'];
+        $countQuery = $class->getNamedNativeQuery('count');
         $this->assertEquals('count', $countQuery['name']);
         $this->assertEquals('mapping-count', $countQuery['resultSetMapping']);
         $this->assertEquals('SELECT COUNT(*) AS count FROM cms_addresses',  $countQuery['query']);
+
+        // result set mapping
+        $this->assertCount(3, $class->sqlResultSetMappings);
+        $this->assertArrayHasKey('mapping-count', $class->sqlResultSetMappings);
+        $this->assertArrayHasKey('mapping-find-all', $class->sqlResultSetMappings);
+        $this->assertArrayHasKey('mapping-without-fields', $class->sqlResultSetMappings);
+        
+        $findAllMapping = $class->getSqlResultSetMapping('mapping-find-all');
+        $this->assertEquals('mapping-find-all', $findAllMapping['name']);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddress', $findAllMapping['entities'][0]['entityClass']);
+        $this->assertEquals(array('name'=>'id','column'=>'id'), $findAllMapping['entities'][0]['fields'][0]);
+        $this->assertEquals(array('name'=>'city','column'=>'city'), $findAllMapping['entities'][0]['fields'][1]);
+        $this->assertEquals(array('name'=>'country','column'=>'country'), $findAllMapping['entities'][0]['fields'][2]);
+
+        $withoutFieldsMapping = $class->getSqlResultSetMapping('mapping-without-fields');
+        $this->assertEquals('mapping-without-fields', $withoutFieldsMapping['name']);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddress', $withoutFieldsMapping['entities'][0]['entityClass']);
+        $this->assertEquals(array(), $withoutFieldsMapping['entities'][0]['fields']);
+        
+        $countMapping = $class->getSqlResultSetMapping('mapping-count');
+        $this->assertEquals('mapping-count', $countMapping['name']);
+        $this->assertEquals(array('name'=>'count'), $countMapping['columns'][0]);
 
     }
 
@@ -531,39 +555,55 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
             $this->markTestIncomplete();
         }
 
-        $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $userMetadata   = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $personMetadata = $this->createClassMetadata('Doctrine\Tests\Models\Company\CompanyPerson');
 
-        $this->assertCount(3, $class->sqlResultSetMappings);
-        $this->assertArrayHasKey('mapping-find-all', $class->sqlResultSetMappings);
-        $this->assertArrayHasKey('mapping-without-fields', $class->sqlResultSetMappings);
+        // user asserts
+        $this->assertCount(3, $userMetadata->getSqlResultSetMappings());
 
-        // empty fields select all fields
-        $withoutFieldsMapping = $class->sqlResultSetMappings['mapping-without-fields'];
-        $this->assertEquals('mapping-without-fields', $withoutFieldsMapping['name']);
-        $this->assertCount(1, $withoutFieldsMapping['entities']);
-        $this->assertCount(0, $withoutFieldsMapping['columns']);
-        $this->assertEquals(array(), $withoutFieldsMapping['entities'][0]['fields']);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddress', $withoutFieldsMapping['entities'][0]['entityClass']);
+        $mapping = $userMetadata->getSqlResultSetMapping('mappingJoinedAddress');
+        $this->assertEquals(array(),$mapping['columns']);
+        $this->assertEquals('mappingJoinedAddress', $mapping['name']);
+        $this->assertNull($mapping['entities'][0]['discriminatorColumn']);
+        $this->assertEquals(array('name'=>'id','column'=>'id'),                     $mapping['entities'][0]['fields'][0]);
+        $this->assertEquals(array('name'=>'name','column'=>'name'),                 $mapping['entities'][0]['fields'][1]);
+        $this->assertEquals(array('name'=>'status','column'=>'status'),             $mapping['entities'][0]['fields'][2]);
+        $this->assertEquals(array('name'=>'address.zip','column'=>'zip'),           $mapping['entities'][0]['fields'][3]);
+        $this->assertEquals(array('name'=>'address.city','column'=>'city'),         $mapping['entities'][0]['fields'][4]);
+        $this->assertEquals(array('name'=>'address.country','column'=>'country'),   $mapping['entities'][0]['fields'][5]);
+        $this->assertEquals(array('name'=>'address.id','column'=>'a_id'),           $mapping['entities'][0]['fields'][6]);
+        $this->assertEquals($userMetadata->name,                                    $mapping['entities'][0]['entityClass']);
 
 
-        $findAllMapping = $class->sqlResultSetMappings['mapping-find-all'];
-        $this->assertEquals('mapping-find-all', $findAllMapping['name']);
-        $this->assertCount(1, $findAllMapping['entities']);
-        $this->assertCount(0, $findAllMapping['columns']);
-        $this->assertEquals(array(
-            array('name'=>'id','column'=>'id'),
-            array('name'=>'city','column'=>'city'),
-            array('name'=>'country','column' => 'country')
-        ), $findAllMapping['entities'][0]['fields']);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddress', $findAllMapping['entities'][0]['entityClass']);
+        $mapping = $userMetadata->getSqlResultSetMapping('mappingJoinedPhonenumber');
+        $this->assertEquals(array(),$mapping['columns']);
+        $this->assertEquals('mappingJoinedPhonenumber', $mapping['name']);
+        $this->assertNull($mapping['entities'][0]['discriminatorColumn']);
+        $this->assertEquals(array('name'=>'id','column'=>'id'),                             $mapping['entities'][0]['fields'][0]);
+        $this->assertEquals(array('name'=>'name','column'=>'name'),                         $mapping['entities'][0]['fields'][1]);
+        $this->assertEquals(array('name'=>'status','column'=>'status'),                     $mapping['entities'][0]['fields'][2]);
+        $this->assertEquals(array('name'=>'phonenumbers.phonenumber','column'=>'number'),   $mapping['entities'][0]['fields'][3]);
+        $this->assertEquals($userMetadata->name,                                            $mapping['entities'][0]['entityClass']);
 
-        
-        $countMapping = $class->sqlResultSetMappings['mapping-count'];
-        $this->assertEquals('mapping-count', $countMapping['name']);
-        $this->assertCount(0, $countMapping['entities']);
-        $this->assertCount(1, $countMapping['columns']);
-        $this->assertEquals(array(array('name'=>'count')),$countMapping['columns']);
+        $mapping = $userMetadata->getSqlResultSetMapping('mappingUserPhonenumberCount');
+        $this->assertEquals(array('name'=>'numphones'),$mapping['columns'][0]);
+        $this->assertEquals('mappingUserPhonenumberCount', $mapping['name']);
+        $this->assertNull($mapping['entities'][0]['discriminatorColumn']);
+        $this->assertEquals(array('name'=>'id','column'=>'id'),         $mapping['entities'][0]['fields'][0]);
+        $this->assertEquals(array('name'=>'name','column'=>'name'),     $mapping['entities'][0]['fields'][1]);
+        $this->assertEquals(array('name'=>'status','column'=>'status'), $mapping['entities'][0]['fields'][2]);
+        $this->assertEquals($userMetadata->name,                        $mapping['entities'][0]['entityClass']);
 
+        //person asserts
+        $this->assertCount(1, $personMetadata->getSqlResultSetMappings());
+
+        $mapping = $personMetadata->getSqlResultSetMapping('mappingFetchAll');
+        $this->assertEquals(array(),$mapping['columns']);
+        $this->assertEquals('mappingFetchAll', $mapping['name']);
+        $this->assertEquals('discriminator',                            $mapping['entities'][0]['discriminatorColumn']);
+        $this->assertEquals(array('name'=>'id','column'=>'id'),         $mapping['entities'][0]['fields'][0]);
+        $this->assertEquals(array('name'=>'name','column'=>'name'),     $mapping['entities'][0]['fields'][1]);
+        $this->assertEquals($personMetadata->name,                      $mapping['entities'][0]['entityClass']);
     }
 }
 
