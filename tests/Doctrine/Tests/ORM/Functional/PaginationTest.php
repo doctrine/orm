@@ -24,23 +24,29 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->populate();
     }
 
-    public function testCountSimpleWithoutJoin()
+    /**
+     * @dataProvider useSqlWalkers
+     */
+    public function testCountSimpleWithoutJoin($useSqlWalkers)
     {
         $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u";
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query);
-        $paginator->setUseSqlWalkers(false);
+        $paginator->setUseSqlWalkers($useSqlWalkers);
         $this->assertEquals(3, count($paginator));
     }
 
-    public function testCountWithFetchJoin()
+    /**
+     * @dataProvider useSqlWalkers
+     */
+    public function testCountWithFetchJoin($useSqlWalkers)
     {
         $dql = "SELECT u,g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g";
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query);
-        $paginator->setUseSqlWalkers(false);
+        $paginator->setUseSqlWalkers($useSqlWalkers);
         $this->assertEquals(3, count($paginator));
     }
 
@@ -54,13 +60,16 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(9, count($paginator));
     }
 
-    public function testIterateSimpleWithoutJoinFetchJoinHandlingOff()
+    /**
+     * @dataProvider useSqlWalkers
+     */
+    public function testIterateSimpleWithoutJoinFetchJoinHandlingOff($useSqlWalkers)
     {
         $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u";
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query, false);
-        $paginator->setUseSqlWalkers(false);
+        $paginator->setUseSqlWalkers($useSqlWalkers);
 
         $data = array();
         foreach ($paginator as $user) {
@@ -69,13 +78,16 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(3, count($data));
     }
 
-    public function testIterateSimpleWithoutJoinFetchJoinHandlingOn()
+    /**
+     * @dataProvider useSqlWalkers
+     */
+    public function testIterateSimpleWithoutJoinFetchJoinHandlingOn($useSqlWalkers)
     {
         $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u";
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query, true);
-        $paginator->setUseSqlWalkers(false);
+        $paginator->setUseSqlWalkers($useSqlWalkers);
 
         $data = array();
         foreach ($paginator as $user) {
@@ -84,13 +96,16 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(3, count($data));
     }
 
-    public function testIterateWithFetchJoin()
+    /**
+     * @dataProvider useSqlWalkers
+     */
+    public function testIterateWithFetchJoin($useSqlWalkers)
     {
         $dql = "SELECT u,g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g";
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query, true);
-        $paginator->setUseSqlWalkers(false);
+        $paginator->setUseSqlWalkers($useSqlWalkers);
 
         $data = array();
         foreach ($paginator as $user) {
@@ -150,5 +165,13 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
             }
         }
         $this->_em->flush();
+    }
+
+    public function useSqlWalkers()
+    {
+        return array(
+            array(true),
+            array(false),
+        );
     }
 }
