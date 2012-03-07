@@ -125,12 +125,12 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Query\SqlWalker');
         $paginator = new Paginator($query);
 
-        try {
-            count($paginator);
-            $this->fail('Paginator did not detect custom SQL walker');
-        } catch (\PHPUnit_Framework_Error_Notice $e) {
-            $this->assertEquals('Undefined index: userCount', $e->getMessage());
-        }
+        $this->setExpectedException(
+            'RuntimeException',
+            'Cannot count query that uses a HAVING clause. Use the SQL walkers for pagination'
+        );
+
+        count($paginator);
     }
 
     public function populate()
