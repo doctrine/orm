@@ -19,17 +19,10 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\Tools\Pagination\WhereInWalker;
-use Doctrine\ORM\Tools\Pagination\WhereInSqlWalker;
-use Doctrine\ORM\Tools\Pagination\CountWalker;
-use Doctrine\ORM\Tools\Pagination\CountSqlWalker;
-use Countable;
-use IteratorAggregate;
-use ArrayIterator;
+use Doctrine\ORM\QueryBuilder,
+    Doctrine\ORM\Query,
+    Doctrine\ORM\Query\ResultSetMapping,
+    Doctrine\ORM\NoResultException;
 
 /**
  * Paginator
