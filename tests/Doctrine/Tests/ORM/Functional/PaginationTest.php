@@ -34,7 +34,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $paginator = new Paginator($query);
         $paginator->setUseSqlWalkers($useSqlWalkers);
-        $this->assertEquals(3, count($paginator));
+        $this->assertCount(3, $paginator);
     }
 
     /**
@@ -47,7 +47,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $paginator = new Paginator($query);
         $paginator->setUseSqlWalkers($useSqlWalkers);
-        $this->assertEquals(3, count($paginator));
+        $this->assertCount(3, $paginator);
     }
 
     public function testCountComplexWithSqlWalker()
@@ -57,7 +57,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $paginator = new Paginator($query);
         $paginator->setUseSqlWalkers(true);
-        $this->assertEquals(9, count($paginator));
+        $this->assertCount(9, $paginator);
     }
 
     /**
@@ -70,12 +70,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $paginator = new Paginator($query, false);
         $paginator->setUseSqlWalkers($useSqlWalkers);
-
-        $data = array();
-        foreach ($paginator as $user) {
-            $data[] = $user;
-        }
-        $this->assertEquals(3, count($data));
+        $this->assertCount(3, $paginator->getIterator());
     }
 
     /**
@@ -88,12 +83,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $paginator = new Paginator($query, true);
         $paginator->setUseSqlWalkers($useSqlWalkers);
-
-        $data = array();
-        foreach ($paginator as $user) {
-            $data[] = $user;
-        }
-        $this->assertEquals(3, count($data));
+        $this->assertCount(3, $paginator->getIterator());
     }
 
     /**
@@ -106,12 +96,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $paginator = new Paginator($query, true);
         $paginator->setUseSqlWalkers($useSqlWalkers);
-
-        $data = array();
-        foreach ($paginator as $user) {
-            $data[] = $user;
-        }
-        $this->assertEquals(3, count($data));
+        $this->assertCount(3, $paginator->getIterator());
     }
 
     public function testIterateComplexWithSqlWalker()
@@ -121,12 +106,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $paginator = new Paginator($query);
         $paginator->setUseSqlWalkers(true);
-
-        $data = array();
-        foreach ($paginator as $user) {
-            $data[] = $user;
-        }
-        $this->assertEquals(9, count($data));
+        $this->assertCount(9, $paginator->getIterator());
     }
 
     public function testDetectSqlWalker()
