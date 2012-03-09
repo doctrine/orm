@@ -130,18 +130,22 @@ class DatabaseDriver implements Driver
                 $allForeignKeyColumns = array_merge($allForeignKeyColumns, $foreignKey->getLocalColumns());
             }
 
-            $pkColumns = $table->getPrimaryKey()->getColumns();
-            sort($pkColumns);
-            sort($allForeignKeyColumns);
+            $pk = $table->getPrimaryKey();
+            if($pk !== null) {
+                $pkColumns = $pk->getColumns();
+                $pkColumns = $table->getPrimaryKey()->getColumns();
+                sort($pkColumns);
+                sort($allForeignKeyColumns);
 
-            if ($pkColumns == $allForeignKeyColumns && count($foreignKeys) == 2) {
-                $this->manyToManyTables[$tableName] = $table;
-            } else {
-                // lower-casing is necessary because of Oracle Uppercase Tablenames,
-                // assumption is lower-case + underscore separated.
-                $className = $this->getClassNameForTable($tableName);
-                $this->tables[$tableName] = $table;
-                $this->classToTableNames[$className] = $tableName;
+                if ($pkColumns == $allForeignKeyColumns && count($foreignKeys) == 2) {
+                    $this->manyToManyTables[$tableName] = $table;
+                } else {
+                    // lower-casing is necessary because of Oracle Uppercase Tablenames,
+                    // assumption is lower-case + underscore separated.
+                    $className = $this->getClassNameForTable($tableName);
+                    $this->tables[$tableName] = $table;
+                    $this->classToTableNames[$className] = $tableName;
+                }
             }
         }
     }
