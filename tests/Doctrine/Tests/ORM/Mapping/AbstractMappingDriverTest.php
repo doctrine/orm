@@ -495,7 +495,9 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testNamedNativeQuery()
     {
-        if (!$this instanceof AnnotationDriverTest && !$this instanceof XmlMappingDriverTest) {
+        if (!$this instanceof AnnotationDriverTest &&
+                !$this instanceof XmlMappingDriverTest &&
+                    !$this instanceof YamlMappingDriverTest) {
             $this->markTestIncomplete();
         }
         
@@ -551,7 +553,9 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testSqlResultSetMapping()
     {
-        if (!$this instanceof AnnotationDriverTest && !$this instanceof XmlMappingDriverTest) {
+        if (!$this instanceof AnnotationDriverTest && 
+                !$this instanceof XmlMappingDriverTest &&
+                    !$this instanceof YamlMappingDriverTest) {
             $this->markTestIncomplete();
         }
 

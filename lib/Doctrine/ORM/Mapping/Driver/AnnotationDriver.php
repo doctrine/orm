@@ -224,6 +224,7 @@ class AnnotationDriver implements Driver
 
             foreach ($sqlResultSetMappingsAnnot->value as $resultSetMapping) {
                 $entities = array();
+                $columns  = array();
                 foreach ($resultSetMapping->entities as $entityResultAnnot) {
                     $entityResult = array(
                         'fields'                => array(),
@@ -241,7 +242,6 @@ class AnnotationDriver implements Driver
                     $entities[] = $entityResult;
                 }
 
-                $columns = array();
                 foreach ($resultSetMapping->columns as $columnResultAnnot) {
                     $columns[] = array(
                         'name' => $columnResultAnnot->name,

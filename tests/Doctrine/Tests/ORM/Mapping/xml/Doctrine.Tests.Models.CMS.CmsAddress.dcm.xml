@@ -46,17 +46,9 @@
         <field name="country" column="country" type="string" length="50"/>
         <field name="city" column="city" type="string" length="50"/>
         <field name="zip" column="zip" type="string" length="50"/>
-        
-           
-        <one-to-one field="address" target-entity="CmsAddress" inversed-by="user" orphan-removal="true">
-            <cascade>
-                <cascade-persist/>
-            </cascade>
-            <join-column name="address_id" referenced-column-name="id"  />
-        </one-to-one>
 
-        <one-to-one field="email" target-entity="CmsUser" inversed-by="address">
-            <join-column referenced-column-name="id" nullable="true" />
+        <one-to-one field="user" target-entity="CmsUser" inversed-by="address">
+            <join-column referenced-column-name="id" />
         </one-to-one>
         
     </entity>
