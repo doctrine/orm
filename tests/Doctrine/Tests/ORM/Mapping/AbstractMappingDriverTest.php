@@ -495,11 +495,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testNamedNativeQuery()
     {
-        if (!$this instanceof AnnotationDriverTest &&
-                !$this instanceof XmlMappingDriverTest &&
-                    !$this instanceof YamlMappingDriverTest) {
-            $this->markTestIncomplete();
-        }
         
         $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
 
@@ -553,11 +548,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testSqlResultSetMapping()
     {
-        if (!$this instanceof AnnotationDriverTest && 
-                !$this instanceof XmlMappingDriverTest &&
-                    !$this instanceof YamlMappingDriverTest) {
-            $this->markTestIncomplete();
-        }
 
         $userMetadata   = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $personMetadata = $this->createClassMetadata('Doctrine\Tests\Models\Company\CompanyPerson');
