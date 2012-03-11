@@ -440,12 +440,14 @@ class SqlWalker implements TreeWalker
                     $sql .= ' ' . $this->_platform->getWriteLockSQL();
                     break;
 
-                case LockMode::PESSIMISTIC_OPTIMISTIC:
+                case LockMode::OPTIMISTIC:
                     foreach ($this->_selectedClasses AS $selectedClass) {
-                        if ( ! $class->isVersioned) {
+                        if ( ! $selectedClass['class']->isVersioned) {
                             throw \Doctrine\ORM\OptimisticLockException::lockFailed($selectedClass['class']->name);
                         }
                     }
+                    break;
+                case LockMode::NONE:
                     break;
 
                 default:
