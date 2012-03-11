@@ -2629,4 +2629,19 @@ class ClassMetadataInfo implements ClassMetadata
     {
         return $this->associationMappings[$fieldName]['mappedBy'];
     }
+
+    /**
+     * @param   string $targetClass
+     * @return  array
+     */
+    public function getAssociationsByTargetClass($targetClass)
+    {
+        $relations = array();
+        foreach ($this->associationMappings as $mapping) {
+            if ($mapping['targetEntity'] == $targetClass) {
+                $relations[$mapping['fieldName']] = $mapping;
+            }
+        }
+        return $relations;
+    }
 }

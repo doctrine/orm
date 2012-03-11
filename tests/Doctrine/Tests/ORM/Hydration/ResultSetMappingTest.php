@@ -102,6 +102,19 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
 
+        $cm->mapOneToOne(array(
+            'fieldName'     => 'email',
+            'targetEntity'  => 'Doctrine\Tests\Models\CMS\CmsEmail',
+            'cascade'       => array('persist'),
+            'inversedBy'    => 'user',
+            'orphanRemoval' => false,
+            'joinColumns'   => array(array(
+                    'nullable' => true,
+                    'referencedColumnName' => 'id',
+                )
+            )
+        ));
+
         $cm->addNamedNativeQuery(array(
             'name'              => 'find-all',
             'query'             => 'SELECT u.id AS user_id, e.id AS email_id, u.name, e.email, u.id + e.id AS scalarColumn FROM cms_users u INNER JOIN cms_emails e ON e.id = u.email_id',
@@ -144,7 +157,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
             )
         ));
 
-
+        
         $queryMapping = $cm->getNamedNativeQuery('find-all');
 
         $rsm = new \Doctrine\ORM\Query\ResultSetMappingBuilder($this->_em);

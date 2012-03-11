@@ -11,9 +11,7 @@
             <named-native-query name="fetchAllWithResultClass" result-class="__CLASS__">
                 <query>SELECT id, name, discr FROM company_persons ORDER BY name</query>
             </named-native-query>
-        </named-native-queries>
-        
-        <named-native-queries>
+            
             <named-native-query name="fetchAllWithSqlResultSetMapping" result-set-mapping="mappingFetchAll">
                 <query>SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name</query>
             </named-native-query>

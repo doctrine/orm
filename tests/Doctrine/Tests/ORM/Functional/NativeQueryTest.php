@@ -8,6 +8,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
+use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
@@ -594,6 +595,57 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue(is_numeric($result[1]->getId()));
         $this->assertEquals('Fabio B. Silva', $result[0]->getName());
         $this->assertEquals('Fabio Silva', $result[1]->getName());
+    }
+
+    /**
+     * @group DDC-1663
+     * DQL : SELECT u, a, COUNT(p) AS numphones FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.address a JOIN u.phonenumbers p
+     */
+    public function testMultipleEntityResults()
+    {
+
+        $user               = new CmsUser;
+        $user->name         = 'Fabio B. Silva';
+        $user->username     = 'FabioBatSilva';
+        $user->status       = 'dev';
+
+        $addr               = new CmsAddress;
+        $addr->country      = 'Brazil';
+        $addr->zip          = 10827;
+        $addr->city         = 'São Paulo';
+
+        $phone              = new CmsPhonenumber;
+        $phone->phonenumber = 424242;
+
+
+        $user->setAddress($addr);
+        $user->addPhonenumber($phone);
+
+
+        $this->_em->clear();
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $query      = $repository->createNativeNamedQuery('fetchMultipleJoinsEntityResults');
+        $result     = $query->getResult();
+
+
+        $this->assertEquals(1, count($result));
+        $this->assertTrue(is_array($result[0]));
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]);
+        $this->assertEquals('Fabio B. Silva', $result[0][0]->name);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress', $result[0][0]->getAddress());
+        $this->assertTrue($result[0][0]->getAddress()->getUser() == $result[0][0]);
+        $this->assertEquals('Brazil', $result[0][0]->getAddress()->getCountry());
+        $this->assertEquals(10827, $result[0][0]->getAddress()->getZipCode());
+
+        $this->assertEquals(1, $result[0]['numphones']);
+
     }
 
 }

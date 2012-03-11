@@ -36,6 +36,12 @@ $metadata->addNamedNativeQuery(array (
     'resultSetMapping'  => 'mappingUserPhonenumberCount',
 ));
 
+$metadata->addNamedNativeQuery(array (
+    "name"              => "fetchMultipleJoinsEntityResults",
+    "resultSetMapping"  => "mappingMultipleJoinsEntityResults",
+    "query"             => "SELECT u.id AS u_id, u.name AS u_name, u.status AS u_status, a.id AS a_id, a.zip AS a_zip, a.country AS a_country, COUNT(p.phonenumber) AS numphones FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id INNER JOIN cms_phonenumbers p ON u.id = p.user_id GROUP BY u.id, u.name, u.status, u.username, a.id, a.zip, a.country ORDER BY u.username"
+));
+
 $metadata->addSqlResultSetMapping(array (
     'name'      => 'mappingJoinedAddress',
     'columns'   => array(),
@@ -131,5 +137,50 @@ $metadata->addSqlResultSetMapping(array (
           array (
             'name' => 'numphones',
           )
+    )
+));
+
+$metadata->addSqlResultSetMapping(array(
+    'name'      => 'mappingMultipleJoinsEntityResults',
+    'entities'  => array(array(
+            'fields' => array(
+                array(
+                    'name'      => 'id',
+                    'column'    => 'u_id',
+                ),
+                array(
+                    'name'      => 'name',
+                    'column'    => 'u_name',
+                ),
+                array(
+                    'name'      => 'status',
+                    'column'    => 'u_status',
+                )
+            ),
+            'entityClass'           => 'Doctrine\Tests\Models\CMS\CmsUser',
+            'discriminatorColumn'   => null,
+        ),
+        array(
+            'fields' => array(
+                array(
+                    'name'      => 'id',
+                    'column'    => 'a_id',
+                ),
+                array(
+                    'name'      => 'zip',
+                    'column'    => 'a_zip',
+                ),
+                array(
+                    'name'      => 'country',
+                    'column'    => 'a_country',
+                ),
+            ),
+            'entityClass'           => 'Doctrine\Tests\Models\CMS\CmsAddress',
+            'discriminatorColumn'   => null,
+        ),
+    ),
+    'columns' => array(array(
+            'name' => 'numphones',
+        )
     )
 ));

@@ -31,6 +31,10 @@
             <named-native-query name="fetchUserPhonenumberCount" result-set-mapping="mappingUserPhonenumberCount">
                 <query>SELECT id, name, status, COUNT(phonenumber) AS numphones FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username IN (?) GROUP BY id, name, status, username ORDER BY username</query>
             </named-native-query>
+
+            <named-native-query name="fetchMultipleJoinsEntityResults" result-set-mapping="mappingMultipleJoinsEntityResults">
+                <query>SELECT u.id AS u_id, u.name AS u_name, u.status AS u_status, a.id AS a_id, a.zip AS a_zip, a.country AS a_country, COUNT(p.phonenumber) AS numphones FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id INNER JOIN cms_phonenumbers p ON u.id = p.user_id GROUP BY u.id, u.name, u.status, u.username, a.id, a.zip, a.country ORDER BY u.username</query>
+            </named-native-query>
         </named-native-queries>
 
         <sql-result-set-mappings>
@@ -60,6 +64,20 @@
                     <field-result name="id"/>
                     <field-result name="name"/>
                     <field-result name="status"/>
+                </entity-result>
+                <column-result name="numphones"/>
+            </sql-result-set-mapping>
+
+            <sql-result-set-mapping name="mappingMultipleJoinsEntityResults">
+                <entity-result entity-class="__CLASS__">
+                    <field-result name="id" column="u_id"/>
+                    <field-result name="name" column="u_name"/>
+                    <field-result name="status" column="u_status"/>
+                </entity-result>
+                <entity-result entity-class="CmsAddress">
+                    <field-result name="id" column="a_id"/>
+                    <field-result name="zip" column="a_zip"/>
+                    <field-result name="country" column="a_country"/>
                 </entity-result>
                 <column-result name="numphones"/>
             </sql-result-set-mapping>

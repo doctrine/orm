@@ -37,6 +37,11 @@ use Doctrine\Common\Collections\ArrayCollection;
  *          resultSetMapping= "mappingUserPhonenumberCount",
  *          query           = "SELECT id, name, status, COUNT(phonenumber) AS numphones FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username IN (?) GROUP BY id, name, status, username ORDER BY username"
  *      ),
+ *      @NamedNativeQuery(
+ *          name            = "fetchMultipleJoinsEntityResults",
+ *          resultSetMapping= "mappingMultipleJoinsEntityResults",
+ *          query           = "SELECT u.id AS u_id, u.name AS u_name, u.status AS u_status, a.id AS a_id, a.zip AS a_zip, a.country AS a_country, COUNT(p.phonenumber) AS numphones FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id INNER JOIN cms_phonenumbers p ON u.id = p.user_id GROUP BY u.id, u.name, u.status, u.username, a.id, a.zip, a.country ORDER BY u.username"
+ *      ),
  * })
  *
  * @SqlResultSetMappings({
@@ -80,6 +85,30 @@ use Doctrine\Common\Collections\ArrayCollection;
  *                      @FieldResult(name = "id"),
  *                      @FieldResult(name = "name"),
  *                      @FieldResult(name = "status"),
+ *                  }
+ *              )
+ *          },
+ *          columns = {
+ *              @ColumnResult("numphones")
+ *          }
+ *      ),
+ *      @SqlResultSetMapping(
+ *          name    = "mappingMultipleJoinsEntityResults",
+ *          entities= {
+ *              @EntityResult(
+ *                  entityClass = "__CLASS__",
+ *                  fields      = {
+ *                      @FieldResult(name = "id",       column="u_id"),
+ *                      @FieldResult(name = "name",     column="u_name"),
+ *                      @FieldResult(name = "status",   column="u_status"),
+ *                  }
+ *              ),
+ *              @EntityResult(
+ *                  entityClass = "CmsAddress",
+ *                  fields      = {
+ *                      @FieldResult(name = "id",       column="a_id"),
+ *                      @FieldResult(name = "zip",      column="a_zip"),
+ *                      @FieldResult(name = "country",  column="a_country"),
  *                  }
  *              )
  *          },
@@ -255,6 +284,12 @@ class CmsUser
             'resultSetMapping'  => 'mappingUserPhonenumberCount',
         ));
 
+        $metadata->addNamedNativeQuery(array (
+            "name"              => "fetchMultipleJoinsEntityResults",
+            "resultSetMapping"  => "mappingMultipleJoinsEntityResults",
+            "query"             => "SELECT u.id AS u_id, u.name AS u_name, u.status AS u_status, a.id AS a_id, a.zip AS a_zip, a.country AS a_country, COUNT(p.phonenumber) AS numphones FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id INNER JOIN cms_phonenumbers p ON u.id = p.user_id GROUP BY u.id, u.name, u.status, u.username, a.id, a.zip, a.country ORDER BY u.username"
+        ));
+
         $metadata->addSqlResultSetMapping(array (
             'name'      => 'mappingJoinedAddress',
             'columns'   => array(),
@@ -352,5 +387,51 @@ class CmsUser
                   )
             )
         ));
+        
+        $metadata->addSqlResultSetMapping(array(
+            'name'      => 'mappingMultipleJoinsEntityResults',
+            'entities'  => array(array(
+                    'fields' => array(
+                        array(
+                            'name'      => 'id',
+                            'column'    => 'u_id',
+                        ),
+                        array(
+                            'name'      => 'name',
+                            'column'    => 'u_name',
+                        ),
+                        array(
+                            'name'      => 'status',
+                            'column'    => 'u_status',
+                        )
+                    ),
+                    'entityClass'           => 'Doctrine\Tests\Models\CMS\CmsUser',
+                    'discriminatorColumn'   => null,
+                ),
+                array(
+                    'fields' => array(
+                        array(
+                            'name'      => 'id',
+                            'column'    => 'a_id',
+                        ),
+                        array(
+                            'name'      => 'zip',
+                            'column'    => 'a_zip',
+                        ),
+                        array(
+                            'name'      => 'country',
+                            'column'    => 'a_country',
+                        ),
+                    ),
+                    'entityClass'           => 'Doctrine\Tests\Models\CMS\CmsAddress',
+                    'discriminatorColumn'   => null,
+                ),
+            ),
+            'columns' => array(array(
+                    'name' => 'numphones',
+                )
+            )
+        ));
+
     }
 }

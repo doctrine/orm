@@ -553,7 +553,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $personMetadata = $this->createClassMetadata('Doctrine\Tests\Models\Company\CompanyPerson');
 
         // user asserts
-        $this->assertCount(3, $userMetadata->getSqlResultSetMappings());
+        $this->assertCount(4, $userMetadata->getSqlResultSetMappings());
 
         $mapping = $userMetadata->getSqlResultSetMapping('mappingJoinedAddress');
         $this->assertEquals(array(),$mapping['columns']);
@@ -587,6 +587,20 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(array('name'=>'name','column'=>'name'),     $mapping['entities'][0]['fields'][1]);
         $this->assertEquals(array('name'=>'status','column'=>'status'), $mapping['entities'][0]['fields'][2]);
         $this->assertEquals($userMetadata->name,                        $mapping['entities'][0]['entityClass']);
+
+        $mapping = $userMetadata->getSqlResultSetMapping('mappingMultipleJoinsEntityResults');
+        $this->assertEquals(array('name'=>'numphones'),$mapping['columns'][0]);
+        $this->assertEquals('mappingMultipleJoinsEntityResults', $mapping['name']);
+        $this->assertNull($mapping['entities'][0]['discriminatorColumn']);
+        $this->assertEquals(array('name'=>'id','column'=>'u_id'),           $mapping['entities'][0]['fields'][0]);
+        $this->assertEquals(array('name'=>'name','column'=>'u_name'),       $mapping['entities'][0]['fields'][1]);
+        $this->assertEquals(array('name'=>'status','column'=>'u_status'),   $mapping['entities'][0]['fields'][2]);
+        $this->assertEquals($userMetadata->name,                            $mapping['entities'][0]['entityClass']);
+        $this->assertNull($mapping['entities'][1]['discriminatorColumn']);
+        $this->assertEquals(array('name'=>'id','column'=>'a_id'),           $mapping['entities'][1]['fields'][0]);
+        $this->assertEquals(array('name'=>'zip','column'=>'a_zip'),         $mapping['entities'][1]['fields'][1]);
+        $this->assertEquals(array('name'=>'country','column'=>'a_country'), $mapping['entities'][1]['fields'][2]);
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddress',         $mapping['entities'][1]['entityClass']);
 
         //person asserts
         $this->assertCount(1, $personMetadata->getSqlResultSetMappings());

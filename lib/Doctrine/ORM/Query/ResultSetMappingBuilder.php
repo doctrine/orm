@@ -172,60 +172,90 @@ class ResultSetMappingBuilder extends ResultSetMapping
      */
     public function addNamedNativeQueryResultSetMapping(ClassMetadataInfo $class, $resultSetMappingName)
     {
-        $resultMapping = $class->getSqlResultSetMapping($resultSetMappingName);
+        $counter        = 0;
+        $resultMapping  = $class->getSqlResultSetMapping($resultSetMappingName);
+        $rooShortName   = $class->reflClass->getShortName();
+        $rootAlias      = strtolower($rooShortName[0]) . $counter;
+
+
         if (isset($resultMapping['entities'])) {
             foreach ($resultMapping['entities'] as $key => $entityMapping) {
                 $classMetadata  = $this->em->getClassMetadata($entityMapping['entityClass']);
-                $shortName      = $classMetadata->reflClass->getShortName();
-                $alias          = strtolower($shortName[0]) . $key;
 
-                if (isset($entityMapping['discriminatorColumn']) && $entityMapping['discriminatorColumn']) {
-                    $discriminatorColumn = $entityMapping['discriminatorColumn'];
-                    $this->setDiscriminatorColumn($alias, $discriminatorColumn);
-                    $this->addMetaResult($alias, $discriminatorColumn, $discriminatorColumn);
-                }
-
-                $this->addEntityResult($classMetadata->name, $alias);
-                if (isset($entityMapping['fields']) && !empty($entityMapping['fields'])) {
-                    foreach ($entityMapping['fields'] as $field) {
-                        $fieldName = $field['name'];
-                        $relation  = null;
-
-                        if(strpos($fieldName, '.')){
-                            list($relation, $fieldName) = explode('.', $fieldName);
-                        }
-
-                        if (isset($classMetadata->associationMappings[$relation])) {
-                            if($relation) {
-                                $associationMapping = $classMetadata->associationMappings[$relation];
-                                $joinAlias          = $alias.$relation;
-                                $parentAlias        = $alias;
-
-                                $this->addJoinedEntityResult($associationMapping['targetEntity'], $joinAlias, $parentAlias, $relation);
-                                $this->addFieldResult($joinAlias, $field['column'], $fieldName);
-                            }else {
-                                $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
-                            }
-                        } else {
-                            if(!isset($classMetadata->fieldMappings[$fieldName])) {
-                                throw new \InvalidArgumentException("Entity '".$classMetadata->name."' has no field '".$fieldName."'. ");
-                            }
-                            $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
-                        }
-                    }
-
+                if ($class->reflClass->name == $classMetadata->reflClass->name) {
+                    $this->addEntityResult($classMetadata->name, $rootAlias);
+                    $this->addNamedNativeQueryEntityResultMapping($classMetadata, $entityMapping, $rootAlias);
                 } else {
-                    foreach ($classMetadata->getColumnNames() as $columnName) {
-                        $propertyName   = $classMetadata->getFieldName($columnName);
-                        $this->addFieldResult($alias, $columnName, $propertyName);
+                    $shortName      = $classMetadata->reflClass->getShortName();
+                    $joinAlias      = strtolower($shortName[0]) . ++ $counter;
+                    $associations   = $class->getAssociationsByTargetClass($classMetadata->name);
+
+                    foreach ($associations as $relation => $mapping) {
+                        $this->addJoinedEntityResult($mapping['targetEntity'], $joinAlias, $rootAlias, $relation);
+                        $this->addNamedNativeQueryEntityResultMapping($classMetadata, $entityMapping, $joinAlias);
                     }
                 }
+
             }
         }
 
         if (isset($resultMapping['columns'])) {
             foreach ($resultMapping['columns'] as $entityMapping) {
                 $this->addScalarResult($entityMapping['name'], $entityMapping['name']);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Adds the entity result mapping of the results of native SQL queries to the result set.
+     * 
+     * @param ClassMetadataInfo $classMetadata
+     * @param array $entityMapping
+     * @param string $alias
+     * @return ResultSetMappingBuilder
+     */
+    public function addNamedNativeQueryEntityResultMapping(ClassMetadataInfo $classMetadata, array $entityMapping, $alias)
+    {
+        if (isset($entityMapping['discriminatorColumn']) && $entityMapping['discriminatorColumn']) {
+            $discriminatorColumn = $entityMapping['discriminatorColumn'];
+            $this->setDiscriminatorColumn($alias, $discriminatorColumn);
+            $this->addMetaResult($alias, $discriminatorColumn, $discriminatorColumn);
+        }
+
+        if (isset($entityMapping['fields']) && !empty($entityMapping['fields'])) {
+            foreach ($entityMapping['fields'] as $field) {
+                $fieldName = $field['name'];
+                $relation  = null;
+
+                if(strpos($fieldName, '.')){
+                    list($relation, $fieldName) = explode('.', $fieldName);
+                }
+
+                if (isset($classMetadata->associationMappings[$relation])) {
+                    if($relation) {
+                        $associationMapping = $classMetadata->associationMappings[$relation];
+                        $joinAlias          = $alias.$relation;
+                        $parentAlias        = $alias;
+
+                        $this->addJoinedEntityResult($associationMapping['targetEntity'], $joinAlias, $parentAlias, $relation);
+                        $this->addFieldResult($joinAlias, $field['column'], $fieldName);
+                    }else {
+                        $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
+                    }
+                } else {
+                    if(!isset($classMetadata->fieldMappings[$fieldName])) {
+                        throw new \InvalidArgumentException("Entity '".$classMetadata->name."' has no field '".$fieldName."'. ");
+                    }
+                    $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
+                }
+            }
+
+        } else {
+            foreach ($classMetadata->getColumnNames() as $columnName) {
+                $propertyName   = $classMetadata->getFieldName($columnName);
+                $this->addFieldResult($alias, $columnName, $propertyName);
             }
         }
 
