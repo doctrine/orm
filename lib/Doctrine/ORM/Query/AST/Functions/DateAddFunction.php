@@ -40,20 +40,11 @@ class DateAddFunction extends FunctionNode
 
     public function getSql(SqlWalker $sqlWalker)
     {
-        $unit = strtolower($this->unit);
-        if ($unit == "day") {
-            return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddDaysExpression(
-                $this->firstDateExpression->dispatch($sqlWalker),
-                $this->intervalExpression->dispatch($sqlWalker)
-            );
-        } else if ($unit == "month") {
-            return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddMonthExpression(
-                $this->firstDateExpression->dispatch($sqlWalker),
-                $this->intervalExpression->dispatch($sqlWalker)
-            );
-        } else {
-            throw QueryException::semanticalError('DATE_ADD() only supports units of type day and month.');
-        }
+        return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddIntervalExpression(
+            $this->firstDateExpression->dispatch($sqlWalker),
+            $this->intervalExpression->dispatch($sqlWalker),
+            $this->unit->dispatch($sqlWalker)
+        );
     }
 
     public function parse(Parser $parser)

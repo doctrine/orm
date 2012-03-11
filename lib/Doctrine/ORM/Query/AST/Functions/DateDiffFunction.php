@@ -38,7 +38,7 @@ class DateDiffFunction extends FunctionNode
 
     public function getSql(SqlWalker $sqlWalker)
     {
-        return $sqlWalker->getConnection()->getDatabasePlatform()->getDateDiffExpression(
+        return $sqlWalker->getConnection()->getDatabasePlatform()->getDateDiffIntervalExpression(
             $this->date1->dispatch($sqlWalker),
             $this->date2->dispatch($sqlWalker)
         );
