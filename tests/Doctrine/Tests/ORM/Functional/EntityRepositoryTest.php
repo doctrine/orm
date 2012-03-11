@@ -46,6 +46,12 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user3->status = null;
         $this->_em->persist($user3);
 
+        $user4 = new CmsUser;
+        $user4->name = 'Alexander';
+        $user4->username = 'asm89';
+        $user4->status = 'dev';
+        $this->_em->persist($user4);
+
         $this->_em->flush();
 
         $user1Id = $user->getId();
@@ -53,6 +59,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         unset($user);
         unset($user2);
         unset($user3);
+        unset($user4);
 
         $this->_em->clear();
 
@@ -126,7 +133,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
 
         $users = $repos->findBy(array('status' => 'dev'));
-        $this->assertEquals(1, count($users));
+        $this->assertEquals(2, count($users));
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser',$users[0]);
         $this->assertEquals('Guilherme', $users[0]->name);
         $this->assertEquals('dev', $users[0]->status);
@@ -186,7 +193,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
 
         $users = $repos->findByStatus('dev');
-        $this->assertEquals(1, count($users));
+        $this->assertEquals(2, count($users));
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser',$users[0]);
         $this->assertEquals('Guilherme', $users[0]->name);
         $this->assertEquals('dev', $users[0]->status);
@@ -198,7 +205,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
 
         $users = $repos->findAll();
-        $this->assertEquals(3, count($users));
+        $this->assertEquals(4, count($users));
     }
 
     public function testFindByAlias()
@@ -211,7 +218,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $repos = $this->_em->getRepository('CMS:CmsUser');
 
         $users = $repos->findAll();
-        $this->assertEquals(3, count($users));
+        $this->assertEquals(4, count($users));
     }
 
     /**
@@ -431,7 +438,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $users1 = $repos->findBy(array(), null, 1, 0);
         $users2 = $repos->findBy(array(), null, 1, 1);
 
-        $this->assertEquals(3, count($repos->findBy(array())));
+        $this->assertEquals(4, count($repos->findBy(array())));
         $this->assertEquals(1, count($users1));
         $this->assertEquals(1, count($users2));
         $this->assertNotSame($users1[0], $users2[0]);
@@ -448,12 +455,49 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $usersAsc = $repos->findBy(array(), array("username" => "ASC"));
         $usersDesc = $repos->findBy(array(), array("username" => "DESC"));
 
-        $this->assertEquals(3, count($usersAsc), "Pre-condition: only three users in fixture");
-        $this->assertEquals(3, count($usersDesc), "Pre-condition: only three users in fixture");
-        $this->assertSame($usersAsc[0], $usersDesc[2]);
-        $this->assertSame($usersAsc[2], $usersDesc[0]);
+        $this->assertEquals(4, count($usersAsc), "Pre-condition: only four users in fixture");
+        $this->assertEquals(4, count($usersDesc), "Pre-condition: only four users in fixture");
+        $this->assertSame($usersAsc[0], $usersDesc[3]);
+        $this->assertSame($usersAsc[3], $usersDesc[0]);
     }
 
+    /**
+     * @group DDC-1426
+     */
+    public function testFindFieldByMagicCallOrderBy()
+    {
+        $this->loadFixture();
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $usersAsc = $repos->findByStatus('dev', array('username' => "ASC"));
+        $usersDesc = $repos->findByStatus('dev', array('username' => "DESC"));
+
+        $this->assertEquals(2, count($usersAsc));
+        $this->assertEquals(2, count($usersDesc));
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser',$usersAsc[0]);
+        $this->assertEquals('Alexander', $usersAsc[0]->name);
+        $this->assertEquals('dev', $usersAsc[0]->status);
+
+        $this->assertSame($usersAsc[0], $usersDesc[1]);
+        $this->assertSame($usersAsc[1], $usersDesc[0]);
+    }
+
+    /**
+     * @group DDC-1426
+     */
+    public function testFindFieldByMagicCallLimitOffset()
+    {
+        $this->loadFixture();
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $users1 = $repos->findByStatus('dev', array(), 1, 0);
+        $users2 = $repos->findByStatus('dev', array(), 1, 1);
+
+        $this->assertEquals(1, count($users1));
+        $this->assertEquals(1, count($users2));
+        $this->assertNotSame($users1[0], $users2[0]);
+    }
 
     /**
      * @group DDC-753

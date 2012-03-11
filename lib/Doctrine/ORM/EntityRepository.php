@@ -225,7 +225,7 @@ class EntityRepository implements ObjectRepository
         $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
 
         if ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName)) {
-            $argumentSize = sizeof($arguments);
+            $argumentSize = count($arguments);
             if ($argumentSize == 1) {
                 return $this->$method(array($fieldName => $arguments[0]));
             } else if ($argumentSize == 2) {
