@@ -962,7 +962,7 @@ class SqlWalker implements TreeWalker
                 $sqlTableAlias = $this->getSQLTableAlias($tableName, $dqlAlias);
                 $columnName = $class->getQuotedColumnName($fieldName, $this->_platform);
 
-                $columnAlias = $this->getSQLColumnAlias($columnName);
+                $columnAlias = $this->getSQLColumnAlias($class->fieldMappings[$fieldName]['columnName']);
                 $sql .= $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
                 $columnAlias = $this->_platform->getSQLResultCasing($columnAlias);
                 $this->_rsm->addScalarResult($columnAlias, $resultAlias);
