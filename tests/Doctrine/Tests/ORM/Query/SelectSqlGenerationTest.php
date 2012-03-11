@@ -894,6 +894,20 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group DDC-1693
+     * @group locking
+     */
+    public function testLockModeNoneQueryHint()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 ".
+            "FROM cms_users c0_ WHERE c0_.username = 'gblanco'",
+            array(Query::HINT_LOCK_MODE => \Doctrine\DBAL\LockMode::NONE)
+                );
+    }
+
+    /**
      * @group DDC-430
      */
     public function testSupportSelectWithMoreThan10InputParameters()
