@@ -272,7 +272,7 @@ class EntityManager implements ObjectManager
     /**
      * Creates a new Query object.
      *
-     * @param string  The DQL string.
+     * @param string $dql The DQL string.
      * @return \Doctrine\ORM\Query
      */
     public function createQuery($dql = "")
