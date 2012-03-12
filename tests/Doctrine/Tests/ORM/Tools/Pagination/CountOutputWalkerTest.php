@@ -3,7 +3,6 @@
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Tools\Pagination\CountWalker;
 
 class CountOutputWalkerTest extends PaginationTestCase
 {
@@ -12,7 +11,6 @@ class CountOutputWalkerTest extends PaginationTestCase
         $query = $this->entityManager->createQuery(
             'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN p.category c JOIN p.author a');
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\CountOutputWalker');
-        $query->setHint(CountWalker::HINT_DISTINCT, true);
         $query->setFirstResult(null)->setMaxResults(null);
 
         $this->assertEquals(
@@ -25,7 +23,6 @@ class CountOutputWalkerTest extends PaginationTestCase
         $query = $this->entityManager->createQuery(
             'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a');
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\CountOutputWalker');
-        $query->setHint(CountWalker::HINT_DISTINCT, true);
         $query->setFirstResult(null)->setMaxResults(null);
 
         $this->assertEquals(
