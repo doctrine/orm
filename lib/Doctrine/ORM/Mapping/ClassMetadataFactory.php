@@ -326,6 +326,14 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 $this->addInheritedNamedQueries($class, $parent);
             }
 
+            if ($parent && !empty ($parent->namedNativeQueries)) {
+                $this->addInheritedNamedNativeQueries($class, $parent);
+            }
+
+            if ($parent && !empty ($parent->sqlResultSetMappings)) {
+                $this->addInheritedSqlResultSetMappings($class, $parent);
+            }
+
             $class->setParentClasses($visited);
 
             if ($this->evm->hasListeners(Events::loadClassMetadata)) {
@@ -461,6 +469,58 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 $subClass->addNamedQuery(array(
                     'name'  => $query['name'],
                     'query' => $query['query']
+                ));
+            }
+        }
+    }
+
+    /**
+     * Adds inherited named native queries to the subclass mapping.
+     *
+     * @since 2.3
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     */
+    private function addInheritedNamedNativeQueries(ClassMetadata $subClass, ClassMetadata $parentClass)
+    {
+        foreach ($parentClass->namedNativeQueries as $name => $query) {
+            if (!isset ($subClass->namedNativeQueries[$name])) {
+                $subClass->addNamedNativeQuery(array(
+                    'name'              => $query['name'],
+                    'query'             => $query['query'],
+                    'isSelfClass'       => $query['isSelfClass'],
+                    'resultSetMapping'  => $query['resultSetMapping'],
+                    'resultClass'       => $query['isSelfClass'] ? $subClass->name : $query['resultClass'],
+                ));
+            }
+        }
+    }
+
+    /**
+     * Adds inherited sql result set mappings to the subclass mapping.
+     *
+     * @since 2.3
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     */
+    private function addInheritedSqlResultSetMappings(ClassMetadata $subClass, ClassMetadata $parentClass)
+    {
+        foreach ($parentClass->sqlResultSetMappings as $name => $mapping) {
+            if (!isset ($subClass->sqlResultSetMappings[$name])) {
+                $entities = array();
+                foreach ($mapping['entities'] as $entity) {
+                    $entities[] = array(
+                        'fields'                => $entity['fields'],
+                        'isSelfClass'           => $entity['isSelfClass'],
+                        'discriminatorColumn'   => $entity['discriminatorColumn'],
+                        'entityClass'           => $entity['isSelfClass'] ? $subClass->name : $entity['entityClass'],
+                    );
+                }
+
+                $subClass->addSqlResultSetMapping(array(
+                    'name'          => $mapping['name'],
+                    'columns'       => $mapping['columns'],
+                    'entities'      => $entities,
                 ));
             }
         }

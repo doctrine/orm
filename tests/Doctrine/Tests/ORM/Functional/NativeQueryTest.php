@@ -648,4 +648,57 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     }
 
+    /**
+     * @group DDC-1663
+     */
+    public function testNamedNativeQueryInheritance()
+    {
+        $contractMetadata   = $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyContract');
+        $flexMetadata       = $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyFlexContract');
+
+        $contractQueries    = $contractMetadata->getNamedNativeQueries();
+        $flexQueries        = $flexMetadata->getNamedNativeQueries();
+
+        $contractMappings   = $contractMetadata->getSqlResultSetMappings();
+        $flexMappings       = $flexMetadata->getSqlResultSetMappings();
+
+
+        // contract queries
+        $this->assertEquals('all-contracts', $contractQueries['all-contracts']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyContract', $contractQueries['all-contracts']['resultClass']);
+
+        $this->assertEquals('all', $contractQueries['all']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyContract', $contractQueries['all']['resultClass']);
+
+
+        // flex contract queries
+        $this->assertEquals('all-contracts', $flexQueries['all-contracts']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexContract', $flexQueries['all-contracts']['resultClass']);
+
+        $this->assertEquals('all-flex', $flexQueries['all-flex']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexContract', $flexQueries['all-flex']['resultClass']);
+
+        $this->assertEquals('all', $flexQueries['all']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexContract', $flexQueries['all']['resultClass']);
+
+
+        // contract result mapping
+        $this->assertEquals('mapping-all-contracts', $contractMappings['mapping-all-contracts']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyContract', $contractMappings['mapping-all-contracts']['entities'][0]['entityClass']);
+
+        $this->assertEquals('mapping-all', $contractMappings['mapping-all']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyContract', $contractMappings['mapping-all-contracts']['entities'][0]['entityClass']);
+
+        // flex contract result mapping
+        $this->assertEquals('mapping-all-contracts', $flexMappings['mapping-all-contracts']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexContract', $flexMappings['mapping-all-contracts']['entities'][0]['entityClass']);
+
+        $this->assertEquals('mapping-all', $flexMappings['mapping-all']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexContract', $flexMappings['mapping-all']['entities'][0]['entityClass']);
+
+        $this->assertEquals('mapping-all-flex', $flexMappings['mapping-all-flex']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexContract', $flexMappings['mapping-all-flex']['entities'][0]['entityClass']);
+
+    }
+
 }

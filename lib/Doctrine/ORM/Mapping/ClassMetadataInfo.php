@@ -1983,10 +1983,14 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::missingQueryMapping($this->name, $queryMapping['name']);
         }
 
+        $queryMapping['isSelfClass'] = false;
         if (isset($queryMapping['resultClass'])) {
 
             if($queryMapping['resultClass'] === '__CLASS__') {
+
+                $queryMapping['isSelfClass'] = true;
                 $queryMapping['resultClass'] = $this->name;
+
             } else if (strlen($this->namespace) > 0 && strpos($queryMapping['resultClass'], '\\') === false) {
                 $queryMapping['resultClass'] = $this->namespace . '\\' . $queryMapping['resultClass'];
             }
@@ -2020,13 +2024,18 @@ class ClassMetadataInfo implements ClassMetadata
                     throw MappingException::missingResultSetMappingEntity($this->name, $resultMapping['name']);
                 }
 
+                $entityResult['isSelfClass'] = false;
                 if($entityResult['entityClass'] === '__CLASS__') {
+
+                    $entityResult['isSelfClass'] = true;
                     $entityResult['entityClass'] = $this->name;
+
                 } else if (strlen($this->namespace) > 0 && strpos($entityResult['entityClass'], '\\') === false) {
                     $entityResult['entityClass'] = $this->namespace . '\\' . $entityResult['entityClass'];
                 }
 
                 $resultMapping['entities'][$key]['entityClass'] = ltrim($entityResult['entityClass'], '\\');
+                $resultMapping['entities'][$key]['isSelfClass'] = $entityResult['isSelfClass'];
 
                 if (isset($entityResult['fields'])) {
                     foreach ($entityResult['fields'] as $k => $field) {
