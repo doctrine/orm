@@ -43,7 +43,7 @@ class SqlWalker implements TreeWalker
      * @var string
      */
     const HINT_DISTINCT = 'doctrine.distinct';
-  
+
     /**
      * @var ResultSetMapping
      */
@@ -1979,11 +1979,11 @@ class SqlWalker implements TreeWalker
         } elseif ($likeExpr->stringPattern instanceof AST\PathExpression) {
             $sql .= $this->walkPathExpression($likeExpr->stringPattern);
         } else {
-            $sql .= $this->_conn->quote($likeExpr->stringPattern);
+            $sql .= $this->walkLiteral($likeExpr->stringPattern);
         }
 
         if ($likeExpr->escapeChar) {
-            $sql .= ' ESCAPE ' . $this->_conn->quote($likeExpr->escapeChar);
+            $sql .= ' ESCAPE ' . $this->walkLiteral($likeExpr->escapeChar);
         }
 
         return $sql;

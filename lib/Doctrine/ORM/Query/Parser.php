@@ -2574,7 +2574,7 @@ class Parser
             case Lexer::T_STRING:
                 $this->match(Lexer::T_STRING);
 
-                return $this->_lexer->token['value'];
+                return new AST\Literal(AST\Literal::STRING, $this->_lexer->token['value']);
 
             case Lexer::T_INPUT_PARAMETER:
                 return $this->InputParameter();
@@ -2854,7 +2854,8 @@ class Parser
         if ($this->_lexer->lookahead['type'] === Lexer::T_ESCAPE) {
             $this->match(Lexer::T_ESCAPE);
             $this->match(Lexer::T_STRING);
-            $escapeChar = $this->_lexer->token['value'];
+
+            $escapeChar = new AST\Literal(AST\Literal::STRING, $this->_lexer->token['value']);
         }
 
         $likeExpr = new AST\LikeExpression($stringExpr, $stringPattern, $escapeChar);
