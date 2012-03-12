@@ -1,0 +1,3 @@
+# Merge copies non persisted properties too
+
+When merging an entity in UoW not only mapped properties are copied, but also others.
