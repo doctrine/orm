@@ -85,7 +85,7 @@ class CountWalkerTest extends PaginationTestCase
 
         $this->setExpectedException(
             'RuntimeException',
-            'Cannot count query that uses a HAVING clause. Use the SQL walkers for pagination'
+            'Cannot count query that uses a HAVING clause. Use the output walkers for pagination'
         );
 
         $query->getSql();

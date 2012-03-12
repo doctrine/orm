@@ -25,104 +25,104 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
-     * @dataProvider useSqlWalkers
+     * @dataProvider useOutputWalkers
      */
-    public function testCountSimpleWithoutJoin($useSqlWalkers)
+    public function testCountSimpleWithoutJoin($useOutputWalkers)
     {
         $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u";
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query);
-        $paginator->setUseSqlWalkers($useSqlWalkers);
+        $paginator->setUseOutputWalkers($useOutputWalkers);
         $this->assertCount(3, $paginator);
     }
 
     /**
-     * @dataProvider useSqlWalkers
+     * @dataProvider useOutputWalkers
      */
-    public function testCountWithFetchJoin($useSqlWalkers)
+    public function testCountWithFetchJoin($useOutputWalkers)
     {
         $dql = "SELECT u,g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g";
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query);
-        $paginator->setUseSqlWalkers($useSqlWalkers);
+        $paginator->setUseOutputWalkers($useOutputWalkers);
         $this->assertCount(3, $paginator);
     }
 
-    public function testCountComplexWithSqlWalker()
+    public function testCountComplexWithOutputWalker()
     {
         $dql = "SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g.id HAVING userCount > 0";
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query);
-        $paginator->setUseSqlWalkers(true);
+        $paginator->setUseOutputWalkers(true);
         $this->assertCount(9, $paginator);
     }
 
     /**
-     * @dataProvider useSqlWalkers
+     * @dataProvider useOutputWalkers
      */
-    public function testIterateSimpleWithoutJoinFetchJoinHandlingOff($useSqlWalkers)
+    public function testIterateSimpleWithoutJoinFetchJoinHandlingOff($useOutputWalkers)
     {
         $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u";
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query, false);
-        $paginator->setUseSqlWalkers($useSqlWalkers);
+        $paginator->setUseOutputWalkers($useOutputWalkers);
         $this->assertCount(3, $paginator->getIterator());
     }
 
     /**
-     * @dataProvider useSqlWalkers
+     * @dataProvider useOutputWalkers
      */
-    public function testIterateSimpleWithoutJoinFetchJoinHandlingOn($useSqlWalkers)
+    public function testIterateSimpleWithoutJoinFetchJoinHandlingOn($useOutputWalkers)
     {
         $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u";
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query, true);
-        $paginator->setUseSqlWalkers($useSqlWalkers);
+        $paginator->setUseOutputWalkers($useOutputWalkers);
         $this->assertCount(3, $paginator->getIterator());
     }
 
     /**
-     * @dataProvider useSqlWalkers
+     * @dataProvider useOutputWalkers
      */
-    public function testIterateWithFetchJoin($useSqlWalkers)
+    public function testIterateWithFetchJoin($useOutputWalkers)
     {
         $dql = "SELECT u,g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g";
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query, true);
-        $paginator->setUseSqlWalkers($useSqlWalkers);
+        $paginator->setUseOutputWalkers($useOutputWalkers);
         $this->assertCount(3, $paginator->getIterator());
     }
 
-    public function testIterateComplexWithSqlWalker()
+    public function testIterateComplexWithOutputWalker()
     {
         $dql = "SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g.id HAVING userCount > 0";
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query);
-        $paginator->setUseSqlWalkers(true);
+        $paginator->setUseOutputWalkers(true);
         $this->assertCount(9, $paginator->getIterator());
     }
 
-    public function testDetectSqlWalker()
+    public function testDetectOutputWalker()
     {
-        // This query works using the SQL walkers but causes an exception using the TreeWalker
+        // This query works using the output walkers but causes an exception using the TreeWalker
         $dql = "SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g.id HAVING userCount > 0";
         $query = $this->_em->createQuery($dql);
 
-        // If the Paginator detects the custom SQL walker it should fall back to using the
-        // Tree walkers for pagination, which leads to an exception. If the query works, the SQL walkers were used
+        // If the Paginator detects the custom output walker it should fall back to using the
+        // Tree walkers for pagination, which leads to an exception. If the query works, the output walkers were used
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Query\SqlWalker');
         $paginator = new Paginator($query);
 
         $this->setExpectedException(
             'RuntimeException',
-            'Cannot count query that uses a HAVING clause. Use the SQL walkers for pagination'
+            'Cannot count query that uses a HAVING clause. Use the output walkers for pagination'
         );
 
         count($paginator);
@@ -147,7 +147,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    public function useSqlWalkers()
+    public function useOutputWalkers()
     {
         return array(
             array(true),

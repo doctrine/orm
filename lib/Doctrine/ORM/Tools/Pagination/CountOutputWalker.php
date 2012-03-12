@@ -27,7 +27,7 @@ use Doctrine\ORM\Query\SqlWalker,
  *
  * @author Sander Marechal <s.marechal@jejik.com>
  */
-class CountSqlWalker extends SqlWalker
+class CountOutputWalker extends SqlWalker
 {
     /**
      * @var Doctrine\DBAL\Platforms\AbstractPlatform
