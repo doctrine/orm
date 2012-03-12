@@ -22,10 +22,9 @@ namespace Doctrine\ORM\Id;
 use Serializable, Doctrine\ORM\EntityManager;
 
 /**
- * Represents an ID generator that uses a database sequence.
+ * Represents an ID generator that uses the database UUID expression
  *
- * @since 2.0
- * @author Roman Borschel <roman@code-factory.org>
+ * @since 2.3
  * @author Maarten de Keizer <m.de.keizer@markei.nl>
  */
 class UuidGenerator extends AbstractIdGenerator
