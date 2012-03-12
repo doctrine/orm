@@ -1334,8 +1334,8 @@ class Parser
 
     /**
      * OrderByItem ::= (
-     *      SimpleArithmeticExpression | SingleValuedPathExpression | CaseExpression |
-     *      ScalarExpression | AggregateExpression | FunctionDeclaration | ResultVariable
+     *      SimpleArithmeticExpression | SingleValuedPathExpression |
+     *      ScalarExpression | ResultVariable
      * ) ["ASC" | "DESC"]
      *
      * @return \Doctrine\ORM\Query\AST\OrderByItem
@@ -1359,34 +1359,13 @@ class Parser
                 $expr = $this->SingleValuedPathExpression();
                 
                 break;
+            case ($this->_lexer->peek() && $this->_isMathOperator($this->_peekBeyondClosingParenthesis())):
+                $expr = $this->ScalarExpression();
 
-            case ($this->_lexer->lookahead['type'] === Lexer::T_CASE):
-            case ($this->_lexer->lookahead['type'] === Lexer::T_COALESCE):
-            case ($this->_lexer->lookahead['type'] === Lexer::T_NULLIF):
-                // Since NULLIF and COALESCE can be identified as a function,
-                // we need to check if before check for FunctionDeclaration
-                $expr = $this->CaseExpression();
                 break;
-
-            case ($this->_isFunction()):
-                $this->_lexer->peek(); // "("
-                
-                // SUM(u.id) + COUNT(u.id)
-                if ($this->_isMathOperator($this->_peekBeyondClosingParenthesis())) {
-                    $expr = $this->ScalarExpression();
-                    break;
-                }
-                // COUNT(u.id)
-                if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
-                    $expr = $this->AggregateExpression();
-                    break;
-                }
-                // IDENTITY(u)
-                $expr = $this->FunctionDeclaration();
-                break;
-
             default:
                 $expr = $this->ResultVariable();
+
                 break;
         }
 

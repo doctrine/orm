@@ -1575,33 +1575,6 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-775
      */
-    public function testOrderByClauseSupportsFunctions()
-    {
-        $this->assertSqlGeneration(
-            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY TRIM(u.name)',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY TRIM(c0_.name) ASC'
-        );
-        $this->assertSqlGeneration(
-            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY IDENTITY(u.email)',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY c0_.email_id ASC'
-        );
-        $this->assertSqlGeneration(
-            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY TRIM(IDENTITY(u.email))',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY TRIM(c0_.email_id) ASC'
-        );
-        $this->assertSqlGeneration(
-            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY SUM(u.id)',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY SUM(c0_.id) ASC'
-        );
-        $this->assertSqlGeneration(
-            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY SUM(u.id) + COUNT(u.email)',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY SUM(c0_.id) + COUNT(c0_.email_id) ASC'
-        );
-    }
-
-    /**
-     * @group DDC-775
-     */
     public function testOrderByClauseSupportsSimpleArithmeticExpression()
     {
         $this->assertSqlGeneration(
@@ -1616,30 +1589,8 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY ((u.id + 5000) * u.id + 3) ',
             'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY (c0_.id + 5000) * c0_.id + 3 ASC'
         );
-        $this->assertSqlGeneration(
-            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY ((u.id + 5000) * SUM(u.id) + 3) ',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY (c0_.id + 5000) * SUM(c0_.id) + 3 ASC'
-        );
     }
 
-    /**
-     * @group DDC-775
-     */
-    public function testOrderByClauseSupportsNullIfAndCoalesce()
-    {
-        $this->assertSqlGeneration(
-            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY NULLIF(u.name, u.username)',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY NULLIF(c0_.name, c0_.username) ASC'
-        );
-        $this->assertSqlGeneration(
-            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY COALESCE(NULLIF(u.name, u.username), u.id)',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY COALESCE(NULLIF(c0_.name, c0_.username), c0_.id) ASC'
-        );
-        $this->assertSqlGeneration(
-            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY CASE u.id WHEN 1 THEN 1 ELSE 0 END',
-            'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ ORDER BY CASE c0_.id WHEN 1 THEN 1 ELSE 0 END ASC'
-        );
-    }
 }
 
 
