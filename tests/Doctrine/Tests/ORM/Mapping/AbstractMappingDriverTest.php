@@ -105,6 +105,18 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    public function testEntityCustomGenerator()
+    {
+        $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\Animal');
+
+        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM,
+            $class->generatorType, "Generator Type");
+        $this->assertEquals(
+            array("class" => "stdClass"),
+            $class->customGeneratorDefinition,
+            "Custom Generator Definition");
+    }
+
 
     /**
      * @depends testEntityTableNameAndInheritance
@@ -650,13 +662,15 @@ class User
 abstract class Animal
 {
     /**
-     * @Id @Column(type="string") @GeneratedValue
+     * @Id @Column(type="string") @GeneratedValue(strategy="CUSTOM")
+     * @CustomIdGenerator(class="stdClass")
      */
     public $id;
 
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
-
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_CUSTOM);
+        $metadata->setCustomGeneratorDefinition(array("class" => "stdClass"));
     }
 }
 

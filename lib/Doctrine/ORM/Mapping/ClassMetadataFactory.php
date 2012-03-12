@@ -518,6 +518,14 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             case ClassMetadata::GENERATOR_TYPE_TABLE:
                 throw new ORMException("TableGenerator not yet implemented.");
                 break;
+            case ClassMetadata::GENERATOR_TYPE_CUSTOM:
+                $definition = $class->customGeneratorDefinition;
+                if (!class_exists($definition['class'])) {
+                    throw new ORMException("Can't instantiate custom generator : " .
+                        $definition['class']);
+                }
+                $class->setIdGenerator(new $definition['class']);
+                break;
             default:
                 throw new ORMException("Unknown generator type: " . $class->generatorType);
         }

@@ -4,3 +4,10 @@ Doctrine\Tests\ORM\Mapping\Animal:
   discriminatorMap:
     cat: Cat
     dog: Dog
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: CUSTOM
+      customIdGenerator:
+        class: stdClass

@@ -17,7 +17,7 @@ abstract class OrmTestCase extends DoctrineTestCase
 
     /**
      * @param array $paths
-     * @return \Doctrine\Common\Annotations\AnnotationReader
+     * @return \Doctrine\ORM\Mapping\Driver\AnnotationDriver
      */
     protected function createAnnotationDriver($paths = array(), $alias = null)
     {
