@@ -523,7 +523,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * NamingStrategy determining the default column and table names
      *
-     * @var Doctrine\ORM\Mapping\NamingStrategy
+     * @var \Doctrine\ORM\Mapping\NamingStrategy
      */
     protected $namingStrategy;
 
