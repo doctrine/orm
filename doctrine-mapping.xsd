@@ -84,6 +84,51 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="named-native-query">
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="query" type="xs:string" use="required"/>
+    <xs:attribute name="result-class" type="xs:string" />
+    <xs:attribute name="result-set-mapping" type="xs:string" />
+  </xs:complexType>
+
+  <xs:complexType name="named-native-queries">
+    <xs:sequence>
+      <xs:element name="named-native-query" type="orm:named-native-query" minOccurs="1" maxOccurs="unbounded" />
+      <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="column-result">
+    <xs:attribute name="name" type="xs:string" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="field-result">
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="column" type="xs:string" />
+  </xs:complexType>
+
+  <xs:complexType name="entity-result">
+    <xs:sequence>
+      <xs:element name="field-result" type="orm:field-result" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="entity-class" type="xs:string" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="sql-result-set-mapping">
+    <xs:sequence>
+      <xs:element name="entity-result" type="orm:entity-result" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="column-result" type="orm:column-result" minOccurs="0" maxOccurs="unbounded" />
+      <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="sql-result-set-mappings">
+    <xs:sequence>
+      <xs:element name="sql-result-set-mapping" type="orm:sql-result-set-mapping" minOccurs="1" maxOccurs="unbounded" />
+      <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="entity">
     <xs:sequence>
       <xs:element name="options" type="orm:options" minOccurs="0" />
@@ -93,6 +138,7 @@
       <xs:element name="discriminator-map" type="orm:discriminator-map" minOccurs="0"/>
       <xs:element name="lifecycle-callbacks" type="orm:lifecycle-callbacks" minOccurs="0" maxOccurs="1" />
       <xs:element name="named-queries" type="orm:named-queries" minOccurs="0" maxOccurs="1" />
+      <xs:element name="named-native-queries" type="orm:named-native-queries" minOccurs="0" maxOccurs="1" />
       <xs:element name="id" type="orm:id" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="field" type="orm:field" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="one-to-one" type="orm:one-to-one" minOccurs="0" maxOccurs="unbounded"/>
