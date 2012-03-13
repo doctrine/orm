@@ -52,7 +52,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testCountComplexWithOutputWalker()
     {
-        $dql = "SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g.id HAVING userCount > 0";
+        $dql = "SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g.id HAVING COUNT(u.id) > 0";
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query);
@@ -101,7 +101,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIterateComplexWithOutputWalker()
     {
-        $dql = "SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g.id HAVING userCount > 0";
+        $dql = "SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g.id HAVING COUNT(u.id) > 0";
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query);
@@ -112,7 +112,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testDetectOutputWalker()
     {
         // This query works using the output walkers but causes an exception using the TreeWalker
-        $dql = "SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g.id HAVING userCount > 0";
+        $dql = "SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g.id HAVING COUNT(u.id) > 0";
         $query = $this->_em->createQuery($dql);
 
         // If the Paginator detects the custom output walker it should fall back to using the
