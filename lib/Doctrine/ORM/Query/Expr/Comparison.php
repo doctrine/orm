@@ -49,7 +49,7 @@ class Comparison
     {
         $this->_leftExpr  = $leftExpr;
         $this->_operator  = $operator;
-        $this->_rightExpr = $rightExpr === false ? (int) $rightExpr : $rightExpr;
+        $this->_rightExpr = $rightExpr === false ? 0 : $rightExpr;
     }
 
     public function __toString()
