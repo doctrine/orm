@@ -471,6 +471,29 @@ proxy classes like so:
 
     $ ./doctrine orm:generate-proxies
 
+Autoloading Proxies
+-------------------
+
+When you deserialize proxy objects from the session or any other storage
+it is necessary to have an autoloading mechanism in place for these classes.
+For implementation reasons Proxy class names are not PSR-0 compliant. This
+means that you have to register a special autoloader for these classes:
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ORM\Proxy\Autoloader;
+
+    $proxyDir = "/path/to/proxies";
+    $proxyNamespace = "MyProxies";
+
+    Autoloader::register($proxyDir, $proxyNamespace);
+
+If you want to execute additional logic to intercept the proxy file not found
+state you can pass a closure as the third argument. It will be called with
+the arguments proxydir, namespace and className when the proxy file could not
+be found.
+
 Multiple Metadata Sources
 -------------------------
 
@@ -482,6 +505,8 @@ aggregate these drivers based on namespaces:
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Mapping\Driver\DriverChain;
+
     $chain = new DriverChain();
     $chain->addDriver($xmlDriver, 'Doctrine\Tests\Models\Company');
     $chain->addDriver($yamlDriver, 'Doctrine\Tests\ORM\Mapping');
