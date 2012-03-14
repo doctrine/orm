@@ -40,4 +40,12 @@ class ProxyException extends \Doctrine\ORM\ORMException {
         return new self("You must configure a proxy namespace. See docs for details");
     }
 
+    public static function notProxyClass($className, $proxyNamespace)
+    {
+        return new self(sprintf(
+            "The class %s is not part of the proxy namespace %s",
+            $className, $proxyNamespace
+        ));
+    }
+
 }
