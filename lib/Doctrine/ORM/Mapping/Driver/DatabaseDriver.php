@@ -130,6 +130,13 @@ class DatabaseDriver implements Driver
                 $allForeignKeyColumns = array_merge($allForeignKeyColumns, $foreignKey->getLocalColumns());
             }
 
+            if ( ! $table->hasPrimaryKey()) {
+                throw new MappingException(
+                    "Table " . $table->getName() . " has no primary key. Doctrine does not ".
+                    "support reverse engineering from tables that don't have a primary key."
+                );
+            }
+
             $pkColumns = $table->getPrimaryKey()->getColumns();
             sort($pkColumns);
             sort($allForeignKeyColumns);
