@@ -336,4 +336,13 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $orExpr = $this->_expr->orx();
         $orExpr->add($this->_expr->quot(5, 2));
     }
+
+    /**
+     * @group DDC-1683
+     */
+    public function testBooleanLiteral()
+    {
+        $this->assertEquals('true', $this->_expr->literal(true));
+        $this->assertEquals('false', $this->_expr->literal(false));
+    }
 }
