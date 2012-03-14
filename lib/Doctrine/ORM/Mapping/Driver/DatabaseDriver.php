@@ -185,12 +185,13 @@ class DatabaseDriver implements Driver
         $fieldMappings = array();
         foreach ($columns as $column) {
             $fieldMapping = array();
-            if ($primaryKeyColumns && in_array($column->getName(), $primaryKeyColumns)) {
-                $fieldMapping['id'] = true;
-            } else if (in_array($column->getName(), $allForeignKeyColumns)) {
+            
+            if (in_array($column->getName(), $allForeignKeyColumns)) {
                 continue;
+            } else if ($primaryKeyColumns && in_array($column->getName(), $primaryKeyColumns)) {
+                $fieldMapping['id'] = true;
             }
-
+            
             $fieldMapping['fieldName'] = $this->getFieldNameForColumn($tableName, $column->getName(), false);
             $fieldMapping['columnName'] = $column->getName();
             $fieldMapping['type'] = strtolower((string) $column->getType());
@@ -291,13 +292,23 @@ class DatabaseDriver implements Driver
             $associationMapping['fieldName'] = $this->getFieldNameForColumn($tableName, $localColumn, true);
             $associationMapping['targetEntity'] = $this->getClassNameForTable($foreignTable);
 
+            if ($primaryKeyColumns && in_array($localColumn, $primaryKeyColumns)) {
+                $associationMapping['id'] = true;
+            }
+
             for ($i = 0; $i < count($cols); $i++) {
                 $associationMapping['joinColumns'][] = array(
                     'name' => $cols[$i],
                     'referencedColumnName' => $fkCols[$i],
                 );
             }
-            $metadata->mapManyToOne($associationMapping);
+            
+            //Here we need to check if $cols are the same as $primaryKeyColums
+            if (!array_diff($cols,$primaryKeyColumns)) {
+                $metadata->mapOneToOne($associationMapping);
+            } else {
+                $metadata->mapManyToOne($associationMapping);
+            }
         }
     }
 
