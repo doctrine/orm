@@ -128,16 +128,17 @@ class EntityManager implements ObjectManager
      */
     protected function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
     {
-        $this->conn = $conn;
-        $this->config = $config;
+        $this->conn         = $conn;
+        $this->config       = $config;
         $this->eventManager = $eventManager;
 
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
+
         $this->metadataFactory = new $metadataFactoryClassName;
         $this->metadataFactory->setEntityManager($this);
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
 
-        $this->unitOfWork = new UnitOfWork($this);
+        $this->unitOfWork   = new UnitOfWork($this);
         $this->proxyFactory = new ProxyFactory(
             $this,
             $config->getProxyDir(),
@@ -307,6 +308,7 @@ class EntityManager implements ObjectManager
     public function createNativeQuery($sql, ResultSetMapping $rsm)
     {
         $query = new NativeQuery($this);
+
         $query->setSql($sql);
         $query->setResultSetMapping($rsm);
 
@@ -382,19 +384,23 @@ class EntityManager implements ObjectManager
     public function getReference($entityName, $id)
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+
         if ( ! is_array($id)) {
             $id = array($class->identifier[0] => $id);
         }
+
         $sortedId = array();
+
         foreach ($class->identifier as $identifier) {
-            if (!isset($id[$identifier])) {
+            if ( ! isset($id[$identifier])) {
                 throw ORMException::missingIdentifierField($class->name, $identifier);
             }
+
             $sortedId[$identifier] = $id[$identifier];
         }
 
         // Check identity map first, if its already in there just return it.
-        if ($entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName)) {
+        if (($entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName)) !== false) {
             return ($entity instanceof $class->name) ? $entity : null;
         }
 
@@ -407,6 +413,7 @@ class EntityManager implements ObjectManager
         }
 
         $entity = $this->proxyFactory->getProxy($class->name, $sortedId);
+
         $this->unitOfWork->registerManaged($entity, $sortedId, array());
 
         return $entity;
@@ -436,7 +443,7 @@ class EntityManager implements ObjectManager
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
         // Check identity map first, if its already in there just return it.
-        if ($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) {
+        if (($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) !== false) {
             return ($entity instanceof $class->name) ? $entity : null;
         }
 
@@ -445,7 +452,9 @@ class EntityManager implements ObjectManager
         }
 
         $entity = $class->newInstance();
+
         $class->setIdentifierValues($entity, $identifier);
+
         $this->unitOfWork->registerManaged($entity, $identifier, array());
         $this->unitOfWork->markReadOnly($entity);
 
@@ -471,6 +480,7 @@ class EntityManager implements ObjectManager
     public function close()
     {
         $this->clear();
+
         $this->closed = true;
     }
 
@@ -732,7 +742,7 @@ class EntityManager implements ObjectManager
                 return new Internal\Hydration\SimpleObjectHydrator($this);
 
             default:
-                if ($class = $this->config->getCustomHydrationMode($hydrationMode)) {
+                if (($class = $this->config->getCustomHydrationMode($hydrationMode)) !== null) {
                     return new $class($this);
                 }
         }
@@ -818,8 +828,7 @@ class EntityManager implements ObjectManager
      */
     public function isFiltersStateClean()
     {
-        return null === $this->filterCollection
-           || $this->filterCollection->isClean();
+        return null === $this->filterCollection || $this->filterCollection->isClean();
     }
 
     /**
