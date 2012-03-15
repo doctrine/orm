@@ -206,15 +206,15 @@ abstract class AbstractQuery
      */
     public function setParameter($key, $value, $type = null)
     {
-        $key = trim($key, ':');
-
+        $key   = trim($key, ':');
         $value = $this->processParameterValue($value);
+
         if ($type === null) {
             $type = Query\ParameterTypeInferer::inferType($value);
         }
 
         $this->_paramTypes[$key] = $type;
-        $this->_params[$key] = $value;
+        $this->_params[$key]     = $value;
 
         return $this;
     }
@@ -249,18 +249,22 @@ abstract class AbstractQuery
         $class = $this->_em->getClassMetadata(get_class($value));
 
         if ($class->isIdentifierComposite) {
-            throw new \InvalidArgumentException("Binding an entity with a composite primary key to a query is not supported. You should split the parameter into the explicit fields and bind them seperately.");
+            throw new \InvalidArgumentException(
+                "Binding an entity with a composite primary key to a query is not supported. " .
+                "You should split the parameter into the explicit fields and bind them seperately."
+            );
         }
 
-        if ($this->_em->getUnitOfWork()->getEntityState($value) === UnitOfWork::STATE_MANAGED) {
-            $values = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
-        } else {
-            $values = $class->getIdentifierValues($value);
-        }
+        $values = ($this->_em->getUnitOfWork()->getEntityState($value) === UnitOfWork::STATE_MANAGED)
+            ? $this->_em->getUnitOfWork()->getEntityIdentifier($value)
+            : $class->getIdentifierValues($value);
 
         $value = $values[$class->getSingleIdentifierFieldName()];
-        if (!$value) {
-            throw new \InvalidArgumentException("Binding entities to query parameters only allowed for entities that have an identifier.");
+
+        if ( ! $value) {
+            throw new \InvalidArgumentException(
+                "Binding entities to query parameters only allowed for entities that have an identifier."
+            );
         }
 
         return $value;
