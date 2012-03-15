@@ -37,7 +37,7 @@ use Doctrine\ORM\Mapping\ClassMetadata,
  * @author    Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author    Roman Borschel <roman@code-factory.org>
  * @author    Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
- * @todo Design for inheritance to allow custom implementations?
+ * @todo      Design for inheritance to allow custom implementations?
  */
 final class PersistentCollection implements Collection
 {
@@ -775,12 +775,15 @@ final class PersistentCollection implements Collection
     public function __clone()
     {
         $this->initialize();
+
         $this->owner = null;
 
         if (is_object($this->coll)) {
             $this->coll = clone $this->coll;
         }
+
         $this->snapshot = array();
+        
         $this->changed();
     }
 }
