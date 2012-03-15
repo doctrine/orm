@@ -33,7 +33,6 @@ use Doctrine\DBAL\LockMode,
  */
 final class Query extends AbstractQuery
 {
-    /* Query STATES */
     /**
      * A query object is in CLEAN state when it has NO unparsed/unprocessed DQL parts.
      */
@@ -108,6 +107,7 @@ final class Query extends AbstractQuery
      */
     const HINT_LOCK_MODE = 'doctrine.lockMode';
 
+
     /**
      * @var integer $_state   The current state of this query.
      */
@@ -153,8 +153,6 @@ final class Query extends AbstractQuery
      */
     private $_useQueryCache = true;
 
-    // End of Caching Stuff
-
     /**
      * Initializes a new Query instance.
      *
@@ -186,6 +184,7 @@ final class Query extends AbstractQuery
     public function getAST()
     {
         $parser = new Parser($this);
+
         return $parser->getAST();
     }
 
@@ -199,9 +198,7 @@ final class Query extends AbstractQuery
     private function _parse()
     {
         // Return previous parser result if the query and the filter collection are both clean
-        if ($this->_state === self::STATE_CLEAN
-            && $this->_em->isFiltersStateClean()
-        ) {
+        if ($this->_state === self::STATE_CLEAN && $this->_em->isFiltersStateClean()) {
             return $this->_parserResult;
         }
 
@@ -210,6 +207,7 @@ final class Query extends AbstractQuery
         // Check query cache.
         if ( ! ($this->_useQueryCache && ($queryCache = $this->getQueryCacheDriver()))) {
             $parser = new Parser($this);
+
             $this->_parserResult = $parser->parse();
 
             return $this->_parserResult;
@@ -227,7 +225,9 @@ final class Query extends AbstractQuery
 
         // Cache miss.
         $parser = new Parser($this);
+
         $this->_parserResult = $parser->parse();
+
         $queryCache->save($hash, $this->_parserResult, $this->_queryCacheTTL);
 
         return $this->_parserResult;
@@ -282,7 +282,9 @@ final class Query extends AbstractQuery
             }
 
             $sqlPositions = $paramMappings[$key];
-            // optimized multi value sql positions away for now, they are not allowed in DQL anyways.
+
+            // optimized multi value sql positions away for now,
+            // they are not allowed in DQL anyways.
             $value = array($value);
             $countValue = count($value);
 
@@ -469,7 +471,7 @@ final class Query extends AbstractQuery
     public function setFirstResult($firstResult)
     {
         $this->_firstResult = $firstResult;
-        $this->_state = self::STATE_DIRTY;
+        $this->_state       = self::STATE_DIRTY;
 
         return $this;
     }
@@ -494,7 +496,7 @@ final class Query extends AbstractQuery
     public function setMaxResults($maxResults)
     {
         $this->_maxResults = $maxResults;
-        $this->_state = self::STATE_DIRTY;
+        $this->_state      = self::STATE_DIRTY;
 
         return $this;
     }
@@ -554,7 +556,7 @@ final class Query extends AbstractQuery
      */
     public function setLockMode($lockMode)
     {
-        if ($lockMode === LockMode::PESSIMISTIC_READ || $lockMode === LockMode::PESSIMISTIC_WRITE) {
+        if (in_array($lockMode, array(LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE))) {
             if ( ! $this->_em->getConnection()->isTransactionActive()) {
                 throw TransactionRequiredException::transactionRequired();
             }
