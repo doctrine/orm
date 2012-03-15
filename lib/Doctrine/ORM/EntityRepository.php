@@ -110,16 +110,19 @@ class EntityRepository implements ObjectRepository
         if ( ! is_array($id)) {
             $id = array($this->_class->identifier[0] => $id);
         }
+
         $sortedId = array();
+
         foreach ($this->_class->identifier as $identifier) {
-            if (!isset($id[$identifier])) {
+            if ( ! isset($id[$identifier])) {
                 throw ORMException::missingIdentifierField($this->_class->name, $identifier);
             }
+
             $sortedId[$identifier] = $id[$identifier];
         }
 
         // Check identity map first
-        if ($entity = $this->_em->getUnitOfWork()->tryGetById($sortedId, $this->_class->rootEntityName)) {
+        if (($entity = $this->_em->getUnitOfWork()->tryGetById($sortedId, $this->_class->rootEntityName)) !== false) {
             if ( ! ($entity instanceof $this->_class->name)) {
                 return null;
             }
@@ -131,16 +134,18 @@ class EntityRepository implements ObjectRepository
             return $entity; // Hit!
         }
 
+        $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
+
         switch ($lockMode) {
             case LockMode::NONE:
-                return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($sortedId);
+                return $persister->load($sortedId);
 
             case LockMode::OPTIMISTIC:
                 if ( ! $this->_class->isVersioned) {
                     throw OptimisticLockException::notVersioned($this->_entityName);
                 }
 
-                $entity = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($sortedId);
+                $entity = $persister->load($sortedId);
 
                 $this->_em->getUnitOfWork()->lock($entity, $lockMode, $lockVersion);
 
@@ -151,7 +156,7 @@ class EntityRepository implements ObjectRepository
                     throw TransactionRequiredException::transactionRequired();
                 }
 
-                return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($sortedId, null, null, array(), $lockMode);
+                return $persister->load($sortedId, null, null, array(), $lockMode);
         }
     }
 
@@ -176,7 +181,9 @@ class EntityRepository implements ObjectRepository
      */
     public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
     {
-        return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->loadAll($criteria, $orderBy, $limit, $offset);
+        $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
+
+        return $persister->loadAll($criteria, $orderBy, $limit, $offset);
     }
 
     /**
@@ -187,7 +194,9 @@ class EntityRepository implements ObjectRepository
      */
     public function findOneBy(array $criteria)
     {
-        return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($criteria, null, null, array(), 0, 1);
+        $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
+
+        return $persister->load($criteria, null, null, array(), 0, 1);
     }
 
     /**
@@ -225,15 +234,21 @@ class EntityRepository implements ObjectRepository
         $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
 
         if ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName)) {
-            $argumentSize = count($arguments);
-            if ($argumentSize == 1) {
-                return $this->$method(array($fieldName => $arguments[0]));
-            } else if ($argumentSize == 2) {
-                return $this->$method(array($fieldName => $arguments[0]), $arguments[1]);
-            } else if ($argumentSize == 3) {
-                return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2]);
-            } else if ($argumentSize == 4) {
-                return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2], $arguments[3]);
+            switch (count($arguments)) {
+                case 1:
+                    return $this->$method(array($fieldName => $arguments[0]));
+
+                case 2:
+                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1]);
+
+                case 3:
+                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2]);
+
+                case 4;
+                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2], $arguments[3]);
+
+                default:
+                    // Do nothing
             }
         }
 
