@@ -255,7 +255,7 @@ class UnitOfWork implements PropertyChangedListener
      * 4) All collection updates
      * 5) All entity deletions
      *
-     * @param object $entity
+     * @param null|object|array $entity
      * @return void
      */
     public function commit($entity = null)
@@ -268,8 +268,12 @@ class UnitOfWork implements PropertyChangedListener
         // Compute changes done since last commit.
         if ($entity === null) {
             $this->computeChangeSets();
-        } else {
+        } elseif (is_object($entity)) {
             $this->computeSingleEntityChangeSet($entity);
+        } elseif (is_array($entity)) {
+            foreach ($entity as $object) {
+                $this->computeSingleEntityChangeSet($object);
+            }
         }
 
         if ( ! ($this->entityInsertions ||
