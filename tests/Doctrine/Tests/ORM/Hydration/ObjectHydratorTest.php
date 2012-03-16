@@ -1863,4 +1863,69 @@ class ObjectHydratorTest extends HydrationTestCase
             $result
         );
     }
+
+
+    /**
+     * @group DDC-1470
+     *
+     * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException
+     * @expectedExceptionMessage The meta mapping for the discriminator column "c_discr" is missing for "Doctrine\Tests\Models\Company\CompanyFixContract" using the DQL alias "c".
+     */
+    public function testMissingMetaMappingException()
+    {
+        $rsm = new ResultSetMapping;
+
+        $rsm->addEntityResult('Doctrine\Tests\Models\Company\CompanyFixContract', 'c');
+        $rsm->addJoinedEntityResult('Doctrine\Tests\Models\Company\CompanyEmployee', 'e', 'c', 'salesPerson');
+
+        $rsm->addFieldResult('c', 'c__id', 'id');
+        $rsm->setDiscriminatorColumn('c', 'c_discr');
+
+        $resultSet = array(
+              array(
+                  'c__id'   => '1',
+                  'c_discr' => 'fix',
+              ),
+         );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator->hydrateAll($stmt, $rsm);
+    }
+
+    /**
+     * @group DDC-1470
+     *
+     * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException
+     * @expectedExceptionMessage The discriminator column "discr" is missing for "Doctrine\Tests\Models\Company\CompanyEmployee" using the DQL alias "e".
+     */
+    public function testMissingDiscriminatorColumnException()
+    {
+        $rsm = new ResultSetMapping;
+
+        $rsm->addEntityResult('Doctrine\Tests\Models\Company\CompanyFixContract', 'c');
+        $rsm->addJoinedEntityResult('Doctrine\Tests\Models\Company\CompanyEmployee', 'e', 'c', 'salesPerson');
+
+        $rsm->addFieldResult('c', 'c__id', 'id');
+        $rsm->addMetaResult('c', 'c_discr', 'discr');
+        $rsm->setDiscriminatorColumn('c', 'c_discr');
+
+        $rsm->addFieldResult('e', 'e__id', 'id');
+        $rsm->addFieldResult('e', 'e__name', 'name');
+        $rsm->addMetaResult('e ', 'e_discr', 'discr');
+        $rsm->setDiscriminatorColumn('e', 'e_discr');
+
+        $resultSet = array(
+              array(
+                  'c__id'   => '1',
+                  'c_discr' => 'fix',
+                  'e__id'   => '1',
+                  'e__name' => 'Fabio B. Silva'
+              ),
+         );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator->hydrateAll($stmt, $rsm);
+    }
 }
