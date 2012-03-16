@@ -23,4 +23,30 @@ class HydrationException extends \Doctrine\ORM\ORMException
             "discriminator value in a table row."
         );
     }
+
+    /**
+     * @since 2.3
+     * @param   string $entityName
+     * @param   string $discrColumnName
+     * @param   string $dqlAlias
+     * @return  HydrationException
+     */
+    public static function missingDiscriminatorColumn($entityName, $discrColumnName, $dqlAlias)
+    {
+        return new self("The discriminator column '$discrColumnName' "
+                . "is missing for '$entityName' using the DQL alias '$dqlAlias'.");
+    }
+
+    /**
+     * @since 2.3
+     * @param   string $entityName
+     * @param   string $discrColumnName
+     * @param   string $dqlAlias
+     * @return  HydrationException
+     */
+    public static function missingDiscriminatorMetaMappingColumn($entityName, $discrColumnName, $dqlAlias)
+    {
+        return new self("The meta mapping for the discriminator column '$discrColumnName' "
+                . "is missing for '$entityName' using the DQL alias '$dqlAlias'.");
+    }
 }
