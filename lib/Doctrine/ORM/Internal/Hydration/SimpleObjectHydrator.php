@@ -92,7 +92,7 @@ class SimpleObjectHydrator extends AbstractHydrator
         if ($this->class->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
             $discrColumnName = $this->_platform->getSQLResultCasing($this->class->discriminatorColumn['name']);
 
-            if (!isset($sqlResult[$discrColumnName])) {
+            if ( ! isset($sqlResult[$discrColumnName])) {
                 throw HydrationException::missingDiscriminatorColumn($entityName, $discrColumnName, key($this->_rsm->aliasMap));
             }
 

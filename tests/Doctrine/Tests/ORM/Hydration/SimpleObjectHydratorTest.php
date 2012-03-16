@@ -13,7 +13,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
      * @group DDC-1470
      *
      * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException
-     * @expectedExceptionMessage The discriminator column 'discr' is missing for 'Doctrine\Tests\Models\Company\CompanyPerson' using the DQL alias 'p'.
+     * @expectedExceptionMessage The discriminator column "discr" is missing for "Doctrine\Tests\Models\Company\CompanyPerson" using the DQL alias "p".
      */
     public function testMissingDiscriminatorColumnException()
     {
