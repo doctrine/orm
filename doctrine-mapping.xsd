@@ -177,7 +177,7 @@
     <xs:restriction base="xs:token"> 
       <xs:enumeration value="EAGER"/> 
       <xs:enumeration value="LAZY"/>
-      <xs:enumeration value="EXTRALAZY"/>
+      <xs:enumeration value="EXTRA_LAZY"/>
     </xs:restriction> 
   </xs:simpleType>
 
