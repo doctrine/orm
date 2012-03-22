@@ -1056,6 +1056,37 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($address));
     }
 
+    public function testFlushManyExplicitEntities()
+    {
+        $userA = new CmsUser;
+        $userA->username = 'UserA';
+        $userA->name = 'UserA';
+
+        $userB = new CmsUser;
+        $userB->username = 'UserB';
+        $userB->name = 'UserB';
+
+        $userC = new CmsUser;
+        $userC->username = 'UserC';
+        $userC->name = 'UserC';
+
+        $this->_em->persist($userA);
+        $this->_em->persist($userB);
+        $this->_em->persist($userC);
+
+        $this->_em->flush(array($userA, $userB, $userB));
+
+        $userC->name = 'changed name';
+
+        $this->_em->flush(array($userA, $userB));
+        $this->_em->refresh($userC);
+
+        $this->assertTrue($userA->id > 0, 'user a has an id');
+        $this->assertTrue($userB->id > 0, 'user b has an id');
+        $this->assertTrue($userC->id > 0, 'user c has an id');
+        $this->assertEquals('UserC', $userC->name, 'name has not changed because we did not flush it');
+    }
+
     /**
      * @group DDC-720
      */
