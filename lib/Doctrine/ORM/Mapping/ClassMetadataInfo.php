@@ -752,6 +752,10 @@ class ClassMetadataInfo implements ClassMetadata
             $serialized[] = 'isReadOnly';
         }
 
+        if ($this->customGeneratorDefinition) {
+            $serialized[] = "customGeneratorDefinition";
+        }
+
         return $serialized;
     }
 
