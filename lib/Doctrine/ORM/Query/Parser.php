@@ -1333,18 +1333,43 @@ class Parser
     }
 
     /**
-     * OrderByItem ::= (ResultVariable | SingleValuedPathExpression) ["ASC" | "DESC"]
+     * OrderByItem ::= (
+     *      SimpleArithmeticExpression | SingleValuedPathExpression |
+     *      ScalarExpression | ResultVariable
+     * ) ["ASC" | "DESC"]
      *
      * @return \Doctrine\ORM\Query\AST\OrderByItem
      */
     public function OrderByItem()
     {
-        $type = 'ASC';
 
-        // We need to check if we are in a ResultVariable or StateFieldPathExpression
+        $this->_lexer->peek(); // lookahead => '.'
+        $this->_lexer->peek(); // lookahead => token after '.'
+        $peek = $this->_lexer->peek(); // lookahead => token after the token after the '.'
+        $this->_lexer->resetPeek();
         $glimpse = $this->_lexer->glimpse();
-        $expr    = ($glimpse['type'] != Lexer::T_DOT) ? $this->ResultVariable() : $this->SingleValuedPathExpression();
 
+        switch (true) {
+
+            case ($this->_isMathOperator($peek)):
+                $expr = $this->SimpleArithmeticExpression();
+
+                break;
+            case ($glimpse['type'] === Lexer::T_DOT):
+                $expr = $this->SingleValuedPathExpression();
+                
+                break;
+            case ($this->_lexer->peek() && $this->_isMathOperator($this->_peekBeyondClosingParenthesis())):
+                $expr = $this->ScalarExpression();
+
+                break;
+            default:
+                $expr = $this->ResultVariable();
+
+                break;
+        }
+
+        $type = 'ASC';
         $item = new AST\OrderByItem($expr);
 
         switch (true) {
