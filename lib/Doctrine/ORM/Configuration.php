@@ -110,6 +110,30 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
+     * Gets a boolean flag that indicates acquiring an exclusive lock on the file while
+     * proceeding to the writing proxy file
+     *
+     * @return boolean
+     */
+    public function getProxyExclusiveLock()
+    {
+        return isset($this->_attributes['proxyExclusiveLock'])
+            ? $this->_attributes['proxyExclusiveLock']
+            : true;
+    }
+
+    /**
+     * Sets a boolean flag that indicates acquiring an exclusive lock on the file while
+     * proceeding to the writing proxy file
+     *
+     * @param boolean $lock
+     */
+    public function setProxyExclusiveLock($lock)
+    {
+        $this->_attributes['proxyExclusiveLock'] = (boolean) $lock;
+    }
+
+    /**
      * Sets the cache driver implementation that is used for metadata caching.
      *
      * @param Driver $driverImpl
@@ -604,7 +628,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
         if ( ! isset($this->_attributes['namingStrategy'])) {
             $this->_attributes['namingStrategy'] = new DefaultNamingStrategy();
         }
-        
+
         return $this->_attributes['namingStrategy'];
     }
 }
