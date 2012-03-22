@@ -100,6 +100,10 @@ class ClassMetadataInfo implements ClassMetadata
      */
     const GENERATOR_TYPE_UUID = 6;
     /**
+     * CUSTOM means that customer will use own ID generator that supposedly work
+     */
+    const GENERATOR_TYPE_CUSTOM = 7;
+    /**
      * DEFERRED_IMPLICIT means that changes of entities are calculated at commit-time
      * by doing a property-by-property comparison with the original data. This will
      * be done for all entities that are in MANAGED state at commit-time.
@@ -180,6 +184,22 @@ class ClassMetadataInfo implements ClassMetadata
      * @var string
      */
     public $rootEntityName;
+
+    /**
+     * READ-ONLY: The definition of custom generator. Only used for CUSTOM
+     * generator type
+     *
+     * The definition has the following structure:
+     * <code>
+     * array(
+     *     'class' => 'ClassName',
+     * )
+     * </code>
+     *
+     * @var array
+     * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
+     */
+    public $customGeneratorDefinition;
 
     /**
      * The name of the custom repository class used for the entity class.
@@ -2144,6 +2164,15 @@ class ClassMetadataInfo implements ClassMetadata
     public function setIdGenerator($generator)
     {
         $this->idGenerator = $generator;
+    }
+
+    /**
+     * Sets definition
+     * @param array $definition
+     */
+    public function setCustomGeneratorDefinition(array $definition)
+    {
+        $this->customGeneratorDefinition = $definition;
     }
 
     /**

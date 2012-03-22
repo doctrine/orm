@@ -14,17 +14,14 @@ class PHPMappingDriverTest extends AbstractMappingDriverTest
     {
         $path = __DIR__ . DIRECTORY_SEPARATOR . 'php';
 
-        /*
-        // Convert YAML mapping information to PHP
-        // Uncomment this code if the YAML changes and you want to update the PHP code
+        // Convert Annotation mapping information to PHP
+        // Uncomment this code if annotations changed and you want to update the PHP code
         // for the same mapping information
-        $cme = new ClassMetadataExporter();
-        $cme->addMappingSource(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
-
-        $exporter = $cme->getExporter('php', $path);
-        $exporter->setMetadatas($cme->getMetadatas());
-        $exporter->export();
-        */
+//        $meta = new \Doctrine\ORM\Mapping\ClassMetadataInfo("Doctrine\Tests\ORM\Mapping\Animal");
+//        $driver = $this->createAnnotationDriver();
+//        $driver->loadMetadataForClass("Doctrine\Tests\ORM\Mapping\Animal", $meta);
+//        $exporter = $cme->getExporter('php', $path);
+//        echo $exporter->exportClassMetadata($meta);
 
         return new PHPDriver($path);
     }
