@@ -447,7 +447,7 @@ class QueryBuilder
         if ($dqlPartName == 'join') {
             $newDqlPart = array();
 
-            foreach ($dqlPart AS $k => $v) {
+            foreach ($dqlPart as $k => $v) {
                 $k = is_numeric($k) ? $this->getRootAlias() : $k;
 
                 $newDqlPart[$k] = $v;
@@ -1097,9 +1097,9 @@ class QueryBuilder
      */
     public function __clone()
     {
-        foreach ($this->_dqlParts AS $part => $elements) {
+        foreach ($this->_dqlParts as $part => $elements) {
             if (is_array($this->_dqlParts[$part])) {
-                foreach ($this->_dqlParts[$part] AS $idx => $element) {
+                foreach ($this->_dqlParts[$part] as $idx => $element) {
                     if (is_object($element)) {
                         $this->_dqlParts[$part][$idx] = clone $element;
                     }

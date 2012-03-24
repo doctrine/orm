@@ -121,13 +121,13 @@ class DriverChain implements Driver
     {
         $classNames = array();
         $driverClasses = array();
-        foreach ($this->drivers AS $namespace => $driver) {
+        foreach ($this->drivers as $namespace => $driver) {
             $oid = spl_object_hash($driver);
             if (!isset($driverClasses[$oid])) {
                 $driverClasses[$oid] = $driver->getAllClassNames();
             }
 
-            foreach ($driverClasses[$oid] AS $className) {
+            foreach ($driverClasses[$oid] as $className) {
                 if (strpos($className, $namespace) === 0) {
                     $classNames[$className] = true;
                 }
@@ -146,7 +146,7 @@ class DriverChain implements Driver
      */
     public function isTransient($className)
     {
-        foreach ($this->drivers AS $namespace => $driver) {
+        foreach ($this->drivers as $namespace => $driver) {
             if (strpos($className, $namespace) === 0) {
                 return $driver->isTransient($className);
             }

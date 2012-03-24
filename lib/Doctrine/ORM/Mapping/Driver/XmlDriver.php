@@ -111,7 +111,7 @@ class XmlDriver extends AbstractFileDriver
                 // Evaluate <discriminator-map...>
                 if (isset($xmlRoot->{'discriminator-map'})) {
                     $map = array();
-                    foreach ($xmlRoot->{'discriminator-map'}->{'discriminator-mapping'} AS $discrMapElement) {
+                    foreach ($xmlRoot->{'discriminator-map'}->{'discriminator-mapping'} as $discrMapElement) {
                         $map[(string)$discrMapElement['value']] = (string)$discrMapElement['class'];
                     }
                     $metadata->setDiscriminatorMap($map);
@@ -339,7 +339,7 @@ class XmlDriver extends AbstractFileDriver
 
                 if (isset($oneToManyElement->{'order-by'})) {
                     $orderBy = array();
-                    foreach ($oneToManyElement->{'order-by'}->{'order-by-field'} AS $orderByField) {
+                    foreach ($oneToManyElement->{'order-by'}->{'order-by-field'} as $orderByField) {
                         $orderBy[(string)$orderByField['name']] = (string)$orderByField['direction'];
                     }
                     $mapping['orderBy'] = $orderBy;
@@ -444,7 +444,7 @@ class XmlDriver extends AbstractFileDriver
 
                 if (isset($manyToManyElement->{'order-by'})) {
                     $orderBy = array();
-                    foreach ($manyToManyElement->{'order-by'}->{'order-by-field'} AS $orderByField) {
+                    foreach ($manyToManyElement->{'order-by'}->{'order-by-field'} as $orderByField) {
                         $orderBy[(string)$orderByField['name']] = (string)$orderByField['direction'];
                     }
                     $mapping['orderBy'] = $orderBy;

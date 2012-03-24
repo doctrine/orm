@@ -75,7 +75,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             return;
         }
 
-        foreach ($this->_rsm->declaringClasses AS $column => $class) {
+        foreach ($this->_rsm->declaringClasses as $column => $class) {
             $this->declaringClasses[$column] = $this->_em->getClassMetadata($class);
         }
     }

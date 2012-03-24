@@ -111,7 +111,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $whereClauses = array();
         $params       = array();
 
-        foreach ($targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'] AS $joinColumn) {
+        foreach ($targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'] as $joinColumn) {
             $whereClauses[] = $joinColumn['name'] . ' = ?';
 
             $params[] = ($targetClass->containsForeignIdentifier)

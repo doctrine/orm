@@ -309,13 +309,13 @@ class SqlWalker implements TreeWalker
     {
         $sqlParts = array();
 
-        foreach ($this->_selectedClasses AS $selectedClass) {
+        foreach ($this->_selectedClasses as $selectedClass) {
             $dqlAlias = $selectedClass['dqlAlias'];
             $qComp    = $this->_queryComponents[$dqlAlias];
 
             if ( ! isset($qComp['relation']['orderBy'])) continue;
 
-            foreach ($qComp['relation']['orderBy'] AS $fieldName => $orientation) {
+            foreach ($qComp['relation']['orderBy'] as $fieldName => $orientation) {
                 $columnName = $qComp['metadata']->getQuotedColumnName($fieldName, $this->_platform);
                 $tableName  = ($qComp['metadata']->isInheritanceTypeJoined())
                     ? $this->_em->getUnitOfWork()->getEntityPersister($qComp['metadata']->name)->getOwningTable($fieldName)
@@ -441,7 +441,7 @@ class SqlWalker implements TreeWalker
                     break;
 
                 case LockMode::OPTIMISTIC:
-                    foreach ($this->_selectedClasses AS $selectedClass) {
+                    foreach ($this->_selectedClasses as $selectedClass) {
                         if ( ! $selectedClass['class']->isVersioned) {
                             throw \Doctrine\ORM\OptimisticLockException::lockFailed($selectedClass['class']->name);
                         }
@@ -1420,7 +1420,7 @@ class SqlWalker implements TreeWalker
     {
         $sqlParts = array();
 
-        foreach ($groupByClause->groupByItems AS $groupByItem) {
+        foreach ($groupByClause->groupByItems as $groupByItem) {
             $sqlParts[] = $this->walkGroupByItem($groupByItem);
         }
 
@@ -1448,14 +1448,14 @@ class SqlWalker implements TreeWalker
         // IdentificationVariable
         $sqlParts = array();
 
-        foreach ($this->_queryComponents[$groupByItem]['metadata']->fieldNames AS $field) {
+        foreach ($this->_queryComponents[$groupByItem]['metadata']->fieldNames as $field) {
             $item       = new AST\PathExpression(AST\PathExpression::TYPE_STATE_FIELD, $groupByItem, $field);
             $item->type = AST\PathExpression::TYPE_STATE_FIELD;
 
             $sqlParts[] = $this->walkPathExpression($item);
         }
 
-        foreach ($this->_queryComponents[$groupByItem]['metadata']->associationMappings AS $mapping) {
+        foreach ($this->_queryComponents[$groupByItem]['metadata']->associationMappings as $mapping) {
             if ($mapping['isOwningSide'] && $mapping['type'] & ClassMetadataInfo::TO_ONE) {
                 $item       = new AST\PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $groupByItem, $mapping['fieldName']);
                 $item->type = AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;

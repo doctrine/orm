@@ -2148,7 +2148,7 @@ class ClassMetadataInfo implements ClassMetadata
         if (isset($this->fieldNames[$columnName])) {
             return $this->fieldNames[$columnName];
         } else {
-            foreach ($this->associationMappings AS $assocName => $mapping) {
+            foreach ($this->associationMappings as $assocName => $mapping) {
                 if ($this->isAssociationWithSingleJoinColumn($assocName) &&
                     $this->associationMappings[$assocName]['joinColumns'][0]['name'] == $columnName) {
 

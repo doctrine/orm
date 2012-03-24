@@ -68,7 +68,7 @@ class SchemaValidator
         $cmf = $this->em->getMetadataFactory();
         $classes = $cmf->getAllMetadata();
 
-        foreach ($classes AS $class) {
+        foreach ($classes as $class) {
             if ($ce = $this->validateClass($class)) {
                 $errors[$class->name] = $ce;
             }
@@ -94,7 +94,7 @@ class SchemaValidator
             }
         }
 
-        foreach ($class->associationMappings AS $fieldName => $assoc) {
+        foreach ($class->associationMappings as $fieldName => $assoc) {
             if (!class_exists($assoc['targetEntity']) || $cmf->isTransient($assoc['targetEntity'])) {
                 $ce[] = "The target entity '" . $assoc['targetEntity'] . "' specified on " . $class->name . '#' . $fieldName . ' is unknown or not an entity.';
                 return $ce;
@@ -168,7 +168,7 @@ class SchemaValidator
             if ($assoc['isOwningSide']) {
                 if ($assoc['type'] == ClassMetadataInfo::MANY_TO_MANY) {
                     $identifierColumns = $class->getIdentifierColumnNames();
-                    foreach ($assoc['joinTable']['joinColumns'] AS $joinColumn) {
+                    foreach ($assoc['joinTable']['joinColumns'] as $joinColumn) {
                         if (!in_array($joinColumn['referencedColumnName'], $identifierColumns)) {
                             $ce[] = "The referenced column name '" . $joinColumn['referencedColumnName'] . "' " .
                                 "has to be a primary key column on the target entity class '".$class->name."'.";
@@ -177,7 +177,7 @@ class SchemaValidator
                     }
 
                     $identifierColumns = $targetMetadata->getIdentifierColumnNames();
-                    foreach ($assoc['joinTable']['inverseJoinColumns'] AS $inverseJoinColumn) {
+                    foreach ($assoc['joinTable']['inverseJoinColumns'] as $inverseJoinColumn) {
                         if (!in_array($inverseJoinColumn['referencedColumnName'], $identifierColumns)) {
                             $ce[] = "The referenced column name '" . $joinColumn['referencedColumnName'] . "' " .
                                 "has to be a primary key column on the target entity class '".$targetMetadata->name."'.";
@@ -201,7 +201,7 @@ class SchemaValidator
 
                 } else if ($assoc['type'] & ClassMetadataInfo::TO_ONE) {
                     $identifierColumns = $targetMetadata->getIdentifierColumnNames();
-                    foreach ($assoc['joinColumns'] AS $joinColumn) {
+                    foreach ($assoc['joinColumns'] as $joinColumn) {
                         if (!in_array($joinColumn['referencedColumnName'], $identifierColumns)) {
                             $ce[] = "The referenced column name '" . $joinColumn['referencedColumnName'] . "' " .
                                     "has to be a primary key column on the target entity class '".$targetMetadata->name."'.";
@@ -210,7 +210,7 @@ class SchemaValidator
 
                     if (count($identifierColumns) != count($assoc['joinColumns'])) {
                         $ids = array();
-                        foreach ($assoc['joinColumns'] AS $joinColumn) {
+                        foreach ($assoc['joinColumns'] as $joinColumn) {
                             $ids[] = $joinColumn['name'];
                         }
 
@@ -223,7 +223,7 @@ class SchemaValidator
             }
 
             if (isset($assoc['orderBy']) && $assoc['orderBy'] !== null) {
-                foreach ($assoc['orderBy'] AS $orderField => $orientation) {
+                foreach ($assoc['orderBy'] as $orderField => $orientation) {
                     if (!$targetMetadata->hasField($orderField)) {
                         $ce[] = "The association " . $class->name."#".$fieldName." is ordered by a foreign field " .
                                 $orderField . " that is not a field on the target entity " . $targetMetadata->name;
@@ -240,7 +240,7 @@ class SchemaValidator
                     "or protected. Public fields may break lazy-loading.";
         }
 
-        foreach ($class->subClasses AS $subClass) {
+        foreach ($class->subClasses as $subClass) {
             if (!in_array($class->name, class_parents($subClass))) {
                 $ce[] = "According to the discriminator map class '" . $subClass . "' has to be a child ".
                         "of '" . $class->name . "' but these entities are not related through inheritance.";

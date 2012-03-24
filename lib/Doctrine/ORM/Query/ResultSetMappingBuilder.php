@@ -81,7 +81,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
             throw new \InvalidArgumentException('ResultSetMapping builder does not currently support inheritance.');
         }
         $platform = $this->em->getConnection()->getDatabasePlatform();
-        foreach ($classMetadata->getColumnNames() AS $columnName) {
+        foreach ($classMetadata->getColumnNames() as $columnName) {
             $propertyName = $classMetadata->getFieldName($columnName);
             if (isset($renamedColumns[$columnName])) {
                 $columnName = $renamedColumns[$columnName];
@@ -92,9 +92,9 @@ class ResultSetMappingBuilder extends ResultSetMapping
             }
             $this->addFieldResult($alias, $columnName, $propertyName);
         }
-        foreach ($classMetadata->associationMappings AS $associationMapping) {
+        foreach ($classMetadata->associationMappings as $associationMapping) {
             if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
-                foreach ($associationMapping['joinColumns'] AS $joinColumn) {
+                foreach ($associationMapping['joinColumns'] as $joinColumn) {
                     $columnName = $joinColumn['name'];
                     $renamedColumnName = isset($renamedColumns[$columnName]) ? $renamedColumns[$columnName] : $columnName;
                     $renamedColumnName = $platform->getSQLResultCasing($renamedColumnName);

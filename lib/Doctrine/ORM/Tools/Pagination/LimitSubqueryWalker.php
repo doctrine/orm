@@ -59,7 +59,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $parentName = null;
         $selectExpressions = array();
 
-        foreach ($this->_getQueryComponents() AS $dqlAlias => $qComp) {
+        foreach ($this->_getQueryComponents() as $dqlAlias => $qComp) {
             // preserve mixed data in query for ordering
             if (isset($qComp['resultVariable'])) {
                 $selectExpressions[] = new SelectExpression($qComp['resultVariable'], $dqlAlias);

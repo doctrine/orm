@@ -76,7 +76,7 @@ class Setup
 
         $parts = explode(PATH_SEPARATOR, get_include_path());
 
-        foreach ($parts AS $includePath) {
+        foreach ($parts as $includePath) {
             if ($includePath != "." && file_exists($includePath . "/Doctrine")) {
                 $loader = new ClassLoader("Symfony\Component", $includePath . "/Doctrine");
                 $loader->register();

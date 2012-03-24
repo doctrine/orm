@@ -65,9 +65,9 @@ EOT
 
         $exit = 0;
         if ($errors) {
-            foreach ($errors AS $className => $errorMessages) {
+            foreach ($errors as $className => $errorMessages) {
                 $output->write("<error>[Mapping]  FAIL - The entity-class '" . $className . "' mapping is invalid:</error>\n");
-                foreach ($errorMessages AS $errorMessage) {
+                foreach ($errorMessages as $errorMessage) {
                     $output->write('* ' . $errorMessage . "\n");
                 }
                 $output->write("\n");

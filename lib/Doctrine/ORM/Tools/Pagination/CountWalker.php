@@ -48,7 +48,7 @@ class CountWalker extends TreeWalkerAdapter
         }
 
         $rootComponents = array();
-        foreach ($this->_getQueryComponents() AS $dqlAlias => $qComp) {
+        foreach ($this->_getQueryComponents() as $dqlAlias => $qComp) {
             $isParent = array_key_exists('parent', $qComp)
                 && $qComp['parent'] === null
                 && $qComp['nestingLevel'] == 0
