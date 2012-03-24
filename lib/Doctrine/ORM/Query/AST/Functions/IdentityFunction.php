@@ -39,7 +39,6 @@ class IdentityFunction extends FunctionNode
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        $platform   = $sqlWalker->getConnection()->getDatabasePlatform();
         $dqlAlias   = $this->pathExpression->identificationVariable;
         $assocField = $this->pathExpression->field;
 

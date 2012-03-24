@@ -838,7 +838,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function validateAssocations()
     {
-        foreach ($this->associationMappings as $field => $mapping) {
+        foreach ($this->associationMappings as $mapping) {
             if ( ! \Doctrine\Common\ClassLoader::classExists($mapping['targetEntity']) ) {
                 throw MappingException::invalidTargetEntityClass($mapping['targetEntity'], $this->name, $mapping['fieldName']);
             }
