@@ -37,7 +37,7 @@ class MappingException extends \Doctrine\ORM\ORMException
         if (null != ($parent = get_parent_class($entityName))) {
             return new self(sprintf(
                 'No identifier/primary key specified for Entity "%s" sub classe of "%s". Every Entity must have an identifier/primary key.',
-                $className, $parent
+                $entityName, $parent
             ));
         }
 
