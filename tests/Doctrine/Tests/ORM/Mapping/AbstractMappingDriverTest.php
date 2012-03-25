@@ -461,6 +461,22 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals("ENUM('ONE','TWO')", $class->discriminatorColumn['columnDefinition']);
         $this->assertEquals("dtype", $class->discriminatorColumn['name']);
     }
+
+    /**
+     * @group DDC-889
+     * @expectedException Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage Class "Doctrine\Tests\Models\DDC889\DDC889Class" sub classe of "Doctrine\Tests\Models\DDC889\DDC889SuperClass" is not a valid entity or mapped super class.
+     */
+    public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses()
+    {
+        $driver     = $this->_loadDriver();
+        $em         = $this->_getTestEntityManager();
+        $factory    = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $em->getConfiguration()->setMetadataDriverImpl($driver);
+        $factory->setEntityManager($em);
+
+        $factory->getMetadataFor('Doctrine\Tests\Models\DDC889\DDC889Class');
+    }
 }
 
 /**

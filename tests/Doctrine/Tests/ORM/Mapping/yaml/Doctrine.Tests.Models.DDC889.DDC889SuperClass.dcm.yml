@@ -1,0 +1,5 @@
+Doctrine\Tests\Models\DDC889\DDC889SuperClass:
+  type: mappedSuperclass
+  fields:
+    name:
+      type: string
