@@ -229,9 +229,9 @@ abstract class AbstractQuery
     {
         switch (true) {
             case is_array($value):
-                for ($i = 0, $l = count($value); $i < $l; $i++) {
-                    $paramValue = $this->processParameterValue($value[$i]);
-                    $value[$i] = is_array($paramValue) ? $paramValue[key($paramValue)] : $paramValue;
+                foreach ($value as $key => $paramValue) {
+                    $paramValue  = $this->processParameterValue($paramValue);
+                    $value[$key] = is_array($paramValue) ? $paramValue[key($paramValue)] : $paramValue;
                 }
 
                 return $value;
