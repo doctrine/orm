@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -27,40 +25,46 @@ namespace Doctrine\ORM\Query\Expr;
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision$
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
 class Composite extends Base
 {
+    /**
+     * @return string
+     */
     public function __toString()
     {
         if ($this->count() === 1) {
-            return (string) $this->_parts[0];
+            return (string) $this->parts[0];
         }
 
         $components = array();
 
-        foreach ($this->_parts as $part) {
+        foreach ($this->parts as $part) {
             $components[] = $this->processQueryPart($part);
         }
 
-        return implode($this->_separator, $components);
+        return implode($this->separator, $components);
     }
 
 
+    /**
+     * @param   string $part
+     * @return  string
+     */
     private function processQueryPart($part)
     {
         $queryPart = (string) $part;
 
         if (is_object($part) && $part instanceof self && $part->count() > 1) {
-            return $this->_preSeparator . $queryPart . $this->_postSeparator;
+            return $this->preSeparator . $queryPart . $this->postSeparator;
         }
 
         // Fixes DDC-1237: User may have added a where item containing nested expression (with "OR" or "AND")
         if (stripos($queryPart, ' OR ') !== false || stripos($queryPart, ' AND ') !== false) {
-            return $this->_preSeparator . $queryPart . $this->_postSeparator;
+            return $this->preSeparator . $queryPart . $this->postSeparator;
         }
 
         return $queryPart;
