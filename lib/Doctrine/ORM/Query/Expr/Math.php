@@ -34,17 +34,17 @@ class Math
     /**
      * @var mixed
      */
-    private $leftExpr;
+    protected $leftExpr;
 
     /**
      * @var string
      */
-    private $operator;
+    protected $operator;
 
     /**
      * @var mixed
      */
-    private $rightExpr;
+    protected $rightExpr;
 
     /**
      * Creates a mathematical expression with the given arguments.
@@ -84,6 +84,9 @@ class Math
         return $this->rightExpr;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         // Adjusting Left Expression

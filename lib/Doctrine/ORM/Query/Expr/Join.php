@@ -40,32 +40,32 @@ class Join
     /**
      * @var string
      */
-    private $joinType;
+    protected $joinType;
 
     /**
      * @var string
      */
-    private $join;
+    protected $join;
 
     /**
      * @var string
      */
-    private $alias;
+    protected $alias;
 
     /**
      * @var string
      */
-    private $conditionType;
+    protected $conditionType;
 
     /**
      * @var string
      */
-    private $condition;
+    protected $condition;
 
     /**
      * @var string
      */
-    private $indexBy;
+    protected $indexBy;
 
     /**
      * @param string $joinType      The condition type constant. Either INNER_JOIN or LEFT_JOIN.

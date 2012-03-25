@@ -34,17 +34,17 @@ class From
     /**
      * @var string
      */
-    private $from;
+    protected $from;
 
     /**
      * @var string
      */
-    private $alias;
+    protected $alias;
 
     /**
      * @var string
      */
-    private $indexBy;
+    protected $indexBy;
 
     /**
      * @param string $from      The class name.

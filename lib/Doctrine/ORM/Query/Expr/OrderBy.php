@@ -54,7 +54,7 @@ class OrderBy
     /**
      * @var array
      */
-    private $parts = array();
+    protected $parts = array();
 
     /**
      * @param string $sort

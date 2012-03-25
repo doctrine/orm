@@ -34,12 +34,12 @@ class Func
     /**
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * @var array
      */
-    private $arguments;
+    protected $arguments;
 
     /**
      * Creates a function, with the given argument.
@@ -69,6 +69,9 @@ class Func
         return $this->arguments;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->name . '(' . implode(', ', $this->arguments) . ')';

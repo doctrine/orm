@@ -41,17 +41,17 @@ class Comparison
     /**
      * @var mixed
      */
-    private $leftExpr;
+    protected $leftExpr;
 
     /**
      * @var string
      */
-    private $operator;
+    protected $operator;
 
     /**
      * @var mixed
      */
-    private $rightExpr;
+    protected $rightExpr;
 
     /**
      * Creates a comparison expression with the given arguments.
