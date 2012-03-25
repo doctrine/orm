@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -27,24 +25,55 @@ namespace Doctrine\ORM\Query\Expr;
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision$
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
 class Func
 {
-    private $_name;
-    private $_arguments;
+    /**
+     * @var string
+     */
+    protected $name;
 
+    /**
+     * @var array
+     */
+    protected $arguments;
+
+    /**
+     * Creates a function, with the given argument.
+     *
+     * @param string    $name
+     * @param array     $arguments
+     */
     public function __construct($name, $arguments)
     {
-        $this->_name = $name;
-        $this->_arguments = (array) $arguments;
+        $this->name         = $name;
+        $this->arguments    = (array) $arguments;
     }
 
+    /**
+     * @return string 
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return array
+     */
+    public function getArguments()
+    {
+        return $this->arguments;
+    }
+
+    /**
+     * @return string
+     */
     public function __toString()
     {
-        return $this->_name . '(' . implode(', ', $this->_arguments) . ')';
+        return $this->name . '(' . implode(', ', $this->arguments) . ')';
     }
 }

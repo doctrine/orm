@@ -345,4 +345,68 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('true', $this->_expr->literal(true));
         $this->assertEquals('false', $this->_expr->literal(false));
     }
+
+
+    /**
+     * @group DDC-1686
+     */
+    public function testExpressionGetter()
+    {
+
+        // Andx
+        $andx = new Expr\Andx(array('1 = 1', '2 = 2'));
+        $this->assertEquals(array('1 = 1', '2 = 2'), $andx->getParts());
+
+        // Comparison
+        $comparison = new Expr\Comparison('foo', Expr\Comparison::EQ, 'bar');
+        $this->assertEquals('foo', $comparison->getLeftExpr());
+        $this->assertEquals('bar', $comparison->getRightExpr());
+        $this->assertEquals(Expr\Comparison::EQ, $comparison->getOperator());
+
+        // From
+        $from = new Expr\From('Foo', 'f', 'f.id');
+        $this->assertEquals('f', $from->getAlias());
+        $this->assertEquals('Foo', $from->getFrom());
+        $this->assertEquals('f.id', $from->getIndexBy());
+
+        // Func
+        $func = new Expr\Func('MAX', array('f.id'));
+        $this->assertEquals('MAX', $func->getName());
+        $this->assertEquals(array('f.id'), $func->getArguments());
+
+        // GroupBy
+        $group = new Expr\GroupBy(array('foo DESC', 'bar ASC'));
+        $this->assertEquals(array('foo DESC', 'bar ASC'), $group->getParts());
+
+        // Join
+        $join = new Expr\Join(Expr\Join::INNER_JOIN, 'f.bar', 'b', Expr\Join::ON, 'b.bar_id = 1', 'b.bar_id');
+        $this->assertEquals(Expr\Join::INNER_JOIN, $join->getJoinType());
+        $this->assertEquals(Expr\Join::ON, $join->getConditionType());
+        $this->assertEquals('b.bar_id = 1', $join->getCondition());
+        $this->assertEquals('b.bar_id', $join->getIndexBy());
+        $this->assertEquals('f.bar', $join->getJoin());
+        $this->assertEquals('b', $join->getAlias());
+
+        // Literal
+        $literal = new Expr\Literal(array('foo'));
+        $this->assertEquals(array('foo'), $literal->getParts());
+
+        // Math
+        $math = new Expr\Math(10, '+', 20);
+        $this->assertEquals(10, $math->getLeftExpr());
+        $this->assertEquals(20, $math->getRightExpr());
+        $this->assertEquals('+', $math->getOperator());
+
+        // OrderBy
+        $order = new Expr\OrderBy('foo', 'DESC');
+        $this->assertEquals(array('foo DESC'), $order->getParts());
+
+        // Andx
+        $orx = new Expr\Orx(array('foo = 1', 'bar = 2'));
+        $this->assertEquals(array('foo = 1', 'bar = 2'), $orx->getParts());
+
+        // Select
+        $select = new Expr\Select(array('foo', 'bar'));
+        $this->assertEquals(array('foo', 'bar'), $select->getParts());
+    }
 }
