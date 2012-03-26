@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -27,18 +25,32 @@ namespace Doctrine\ORM\Query\Expr;
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision$
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
 class Orx extends Composite
 {
-    protected $_separator = ' OR ';
-    protected $_allowedClasses = array(
+    /**
+     * @var string
+     */
+    protected $separator = ' OR ';
+
+    /**
+     * @var array
+     */
+    protected $allowedClasses = array(
         'Doctrine\ORM\Query\Expr\Comparison',
         'Doctrine\ORM\Query\Expr\Func',
         'Doctrine\ORM\Query\Expr\Andx',
         'Doctrine\ORM\Query\Expr\Orx',
     );
+
+    /**
+     * @return array
+     */
+    public function getParts()
+    {
+        return $this->parts;
+    }
 }

@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -27,41 +25,123 @@ namespace Doctrine\ORM\Query\Expr;
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision$
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
 class Join
 {
-    const INNER_JOIN = 'INNER';
-    const LEFT_JOIN  = 'LEFT';
+    const INNER_JOIN    = 'INNER';
+    const LEFT_JOIN     = 'LEFT';
 
-    const ON   = 'ON';
-    const WITH = 'WITH';
+    const ON            = 'ON';
+    const WITH          = 'WITH';
 
-    private $_joinType;
-    private $_join;
-    private $_alias;
-    private $_conditionType;
-    private $_condition;
-    private $_indexBy;
+    /**
+     * @var string
+     */
+    protected $joinType;
 
+    /**
+     * @var string
+     */
+    protected $join;
+
+    /**
+     * @var string
+     */
+    protected $alias;
+
+    /**
+     * @var string
+     */
+    protected $conditionType;
+
+    /**
+     * @var string
+     */
+    protected $condition;
+
+    /**
+     * @var string
+     */
+    protected $indexBy;
+
+    /**
+     * @param string $joinType      The condition type constant. Either INNER_JOIN or LEFT_JOIN.
+     * @param string $join          The relationship to join
+     * @param string $alias         The alias of the join
+     * @param string $conditionType The condition type constant. Either ON or WITH.
+     * @param string $condition     The condition for the join
+     * @param string $indexBy       The index for the join
+     */
     public function __construct($joinType, $join, $alias = null, $conditionType = null, $condition = null, $indexBy = null)
     {
-        $this->_joinType       = $joinType;
-        $this->_join           = $join;
-        $this->_alias          = $alias;
-        $this->_conditionType  = $conditionType;
-        $this->_condition      = $condition;
-        $this->_indexBy        = $indexBy;
+        $this->joinType       = $joinType;
+        $this->join           = $join;
+        $this->alias          = $alias;
+        $this->conditionType  = $conditionType;
+        $this->condition      = $condition;
+        $this->indexBy        = $indexBy;
     }
 
+    /**
+     * @return string 
+     */
+    public function getJoinType()
+    {
+        return $this->joinType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getJoin()
+    {
+        return $this->join;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAlias()
+    {
+        return $this->alias;
+    }
+
+    /**
+     * @return string
+     */
+    public function getConditionType()
+    {
+        return $this->conditionType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCondition()
+    {
+        return $this->condition;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIndexBy()
+    {
+        return $this->indexBy;
+    }
+
+
+    /**
+     * @return string
+     */
     public function __toString()
     {
-        return strtoupper($this->_joinType) . ' JOIN ' . $this->_join
-             . ($this->_alias ? ' ' . $this->_alias : '')
-             . ($this->_condition ? ' ' . strtoupper($this->_conditionType) . ' ' . $this->_condition : '')
-             . ($this->_indexBy ? ' INDEX BY ' . $this->_indexBy : '');
+        return strtoupper($this->joinType) . ' JOIN ' . $this->join
+             . ($this->alias ? ' ' . $this->alias : '')
+             . ($this->condition ? ' ' . strtoupper($this->conditionType) . ' ' . $this->condition : '')
+             . ($this->indexBy ? ' INDEX BY ' . $this->indexBy : '');
     }
 }

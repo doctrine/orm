@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -27,7 +25,6 @@ namespace Doctrine\ORM\Query\Expr;
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision$
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
@@ -41,19 +38,64 @@ class Comparison
     const GT  = '>';
     const GTE = '>=';
 
-    private $_leftExpr;
-    private $_operator;
-    private $_rightExpr;
+    /**
+     * @var mixed
+     */
+    protected $leftExpr;
 
+    /**
+     * @var string
+     */
+    protected $operator;
+
+    /**
+     * @var mixed
+     */
+    protected $rightExpr;
+
+    /**
+     * Creates a comparison expression with the given arguments.
+     * 
+     * @param mixed     $leftExpr
+     * @param string    $operator
+     * @param mixed     $rightExpr
+     */
     public function __construct($leftExpr, $operator, $rightExpr)
     {
-        $this->_leftExpr  = $leftExpr;
-        $this->_operator  = $operator;
-        $this->_rightExpr = $rightExpr;
+        $this->leftExpr  = $leftExpr;
+        $this->operator  = $operator;
+        $this->rightExpr = $rightExpr;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getLeftExpr()
+    {
+        return $this->leftExpr;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOperator()
+    {
+        return $this->operator;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRightExpr()
+    {
+        return $this->rightExpr;
+    }
+
+    /**
+     * @return string
+     */
     public function __toString()
     {
-        return $this->_leftExpr . ' ' . $this->_operator . ' ' . $this->_rightExpr;
+        return $this->leftExpr . ' ' . $this->operator . ' ' . $this->rightExpr;
     }
 }
