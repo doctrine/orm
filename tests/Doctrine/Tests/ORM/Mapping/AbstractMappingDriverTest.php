@@ -469,7 +469,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-889
      * @expectedException Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Class "Doctrine\Tests\Models\DDC889\DDC889Class" sub classe of "Doctrine\Tests\Models\DDC889\DDC889SuperClass" is not a valid entity or mapped super class.
+     * @expectedExceptionMessage Class "Doctrine\Tests\Models\DDC889\DDC889Class" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass" is not a valid entity or mapped super class.
      */
     public function testInvalidEntityOrMappedSuperClassShouldMentionParentClasses()
     {
@@ -479,7 +479,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-889
      * @expectedException Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage No identifier/primary key specified for Entity "Doctrine\Tests\Models\DDC889\DDC889Entity" sub classe of "Doctrine\Tests\Models\DDC889\DDC889SuperClass". Every Entity must have an identifier/primary key.
+     * @expectedExceptionMessage No identifier/primary key specified for Entity "Doctrine\Tests\Models\DDC889\DDC889Entity" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass". Every Entity must have an identifier/primary key.
      */
     public function testIdentifierRequiredShouldMentionParentClasses()
     {
