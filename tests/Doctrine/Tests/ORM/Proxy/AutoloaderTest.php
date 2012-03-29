@@ -30,9 +30,9 @@ class AutoloaderTest extends OrmTestCase
     static public function dataResolveFile()
     {
         return array(
-            array('/tmp', 'MyProxy', 'MyProxy\__CG__\RealClass', '/tmp/__CG__RealClass.php'),
-            array('/tmp', 'MyProxy\Subdir', 'MyProxy\Subdir\__CG__\RealClass', '/tmp/__CG__RealClass.php'),
-            array('/tmp', 'MyProxy', 'MyProxy\__CG__\Other\RealClass', '/tmp/__CG__OtherRealClass.php'),
+            array('/tmp', 'MyProxy', 'MyProxy\__CG__\RealClass', '/tmp' . DIRECTORY_SEPARATOR . '__CG__RealClass.php'),
+            array('/tmp', 'MyProxy\Subdir', 'MyProxy\Subdir\__CG__\RealClass', '/tmp' . DIRECTORY_SEPARATOR . '__CG__RealClass.php'),
+            array('/tmp', 'MyProxy', 'MyProxy\__CG__\Other\RealClass', '/tmp' . DIRECTORY_SEPARATOR . '__CG__OtherRealClass.php'),
         );
     }
 
