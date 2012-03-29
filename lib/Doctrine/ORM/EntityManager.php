@@ -143,7 +143,8 @@ class EntityManager implements ObjectManager
             $this,
             $config->getProxyDir(),
             $config->getProxyNamespace(),
-            $config->getAutoGenerateProxyClasses()
+            $config->getAutoGenerateProxyClasses(),
+            $config->getProxyExclusiveLock()
         );
     }
 

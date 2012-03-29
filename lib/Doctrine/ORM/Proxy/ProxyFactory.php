@@ -41,6 +41,8 @@ class ProxyFactory
     private $_proxyNamespace;
     /** The directory that contains all proxy classes. */
     private $_proxyDir;
+    /** Acquire an exclusive lock on the file while proceeding to the writing. */
+    private $_lock;
 
     /**
      * Used to match very simple id methods that don't need
@@ -58,8 +60,9 @@ class ProxyFactory
      * @param string $proxyDir The directory to use for the proxy classes. It must exist.
      * @param string $proxyNs The namespace to use for the proxy classes.
      * @param boolean $autoGenerate Whether to automatically generate proxy classes.
+     * @param boolean $lock Acquire an exclusive lock on the file while proceeding to the writing.
      */
-    public function __construct(EntityManager $em, $proxyDir, $proxyNs, $autoGenerate = false)
+    public function __construct(EntityManager $em, $proxyDir, $proxyNs, $autoGenerate = false, $lock = true)
     {
         if ( ! $proxyDir) {
             throw ProxyException::proxyDirectoryRequired();
@@ -71,6 +74,7 @@ class ProxyFactory
         $this->_proxyDir = $proxyDir;
         $this->_autoGenerate = $autoGenerate;
         $this->_proxyNamespace = $proxyNs;
+        $this->_lock = $lock;
     }
 
     /**
@@ -189,7 +193,7 @@ class ProxyFactory
             throw ProxyException::proxyDirectoryNotWritable();
         }
 
-        file_put_contents($fileName, $file, LOCK_EX);
+        file_put_contents($fileName, $file, $this->_lock ? LOCK_EX : 0);
     }
 
     /**
