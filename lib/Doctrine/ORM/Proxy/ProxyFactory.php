@@ -189,7 +189,7 @@ class ProxyFactory
             throw ProxyException::proxyDirectoryNotWritable();
         }
 
-        file_put_contents($fileName, $file, LOCK_EX);
+        file_put_contents($fileName, $file);
     }
 
     /**
