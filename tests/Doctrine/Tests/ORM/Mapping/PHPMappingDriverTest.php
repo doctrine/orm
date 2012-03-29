@@ -25,4 +25,14 @@ class PHPMappingDriverTest extends AbstractMappingDriverTest
 
         return new PHPDriver($path);
     }
+
+    /**
+     * All class are entitier for php driver
+     * 
+     * @group DDC-889
+     */
+    public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses()
+    {
+        $this->createClassMetadata('Doctrine\Tests\Models\DDC889\DDC889Class');
+    }
 }
