@@ -493,7 +493,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ( ! $class->isInheritanceTypeNone()) {
-            $class = $this->em->getClassMetadata(get_class($entity));
+            $class = $this->em->getClassMetadata(ClassUtils::getClass($entity));
         }
 
         // Fire PreFlush lifecycle callbacks
@@ -1398,7 +1398,7 @@ class UnitOfWork implements PropertyChangedListener
     public function removeFromIdentityMap($entity)
     {
         $oid           = spl_object_hash($entity);
-        $classMetadata = $this->em->getClassMetadata(get_class($entity));
+        $classMetadata = $this->em->getClassMetadata(ClassUtils::getClass($entity));
         $idHash        = implode(' ', $this->entityIdentifiers[$oid]);
 
         if ($idHash === '') {
