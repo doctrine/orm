@@ -7,4 +7,3 @@ When merging an entity in UoW not only mapped properties are copied, but also ot
 Metadata drivers have been rewritten to reuse code from Doctrine\Common.
 This is mainly an internal refactoring, but anyone who is using the Doctrine\ORM\Mapping\Driver\Driver interface explicitly should instead refer to Doctrine\Common\Persistence\Mapping\Driver\MappingDriver.
 Same applies to Doctrine\ORM\Mapping\Driver\AbstractFileDriver: you should now refer to Doctrine\Common\Persistence\Mapping\Driver\FileDriver.
->>>>>>> Adding notes about upgrading to 2.3 (metadata drivers changes)
