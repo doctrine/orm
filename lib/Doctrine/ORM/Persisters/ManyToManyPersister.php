@@ -23,7 +23,8 @@ namespace Doctrine\ORM\Persisters;
 
 use Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\PersistentCollection,
-    Doctrine\ORM\UnitOfWork;
+    Doctrine\ORM\UnitOfWork,
+    Doctrine\Common\Util\ClassUtils;
 
 /**
  * Persister for many-to-many collections.
@@ -43,7 +44,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     protected function _getDeleteRowSQL(PersistentCollection $coll)
     {
         $mapping = $coll->getMapping();
-        $class   = $this->_em->getClassMetadata(get_class($coll->getOwner()));
+        $class   = $this->_em->getClassMetadata(ClassUtils::getClass($coll->getOwner()));
 
         return 'DELETE FROM ' . $class->getQuotedJoinTableName($mapping, $this->_conn->getDatabasePlatform())
              . ' WHERE ' . implode(' = ? AND ', $mapping['joinTableColumns']) . ' = ?';
@@ -80,7 +81,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $mapping = $coll->getMapping();
         $columns = $mapping['joinTableColumns'];
-        $class   = $this->_em->getClassMetadata(get_class($coll->getOwner()));
+        $class   = $this->_em->getClassMetadata(ClassUtils::getClass($coll->getOwner()));
 
         $joinTable = $class->getQuotedJoinTableName($mapping, $this->_conn->getDatabasePlatform());
 
@@ -118,7 +119,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $identifier2 = $this->_uow->getEntityIdentifier($element);
 
         if ($isComposite) {
-            $class1 = $this->_em->getClassMetadata(get_class($coll->getOwner()));
+            $class1 = $this->_em->getClassMetadata(ClassUtils::getClass($coll->getOwner()));
             $class2 = $coll->getTypeClass();
         }
 
@@ -150,7 +151,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function _getDeleteSQL(PersistentCollection $coll)
     {
-        $class   = $this->_em->getClassMetadata(get_class($coll->getOwner()));
+        $class   = $this->_em->getClassMetadata(ClassUtils::getClass($coll->getOwner()));
         $mapping = $coll->getMapping();
 
         return 'DELETE FROM ' . $class->getQuotedJoinTableName($mapping, $this->_conn->getDatabasePlatform())
@@ -178,7 +179,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         // Composite identifier
-        $sourceClass = $this->_em->getClassMetadata(get_class($mapping->getOwner()));
+        $sourceClass = $this->_em->getClassMetadata(ClassUtils::getClass($mapping->getOwner()));
 
         foreach ($mapping['relationToSourceKeyColumns'] as $srcColumn) {
             $params[] = $identifier[$sourceClass->fieldNames[$srcColumn]];
