@@ -263,9 +263,6 @@ class YamlDriver extends AbstractFileDriver
                 if (isset($fieldMapping['columnDefinition'])) {
                     $mapping['columnDefinition'] = $fieldMapping['columnDefinition'];
                 }
-                if (isset($fieldMapping['default'])) {
-                    $mapping['default'] = $fieldMapping['default'];
-                }
 
                 $metadata->mapField($mapping);
             }
