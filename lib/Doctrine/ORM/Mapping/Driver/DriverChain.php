@@ -61,9 +61,9 @@ class DriverChain implements MappingDriver
     /**
      * Set the default driver.
      *
-     * @param Driver $driver
+     * @param MappingDriver $driver
      */
-    public function setDefaultDriver(Driver $driver)
+    public function setDefaultDriver(MappingDriver $driver)
     {
         $this->defaultDriver = $driver;
     }

@@ -93,8 +93,8 @@ class DriverChainTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testDefaultDriver()
     {
-        $companyDriver      = $this->getMock('Doctrine\ORM\Mapping\Driver\Driver');
-        $dafaultDriver      = $this->getMock('Doctrine\ORM\Mapping\Driver\Driver');
+        $companyDriver      = $this->getMock('Doctrine\Common\Persistence\Mapping\Driver\MappingDriver');
+        $dafaultDriver      = $this->getMock('Doctrine\Common\Persistence\Mapping\Driver\MappingDriver');
         $entityClassName    = 'Doctrine\Tests\ORM\Mapping\DriverChainEntity';
         $managerClassName   = 'Doctrine\Tests\Models\Company\CompanyManager';
         $chain              = new DriverChain();
