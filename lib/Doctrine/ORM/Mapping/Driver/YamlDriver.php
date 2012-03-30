@@ -19,8 +19,10 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Mapping\MappingException;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata,
+    Doctrine\Common\Persistence\Mapping\Driver\FileDriver,
+    Doctrine\ORM\Mapping\MappingException,
+    Symfony\Component\Yaml\Yaml;
 
 /**
  * The YamlDriver reads the mapping metadata from yaml schema files.
@@ -31,17 +33,22 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo,
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @author Roman Borschel <roman@code-factory.org>
  */
-class YamlDriver extends AbstractFileDriver
+class YamlDriver extends FileDriver
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected $_fileExtension = '.dcm.yml';
+    const DEFAULT_FILE_EXTENSION = '.dcm.yml';
 
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
+    public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
+    {
+        parent::__construct($locator, $fileExtension);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         $element = $this->getElement($className);
 
@@ -517,8 +524,8 @@ class YamlDriver extends AbstractFileDriver
     /**
      * {@inheritdoc}
      */
-    protected function _loadMappingFile($file)
+    protected function loadMappingFile($file)
     {
-        return \Symfony\Component\Yaml\Yaml::parse($file);
+        return Yaml::parse($file);
     }
 }

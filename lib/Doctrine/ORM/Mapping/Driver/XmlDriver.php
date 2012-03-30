@@ -22,7 +22,8 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use SimpleXMLElement,
-    Doctrine\ORM\Mapping\ClassMetadataInfo,
+    Doctrine\Common\Persistence\Mapping\Driver\FileDriver,
+    Doctrine\Common\Persistence\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\MappingException;
 
 /**
@@ -37,17 +38,22 @@ use SimpleXMLElement,
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class XmlDriver extends AbstractFileDriver
+class XmlDriver extends FileDriver
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected $_fileExtension = '.dcm.xml';
+    const DEFAULT_FILE_EXTENSION = '.dcm.xml';
 
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
+    public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
+    {
+        parent::__construct($locator, $fileExtension);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         $xmlRoot = $this->getElement($className);
 
@@ -553,7 +559,7 @@ class XmlDriver extends AbstractFileDriver
     /**
      * {@inheritdoc}
      */
-    protected function _loadMappingFile($file)
+    protected function loadMappingFile($file)
     {
         $result = array();
         $xmlElement = simplexml_load_file($file);

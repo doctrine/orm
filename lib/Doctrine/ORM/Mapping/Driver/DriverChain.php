@@ -19,8 +19,8 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\ORM\Mapping\Driver\Driver,
-    Doctrine\ORM\Mapping\ClassMetadataInfo,
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver,
+    Doctrine\Common\Persistence\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\MappingException;
 
 /**
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping\Driver\Driver,
  * @author Roman Borschel <roman@code-factory.org>
  * @todo Rename: MappingDriverChain or MetadataDriverChain
  */
-class DriverChain implements Driver
+class DriverChain implements MappingDriver
 {
     /**
      * @var array
@@ -71,10 +71,10 @@ class DriverChain implements Driver
     /**
      * Add a nested driver.
      *
-     * @param Driver $nestedDriver
+     * @param MappingDriver $nestedDriver
      * @param string $namespace
      */
-    public function addDriver(Driver $nestedDriver, $namespace)
+    public function addDriver(MappingDriver $nestedDriver, $namespace)
     {
         $this->drivers[$namespace] = $nestedDriver;
     }
@@ -93,9 +93,9 @@ class DriverChain implements Driver
      * Loads the metadata for the specified class into the provided container.
      *
      * @param string $className
-     * @param ClassMetadataInfo $metadata
+     * @param ClassMetadata $metadata
      */
-    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         foreach ($this->drivers as $namespace => $driver) {
             if (strpos($className, $namespace) === 0) {

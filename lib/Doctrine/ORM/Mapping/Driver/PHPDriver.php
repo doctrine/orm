@@ -19,16 +19,11 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Cache\ArrayCache,
-    Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\DBAL\Schema\AbstractSchemaManager,
-    Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Mapping\MappingException,
-    Doctrine\Common\Util\Inflector,
-    Doctrine\ORM\Mapping\Driver\AbstractFileDriver;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata,
+    Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 
 /**
- * The PHPDriver includes php files which just populate ClassMetadataInfo
+ * The PHPDriver includes php files which just populate ClassMetadata
  * instances with plain php code
  *
  * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
@@ -41,29 +36,44 @@ use Doctrine\Common\Cache\ArrayCache,
  * @author      Roman Borschel <roman@code-factory.org>
  * @todo Rename: PHPDriver
  */
-class PHPDriver extends AbstractFileDriver
+class PHPDriver extends FileDriver
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected $_fileExtension = '.php';
-    protected $_metadata;
+    const DEFAULT_FILE_EXTENSION = '.php';
 
     /**
+     *
+     * @var ClassMetadata
+     */
+    protected $_metadata;
+    
+    /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
+    public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
-        $this->_metadata = $metadata;
-        $this->_loadMappingFile($this->_findMappingFile($className));
+        parent::__construct($locator, $fileExtension);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function _loadMappingFile($file)
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
+        $this->_metadata = $metadata;
+        $this->getElement($className);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function loadMappingFile($file)
+    {
+        $result = array();
         $metadata = $this->_metadata;
         include $file;
+        // @todo cannot assume that the only loaded metadata is $metadata. Some
+        // decision about the preferred approach should be taken
+        $result[$metadata->getName()] = $metadata;
+        return $result;
     }
 }
