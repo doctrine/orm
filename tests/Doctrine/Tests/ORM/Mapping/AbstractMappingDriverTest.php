@@ -24,6 +24,21 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         return $class;
     }
 
+    /**
+     * @param \Doctrine\ORM\EntityManager $entityClassName
+     * @return \Doctrine\ORM\Mapping\ClassMetadataFactory
+     */
+    protected function createClassMetadataFactory(\Doctrine\ORM\EntityManager $em = null)
+    {
+        $driver     = $this->_loadDriver();
+        $em         = $em ?: $this->_getTestEntityManager();
+        $factory    = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $em->getConfiguration()->setMetadataDriverImpl($driver);
+        $factory->setEntityManager($em);
+
+        return $factory;
+    }
+
     public function testLoadMapping()
     {
         $entityClassName = 'Doctrine\Tests\ORM\Mapping\User';
@@ -329,12 +344,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testMappedSuperclassWithRepository()
     {
-        $driver     = $this->_loadDriver();
         $em         = $this->_getTestEntityManager();
-        $factory    = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
-
-        $em->getConfiguration()->setMetadataDriverImpl($driver);
-        $factory->setEntityManager($em);
+        $factory    = $this->createClassMetadataFactory($em);
 
 
         $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment');
@@ -365,12 +376,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testDefaultFieldType()
     {
-        $driver     = $this->_loadDriver();
         $em         = $this->_getTestEntityManager();
-        $factory    = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
-
-        $em->getConfiguration()->setMetadataDriverImpl($driver);
-        $factory->setEntityManager($em);
+        $factory    = $this->createClassMetadataFactory($em);
 
 
         $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType');
@@ -429,11 +436,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testNamingStrategy()
     {
-        $driver     = $this->_loadDriver();
         $em         = $this->_getTestEntityManager();
-        $factory    = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
-        $em->getConfiguration()->setMetadataDriverImpl($driver);
-        $factory->setEntityManager($em);
+        $factory    = $this->createClassMetadataFactory($em);
 
 
         $this->assertInstanceOf('Doctrine\ORM\Mapping\DefaultNamingStrategy', $em->getConfiguration()->getNamingStrategy());
@@ -460,6 +464,29 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals("ENUM('ONE','TWO')", $class->discriminatorColumn['columnDefinition']);
         $this->assertEquals("dtype", $class->discriminatorColumn['name']);
+    }
+
+    /**
+     * @group DDC-889
+     * @expectedException Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage Class "Doctrine\Tests\Models\DDC889\DDC889Class" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass" is not a valid entity or mapped super class.
+     */
+    public function testInvalidEntityOrMappedSuperClassShouldMentionParentClasses()
+    {
+        $this->createClassMetadata('Doctrine\Tests\Models\DDC889\DDC889Class');
+    }
+
+    /**
+     * @group DDC-889
+     * @expectedException Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage No identifier/primary key specified for Entity "Doctrine\Tests\Models\DDC889\DDC889Entity" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass". Every Entity must have an identifier/primary key.
+     */
+    public function testIdentifierRequiredShouldMentionParentClasses()
+    {
+
+        $factory = $this->createClassMetadataFactory();
+        
+        $factory->getMetadataFor('Doctrine\Tests\Models\DDC889\DDC889Entity');
     }
 }
 
