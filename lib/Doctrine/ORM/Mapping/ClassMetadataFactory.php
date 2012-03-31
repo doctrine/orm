@@ -24,6 +24,7 @@ use ReflectionException,
     Doctrine\ORM\EntityManager,
     Doctrine\DBAL\Platforms,
     Doctrine\ORM\Events,
+    Doctrine\Common\Util\ClassUtils,
     Doctrine\Common\Persistence\Mapping\RuntimeReflectionService,
     Doctrine\Common\Persistence\Mapping\ReflectionService,
     Doctrine\Common\Persistence\Mapping\ClassMetadataFactory as ClassMetadataFactoryInterface;
@@ -168,6 +169,8 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
                     return $this->loadedMetadata[$realClassName];
                 }
+            } else {
+                $realClassName = ClassUtils::getRealClass($realClassName);
             }
 
             if ($this->cacheDriver) {
