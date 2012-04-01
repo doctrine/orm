@@ -805,7 +805,7 @@ public function <methodName>()
         $this->_staticReflection[$metadata->name]['methods'][] = $methodName;
 
         $replacements = array(
-            '<name>'        => $this->_annotationsPrefix . $name,
+            '<name>'        => $this->_annotationsPrefix . ucfirst($name),
             '<methodName>'  => $methodName,
         );
 
