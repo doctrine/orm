@@ -676,7 +676,7 @@ public function <methodName>()
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
             if ( ! isset($fieldMapping['id']) || ! $fieldMapping['id'] ||
-                $metadata->isIdGeneratorType($fieldMapping['fielName'], ClassMetadataInfo::GENERATOR_TYPE_NONE)) {
+                $metadata->isIdGeneratorType($fieldMapping['fieldName'], ClassMetadataInfo::GENERATOR_TYPE_NONE)) {
                 if ($code = $this->_generateEntityStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type'])) {
                     $methods[] = $code;
                 }

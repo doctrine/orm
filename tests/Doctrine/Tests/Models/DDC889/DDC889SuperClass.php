@@ -36,6 +36,5 @@ class DDC889SuperClass
         ));
 
         $metadata->isMappedSuperclass = true;
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_NONE);
     }
 }

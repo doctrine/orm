@@ -26,5 +26,4 @@ $metadata->mapField(array(
    'id' => true,
    'columnName' => 'id',
   ));
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_CUSTOM);
-$metadata->setCustomGeneratorDefinition(array("class" => "stdClass"));
+$metadata->addIdGenerator('id', ClassMetadataInfo::GENERATOR_TYPE_CUSTOM, array('class' => 'stdClass'));

@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
+
 /**
  * EntityPersister implementation used for mocking during tests.
  */
@@ -22,25 +24,44 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
      */
     public function insert($entity)
     {
+        $fieldNames = $this->_class->getIdentifierFieldNames();
+
         $this->_inserts[] = $entity;
-        if ( ! is_null($this->_mockIdGeneratorType) && $this->_mockIdGeneratorType == \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY
-                || $this->_class->isIdGeneratorIdentity()) {
+
+        if ( ! is_null($this->_mockIdGeneratorType)
+                && $this->_mockIdGeneratorType == ClassMetadata::GENERATOR_TYPE_IDENTITY
+                || $this->_class->isIdGeneratorType($fieldNames[0], ClassMetadata::GENERATOR_TYPE_IDENTITY)) {
             $id = $this->_identityColumnValueCounter++;
-            $this->_postInsertIds[$id] = $entity;
+
+            $this->_postInsertIds[spl_object_hash($entity)] = array(
+                'entity' => $entity,
+                'idList' => array($fieldNames[0] => $id)
+            );
+
             return $id;
         }
+
         return null;
     }
 
     public function addInsert($entity)
     {
+        $fieldNames = $this->_class->getIdentifierFieldNames();
+
         $this->_inserts[] = $entity;
-        if ( ! is_null($this->_mockIdGeneratorType) && $this->_mockIdGeneratorType == \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY
-                || $this->_class->isIdGeneratorIdentity()) {
+
+        if ( ! is_null($this->_mockIdGeneratorType)
+                && $this->_mockIdGeneratorType == ClassMetadata::GENERATOR_TYPE_IDENTITY
+                || $this->_class->isIdGeneratorType($fieldNames[0], ClassMetadata::GENERATOR_TYPE_IDENTITY)) {
             $id = $this->_identityColumnValueCounter++;
-            $this->_postInsertIds[$id] = $entity;
+
+            $this->_postInsertIds[spl_object_hash($entity)] = array(
+                'entity' => $entity,
+                'idList' => array($fieldNames[0] => $id)
+            );
             return $id;
         }
+
         return null;
     }
 

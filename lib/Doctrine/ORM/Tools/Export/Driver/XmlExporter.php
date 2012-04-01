@@ -95,7 +95,7 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        $trackingPolicy = $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy);
+        $trackingPolicy = $this->getChangeTrackingPolicyString($metadata->changeTrackingPolicy);
         if ( $trackingPolicy != 'DEFERRED_IMPLICIT') {
             $root->addChild('change-tracking-policy', $trackingPolicy);
         }
@@ -130,7 +130,7 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
+        if ($idGeneratorType = $this->getIdGeneratorTypeString($metadata->generatorType)) {
             $id[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
         }
 
@@ -145,7 +145,7 @@ class XmlExporter extends AbstractExporter
                 if (isset($field['associationKey']) && $field['associationKey']) {
                     $idXml->addAttribute('association-key', 'true');
                 }
-                if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
+                if ($idGeneratorType = $this->getIdGeneratorTypeString($metadata->generatorType)) {
                     $generatorXml = $idXml->addChild('generator');
                     $generatorXml->addAttribute('strategy', $idGeneratorType);
                 }

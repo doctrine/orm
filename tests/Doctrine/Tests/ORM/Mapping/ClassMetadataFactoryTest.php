@@ -36,7 +36,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm1->inheritanceType);
         $this->assertTrue($cm1->hasField('name'));
         $this->assertEquals(2, count($cm1->associationMappings));
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $cm1->generatorType);
+        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $cm1->idGeneratorList['id']['type']);
         $this->assertEquals('group', $cm1->table['name']);
 
         // Go
@@ -52,25 +52,30 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     public function testGetMetadataFor_ReturnsLoadedCustomIdGenerator()
     {
         $cm1 = $this->_createValidClassMetadata();
-        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
-        $cm1->customGeneratorDefinition = array(
-            "class" => "Doctrine\Tests\ORM\Mapping\CustomIdGenerator");
+
+        $cm1->addIdGenerator(
+            'id',
+            ClassMetadata::GENERATOR_TYPE_CUSTOM,
+            array('class' => 'Doctrine\Tests\ORM\Mapping\CustomIdGenerator')
+        );
+
         $cmf = $this->_createTestFactory();
         $cmf->setMetadataForClass($cm1->name, $cm1);
 
         $actual = $cmf->getMetadataFor($cm1->name);
 
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM,
-            $actual->generatorType);
-        $this->assertInstanceOf("Doctrine\Tests\ORM\Mapping\CustomIdGenerator",
-            $actual->idGenerator);
+        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, $actual->idGeneratorList['id']['type']);
+        $this->assertInstanceOf(
+            "Doctrine\Tests\ORM\Mapping\CustomIdGenerator", $actual->idGeneratorList['id']['generator']
+        );
     }
 
     public function testGetMetadataFor_ThrowsExceptionOnUnknownCustomGeneratorClass()
     {
         $cm1 = $this->_createValidClassMetadata();
-        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
-        $cm1->customGeneratorDefinition = array("class" => "NotExistingGenerator");
+
+        $cm1->addIdGenerator('id', ClassMetadata::GENERATOR_TYPE_CUSTOM, array('class' => 'NotExistingGenerator'));
+
         $cmf = $this->_createTestFactory();
         $cmf->setMetadataForClass($cm1->name, $cm1);
         $this->setExpectedException("Doctrine\ORM\ORMException");
@@ -81,7 +86,9 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     public function testGetMetadataFor_ThrowsExceptionOnMissingCustomGeneratorDefinition()
     {
         $cm1 = $this->_createValidClassMetadata();
-        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
+
+        $cm1->addIdGenerator('id', ClassMetadata::GENERATOR_TYPE_CUSTOM);
+
         $cmf = $this->_createTestFactory();
         $cmf->setMetadataForClass($cm1->name, $cm1);
         $this->setExpectedException("Doctrine\ORM\ORMException");
@@ -206,8 +213,8 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $cm1->mapOneToOne(array('fieldName' => 'association', 'targetEntity' => 'TestEntity1', 'joinColumns' => $joinColumns));
 
         // and an id generator type
-        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
-        
+        $cm1->addIdGenerator('id', ClassMetadata::GENERATOR_TYPE_AUTO);
+
         return $cm1;
     }
 }

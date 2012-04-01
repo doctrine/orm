@@ -8,4 +8,3 @@ $metadata->mapField(array(
   ));
 $metadata->isMappedSuperclass = true;
 $metadata->setCustomRepositoryClass("Doctrine\Tests\Models\DDC889\DDC889SuperClass");
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);

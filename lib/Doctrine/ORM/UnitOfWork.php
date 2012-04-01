@@ -916,12 +916,11 @@ class UnitOfWork implements PropertyChangedListener
                     $class->reflFields[$fieldName]->setValue($insertList['entity'], $fieldValue);
 
                     $this->originalEntityData[$oid][$fieldName] = $fieldValue;
+                    $this->entityStates[$oid]                   = self::STATE_MANAGED;
+                    $this->entityIdentifiers[$oid]              = $insertList['idList'];
+
+                    $this->addToIdentityMap($insertList['entity']);
                 }
-
-                $this->entityStates[$oid]      = self::STATE_MANAGED;
-                $this->entityIdentifiers[$oid] = $insertList['idList'];
-
-                $this->addToIdentityMap($insertList['entity']);
             }
         }
 

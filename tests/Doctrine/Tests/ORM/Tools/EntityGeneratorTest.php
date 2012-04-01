@@ -68,7 +68,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         ));
         $metadata->addLifecycleCallback('loading', 'postLoad');
         $metadata->addLifecycleCallback('willBeRemoved', 'preRemove');
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $metadata->addIdGenerator('id', ClassMetadataInfo::GENERATOR_TYPE_AUTO);
 
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
 
@@ -179,7 +179,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($cm->getTableName(), $metadata->getTableName());
         $this->assertEquals($cm->lifecycleCallbacks, $metadata->lifecycleCallbacks);
         $this->assertEquals($cm->identifier, $metadata->identifier);
-        $this->assertEquals($cm->idGenerator, $metadata->idGenerator);
+        $this->assertEquals($cm->idGeneratorList, $metadata->idGeneratorList);
         $this->assertEquals($cm->customRepositoryClassName, $metadata->customRepositoryClassName);
     }
 
@@ -202,7 +202,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($cm->getTableName(), $metadata->getTableName());
         $this->assertEquals($cm->lifecycleCallbacks, $metadata->lifecycleCallbacks);
         $this->assertEquals($cm->identifier, $metadata->identifier);
-        $this->assertEquals($cm->idGenerator, $metadata->idGenerator);
+        $this->assertEquals($cm->idGeneratorList, $metadata->idGeneratorList);
         $this->assertEquals($cm->customRepositoryClassName, $metadata->customRepositoryClassName);
     }
 

@@ -109,14 +109,14 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testEntitySequence($class)
     {
-        $this->assertInternalType('array', $class->sequenceGeneratorDefinition, 'No Sequence Definition set on this driver.');
+        $this->assertInternalType('array', $class->idGeneratorList['id']['definition'], 'No Sequence Definition set on this driver.');
         $this->assertEquals(
             array(
                 'sequenceName' => 'tablename_seq',
                 'allocationSize' => 100,
                 'initialValue' => 1,
             ),
-            $class->sequenceGeneratorDefinition
+            $class->idGeneratorList['id']['definition']
         );
     }
 
@@ -124,12 +124,17 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     {
         $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\Animal');
 
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM,
-            $class->generatorType, "Generator Type");
+        $this->assertEquals(
+            ClassMetadata::GENERATOR_TYPE_CUSTOM,
+            $class->idGeneratorList['id']['type'],
+            "Generator Type"
+        );
+
         $this->assertEquals(
             array("class" => "stdClass"),
-            $class->customGeneratorDefinition,
-            "Custom Generator Definition");
+            $class->idGeneratorList['id']['definition'],
+            "Custom Generator Definition"
+        );
     }
 
 
@@ -185,7 +190,12 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertEquals(array('id'), $class->identifier);
         $this->assertEquals('integer', $class->fieldMappings['id']['type']);
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $class->generatorType, "ID-Generator is not ClassMetadata::GENERATOR_TYPE_AUTO");
+
+        $this->assertEquals(
+            ClassMetadata::GENERATOR_TYPE_AUTO,
+            $class->idGeneratorList['id']['type'],
+            "ID-Generator is not ClassMetadata::GENERATOR_TYPE_AUTO"
+        );
 
         return $class;
     }
@@ -485,7 +495,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     {
 
         $factory = $this->createClassMetadataFactory();
-        
+
         $factory->getMetadataFor('Doctrine\Tests\Models\DDC889\DDC889Entity');
     }
 }
@@ -595,7 +605,15 @@ class User
            'columnName' => 'user_email',
            'columnDefinition' => 'CHAR(32) NOT NULL',
           ));
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $metadata->addIdGenerator(
+            'id',
+            ClassMetadataInfo::GENERATOR_TYPE_AUTO,
+            array(
+                'sequenceName' => 'tablename_seq',
+                'allocationSize' => 100,
+                'initialValue' => 1,
+            )
+           );
         $metadata->mapOneToOne(array(
            'fieldName' => 'address',
            'targetEntity' => 'Doctrine\\Tests\\ORM\\Mapping\\Address',
@@ -673,11 +691,6 @@ class User
         $metadata->table['indexes'] = array(
             'name_idx' => array('columns' => array('name')), 0 => array('columns' => array('user_email'))
         );
-        $metadata->setSequenceGeneratorDefinition(array(
-                'sequenceName' => 'tablename_seq',
-                'allocationSize' => 100,
-                'initialValue' => 1,
-            ));
     }
 }
 
@@ -696,8 +709,7 @@ abstract class Animal
 
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_CUSTOM);
-        $metadata->setCustomGeneratorDefinition(array("class" => "stdClass"));
+        $metadata->addIdGenerator('id', ClassMetadataInfo::GENERATOR_TYPE_CUSTOM, array('class' => 'stdClass'));
     }
 }
 
@@ -775,7 +787,7 @@ class DDC1170Entity
             'columnDefinition'  => 'VARCHAR(255) NOT NULL'
         ));
 
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->addIdGenerator('id', ClassMetadataInfo::GENERATOR_TYPE_NONE);
     }
 
 }
@@ -794,7 +806,7 @@ class DDC807Entity
      * @GeneratedValue(strategy="NONE")
      **/
    public $id;
-   
+
    public static function loadMetadata(ClassMetadataInfo $metadata)
     {
          $metadata->mapField(array(
@@ -808,7 +820,7 @@ class DDC807Entity
             'columnDefinition'  => "ENUM('ONE','TWO')"
         ));
 
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->addIdGenerator('id', ClassMetadataInfo::GENERATOR_TYPE_NONE);
     }
 }
 

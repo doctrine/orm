@@ -9,4 +9,4 @@ $metadata->mapField(array(
 $metadata->mapField(array(
    'fieldName'  => 'name'
 ));
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+$metadata->addIdGenerator('id', ClassMetadataInfo::GENERATOR_TYPE_NONE);

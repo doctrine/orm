@@ -13,4 +13,4 @@ $metadata->mapField(array(
     'columnDefinition'  => 'VARCHAR(255) NOT NULL'
 ));
 
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+$metadata->addIdGenerator('id', ClassMetadataInfo::GENERATOR_TYPE_NONE);

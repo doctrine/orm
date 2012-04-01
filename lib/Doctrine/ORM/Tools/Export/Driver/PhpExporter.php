@@ -57,7 +57,7 @@ class PhpExporter extends AbstractExporter
         }
 
         if ($metadata->inheritanceType) {
-            $lines[] = '$metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_' . $this->_getInheritanceTypeString($metadata->inheritanceType) . ');';
+            $lines[] = '$metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_' . $this->getInheritanceTypeString($metadata->inheritanceType) . ');';
         }
 
         if ($metadata->customRepositoryClassName) {
@@ -77,7 +77,7 @@ class PhpExporter extends AbstractExporter
         }
 
         if ($metadata->changeTrackingPolicy) {
-            $lines[] = '$metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_' . $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy) . ');';
+            $lines[] = '$metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_' . $this->getChangeTrackingPolicyString($metadata->changeTrackingPolicy) . ');';
         }
 
         if ($metadata->lifecycleCallbacks) {
@@ -99,7 +99,7 @@ class PhpExporter extends AbstractExporter
             $generatorType       = $idGenerator['type'];
             $generatorDefinition = $idGenerator['definition'];
 
-            if ($generatorTypeString = $this->_getIdGeneratorTypeString($generatorType)) {
+            if ($generatorTypeString = $this->getIdGeneratorTypeString($generatorType)) {
                 $lines[] = '$metadata->addIdGenerator('
                          . $this->_varExport($fieldMapping['fieldName']) . ', '
                          . 'ClassMetadataInfo::GENERATOR_TYPE_' . $generatorTypeString . ', '

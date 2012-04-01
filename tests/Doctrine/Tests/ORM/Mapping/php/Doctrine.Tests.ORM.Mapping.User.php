@@ -35,7 +35,11 @@ $metadata->mapField(array(
    'columnName' => 'user_email',
    'columnDefinition' => 'CHAR(32) NOT NULL',
   ));
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+$metadata->addIdGenerator('id', ClassMetadataInfo::GENERATOR_TYPE_AUTO, array(
+    'sequenceName' => 'tablename_seq',
+    'allocationSize' => 100,
+    'initialValue' => 1,
+));
 $metadata->mapOneToOne(array(
    'fieldName' => 'address',
    'targetEntity' => 'Doctrine\\Tests\\ORM\\Mapping\\Address',
@@ -108,7 +112,7 @@ $metadata->mapManyToMany(array(
    'orderBy' => NULL,
   ));
 $metadata->table['options'] = array(
-    'foo' => 'bar', 
+    'foo' => 'bar',
     'baz' => array('key' => 'val')
 );
 $metadata->table['uniqueConstraints'] = array(
@@ -117,8 +121,3 @@ $metadata->table['uniqueConstraints'] = array(
 $metadata->table['indexes'] = array(
     'name_idx' => array('columns' => array('name')), 0 => array('columns' => array('user_email'))
 );
-$metadata->setSequenceGeneratorDefinition(array(
-        'sequenceName' => 'tablename_seq',
-        'allocationSize' => 100,
-        'initialValue' => 1,
-    ));

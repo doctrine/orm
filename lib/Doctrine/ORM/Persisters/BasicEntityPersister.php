@@ -73,7 +73,7 @@ use PDO,
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  * @author Alexander <iam.asm89@gmail.com>
- * @since 2.0
+ * @since  2.0
  */
 class BasicEntityPersister
 {
@@ -237,7 +237,7 @@ class BasicEntityPersister
             $stmt->execute();
 
             // Handle Post Insert ID
-            $idList = $this->_class->getIdentifierValues($entity);
+            $idList = array();
 
             foreach ($this->_class->idGeneratorList as $fieldName => $idGenerator) {
                 $generator = $idGenerator['generator'];
