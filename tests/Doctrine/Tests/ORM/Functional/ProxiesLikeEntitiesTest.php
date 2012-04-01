@@ -96,6 +96,36 @@ class ProxiesLikeEntitiesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
     }
 
+    /**
+     * Verifying that proxies can be used without problems as query parameters
+     */
+    public function testFindWithProxyName()
+    {
+        $result = $this
+            ->_em
+            ->find('Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser', $this->user->getId());
+        $this->assertSame($this->user->getId(), $result->getId());
+        $this->_em->clear();
+        $result = $this
+            ->_em
+            ->getReference('Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser', $this->user->getId());
+        $this->assertSame($this->user->getId(), $result->getId());
+        $this->_em->clear();
+        $result = $this
+            ->_em
+            ->getRepository('Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser')
+            ->findOneBy(array('username' => $this->user->username));
+        $this->assertSame($this->user->getId(), $result->getId());
+        $this->_em->clear();
+        $result = $this
+            ->_em
+            ->createQuery('SELECT u FROM Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1')
+            ->setParameter(1, $this->user->getId())
+            ->getSingleResult();
+        $this->assertSame($this->user->getId(), $result->getId());
+        $this->_em->clear();
+    }
+
     protected function tearDown()
     {
         $this->_em->createQuery('DELETE FROM Doctrine\Tests\Models\CMS\CmsUser u')->execute();
