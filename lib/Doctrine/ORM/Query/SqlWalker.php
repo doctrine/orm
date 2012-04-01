@@ -242,7 +242,7 @@ class SqlWalker implements TreeWalker
         // And strip non alphanumeric characters
         $columnName = $columnName . $this->_aliasCounter++;
         $columnName = substr($columnName, -$this->_platform->getMaxIdentifierLength());
-        $columnName = preg_replace('/[^A-Za-z0-9_]/', '', $columnName );
+        $columnName = preg_replace('/[^A-Za-z0-9_]/', '', $columnName);
 
         return $this->_platform->getSQLResultCasing($columnName);
     }
