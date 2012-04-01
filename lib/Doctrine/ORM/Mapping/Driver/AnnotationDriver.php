@@ -324,29 +324,34 @@ class AnnotationDriver implements Driver
                     $mapping['id'] = true;
                 }
 
-                if ($generatedValueAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\GeneratedValue')) {
-                    $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $generatedValueAnnot->strategy));
-                }
+                $metadata->mapField($mapping);
 
+                // Check for Version definition
                 if ($this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Version')) {
                     $metadata->setVersionMapping($mapping);
                 }
 
-                $metadata->mapField($mapping);
+                // Check for GeneratedValue definition
+                if ($generatedValueAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\GeneratedValue')) {
+                    $generatorType       = constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $generatedValueAnnot->strategy);
+                    $generatorDefinition = array();
 
-                // Check for SequenceGenerator/TableGenerator definition
-                if ($seqGeneratorAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\SequenceGenerator')) {
-                    $metadata->setSequenceGeneratorDefinition(array(
-                        'sequenceName' => $seqGeneratorAnnot->sequenceName,
-                        'allocationSize' => $seqGeneratorAnnot->allocationSize,
-                        'initialValue' => $seqGeneratorAnnot->initialValue
-                    ));
-                } else if ($this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\TableGenerator')) {
-                    throw MappingException::tableIdGeneratorNotImplemented($className);
-                } else if ($customGeneratorAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\CustomIdGenerator')) {
-                    $metadata->setCustomGeneratorDefinition(array(
-                        'class' => $customGeneratorAnnot->class
-                    ));
+                    // Check for SequenceGenerator/TableGenerator definition
+                    if ($seqGeneratorAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\SequenceGenerator')) {
+                        $generatorDefinition = array(
+                            'sequenceName'   => $seqGeneratorAnnot->sequenceName,
+                            'allocationSize' => $seqGeneratorAnnot->allocationSize,
+                            'initialValue'   => $seqGeneratorAnnot->initialValue
+                        );
+                    } else if ($customGeneratorAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\CustomIdGenerator')) {
+                        $generatorDefinition = array(
+                            'class' => $customGeneratorAnnot->class
+                        );
+                    } else if ($this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\TableGenerator')) {
+                        throw MappingException::tableIdGeneratorNotImplemented($className);
+                    }
+
+                    $metadata->addIdGenerator($mapping['fieldName'], $generatorType, $generatorDefinition);
                 }
             } else if ($oneToOneAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OneToOne')) {
                 if ($idAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Id')) {

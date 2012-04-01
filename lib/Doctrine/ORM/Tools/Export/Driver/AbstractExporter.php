@@ -1,8 +1,6 @@
 <?php
 
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -23,6 +21,7 @@
 namespace Doctrine\ORM\Tools\Export\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+
 use Doctrine\ORM\Tools\Export\ExportException;
 
 /**
@@ -32,31 +31,56 @@ use Doctrine\ORM\Tools\Export\ExportException;
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision$
  * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Guilheme Blanco <guilhermeblanco@hotmail.com>
  */
 abstract class AbstractExporter
 {
+    /**
+     * @var array
+     */
     protected $_metadata = array();
+
+    /**
+     * @var string
+     */
     protected $_outputDir;
+
+    /**
+     * @var string
+     */
     protected $_extension;
+
+    /**
+     * @var boolean
+     */
     protected $_overwriteExistingFiles = false;
 
+    /**
+     * Constructor
+     *
+     * @param string $dir
+     */
     public function __construct($dir = null)
     {
         $this->_outputDir = $dir;
     }
 
+    /**
+     * Define the overwrite existing file
+     *
+     * @param boolean $overwrite
+     */
     public function setOverwriteExistingFiles($overwrite)
     {
         $this->_overwriteExistingFiles = $overwrite;
     }
 
     /**
-     * Converts a single ClassMetadata instance to the exported format
-     * and returns it
+     * Converts a single ClassMetadata instance to the exported format and returns it
      *
      * @param ClassMetadataInfo $metadata
+     *
      * @return mixed $exported
      */
     abstract public function exportClassMetadata(ClassMetadataInfo $metadata);
@@ -65,7 +89,6 @@ abstract class AbstractExporter
      * Set the array of ClassMetadataInfo instances to export
      *
      * @param array $metadata
-     * @return void
      */
     public function setMetadata(array $metadata)
     {
@@ -91,7 +114,6 @@ abstract class AbstractExporter
      *     $exporter->export();
      *
      * @param string $dir
-     * @return void
      */
     public function setOutputDir($dir)
     {
@@ -99,10 +121,8 @@ abstract class AbstractExporter
     }
 
     /**
-     * Export each ClassMetadata instance to a single Doctrine Mapping file
-     * named after the entity
+     * Export each ClassMetadata instance to a single Doctrine Mapping file named after the entity
      *
-     * @return void
      */
     public function export()
     {
@@ -111,16 +131,19 @@ abstract class AbstractExporter
         }
 
         foreach ($this->_metadata as $metadata) {
-            //In case output is returned, write it to a file, skip otherwise
-            if($output = $this->exportClassMetadata($metadata)){
-                $path = $this->_generateOutputPath($metadata);
-                $dir = dirname($path);
+            // In case output is returned, write it to a file, skip otherwise
+            if ($output = $this->exportClassMetadata($metadata)) {
+                $path = $this->generateOutputPath($metadata);
+                $dir  = dirname($path);
+
                 if ( ! is_dir($dir)) {
                     mkdir($dir, 0777, true);
                 }
-                if (file_exists($path) && !$this->_overwriteExistingFiles) {
+
+                if (file_exists($path) && ! $this->_overwriteExistingFiles) {
                     throw ExportException::attemptOverwriteExistingFile($path);
                 }
+
                 file_put_contents($path, $output);
             }
         }
@@ -130,9 +153,10 @@ abstract class AbstractExporter
      * Generate the path to write the class for the given ClassMetadataInfo instance
      *
      * @param ClassMetadataInfo $metadata
+     *
      * @return string $path
      */
-    protected function _generateOutputPath(ClassMetadataInfo $metadata)
+    protected function generateOutputPath(ClassMetadataInfo $metadata)
     {
         return $this->_outputDir . '/' . str_replace('\\', '.', $metadata->name) . $this->_extension;
     }
@@ -146,72 +170,78 @@ abstract class AbstractExporter
      *     $exporter->export();
      *
      * @param string $extension
-     * @return void
      */
     public function setExtension($extension)
     {
         $this->_extension = $extension;
     }
 
-    protected function _getInheritanceTypeString($type)
+    /**
+     * Retrieve the inheritance type string
+     *
+     * @param integer $type
+     *
+     * @return string
+     */
+    protected function getInheritanceTypeString($type)
     {
-        switch ($type)
-        {
+        switch ($type) {
             case ClassMetadataInfo::INHERITANCE_TYPE_NONE:
                 return 'NONE';
-            break;
 
             case ClassMetadataInfo::INHERITANCE_TYPE_JOINED:
                 return 'JOINED';
-            break;
 
             case ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_TABLE:
                 return 'SINGLE_TABLE';
-            break;
 
             case ClassMetadataInfo::INHERITANCE_TYPE_TABLE_PER_CLASS:
                 return 'PER_CLASS';
-            break;
         }
     }
 
-    protected function _getChangeTrackingPolicyString($policy)
+    /**
+     * Retrieve the change tracking policy
+     *
+     * @param integer $policy
+     *
+     * @return string
+     */
+    protected function getChangeTrackingPolicyString($policy)
     {
-        switch ($policy)
-        {
+        switch ($policy) {
             case ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT:
                 return 'DEFERRED_IMPLICIT';
-            break;
 
             case ClassMetadataInfo::CHANGETRACKING_DEFERRED_EXPLICIT:
                 return 'DEFERRED_EXPLICIT';
-            break;
 
             case ClassMetadataInfo::CHANGETRACKING_NOTIFY:
                 return 'NOTIFY';
-            break;
         }
     }
 
-    protected function _getIdGeneratorTypeString($type)
+    /**
+     * Retrieve the ID generator type
+     *
+     * @param integer $type
+     *
+     * @return string
+     */
+    protected function getIdGeneratorTypeString($type)
     {
-        switch ($type)
-        {
+        switch ($type) {
             case ClassMetadataInfo::GENERATOR_TYPE_AUTO:
                 return 'AUTO';
-            break;
 
             case ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE:
                 return 'SEQUENCE';
-            break;
 
             case ClassMetadataInfo::GENERATOR_TYPE_TABLE:
                 return 'TABLE';
-            break;
 
             case ClassMetadataInfo::GENERATOR_TYPE_IDENTITY:
                 return 'IDENTITY';
-            break;
         }
     }
 }

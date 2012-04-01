@@ -218,15 +218,13 @@ class BasicEntityPersister
             return;
         }
 
-        $postInsertIds = array();
-        $idGen = $this->_class->idGenerator;
-        $isPostInsertId = $idGen->isPostInsertGenerator();
-
-        $stmt = $this->_conn->prepare($this->_getInsertSQL());
-        $tableName = $this->_class->getTableName();
+        $stmt         = $this->_conn->prepare($this->_getInsertSQL());
+        $tableName    = $this->_class->getTableName();
+        $insertIdList = array();
 
         foreach ($this->_queuedInserts as $entity) {
             $insertData = $this->_prepareInsertData($entity);
+            $oid        = spl_object_hash($entity);
 
             if (isset($insertData[$tableName])) {
                 $paramIndex = 1;
@@ -238,22 +236,31 @@ class BasicEntityPersister
 
             $stmt->execute();
 
-            if ($isPostInsertId) {
-                $id = $idGen->generate($this->_em, $entity);
-                $postInsertIds[$id] = $entity;
-            } else {
-                $id = $this->_class->getIdentifierValues($entity);
+            // Handle Post Insert ID
+            $idList = $this->_class->getIdentifierValues($entity);
+
+            foreach ($this->_class->idGeneratorList as $fieldName => $idGenerator) {
+                $generator = $idGenerator['generator'];
+
+                if ($generator && $generator->isPostInsertGenerator()) {
+                    $idList[$fieldName] = $generator->generate($this->_em, $entity);
+                }
             }
 
+            $insertIdList[$oid] = array(
+                'entity' => $entity,
+                'idList' => $idList
+            );
+
             if ($this->_class->isVersioned) {
-                $this->assignDefaultVersionValue($entity, $id);
+                $this->assignDefaultVersionValue($entity, $idList);
             }
         }
 
         $stmt->closeCursor();
         $this->_queuedInserts = array();
 
-        return $postInsertIds;
+        return $insertIdList;
     }
 
     /**
@@ -274,23 +281,31 @@ class BasicEntityPersister
      * Fetch the current version value of a versioned entity.
      *
      * @param \Doctrine\ORM\Mapping\ClassMetadata $versionedClass
-     * @param mixed $id
+     * @param array $idList
+     *
      * @return mixed
      */
-    protected function fetchVersionValue($versionedClass, $id)
+    protected function fetchVersionValue($versionedClass, $idList)
     {
-        $versionField = $versionedClass->versionField;
-        $identifier   = $versionedClass->getIdentifierColumnNames();
-
+        $versionField           = $versionedClass->versionField;
+        $versionFieldType       = Type::getType($versionedClass->fieldMappings[$versionField]['type']);
         $versionFieldColumnName = $versionedClass->getQuotedColumnName($versionField, $this->_platform);
 
-        //FIXME: Order with composite keys might not be correct
+        $quotedColumnNameList = array();
+        $columnParameterList  = array();
+
+        foreach ($idList as $fieldName => $fieldValue) {
+            $quotedColumnNameList[] = $versionedClass->getQuotedColumnName($fieldName, $this->_platform);
+            $columnParameterList[]  = $fieldValue;
+        }
+
         $sql = 'SELECT ' . $versionFieldColumnName
              . ' FROM ' . $versionedClass->getQuotedTableName($this->_platform)
-             . ' WHERE ' . implode(' = ? AND ', $identifier) . ' = ?';
-        $value = $this->_conn->fetchColumn($sql, array_values((array)$id));
+             . ' WHERE ' . implode(' = ? AND ', $quotedColumnNameList) . ' = ?';
 
-        return Type::getType($versionedClass->fieldMappings[$versionField]['type'])->convertToPHPValue($value, $this->_platform);
+        $value = $this->_conn->fetchColumn($sql, $columnParameterList);
+
+        return $versionFieldType->convertToPHPValue($value, $this->_platform);
     }
 
     /**
@@ -1173,19 +1188,22 @@ class BasicEntityPersister
         $columns = array();
 
         foreach ($this->_class->reflFields as $name => $field) {
-            if ($this->_class->isVersioned && $this->_class->versionField == $name) {
-                continue;
-            }
+            //if ($this->_class->isVersioned && $this->_class->versionField == $name) {
+            //    continue;
+            //}
 
             if (isset($this->_class->associationMappings[$name])) {
                 $assoc = $this->_class->associationMappings[$name];
 
                 if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
-                    foreach ($assoc['targetToSourceKeyColumns'] as $sourceCol) {
+                    foreach ($assoc['targetToSourceKeyColumns'] as $targetCol => $sourceCol) {
                         $columns[] = $sourceCol;
+
+                        $assocClass = $this->_em->getClassMetadata($assoc['targetEntity']);
+                        $this->_columnTypes[$sourceCol] = $assocClass->fieldMappings[$targetCol]['type'];
                     }
                 }
-            } else if ($this->_class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $this->_class->identifier[0] != $name) {
+            } else if ( ! $this->_class->isIdGeneratorType($name, ClassMetadata::GENERATOR_TYPE_IDENTITY) || ! $this->_class->isIdentifier($name)) {
                 $columns[] = $this->_class->getQuotedColumnName($name, $this->_platform);
                 $this->_columnTypes[$name] = $this->_class->fieldMappings[$name]['type'];
             }

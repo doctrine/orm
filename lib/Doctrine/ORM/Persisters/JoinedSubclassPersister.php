@@ -119,9 +119,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             return;
         }
 
-        $postInsertIds = array();
-        $idGen = $this->_class->idGenerator;
-        $isPostInsertId = $idGen->isPostInsertGenerator();
+        $insertIdList = array();
 
         // Prepare statement for the root table
         $rootClass     = ($this->_class->name !== $this->_class->rootEntityName) ? $this->_em->getClassMetadata($this->_class->rootEntityName) : $this->_class;
@@ -151,6 +149,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         // 2) Insert on sub tables
         foreach ($this->_queuedInserts as $entity) {
             $insertData = $this->_prepareInsertData($entity);
+            $oid        = spl_object_hash($entity);
 
             // Execute insert on root table
             $paramIndex = 1;
@@ -161,12 +160,21 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             $rootTableStmt->execute();
 
-            if ($isPostInsertId) {
-                $id = $idGen->generate($this->_em, $entity);
-                $postInsertIds[$id] = $entity;
-            } else {
-                $id = $this->_em->getUnitOfWork()->getEntityIdentifier($entity);
+            // Handle Post Insert ID
+            $idList = $this->_class->getIdentifierValues($entity);
+
+            foreach ($this->_class->idGeneratorList as $fieldName => $idGenerator) {
+                $generator = $idGenerator['generator'];
+
+                if ($generator && $generator->isPostInsertGenerator()) {
+                    $idList[$fieldName] = $generator->generate($this->_em, $entity);
+                }
             }
+
+            $insertIdList[$oid] = array(
+                'entity' => $entity,
+                'idList' => $idList
+            );
 
             // Execute inserts on subtables.
             // The order doesn't matter because all child tables link to the root table via FK.
@@ -174,7 +182,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 $data = isset($insertData[$tableName]) ? $insertData[$tableName] : array();
                 $paramIndex = 1;
 
-                foreach ((array) $id as $idName => $idVal) {
+                foreach ($idList as $idName => $idVal) {
                     $type = isset($this->_columnTypes[$idName]) ? $this->_columnTypes[$idName] : Type::STRING;
 
                     $stmt->bindValue($paramIndex++, $idVal, $type);
@@ -195,12 +203,12 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         if ($this->_class->isVersioned) {
-            $this->assignDefaultVersionValue($entity, $id);
+            $this->assignDefaultVersionValue($entity, $idList);
         }
 
         $this->_queuedInserts = array();
 
-        return $postInsertIds;
+        return $insertIdList;
     }
 
     /**
@@ -456,13 +464,15 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             if (isset($this->_class->associationMappings[$name])) {
                 $assoc = $this->_class->associationMappings[$name];
+                
                 if ($assoc['type'] & ClassMetadata::TO_ONE && $assoc['isOwningSide']) {
                     foreach ($assoc['targetToSourceKeyColumns'] as $sourceCol) {
                         $columns[] = $sourceCol;
                     }
                 }
             } else if ($this->_class->name != $this->_class->rootEntityName ||
-                    ! $this->_class->isIdGeneratorIdentity() || $this->_class->identifier[0] != $name) {
+                    ! $this->_class->isIdGeneratorType($name, ClassMetadata::GENERATOR_TYPE_IDENTITY) ||
+                    $this->_class->identifier[0] != $name) {
                 $columns[] = $this->_class->getQuotedColumnName($name, $this->_platform);
             }
         }

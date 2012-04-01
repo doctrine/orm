@@ -527,7 +527,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            if (( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity()) && ($name !== $class->versionField)) {
+            if (( ! $class->isIdentifier($name) || ! $class->isIdGeneratorType($name, ClassMetadata::GENERATOR_TYPE_IDENTITY)) && ($name !== $class->versionField)) {
                 $actualData[$name] = $value;
             }
         }
@@ -791,18 +791,26 @@ class UnitOfWork implements PropertyChangedListener
             $this->evm->dispatchEvent(Events::prePersist, new LifecycleEventArgs($entity, $this->em));
         }
 
-        $idGen = $class->idGenerator;
+        $idValueList = array();
 
-        if ( ! $idGen->isPostInsertGenerator()) {
-            $idValue = $idGen->generate($this->em, $entity);
+        foreach ($class->idGeneratorList as $fieldName => $idGenerator) {
+            $generator = $idGenerator['generator'];
 
-            if ( ! $idGen instanceof \Doctrine\ORM\Id\AssignedGenerator) {
-                $idValue = array($class->identifier[0] => $idValue);
+            if ($generator && ! $generator->isPostInsertGenerator()) {
+                $idValue = $generator->generate($this->em, $entity);
 
-                $class->setIdentifierValues($entity, $idValue);
+                if ( ! $generator instanceof \Doctrine\ORM\Id\AssignedGenerator) {
+                    $idValue = array($fieldName => $idValue);
+
+                    $class->setIdentifierValues($entity, $idValue);
+                }
+
+                $idValueList = array_merge($idValueList, $idValue);
             }
+        }
 
-            $this->entityIdentifiers[$oid] = $idValue;
+        if ( ! empty($idValueList)) {
+            $this->entityIdentifiers[$oid] = $idValueList;
         }
 
         $this->entityStates[$oid] = self::STATE_MANAGED;
@@ -844,7 +852,7 @@ class UnitOfWork implements PropertyChangedListener
         $actualData = array();
 
         foreach ($class->reflFields as $name => $refProp) {
-            if ( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity()) {
+            if ( ! $class->isIdentifier($name) || ! $class->isIdGeneratorType($name, ClassMetadata::GENERATOR_TYPE_IDENTITY)) {
                 $actualData[$name] = $refProp->getValue($entity);
             }
         }
@@ -899,21 +907,21 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
-        $postInsertIds = $persister->executeInserts();
+        $insertIdList = $persister->executeInserts();
 
-        if ($postInsertIds) {
+        if ($insertIdList) {
             // Persister returned post-insert IDs
-            foreach ($postInsertIds as $id => $entity) {
-                $oid     = spl_object_hash($entity);
-                $idField = $class->identifier[0];
+            foreach ($insertIdList as $oid => $insertList) {
+                foreach ($insertList['idList'] as $fieldName => $fieldValue) {
+                    $class->reflFields[$fieldName]->setValue($insertList['entity'], $fieldValue);
 
-                $class->reflFields[$idField]->setValue($entity, $id);
+                    $this->originalEntityData[$oid][$fieldName] = $fieldValue;
+                }
 
-                $this->entityIdentifiers[$oid] = array($idField => $id);
-                $this->entityStates[$oid] = self::STATE_MANAGED;
-                $this->originalEntityData[$oid][$idField] = $id;
+                $this->entityStates[$oid]      = self::STATE_MANAGED;
+                $this->entityIdentifiers[$oid] = $insertList['idList'];
 
-                $this->addToIdentityMap($entity);
+                $this->addToIdentityMap($insertList['entity']);
             }
         }
 
@@ -1008,8 +1016,10 @@ class UnitOfWork implements PropertyChangedListener
             // Entity with this $oid after deletion treated as NEW, even if the $oid
             // is obtained by a new entity because the old one went out of scope.
             //$this->entityStates[$oid] = self::STATE_NEW;
-            if ( ! $class->isIdentifierNatural()) {
-                $class->reflFields[$class->identifier[0]]->setValue($entity, null);
+            foreach ($class->idGeneratorList as $fieldName => $idGenerator) {
+                if ($idGenerator['type'] !== ClassMetadata::GENERATOR_TYPE_NONE) {
+                    $class->reflFields[$fieldName]->setValue($entity, null);
+                }
             }
 
             if ($hasLifecycleCallbacks) {
@@ -1342,47 +1352,24 @@ class UnitOfWork implements PropertyChangedListener
             return self::STATE_NEW;
         }
 
-        switch (true) {
-            case ($class->isIdentifierNatural());
-                // Check for a version field, if available, to avoid a db lookup.
-                if ($class->isVersioned) {
-                    return ($class->getFieldValue($entity, $class->versionField))
-                        ? self::STATE_DETACHED
-                        : self::STATE_NEW;
-                }
-
-                // Last try before db lookup: check the identity map.
-                if ($this->tryGetById($id, $class->rootEntityName)) {
-                    return self::STATE_DETACHED;
-                }
-
-                // db lookup
-                if ($this->getEntityPersister(get_class($entity))->exists($entity)) {
-                    return self::STATE_DETACHED;
-                }
-
-                return self::STATE_NEW;
-
-            case ( ! $class->idGenerator->isPostInsertGenerator()):
-                // if we have a pre insert generator we can't be sure that having an id
-                // really means that the entity exists. We have to verify this through
-                // the last resort: a db lookup
-
-                // Last try before db lookup: check the identity map.
-                if ($this->tryGetById($id, $class->rootEntityName)) {
-                    return self::STATE_DETACHED;
-                }
-
-                // db lookup
-                if ($this->getEntityPersister(get_class($entity))->exists($entity)) {
-                    return self::STATE_DETACHED;
-                }
-
-                return self::STATE_NEW;
-
-            default:
-                return self::STATE_DETACHED;
+        // Check for a version field, if available, to avoid a db lookup.
+        if ($class->isVersioned) {
+            return ($class->getFieldValue($entity, $class->versionField))
+                ? self::STATE_DETACHED
+                : self::STATE_NEW;
         }
+
+        // Last try before db lookup: check the identity map.
+        if ($this->tryGetById($id, $class->rootEntityName)) {
+            return self::STATE_DETACHED;
+        }
+
+        // db lookup
+        if ($this->getEntityPersister(get_class($entity))->exists($entity)) {
+            return self::STATE_DETACHED;
+        }
+
+        return self::STATE_NEW;
     }
 
     /**
@@ -1711,8 +1698,10 @@ class UnitOfWork implements PropertyChangedListener
                 if ($managedCopy === null) {
                     // If the identifier is ASSIGNED, it is NEW, otherwise an error
                     // since the managed entity was not found.
-                    if ( ! $class->isIdentifierNatural()) {
-                        throw new EntityNotFoundException;
+                    foreach ($class->idGeneratorList as $idGenerator) {
+                        if ($idGenerator['type'] !== ClassMetadata::GENERATOR_TYPE_NONE) {
+                            throw new EntityNotFoundException;
+                        }
                     }
 
                     $managedCopy = $this->newInstance($class);

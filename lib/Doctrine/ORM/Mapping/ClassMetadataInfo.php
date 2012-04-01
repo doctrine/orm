@@ -186,22 +186,6 @@ class ClassMetadataInfo implements ClassMetadata
     public $rootEntityName;
 
     /**
-     * READ-ONLY: The definition of custom generator. Only used for CUSTOM
-     * generator type
-     *
-     * The definition has the following structure:
-     * <code>
-     * array(
-     *     'class' => 'ClassName',
-     * )
-     * </code>
-     *
-     * @var array
-     * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
-     */
-    public $customGeneratorDefinition;
-
-    /**
      * The name of the custom repository class used for the entity class.
      * (Optional).
      *
@@ -253,11 +237,23 @@ class ClassMetadataInfo implements ClassMetadata
     public $inheritanceType = self::INHERITANCE_TYPE_NONE;
 
     /**
-     * READ-ONLY: The Id generator type used by the class.
+     * READ-ONLY: The Id generator list used by the class.
+     * Keys are the field names and values are mapping definitions.
      *
-     * @var string
+     * The mapping definition array has the following values:
+     *
+     * - <b>type</b> (integer)
+     * The generator type of the given field.
+     *
+     * - <b>definition</b> (array)
+     * The generation definition of the given field.
+     *
+     * - <b>generator</b> (AbstractIdGenerator)
+     * The Generator strategy.
+     *
+     * @var array
      */
-    public $generatorType = self::GENERATOR_TYPE_NONE;
+    public $idGeneratorList = array();
 
     /**
      * READ-ONLY: The field mappings of the class.
@@ -446,41 +442,6 @@ class ClassMetadataInfo implements ClassMetadata
     public $containsForeignIdentifier = false;
 
     /**
-     * READ-ONLY: The ID generator used for generating IDs for this class.
-     *
-     * @var \Doctrine\ORM\Id\AbstractIdGenerator
-     * @todo Remove!
-     */
-    public $idGenerator;
-
-    /**
-     * READ-ONLY: The definition of the sequence generator of this class. Only used for the
-     * SEQUENCE generation strategy.
-     *
-     * The definition has the following structure:
-     * <code>
-     * array(
-     *     'sequenceName' => 'name',
-     *     'allocationSize' => 20,
-     *     'initialValue' => 1
-     * )
-     * </code>
-     *
-     * @var array
-     * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
-     */
-    public $sequenceGeneratorDefinition;
-
-    /**
-     * READ-ONLY: The definition of the table generator of this class. Only used for the
-     * TABLE generation strategy.
-     *
-     * @var array
-     * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
-     */
-    public $tableGeneratorDefinition;
-
-    /**
      * READ-ONLY: The policy used for change-tracking on entities of this class.
      *
      * @var integer
@@ -587,6 +548,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ($this->isIdentifierComposite) {
             throw new \BadMethodCallException("Class " . $this->name . " has a composite identifier.");
         }
+
         return $this->reflFields[$this->identifier[0]];
     }
 
@@ -699,7 +661,7 @@ class ClassMetadataInfo implements ClassMetadata
             'namespace', // TODO: REMOVE
             'table',
             'rootEntityName',
-            'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.
+            'idGeneratorList',
         );
 
         // The rest of the metadata is only serialized if necessary.
@@ -718,13 +680,6 @@ class ClassMetadataInfo implements ClassMetadata
             $serialized[] = 'discriminatorMap';
             $serialized[] = 'parentClasses';
             $serialized[] = 'subClasses';
-        }
-
-        if ($this->generatorType != self::GENERATOR_TYPE_NONE) {
-            $serialized[] = 'generatorType';
-            if ($this->generatorType == self::GENERATOR_TYPE_SEQUENCE) {
-                $serialized[] = 'sequenceGeneratorDefinition';
-            }
         }
 
         if ($this->isMappedSuperclass) {
@@ -750,10 +705,6 @@ class ClassMetadataInfo implements ClassMetadata
 
         if ($this->isReadOnly) {
             $serialized[] = 'isReadOnly';
-        }
-
-        if ($this->customGeneratorDefinition) {
-            $serialized[] = "customGeneratorDefinition";
         }
 
         return $serialized;
@@ -824,10 +775,6 @@ class ClassMetadataInfo implements ClassMetadata
         // Verify & complete identifier mapping
         if ( ! $this->identifier && ! $this->isMappedSuperclass) {
             throw MappingException::identifierRequired($this->name);
-        }
-
-        if ($this->usesIdGenerator() && $this->isIdentifierComposite) {
-            throw MappingException::compositeKeyAssignedIdGeneratorRequired($this->name);
         }
     }
 
@@ -924,6 +871,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! $this->isIdentifierComposite) {
             return $fieldName === $this->identifier[0];
         }
+
         return in_array($fieldName, $this->identifier);
     }
 
@@ -936,9 +884,11 @@ class ClassMetadataInfo implements ClassMetadata
     public function isUniqueField($fieldName)
     {
         $mapping = $this->getFieldMapping($fieldName);
+
         if ($mapping !== false) {
             return isset($mapping['unique']) && $mapping['unique'] == true;
         }
+
         return false;
     }
 
@@ -951,9 +901,11 @@ class ClassMetadataInfo implements ClassMetadata
     public function isNullable($fieldName)
     {
         $mapping = $this->getFieldMapping($fieldName);
+
         if ($mapping !== false) {
             return isset($mapping['nullable']) && $mapping['nullable'] == true;
         }
+
         return false;
     }
 
@@ -967,8 +919,9 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getColumnName($fieldName)
     {
-        return isset($this->columnNames[$fieldName]) ?
-                $this->columnNames[$fieldName] : $fieldName;
+        return isset($this->columnNames[$fieldName])
+            ? $this->columnNames[$fieldName]
+            : $fieldName;
     }
 
     /**
@@ -983,6 +936,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! isset($this->fieldMappings[$fieldName])) {
             throw MappingException::mappingNotFound($this->name, $fieldName);
         }
+
         return $this->fieldMappings[$fieldName];
     }
 
@@ -999,6 +953,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! isset($this->associationMappings[$fieldName])) {
             throw MappingException::mappingNotFound($this->name, $fieldName);
         }
+
         return $this->associationMappings[$fieldName];
     }
 
@@ -1021,8 +976,9 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getFieldName($columnName)
     {
-        return isset($this->fieldNames[$columnName]) ?
-                $this->fieldNames[$columnName] : $columnName;
+        return isset($this->fieldNames[$columnName])
+            ? $this->fieldNames[$columnName]
+            : $columnName;
     }
 
     /**
@@ -1038,6 +994,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! isset($this->namedQueries[$queryName])) {
             throw MappingException::queryNotFound($this->name, $queryName);
         }
+
         return $this->namedQueries[$queryName]['dql'];
     }
 
@@ -1063,6 +1020,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! isset($mapping['fieldName']) || strlen($mapping['fieldName']) == 0) {
             throw MappingException::missingFieldName($this->name);
         }
+
         if ( ! isset($mapping['type'])) {
             // Default to string
             $mapping['type'] = 'string';
@@ -1122,9 +1080,11 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! isset($mapping['mappedBy'])) {
             $mapping['mappedBy'] = null;
         }
+
         if ( ! isset($mapping['inversedBy'])) {
             $mapping['inversedBy'] = null;
         }
+
         $mapping['isOwningSide'] = true; // assume owning side until we hit mappedBy
 
         // unset optional indexBy attribute if its empty
@@ -1319,17 +1279,20 @@ class ClassMetadataInfo implements ClassMetadata
     protected function _validateAndCompleteManyToManyMapping(array $mapping)
     {
         $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
+
         if ($mapping['isOwningSide']) {
             // owning side MUST have a join table
             if ( ! isset($mapping['joinTable']['name'])) {
                 $mapping['joinTable']['name'] = $this->namingStrategy->joinTableName($mapping['sourceEntity'], $mapping['targetEntity'], $mapping['fieldName']);
             }
+
             if ( ! isset($mapping['joinTable']['joinColumns'])) {
                 $mapping['joinTable']['joinColumns'] = array(array(
                         'name' => $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity']),
                         'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
                         'onDelete' => 'CASCADE'));
             }
+
             if ( ! isset($mapping['joinTable']['inverseJoinColumns'])) {
                 $mapping['joinTable']['inverseJoinColumns'] = array(array(
                         'name' => $this->namingStrategy->joinKeyColumnName($mapping['targetEntity']),
@@ -1341,12 +1304,15 @@ class ClassMetadataInfo implements ClassMetadata
                 if (empty($joinColumn['name'])) {
                     $joinColumn['name'] = $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $joinColumn['referencedColumnName']);
                 }
+
                 if (empty($joinColumn['referencedColumnName'])) {
                     $joinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
                 }
+
                 if (isset($joinColumn['onDelete']) && strtolower($joinColumn['onDelete']) == 'cascade') {
                     $mapping['isOnDeleteCascade'] = true;
                 }
+
                 $mapping['relationToSourceKeyColumns'][$joinColumn['name']] = $joinColumn['referencedColumnName'];
                 $mapping['joinTableColumns'][] = $joinColumn['name'];
             }
@@ -1355,12 +1321,15 @@ class ClassMetadataInfo implements ClassMetadata
                 if (empty($inverseJoinColumn['name'])) {
                     $inverseJoinColumn['name'] = $this->namingStrategy->joinKeyColumnName($mapping['targetEntity'], $inverseJoinColumn['referencedColumnName']);
                 }
+
                 if (empty($inverseJoinColumn['referencedColumnName'])) {
                     $inverseJoinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
                 }
+
                 if (isset($inverseJoinColumn['onDelete']) && strtolower($inverseJoinColumn['onDelete']) == 'cascade') {
                     $mapping['isOnDeleteCascade'] = true;
                 }
+
                 $mapping['relationToTargetKeyColumns'][$inverseJoinColumn['name']] = $inverseJoinColumn['referencedColumnName'];
                 $mapping['joinTableColumns'][] = $inverseJoinColumn['name'];
             }
@@ -1492,24 +1461,6 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Sets the type of Id generator to use for the mapped class.
-     */
-    public function setIdGeneratorType($generatorType)
-    {
-        $this->generatorType = $generatorType;
-    }
-
-    /**
-     * Checks whether the mapped class uses an Id generator.
-     *
-     * @return boolean TRUE if the mapped class uses an Id generator, FALSE otherwise.
-     */
-    public function usesIdGenerator()
-    {
-        return $this->generatorType != self::GENERATOR_TYPE_NONE;
-    }
-
-    /**
      * @return boolean
      */
     public function isInheritanceTypeNone()
@@ -1548,57 +1499,6 @@ class ClassMetadataInfo implements ClassMetadata
     public function isInheritanceTypeTablePerClass()
     {
         return $this->inheritanceType == self::INHERITANCE_TYPE_TABLE_PER_CLASS;
-    }
-
-    /**
-     * Checks whether the class uses an identity column for the Id generation.
-     *
-     * @return boolean TRUE if the class uses the IDENTITY generator, FALSE otherwise.
-     */
-    public function isIdGeneratorIdentity()
-    {
-        return $this->generatorType == self::GENERATOR_TYPE_IDENTITY;
-    }
-
-    /**
-     * Checks whether the class uses a sequence for id generation.
-     *
-     * @return boolean TRUE if the class uses the SEQUENCE generator, FALSE otherwise.
-     */
-    public function isIdGeneratorSequence()
-    {
-        return $this->generatorType == self::GENERATOR_TYPE_SEQUENCE;
-    }
-
-    /**
-     * Checks whether the class uses a table for id generation.
-     *
-     * @return boolean  TRUE if the class uses the TABLE generator, FALSE otherwise.
-     */
-    public function isIdGeneratorTable()
-    {
-        $this->generatorType == self::GENERATOR_TYPE_TABLE;
-    }
-
-    /**
-     * Checks whether the class has a natural identifier/pk (which means it does
-     * not use any Id generator.
-     *
-     * @return boolean
-     */
-    public function isIdentifierNatural()
-    {
-        return $this->generatorType == self::GENERATOR_TYPE_NONE;
-    }
-    
-    /**
-     * Checks whether the class use a UUID for id generation
-     *
-     * @return boolean
-     */
-    public function isIdentifierUuid()
-    {
-        return $this->generatorType == self::GENERATOR_TYPE_UUID;
     }
 
     /**
@@ -1668,6 +1568,7 @@ class ClassMetadataInfo implements ClassMetadata
     public function setParentClasses(array $classNames)
     {
         $this->parentClasses = $classNames;
+
         if (count($classNames) > 0) {
             $this->rootEntityName = array_pop($classNames);
         }
@@ -1683,6 +1584,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! $this->_isInheritanceType($type)) {
             throw MappingException::invalidInheritanceType($this->name, $type);
         }
+
         $this->inheritanceType = $type;
     }
 
@@ -1776,9 +1678,11 @@ class ClassMetadataInfo implements ClassMetadata
     public function mapField(array $mapping)
     {
         $this->_validateAndCompleteFieldMapping($mapping);
+
         if (isset($this->fieldMappings[$mapping['fieldName']]) || isset($this->associationMappings[$mapping['fieldName']])) {
             throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
         }
+
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
     }
 
@@ -1794,6 +1698,7 @@ class ClassMetadataInfo implements ClassMetadata
         if (isset($this->associationMappings[$mapping['fieldName']])) {
             throw MappingException::duplicateAssociationMapping($this->name, $mapping['fieldName']);
         }
+
         $this->associationMappings[$mapping['fieldName']] = $mapping;
     }
 
@@ -2161,27 +2066,10 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Sets the ID generator used to generate IDs for instances of this class.
+     * Add an ID generator used to generate IDs for this class.
+     * Depending of the generator type, the definition may vary.
      *
-     * @param AbstractIdGenerator $generator
-     */
-    public function setIdGenerator($generator)
-    {
-        $this->idGenerator = $generator;
-    }
-
-    /**
-     * Sets definition
-     * @param array $definition
-     */
-    public function setCustomGeneratorDefinition(array $definition)
-    {
-        $this->customGeneratorDefinition = $definition;
-    }
-
-    /**
-     * Sets the definition of the sequence ID generator for this class.
-     *
+     * - <b>Sequence generator</b>
      * The definition must have the following structure:
      * <code>
      * array(
@@ -2191,11 +2079,41 @@ class ClassMetadataInfo implements ClassMetadata
      * )
      * </code>
      *
-     * @param array $definition
+     * @param string  $fieldName
+     * @param integer $generatorType
+     * @param array   $definition
      */
-    public function setSequenceGeneratorDefinition(array $definition)
+    public function addIdGenerator($fieldName, $generatorType, array $definition = array())
     {
-        $this->sequenceGeneratorDefinition = $definition;
+        $this->idGeneratorList[$fieldName] = array(
+            'type'       => $generatorType,
+            'definition' => $definition,
+            'generator'  => null
+        );
+    }
+
+    /**
+     * Check if ID field is of a given generator type.
+     *
+     * @param string $fieldName
+     * @param integer $generatorType
+     *
+     * @return boolean
+     */
+    public function isIdGeneratorType($fieldName, $generatorType)
+    {
+        return isset($this->idGeneratorList[$fieldName])
+            && $this->idGeneratorList[$fieldName]['type'] === $generatorType;
+    }
+
+    /**
+     * Set the ID generator list for this class.
+     *
+     * @param array $idGeneratorList
+     */
+    public function setIdGeneratorList(array $idGeneratorList)
+    {
+        $this->idGeneratorList = $idGeneratorList;
     }
 
     /**

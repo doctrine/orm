@@ -53,11 +53,6 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self("The inheritance type '$type' specified for '$entityName' does not exist.");
     }
 
-    public static function generatorNotAllowedWithCompositeId()
-    {
-        return new self("Id generators can't be used with a composite id.");
-    }
-
     public static function missingFieldName($entity)
     {
         return new self("The field or association mapping misses the 'fieldName' attribute in entity '$entity'.");
@@ -343,11 +338,6 @@ class MappingException extends \Doctrine\ORM\ORMException
     public static function invalidFetchMode($className, $annotation)
     {
         return new self("Entity '" . $className . "' has a mapping with invalid fetch mode '" . $annotation . "'");
-    }
-
-    public static function compositeKeyAssignedIdGeneratorRequired($className)
-    {
-        return new self("Entity '". $className . "' has a composite identifier but uses an ID generator other than manually assigning (Identity, Sequence). This is not supported.");
     }
 
     public static function invalidTargetEntityClass($targetEntity, $sourceEntity, $associationName)

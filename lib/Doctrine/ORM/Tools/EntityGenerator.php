@@ -675,7 +675,8 @@ public function <methodName>()
         $methods = array();
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
-            if ( ! isset($fieldMapping['id']) || ! $fieldMapping['id'] || $metadata->generatorType == ClassMetadataInfo::GENERATOR_TYPE_NONE) {
+            if ( ! isset($fieldMapping['id']) || ! $fieldMapping['id'] ||
+                $metadata->isIdGeneratorType($fieldMapping['fielName'], ClassMetadataInfo::GENERATOR_TYPE_NONE)) {
                 if ($code = $this->_generateEntityStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type'])) {
                     $methods[] = $code;
                 }
@@ -889,13 +890,9 @@ public function <methodName>()
 
         if ($this->_generateAnnotations) {
             $lines[] = $this->_spaces . ' *';
-            
+
             if (isset($associationMapping['id']) && $associationMapping['id']) {
                 $lines[] = $this->_spaces . ' * @' . $this->_annotationsPrefix . 'Id';
-            
-                if ($generatorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-                    $lines[] = $this->_spaces . ' * @' . $this->_annotationsPrefix . 'GeneratedValue(strategy="' . $generatorType . '")';
-                }
             }
 
             $type = null;
@@ -1050,26 +1047,36 @@ public function <methodName>()
             if (isset($fieldMapping['id']) && $fieldMapping['id']) {
                 $lines[] = $this->_spaces . ' * @' . $this->_annotationsPrefix . 'Id';
 
-                if ($generatorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-                    $lines[] = $this->_spaces.' * @' . $this->_annotationsPrefix . 'GeneratedValue(strategy="' . $generatorType . '")';
+                $idGenerator         = $metadata->idGeneratorList[$fieldMapping['fieldName']];
+                $generatorType       = $idGenerator['type'];
+                $generatorDefinition = $idGenerator['definition'];
+
+                if ($generatorTypeString = $this->_getIdGeneratorTypeString($generatorType)) {
+                    $lines[] = $this->_spaces.' * @' . $this->_annotationsPrefix . 'GeneratedValue(strategy="' . $generatorTypeString . '")';
                 }
 
-                if ($metadata->sequenceGeneratorDefinition) {
-                    $sequenceGenerator = array();
+                switch ($generatorType) {
+                    case ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE:
+                        $sequenceGenerator = array();
 
-                    if (isset($metadata->sequenceGeneratorDefinition['sequenceName'])) {
-                        $sequenceGenerator[] = 'sequenceName="' . $metadata->sequenceGeneratorDefinition['sequenceName'] . '"';
-                    }
+                        if (isset($generatorDefinition['sequenceName'])) {
+                            $sequenceGenerator[] = 'sequenceName="' . $generatorDefinition['sequenceName'] . '"';
+                        }
 
-                    if (isset($metadata->sequenceGeneratorDefinition['allocationSize'])) {
-                        $sequenceGenerator[] = 'allocationSize="' . $metadata->sequenceGeneratorDefinition['allocationSize'] . '"';
-                    }
+                        if (isset($generatorDefinition['allocationSize'])) {
+                            $sequenceGenerator[] = 'allocationSize="' . $generatorDefinition['allocationSize'] . '"';
+                        }
 
-                    if (isset($metadata->sequenceGeneratorDefinition['initialValue'])) {
-                        $sequenceGenerator[] = 'initialValue="' . $metadata->sequenceGeneratorDefinition['initialValue'] . '"';
-                    }
+                        if (isset($generatorDefinition['initialValue'])) {
+                            $sequenceGenerator[] = 'initialValue="' . $generatorDefinition['initialValue'] . '"';
+                        }
 
-                    $lines[] = $this->_spaces . ' * @' . $this->_annotationsPrefix . 'SequenceGenerator(' . implode(', ', $sequenceGenerator) . ')';
+                        $lines[] = $this->_spaces . ' * @' . $this->_annotationsPrefix . 'SequenceGenerator(' . implode(', ', $sequenceGenerator) . ')';
+                        break;
+
+                    case ClassMetadataInfo::GENERATOR_TYPE_CUSTOM:
+                        $lines[] = $this->_spaces . ' * @' . $this->_annotationsPrefix . 'CustomIdGenerator(class=' . $generatorDefinition['class'] . ')';
+                        break;
                 }
             }
 
