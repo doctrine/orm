@@ -11,6 +11,10 @@ require_once __DIR__ . '/../../TestInit.php';
 
 class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
 {
+
+    /**
+     * @var EntityGenerator
+     */
     private $_generator;
     private $_tmpDir;
     private $_namespace;
@@ -53,6 +57,16 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $metadata->mapField(array('fieldName' => 'name', 'type' => 'string'));
         $metadata->mapField(array('fieldName' => 'status', 'type' => 'string', 'default' => 'published'));
         $metadata->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
+        $metadata->mapField(array('fieldName' => 'datetimetz', 'type' => 'datetimetz'));
+        $metadata->mapField(array('fieldName' => 'datetime', 'type' => 'datetime'));
+        $metadata->mapField(array('fieldName' => 'date', 'type' => 'date'));
+        $metadata->mapField(array('fieldName' => 'time', 'type' => 'time'));
+        $metadata->mapField(array('fieldName' => 'object', 'type' => 'object'));
+        $metadata->mapField(array('fieldName' => 'bigint', 'type' => 'bigint'));
+        $metadata->mapField(array('fieldName' => 'smallint', 'type' => 'smallint'));
+        $metadata->mapField(array('fieldName' => 'text', 'text' => 'text'));
+        $metadata->mapField(array('fieldName' => 'blob', 'type' => 'blob'));
+        $metadata->mapField(array('fieldName' => 'decimal', 'type' => 'decimal'));
         $metadata->mapOneToOne(array('fieldName' => 'author', 'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', 'mappedBy' => 'book'));
         $joinColumns = array(
             array('name' => 'author_id', 'referencedColumnName' => 'id')
@@ -104,10 +118,32 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getComments'), "EntityGeneratorBook::getComments() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'addEntityGeneratorComment'), "EntityGeneratorBook::addEntityGeneratorComment() missing.");
 
-        $this->assertEquals('published', $book->getStatus());
-
+        $date = new \DateTime();
+        $obj  = new \stdClass();
         $book->setName('Jonathan H. Wage');
+        $book->setDatetimetz($date);
+        $book->setDatetime($date);
+        $book->setDate($date);
+        $book->setTime($date);
+        $book->setObject($obj);
+        $book->setSmallint(11);
+        $book->setBigint(22);
+        $book->setBlob('blob');
+        $book->setText('text');
+        $book->setDecimal(3.3);
+
+        $this->assertEquals('published', $book->getStatus());
         $this->assertEquals('Jonathan H. Wage', $book->getName());
+        $this->assertEquals($date, $book->getDatetimetz());
+        $this->assertEquals($date, $book->getDatetime());
+        $this->assertEquals($date, $book->getDate());
+        $this->assertEquals($date, $book->getTime());
+        $this->assertEquals(11, $book->getSmallint());
+        $this->assertEquals(22, $book->getBigint());
+        $this->assertEquals($obj, $book->getObject());
+        $this->assertEquals('text', $book->getText());
+        $this->assertEquals('blob', $book->getBlob());
+        $this->assertEquals(3.3, $book->getDecimal());
 
         $author = new EntityGeneratorAuthor();
         $book->setAuthor($author);
@@ -212,10 +248,10 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
     public function testParseTokensInEntityFile($php, $classes)
     {
         $r = new \ReflectionObject($this->_generator);
-        $m = $r->getMethod('_parseTokensInEntityFile');
+        $m = $r->getMethod('parseTokensInEntityFile');
         $m->setAccessible(true);
 
-        $p = $r->getProperty('_staticReflection');
+        $p = $r->getProperty('staticReflection');
         $p->setAccessible(true);
 
         $ret = $m->invoke($this->_generator, $php);
@@ -254,7 +290,51 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertContains('@SequenceGenerator(sequenceName="DDC1784_ID_SEQ", allocationSize=1, initialValue=2)', $docComment);
     }
 
+    /**
+     * @group DDC-1694
+     */
+    public function testEntityTypeAlias()
+    {
+        $metadata   = $this->generateBookEntityFixture();
+        $book       = $this->newInstance($metadata);
+        $reflClass  = new \ReflectionClass($metadata->name);
 
+        $this->assertPhpDocVarType('\DateTime', $reflClass->getProperty('datetimetz'));
+        $this->assertPhpDocVarType('\DateTime', $reflClass->getProperty('datetime'));
+        $this->assertPhpDocVarType('\DateTime', $reflClass->getProperty('date'));
+        $this->assertPhpDocVarType('\DateTime', $reflClass->getProperty('time'));
+        $this->assertPhpDocVarType('\stdClass', $reflClass->getProperty('object'));
+        $this->assertPhpDocVarType('integer',   $reflClass->getProperty('bigint'));
+        $this->assertPhpDocVarType('integer',   $reflClass->getProperty('smallint'));
+        $this->assertPhpDocVarType('string',    $reflClass->getProperty('text'));
+        $this->assertPhpDocVarType('string',    $reflClass->getProperty('blob'));
+        $this->assertPhpDocVarType('double',    $reflClass->getProperty('decimal'));
+
+        $this->assertPhpDocReturnType('\DateTime', $reflClass->getMethod('getDatetimetz'));
+        $this->assertPhpDocReturnType('\DateTime', $reflClass->getMethod('getDatetime'));
+        $this->assertPhpDocReturnType('\DateTime', $reflClass->getMethod('getDate'));
+        $this->assertPhpDocReturnType('\DateTime', $reflClass->getMethod('getTime'));
+        $this->assertPhpDocReturnType('\stdClass', $reflClass->getMethod('getObject'));
+        $this->assertPhpDocReturnType('integer',   $reflClass->getMethod('getBigint'));
+        $this->assertPhpDocReturnType('integer',   $reflClass->getMethod('getSmallint'));
+        $this->assertPhpDocReturnType('string',    $reflClass->getMethod('getText'));
+        $this->assertPhpDocReturnType('string',    $reflClass->getMethod('getBlob'));
+        $this->assertPhpDocReturnType('double',    $reflClass->getMethod('getDecimal'));
+
+
+        $this->assertPhpDocParamType('\DateTime', $reflClass->getMethod('setDatetimetz'));
+        $this->assertPhpDocParamType('\DateTime', $reflClass->getMethod('setDatetime'));
+        $this->assertPhpDocParamType('\DateTime', $reflClass->getMethod('setDate'));
+        $this->assertPhpDocParamType('\DateTime', $reflClass->getMethod('setTime'));
+        $this->assertPhpDocParamType('\stdClass', $reflClass->getMethod('setObject'));
+        $this->assertPhpDocParamType('integer',   $reflClass->getMethod('setBigint'));
+        $this->assertPhpDocParamType('integer',   $reflClass->getMethod('setSmallint'));
+        $this->assertPhpDocParamType('string',    $reflClass->getMethod('setText'));
+        $this->assertPhpDocParamType('string',    $reflClass->getMethod('setBlob'));
+        $this->assertPhpDocParamType('double',    $reflClass->getMethod('setDecimal'));
+
+    }
+    
     public function getParseTokensInEntityFileData()
     {
         return array(
@@ -285,6 +365,36 @@ class
                 array('Foo\Bar\Baz'),
             ),
         );
+    }
+
+    /**
+     * @param string $type
+     * @param \ReflectionProperty $property
+     */
+    private function assertPhpDocVarType($type, \ReflectionProperty $property)
+    {
+        $this->assertEquals(1, preg_match('/@var\s+([^\s]+)/',$property->getDocComment(), $matches));
+        $this->assertEquals($type, $matches[1]);
+    }
+
+    /**
+     * @param string $type
+     * @param \ReflectionProperty $method
+     */
+    private function assertPhpDocReturnType($type, \ReflectionMethod $method)
+    {
+        $this->assertEquals(1, preg_match('/@return\s+([^\s]+)/', $method->getDocComment(), $matches));
+        $this->assertEquals($type, $matches[1]);
+    }
+
+    /**
+     * @param string $type
+     * @param \ReflectionProperty $method
+     */
+    private function assertPhpDocParamType($type, \ReflectionMethod $method)
+    {
+        $this->assertEquals(1, preg_match('/@param\s+([^\s]+)/', $method->getDocComment(), $matches));
+        $this->assertEquals($type, $matches[1]);
     }
 }
 
