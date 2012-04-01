@@ -128,7 +128,7 @@ class EntityGenerator
 
     /**
      * Whether or not to re-generate entity class if it exists already
-     * 
+     *
      * @var boolean
      */
     private $regenerateEntityIfExists = false;
@@ -456,7 +456,7 @@ public function <methodName>()
         $this->backupExisting = $bool;
     }
 
-    /**
+     /**
      * @param   string $type
      * @return  string
      */

@@ -57,16 +57,6 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $metadata->mapField(array('fieldName' => 'name', 'type' => 'string'));
         $metadata->mapField(array('fieldName' => 'status', 'type' => 'string', 'default' => 'published'));
         $metadata->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
-        $metadata->mapField(array('fieldName' => 'datetimetz', 'type' => 'datetimetz'));
-        $metadata->mapField(array('fieldName' => 'datetime', 'type' => 'datetime'));
-        $metadata->mapField(array('fieldName' => 'date', 'type' => 'date'));
-        $metadata->mapField(array('fieldName' => 'time', 'type' => 'time'));
-        $metadata->mapField(array('fieldName' => 'object', 'type' => 'object'));
-        $metadata->mapField(array('fieldName' => 'bigint', 'type' => 'bigint'));
-        $metadata->mapField(array('fieldName' => 'smallint', 'type' => 'smallint'));
-        $metadata->mapField(array('fieldName' => 'text', 'text' => 'text'));
-        $metadata->mapField(array('fieldName' => 'blob', 'type' => 'blob'));
-        $metadata->mapField(array('fieldName' => 'decimal', 'type' => 'decimal'));
         $metadata->mapOneToOne(array('fieldName' => 'author', 'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', 'mappedBy' => 'book'));
         $joinColumns = array(
             array('name' => 'author_id', 'referencedColumnName' => 'id')
@@ -83,6 +73,24 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $metadata->addLifecycleCallback('loading', 'postLoad');
         $metadata->addLifecycleCallback('willBeRemoved', 'preRemove');
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+
+        return $metadata;
+    }
+
+    private function generateEntityTypeFixture(array $field)
+    {
+        $metadata = new ClassMetadataInfo($this->_namespace . '\EntityType');
+        $metadata->namespace = $this->_namespace;
+
+        $metadata->table['name'] = 'entity_type';
+        $metadata->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+
+        $name  = $field['fieldName'];
+        $type  = $field['dbType'];
+        $metadata->mapField(array('fieldName' => $name, 'type' => $type));
 
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
 
@@ -118,32 +126,10 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getComments'), "EntityGeneratorBook::getComments() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'addEntityGeneratorComment'), "EntityGeneratorBook::addEntityGeneratorComment() missing.");
 
-        $date = new \DateTime();
-        $obj  = new \stdClass();
-        $book->setName('Jonathan H. Wage');
-        $book->setDatetimetz($date);
-        $book->setDatetime($date);
-        $book->setDate($date);
-        $book->setTime($date);
-        $book->setObject($obj);
-        $book->setSmallint(11);
-        $book->setBigint(22);
-        $book->setBlob('blob');
-        $book->setText('text');
-        $book->setDecimal(3.3);
-
         $this->assertEquals('published', $book->getStatus());
+
+        $book->setName('Jonathan H. Wage');
         $this->assertEquals('Jonathan H. Wage', $book->getName());
-        $this->assertEquals($date, $book->getDatetimetz());
-        $this->assertEquals($date, $book->getDatetime());
-        $this->assertEquals($date, $book->getDate());
-        $this->assertEquals($date, $book->getTime());
-        $this->assertEquals(11, $book->getSmallint());
-        $this->assertEquals(22, $book->getBigint());
-        $this->assertEquals($obj, $book->getObject());
-        $this->assertEquals('text', $book->getText());
-        $this->assertEquals('blob', $book->getBlob());
-        $this->assertEquals(3.3, $book->getDecimal());
 
         $author = new EntityGeneratorAuthor();
         $book->setAuthor($author);
@@ -291,50 +277,104 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @dataProvider getEntityTypeAliasDataProvider
+     *
      * @group DDC-1694
      */
-    public function testEntityTypeAlias()
+    public function testEntityTypeAlias(array $field)
     {
-        $metadata   = $this->generateBookEntityFixture();
-        $book       = $this->newInstance($metadata);
+        $metadata   = $this->generateEntityTypeFixture($field);
+        $path       = $this->_tmpDir . '/'. $this->_namespace . '/EntityType.php';
+
+        $this->assertFileExists($path);
+        require_once $path;
+
+        $entity     = new $metadata->name;
         $reflClass  = new \ReflectionClass($metadata->name);
+        
+        $type   = $field['phpType'];
+        $name   = $field['fieldName'];
+        $value  = $field['value'];
+        $getter = "get" . ucfirst($name);
+        $setter = "set" . ucfirst($name);
 
-        $this->assertPhpDocVarType('\DateTime', $reflClass->getProperty('datetimetz'));
-        $this->assertPhpDocVarType('\DateTime', $reflClass->getProperty('datetime'));
-        $this->assertPhpDocVarType('\DateTime', $reflClass->getProperty('date'));
-        $this->assertPhpDocVarType('\DateTime', $reflClass->getProperty('time'));
-        $this->assertPhpDocVarType('\stdClass', $reflClass->getProperty('object'));
-        $this->assertPhpDocVarType('integer',   $reflClass->getProperty('bigint'));
-        $this->assertPhpDocVarType('integer',   $reflClass->getProperty('smallint'));
-        $this->assertPhpDocVarType('string',    $reflClass->getProperty('text'));
-        $this->assertPhpDocVarType('string',    $reflClass->getProperty('blob'));
-        $this->assertPhpDocVarType('double',    $reflClass->getProperty('decimal'));
+        $this->assertPhpDocVarType($type, $reflClass->getProperty($name));
+        $this->assertPhpDocParamType($type, $reflClass->getMethod($setter));
+        $this->assertPhpDocReturnType($type, $reflClass->getMethod($getter));
 
-        $this->assertPhpDocReturnType('\DateTime', $reflClass->getMethod('getDatetimetz'));
-        $this->assertPhpDocReturnType('\DateTime', $reflClass->getMethod('getDatetime'));
-        $this->assertPhpDocReturnType('\DateTime', $reflClass->getMethod('getDate'));
-        $this->assertPhpDocReturnType('\DateTime', $reflClass->getMethod('getTime'));
-        $this->assertPhpDocReturnType('\stdClass', $reflClass->getMethod('getObject'));
-        $this->assertPhpDocReturnType('integer',   $reflClass->getMethod('getBigint'));
-        $this->assertPhpDocReturnType('integer',   $reflClass->getMethod('getSmallint'));
-        $this->assertPhpDocReturnType('string',    $reflClass->getMethod('getText'));
-        $this->assertPhpDocReturnType('string',    $reflClass->getMethod('getBlob'));
-        $this->assertPhpDocReturnType('double',    $reflClass->getMethod('getDecimal'));
-
-
-        $this->assertPhpDocParamType('\DateTime', $reflClass->getMethod('setDatetimetz'));
-        $this->assertPhpDocParamType('\DateTime', $reflClass->getMethod('setDatetime'));
-        $this->assertPhpDocParamType('\DateTime', $reflClass->getMethod('setDate'));
-        $this->assertPhpDocParamType('\DateTime', $reflClass->getMethod('setTime'));
-        $this->assertPhpDocParamType('\stdClass', $reflClass->getMethod('setObject'));
-        $this->assertPhpDocParamType('integer',   $reflClass->getMethod('setBigint'));
-        $this->assertPhpDocParamType('integer',   $reflClass->getMethod('setSmallint'));
-        $this->assertPhpDocParamType('string',    $reflClass->getMethod('setText'));
-        $this->assertPhpDocParamType('string',    $reflClass->getMethod('setBlob'));
-        $this->assertPhpDocParamType('double',    $reflClass->getMethod('setDecimal'));
-
+        $this->assertSame($entity, $entity->{$setter}($value));
+        $this->assertEquals($value, $entity->{$getter}());
     }
-    
+
+    /**
+     * @return array
+     */
+    public function getEntityTypeAliasDataProvider()
+    {
+        return array(array(
+            array(
+                'fieldName' => 'datetimetz',
+                'phpType' => '\\DateTime',
+                'dbType' => 'datetimetz',
+                'value' => new \DateTime
+            ),
+            array(
+                'fieldName' => 'datetime',
+                'phpType' => '\\DateTime',
+                'dbType' => 'datetime',
+                'value' => new \DateTime
+            ),
+            array(
+                'fieldName' => 'date', 
+                'phpType' => '\\DateTime',
+                'dbType' => 'date',
+                'value' => new \DateTime
+            ),
+            array(
+                'fieldName' => 'time', 
+                'phpType' => '\DateTime',
+                'dbType' => 'time',
+                'value' => new \DateTime
+            ),
+            array(
+                'fieldName' => 'object', 
+                'phpType' => '\stdClass',
+                'dbType' => 'object',
+                'value' => new \stdClass()
+            ),
+            array(
+                'fieldName' => 'bigint', 
+                'phpType' => 'integer',
+                'dbType' => 'bigint',
+                'value' => 11
+            ),
+            array(
+                'fieldName' => 'smallint', 
+                'phpType' => 'integer',
+                'type' => 'smallint',
+                'value' => 22
+            ),
+            array(
+                'fieldName' => 'text', 
+                'phpType' => 'string',
+                'dbType' => 'text',
+                'value' => 'text'
+            ),
+            array(
+                'fieldName' => 'blob', 
+                'phpType' => 'string',
+                'dbType' => 'blob',
+                'value' => 'blob'
+            ),
+            array(
+                'fieldName' => 'blob', 
+                'phpType' => 'double',
+                'dbType' => 'blob',
+                'value' => 33.33
+            ),
+        ));
+    }
+
     public function getParseTokensInEntityFileData()
     {
         return array(
