@@ -311,65 +311,65 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
      */
     public function getEntityTypeAliasDataProvider()
     {
-        return array(array(
-            array(
+        return array(
+            array(array(
                 'fieldName' => 'datetimetz',
                 'phpType' => '\\DateTime',
                 'dbType' => 'datetimetz',
                 'value' => new \DateTime
-            ),
-            array(
+            )),
+            array(array(
                 'fieldName' => 'datetime',
                 'phpType' => '\\DateTime',
                 'dbType' => 'datetime',
                 'value' => new \DateTime
-            ),
-            array(
+            )),
+            array(array(
                 'fieldName' => 'date', 
                 'phpType' => '\\DateTime',
                 'dbType' => 'date',
                 'value' => new \DateTime
-            ),
-            array(
+            )),
+            array(array(
                 'fieldName' => 'time', 
                 'phpType' => '\DateTime',
                 'dbType' => 'time',
                 'value' => new \DateTime
-            ),
-            array(
+            )),
+            array(array(
                 'fieldName' => 'object', 
                 'phpType' => '\stdClass',
                 'dbType' => 'object',
                 'value' => new \stdClass()
-            ),
-            array(
+            )),
+            array(array(
                 'fieldName' => 'bigint', 
                 'phpType' => 'integer',
                 'dbType' => 'bigint',
                 'value' => 11
-            ),
-            array(
+            )),
+            array(array(
                 'fieldName' => 'smallint', 
                 'phpType' => 'integer',
-                'type' => 'smallint',
+                'dbType' => 'smallint',
                 'value' => 22
-            ),
-            array(
+            )),
+            array(array(
                 'fieldName' => 'text', 
                 'phpType' => 'string',
                 'dbType' => 'text',
                 'value' => 'text'
-            ),
-            array(
+            )),
+            array(array(
                 'fieldName' => 'blob', 
                 'phpType' => 'string',
                 'dbType' => 'blob',
                 'value' => 'blob'
-            ),
-            array(
-                'fieldName' => 'blob', 
-                'phpType' => 'double',
-                'dbType' => 'blob',
+            )),
+            array(array(
+                'fieldName' => 'decimal',
+                'phpType' => 'float',
+                'dbType' => 'decimal',
                 'value' => 33.33
             ),
         ));

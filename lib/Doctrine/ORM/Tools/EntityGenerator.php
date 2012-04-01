@@ -153,7 +153,7 @@ class EntityGenerator
         Type::SMALLINT      => 'integer',
         Type::TEXT          => 'string',
         Type::BLOB          => 'string',
-        Type::DECIMAL       => 'double',
+        Type::DECIMAL       => 'float',
     );
 
     /**
