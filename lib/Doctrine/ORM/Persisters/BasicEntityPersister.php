@@ -1143,6 +1143,7 @@ class BasicEntityPersister
                     $placeholder = '?';
 
                     if (isset($this->_columnTypes[$column]) &&
+                        isset($this->_class->fieldNames[$column]) &&
                         isset($this->_class->fieldMappings[$this->_class->fieldNames[$column]]['requireSQLConversion'])) {
                         $type = Type::getType($this->_columnTypes[$column]);
                         $placeholder = $type->convertToDatabaseValueSQL('?', $this->_platform);
