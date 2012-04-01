@@ -524,8 +524,12 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 case ClassMetadata::GENERATOR_TYPE_CUSTOM:
                     $definition = $idGeneratorMapping['definition'];
 
+                    if ( ! isset($definition['class'])) {
+                        throw new ORMException("Missing custom generation definition: class.");
+                    }
+
                     if ( ! class_exists($definition['class'])) {
-                        throw new ORMException("Can't instantiate custom generator : " . $definition['class']);
+                        throw new ORMException("Can't instantiate custom generator: " . $definition['class']);
                     }
 
                     $idGeneratorMapping['generator'] = new $definition['class'];

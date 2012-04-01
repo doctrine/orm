@@ -91,7 +91,7 @@ class PhpExporter extends AbstractExporter
         foreach ($metadata->fieldMappings as $fieldMapping) {
             $lines[] = '$metadata->mapField(' . $this->_varExport($fieldMapping) . ');';
 
-            if ( ! $fieldMapping['id']) {
+            if ( ! isset($fieldMapping['id'])) {
                 continue;
             }
 

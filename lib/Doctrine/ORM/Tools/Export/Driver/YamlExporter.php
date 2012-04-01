@@ -114,8 +114,10 @@ class YamlExporter extends AbstractExporter
             $fieldMappings[$name] = $fieldMapping;
         }
 
-        if ($idGeneratorType = $this->getIdGeneratorTypeString($metadata->generatorType)) {
-            $ids[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
+        foreach ($metadata->getIdentifierFieldNames() as $fieldName) {
+            if ($idGeneratorType = $this->getIdGeneratorTypeString($metadata->idGeneratorList[$fieldName]['type'])) {
+                $ids[$fieldName]['generator']['strategy'] = $idGeneratorType;
+            }
         }
 
         if ($ids) {

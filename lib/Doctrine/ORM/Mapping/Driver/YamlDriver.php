@@ -235,9 +235,12 @@ class YamlDriver extends AbstractFileDriver
 
                 if (isset($fieldMapping['id'])) {
                     $mapping['id'] = true;
+
                     if (isset($fieldMapping['generator']['strategy'])) {
-                        $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
-                                . strtoupper($fieldMapping['generator']['strategy'])));
+                        $metadata->addIdGenerator(
+                            $name,
+                            constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . strtoupper($fieldMapping['generator']['strategy']))
+                        );
                     }
                 }
                 if (isset($fieldMapping['column'])) {

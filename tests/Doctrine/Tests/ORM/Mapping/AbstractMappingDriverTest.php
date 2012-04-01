@@ -419,7 +419,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('id', $class->fieldMappings['id']['columnName']);
         $this->assertEquals('name', $class->fieldMappings['name']['columnName']);
 
-        $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_NONE, $class->generatorType);
+        $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_NONE, $class->idGeneratorList['id']['type']);
     }
 
     /**

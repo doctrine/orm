@@ -130,8 +130,10 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        if ($idGeneratorType = $this->getIdGeneratorTypeString($metadata->generatorType)) {
-            $id[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
+        foreach ($metadata->getIdentifierFieldNames() as $fieldName) {
+            if ($idGeneratorType = $this->getIdGeneratorTypeString($metadata->idGeneratorList[$fieldName]['type'])) {
+                $ids[$fieldName]['generator']['strategy'] = $idGeneratorType;
+            }
         }
 
         if ($id) {
@@ -145,7 +147,8 @@ class XmlExporter extends AbstractExporter
                 if (isset($field['associationKey']) && $field['associationKey']) {
                     $idXml->addAttribute('association-key', 'true');
                 }
-                if ($idGeneratorType = $this->getIdGeneratorTypeString($metadata->generatorType)) {
+
+                if ($idGeneratorType = $this->getIdGeneratorTypeString($metadata->idGeneratorList[$field['fieldName']]['type'])) {
                     $generatorXml = $idXml->addChild('generator');
                     $generatorXml->addAttribute('strategy', $idGeneratorType);
                 }
