@@ -1504,7 +1504,7 @@ class BasicEntityPersister
             if ($this->_em->getUnitOfWork()->getEntityState($value) === UnitOfWork::STATE_MANAGED) {
                 $idValues = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
             } else {
-                $class = $this->_em->getClassMetadata(ClassUtils::getClass($value));
+                $class = $this->_em->getClassMetadata(get_class($value));
                 $idValues = $class->getIdentifierValues($value);
             }
 

@@ -22,7 +22,6 @@ namespace Doctrine\ORM\Id;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMException;
-use Doctrine\Common\Util\ClassUtils;
 
 /**
  * Special generator for application-assigned identifiers (doesnt really generate anything).
@@ -44,7 +43,7 @@ class AssignedGenerator extends AbstractIdGenerator
      */
     public function generate(EntityManager $em, $entity)
     {
-        $class      = $em->getClassMetadata(ClassUtils::getClass($entity));
+        $class      = $em->getClassMetadata(get_class($entity));
         $idFields   = $class->getIdentifierFieldNames();
         $identifier = array();
 

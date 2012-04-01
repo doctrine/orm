@@ -22,8 +22,7 @@ namespace Doctrine\ORM;
 use Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\Common\Collections\Collection,
     Doctrine\Common\Collections\ArrayCollection,
-    Closure,
-    Doctrine\Common\Util\ClassUtils;
+    Closure;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
@@ -307,7 +306,7 @@ final class PersistentCollection implements Collection
             $this->association['isOwningSide'] &&
             $this->association['type'] === ClassMetadata::MANY_TO_MANY &&
             $this->owner &&
-            $this->em->getClassMetadata(ClassUtils::getClass($this->owner))->isChangeTrackingNotify()) {
+            $this->em->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify()) {
             $this->em->getUnitOfWork()->scheduleForDirtyCheck($this->owner);
         }
     }
