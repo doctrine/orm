@@ -637,6 +637,18 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('cms_cmsaddress_cms_cmsuser', $addressMetadata->associationMappings['user']['joinTable']['name']);
         $this->assertEquals('doctrineglobal_article_cms_cmsuser', $articleMetadata->associationMappings['author']['joinTable']['name']);
     }
+
+    /**
+     * @group DDC-1746
+     */
+    public function testInvalidCascade()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+
+        $this->setExpectedException("Doctrine\ORM\Mapping\MappingException", "Invalid cascade option(s) specified: 'invalid'. Only 'remove', 'persist', 'refresh', 'merge' and 'detach' are allowed.");
+        $cm->mapManyToOne(array('fieldName' => 'address', 'targetEntity' => 'UnknownClass', 'cascade' => array('invalid')));
+    }
 }
 
 class MyNamespacedNamingStrategy extends \Doctrine\ORM\Mapping\DefaultNamingStrategy

@@ -1170,6 +1170,12 @@ class ClassMetadataInfo implements ClassMetadata
             $cascades = array('remove', 'persist', 'refresh', 'merge', 'detach');
         }
 
+        if (count($cascades) !== count(array_intersect($cascades, array('remove', 'persist', 'refresh', 'merge', 'detach')))) {
+            throw MappingException::invalidCascadeOption(
+                array_diff($cascades, array_intersect($cascades, array('remove', 'persist', 'refresh', 'merge', 'detach')))
+            );
+        }
+
         $mapping['cascade'] = $cascades;
         $mapping['isCascadeRemove'] = in_array('remove',  $cascades);
         $mapping['isCascadePersist'] = in_array('persist',  $cascades);
