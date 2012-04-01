@@ -239,9 +239,12 @@ class SqlWalker implements TreeWalker
     {
         // Trim the column alias to the maximum identifier length of the platform.
         // If the alias is to long, characters are cut off from the beginning.
-        return $this->_platform->getSQLResultCasing(
-            substr($columnName . $this->_aliasCounter++, -$this->_platform->getMaxIdentifierLength())
-        );
+        // And strip non alphanumeric characters
+        $columnName = $columnName . $this->_aliasCounter++;
+        $columnName = substr($columnName, -$this->_platform->getMaxIdentifierLength());
+        $columnName = preg_replace('/[^A-Za-z0-9_]/', '', $columnName );
+
+        return $this->_platform->getSQLResultCasing($columnName);
     }
 
     /**
