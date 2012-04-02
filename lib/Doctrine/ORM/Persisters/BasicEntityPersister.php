@@ -1198,9 +1198,6 @@ class BasicEntityPersister
                 if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
                     foreach ($assoc['targetToSourceKeyColumns'] as $targetCol => $sourceCol) {
                         $columns[] = $sourceCol;
-
-                        $assocClass = $this->_em->getClassMetadata($assoc['targetEntity']);
-                        $this->_columnTypes[$sourceCol] = $assocClass->fieldMappings[$targetCol]['type'];
                     }
                 }
             } else if ( ! $this->_class->isIdGeneratorType($name, ClassMetadata::GENERATOR_TYPE_IDENTITY) || ! $this->_class->isIdentifier($name)) {

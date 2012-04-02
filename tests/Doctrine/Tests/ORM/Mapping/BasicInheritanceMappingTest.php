@@ -140,8 +140,8 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\SuperclassEntity');
         /* @var $class ClassMetadataInfo */
 
-        $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
-        $this->assertEquals(array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'), $class->sequenceGeneratorDefinition);
+        $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGeneratorList['id']['generator']);
+        $this->assertEquals(array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'), $class->idGeneratorList['id']['definition']);
     }
 
     /**
@@ -153,8 +153,8 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\HierachyD');
         /* @var $class ClassMetadataInfo */
 
-        $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
-        $this->assertEquals(array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'), $class->sequenceGeneratorDefinition);
+        $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGeneratorList['id']['generator']);
+        $this->assertEquals(array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'), $class->idGeneratorList['id']['definition']);
     }
 
     /**
@@ -166,8 +166,8 @@ class BasicInheritanceMappingTest extends \Doctrine\Tests\OrmTestCase
         $class = $this->_factory->getMetadataFor(__NAMESPACE__ . '\\MediumSuperclassEntity');
         /* @var $class ClassMetadataInfo */
 
-        $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGenerator);
-        $this->assertEquals(array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'), $class->sequenceGeneratorDefinition);
+        $this->assertInstanceOf('Doctrine\ORM\Id\SequenceGenerator', $class->idGeneratorList['id']['generator']);
+        $this->assertEquals(array('allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'), $class->idGeneratorList['id']['definition']);
     }
 }
 
