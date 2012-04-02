@@ -355,6 +355,7 @@ class SchemaTool
         $options = array();
         $options['length'] = isset($mapping['length']) ? $mapping['length'] : null;
         $options['notnull'] = isset($mapping['nullable']) ? ! $mapping['nullable'] : true;
+
         if ($class->isInheritanceTypeSingleTable() && count($class->parentClasses) > 0) {
             $options['notnull'] = false;
         }
@@ -386,10 +387,7 @@ class SchemaTool
             $options['customSchemaOptions'] = $mapping['options'];
         }
 
-        if (
-            in_array($mapping['fieldName'], $class->getIdentifierFieldNames()) &&
-            $class->isIdGeneratorType($mapping['fieldName'], ClassMetadata::GENERATOR_TYPE_IDENTITY)
-        ) {
+        if ($class->isIdentifier($mapping['fieldName']) && $class->isIdGeneratorType($mapping['fieldName'], ClassMetadata::GENERATOR_TYPE_IDENTITY)) {
             $options['autoincrement'] = true;
         }
 

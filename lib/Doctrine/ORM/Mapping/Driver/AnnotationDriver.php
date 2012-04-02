@@ -322,19 +322,14 @@ class AnnotationDriver implements Driver
 
                 if ($idAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Id')) {
                     $mapping['id'] = true;
-                }
 
-                $metadata->mapField($mapping);
-
-                // Check for Version definition
-                if ($this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Version')) {
-                    $metadata->setVersionMapping($mapping);
-                }
-
-                // Check for GeneratedValue definition
-                if ($generatedValueAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\GeneratedValue')) {
-                    $generatorType       = constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $generatedValueAnnot->strategy);
+                    $generatorType = \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_AUTO;
                     $generatorDefinition = array();
+
+                    // Check for GeneratedValue definition
+                    if ($generatedValueAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\GeneratedValue')) {
+                        $generatorType       = constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $generatedValueAnnot->strategy);
+                    }
 
                     // Check for SequenceGenerator/TableGenerator definition
                     if ($seqGeneratorAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\SequenceGenerator')) {
@@ -353,6 +348,13 @@ class AnnotationDriver implements Driver
 
                     $metadata->addIdGenerator($mapping['fieldName'], $generatorType, $generatorDefinition);
                 }
+
+                // Check for Version definition
+                if ($this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Version')) {
+                    $metadata->setVersionMapping($mapping);
+                }
+
+                $metadata->mapField($mapping);
             } else if ($oneToOneAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OneToOne')) {
                 if ($idAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Id')) {
                     $mapping['id'] = true;

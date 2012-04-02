@@ -245,32 +245,35 @@ class XmlDriver extends AbstractFileDriver
 
             $metadata->mapField($mapping);
 
+            $generatorType       = \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_AUTO;
+            $generatorDefinition = array();
+
+            // Check for Generator type
             if (isset($idElement->generator)) {
-                $generatorDefinition = array();
                 $generatorStrategy   = isset($idElement->generator['strategy']) ? (string) $idElement->generator['strategy'] : 'AUTO';
                 $generatorType       = constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . strtoupper($generatorStrategy));
-
-                // Check for SequenceGenerator/TableGenerator definition
-                if (isset($idElement->{'sequence-generator'})) {
-                    $seqGenerator = $idElement->{'sequence-generator'};
-
-                    $generatorDefinition = array(
-                        'sequenceName'   => (string)$seqGenerator['sequence-name'],
-                        'allocationSize' => (string)$seqGenerator['allocation-size'],
-                        'initialValue'   => (string)$seqGenerator['initial-value']
-                    );
-                } else if (isset($idElement->{'custom-id-generator'})) {
-                    $customGenerator = $idElement->{'custom-id-generator'};
-
-                    $generatorDefinition = array(
-                        'class' => (string) $customGenerator['class']
-                    );
-                } else if (isset($idElement->{'table-generator'})) {
-                    throw MappingException::tableIdGeneratorNotImplemented($className);
-                }
-
-                $metadata->addIdGenerator($mapping['fieldName'], $generatorType, $generatorDefinition);
             }
+
+            // Check for SequenceGenerator/TableGenerator definition
+            if (isset($idElement->{'sequence-generator'})) {
+                $seqGenerator = $idElement->{'sequence-generator'};
+
+                $generatorDefinition = array(
+                    'sequenceName'   => (string)$seqGenerator['sequence-name'],
+                    'allocationSize' => (string)$seqGenerator['allocation-size'],
+                    'initialValue'   => (string)$seqGenerator['initial-value']
+                );
+            } else if (isset($idElement->{'custom-id-generator'})) {
+                $customGenerator = $idElement->{'custom-id-generator'};
+
+                $generatorDefinition = array(
+                    'class' => (string) $customGenerator['class']
+                );
+            } else if (isset($idElement->{'table-generator'})) {
+                throw MappingException::tableIdGeneratorNotImplemented($className);
+            }
+
+            $metadata->addIdGenerator($mapping['fieldName'], $generatorType, $generatorDefinition);
         }
 
         // Evaluate <one-to-one ...> mappings

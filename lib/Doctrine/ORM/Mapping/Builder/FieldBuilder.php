@@ -46,12 +46,12 @@ class FieldBuilder
     /**
      * @var string
      */
-    private $generatedValue;
+    private $generatedValue = 'AUTO';
 
     /**
      * @var array
      */
-    private $generatorDefinition;
+    private $generatorDefinition = array();
 
     /**
      *
@@ -209,10 +209,13 @@ class FieldBuilder
             $cm->setVersionMapping($this->mapping);
         }
 
-        $generatorType = constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . strtoupper($this->generatedValue));
-
         $cm->mapField($this->mapping);
-        $cm->addIdGenerator($this->mapping['fieldName'], $generatorType, $this->generatorDefinition);
+
+        if (isset($this->mapping['id']) && $this->mapping['id']) {
+            $generatorType = constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . strtoupper($this->generatedValue));
+
+            $cm->addIdGenerator($this->mapping['fieldName'], $generatorType, $this->generatorDefinition);
+        }
 
         return $this->builder;
     }

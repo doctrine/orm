@@ -1188,9 +1188,9 @@ class BasicEntityPersister
         $columns = array();
 
         foreach ($this->_class->reflFields as $name => $field) {
-            //if ($this->_class->isVersioned && $this->_class->versionField == $name) {
-            //    continue;
-            //}
+            if ($this->_class->isVersioned && $this->_class->versionField == $name) {
+                continue;
+            }
 
             if (isset($this->_class->associationMappings[$name])) {
                 $assoc = $this->_class->associationMappings[$name];

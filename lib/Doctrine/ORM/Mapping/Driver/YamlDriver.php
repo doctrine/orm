@@ -194,24 +194,27 @@ class YamlDriver extends AbstractFileDriver
 
                 $metadata->mapField($mapping);
 
+                $generatorType       = \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_AUTO;
+                $generatorDefinition = array();
+
+                // Check for Generator type
                 if (isset($idElement['generator'])) {
-                    $generatorDefinition = array();
                     $generatorStrategy   = $idElement['generator']['strategy'];
                     $generatorType       = constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . strtoupper($generatorStrategy));
-
-                    // Check for SequenceGenerator/TableGenerator definition
-                    if (isset($idElement['sequenceGenerator'])) {
-                        $generatorDefinition = $idElement['sequenceGenerator'];
-                    } else if (isset($idElement['customIdGenerator'])) {
-                        $generatorDefinition = array(
-                            'class' => (string) $idElement['customIdGenerator']['class']
-                        );
-                    } else if (isset($idElement['tableGenerator'])) {
-                        throw MappingException::tableIdGeneratorNotImplemented($className);
-                    }
-
-                    $metadata->addIdGenerator($mapping['fieldName'], $generatorType, $generatorDefinition);
                 }
+
+                // Check for SequenceGenerator/TableGenerator definition
+                if (isset($idElement['sequenceGenerator'])) {
+                    $generatorDefinition = $idElement['sequenceGenerator'];
+                } else if (isset($idElement['customIdGenerator'])) {
+                    $generatorDefinition = array(
+                        'class' => (string) $idElement['customIdGenerator']['class']
+                    );
+                } else if (isset($idElement['tableGenerator'])) {
+                    throw MappingException::tableIdGeneratorNotImplemented($className);
+                }
+
+                $metadata->addIdGenerator($mapping['fieldName'], $generatorType, $generatorDefinition);
             }
         }
 
