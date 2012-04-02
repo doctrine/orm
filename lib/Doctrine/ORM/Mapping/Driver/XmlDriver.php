@@ -166,6 +166,9 @@ class XmlDriver extends AbstractFileDriver
             $metadata->table['options'] = $this->_parseOptions($xmlRoot->options->children());
         }
 
+        // The mapping assignement is done in 2 times as a bug might occurs on some php/xml lib versions
+        // The internal SimpleXmlIterator get resetted, to this generate a duplicate field exception
+        $mappings = array();
         // Evaluate <field ...> mappings
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $fieldMapping) {
@@ -213,10 +216,14 @@ class XmlDriver extends AbstractFileDriver
                     $mapping['options'] = $this->_parseOptions($fieldMapping->options->children());
                 }
 
-                $metadata->mapField($mapping);
+                $mappings[] = $mapping;
             }
         }
 
+        foreach ($mappings as $mapping) {
+             $metadata->mapField($mapping);
+        }
+        
         // Evaluate <id ...> mappings
         $associationIds = array();
         foreach ($xmlRoot->id as $idElement) {
