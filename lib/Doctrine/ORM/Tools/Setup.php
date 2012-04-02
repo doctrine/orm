@@ -173,6 +173,11 @@ class Setup
                 $memcache->connect('127.0.0.1');
                 $cache = new \Doctrine\Common\Cache\MemcacheCache();
                 $cache->setMemcache($memcache);
+            } else if (extension_loaded('redis')) {
+                $redis = new \Redis();
+                $redis->connect('127.0.0.1');
+                $cache = new \Doctrine\Common\Cache\RedisCache();
+                $cache->setRedis($redis);
             } else {
                 $cache = new ArrayCache;
             }
