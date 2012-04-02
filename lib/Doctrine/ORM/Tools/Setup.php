@@ -165,9 +165,9 @@ class Setup
         $proxyDir = $proxyDir ?: sys_get_temp_dir();
         if ($isDevMode === false && $cache === null) {
             if (extension_loaded('apc')) {
-                $cache = new \Doctrine\Common\Cache\ApcCache;
+                $cache = new \Doctrine\Common\Cache\ApcCache();
             } else if (extension_loaded('xcache')) {
-                $cache = new \Doctrine\Common\Cache\XcacheCache;
+                $cache = new \Doctrine\Common\Cache\XcacheCache();
             } else if (extension_loaded('memcache')) {
                 $memcache = new \Memcache();
                 $memcache->connect('127.0.0.1');
@@ -179,10 +179,10 @@ class Setup
                 $cache = new \Doctrine\Common\Cache\RedisCache();
                 $cache->setRedis($redis);
             } else {
-                $cache = new ArrayCache;
+                $cache = new ArrayCache();
             }
         } else if ($cache === null) {
-            $cache = new ArrayCache;
+            $cache = new ArrayCache();
         }
         $cache->setNamespace("dc2_" . md5($proxyDir) . "_"); // to avoid collisions
 
@@ -190,7 +190,7 @@ class Setup
         $config->setMetadataCacheImpl($cache);
         $config->setQueryCacheImpl($cache);
         $config->setResultCacheImpl($cache);
-        $config->setProxyDir( $proxyDir );
+        $config->setProxyDir($proxyDir);
         $config->setProxyNamespace('DoctrineProxies');
         $config->setAutoGenerateProxyClasses($isDevMode);
 
