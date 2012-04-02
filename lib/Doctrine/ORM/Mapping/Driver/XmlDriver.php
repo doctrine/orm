@@ -222,7 +222,11 @@ class XmlDriver extends AbstractFileDriver
 
         foreach ($xmlRoot->id as $idElement) {
             if ((bool) $idElement['association-key'] == true) {
-                $associationIds[(string)$idElement['name']] = true;
+                $fieldName                  = (string) $idElement['name'];
+                $associationIds[$fieldName] = true;
+
+                $metadata->addIdGenerator($fieldName, ClassMetadataInfo::GENERATOR_TYPE_NONE);
+
                 continue;
             }
 
@@ -245,7 +249,7 @@ class XmlDriver extends AbstractFileDriver
 
             $metadata->mapField($mapping);
 
-            $generatorType       = \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_AUTO;
+            $generatorType       = ClassMetadataInfo::GENERATOR_TYPE_NONE;
             $generatorDefinition = array();
 
             // Check for Generator type

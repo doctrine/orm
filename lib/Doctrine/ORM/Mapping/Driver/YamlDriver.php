@@ -168,6 +168,9 @@ class YamlDriver extends AbstractFileDriver
             foreach ($element['id'] as $name => $idElement) {
                 if (isset($idElement['associationKey']) && $idElement['associationKey'] == true) {
                     $associationIds[$name] = true;
+
+                    $metadata->addIdGenerator($name, ClassMetadataInfo::GENERATOR_TYPE_NONE);
+
                     continue;
                 }
 
@@ -194,7 +197,7 @@ class YamlDriver extends AbstractFileDriver
 
                 $metadata->mapField($mapping);
 
-                $generatorType       = \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_AUTO;
+                $generatorType       = ClassMetadataInfo::GENERATOR_TYPE_NONE;
                 $generatorDefinition = array();
 
                 // Check for Generator type

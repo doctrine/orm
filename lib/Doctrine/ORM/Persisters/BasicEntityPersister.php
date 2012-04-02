@@ -242,9 +242,15 @@ class BasicEntityPersister
             foreach ($this->_class->idGeneratorList as $fieldName => $idGenerator) {
                 $generator = $idGenerator['generator'];
 
-                if ($generator && $generator->isPostInsertGenerator()) {
+                if ($generator->isPostInsertGenerator()) {
                     $idList[$fieldName] = $generator->generate($this->_em, $entity);
+
+                    continue;
                 }
+
+                $identifierList = $generator->generate($this->_em, $entity);
+
+                $idList = array_merge($idList, $identifierList);
             }
 
             $insertIdList[$oid] = array(

@@ -301,6 +301,8 @@ class DatabaseDriver implements Driver
 
             if ($primaryKeyColumns && in_array($localColumn, $primaryKeyColumns)) {
                 $associationMapping['id'] = true;
+
+                $metadata->addIdGenerator($associationMapping['fieldName'], ClassMetadataInfo::GENERATOR_TYPE_NONE);
             }
 
             for ($i = 0; $i < count($cols); $i++) {

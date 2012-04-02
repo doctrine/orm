@@ -228,7 +228,7 @@ class AnnotationDriver implements Driver
             $inheritanceTypeAnnot = $classAnnotations['Doctrine\ORM\Mapping\InheritanceType'];
             $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
 
-            if ($metadata->inheritanceType != \Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_NONE) {
+            if ($metadata->inheritanceType !== ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
                 // Evaluate DiscriminatorColumn annotation
                 if (isset($classAnnotations['Doctrine\ORM\Mapping\DiscriminatorColumn'])) {
                     $discrColumnAnnot = $classAnnotations['Doctrine\ORM\Mapping\DiscriminatorColumn'];
@@ -323,7 +323,7 @@ class AnnotationDriver implements Driver
                 if ($idAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Id')) {
                     $mapping['id'] = true;
 
-                    $generatorType = \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_AUTO;
+                    $generatorType = ClassMetadataInfo::GENERATOR_TYPE_NONE;
                     $generatorDefinition = array();
 
                     // Check for GeneratedValue definition
@@ -358,6 +358,11 @@ class AnnotationDriver implements Driver
             } else if ($oneToOneAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OneToOne')) {
                 if ($idAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Id')) {
                     $mapping['id'] = true;
+
+                    $generatorType       = ClassMetadataInfo::GENERATOR_TYPE_NONE;
+                    $generatorDefinition = array();
+
+                    $metadata->addIdGenerator($mapping['fieldName'], $generatorType, $generatorDefinition);
                 }
 
                 $mapping['targetEntity'] = $oneToOneAnnot->targetEntity;
@@ -384,6 +389,11 @@ class AnnotationDriver implements Driver
             } else if ($manyToOneAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\ManyToOne')) {
                 if ($idAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Id')) {
                     $mapping['id'] = true;
+
+                    $generatorType       = ClassMetadataInfo::GENERATOR_TYPE_NONE;
+                    $generatorDefinition = array();
+
+                    $metadata->addIdGenerator($mapping['fieldName'], $generatorType, $generatorDefinition);
                 }
 
                 $mapping['joinColumns'] = $joinColumns;

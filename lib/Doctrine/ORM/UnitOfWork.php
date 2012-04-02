@@ -912,15 +912,20 @@ class UnitOfWork implements PropertyChangedListener
         if ($insertIdList) {
             // Persister returned post-insert IDs
             foreach ($insertIdList as $oid => $insertList) {
+                $metadata = $this->em->getClassMetadata(get_class($insertList['entity']));
+
                 foreach ($insertList['idList'] as $fieldName => $fieldValue) {
-                    $class->reflFields[$fieldName]->setValue($insertList['entity'], $fieldValue);
+                    if ($metadata->idGeneratorList[$fieldName]['generator']->isPostInsertGenerator()) {
+                        $class->reflFields[$fieldName]->setValue($insertList['entity'], $fieldValue);
 
-                    $this->originalEntityData[$oid][$fieldName] = $fieldValue;
-                    $this->entityStates[$oid]                   = self::STATE_MANAGED;
-                    $this->entityIdentifiers[$oid]              = $insertList['idList'];
-
-                    $this->addToIdentityMap($insertList['entity']);
+                        $this->originalEntityData[$oid][$fieldName] = $fieldValue;
+                    }
                 }
+
+                $this->entityStates[$oid]      = self::STATE_MANAGED;
+                $this->entityIdentifiers[$oid] = $insertList['idList'];
+
+                $this->addToIdentityMap($insertList['entity']);
             }
         }
 

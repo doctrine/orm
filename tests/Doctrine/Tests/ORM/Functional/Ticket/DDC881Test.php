@@ -135,6 +135,7 @@ class DDC881PhoneNumber
     /**
      * @Id
      * @Column(type="integer")
+     * @GeneratedValue(strategy="NONE")
      */
     private $id;
     /**
