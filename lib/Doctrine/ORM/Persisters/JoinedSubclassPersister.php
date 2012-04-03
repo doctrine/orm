@@ -161,14 +161,24 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $rootTableStmt->execute();
 
             // Handle Post Insert ID
-            $idList = $this->_class->getIdentifierValues($entity);
+            $idList = array();
 
             foreach ($this->_class->idGeneratorList as $fieldName => $idGenerator) {
                 $generator = $idGenerator['generator'];
 
-                if ($generator && $generator->isPostInsertGenerator()) {
+                if ($generator->isPostInsertGenerator()) {
                     $idList[$fieldName] = $generator->generate($this->_em, $entity);
+
+                    continue;
                 }
+
+                $identifierList = $generator->generate($this->_em, $entity);
+
+                if ( ! is_array($identifierList)) {
+                    $identifierList = array($fieldName => $identifierList);
+                }
+
+                $idList = array_merge($idList, $identifierList);
             }
 
             $insertIdList[$oid] = array(
@@ -464,7 +474,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             if (isset($this->_class->associationMappings[$name])) {
                 $assoc = $this->_class->associationMappings[$name];
-                
+
                 if ($assoc['type'] & ClassMetadata::TO_ONE && $assoc['isOwningSide']) {
                     foreach ($assoc['targetToSourceKeyColumns'] as $sourceCol) {
                         $columns[] = $sourceCol;

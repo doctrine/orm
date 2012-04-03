@@ -250,6 +250,10 @@ class BasicEntityPersister
 
                 $identifierList = $generator->generate($this->_em, $entity);
 
+                if ( ! is_array($identifierList)) {
+                    $identifierList = array($fieldName => $identifierList);
+                }
+
                 $idList = array_merge($idList, $identifierList);
             }
 
