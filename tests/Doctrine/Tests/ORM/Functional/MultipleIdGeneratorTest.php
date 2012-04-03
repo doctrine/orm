@@ -21,11 +21,11 @@ class MultipleIdGeneratorTest extends OrmFunctionalTestCase
     public function testMultipleIdGenerator()
     {
         $entity = new MultipleIdGeneratorEntity();
+        $entity->setId(1);
         $entity->setSecondId(rand(1, PHP_INT_MAX));
 
         $this->_em->persist($entity);
 
-        $this->assertTrue(false);
         $this->assertNotNull($entity->getId());
         $this->assertNotNull($entity->getSecondId());
     }
@@ -39,7 +39,7 @@ class MultipleIdGeneratorEntity
     /**
      * @Id
      * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @GeneratedValue(strategy="NONE")
      */
     private $id;
 
@@ -49,6 +49,16 @@ class MultipleIdGeneratorEntity
      * @GeneratedValue(strategy="NONE")
      */
     private $secondId;
+
+    /**
+     * Set id.
+     *
+     * @param integer $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
 
     /**
      * Get id.

@@ -277,6 +277,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             if ($parent) {
                 $class->setInheritanceType($parent->inheritanceType);
                 $class->setDiscriminatorColumn($parent->discriminatorColumn);
+                $class->setIdGeneratorList($parent->idGeneratorList);
                 $this->addInheritedFields($class, $parent);
                 $this->addInheritedRelations($class, $parent);
                 $class->setIdentifier($parent->identifier);
@@ -300,10 +301,8 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
             // If this class has a parent the id generator strategy is inherited.
             // However this is only true if the hierachy of parents contains the root entity,
-            // if it consinsts of mapped superclasses these don't necessarily include the id field.
-            if ($parent && $rootEntityFound) {
-                $class->setIdGeneratorList($parent->idGeneratorList);
-            } else {
+            // if it consists of mapped superclasses these don't necessarily include the id field.
+            if ( ! ($parent && $rootEntityFound)) {
                 $this->completeIdGeneratorMapping($class);
             }
 
@@ -470,7 +469,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     {
         $preferredAutoGeneratorType = $this->getPreferredAutoGeneratorType();
 
-        foreach ($class->idGeneratorList as & $idGeneratorMapping) {
+        foreach ($class->idGeneratorList as $fieldName => & $idGeneratorMapping) {
             // Resolve "AUTO" strategy
             if ($idGeneratorMapping['type'] === ClassMetadata::GENERATOR_TYPE_AUTO) {
                 $idGeneratorMapping['type'] = $preferredAutoGeneratorType;
@@ -494,7 +493,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                     $definition = $idGeneratorMapping['definition'];
 
                     if (empty($definition)) {
-                        $sequenceName = $class->getTableName() . '_' . $class->getSingleIdentifierColumnName() . '_seq';
+                        $sequenceName = $class->getTableName() . '_' . $class->getColumnName($fieldName) . '_seq';
 
                         $definition = array(
                             'sequenceName'   => $this->targetPlatform->fixSchemaElementName($sequenceName),
@@ -525,11 +524,11 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                     $definition = $idGeneratorMapping['definition'];
 
                     if ( ! isset($definition['class'])) {
-                        throw new ORMException("Missing custom generation definition: class.");
+                        throw new ORMException("Missing custom generation definition in property '" . $fieldName . "': class.");
                     }
 
                     if ( ! class_exists($definition['class'])) {
-                        throw new ORMException("Can't instantiate custom generator: " . $definition['class']);
+                        throw new ORMException("Can't instantiate custom generator in property '" . $fieldName . "': " . $definition['class']);
                     }
 
                     $idGeneratorMapping['generator'] = new $definition['class'];
