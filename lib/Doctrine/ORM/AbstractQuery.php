@@ -325,10 +325,12 @@ abstract class AbstractQuery
     public function setHydrationCacheProfile(QueryCacheProfile $profile = null)
     {
         if ( ! $profile->getResultCacheDriver()) {
-            $profile = $profile->setResultCacheDriver($this->_em->getConfiguration()->getResultCacheImpl());
+            $resultCacheDriver = $this->_em->getConfiguration()->getResultCacheImpl();
+            $profile = $profile->setResultCacheDriver($resultCacheDriver);
         }
 
         $this->_hydrationCacheProfile = $profile;
+
         return $this;
     }
 
@@ -352,10 +354,12 @@ abstract class AbstractQuery
     public function setResultCacheProfile(QueryCacheProfile $profile = null)
     {
         if ( ! $profile->getResultCacheDriver()) {
-            $profile = $profile->setResultCacheDriver($this->_em->getConfiguration()->getResultCacheImpl());
+            $resultCacheDriver = $this->_em->getConfiguration()->getResultCacheImpl();
+            $profile = $profile->setResultCacheDriver($resultCacheDriver);
         }
 
         $this->_queryCacheProfile = $profile;
+
         return $this;
     }
 
@@ -705,13 +709,14 @@ abstract class AbstractQuery
         }
 
         $setCacheEntry = function() {};
+
         if ($this->_hydrationCacheProfile !== null) {
             list($cacheKey, $realCacheKey) = $this->getHydrationCacheId();
 
-            $qcp = $this->getHydrationCacheProfile();
-            $cache = $qcp->getResultCacheDriver();
-
+            $qcp    = $this->getHydrationCacheProfile();
+            $cache  = $qcp->getResultCacheDriver();
             $result = $cache->fetch($cacheKey);
+
             if (isset($result[$realCacheKey])) {
                 return $result[$realCacheKey];
             }
@@ -730,6 +735,7 @@ abstract class AbstractQuery
 
         if (is_numeric($stmt)) {
             $setCacheEntry($stmt);
+
             return $stmt;
         }
 
@@ -752,6 +758,7 @@ abstract class AbstractQuery
     protected function getHydrationCacheId()
     {
         $params = $this->getParameters();
+
         foreach ($params AS $key => $value) {
             if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(get_class($value))) {
                 if ($this->_em->getUnitOfWork()->getEntityState($value) == UnitOfWork::STATE_MANAGED) {
