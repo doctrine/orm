@@ -308,11 +308,24 @@ abstract class AbstractQuery
     /**
      * Set a cache profile for hydration caching.
      *
+     * If no result cache driver is set in the QueryCacheProfile, the default
+     * result cache driver is used from the configuration.
+     *
+     * @example
+     * $lifetime = 100;
+     * $resultKey = "abc";
+     * $query->setHydrationCacheProfile(new QueryCacheProfile());
+     * $query->setHydrationCacheProfile(new QueryCacheProfile($lifetime, $resultKey));
+     *
      * @param \Doctrine\DBAL\Cache\QueryCacheProfile $profile
      * @return \Doctrine\ORM\AbstractQuery
      */
     public function setHydrationCacheProfile(QueryCacheProfile $profile = null)
     {
+        if ( ! $profile->getResultCacheDriver()) {
+            $profile = $profile->setResultCacheDriver($this->_em->getConfiguration()->getResultCacheImpl());
+        }
+
         $this->_hydrationCacheProfile = $profile;
         return $this;
     }
