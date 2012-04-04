@@ -768,19 +768,19 @@ abstract class AbstractQuery
                 if ($this->_em->getUnitOfWork()->getEntityState($value) == UnitOfWork::STATE_MANAGED) {
                     $idValues = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
                 } else {
-                    $class = $this->_em->getClassMetadata(get_class($value));
+                    $class    = $this->_em->getClassMetadata(get_class($value));
                     $idValues = $class->getIdentifierValues($value);
                 }
                 $params[$key] = $idValues;
             }
         }
 
-        $sql = $this->getSQL();
-        $hints = $this->getHints();
+        $sql                    = $this->getSQL();
+        $hints                  = $this->getHints();
         $hints['hydrationMode'] = $this->getHydrationMode();
+        $qcp                    = $this->getHydrationCacheProfile();
         ksort($hints);
 
-        $qcp = $this->getHydrationCacheProfile();
         return $qcp->generateCacheKeys($sql, $params, $hints);
     }
 
