@@ -21,7 +21,8 @@ namespace Doctrine\ORM;
 
 use Doctrine\DBAL\Types\Type,
     Doctrine\ORM\Query\QueryException,
-    Doctrine\DBAL\Cache\QueryCacheProfile;
+    Doctrine\DBAL\Cache\QueryCacheProfile,
+    Doctrine\ORM\Internal\Hydration\CacheHydrator;
 
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
@@ -100,6 +101,11 @@ abstract class AbstractQuery
      * @var boolean Boolean value that indicates whether or not expire the result cache.
      */
     protected $_expireResultCache = false;
+
+    /**
+     * @param \Doctrine\DBAL\Cache\QueryCacheProfile
+     */
+    protected $_hydrationCacheProfile;
 
     /**
      * Initializes a new instance of a class derived from <tt>AbstractQuery</tt>.
@@ -297,6 +303,26 @@ abstract class AbstractQuery
         $this->_resultSetMapping = $rsm;
 
         return $this;
+    }
+
+    /**
+     * Set a cache profile for hydration caching.
+     *
+     * @param \Doctrine\DBAL\Cache\QueryCacheProfile $profile
+     * @return \Doctrine\ORM\AbstractQuery
+     */
+    public function setHydrationCacheProfile(QueryCacheProfile $profile = null)
+    {
+        $this->_hydrationCacheProfile = $profile;
+        return $this;
+    }
+
+    /**
+     * @return \Doctrine\DBAL\Cache\QueryCacheProfile
+     */
+    public function getHydrationCacheProfile()
+    {
+        return $this->_hydrationCacheProfile;
     }
 
     /**
@@ -644,15 +670,72 @@ abstract class AbstractQuery
             $this->setParameters($params);
         }
 
+        $saveCache = function() {};
+        if ($this->_hydrationCacheProfile !== null) {
+            list($cacheKey, $realCacheKey) = $this->getHydrationCacheId();
+
+            $qcp = $this->getHydrationCacheProfile();
+            $cache = $qcp->getResultCacheDriver();
+
+            $result = $cache->fetch($cacheKey);
+            if (isset($result[$realCacheKey])) {
+                return $result[$realCacheKey];
+            }
+
+            if ( ! $result) {
+                $result = array();
+            }
+            $saveCache = function($data) use ($cache, $result, $cacheKey, $realCacheKey, $qcp) {
+                $result[$realCacheKey] = $data;
+                $cache->save($cacheKey, $result, $qcp->getLifetime());
+            };
+        }
+
         $stmt = $this->_doExecute();
 
         if (is_numeric($stmt)) {
+            $saveCache($stmt);
             return $stmt;
         }
 
-        return $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
+        $data = $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
             $stmt, $this->_resultSetMapping, $this->_hints
         );
+
+        $saveCache($data);
+
+        return $data;
+    }
+
+    /**
+     * Get the result cache id to use to store the result set cache entry.
+     * Will return the configured id if it exists otherwise a hash will be
+     * automatically generated for you.
+     *
+     * @return array ($key, $hash)
+     */
+    protected function getHydrationCacheId()
+    {
+        $params = $this->getParameters();
+        foreach ($params AS $key => $value) {
+            if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(get_class($value))) {
+                if ($this->_em->getUnitOfWork()->getEntityState($value) == UnitOfWork::STATE_MANAGED) {
+                    $idValues = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
+                } else {
+                    $class = $this->_em->getClassMetadata(get_class($value));
+                    $idValues = $class->getIdentifierValues($value);
+                }
+                $params[$key] = $idValues;
+            }
+        }
+
+        $sql = $this->getSQL();
+        $hints = $this->getHints();
+        $hints['hydrationMode'] = $this->getHydrationMode();
+        ksort($hints);
+
+        $qcp = $this->getHydrationCacheProfile();
+        return $qcp->generateCacheKeys($sql, $params, $hints);
     }
 
     /**
