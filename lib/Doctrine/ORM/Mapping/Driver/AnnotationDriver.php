@@ -529,6 +529,8 @@ class AnnotationDriver implements Driver
         $classes = array();
         $includedFiles = array();
 
+        $initialIncludedFiles = get_declared_classes();
+
         foreach ($this->_paths as $path) {
             if ( ! is_dir($path)) {
                 throw MappingException::fileMappingDriversRequireConfiguredDirectoryPath($path);
@@ -552,16 +554,15 @@ class AnnotationDriver implements Driver
             }
         }
 
-        $declared = get_declared_classes();
-
-        foreach ($declared as $className) {
-            $rc = new \ReflectionClass($className);
-            $sourceFile = $rc->getFileName();
-            if (in_array($sourceFile, $includedFiles) && ! $this->isTransient($className)) {
-                $classes[] = $className;
+        $finalIncludedFiles = get_declared_classes();
+        $classesDiff = array_values(array_diff($finalIncludedFiles, $initialIncludedFiles));
+        
+        foreach ($classesDiff AS $class) {
+            if (!$this->isTransient($class)) {
+                $classes[] = $class;
             }
         }
-
+        
         $this->_classNames = $classes;
 
         return $classes;
