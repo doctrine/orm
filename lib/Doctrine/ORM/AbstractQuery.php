@@ -307,6 +307,12 @@ abstract class AbstractQuery
      * If no result cache driver is set in the QueryCacheProfile, the default
      * result cache driver is used from the configuration.
      *
+     * Important: Hydration caching does NOT register entities in the
+     * UnitOfWork when retrieved from the cache. Never use result cached
+     * entities for requests that also flush the EntityManager. If you want
+     * some form of caching with UnitOfWork registration you should use
+     * {@see AbstractQuery::setResultCacheProfile()}.
+     *
      * @example
      * $lifetime = 100;
      * $resultKey = "abc";
@@ -332,6 +338,25 @@ abstract class AbstractQuery
     public function getHydrationCacheProfile()
     {
         return $this->_hydrationCacheProfile;
+    }
+
+    /**
+     * Set a cache profile for the result cache.
+     *
+     * If no result cache driver is set in the QueryCacheProfile, the default
+     * result cache driver is used from the configuration.
+     *
+     * @param \Doctrine\DBAL\Cache\QueryCacheProfile $profile
+     * @return \Doctrine\ORM\AbstractQuery
+     */
+    public function setResultCacheProfile(QueryCacheProfile $profile = null)
+    {
+        if ( ! $profile->getResultCacheDriver()) {
+            $profile = $profile->setResultCacheDriver($this->_em->getConfiguration()->getResultCacheImpl());
+        }
+
+        $this->_queryCacheProfile = $profile;
+        return $this;
     }
 
     /**
