@@ -238,6 +238,8 @@ class QueryBuilder
      * </code>
      *
      * @deprecated Please use $qb->getRootAliases() instead.
+     * @param string $rootAlias
+     * @param string $alias
      * @return string $rootAlias
      */
     public function getRootAlias($rootAlias = null, $alias = null)
