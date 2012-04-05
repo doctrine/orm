@@ -247,6 +247,28 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
+     * Gets the cache driver implementation that is used for the hydration cache (SQL cache).
+     *
+     * @return \Doctrine\Common\Cache\Cache
+     */
+    public function getHydrationCacheImpl()
+    {
+        return isset($this->_attributes['hydrationCacheImpl'])
+            ? $this->_attributes['hydrationCacheImpl']
+            : null;
+    }
+
+    /**
+     * Sets the cache driver implementation that is used for the hydration cache (SQL cache).
+     *
+     * @param \Doctrine\Common\Cache\Cache $cacheImpl
+     */
+    public function setHydrationCacheImpl(Cache $cacheImpl)
+    {
+        $this->_attributes['hydrationCacheImpl'] = $cacheImpl;
+    }
+
+    /**
      * Gets the cache driver implementation that is used for metadata caching.
      *
      * @return \Doctrine\Common\Cache\Cache
