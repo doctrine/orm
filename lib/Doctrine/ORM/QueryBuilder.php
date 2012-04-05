@@ -97,6 +97,12 @@ class QueryBuilder
     private $_maxResults = null;
 
     /**
+     * Keeps root entity alias names for join entities
+     * @var array
+     */
+    private $joinRootAliases = array();
+
+    /**
      * Initializes a new <tt>QueryBuilder</tt> that uses the given <tt>EntityManager</tt>.
      *
      * @param EntityManager $em The EntityManager to use.
@@ -234,10 +240,22 @@ class QueryBuilder
      * @deprecated Please use $qb->getRootAliases() instead.
      * @return string $rootAlias
      */
-    public function getRootAlias()
+    public function getRootAlias($rootAlias = null, $alias = null)
     {
-        $aliases = $this->getRootAliases();
-        return $aliases[0];
+        if ( ! is_null($rootAlias) && in_array($rootAlias, $this->getRootAliases())) {
+            // Do nothing
+        } elseif ( ! is_null($rootAlias) && isset($this->joinRootAliases[$rootAlias])) {
+            $rootAlias = $this->joinRootAliases[$rootAlias];
+        } else {
+            $aliases = $this->getRootAliases();
+            $rootAlias = $aliases[0];
+        }
+
+        if ( ! is_null($alias)) {
+            $this->joinRootAliases[$alias] = $rootAlias;
+        }
+
+        return $rootAlias;
     }
 
     /**
@@ -669,9 +687,7 @@ class QueryBuilder
     {
         $rootAlias = substr($join, 0, strpos($join, '.'));
 
-        if ( ! in_array($rootAlias, $this->getRootAliases())) {
-            $rootAlias = $this->getRootAlias();
-        }
+        $rootAlias = $this->getRootAlias($rootAlias, $alias);
 
         $join = new Expr\Join(
             Expr\Join::INNER_JOIN, $join, $alias, $conditionType, $condition, $indexBy
@@ -705,9 +721,7 @@ class QueryBuilder
     {
         $rootAlias = substr($join, 0, strpos($join, '.'));
 
-        if ( ! in_array($rootAlias, $this->getRootAliases())) {
-            $rootAlias = $this->getRootAlias();
-        }
+        $rootAlias = $this->getRootAlias($rootAlias, $alias);
 
         $join = new Expr\Join(
             Expr\Join::LEFT_JOIN, $join, $alias, $conditionType, $condition, $indexBy
