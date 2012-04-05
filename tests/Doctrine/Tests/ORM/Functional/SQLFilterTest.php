@@ -328,6 +328,80 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertNotEquals($firstSQLQuery, $query->getSQL());
     }
 
+    public function testRepositoryFind()
+    {
+        $this->loadFixtureData();
+
+        $this->assertNotNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->find($this->groupId));
+        $this->assertNotNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->find($this->groupId2));
+
+        $this->useCMSGroupPrefixFilter();
+        $this->_em->clear();
+
+        $this->assertNotNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->find($this->groupId));
+        $this->assertNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->find($this->groupId2));
+    }
+
+    public function testRepositoryFindAll()
+    {
+        $this->loadFixtureData();
+
+        $this->assertCount(2, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findAll());
+
+        $this->useCMSGroupPrefixFilter();
+        $this->_em->clear();
+
+        $this->assertCount(1, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findAll());
+    }
+
+    public function testRepositoryFindBy()
+    {
+        $this->loadFixtureData();
+
+        $this->assertCount(1, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findBy(array('id' => $this->groupId2)));
+
+        $this->useCMSGroupPrefixFilter();
+        $this->_em->clear();
+
+        $this->assertCount(0, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findBy(array('id' => $this->groupId2)));
+    }
+
+    public function testRepositoryFindByX()
+    {
+        $this->loadFixtureData();
+
+        $this->assertCount(1, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findById($this->groupId2));
+
+        $this->useCMSGroupPrefixFilter();
+        $this->_em->clear();
+
+        $this->assertCount(0, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findById($this->groupId2));
+    }
+
+    public function testRepositoryFindOneBy()
+    {
+        $this->loadFixtureData();
+
+        $this->assertNotNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findOneBy(array('id' => $this->groupId2)));
+
+        $this->useCMSGroupPrefixFilter();
+        $this->_em->clear();
+
+        $this->assertNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findOneBy(array('id' => $this->groupId2)));
+    }
+
+    public function testRepositoryFindOneByX()
+    {
+        $this->loadFixtureData();
+
+        $this->assertNotNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findOneById($this->groupId2));
+
+        $this->useCMSGroupPrefixFilter();
+        $this->_em->clear();
+
+        $this->assertNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findOneById($this->groupId2));
+    }
+
     public function testToOneFilter()
     {
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
