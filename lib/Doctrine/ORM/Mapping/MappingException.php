@@ -355,12 +355,14 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self("The target-entity " . $targetEntity . " cannot be found in '" . $sourceEntity."#".$associationName."'.");
     }
 
-    public static function invalidCascadeOption(array $cascades)
+    public static function invalidCascadeOption(array $cascades, $className, $propertyName)
     {
         $cascades = implode(", ", array_map(function ($e) { return "'" . $e . "'"; }, $cascades));
-        return new self(
-            "Invalid cascade option(s) specified: " . $cascades . ". " .
-            "Only 'remove', 'persist', 'refresh', 'merge' and 'detach' are allowed."
-        );
+        return new self(sprintf(
+            'You have specified invalid cascade options for %s::$%s: %s; available options: "remove", "persist", "refresh", "merge", and "detach"',
+            $className,
+            $propertyName,
+            $cascades
+        ));
     }
 }

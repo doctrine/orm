@@ -1212,7 +1212,9 @@ class ClassMetadataInfo implements ClassMetadata
 
         if (count($cascades) !== count(array_intersect($cascades, array('remove', 'persist', 'refresh', 'merge', 'detach')))) {
             throw MappingException::invalidCascadeOption(
-                array_diff($cascades, array_intersect($cascades, array('remove', 'persist', 'refresh', 'merge', 'detach')))
+                array_diff($cascades, array_intersect($cascades, array('remove', 'persist', 'refresh', 'merge', 'detach'))),
+                $this->name,
+                $mapping['fieldName']
             );
         }
 
@@ -1596,7 +1598,7 @@ class ClassMetadataInfo implements ClassMetadata
     {
         return $this->generatorType == self::GENERATOR_TYPE_NONE;
     }
-    
+
     /**
      * Checks whether the class use a UUID for id generation
      *
