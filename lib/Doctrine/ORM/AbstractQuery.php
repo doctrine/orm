@@ -20,8 +20,8 @@
 namespace Doctrine\ORM;
 
 use Doctrine\DBAL\Types\Type,
-    Doctrine\ORM\Query\QueryException,
     Doctrine\DBAL\Cache\QueryCacheProfile,
+    Doctrine\ORM\Query\QueryException,
     Doctrine\ORM\Internal\Hydration\CacheHydrator;
 
 /**
@@ -30,7 +30,6 @@ use Doctrine\DBAL\Types\Type,
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision$
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -325,7 +324,7 @@ abstract class AbstractQuery
     public function setHydrationCacheProfile(QueryCacheProfile $profile = null)
     {
         if ( ! $profile->getResultCacheDriver()) {
-            $resultCacheDriver = $this->_em->getConfiguration()->getResultCacheImpl();
+            $resultCacheDriver = $this->_em->getConfiguration()->getHydrationCacheImpl();
             $profile = $profile->setResultCacheDriver($resultCacheDriver);
         }
 
@@ -713,9 +712,9 @@ abstract class AbstractQuery
         if ($this->_hydrationCacheProfile !== null) {
             list($cacheKey, $realCacheKey) = $this->getHydrationCacheId();
 
-            $qcp    = $this->getHydrationCacheProfile();
-            $cache  = $qcp->getResultCacheDriver();
-            $result = $cache->fetch($cacheKey);
+            $queryCacheProfile = $this->getHydrationCacheProfile();
+            $cache             = $queryCacheProfile->getResultCacheDriver();
+            $result            = $cache->fetch($cacheKey);
 
             if (isset($result[$realCacheKey])) {
                 return $result[$realCacheKey];
@@ -725,9 +724,9 @@ abstract class AbstractQuery
                 $result = array();
             }
 
-            $setCacheEntry = function($data) use ($cache, $result, $cacheKey, $realCacheKey, $qcp) {
+            $setCacheEntry = function($data) use ($cache, $result, $cacheKey, $realCacheKey, $queryCacheProfile) {
                 $result[$realCacheKey] = $data;
-                $cache->save($cacheKey, $result, $qcp->getLifetime());
+                $cache->save($cacheKey, $result, $queryCacheProfile->getLifetime());
             };
         }
 
@@ -760,24 +759,16 @@ abstract class AbstractQuery
         $params = $this->getParameters();
 
         foreach ($params AS $key => $value) {
-            if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(get_class($value))) {
-                if ($this->_em->getUnitOfWork()->getEntityState($value) == UnitOfWork::STATE_MANAGED) {
-                    $idValues = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
-                } else {
-                    $class    = $this->_em->getClassMetadata(get_class($value));
-                    $idValues = $class->getIdentifierValues($value);
-                }
-                $params[$key] = $idValues;
-            }
+            $params[$key] = $this->processParameterValue($value);
         }
 
         $sql                    = $this->getSQL();
+        $queryCacheProfile      = $this->getHydrationCacheProfile();
         $hints                  = $this->getHints();
         $hints['hydrationMode'] = $this->getHydrationMode();
-        $qcp                    = $this->getHydrationCacheProfile();
         ksort($hints);
 
-        return $qcp->generateCacheKeys($sql, $params, $hints);
+        return $queryCacheProfile->generateCacheKeys($sql, $params, $hints);
     }
 
     /**
