@@ -26,7 +26,8 @@ use ReflectionException,
     Doctrine\ORM\Events,
     Doctrine\Common\Persistence\Mapping\RuntimeReflectionService,
     Doctrine\Common\Persistence\Mapping\ReflectionService,
-    Doctrine\Common\Persistence\Mapping\ClassMetadataFactory as ClassMetadataFactoryInterface;
+    Doctrine\Common\Persistence\Mapping\ClassMetadataFactory as ClassMetadataFactoryInterface,
+    Doctrine\Common\Util\ClassUtils;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -155,7 +156,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     public function getMetadataFor($className)
     {
         if ( ! isset($this->loadedMetadata[$className])) {
-            $realClassName = $className;
+            $realClassName = ClassUtils::getRealClass($className);
 
             // Check for namespace alias
             if (strpos($className, ':') !== false) {
