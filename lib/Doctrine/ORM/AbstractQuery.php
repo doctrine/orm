@@ -20,8 +20,9 @@
 namespace Doctrine\ORM;
 
 use Doctrine\DBAL\Types\Type,
+    Doctrine\DBAL\Cache\QueryCacheProfile,
     Doctrine\ORM\Query\QueryException,
-    Doctrine\DBAL\Cache\QueryCacheProfile;
+    Doctrine\ORM\Internal\Hydration\CacheHydrator;
 
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
@@ -29,7 +30,6 @@ use Doctrine\DBAL\Types\Type,
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision$
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -100,6 +100,11 @@ abstract class AbstractQuery
      * @var boolean Boolean value that indicates whether or not expire the result cache.
      */
     protected $_expireResultCache = false;
+
+    /**
+     * @param \Doctrine\DBAL\Cache\QueryCacheProfile
+     */
+    protected $_hydrationCacheProfile;
 
     /**
      * Initializes a new instance of a class derived from <tt>AbstractQuery</tt>.
@@ -291,6 +296,68 @@ abstract class AbstractQuery
     public function setResultSetMapping(Query\ResultSetMapping $rsm)
     {
         $this->_resultSetMapping = $rsm;
+
+        return $this;
+    }
+
+    /**
+     * Set a cache profile for hydration caching.
+     *
+     * If no result cache driver is set in the QueryCacheProfile, the default
+     * result cache driver is used from the configuration.
+     *
+     * Important: Hydration caching does NOT register entities in the
+     * UnitOfWork when retrieved from the cache. Never use result cached
+     * entities for requests that also flush the EntityManager. If you want
+     * some form of caching with UnitOfWork registration you should use
+     * {@see AbstractQuery::setResultCacheProfile()}.
+     *
+     * @example
+     * $lifetime = 100;
+     * $resultKey = "abc";
+     * $query->setHydrationCacheProfile(new QueryCacheProfile());
+     * $query->setHydrationCacheProfile(new QueryCacheProfile($lifetime, $resultKey));
+     *
+     * @param \Doctrine\DBAL\Cache\QueryCacheProfile $profile
+     * @return \Doctrine\ORM\AbstractQuery
+     */
+    public function setHydrationCacheProfile(QueryCacheProfile $profile = null)
+    {
+        if ( ! $profile->getResultCacheDriver()) {
+            $resultCacheDriver = $this->_em->getConfiguration()->getHydrationCacheImpl();
+            $profile = $profile->setResultCacheDriver($resultCacheDriver);
+        }
+
+        $this->_hydrationCacheProfile = $profile;
+
+        return $this;
+    }
+
+    /**
+     * @return \Doctrine\DBAL\Cache\QueryCacheProfile
+     */
+    public function getHydrationCacheProfile()
+    {
+        return $this->_hydrationCacheProfile;
+    }
+
+    /**
+     * Set a cache profile for the result cache.
+     *
+     * If no result cache driver is set in the QueryCacheProfile, the default
+     * result cache driver is used from the configuration.
+     *
+     * @param \Doctrine\DBAL\Cache\QueryCacheProfile $profile
+     * @return \Doctrine\ORM\AbstractQuery
+     */
+    public function setResultCacheProfile(QueryCacheProfile $profile = null)
+    {
+        if ( ! $profile->getResultCacheDriver()) {
+            $resultCacheDriver = $this->_em->getConfiguration()->getResultCacheImpl();
+            $profile = $profile->setResultCacheDriver($resultCacheDriver);
+        }
+
+        $this->_queryCacheProfile = $profile;
 
         return $this;
     }
@@ -640,15 +707,68 @@ abstract class AbstractQuery
             $this->setParameters($params);
         }
 
+        $setCacheEntry = function() {};
+
+        if ($this->_hydrationCacheProfile !== null) {
+            list($cacheKey, $realCacheKey) = $this->getHydrationCacheId();
+
+            $queryCacheProfile = $this->getHydrationCacheProfile();
+            $cache             = $queryCacheProfile->getResultCacheDriver();
+            $result            = $cache->fetch($cacheKey);
+
+            if (isset($result[$realCacheKey])) {
+                return $result[$realCacheKey];
+            }
+
+            if ( ! $result) {
+                $result = array();
+            }
+
+            $setCacheEntry = function($data) use ($cache, $result, $cacheKey, $realCacheKey, $queryCacheProfile) {
+                $result[$realCacheKey] = $data;
+                $cache->save($cacheKey, $result, $queryCacheProfile->getLifetime());
+            };
+        }
+
         $stmt = $this->_doExecute();
 
         if (is_numeric($stmt)) {
+            $setCacheEntry($stmt);
+
             return $stmt;
         }
 
-        return $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
+        $data = $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
             $stmt, $this->_resultSetMapping, $this->_hints
         );
+
+        $setCacheEntry($data);
+
+        return $data;
+    }
+
+    /**
+     * Get the result cache id to use to store the result set cache entry.
+     * Will return the configured id if it exists otherwise a hash will be
+     * automatically generated for you.
+     *
+     * @return array ($key, $hash)
+     */
+    protected function getHydrationCacheId()
+    {
+        $params = $this->getParameters();
+
+        foreach ($params AS $key => $value) {
+            $params[$key] = $this->processParameterValue($value);
+        }
+
+        $sql                    = $this->getSQL();
+        $queryCacheProfile      = $this->getHydrationCacheProfile();
+        $hints                  = $this->getHints();
+        $hints['hydrationMode'] = $this->getHydrationMode();
+        ksort($hints);
+
+        return $queryCacheProfile->generateCacheKeys($sql, $params, $hints);
     }
 
     /**
