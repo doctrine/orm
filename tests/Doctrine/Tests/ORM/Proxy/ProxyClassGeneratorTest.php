@@ -155,6 +155,20 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(1, substr_count($classCode, 'function __sleep'));
     }
 
+    /**
+     * @group DDC-1771
+     */
+    public function testSkipAbstractClassesOnGeneration()
+    {
+        $cm = new \Doctrine\ORM\Mapping\ClassMetadata(__NAMESPACE__ . '\\AbstractClass');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $this->assertNotNull($cm->reflClass);
+
+        $num = $this->_proxyFactory->generateProxyClasses(array($cm));
+
+        $this->assertEquals(0, $num, "No proxies generated.");
+    }
+
     public function testNoConfigDir_ThrowsException()
     {
         $this->setExpectedException('Doctrine\ORM\Proxy\ProxyException');
@@ -182,4 +196,9 @@ class SleepClass
     {
         return array('id');
     }
+}
+
+abstract class AbstractClass
+{
+
 }
