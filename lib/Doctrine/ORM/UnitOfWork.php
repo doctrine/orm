@@ -302,6 +302,11 @@ class UnitOfWork implements PropertyChangedListener
         $conn = $this->em->getConnection();
         $conn->beginTransaction();
 
+        // Raise onBeginTransaction
+        if ($this->evm->hasListeners(Events::onBeginTransaction)) {
+            $this->evm->dispatchEvent(Events::onBeginTransaction, new Event\OnBeginTransactionEventArgs($conn));
+        }
+
         try {
             if ($this->entityInsertions) {
                 foreach ($commitOrder as $class) {
@@ -336,10 +341,20 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
+            // Raise onCommit
+            if ($this->evm->hasListeners(Events::onCommit)) {
+                $this->evm->dispatchEvent(Events::onCommit, new Event\OnCommitEventArgs($conn));
+            }
+
             $conn->commit();
         } catch (Exception $e) {
             $this->em->close();
             $conn->rollback();
+
+            // Raise onRollback
+            if ($this->evm->hasListeners(Events::onRollback)) {
+                $this->evm->dispatchEvent(Events::onRollback, new Event\OnRollbackEventArgs($e));
+            }
 
             throw $e;
         }

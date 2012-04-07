@@ -22,31 +22,32 @@
 namespace Doctrine\ORM\Event;
 
 /**
- * Provides event arguments for the preFlush event.
+ * Provides event arguments for the onBeginTransaction event.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
- * @since       2.0
+ * @since       2.3
  * @author      Roman Borschel <roman@code-factory.de>
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
+ * @author      Gustavo Falco <comfortablynumb84@gmail.com>
  */
-class PreFlushEventArgs extends \Doctrine\Common\EventArgs
+class OnBeginTransactionEventArgs extends \Doctrine\Common\EventArgs
 {
     /**
-     * @var EntityManager
+     * @var \Doctrine\DBAL\Connection
      */
-    private $em;
+    private $conn;
 
-    public function __construct($em)
+    public function __construct(\Doctrine\DBAL\Connection $conn)
     {
-        $this->em = $em;
+        $this->conn = $conn;
     }
 
     /**
-     * @return EntityManager
+     * @return \Doctrine\DBAL\Connection
      */
-    public function getEntityManager()
+    public function getConnection()
     {
-        return $this->em;
+        return $this->conn;
     }
 }

@@ -22,31 +22,32 @@
 namespace Doctrine\ORM\Event;
 
 /**
- * Provides event arguments for the preFlush event.
+ * Provides event arguments for the onRollback event.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
- * @since       2.0
+ * @since       2.3
  * @author      Roman Borschel <roman@code-factory.de>
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
+ * @author      Gustavo Falco <comfortablynumb84@gmail.com>
  */
-class PreFlushEventArgs extends \Doctrine\Common\EventArgs
+class OnRollbackEventArgs extends \Doctrine\Common\EventArgs
 {
     /**
-     * @var EntityManager
+     * @var Exception
      */
-    private $em;
+    private $exception;
 
-    public function __construct($em)
+    public function __construct($exception)
     {
-        $this->em = $em;
+        $this->exception = $exception;
     }
 
     /**
-     * @return EntityManager
+     * @return Exception
      */
-    public function getEntityManager()
+    public function getException()
     {
-        return $this->em;
+        return $this->exception;
     }
 }
