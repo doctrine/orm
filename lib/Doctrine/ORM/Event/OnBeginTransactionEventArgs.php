@@ -21,6 +21,9 @@
 
 namespace Doctrine\ORM\Event;
 
+use Doctrine\ORM\UnitOfWork;
+use Doctrine\DBAL\Connection;
+
 /**
  * Provides event arguments for the onBeginTransaction event.
  *
@@ -34,13 +37,27 @@ namespace Doctrine\ORM\Event;
 class OnBeginTransactionEventArgs extends \Doctrine\Common\EventArgs
 {
     /**
+     * @var \Doctrine\ORM\UnitOfWork
+     */
+    private $uow;
+
+    /**
      * @var \Doctrine\DBAL\Connection
      */
     private $conn;
 
-    public function __construct(\Doctrine\DBAL\Connection $conn)
+    public function __construct(UnitOfWork $uow, Connection $conn)
     {
+        $this->uow = $uow;
         $this->conn = $conn;
+    }
+
+    /**
+     * @return \Doctrine\ORM\UnitOfWork
+     */
+    public function getUnitOfWork()
+    {
+        return $this->uow;
     }
 
     /**

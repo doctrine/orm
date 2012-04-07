@@ -21,6 +21,9 @@
 
 namespace Doctrine\ORM\Event;
 
+use Exception;
+use Doctrine\ORM\UnitOfWork;
+
 /**
  * Provides event arguments for the onRollback event.
  *
@@ -34,13 +37,27 @@ namespace Doctrine\ORM\Event;
 class OnRollbackEventArgs extends \Doctrine\Common\EventArgs
 {
     /**
+     * @var \Doctrine\ORM\UnitOfWork
+     */
+    private $uow;
+
+    /**
      * @var Exception
      */
     private $exception;
 
-    public function __construct($exception)
+    public function __construct(UnitOfWork $uow, Exception $exception)
     {
+        $this->uow = $uow;
         $this->exception = $exception;
+    }
+
+    /**
+     * @return \Doctrine\ORM\UnitOfWork
+     */
+    public function getUnitOfWork()
+    {
+        return $this->uow;
     }
 
     /**

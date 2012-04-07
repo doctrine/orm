@@ -304,7 +304,7 @@ class UnitOfWork implements PropertyChangedListener
 
         // Raise onBeginTransaction
         if ($this->evm->hasListeners(Events::onBeginTransaction)) {
-            $this->evm->dispatchEvent(Events::onBeginTransaction, new Event\OnBeginTransactionEventArgs($conn));
+            $this->evm->dispatchEvent(Events::onBeginTransaction, new Event\OnBeginTransactionEventArgs($this, $conn));
         }
 
         try {
@@ -343,7 +343,7 @@ class UnitOfWork implements PropertyChangedListener
 
             // Raise onCommit
             if ($this->evm->hasListeners(Events::onCommit)) {
-                $this->evm->dispatchEvent(Events::onCommit, new Event\OnCommitEventArgs($conn));
+                $this->evm->dispatchEvent(Events::onCommit, new Event\OnCommitEventArgs($this, $conn));
             }
 
             $conn->commit();
@@ -353,7 +353,7 @@ class UnitOfWork implements PropertyChangedListener
 
             // Raise onRollback
             if ($this->evm->hasListeners(Events::onRollback)) {
-                $this->evm->dispatchEvent(Events::onRollback, new Event\OnRollbackEventArgs($e));
+                $this->evm->dispatchEvent(Events::onRollback, new Event\OnRollbackEventArgs($this, $e));
             }
 
             throw $e;
