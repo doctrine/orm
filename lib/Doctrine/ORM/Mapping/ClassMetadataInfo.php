@@ -1642,7 +1642,7 @@ class ClassMetadataInfo implements ClassMetadata
                 if ( ! class_exists($className)) {
                     throw MappingException::invalidClassInDiscriminatorMap($className, $this->name);
                 }
-                if (is_subclass_of($className, $this->name)) {
+                if (is_subclass_of($className, $this->name) && ! in_array($className, $this->subClasses)) {
                     $this->subClasses[] = $className;
                 }
             }
