@@ -19,32 +19,50 @@
 
 namespace Doctrine\ORM\Event;
 
+use Doctrine\ORM\UnitOfWork;
+use Doctrine\DBAL\Connection;
+
 /**
- * Provides event arguments for the preFlush event.
+ * Provides event arguments for the onCommit event.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
- * @since       2.0
+ * @since       2.3
  * @author      Roman Borschel <roman@code-factory.de>
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
+ * @author      Gustavo Falco <comfortablynumb84@gmail.com>
  */
-class PreFlushEventArgs extends \Doctrine\Common\EventArgs
+class OnCommitEventArgs extends \Doctrine\Common\EventArgs
 {
     /**
-     * @var EntityManager
+     * @var \Doctrine\ORM\UnitOfWork
      */
-    private $em;
+    private $uow;
 
-    public function __construct($em)
+    /**
+     * @var \Doctrine\DBAL\Connection
+     */
+    private $conn;
+
+    public function __construct(UnitOfWork $uow, Connection $conn)
     {
-        $this->em = $em;
+        $this->uow = $uow;
+        $this->conn = $conn;
     }
 
     /**
-     * @return EntityManager
+     * @return \Doctrine\ORM\UnitOfWork
      */
-    public function getEntityManager()
+    public function getUnitOfWork()
     {
-        return $this->em;
+        return $this->uow;
+    }
+
+    /**
+     * @return \Doctrine\DBAL\Connection
+     */
+    public function getConnection()
+    {
+        return $this->conn;
     }
 }

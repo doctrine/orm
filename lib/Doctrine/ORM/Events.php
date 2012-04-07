@@ -145,4 +145,25 @@ final class Events
      * @var string
      */
     const onClear = 'onClear';
+
+    /**
+     * The onBeginTransaction event occurs just after the transaction is initiated on UnitOfWork#commit,
+     *
+     * @var string
+     */
+    const onBeginTransaction = 'onBeginTransaction';
+
+    /**
+     * The onCommit event occurs just before the transaction is commited on UnitOfWork#commit,
+     *
+     * @var string
+     */
+    const onCommit = 'onCommit';
+
+    /**
+     * The onRollback event occurs when a rollback is executed on the actual transaction on UnitOfWork#commit,
+     *
+     * @var string
+     */
+    const onRollback = 'onRollback';
 }
