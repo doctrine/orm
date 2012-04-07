@@ -402,9 +402,6 @@ class YamlDriver extends AbstractFileDriver
                 if (isset($manyToManyElement['mappedBy'])) {
                     $mapping['mappedBy'] = $manyToManyElement['mappedBy'];
                 } else if (isset($manyToManyElement['joinTable'])) {
-                    if (isset($manyToManyElement['inversedBy'])) {
-                        $mapping['inversedBy'] = $manyToManyElement['inversedBy'];
-                    }
 
                     $joinTableElement = $manyToManyElement['joinTable'];
                     $joinTable = array(
@@ -432,6 +429,10 @@ class YamlDriver extends AbstractFileDriver
                     }
 
                     $mapping['joinTable'] = $joinTable;
+                }
+
+                if (isset($manyToManyElement['inversedBy'])) {
+                    $mapping['inversedBy'] = $manyToManyElement['inversedBy'];
                 }
 
                 if (isset($manyToManyElement['cascade'])) {
