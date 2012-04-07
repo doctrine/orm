@@ -87,7 +87,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     /**
      * @group DDC-889
-     * @expectedException Doctrine\ORM\Mapping\MappingException
+     * @expectedException Doctrine\Common\Persistence\Mapping\MappingException
      * @expectedExceptionMessage Invalid mapping file 'Doctrine.Tests.Models.DDC889.DDC889Class.dcm.xml' for class 'Doctrine\Tests\Models\DDC889\DDC889Class'.
      */
     public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses()
