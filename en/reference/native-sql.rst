@@ -9,6 +9,10 @@ of the database result should be mapped by Doctrine in terms of the
 object graph. This allows you to map arbitrary SQL code to objects,
 such as highly vendor-optimized SQL or stored-procedures.
 
+Because writing ``ResultSetMapping`` is not so simple, there is a convenience
+wrapper around it called a ``ResultSetMappingBuilder``. The last section
+of this chapter describes its usage.
+
 .. note::
 
     If you want to execute DELETE, UPDATE or INSERT statements
@@ -377,13 +381,16 @@ in your sQL statement:
 
     <?php
 
+    use Doctrine\ORM\Query\ResultSetMappingBuilder;
+
     $sql = "SELECT u.id, u.name, a.id AS address_id, a.street, a.city " . 
            "FROM users u INNER JOIN address a ON u.address_id = a.id";
 
-    $rsm = new ResultSetMappingBuilder($em);
+    $rsm = new ResultSetMappingBuilder($entityManager);
     $rsm->addRootEntityFromClassMetadata('MyProject\User', 'u');
     $rsm->addJoinedEntityFromClassMetadata('MyProject\Address', 'a', 'u', 'address', array('id' => 'address_id'));
 
 For entites with more columns the builder is very convenient to use. It extends the ``ResultSetMapping`` class
 and as such has all the functionality of it as well. Currently the ``ResultSetMappingBuilder`` does not support
 entities with inheritance.
+
