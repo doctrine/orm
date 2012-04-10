@@ -1597,17 +1597,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     public function testStripNonAlphanumericCharactersFromAlias()
     {
         $this->assertSqlGeneration(
-            'SELECT e FROM Doctrine\Tests\ORM\Query\DDC1719Entity e',
+            'SELECT e FROM Doctrine\Tests\Models\DDC1719\DDC1719Entity e',
             'SELECT d0_.id AS id0, d0_."entity-value" AS entityvalue1 FROM "ddc-1719-entity" d0_'
         );
 
         $this->assertSqlGeneration(
-            'SELECT e.value FROM Doctrine\Tests\ORM\Query\DDC1719Entity e ORDER BY e.value',
+            'SELECT e.value FROM Doctrine\Tests\Models\DDC1719\DDC1719Entity e ORDER BY e.value',
             'SELECT d0_."entity-value" AS entityvalue0 FROM "ddc-1719-entity" d0_ ORDER BY d0_."entity-value" ASC'
         );
 
         $this->assertSqlGeneration(
-            'SELECT TRIM(e.value) FROM Doctrine\Tests\ORM\Query\DDC1719Entity e ORDER BY e.value',
+            'SELECT TRIM(e.value) FROM Doctrine\Tests\Models\DDC1719\DDC1719Entity e ORDER BY e.value',
             'SELECT TRIM(d0_."entity-value") AS sclr0 FROM "ddc-1719-entity" d0_ ORDER BY d0_."entity-value" ASC'
         );
     }
@@ -1708,22 +1708,3 @@ class DDC1474Entity
 
 }
 
-/**
- * @Entity
- * @Table(name="`ddc-1719-entity`")
- */
-class DDC1719Entity
-{
-
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
-
-    /**
-     * @Column(type="string", name="`entity-value`")
-     */
-    protected $value;
-}
