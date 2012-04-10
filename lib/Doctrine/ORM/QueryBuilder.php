@@ -97,8 +97,7 @@ class QueryBuilder
     private $_maxResults = null;
 
     /**
-     * Keeps root entity alias names for join entities
-     * @var array
+     * @var array Keeps root entity alias names for join entities.
      */
     private $joinRootAliases = array();
 
@@ -226,6 +225,32 @@ class QueryBuilder
     }
 
     /**
+     * Finds the root entity alias of the joined entity.
+     *
+     * @param string $alias The alias of the new join entity
+     * @param string $parentAlias The parent entity alias of the join relationship
+     * @return string
+     */
+    private function findRootAlias($alias, $parentAlias)
+    {
+        $rootAlias = null;
+
+        if (in_array($parentAlias, $this->getRootAliases())) {
+            $rootAlias = $parentAlias;
+        } elseif (isset($this->joinRootAliases[$parentAlias])) {
+            $rootAlias = $this->joinRootAliases[$parentAlias];
+        } else {
+            // Should never happen with correct joining order. Might be
+            // thoughtful to throw exception instead.
+            $rootAlias = $this->getRootAlias();
+        }
+
+        $this->joinRootAliases[$alias] = $rootAlias;
+
+        return $rootAlias;
+    }
+
+    /**
      * Gets the FIRST root alias of the query. This is the first entity alias involved
      * in the construction of the query.
      *
@@ -238,26 +263,12 @@ class QueryBuilder
      * </code>
      *
      * @deprecated Please use $qb->getRootAliases() instead.
-     * @param string $rootAlias
-     * @param string $alias
      * @return string $rootAlias
      */
-    public function getRootAlias($rootAlias = null, $alias = null)
+    public function getRootAlias()
     {
-        if ( ! is_null($rootAlias) && in_array($rootAlias, $this->getRootAliases())) {
-            // Do nothing
-        } elseif ( ! is_null($rootAlias) && isset($this->joinRootAliases[$rootAlias])) {
-            $rootAlias = $this->joinRootAliases[$rootAlias];
-        } else {
-            $aliases = $this->getRootAliases();
-            $rootAlias = $aliases[0];
-        }
-
-        if ( ! is_null($alias)) {
-            $this->joinRootAliases[$alias] = $rootAlias;
-        }
-
-        return $rootAlias;
+        $aliases = $this->getRootAliases();
+        return $aliases[0];
     }
 
     /**
@@ -687,9 +698,9 @@ class QueryBuilder
      */
     public function innerJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
-        $rootAlias = substr($join, 0, strpos($join, '.'));
+        $parentAlias = substr($join, 0, strpos($join, '.'));
 
-        $rootAlias = $this->getRootAlias($rootAlias, $alias);
+        $rootAlias = $this->findRootAlias($alias, $parentAlias);
 
         $join = new Expr\Join(
             Expr\Join::INNER_JOIN, $join, $alias, $conditionType, $condition, $indexBy
@@ -721,9 +732,9 @@ class QueryBuilder
      */
     public function leftJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
-        $rootAlias = substr($join, 0, strpos($join, '.'));
+        $parentAlias = substr($join, 0, strpos($join, '.'));
 
-        $rootAlias = $this->getRootAlias($rootAlias, $alias);
+        $rootAlias = $this->findRootAlias($alias, $parentAlias);
 
         $join = new Expr\Join(
             Expr\Join::LEFT_JOIN, $join, $alias, $conditionType, $condition, $indexBy
