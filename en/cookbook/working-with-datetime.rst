@@ -98,7 +98,7 @@ the UTC time at the time of the booking and the timezone the event happend in.
 
 
             return $value->format($platform->getDateTimeFormatString(),
-                (self::$utc) ? self::$utc : (self::$utc = new \DateTimeZone(\DateTimeZone::UTC))
+                (self::$utc) ? self::$utc : (self::$utc = new \DateTimeZone('UTC'))
             );
         }
 
@@ -111,7 +111,7 @@ the UTC time at the time of the booking and the timezone the event happend in.
             $val = \DateTime::createFromFormat(
                 $platform->getDateTimeFormatString(),
                 $value,
-                (self::$utc) ? self::$utc : (self::$utc = new \DateTimeZone(\DateTimeZone::UTC))
+                (self::$utc) ? self::$utc : (self::$utc = new \DateTimeZone('UTC'))
             );
             if (!$val) {
                 throw ConversionException::conversionFailed($value, $this->getName());
