@@ -46,7 +46,7 @@ class EnsureProductionSettingsCommand extends Console\Command\Command
     {
         $this
         ->setName('orm:ensure-production-settings')
-        ->setDescription('Verify that Doctrine is properly configured for a production environment.')
+        ->setDescription('Verifies that Doctrine is properly configured for a production environment.')
         ->setDefinition(array(
             new InputOption(
                 'complete', null, InputOption::VALUE_NONE,
