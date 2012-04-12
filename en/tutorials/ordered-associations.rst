@@ -64,7 +64,7 @@ However the following:
 
     SELECT u, g FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name ASC
 
-You can't reverse the order with an explicit DQL ORDER BY:
+You can reverse the order with an explicit DQL ORDER BY:
 
 .. code-block:: sql
 
