@@ -1,9 +1,11 @@
 Implementing a NamingStrategy
 ==============================
 
-Using a naming strategy you can provide rules for automatically generating database identifiers, columns and tables names
+Using a naming strategy you can provide rules for automatically generating
+database identifiers, columns and tables names
 when the table/column name is not given.
-This feature helps reduce the verbosity of the mapping document, eliminating repetitive noise (eg: ``TABLE_``).
+This feature helps reduce the verbosity of the mapping document,
+eliminating repetitive noise (eg: ``TABLE_``).
 
 
 Configuring a naming strategy
@@ -24,20 +26,23 @@ You can specify a different strategy by calling ``Doctrine\ORM\Configuration#set
 Underscore naming strategy
 ---------------------------
 
-``\Doctrine\ORM\Mapping\UnderscoreNamingStrategy`` is a built-in strategy that might be a useful if you want to use a underlying convention.
+``\Doctrine\ORM\Mapping\UnderscoreNamingStrategy`` is a built-in strategy
+that might be a useful if you want to use a underlying convention.
 
 .. code-block:: php
 
     <?php
     $namingStrategy = new \Doctrine\ORM\Mapping\UnderscoreNamingStrategy(CASE_UPPER);
-    $configuration()->setNamingStrategy(namingStrategy);
+    $configuration()->setNamingStrategy($namingStrategy);
 
-Then SomeEntityName will generate the table SOME_ENTITY_NAME when CASE_UPPER or some_entity_name using CASE_LOWER is given.
+Then SomeEntityName will generate the table SOME_ENTITY_NAME when CASE_UPPER
+or some_entity_name using CASE_LOWER is given.
 
 
 Naming strategy interface
 -------------------------
-The interface ``Doctrine\ORM\Mapping\NamingStrategy`` allows you to specify a "naming standard" for database tables and columns.
+The interface ``Doctrine\ORM\Mapping\NamingStrategy`` allows you to specify
+a "naming standard" for database tables and columns.
 
 .. code-block:: php
 
@@ -94,7 +99,9 @@ The interface ``Doctrine\ORM\Mapping\NamingStrategy`` allows you to specify a "n
 
 Implementing a naming strategy
 -------------------------------
-If you have database naming standards like all tables names should be prefixed by the application prefix, all column names should be upper case, you can easily achieve such standards by implementing a naming strategy.
+If you have database naming standards like all tables names should be prefixed
+by the application prefix, all column names should be upper case,
+you can easily achieve such standards by implementing a naming strategy.
 You need to implements NamingStrategy first. Following is an example
 
 
