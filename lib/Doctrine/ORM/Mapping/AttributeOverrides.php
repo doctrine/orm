@@ -20,10 +20,10 @@
 namespace Doctrine\ORM\Mapping;
 
 /**
- * Used to override mappings of multiple properties or fields.
+ * This annotation is used to override the mapping of a entity property.
  *
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since   2.2
+ * @since   2.3
  *
  * @Annotation
  * @Target("CLASS")
