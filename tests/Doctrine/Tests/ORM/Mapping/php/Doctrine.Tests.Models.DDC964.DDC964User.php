@@ -6,11 +6,16 @@ $metadata->mapField(array(
    'id'         => true,
    'fieldName'  => 'id',
    'type'       => 'integer',
-   'columnName' => 'id',
+   'columnName' => 'user_id',
+   'length'     => 150,
 ));
 $metadata->mapField(array(
-   'fieldName'  => 'name',
-   'type'       => 'string',
+    'fieldName' => 'name',
+    'type'      => 'string',
+    'columnName'=> 'user_name',
+    'nullable'  => true,
+    'unique'    => false,
+    'length'    => 250,
 ));
 
 $metadata->mapManyToOne(array(

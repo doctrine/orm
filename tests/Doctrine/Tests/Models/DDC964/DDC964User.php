@@ -11,13 +11,14 @@ class DDC964User
 {
 
     /**
+     * @Id
      * @GeneratedValue
-     * @Id @Column(type="integer")
+     * @Column(type="integer", name="user_id", length=150)
      */
     protected $id;
 
     /**
-     * @Column
+     * @Column(name="user_name", nullable=true, unique=false, length=250)
      */
     protected $name;
 
@@ -112,11 +113,16 @@ class DDC964User
            'id'         => true,
            'fieldName'  => 'id',
            'type'       => 'integer',
-           'columnName' => 'id',
+           'columnName' => 'user_id',
+           'length'     => 150,
         ));
         $metadata->mapField(array(
-           'fieldName'  => 'name',
-           'type'       => 'string',
+            'fieldName' => 'name',
+            'type'      => 'string',
+            'columnName'=> 'user_name',
+            'nullable'  => true,
+            'unique'    => false,
+            'length'    => 250,
         ));
 
         $metadata->mapManyToOne(array(

@@ -146,6 +146,7 @@
       <xs:element name="many-to-one" type="orm:many-to-one" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="many-to-many" type="orm:many-to-many" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="association-overrides" type="orm:association-overrides" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="attribute-overrides" type="orm:attribute-overrides" minOccurs="0" maxOccurs="unbounded" />
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required" />
@@ -496,6 +497,21 @@
       <xs:element name="join-table" type="orm:join-table" minOccurs="0" />
       <xs:element name="join-columns" type="orm:join-columns" minOccurs="0" />
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="attribute-overrides">
+    <xs:sequence>
+      <xs:element name="attribute-override" type="orm:attribute-override" minOccurs="1" maxOccurs="unbounded" />
+      <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="attribute-override">
+    <xs:sequence>
+      <xs:element name="field" type="orm:field" minOccurs="1" />
+      <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
   </xs:complexType>

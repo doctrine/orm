@@ -277,19 +277,7 @@ class YamlDriver extends AbstractFileDriver
         if (isset($element['fields'])) {
             foreach ($element['fields'] as $name => $fieldMapping) {
 
-                $mapping = array(
-                    'fieldName' => $name
-                );
-
-                if (isset($fieldMapping['type'])) {
-                    $e = explode('(', $fieldMapping['type']);
-                    $fieldMapping['type'] = $e[0];
-                    $mapping['type']      = $fieldMapping['type'];
-
-                    if (isset($e[1])) {
-                        $fieldMapping['length'] = substr($e[1], 0, strlen($e[1]) - 1);
-                    }
-                }
+                $mapping = $this->columnToArray($name, $fieldMapping);
 
                 if (isset($fieldMapping['id'])) {
                     $mapping['id'] = true;
@@ -297,33 +285,6 @@ class YamlDriver extends AbstractFileDriver
                         $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
                                 . strtoupper($fieldMapping['generator']['strategy'])));
                     }
-                }
-                if (isset($fieldMapping['column'])) {
-                    $mapping['columnName'] = $fieldMapping['column'];
-                }
-                if (isset($fieldMapping['length'])) {
-                    $mapping['length'] = $fieldMapping['length'];
-                }
-                if (isset($fieldMapping['precision'])) {
-                    $mapping['precision'] = $fieldMapping['precision'];
-                }
-                if (isset($fieldMapping['scale'])) {
-                    $mapping['scale'] = $fieldMapping['scale'];
-                }
-                if (isset($fieldMapping['unique'])) {
-                    $mapping['unique'] = (bool)$fieldMapping['unique'];
-                }
-                if (isset($fieldMapping['options'])) {
-                    $mapping['options'] = $fieldMapping['options'];
-                }
-                if (isset($fieldMapping['nullable'])) {
-                    $mapping['nullable'] = $fieldMapping['nullable'];
-                }
-                if (isset($fieldMapping['version']) && $fieldMapping['version']) {
-                    $metadata->setVersionMapping($mapping);
-                }
-                if (isset($fieldMapping['columnDefinition'])) {
-                    $mapping['columnDefinition'] = $fieldMapping['columnDefinition'];
                 }
 
                 $metadata->mapField($mapping);
@@ -359,7 +320,7 @@ class YamlDriver extends AbstractFileDriver
                         $joinColumns[] = $this->joinColumnToArray($oneToOneElement['joinColumn']);
                     } else if (isset($oneToOneElement['joinColumns'])) {
                         foreach ($oneToOneElement['joinColumns'] as $name => $joinColumnElement) {
-                            if (!isset($joinColumnElement['name'])) {
+                            if ( ! isset($joinColumnElement['name'])) {
                                 $joinColumnElement['name'] = $name;
                             }
 
@@ -441,7 +402,7 @@ class YamlDriver extends AbstractFileDriver
                     $joinColumns[] = $this->joinColumnToArray($manyToOneElement['joinColumn']);
                 } else if (isset($manyToOneElement['joinColumns'])) {
                     foreach ($manyToOneElement['joinColumns'] as $name => $joinColumnElement) {
-                        if (!isset($joinColumnElement['name'])) {
+                        if ( ! isset($joinColumnElement['name'])) {
                             $joinColumnElement['name'] = $name;
                         }
 
@@ -485,7 +446,7 @@ class YamlDriver extends AbstractFileDriver
                     }
 
                     foreach ($joinTableElement['joinColumns'] as $name => $joinColumnElement) {
-                        if (!isset($joinColumnElement['name'])) {
+                        if ( ! isset($joinColumnElement['name'])) {
                             $joinColumnElement['name'] = $name;
                         }
 
@@ -493,7 +454,7 @@ class YamlDriver extends AbstractFileDriver
                     }
 
                     foreach ($joinTableElement['inverseJoinColumns'] as $name => $joinColumnElement) {
-                        if (!isset($joinColumnElement['name'])) {
+                        if ( ! isset($joinColumnElement['name'])) {
                             $joinColumnElement['name'] = $name;
                         }
 
@@ -528,16 +489,16 @@ class YamlDriver extends AbstractFileDriver
         }
 
         // Evaluate associationOverride
-        if (isset($element['associationOverride'])) {
+        if (isset($element['associationOverride']) && is_array($element['associationOverride'])) {
 
-            foreach ($element['associationOverride'] as $fieldName => $associationOverride) {
+            foreach ($element['associationOverride'] as $fieldName => $associationOverrideElement) {
                 $override   = array();
 
                 // Check for joinColumn
-                if (isset($associationOverride['joinColumn'])) {
+                if (isset($associationOverrideElement['joinColumn'])) {
                     $joinColumns = array();
-                    foreach ($associationOverride['joinColumn'] as $name => $joinColumnElement) {
-                        if (!isset($joinColumnElement['name'])) {
+                    foreach ($associationOverrideElement['joinColumn'] as $name => $joinColumnElement) {
+                        if ( ! isset($joinColumnElement['name'])) {
                             $joinColumnElement['name'] = $name;
                         }
                         $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
@@ -546,9 +507,9 @@ class YamlDriver extends AbstractFileDriver
                 }
 
                 // Check for joinTable
-                if (isset($associationOverride['joinTable'])) {
+                if (isset($associationOverrideElement['joinTable'])) {
 
-                    $joinTableElement   = $associationOverride['joinTable'];
+                    $joinTableElement   = $associationOverrideElement['joinTable'];
                     $joinTable          =  array(
                         'name' => $joinTableElement['name']
                     );
@@ -558,7 +519,7 @@ class YamlDriver extends AbstractFileDriver
                     }
 
                     foreach ($joinTableElement['joinColumns'] as $name => $joinColumnElement) {
-                        if (!isset($joinColumnElement['name'])) {
+                        if ( ! isset($joinColumnElement['name'])) {
                             $joinColumnElement['name'] = $name;
                         }
 
@@ -566,7 +527,7 @@ class YamlDriver extends AbstractFileDriver
                     }
 
                     foreach ($joinTableElement['inverseJoinColumns'] as $name => $joinColumnElement) {
-                        if (!isset($joinColumnElement['name'])) {
+                        if ( ! isset($joinColumnElement['name'])) {
                             $joinColumnElement['name'] = $name;
                         }
 
@@ -577,6 +538,15 @@ class YamlDriver extends AbstractFileDriver
                 }
 
                 $metadata->setAssociationOverride($fieldName, $override);
+            }
+        }
+
+        // Evaluate associationOverride
+        if (isset($element['attributeOverride']) && is_array($element['attributeOverride'])) {
+
+            foreach ($element['attributeOverride'] as $fieldName => $attributeOverrideElement) {
+                $mapping = $this->columnToArray($fieldName, $attributeOverrideElement);
+                $metadata->setAttributeOverride($fieldName, $mapping);
             }
         }
 
@@ -629,6 +599,68 @@ class YamlDriver extends AbstractFileDriver
         }
 
         return $joinColumn;
+    }
+
+    /**
+     * Parse the given column as array
+     *
+     * @param   string  $fieldName
+     * @param   array   $column
+     * @return  array
+     */
+    private function columnToArray($fieldName, $column)
+    {
+        $mapping = array(
+            'fieldName' => $fieldName
+        );
+
+        if (isset($column['type'])) {
+            $params = explode('(', $column['type']);
+            $column['type']  = $params[0];
+            $mapping['type'] = $column['type'];
+
+            if (isset($params[1])) {
+                $column['length'] = substr($params[1], 0, strlen($params[1]) - 1);
+            }
+        }
+
+        if (isset($column['column'])) {
+            $mapping['columnName'] = $column['column'];
+        }
+
+        if (isset($column['length'])) {
+            $mapping['length'] = $column['length'];
+        }
+
+        if (isset($column['precision'])) {
+            $mapping['precision'] = $column['precision'];
+        }
+
+        if (isset($column['scale'])) {
+            $mapping['scale'] = $column['scale'];
+        }
+
+        if (isset($column['unique'])) {
+            $mapping['unique'] = (bool)$column['unique'];
+        }
+
+        if (isset($column['options'])) {
+            $mapping['options'] = $column['options'];
+        }
+
+        if (isset($column['nullable'])) {
+            $mapping['nullable'] = $column['nullable'];
+        }
+
+        if (isset($column['version']) && $column['version']) {
+            $metadata->setVersionMapping($mapping);
+        }
+
+        if (isset($column['columnDefinition'])) {
+            $mapping['columnDefinition'] = $column['columnDefinition'];
+        }
+
+        return $mapping;
     }
 
     /**

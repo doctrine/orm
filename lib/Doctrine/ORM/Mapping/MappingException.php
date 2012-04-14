@@ -94,6 +94,17 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self("Invalid field override named '$fieldName' for class '$className'.");
     }
 
+    /**
+     * Exception for invalid property type override.
+     *
+     * @param string $className The entity's name
+     * @param string $fieldName
+     */
+    public static function invalidOverrideFieldType($className, $fieldName)
+    {
+        return new self("The column type of attribute '$fieldName' on class '$className' could not be changed.");
+    }
+
     public static function mappingNotFound($className, $fieldName)
     {
         return new self("No mapping found for field '$fieldName' on class '$className'.");
