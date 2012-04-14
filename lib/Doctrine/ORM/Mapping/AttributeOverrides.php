@@ -20,17 +20,22 @@
 namespace Doctrine\ORM\Mapping;
 
 /**
+ * Used to override mappings of multiple properties or fields.
+ *
+ * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * @since   2.2
+ *
  * @Annotation
- * @Target({"PROPERTY","ANNOTATION"})
+ * @Target("CLASS")
  */
-final class JoinTable implements Annotation
+final class AttributeOverrides implements Annotation
 {
-    /** @var string */
-    public $name;
-    /** @var string */
-    public $schema;
-    /** @var array<\Doctrine\ORM\Mapping\JoinColumn> */
-    public $joinColumns = array();
-    /** @var array<\Doctrine\ORM\Mapping\JoinColumn> */
-    public $inverseJoinColumns = array();
+
+    /**
+     * One or more field or property mapping overrides.
+     *
+     * @var array<\Doctrine\ORM\Mapping\AttributeOverride>
+     */
+    public $value;
+
 }

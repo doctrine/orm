@@ -648,6 +648,48 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
 
         $this->setExpectedException("Doctrine\ORM\Mapping\MappingException", "Invalid cascade option(s) specified: 'invalid'. Only 'remove', 'persist', 'refresh', 'merge' and 'detach' are allowed.");
         $cm->mapManyToOne(array('fieldName' => 'address', 'targetEntity' => 'UnknownClass', 'cascade' => array('invalid')));
+     }
+
+    /**
+     * @group DDC-964
+     * @expectedException        Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage Invalid field override named 'invalidPropertyName' for class 'Doctrine\Tests\Models\DDC964\DDC964Admin
+     */
+    public function testInvalidPropertyAssociationOverrideNameException()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\DDC964\DDC964Admin');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->mapManyToOne(array('fieldName' => 'address', 'targetEntity' => 'DDC964Address'));
+
+        $cm->setAssociationOverride('invalidPropertyName', array());
+    }
+
+    /**
+     * @group DDC-964
+     * @expectedException        Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage Invalid field override named 'invalidPropertyName' for class 'Doctrine\Tests\Models\DDC964\DDC964Guest'.
+     */
+    public function testInvalidPropertyAttributeOverrideNameException()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\DDC964\DDC964Guest');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->mapField(array('fieldName' => 'name'));
+
+        $cm->setAttributeOverride('invalidPropertyName', array());
+    }
+
+    /**
+     * @group DDC-964
+     * @expectedException        Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage The column type of attribute 'name' on class 'Doctrine\Tests\Models\DDC964\DDC964Guest' could not be changed.
+     */
+    public function testInvalidOverrideAttributeFieldTypeException()
+    {
+        $cm = new ClassMetadata('Doctrine\Tests\Models\DDC964\DDC964Guest');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->mapField(array('fieldName' => 'name', 'type'=>'string'));
+
+        $cm->setAttributeOverride('name', array('type'=>'date'));
     }
 }
 

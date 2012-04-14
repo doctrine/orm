@@ -20,17 +20,28 @@
 namespace Doctrine\ORM\Mapping;
 
 /**
+ * Used to override the mapping of a property.
+ *
+ * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * @since   2.2
+ *
  * @Annotation
- * @Target({"PROPERTY","ANNOTATION"})
+ * @Target("ANNOTATION")
  */
-final class JoinTable implements Annotation
+final class AttributeOverride implements Annotation
 {
-    /** @var string */
+
+    /**
+     * The name of the property whose mapping is being overridden.
+     * 
+     * @var string 
+     */
     public $name;
-    /** @var string */
-    public $schema;
-    /** @var array<\Doctrine\ORM\Mapping\JoinColumn> */
-    public $joinColumns = array();
-    /** @var array<\Doctrine\ORM\Mapping\JoinColumn> */
-    public $inverseJoinColumns = array();
+
+    /**
+     * The name of the property whose mapping is being overridden.
+     *
+     * @var \Doctrine\ORM\Mapping\Column
+     */
+    public $column;
 }
