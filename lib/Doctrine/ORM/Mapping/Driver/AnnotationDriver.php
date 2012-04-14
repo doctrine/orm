@@ -24,7 +24,8 @@ use Doctrine\Common\Cache\ArrayCache,
     Doctrine\Common\Annotations\AnnotationRegistry,
     Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\MappingException,
-    Doctrine\ORM\Mapping\JoinColumn;
+    Doctrine\ORM\Mapping\JoinColumn,
+    Doctrine\ORM\Mapping\Column;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -135,7 +136,7 @@ class AnnotationDriver implements Driver
     public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
     {
         $class = $metadata->getReflectionClass();
-        if (!$class) {
+        if ( ! $class) {
             // this happens when running annotation driver in combination with
             // static reflection services. This is not the nicest fix
             $class = new \ReflectionClass($metadata->name);
@@ -209,12 +210,12 @@ class AnnotationDriver implements Driver
         if (isset($classAnnotations['Doctrine\ORM\Mapping\NamedQueries'])) {
             $namedQueriesAnnot = $classAnnotations['Doctrine\ORM\Mapping\NamedQueries'];
 
-            if (!is_array($namedQueriesAnnot->value)) {
+            if ( ! is_array($namedQueriesAnnot->value)) {
                 throw new \UnexpectedValueException("@NamedQueries should contain an array of @NamedQuery annotations.");
             }
 
             foreach ($namedQueriesAnnot->value as $namedQuery) {
-                if (!($namedQuery instanceof \Doctrine\ORM\Mapping\NamedQuery)) {
+                if ( ! ($namedQuery instanceof \Doctrine\ORM\Mapping\NamedQuery)) {
                     throw new \UnexpectedValueException("@NamedQueries should contain an array of @NamedQuery annotations.");
                 }
                 $metadata->addNamedQuery(array(
@@ -289,23 +290,7 @@ class AnnotationDriver implements Driver
                     throw MappingException::propertyTypeIsRequired($className, $property->getName());
                 }
 
-                $mapping['type'] = $columnAnnot->type;
-                $mapping['length'] = $columnAnnot->length;
-                $mapping['precision'] = $columnAnnot->precision;
-                $mapping['scale'] = $columnAnnot->scale;
-                $mapping['nullable'] = $columnAnnot->nullable;
-                $mapping['unique'] = $columnAnnot->unique;
-                if ($columnAnnot->options) {
-                    $mapping['options'] = $columnAnnot->options;
-                }
-
-                if (isset($columnAnnot->name)) {
-                    $mapping['columnName'] = $columnAnnot->name;
-                }
-
-                if (isset($columnAnnot->columnDefinition)) {
-                    $mapping['columnDefinition'] = $columnAnnot->columnDefinition;
-                }
+                $mapping = $this->columnToArray($property->getName(), $columnAnnot);
 
                 if ($idAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Id')) {
                     $mapping['id'] = true;
@@ -448,6 +433,16 @@ class AnnotationDriver implements Driver
             }
         }
 
+         $attributeOverrides = array();
+        // Evaluate AttributeOverrides annotation
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\AttributeOverrides'])) {
+            $attributeOverridesAnnot = $classAnnotations['Doctrine\ORM\Mapping\AttributeOverrides'];
+            foreach ($attributeOverridesAnnot->value as $attributeOverrideAnnot) {
+                $attributeOverride = $this->columnToArray($attributeOverrideAnnot->name, $attributeOverrideAnnot->column);
+                $metadata->setAttributeOverride($attributeOverrideAnnot->name, $attributeOverride);
+            }
+        }
+
         // Evaluate @HasLifecycleCallbacks annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\HasLifecycleCallbacks'])) {
             foreach ($class->getMethods() as $method) {
@@ -536,7 +531,7 @@ class AnnotationDriver implements Driver
             return $this->_classNames;
         }
 
-        if (!$this->_paths) {
+        if ( ! $this->_paths) {
             throw MappingException::pathRequired();
         }
 
@@ -591,7 +586,7 @@ class AnnotationDriver implements Driver
      */
     private function getFetchMode($className, $fetchMode)
     {
-        if(!defined('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $fetchMode)) {
+        if( ! defined('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $fetchMode)) {
             throw MappingException::invalidFetchMode($className,  $fetchMode);
         }
 
@@ -614,6 +609,40 @@ class AnnotationDriver implements Driver
             'columnDefinition' => $joinColumn->columnDefinition,
             'referencedColumnName' => $joinColumn->referencedColumnName,
         );
+    }
+
+    /**
+     * Parse the given Column as array
+     *
+     * @param   string $fieldName
+     * @param   Column $column
+     * @return  array
+     */
+    private function columnToArray($fieldName, Column $column)
+    {
+        $mapping = array(
+            'fieldName' => $fieldName,
+            'type'      => $column->type,
+            'scale'     => $column->scale,
+            'length'    => $column->length,
+            'unique'    => $column->unique,
+            'nullable'  => $column->nullable,
+            'precision' => $column->precision
+        );
+
+        if ($column->options) {
+            $mapping['options'] = $column->options;
+        }
+
+        if (isset($column->name)) {
+            $mapping['columnName'] = $column->name;
+        }
+
+        if (isset($column->columnDefinition)) {
+            $mapping['columnDefinition'] = $column->columnDefinition;
+        }
+
+        return $mapping;
     }
 
     /**

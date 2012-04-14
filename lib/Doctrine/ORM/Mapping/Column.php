@@ -21,7 +21,7 @@ namespace Doctrine\ORM\Mapping;
 
 /**
  * @Annotation
- * @Target("PROPERTY")
+ * @Target({"PROPERTY","ANNOTATION"})
  */
 final class Column implements Annotation
 {

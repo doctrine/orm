@@ -50,7 +50,7 @@ class XmlDriver extends AbstractFileDriver
     public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
     {
         $xmlRoot = $this->getElement($className);
-
+        
         if ($xmlRoot->getName() == 'entity') {
             if (isset($xmlRoot['repository-class'])) {
                 $metadata->setCustomRepositoryClass((string)$xmlRoot['repository-class']);
@@ -169,50 +169,7 @@ class XmlDriver extends AbstractFileDriver
         // Evaluate <field ...> mappings
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $fieldMapping) {
-                $mapping = array(
-                    'fieldName' => (string)$fieldMapping['name'],
-                );
-
-                if (isset($fieldMapping['type'])) {
-                    $mapping['type'] = (string)$fieldMapping['type'];
-                }
-
-                if (isset($fieldMapping['column'])) {
-                    $mapping['columnName'] = (string)$fieldMapping['column'];
-                }
-
-                if (isset($fieldMapping['length'])) {
-                    $mapping['length'] = (int)$fieldMapping['length'];
-                }
-
-                if (isset($fieldMapping['precision'])) {
-                    $mapping['precision'] = (int)$fieldMapping['precision'];
-                }
-
-                if (isset($fieldMapping['scale'])) {
-                    $mapping['scale'] = (int)$fieldMapping['scale'];
-                }
-
-                if (isset($fieldMapping['unique'])) {
-                    $mapping['unique'] = ((string)$fieldMapping['unique'] == "false") ? false : true;
-                }
-
-                if (isset($fieldMapping['nullable'])) {
-                    $mapping['nullable'] = ((string)$fieldMapping['nullable'] == "false") ? false : true;
-                }
-
-                if (isset($fieldMapping['version']) && $fieldMapping['version']) {
-                    $metadata->setVersionMapping($mapping);
-                }
-
-                if (isset($fieldMapping['column-definition'])) {
-                    $mapping['columnDefinition'] = (string)$fieldMapping['column-definition'];
-                }
-
-                if (isset($fieldMapping->options)) {
-                    $mapping['options'] = $this->_parseOptions($fieldMapping->options->children());
-                }
-
+                $mapping = $this->columnToArray($fieldMapping);
                 $metadata->mapField($mapping);
             }
         }
@@ -232,6 +189,10 @@ class XmlDriver extends AbstractFileDriver
 
             if (isset($idElement['type'])) {
                 $mapping['type'] = (string)$idElement['type'];
+            }
+
+            if (isset($idElement['length'])) {
+                $mapping['length'] = (string)$idElement['length'];
             }
 
             if (isset($idElement['column'])) {
@@ -461,24 +422,36 @@ class XmlDriver extends AbstractFileDriver
         }
 
         // Evaluate association-overrides
+        if (isset($xmlRoot->{'attribute-overrides'})) {
+            foreach ($xmlRoot->{'attribute-overrides'}->{'attribute-override'} as $overrideElement) {
+                $fieldName = (string) $overrideElement['name'];
+                foreach ($overrideElement->field as $field) {
+                    $mapping = $this->columnToArray($field);
+                    $mapping['fieldName'] = $fieldName;
+                    $metadata->setAttributeOverride($fieldName, $mapping);
+                }
+            }
+        }
+
+        // Evaluate association-overrides
         if (isset($xmlRoot->{'association-overrides'})) {
-            foreach ($xmlRoot->{'association-overrides'}->{'association-override'} as $associationOverrideElement) {
-                $fieldName  = (string) $associationOverrideElement['name'];
+            foreach ($xmlRoot->{'association-overrides'}->{'association-override'} as $overrideElement) {
+                $fieldName  = (string) $overrideElement['name'];
                 $override   = array();
 
                 // Check for join-columns
-                if (isset($associationOverrideElement->{'join-columns'})) {
+                if (isset($overrideElement->{'join-columns'})) {
                     $joinColumns = array();
-                    foreach ($associationOverrideElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
+                    foreach ($overrideElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
                         $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
                     }
                     $override['joinColumns'] = $joinColumns;
                 }
 
                 // Check for join-table
-                if ($associationOverrideElement->{'join-table'}) {
+                if ($overrideElement->{'join-table'}) {
                     $joinTable          = null;
-                    $joinTableElement   = $associationOverrideElement->{'join-table'};
+                    $joinTableElement   = $overrideElement->{'join-table'};
 
                     $joinTable = array(
                         'name'      => (string) $joinTableElement['name'],
@@ -572,6 +545,61 @@ class XmlDriver extends AbstractFileDriver
         }
 
         return $joinColumn;
+    }
+
+     /**
+     * Parse the given field as array
+     *
+     * @param   SimpleXMLElement   $fieldMapping
+     * @return  array
+     */
+    private function columnToArray(SimpleXMLElement $fieldMapping)
+    {
+        $mapping = array(
+            'fieldName' => (string)$fieldMapping['name'],
+        );
+
+        if (isset($fieldMapping['type'])) {
+            $mapping['type'] = (string)$fieldMapping['type'];
+        }
+
+        if (isset($fieldMapping['column'])) {
+            $mapping['columnName'] = (string)$fieldMapping['column'];
+        }
+
+        if (isset($fieldMapping['length'])) {
+            $mapping['length'] = (int)$fieldMapping['length'];
+        }
+
+        if (isset($fieldMapping['precision'])) {
+            $mapping['precision'] = (int)$fieldMapping['precision'];
+        }
+
+        if (isset($fieldMapping['scale'])) {
+            $mapping['scale'] = (int)$fieldMapping['scale'];
+        }
+
+        if (isset($fieldMapping['unique'])) {
+            $mapping['unique'] = ((string)$fieldMapping['unique'] == "false") ? false : true;
+        }
+
+        if (isset($fieldMapping['nullable'])) {
+            $mapping['nullable'] = ((string)$fieldMapping['nullable'] == "false") ? false : true;
+        }
+
+        if (isset($fieldMapping['version']) && $fieldMapping['version']) {
+            $metadata->setVersionMapping($mapping);
+        }
+
+        if (isset($fieldMapping['column-definition'])) {
+            $mapping['columnDefinition'] = (string)$fieldMapping['column-definition'];
+        }
+
+        if (isset($fieldMapping->options)) {
+            $mapping['options'] = $this->_parseOptions($fieldMapping->options->children());
+        }
+
+        return $mapping;
     }
 
     /**

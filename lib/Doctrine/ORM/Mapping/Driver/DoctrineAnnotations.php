@@ -55,3 +55,5 @@ require_once __DIR__.'/../PostLoad.php';
 require_once __DIR__.'/../PreFlush.php';
 require_once __DIR__.'/../AssociationOverride.php';
 require_once __DIR__.'/../AssociationOverrides.php';
+require_once __DIR__.'/../AttributeOverride.php';
+require_once __DIR__.'/../AttributeOverrides.php';

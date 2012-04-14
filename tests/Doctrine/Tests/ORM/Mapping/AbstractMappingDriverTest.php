@@ -567,6 +567,46 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(array('adminaddress_id'=>'adminaddress_id'), $adminAddress['joinColumnFieldNames']);
         $this->assertEquals(array('id'=>'adminaddress_id'), $adminAddress['targetToSourceKeyColumns']);
     }
+
+    /**
+     * @group DDC-964
+     */
+    public function testAttributeOverridesMapping()
+    {
+
+        $factory       = $this->createClassMetadataFactory();
+        $guestMetadata = $factory->getMetadataFor('Doctrine\Tests\Models\DDC964\DDC964Guest');
+        $adminMetadata = $factory->getMetadataFor('Doctrine\Tests\Models\DDC964\DDC964Admin');
+
+        $this->assertTrue($adminMetadata->fieldMappings['id']['id']);
+        $this->assertEquals('id', $adminMetadata->fieldMappings['id']['fieldName']);
+        $this->assertEquals('user_id', $adminMetadata->fieldMappings['id']['columnName']);
+        $this->assertEquals(array('user_id'=>'id','user_name'=>'name'), $adminMetadata->fieldNames);
+        $this->assertEquals(array('id'=>'user_id','name'=>'user_name'), $adminMetadata->columnNames);
+        $this->assertEquals(150, $adminMetadata->fieldMappings['id']['length']);
+
+
+        $this->assertEquals('name', $adminMetadata->fieldMappings['name']['fieldName']);
+        $this->assertEquals('user_name', $adminMetadata->fieldMappings['name']['columnName']);
+        $this->assertEquals(250, $adminMetadata->fieldMappings['name']['length']);
+        $this->assertTrue($adminMetadata->fieldMappings['name']['nullable']);
+        $this->assertFalse($adminMetadata->fieldMappings['name']['unique']);
+
+
+        $this->assertTrue($guestMetadata->fieldMappings['id']['id']);
+        $this->assertEquals('guest_id', $guestMetadata->fieldMappings['id']['columnName']);
+        $this->assertEquals('id', $guestMetadata->fieldMappings['id']['fieldName']);
+        $this->assertEquals(array('guest_id'=>'id','guest_name'=>'name'), $guestMetadata->fieldNames);
+        $this->assertEquals(array('id'=>'guest_id','name'=>'guest_name'), $guestMetadata->columnNames);
+        $this->assertEquals(140, $guestMetadata->fieldMappings['id']['length']);
+
+        $this->assertEquals('name', $guestMetadata->fieldMappings['name']['fieldName']);
+        $this->assertEquals('guest_name', $guestMetadata->fieldMappings['name']['columnName']);
+        $this->assertEquals(240, $guestMetadata->fieldMappings['name']['length']);
+        $this->assertFalse($guestMetadata->fieldMappings['name']['nullable']);
+        $this->assertTrue($guestMetadata->fieldMappings['name']['unique']);
+    }
+
 }
 
 /**
