@@ -8,10 +8,13 @@ Index
 -----
 
 -  :ref:`@Column <annref_column>`
+-  :ref:`@ColumnResult <annref_column_result>`
 -  :ref:`@ChangeTrackingPolicy <annref_changetrackingpolicy>`
 -  :ref:`@DiscriminatorColumn <annref_discriminatorcolumn>`
 -  :ref:`@DiscriminatorMap <annref_discriminatormap>`
 -  :ref:`@Entity <annref_entity>`
+-  :ref:`@EntityResult <annref_entity_result>`
+-  :ref:`@FieldResult <annref_field_result>`
 -  :ref:`@GeneratedValue <annref_generatedvalue>`
 -  :ref:`@HasLifecycleCallbacks <annref_haslifecyclecallbacks>`
 -  :ref:`@Index <annref_index>`
@@ -22,6 +25,7 @@ Index
 -  :ref:`@ManyToOne <annref_manytoone>`
 -  :ref:`@ManyToMany <annref_manytomany>`
 -  :ref:`@MappedSuperclass <annref_mappedsuperclass>`
+-  :ref:`@NamedNativeQuery <annref_named_native_query>`
 -  :ref:`@OneToOne <annref_onetoone>`
 -  :ref:`@OneToMany <annref_onetomany>`
 -  :ref:`@OrderBy <annref_orderby>`
@@ -33,6 +37,7 @@ Index
 -  :ref:`@PreRemove <annref_preremove>`
 -  :ref:`@PreUpdate <annref_preupdate>`
 -  :ref:`@SequenceGenerator <annref_sequencegenerator>`
+-  :ref:`@SqlResultSetMapping <annref_sql_resultset_mapping>`
 -  :ref:`@Table <annref_table>`
 -  :ref:`@UniqueConstraint <annref_uniqueconstraint>`
 -  :ref:`@Version <annref_version>`
@@ -108,6 +113,17 @@ Examples:
      * @Column(type="decimal", precision=2, scale=1)
      */
     protected $height;
+
+.. _annref_column_result:
+
+@ColumnResult
+~~~~~~~~~~~~~~
+References name of a column in the SELECT clause of a SQL query.
+Scalar result types can be included in the query result by specifying this annotation in the metadata.
+
+Required attributes:
+
+-  **name**: The name of a column in the SELECT clause of a SQL query
 
 .. _annref_changetrackingpolicy:
 
@@ -218,6 +234,39 @@ Example:
     {
         //...
     }
+
+.. _annref_entity_result:
+
+@EntityResult
+~~~~~~~~~~~~~~
+References an entity in the SELECT clause of a SQL query.
+If this annotation is used, the SQL statement should select all of the columns that are mapped to the entity object.
+This should include foreign key columns to related entities.
+The results obtained when insufficient data is available are undefined.
+
+Required attributes:
+
+-  **entityClass**: The class of the result.
+
+Optional attributes:
+
+-  **fields**: Array of @FieldResult, Maps the columns specified in the SELECT list of the query to the properties or fields of the entity class.
+-  **discriminatorColumn**: Specifies the column name of the column in the SELECT list that is used to determine the type of the entity instance.
+
+.. _annref_field_result:
+
+@FieldResult
+~~~~~~~~~~~~~
+Is used to map the columns specified in the SELECT list of the query to the properties or fields of the entity class.
+
+Required attributes:
+
+-  **name**: Name of the persistent field or property of the class.
+
+
+Optional attributes:
+
+-  **column**: Name of the column in the SELECT clause.
 
 .. _annref_generatedvalue:
 
@@ -597,6 +646,77 @@ Example:
         // ... fields and methods
     }
 
+.. _annref_named_native_query:
+
+@NamedNativeQuery
+~~~~~~~~~~~~~~~~~
+Is used to specify a native SQL named query.
+The NamedNativeQuery annotation can be applied to an entity or mapped superclass.
+
+Required attributes:
+
+-  **name**: The name used to refer to the query with the EntityManager methods that create query objects.
+-  **query**: The SQL query string.
+
+
+Optional attributes:
+
+-  **resultClass**: The class of the result.
+-  **sqlResultSetMapping**: The name of a SqlResultSetMapping, as defined in metadata.
+
+
+Example:
+
+.. code-block:: php
+
+    <?php
+    /**
+     * @NamedNativeQueries({
+     *      @NamedNativeQuery(
+     *          name            = "fetchJoinedAddress",
+     *          resultSetMapping= "mappingJoinedAddress",
+     *          query           = "SELECT u.id, u.name, u.status, a.id AS a_id, a.country, a.zip, a.city FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?"
+     *      ),
+     * })
+     * @SqlResultSetMappings({
+     *      @SqlResultSetMapping(
+     *          name    = "mappingJoinedAddress",
+     *          entities= {
+     *              @EntityResult(
+     *                  entityClass = "__CLASS__",
+     *                  fields      = {
+     *                      @FieldResult(name = "id"),
+     *                      @FieldResult(name = "name"),
+     *                      @FieldResult(name = "status"),
+     *                      @FieldResult(name = "address.zip"),
+     *                      @FieldResult(name = "address.city"),
+     *                      @FieldResult(name = "address.country"),
+     *                      @FieldResult(name = "address.id", column = "a_id"),
+     *                  }
+     *              )
+     *          }
+     *      )
+     * })
+     */
+    class User
+    {
+        /** @Id @Column(type="integer") @GeneratedValue */
+        public $id;
+
+        /** @Column(type="string", length=50, nullable=true) */
+        public $status;
+
+        /** @Column(type="string", length=255, unique=true) */
+        public $username;
+
+        /** @Column(type="string", length=255) */
+        public $name;
+
+        /** @OneToOne(targetEntity="Address") */
+        public $address;
+
+        // ....
+    }
 .. _annref_onetoone:
 
 @OneToOne
@@ -801,6 +921,106 @@ Example:
      */
     protected $id = null;
 
+.. _annref_sql_resultset_mapping:
+
+@SqlResultSetMapping
+~~~~~~~~~~~~~~~~~~~~
+The SqlResultSetMapping annotation is used to specify the mapping of the result of a native SQL query.
+The SqlResultSetMapping annotation can be applied to an entity or mapped superclass.
+
+Required attributes:
+
+-  **name**: The name given to the result set mapping, and used to refer to it in the methods of the Query API.
+
+
+Optional attributes:
+
+-  **resultClass**: Array of @EntityResult, Specifies the result set mapping to entities.
+-  **columns**: Array of @ColumnResult, Specifies the result set mapping to scalar values.
+
+Example:
+
+.. code-block:: php
+
+    <?php
+    /**
+     * @NamedNativeQueries({
+     *      @NamedNativeQuery(
+     *          name            = "fetchUserPhonenumberCount",
+     *          resultSetMapping= "mappingUserPhonenumberCount",
+     *          query           = "SELECT id, name, status, COUNT(phonenumber) AS numphones FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username IN (?) GROUP BY id, name, status, username ORDER BY username"
+     *      ),
+     *      @NamedNativeQuery(
+     *          name            = "fetchMultipleJoinsEntityResults",
+     *          resultSetMapping= "mappingMultipleJoinsEntityResults",
+     *          query           = "SELECT u.id AS u_id, u.name AS u_name, u.status AS u_status, a.id AS a_id, a.zip AS a_zip, a.country AS a_country, COUNT(p.phonenumber) AS numphones FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id INNER JOIN cms_phonenumbers p ON u.id = p.user_id GROUP BY u.id, u.name, u.status, u.username, a.id, a.zip, a.country ORDER BY u.username"
+     *      ),
+     * })
+     * @SqlResultSetMappings({
+     *      @SqlResultSetMapping(
+     *          name    = "mappingUserPhonenumberCount",
+     *          entities= {
+     *              @EntityResult(
+     *                  entityClass = "User",
+     *                  fields      = {
+     *                      @FieldResult(name = "id"),
+     *                      @FieldResult(name = "name"),
+     *                      @FieldResult(name = "status"),
+     *                  }
+     *              )
+     *          },
+     *          columns = {
+     *              @ColumnResult("numphones")
+     *          }
+     *      ),
+     *      @SqlResultSetMapping(
+     *          name    = "mappingMultipleJoinsEntityResults",
+     *          entities= {
+     *              @EntityResult(
+     *                  entityClass = "__CLASS__",
+     *                  fields      = {
+     *                      @FieldResult(name = "id",       column="u_id"),
+     *                      @FieldResult(name = "name",     column="u_name"),
+     *                      @FieldResult(name = "status",   column="u_status"),
+     *                  }
+     *              ),
+     *              @EntityResult(
+     *                  entityClass = "Address",
+     *                  fields      = {
+     *                      @FieldResult(name = "id",       column="a_id"),
+     *                      @FieldResult(name = "zip",      column="a_zip"),
+     *                      @FieldResult(name = "country",  column="a_country"),
+     *                  }
+     *              )
+     *          },
+     *          columns = {
+     *              @ColumnResult("numphones")
+     *          }
+     *      )
+     *})
+     */
+     class User
+    {
+        /** @Id @Column(type="integer") @GeneratedValue */
+        public $id;
+
+        /** @Column(type="string", length=50, nullable=true) */
+        public $status;
+
+        /** @Column(type="string", length=255, unique=true) */
+        public $username;
+
+        /** @Column(type="string", length=255) */
+        public $name;
+
+        /** @OneToMany(targetEntity="Phonenumber") */
+        public $phonenumbers;
+
+        /** @OneToOne(targetEntity="Address") */
+        public $address;
+
+        // ....
+    }
 .. _annref_table:
 
 @Table
