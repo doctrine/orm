@@ -7,8 +7,11 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsEmail;
+use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\Models\Company\CompanyPerson;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -23,6 +26,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     protected function setUp() {
         $this->useModelSet('cms');
+        $this->useModelSet('company');
         parent::setUp();
         $this->platform = $this->_em->getConnection()->getDatabasePlatform();
     }
@@ -329,5 +333,372 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         );
         $users = $query->getResult();
     }
-}
 
+
+    /**
+     * @group DDC-1663
+     */
+    public function testBasicNativeNamedQueryWithSqlResultSetMapping()
+    {
+        $user           = new CmsUser;
+        $user->name     = 'Fabio B. Silva';
+        $user->username = 'FabioBatSilva';
+        $user->status   = 'dev';
+
+        $addr           = new CmsAddress;
+        $addr->country  = 'Brazil';
+        $addr->zip      = 10827;
+        $addr->city     = 'São Paulo';
+
+        $user->setAddress($addr);
+
+        $this->_em->clear();
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsAddress');
+        $query      = $repository->createNativeNamedQuery('find-all');
+        $result     = $query->getResult();
+        
+        $this->assertCount(1, $result);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress', $result[0]);
+        $this->assertEquals($addr->id,  $result[0]->id);
+        $this->assertEquals($addr->city,  $result[0]->city);
+        $this->assertEquals($addr->country, $result[0]->country);
+    }
+
+    /**
+     * @group DDC-1663
+     */
+    public function testBasicNativeNamedQueryWithResultClass()
+    {
+        $user           = new CmsUser;
+        $user->name     = 'Fabio B. Silva';
+        $user->username = 'FabioBatSilva';
+        $user->status   = 'dev';
+
+        $email          = new CmsEmail();
+        $email->email   = 'fabio.bat.silva@gmail.com';
+
+        $user->setEmail($email);
+
+        $this->_em->clear();
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+
+        $result = $repository->createNativeNamedQuery('fetchIdAndUsernameWithResultClass')
+                        ->setParameter(1, 'FabioBatSilva')->getResult();
+        
+        $this->assertEquals(1, count($result));
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
+        $this->assertNull($result[0]->name);
+        $this->assertNull($result[0]->email);
+        $this->assertEquals($user->id, $result[0]->id);
+        $this->assertEquals('FabioBatSilva', $result[0]->username);
+
+        $this->_em->clear();
+
+
+        $result = $repository->createNativeNamedQuery('fetchAllColumns')
+                        ->setParameter(1, 'FabioBatSilva')->getResult();
+
+        $this->assertEquals(1, count($result));
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
+        $this->assertEquals($user->id, $result[0]->id);
+        $this->assertEquals('Fabio B. Silva', $result[0]->name);
+        $this->assertEquals('FabioBatSilva', $result[0]->username);
+        $this->assertEquals('dev', $result[0]->status);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsEmail', $result[0]->email);
+    }
+
+
+    /**
+     * @group DDC-1663
+     */
+    public function testJoinedOneToOneNativeNamedQueryWithResultSetMapping()
+    {
+        $user           = new CmsUser;
+        $user->name     = 'Fabio B. Silva';
+        $user->username = 'FabioBatSilva';
+        $user->status   = 'dev';
+
+        $addr           = new CmsAddress;
+        $addr->country  = 'Brazil';
+        $addr->zip      = 10827;
+        $addr->city     = 'São Paulo';
+
+
+        $user->setAddress($addr);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+
+        $result = $repository->createNativeNamedQuery('fetchJoinedAddress')
+                        ->setParameter(1, 'FabioBatSilva')->getResult();
+
+        $this->assertEquals(1, count($result));
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
+        $this->assertEquals('Fabio B. Silva', $result[0]->name);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0]->getPhonenumbers());
+        $this->assertFalse($result[0]->getPhonenumbers()->isInitialized());
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress', $result[0]->getAddress());
+        $this->assertTrue($result[0]->getAddress()->getUser() == $result[0]);
+        $this->assertEquals('Brazil', $result[0]->getAddress()->getCountry());
+        $this->assertEquals(10827, $result[0]->getAddress()->getZipCode());
+        $this->assertEquals('São Paulo', $result[0]->getAddress()->getCity());
+    }
+
+    /**
+     * @group DDC-1663
+     */
+    public function testJoinedOneToManyNativeNamedQueryWithResultSetMapping()
+    {
+        $user               = new CmsUser;
+        $user->name         = 'Fabio B. Silva';
+        $user->username     = 'FabioBatSilva';
+        $user->status       = 'dev';
+
+        $phone              = new CmsPhonenumber;
+        $phone->phonenumber = 424242;
+
+        $user->addPhonenumber($phone);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $result = $repository->createNativeNamedQuery('fetchJoinedPhonenumber')
+                        ->setParameter(1, 'FabioBatSilva')->getResult();
+
+        $this->assertEquals(1, count($result));
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
+        $this->assertEquals('Fabio B. Silva', $result[0]->name);
+        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0]->getPhonenumbers());
+        $this->assertTrue($result[0]->getPhonenumbers()->isInitialized());
+        $this->assertEquals(1, count($result[0]->getPhonenumbers()));
+        $phones = $result[0]->getPhonenumbers();
+        $this->assertEquals(424242, $phones[0]->phonenumber);
+        $this->assertTrue($phones[0]->getUser() === $result[0]);
+    }
+
+    /**
+     * @group DDC-1663
+     */
+    public function testMixedNativeNamedQueryNormalJoin()
+    {
+        $user1                  = new CmsUser;
+        $user1->name            = 'Fabio B. Silva';
+        $user1->username        = 'FabioBatSilva';
+        $user1->status          = 'dev';
+
+        $user2                  = new CmsUser;
+        $user2->name            = 'test tester';
+        $user2->username        = 'test';
+        $user2->status          = 'tester';
+        
+        $phone1                 = new CmsPhonenumber;
+        $phone2                 = new CmsPhonenumber;
+        $phone3                 = new CmsPhonenumber;
+        $phone1->phonenumber    = 11111111;
+        $phone2->phonenumber    = 22222222;
+        $phone3->phonenumber    = 33333333;
+
+        $user1->addPhonenumber($phone1);
+        $user1->addPhonenumber($phone2);
+        $user2->addPhonenumber($phone3);
+
+        $this->_em->persist($user1);
+        $this->_em->persist($user2);
+        $this->_em->flush();
+
+        $this->_em->clear();
+        
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+
+        $result = $repository->createNativeNamedQuery('fetchUserPhonenumberCount')
+                        ->setParameter(1, array('test','FabioBatSilva'))->getResult();
+
+        $this->assertEquals(2, count($result));
+        $this->assertTrue(is_array($result[0]));
+        $this->assertTrue(is_array($result[1]));
+
+        // first user => 2 phonenumbers
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]);
+        $this->assertEquals('Fabio B. Silva', $result[0][0]->name);
+        $this->assertEquals(2, $result[0]['numphones']);
+
+        // second user => 1 phonenumbers
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][0]);
+        $this->assertEquals('test tester', $result[1][0]->name);
+        $this->assertEquals(1, $result[1]['numphones']);
+    }
+
+    /**
+     * @group DDC-1663
+     */
+    public function testNativeNamedQueryInheritance()
+    {
+        $person = new CompanyPerson;
+        $person->setName('Fabio B. Silva');
+
+        $employee = new CompanyEmployee;
+        $employee->setName('Fabio Silva');
+        $employee->setSalary(100000);
+        $employee->setDepartment('IT');
+
+        $this->_em->persist($person);
+        $this->_em->persist($employee);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyPerson');
+
+        $result = $repository->createNativeNamedQuery('fetchAllWithSqlResultSetMapping')
+                        ->getResult();
+
+        $this->assertEquals(2, count($result));
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyPerson', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $result[1]);
+        $this->assertTrue(is_numeric($result[0]->getId()));
+        $this->assertTrue(is_numeric($result[1]->getId()));
+        $this->assertEquals('Fabio B. Silva', $result[0]->getName());
+        $this->assertEquals('Fabio Silva', $result[1]->getName());
+
+
+        $this->_em->clear();
+        
+
+        $result = $repository->createNativeNamedQuery('fetchAllWithResultClass')
+                        ->getResult();
+
+        $this->assertEquals(2, count($result));
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyPerson', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $result[1]);
+        $this->assertTrue(is_numeric($result[0]->getId()));
+        $this->assertTrue(is_numeric($result[1]->getId()));
+        $this->assertEquals('Fabio B. Silva', $result[0]->getName());
+        $this->assertEquals('Fabio Silva', $result[1]->getName());
+    }
+
+    /**
+     * @group DDC-1663
+     * DQL : SELECT u, a, COUNT(p) AS numphones FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.address a JOIN u.phonenumbers p
+     */
+    public function testMultipleEntityResults()
+    {
+
+        $user               = new CmsUser;
+        $user->name         = 'Fabio B. Silva';
+        $user->username     = 'FabioBatSilva';
+        $user->status       = 'dev';
+
+        $addr               = new CmsAddress;
+        $addr->country      = 'Brazil';
+        $addr->zip          = 10827;
+        $addr->city         = 'São Paulo';
+
+        $phone              = new CmsPhonenumber;
+        $phone->phonenumber = 424242;
+
+
+        $user->setAddress($addr);
+        $user->addPhonenumber($phone);
+
+
+        $this->_em->clear();
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $query      = $repository->createNativeNamedQuery('fetchMultipleJoinsEntityResults');
+        $result     = $query->getResult();
+
+
+        $this->assertEquals(1, count($result));
+        $this->assertTrue(is_array($result[0]));
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]);
+        $this->assertEquals('Fabio B. Silva', $result[0][0]->name);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress', $result[0][0]->getAddress());
+        $this->assertTrue($result[0][0]->getAddress()->getUser() == $result[0][0]);
+        $this->assertEquals('Brazil', $result[0][0]->getAddress()->getCountry());
+        $this->assertEquals(10827, $result[0][0]->getAddress()->getZipCode());
+
+        $this->assertEquals(1, $result[0]['numphones']);
+
+    }
+
+    /**
+     * @group DDC-1663
+     */
+    public function testNamedNativeQueryInheritance()
+    {
+        $contractMetadata   = $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyContract');
+        $flexMetadata       = $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyFlexContract');
+
+        $contractQueries    = $contractMetadata->getNamedNativeQueries();
+        $flexQueries        = $flexMetadata->getNamedNativeQueries();
+
+        $contractMappings   = $contractMetadata->getSqlResultSetMappings();
+        $flexMappings       = $flexMetadata->getSqlResultSetMappings();
+
+
+        // contract queries
+        $this->assertEquals('all-contracts', $contractQueries['all-contracts']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyContract', $contractQueries['all-contracts']['resultClass']);
+
+        $this->assertEquals('all', $contractQueries['all']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyContract', $contractQueries['all']['resultClass']);
+
+
+        // flex contract queries
+        $this->assertEquals('all-contracts', $flexQueries['all-contracts']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexContract', $flexQueries['all-contracts']['resultClass']);
+
+        $this->assertEquals('all-flex', $flexQueries['all-flex']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexContract', $flexQueries['all-flex']['resultClass']);
+
+        $this->assertEquals('all', $flexQueries['all']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexContract', $flexQueries['all']['resultClass']);
+
+
+        // contract result mapping
+        $this->assertEquals('mapping-all-contracts', $contractMappings['mapping-all-contracts']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyContract', $contractMappings['mapping-all-contracts']['entities'][0]['entityClass']);
+
+        $this->assertEquals('mapping-all', $contractMappings['mapping-all']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyContract', $contractMappings['mapping-all-contracts']['entities'][0]['entityClass']);
+
+        // flex contract result mapping
+        $this->assertEquals('mapping-all-contracts', $flexMappings['mapping-all-contracts']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexContract', $flexMappings['mapping-all-contracts']['entities'][0]['entityClass']);
+
+        $this->assertEquals('mapping-all', $flexMappings['mapping-all']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexContract', $flexMappings['mapping-all']['entities'][0]['entityClass']);
+
+        $this->assertEquals('mapping-all-flex', $flexMappings['mapping-all-flex']['name']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexContract', $flexMappings['mapping-all-flex']['entities'][0]['entityClass']);
+
+    }
+
+}

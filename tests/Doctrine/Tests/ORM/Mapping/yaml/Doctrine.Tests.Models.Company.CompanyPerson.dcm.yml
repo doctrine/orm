@@ -1,0 +1,75 @@
+Doctrine\Tests\Models\Company\CompanyPerson:
+  type: entity
+  table: company_persons
+  inheritanceType: JOINED
+  discriminatorMap:
+    person: CompanyPerson
+    manager: CompanyManager
+    employee: CompanyEmployee
+  namedNativeQueries:
+    fetchAllWithResultClass:
+      resultClass: __CLASS__
+      query: SELECT id, name, discr FROM company_persons ORDER BY name
+    fetchAllWithSqlResultSetMapping:
+      name: fetchAllWithSqlResultSetMapping
+      resultSetMapping: mappingFetchAll
+      query: SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name
+
+  sqlResultSetMappings:
+    mappingFetchAll:
+      entityResult:
+        0:
+          entityClass: __CLASS__
+          discriminatorColumn: discriminator
+          fieldResult:
+            0:
+              name: id
+            1:
+              name: name
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    name:
+      type: string
+      length: 255
+    username:
+      type: string
+      length: 255
+      unique: true
+    status:
+      type: string
+      length: 50
+      unique: true
+  oneToOne:
+    address:
+      targetEntity: CmsAddress
+      orphanRemoval: true
+      inversedBy: user
+      joinColumn:
+        name: address_id
+        referencedColumnName: id
+      cascade: [ persist ]
+  oneToOne:
+    email:
+      targetEntity: CmsEmail
+      orphanRemoval: true
+      inversedBy: user
+      joinColumn:
+        nullable: true
+        referencedColumnName: id
+      cascade: [ persist ]
+  manyToMany:
+    groups:
+      targetEntity: CmsGroup
+      joinTable:
+        name: cms_users_groups
+        joinColumns:
+          user_id:
+            referencedColumnName: id
+        inverseJoinColumns:
+          group_id:
+            referencedColumnName: id
+      cascade: [ persist , detach, merge]

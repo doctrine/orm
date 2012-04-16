@@ -1,0 +1,62 @@
+Doctrine\Tests\Models\CMS\CmsAddress:
+  type: entity
+  table: cms_address
+  namedNativeQueries:
+    find-all:
+      resultSetMapping: mapping-find-all
+      query: SELECT id, country, city FROM cms_addresses
+    find-by-id:
+      name: find-by-id
+      resultClass: CmsAddress
+      query: SELECT * FROM cms_addresses WHERE id = ?
+    count:
+      name: count
+      resultSetMapping: mapping-count
+      query: SELECT COUNT(*) AS count FROM cms_addresses
+
+  sqlResultSetMappings:
+    mapping-find-all:
+      entityResult:
+        address:
+          entityClass: CmsAddress
+          fieldResult:
+            0:
+              name: id
+              column: id
+            1:
+              name: city
+              column: city
+            2:
+              name: country
+              column: country
+    mapping-without-fields:
+      name: mapping-without-fields
+      entityResult:
+        address:
+          entityClass: CmsAddress
+    mapping-count:
+      name: mapping-count
+      columnResult:
+        count:
+          name: count
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    country:
+      type: string
+      length: 50
+    city:
+      type: string
+      length: 50
+    zip:
+      type: string
+      length: 50
+  oneToOne:
+    address:
+      targetEntity: CmsUser
+      inversedBy: address
+      joinColumn:
+        referencedColumnName: id

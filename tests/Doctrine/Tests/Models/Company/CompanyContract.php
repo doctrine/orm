@@ -12,6 +12,48 @@ namespace Doctrine\Tests\Models\Company;
  *     "flexible"  = "CompanyFlexContract",
  *     "flexultra" = "CompanyFlexUltraContract"
  * })
+ *
+ * @NamedNativeQueries({
+ *      @NamedNativeQuery(
+ *          name           = "all-contracts",
+ *          resultClass    = "__CLASS__",
+ *          query          = "SELECT id, completed, discr FROM company_contracts"
+ *      ),
+ *      @NamedNativeQuery(
+ *          name           = "all",
+ *          resultClass    = "__CLASS__",
+ *          query          = "SELECT id, completed, discr FROM company_contracts"
+ *      ),
+ * })
+ *
+ * @SqlResultSetMappings({
+ *      @SqlResultSetMapping(
+ *          name    = "mapping-all-contracts",
+ *          entities= {
+ *              @EntityResult(
+ *                  entityClass         = "__CLASS__",
+ *                  discriminatorColumn = "discr",
+ *                  fields              = {
+ *                      @FieldResult("id"),
+ *                      @FieldResult("completed"),
+ *                  }
+ *              )
+ *          }
+ *      ),
+ *      @SqlResultSetMapping(
+ *          name    = "mapping-all",
+ *          entities= {
+ *              @EntityResult(
+ *                  entityClass         = "__CLASS__",
+ *                  discriminatorColumn = "discr",
+ *                  fields              = {
+ *                      @FieldResult("id"),
+ *                      @FieldResult("completed"),
+ *                  }
+ *              )
+ *          }
+ *      ),
+ * })
  */
 abstract class CompanyContract
 {

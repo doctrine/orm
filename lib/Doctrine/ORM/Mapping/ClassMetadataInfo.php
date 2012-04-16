@@ -49,16 +49,19 @@ class ClassMetadataInfo implements ClassMetadata
      * and therefore does not need an inheritance mapping type.
      */
     const INHERITANCE_TYPE_NONE = 1;
+
     /**
      * JOINED means the class will be persisted according to the rules of
      * <tt>Class Table Inheritance</tt>.
      */
     const INHERITANCE_TYPE_JOINED = 2;
+
     /**
      * SINGLE_TABLE means the class will be persisted according to the rules of
      * <tt>Single Table Inheritance</tt>.
      */
     const INHERITANCE_TYPE_SINGLE_TABLE = 3;
+
     /**
      * TABLE_PER_CLASS means the class will be persisted according to the rules
      * of <tt>Concrete Table Inheritance</tt>.
@@ -71,17 +74,20 @@ class ClassMetadataInfo implements ClassMetadata
      * Offers full portability.
      */
     const GENERATOR_TYPE_AUTO = 1;
+
     /**
      * SEQUENCE means a separate sequence object will be used. Platforms that do
      * not have native sequence support may emulate it. Full portability is currently
      * not guaranteed.
      */
     const GENERATOR_TYPE_SEQUENCE = 2;
+
     /**
      * TABLE means a separate table is used for id generation.
      * Offers full portability.
      */
     const GENERATOR_TYPE_TABLE = 3;
+
     /**
      * IDENTITY means an identity column is used for id generation. The database
      * will fill in the id column on insertion. Platforms that do not support
@@ -89,11 +95,13 @@ class ClassMetadataInfo implements ClassMetadata
      * not guaranteed.
      */
     const GENERATOR_TYPE_IDENTITY = 4;
+
     /**
      * NONE means the class does not have a generated id. That means the class
      * must have a natural, manually assigned id.
      */
     const GENERATOR_TYPE_NONE = 5;
+
     /**
      * UUID means that a UUID/GUID expression is used for id generation. Full
      * portability is currently not guaranteed.
@@ -111,53 +119,64 @@ class ClassMetadataInfo implements ClassMetadata
      * This is the default change tracking policy.
      */
     const CHANGETRACKING_DEFERRED_IMPLICIT = 1;
+
     /**
      * DEFERRED_EXPLICIT means that changes of entities are calculated at commit-time
      * by doing a property-by-property comparison with the original data. This will
      * be done only for entities that were explicitly saved (through persist() or a cascade).
      */
     const CHANGETRACKING_DEFERRED_EXPLICIT = 2;
+
     /**
      * NOTIFY means that Doctrine relies on the entities sending out notifications
      * when their properties change. Such entity classes must implement
      * the <tt>NotifyPropertyChanged</tt> interface.
      */
     const CHANGETRACKING_NOTIFY = 3;
+
     /**
      * Specifies that an association is to be fetched when it is first accessed.
      */
     const FETCH_LAZY = 2;
+
     /**
      * Specifies that an association is to be fetched when the owner of the
      * association is fetched.
      */
     const FETCH_EAGER = 3;
+
     /**
      * Specifies that an association is to be fetched lazy (on first access) and that
      * commands such as Collection#count, Collection#slice are issued directly against
      * the database if the collection is not yet initialized.
      */
     const FETCH_EXTRA_LAZY = 4;
+
     /**
      * Identifies a one-to-one association.
      */
     const ONE_TO_ONE = 1;
+
     /**
      * Identifies a many-to-one association.
      */
     const MANY_TO_ONE = 2;
+
     /**
      * Identifies a one-to-many association.
      */
     const ONE_TO_MANY = 4;
+
     /**
      * Identifies a many-to-many association.
      */
     const MANY_TO_MANY = 8;
+
     /**
      * Combined bitmask for to-one (single-valued) associations.
      */
     const TO_ONE = 3;
+
     /**
      * Combined bitmask for to-many (collection-valued) associations.
      */
@@ -236,6 +255,35 @@ class ClassMetadataInfo implements ClassMetadata
      * @var array
      */
     public $namedQueries = array();
+
+    /**
+     * READ-ONLY: The named native queries allowed to be called directly from Repository.
+     *
+     * A native SQL named query definition has the following structure:
+     * <pre>
+     * array(
+     *     'name'               => <query name>,
+     *     'query'              => <sql query>,
+     *     'resultClass'        => <class of the result>,
+     *     'resultSetMapping'   => <name of a SqlResultSetMapping>
+     * )
+     * </pre>
+     */
+    public $namedNativeQueries = array();
+
+    /**
+     * READ-ONLY: The mappings of the results of native SQL queries.
+     *
+     * A native result mapping definition has the following structure:
+     * <pre>
+     * array(
+     *     'name'               => <result name>,
+     *     'entities'           => array(<entity result mapping>),
+     *     'columns'            => array(<column result mapping>)
+     * )
+     * </pre>
+     */
+    public $sqlResultSetMappings = array();
 
     /**
      * READ-ONLY: The field names of all fields that are part of the identifier/primary key
@@ -748,6 +796,14 @@ class ClassMetadataInfo implements ClassMetadata
             $serialized[] = 'namedQueries';
         }
 
+        if ($this->namedNativeQueries) {
+            $serialized[] = 'namedNativeQueries';
+        }
+
+        if ($this->sqlResultSetMappings) {
+            $serialized[] = 'sqlResultSetMappings';
+        }
+
         if ($this->isReadOnly) {
             $serialized[] = 'isReadOnly';
         }
@@ -1049,6 +1105,60 @@ class ClassMetadataInfo implements ClassMetadata
     public function getNamedQueries()
     {
         return $this->namedQueries;
+    }
+
+    /**
+     * Gets the named native query.
+     *
+     * @see ClassMetadataInfo::$namedNativeQueries
+     * @throws  MappingException
+     * @param   string $queryName The query name
+     * @return  array
+     */
+    public function getNamedNativeQuery($queryName)
+    {
+        if ( ! isset($this->namedNativeQueries[$queryName])) {
+            throw MappingException::queryNotFound($this->name, $queryName);
+        }
+
+        return $this->namedNativeQueries[$queryName];
+    }
+
+    /**
+     * Gets all named native queries of the class.
+     *
+     * @return array
+     */
+    public function getNamedNativeQueries()
+    {
+        return $this->namedNativeQueries;
+    }
+
+    /**
+     * Gets the result set mapping.
+     *
+     * @see ClassMetadataInfo::$sqlResultSetMappings
+     * @throws  MappingException
+     * @param   string $name The result set mapping name
+     * @return  array
+     */
+    public function getSqlResultSetMapping($name)
+    {
+        if ( ! isset($this->sqlResultSetMappings[$name])) {
+            throw MappingException::resultMappingNotFound($this->name, $name);
+        }
+
+        return $this->sqlResultSetMappings[$name];
+    }
+
+    /**
+     * Gets all sql result set mappings of the class.
+     *
+     * @return array
+     */
+    public function getSqlResultSetMappings()
+    {
+        return $this->sqlResultSetMappings;
     }
 
     /**
@@ -1826,8 +1936,16 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function addNamedQuery(array $queryMapping)
     {
+        if (!isset($queryMapping['name'])) {
+            throw MappingException::nameIsMandatoryForQueryMapping($this->name);
+        }
+
         if (isset($this->namedQueries[$queryMapping['name']])) {
             throw MappingException::duplicateQueryMapping($this->name, $queryMapping['name']);
+        }
+
+        if (!isset($queryMapping['query'])) {
+            throw MappingException::emptyQueryMapping($this->name, $queryMapping['name']);
         }
 
         $name   = $queryMapping['name'];
@@ -1838,6 +1956,107 @@ class ClassMetadataInfo implements ClassMetadata
             'query' => $query,
             'dql'   => $dql
         );
+    }
+
+    /**
+     * INTERNAL:
+     * Adds a named native query to this class.
+     *
+     * @throws MappingException
+     * @param array $queryMapping
+     */
+    public function addNamedNativeQuery(array $queryMapping)
+    {
+        if (!isset($queryMapping['name'])) {
+            throw MappingException::nameIsMandatoryForQueryMapping($this->name);
+        }
+
+        if (isset($this->namedNativeQueries[$queryMapping['name']])) {
+            throw MappingException::duplicateQueryMapping($this->name, $queryMapping['name']);
+        }
+
+        if (!isset($queryMapping['query'])) {
+            throw MappingException::emptyQueryMapping($this->name, $queryMapping['name']);
+        }
+
+        if (!isset($queryMapping['resultClass']) && !isset($queryMapping['resultSetMapping'])) {
+            throw MappingException::missingQueryMapping($this->name, $queryMapping['name']);
+        }
+
+        $queryMapping['isSelfClass'] = false;
+        if (isset($queryMapping['resultClass'])) {
+
+            if($queryMapping['resultClass'] === '__CLASS__') {
+
+                $queryMapping['isSelfClass'] = true;
+                $queryMapping['resultClass'] = $this->name;
+
+            } else if (strlen($this->namespace) > 0 && strpos($queryMapping['resultClass'], '\\') === false) {
+                $queryMapping['resultClass'] = $this->namespace . '\\' . $queryMapping['resultClass'];
+            }
+
+            $queryMapping['resultClass'] = ltrim($queryMapping['resultClass'], '\\');
+        }
+
+        $this->namedNativeQueries[$queryMapping['name']] = $queryMapping;
+    }
+
+    /**
+     * INTERNAL:
+     * Adds a sql result set mapping to this class.
+     *
+     * @throws MappingException
+     * @param array $resultMapping
+     */
+    public function addSqlResultSetMapping(array $resultMapping)
+    {
+        if (!isset($resultMapping['name'])) {
+            throw MappingException::nameIsMandatoryForSqlResultSetMapping($this->name);
+        }
+
+        if (isset($this->sqlResultSetMappings[$resultMapping['name']])) {
+            throw MappingException::duplicateResultSetMapping($this->name, $resultMapping['name']);
+        }
+
+        if (isset($resultMapping['entities'])) {
+            foreach ($resultMapping['entities'] as $key => $entityResult) {
+                if (!isset($entityResult['entityClass'])) {
+                    throw MappingException::missingResultSetMappingEntity($this->name, $resultMapping['name']);
+                }
+
+                $entityResult['isSelfClass'] = false;
+                if($entityResult['entityClass'] === '__CLASS__') {
+
+                    $entityResult['isSelfClass'] = true;
+                    $entityResult['entityClass'] = $this->name;
+
+                } else if (strlen($this->namespace) > 0 && strpos($entityResult['entityClass'], '\\') === false) {
+                    $entityResult['entityClass'] = $this->namespace . '\\' . $entityResult['entityClass'];
+                }
+
+                $resultMapping['entities'][$key]['entityClass'] = ltrim($entityResult['entityClass'], '\\');
+                $resultMapping['entities'][$key]['isSelfClass'] = $entityResult['isSelfClass'];
+
+                if (isset($entityResult['fields'])) {
+                    foreach ($entityResult['fields'] as $k => $field) {
+                        if (!isset($field['name'])) {
+                            throw MappingException::missingResultSetMappingFieldName($this->name, $resultMapping['name']);
+                        }
+
+                        if (!isset($field['column'])) {
+                            $fieldName = $field['name'];
+                            if(strpos($fieldName, '.')){
+                                list(, $fieldName) = explode('.', $fieldName);
+                            }
+
+                            $resultMapping['entities'][$key]['fields'][$k]['column'] = $fieldName;
+                        }
+                    }
+                }
+            }
+        }
+
+        $this->sqlResultSetMappings[$resultMapping['name']] = $resultMapping;
     }
 
     /**
@@ -2053,12 +2272,34 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Checks whether the class has a named query with the given query name.
      *
-     * @param string $fieldName
+     * @param string $queryName
      * @return boolean
      */
     public function hasNamedQuery($queryName)
     {
         return isset($this->namedQueries[$queryName]);
+    }
+
+    /**
+     * Checks whether the class has a named native query with the given query name.
+     *
+     * @param string $queryName
+     * @return boolean
+     */
+    public function hasNamedNativeQuery($queryName)
+    {
+        return isset($this->namedNativeQueries[$queryName]);
+    }
+
+    /**
+     * Checks whether the class has a named native query with the given query name.
+     *
+     * @param string $name
+     * @return boolean
+     */
+    public function hasSqlResultSetMapping($name)
+    {
+        return isset($this->sqlResultSetMappings[$name]);
     }
 
     /**
@@ -2396,5 +2637,20 @@ class ClassMetadataInfo implements ClassMetadata
     public function getAssociationMappedByTargetField($fieldName)
     {
         return $this->associationMappings[$fieldName]['mappedBy'];
+    }
+
+    /**
+     * @param   string $targetClass
+     * @return  array
+     */
+    public function getAssociationsByTargetClass($targetClass)
+    {
+        $relations = array();
+        foreach ($this->associationMappings as $mapping) {
+            if ($mapping['targetEntity'] == $targetClass) {
+                $relations[$mapping['fieldName']] = $mapping;
+            }
+        }
+        return $relations;
     }
 }

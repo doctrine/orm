@@ -204,6 +204,58 @@ class AnnotationDriver implements Driver
             $metadata->setPrimaryTable($primaryTable);
         }
 
+        // Evaluate NamedNativeQueries annotation
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\NamedNativeQueries'])) {
+            $namedNativeQueriesAnnot = $classAnnotations['Doctrine\ORM\Mapping\NamedNativeQueries'];
+
+            foreach ($namedNativeQueriesAnnot->value as $namedNativeQuery) {
+                $metadata->addNamedNativeQuery(array(
+                    'name'              => $namedNativeQuery->name,
+                    'query'             => $namedNativeQuery->query,
+                    'resultClass'       => $namedNativeQuery->resultClass,
+                    'resultSetMapping'  => $namedNativeQuery->resultSetMapping,
+                ));
+            }
+        }
+
+        // Evaluate SqlResultSetMappings annotation
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\SqlResultSetMappings'])) {
+            $sqlResultSetMappingsAnnot = $classAnnotations['Doctrine\ORM\Mapping\SqlResultSetMappings'];
+
+            foreach ($sqlResultSetMappingsAnnot->value as $resultSetMapping) {
+                $entities = array();
+                $columns  = array();
+                foreach ($resultSetMapping->entities as $entityResultAnnot) {
+                    $entityResult = array(
+                        'fields'                => array(),
+                        'entityClass'           => $entityResultAnnot->entityClass,
+                        'discriminatorColumn'   => $entityResultAnnot->discriminatorColumn,
+                    );
+
+                    foreach ($entityResultAnnot->fields as $fieldResultAnnot) {
+                        $entityResult['fields'][] = array(
+                            'name'      => $fieldResultAnnot->name,
+                            'column'    => $fieldResultAnnot->column
+                        );
+                    }
+
+                    $entities[] = $entityResult;
+                }
+
+                foreach ($resultSetMapping->columns as $columnResultAnnot) {
+                    $columns[] = array(
+                        'name' => $columnResultAnnot->name,
+                    );
+                }
+
+                $metadata->addSqlResultSetMapping(array(
+                    'name'          => $resultSetMapping->name,
+                    'entities'      => $entities,
+                    'columns'       => $columns
+                ));
+            }
+        }
+
         // Evaluate NamedQueries annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\NamedQueries'])) {
             $namedQueriesAnnot = $classAnnotations['Doctrine\ORM\Mapping\NamedQueries'];
