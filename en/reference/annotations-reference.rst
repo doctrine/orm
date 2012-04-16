@@ -157,7 +157,7 @@ Example:
 
 .. _annref_discriminatorcolumn:
 
-@DiscrimnatorColumn
+@DiscriminatorColumn
 ~~~~~~~~~~~~~~~~~~~~~
 
 This annotation is a required annotation for the topmost/super
