@@ -3,6 +3,48 @@ namespace Doctrine\Tests\Models\Company;
 
 /**
  * @Entity
+ *
+ * @NamedNativeQueries({
+ *      @NamedNativeQuery(
+ *          name           = "all",
+ *          resultClass    = "__CLASS__",
+ *          query          = "SELECT id, hoursWorked, discr FROM company_contracts"
+ *      ),
+ *      @NamedNativeQuery(
+ *          name           = "all-flex",
+ *          resultClass    = "CompanyFlexContract",
+ *          query          = "SELECT id, hoursWorked, discr FROM company_contracts"
+ *      ),
+ * })
+ *
+ * @SqlResultSetMappings({
+ *      @SqlResultSetMapping(
+ *          name    = "mapping-all-flex",
+ *          entities= {
+ *              @EntityResult(
+ *                  entityClass         = "__CLASS__",
+ *                  discriminatorColumn = "discr",
+ *                  fields              = {
+ *                      @FieldResult("id"),
+ *                      @FieldResult("hoursWorked"),
+ *                  }
+ *              )
+ *          }
+ *      ),
+ *      @SqlResultSetMapping(
+ *          name    = "mapping-all",
+ *          entities= {
+ *              @EntityResult(
+ *                  entityClass         = "CompanyFlexContract",
+ *                  discriminatorColumn = "discr",
+ *                  fields              = {
+ *                      @FieldResult("id"),
+ *                      @FieldResult("hoursWorked"),
+ *                  }
+ *              )
+ *          }
+ *      ),
+ * })
  */
 class CompanyFlexContract extends CompanyContract
 {

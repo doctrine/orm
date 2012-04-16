@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+                              
+    <entity name="Doctrine\Tests\Models\CMS\CmsAddress" table="cms_users">
+
+        <named-native-queries>
+            <named-native-query name="find-all" result-set-mapping="mapping-find-all">
+                <query>SELECT id, country, city FROM cms_addresses</query>
+            </named-native-query>
+            
+            <named-native-query name="find-by-id" result-class="CmsAddress">
+                <query>SELECT * FROM cms_addresses WHERE id = ?</query>
+            </named-native-query>
+
+            <named-native-query name="count" result-set-mapping="mapping-count">
+                <query>SELECT COUNT(*) AS count FROM cms_addresses</query>
+            </named-native-query>
+        </named-native-queries>
+
+        <sql-result-set-mappings>
+            <sql-result-set-mapping name="mapping-find-all">
+                <entity-result entity-class="CmsAddress">
+                    <field-result name="id" column="id"/>
+                    <field-result name="city" column="city"/>
+                    <field-result name="country" column="country"/>
+                </entity-result>
+            </sql-result-set-mapping>
+
+            <sql-result-set-mapping name="mapping-without-fields">
+                <entity-result entity-class="CmsAddress"/>
+            </sql-result-set-mapping>
+
+            <sql-result-set-mapping name="mapping-count">
+                <column-result name="count"/>
+            </sql-result-set-mapping>
+        </sql-result-set-mappings>
+
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+        
+        <field name="country" column="country" type="string" length="50"/>
+        <field name="city" column="city" type="string" length="50"/>
+        <field name="zip" column="zip" type="string" length="50"/>
+
+        <one-to-one field="user" target-entity="CmsUser" inversed-by="address">
+            <join-column referenced-column-name="id" />
+        </one-to-one>
+        
+    </entity>
+</doctrine-mapping>

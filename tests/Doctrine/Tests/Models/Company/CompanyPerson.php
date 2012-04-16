@@ -11,9 +11,39 @@ namespace Doctrine\Tests\Models\Company;
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({
- *      "person" = "CompanyPerson",
- *      "manager" = "CompanyManager",
- *      "employee" = "CompanyEmployee"})
+ *      "person"    = "CompanyPerson",
+ *      "manager"   = "CompanyManager",
+ *      "employee"  = "CompanyEmployee"
+ * })
+ *
+ * @NamedNativeQueries({
+ *      @NamedNativeQuery(
+ *          name           = "fetchAllWithResultClass",
+ *          resultClass    = "__CLASS__",
+ *          query          = "SELECT id, name, discr FROM company_persons ORDER BY name"
+ *      ),
+ *      @NamedNativeQuery(
+ *          name            = "fetchAllWithSqlResultSetMapping",
+ *          resultSetMapping= "mappingFetchAll",
+ *          query           = "SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name"
+ *      )
+ * })
+ *
+ * @SqlResultSetMappings({
+ *      @SqlResultSetMapping(
+ *          name    = "mappingFetchAll",
+ *          entities= {
+ *              @EntityResult(
+ *                  entityClass         = "__CLASS__",
+ *                  discriminatorColumn = "discriminator",
+ *                  fields              = {
+ *                      @FieldResult("id"),
+ *                      @FieldResult("name"),
+ *                  }
+ *              )
+ *          }
+ *      )
+ * })
  */
 class CompanyPerson
 {
@@ -77,6 +107,46 @@ class CompanyPerson
             $this->spouse = $spouse;
             $this->spouse->setSpouse($this);
         }
+    }
+
+    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    {
+
+        $metadata->setPrimaryTable(array(
+           'name' => 'company_person',
+        ));
+
+        $metadata->addNamedNativeQuery(array (
+            'name'              => 'fetchAllWithResultClass',
+            'query'             => 'SELECT id, name, discr FROM company_persons ORDER BY name',
+            'resultClass'       => 'Doctrine\\Tests\\Models\\Company\\CompanyPerson',
+        ));
+
+        $metadata->addNamedNativeQuery(array (
+            'name'              => 'fetchAllWithSqlResultSetMapping',
+            'query'             => 'SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name',
+            'resultSetMapping'  => 'mappingFetchAll',
+        ));
+
+        $metadata->addSqlResultSetMapping(array (
+            'name'      => 'mappingFetchAll',
+            'columns'   => array(),
+            'entities'  => array ( array (
+                'fields' => array (
+                  array (
+                    'name'      => 'id',
+                    'column'    => 'id',
+                  ),
+                  array (
+                    'name'      => 'name',
+                    'column'    => 'name',
+                  ),
+                ),
+                'entityClass' => 'Doctrine\Tests\Models\Company\CompanyPerson',
+                'discriminatorColumn' => 'discriminator',
+              ),
+            ),
+        ));
     }
 }
 

@@ -83,6 +83,68 @@ class YamlDriver extends AbstractFileDriver
             }
         }
 
+        // Evaluate named native queries
+        if (isset($element['namedNativeQueries'])) {
+            foreach ($element['namedNativeQueries'] as $name => $mappingElement) {
+                if (!isset($mappingElement['name'])) {
+                    $mappingElement['name'] = $name;
+                }
+                $metadata->addNamedNativeQuery(array(
+                    'name'              => $mappingElement['name'],
+                    'query'             => isset($mappingElement['query']) ? $mappingElement['query'] : null,
+                    'resultClass'       => isset($mappingElement['resultClass']) ? $mappingElement['resultClass'] : null,
+                    'resultSetMapping'  => isset($mappingElement['resultSetMapping']) ? $mappingElement['resultSetMapping'] : null,
+                ));
+            }
+        }
+
+        // Evaluate sql result set mappings
+        if (isset($element['sqlResultSetMappings'])) {
+            foreach ($element['sqlResultSetMappings'] as $name => $resultSetMapping) {
+                if (!isset($resultSetMapping['name'])) {
+                    $resultSetMapping['name'] = $name;
+                }
+
+                $entities = array();
+                $columns  = array();
+                if (isset($resultSetMapping['entityResult'])) {
+                    foreach ($resultSetMapping['entityResult'] as $entityResultElement) {
+                        $entityResult = array(
+                            'fields'                => array(),
+                            'entityClass'           => isset($entityResultElement['entityClass']) ? $entityResultElement['entityClass'] : null,
+                            'discriminatorColumn'   => isset($entityResultElement['discriminatorColumn']) ? $entityResultElement['discriminatorColumn'] : null,
+                        );
+
+                        if (isset($entityResultElement['fieldResult'])) {
+                            foreach ($entityResultElement['fieldResult'] as $fieldResultElement) {
+                                $entityResult['fields'][] = array(
+                                    'name'      => isset($fieldResultElement['name']) ? $fieldResultElement['name'] : null,
+                                    'column'    => isset($fieldResultElement['column']) ? $fieldResultElement['column'] : null,
+                                );
+                            }
+                        }
+
+                        $entities[] = $entityResult;
+                    }
+                }
+                
+
+                if (isset($resultSetMapping['columnResult'])) {
+                    foreach ($resultSetMapping['columnResult'] as $columnResultAnnot) {
+                        $columns[] = array(
+                            'name' => isset($columnResultAnnot['name']) ? $columnResultAnnot['name'] : null,
+                        );
+                    }
+                }
+
+                $metadata->addSqlResultSetMapping(array(
+                    'name'          => $resultSetMapping['name'],
+                    'entities'      => $entities,
+                    'columns'       => $columns
+                ));
+            }
+        }
+
         /* not implemented specially anyway. use table = schema.table
         if (isset($element['schema'])) {
             $metadata->table['schema'] = $element['schema'];
@@ -484,10 +546,14 @@ class YamlDriver extends AbstractFileDriver
      */
     private function _getJoinColumnMapping($joinColumnElement)
     {
-        $joinColumn = array(
-            'name' => $joinColumnElement['name'],
-            'referencedColumnName' => $joinColumnElement['referencedColumnName']
-        );
+        $joinColumn = array();
+        if (isset($joinColumnElement['referencedColumnName'])) {
+            $joinColumn['referencedColumnName'] = (string) $joinColumnElement['referencedColumnName'];
+        }
+        
+        if (isset($joinColumnElement['name'])) {
+            $joinColumn['name'] = (string) $joinColumnElement['name'];
+        }
 
         if (isset($joinColumnElement['fieldName'])) {
             $joinColumn['fieldName'] = (string) $joinColumnElement['fieldName'];
