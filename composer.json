@@ -14,7 +14,6 @@
     "require": {
         "php": ">=5.3.2",
         "ext-pdo": "*",
-        "doctrine/common": "dev-master",
         "doctrine/dbal": "dev-master"
     },
     "autoload": {
