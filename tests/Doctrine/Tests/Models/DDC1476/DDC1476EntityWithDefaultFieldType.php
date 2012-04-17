@@ -70,7 +70,7 @@ class DDC1476EntityWithDefaultFieldType
            'fieldName'  => 'name',
         ));
 
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->addIdGenerator('id', \Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_NONE);
     }
 
 }

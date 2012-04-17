@@ -224,11 +224,15 @@ class YamlDriver extends AbstractFileDriver
         }
 
         $associationIds = array();
+
         if (isset($element['id'])) {
             // Evaluate identifier settings
             foreach ($element['id'] as $name => $idElement) {
                 if (isset($idElement['associationKey']) && $idElement['associationKey'] == true) {
                     $associationIds[$name] = true;
+
+                    $metadata->addIdGenerator($name, ClassMetadataInfo::GENERATOR_TYPE_NONE);
+
                     continue;
                 }
 
@@ -255,21 +259,27 @@ class YamlDriver extends AbstractFileDriver
 
                 $metadata->mapField($mapping);
 
+                $generatorType       = ClassMetadataInfo::GENERATOR_TYPE_NONE;
+                $generatorDefinition = array();
+
+                // Check for Generator type
                 if (isset($idElement['generator'])) {
-                    $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
-                            . strtoupper($idElement['generator']['strategy'])));
+                    $generatorStrategy   = $idElement['generator']['strategy'];
+                    $generatorType       = constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . strtoupper($generatorStrategy));
                 }
+
                 // Check for SequenceGenerator/TableGenerator definition
                 if (isset($idElement['sequenceGenerator'])) {
-                    $metadata->setSequenceGeneratorDefinition($idElement['sequenceGenerator']);
+                    $generatorDefinition = $idElement['sequenceGenerator'];
                 } else if (isset($idElement['customIdGenerator'])) {
-                    $customGenerator = $idElement['customIdGenerator'];
-                    $metadata->setCustomGeneratorDefinition(array(
-                        'class' => (string) $customGenerator['class']
-                    ));
+                    $generatorDefinition = array(
+                        'class' => (string) $idElement['customIdGenerator']['class']
+                    );
                 } else if (isset($idElement['tableGenerator'])) {
                     throw MappingException::tableIdGeneratorNotImplemented($className);
                 }
+
+                $metadata->addIdGenerator($mapping['fieldName'], $generatorType, $generatorDefinition);
             }
         }
 
@@ -293,9 +303,12 @@ class YamlDriver extends AbstractFileDriver
 
                 if (isset($fieldMapping['id'])) {
                     $mapping['id'] = true;
+
                     if (isset($fieldMapping['generator']['strategy'])) {
-                        $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
-                                . strtoupper($fieldMapping['generator']['strategy'])));
+                        $metadata->addIdGenerator(
+                            $name,
+                            constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . strtoupper($fieldMapping['generator']['strategy']))
+                        );
                     }
                 }
                 if (isset($fieldMapping['column'])) {

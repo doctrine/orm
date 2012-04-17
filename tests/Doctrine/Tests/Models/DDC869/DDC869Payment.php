@@ -51,7 +51,7 @@ class DDC869Payment
         ));
         $metadata->isMappedSuperclass = true;
         $metadata->setCustomRepositoryClass("Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $metadata->addIdGenerator('id', \Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_AUTO);
     }
 
 }

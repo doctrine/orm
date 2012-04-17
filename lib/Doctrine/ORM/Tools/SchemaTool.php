@@ -208,12 +208,14 @@ class SchemaTool
             }
 
             $pkColumns = array();
+
             foreach ($class->identifier as $identifierField) {
                 if (isset($class->fieldMappings[$identifierField])) {
                     $pkColumns[] = $class->getQuotedColumnName($identifierField, $this->_platform);
                 } else if (isset($class->associationMappings[$identifierField])) {
                     /* @var $assoc \Doctrine\ORM\Mapping\OneToOne */
                     $assoc = $class->associationMappings[$identifierField];
+
                     foreach ($assoc['joinColumns'] as $joinColumn) {
                         $pkColumns[] = $joinColumn['name'];
                     }
@@ -243,15 +245,18 @@ class SchemaTool
 
             $processedClasses[$class->name] = true;
 
-            if ($class->isIdGeneratorSequence() && $class->name == $class->rootEntityName) {
-                $seqDef = $class->sequenceGeneratorDefinition;
+            if ($class->name === $class->rootEntityName) {
+                foreach ($class->idGeneratorList as $idGenerator) {
+                    $generatorType       = $idGenerator['type'];
+                    $generatorDefinition = $idGenerator['definition'];
 
-                if (!$schema->hasSequence($seqDef['sequenceName'])) {
-                    $schema->createSequence(
-                        $seqDef['sequenceName'],
-                        $seqDef['allocationSize'],
-                        $seqDef['initialValue']
-                    );
+                    if ($generatorType === ClassMetadata::GENERATOR_TYPE_SEQUENCE && ! $schema->hasSequence($generatorDefinition['sequenceName'])) {
+                        $schema->createSequence(
+                            $generatorDefinition['sequenceName'],
+                            $generatorDefinition['allocationSize'],
+                            $generatorDefinition['initialValue']
+                        );
+                    }
                 }
             }
 
@@ -350,6 +355,7 @@ class SchemaTool
         $options = array();
         $options['length'] = isset($mapping['length']) ? $mapping['length'] : null;
         $options['notnull'] = isset($mapping['nullable']) ? ! $mapping['nullable'] : true;
+
         if ($class->isInheritanceTypeSingleTable() && count($class->parentClasses) > 0) {
             $options['notnull'] = false;
         }
@@ -381,9 +387,10 @@ class SchemaTool
             $options['customSchemaOptions'] = $mapping['options'];
         }
 
-        if ($class->isIdGeneratorIdentity() && $class->getIdentifierFieldNames() == array($mapping['fieldName'])) {
+        if ($class->isIdentifier($mapping['fieldName']) && $class->isIdGeneratorType($mapping['fieldName'], ClassMetadata::GENERATOR_TYPE_IDENTITY)) {
             $options['autoincrement'] = true;
         }
+
         if ($class->isInheritanceTypeJoined() && $class->name != $class->rootEntityName) {
             $options['autoincrement'] = false;
         }

@@ -40,7 +40,7 @@ class DDC889Class extends DDC889SuperClass
            'columnName' => 'id',
         ));
 
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $metadata->addIdGenerator('id', \Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_AUTO);
     }
 
 }

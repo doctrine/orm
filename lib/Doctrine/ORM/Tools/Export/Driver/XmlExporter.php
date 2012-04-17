@@ -95,7 +95,7 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        $trackingPolicy = $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy);
+        $trackingPolicy = $this->getChangeTrackingPolicyString($metadata->changeTrackingPolicy);
         if ( $trackingPolicy != 'DEFERRED_IMPLICIT') {
             $root->addChild('change-tracking-policy', $trackingPolicy);
         }
@@ -130,8 +130,10 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-            $id[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
+        foreach ($metadata->getIdentifierFieldNames() as $fieldName) {
+            if ($idGeneratorType = $this->getIdGeneratorTypeString($metadata->idGeneratorList[$fieldName]['type'])) {
+                $ids[$fieldName]['generator']['strategy'] = $idGeneratorType;
+            }
         }
 
         if ($id) {
@@ -145,7 +147,8 @@ class XmlExporter extends AbstractExporter
                 if (isset($field['associationKey']) && $field['associationKey']) {
                     $idXml->addAttribute('association-key', 'true');
                 }
-                if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
+
+                if ($idGeneratorType = $this->getIdGeneratorTypeString($metadata->idGeneratorList[$field['fieldName']]['type'])) {
                     $generatorXml = $idXml->addChild('generator');
                     $generatorXml->addAttribute('strategy', $idGeneratorType);
                 }

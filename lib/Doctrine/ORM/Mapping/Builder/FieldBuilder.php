@@ -46,12 +46,12 @@ class FieldBuilder
     /**
      * @var string
      */
-    private $generatedValue;
+    private $generatedValue = 'AUTO';
 
     /**
      * @var array
      */
-    private $sequenceDef;
+    private $generatorDefinition = array();
 
     /**
      *
@@ -176,13 +176,9 @@ class FieldBuilder
      * @param int $initialValue
      * @return FieldBuilder
      */
-    public function setSequenceGenerator($sequenceName, $allocationSize = 1, $initialValue = 1)
+    public function setGeneratorDefinition($definition)
     {
-        $this->sequenceDef = array(
-            'sequenceName' => $sequenceName,
-            'allocationSize' => $allocationSize,
-            'initialValue' => $initialValue,
-        );
+        $this->generatorDefinition = $definition;
         return $this;
     }
 
@@ -208,16 +204,19 @@ class FieldBuilder
     public function build()
     {
         $cm = $this->builder->getClassMetadata();
-        if ($this->generatedValue) {
-            $cm->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $this->generatedValue));
-        }
+
         if ($this->version) {
             $cm->setVersionMapping($this->mapping);
         }
+
         $cm->mapField($this->mapping);
-        if ($this->sequenceDef) {
-            $cm->setSequenceGeneratorDefinition($this->sequenceDef);
+
+        if (isset($this->mapping['id']) && $this->mapping['id']) {
+            $generatorType = constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . strtoupper($this->generatedValue));
+
+            $cm->addIdGenerator($this->mapping['fieldName'], $generatorType, $this->generatorDefinition);
         }
+
         return $this->builder;
     }
 }

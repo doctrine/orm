@@ -64,7 +64,7 @@ class YamlExporter extends AbstractExporter
 
         $inheritanceType = $metadata->inheritanceType;
         if ($inheritanceType !== ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
-            $array['inheritanceType'] = $this->_getInheritanceTypeString($inheritanceType);
+            $array['inheritanceType'] = $this->getInheritanceTypeString($inheritanceType);
         }
 
         if ($column = $metadata->discriminatorColumn) {
@@ -76,7 +76,7 @@ class YamlExporter extends AbstractExporter
         }
 
         if ($metadata->changeTrackingPolicy !== ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT) {
-            $array['changeTrackingPolicy'] = $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy);
+            $array['changeTrackingPolicy'] = $this->getChangeTrackingPolicyString($metadata->changeTrackingPolicy);
         }
 
         if (isset($metadata->table['indexes'])) {
@@ -114,8 +114,10 @@ class YamlExporter extends AbstractExporter
             $fieldMappings[$name] = $fieldMapping;
         }
 
-        if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-            $ids[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
+        foreach ($metadata->getIdentifierFieldNames() as $fieldName) {
+            if ($idGeneratorType = $this->getIdGeneratorTypeString($metadata->idGeneratorList[$fieldName]['type'])) {
+                $ids[$fieldName]['generator']['strategy'] = $idGeneratorType;
+            }
         }
 
         if ($ids) {

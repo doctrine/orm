@@ -43,29 +43,33 @@ class AssignedGenerator extends AbstractIdGenerator
      */
     public function generate(EntityManager $em, $entity)
     {
-        $class      = $em->getClassMetadata(get_class($entity));
-        $idFields   = $class->getIdentifierFieldNames();
-        $identifier = array();
+        $class               = $em->getClassMetadata(get_class($entity));
+        $identifierList      = $class->getIdentifierFieldNames();
+        $identifierValueList = array();
 
-        foreach ($idFields as $idField) {
-            $value = $class->reflFields[$idField]->getValue($entity);
-
-            if ( ! isset($value)) {
-                throw ORMException::entityMissingAssignedIdForField($entity, $idField);
+        foreach ($identifierList as $fieldName) {
+            if ( ! ($class->idGeneratorList[$fieldName]['generator'] instanceof self)) {
+                continue;
             }
 
-            if (isset($class->associationMappings[$idField])) {
-                if ( ! $em->getUnitOfWork()->isInIdentityMap($value)) {
-                    throw ORMException::entityMissingForeignAssignedId($entity, $value);
+            $fieldValue = $class->reflFields[$fieldName]->getValue($entity);
+
+            if ( ! isset($fieldValue)) {
+                throw ORMException::entityMissingAssignedIdForField($entity, $fieldName);
+            }
+
+            if (isset($class->associationMappings[$fieldName])) {
+                if ( ! $em->getUnitOfWork()->isInIdentityMap($fieldValue)) {
+                    throw ORMException::entityMissingForeignAssignedId($entity, $fieldValue);
                 }
 
                 // NOTE: Single Columns as associated identifiers only allowed - this constraint it is enforced.
-                $value = current($em->getUnitOfWork()->getEntityIdentifier($value));
+                $fieldValue = current($em->getUnitOfWork()->getEntityIdentifier($fieldValue));
             }
 
-            $identifier[$idField] = $value;
+            $identifierValueList[$fieldName] = $fieldValue;
         }
 
-        return $identifier;
+        return $identifierValueList;
     }
 }

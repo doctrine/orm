@@ -8,5 +8,3 @@ $metadata->mapField(array(
    'type'       => 'integer',
    'columnName' => 'id',
 ));
-
-//$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);

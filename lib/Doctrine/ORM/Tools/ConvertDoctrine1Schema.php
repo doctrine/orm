@@ -100,14 +100,7 @@ class ConvertDoctrine1Schema
     private function _convertTableName($className, array $model, ClassMetadataInfo $metadata)
     {
         if (isset($model['tableName']) && $model['tableName']) {
-            $e = explode('.', $model['tableName']);
-
-            if (count($e) > 1) {
-                $metadata->table['schema'] = $e[0];
-                $metadata->table['name'] = $e[1];
-            } else {
-                $metadata->table['name'] = $e[0];
-            }
+            $metadata->table['name'] = $model['tableName'];
         }
     }
 
@@ -127,13 +120,14 @@ class ConvertDoctrine1Schema
 
         if ( ! $id) {
             $fieldMapping = array(
-                'fieldName' => 'id',
+                'fieldName'  => 'id',
                 'columnName' => 'id',
-                'type' => 'integer',
-                'id' => true
+                'type'       => 'integer',
+                'id'         => true
             );
+
             $metadata->mapField($fieldMapping);
-            $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+            $metadata->addIdGenerator($fieldMapping['fieldName'], ClassMetadataInfo::GENERATOR_TYPE_AUTO);
         }
     }
 
@@ -186,19 +180,21 @@ class ConvertDoctrine1Schema
         $metadata->mapField($fieldMapping);
 
         if (isset($column['autoincrement'])) {
-            $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+            $metadata->addIdGenerator($fieldMapping['fieldName'], ClassMetadataInfo::GENERATOR_TYPE_AUTO);
         } else if (isset($column['sequence'])) {
-            $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
             $definition = array(
                 'sequenceName' => is_array($column['sequence']) ? $column['sequence']['name']:$column['sequence']
             );
+
             if (isset($column['sequence']['size'])) {
                 $definition['allocationSize'] = $column['sequence']['size'];
             }
+
             if (isset($column['sequence']['value'])) {
                 $definition['initialValue'] = $column['sequence']['value'];
             }
-            $metadata->setSequenceGeneratorDefinition($definition);
+            
+            $metadata->addIdGenerator($fieldMapping['fieldName'], ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE, $definition);
         }
         return $fieldMapping;
     }

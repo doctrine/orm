@@ -12,4 +12,4 @@ $metadata->setDiscriminatorColumn(array(
     'columnDefinition'  => "ENUM('ONE','TWO')"
 ));
 
-$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+$metadata->addIdGenerator('id', ClassMetadataInfo::GENERATOR_TYPE_NONE);

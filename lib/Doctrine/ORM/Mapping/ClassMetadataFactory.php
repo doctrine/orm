@@ -258,13 +258,16 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
         $parent = null;
         $rootEntityFound = false;
         $visited = array();
+
         foreach ($parentClasses as $className) {
             if (isset($this->loadedMetadata[$className])) {
                 $parent = $this->loadedMetadata[$className];
+
                 if ( ! $parent->isMappedSuperclass) {
                     $rootEntityFound = true;
                     array_unshift($visited, $className);
                 }
+
                 continue;
             }
 
@@ -274,7 +277,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
             if ($parent) {
                 $class->setInheritanceType($parent->inheritanceType);
                 $class->setDiscriminatorColumn($parent->discriminatorColumn);
-                $class->setIdGeneratorType($parent->generatorType);
+                $class->setIdGeneratorList($parent->idGeneratorList);
                 $this->addInheritedFields($class, $parent);
                 $this->addInheritedRelations($class, $parent);
                 $class->setIdentifier($parent->identifier);
@@ -283,6 +286,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 $class->setDiscriminatorMap($parent->discriminatorMap);
                 $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
                 $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
+
                 if ($parent->isMappedSuperclass) {
                     $class->setCustomRepositoryClass($parent->customRepositoryClassName);
                 }
@@ -297,20 +301,8 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
             // If this class has a parent the id generator strategy is inherited.
             // However this is only true if the hierachy of parents contains the root entity,
-            // if it consinsts of mapped superclasses these don't necessarily include the id field.
-            if ($parent && $rootEntityFound) {
-                if ($parent->isIdGeneratorSequence()) {
-                    $class->setSequenceGeneratorDefinition($parent->sequenceGeneratorDefinition);
-                } else if ($parent->isIdGeneratorTable()) {
-                    $class->getTableGeneratorDefinition($parent->tableGeneratorDefinition);
-                }
-                if ($parent->generatorType) {
-                    $class->setIdGeneratorType($parent->generatorType);
-                }
-                if ($parent->idGenerator) {
-                    $class->setIdGenerator($parent->idGenerator);
-                }
-            } else {
+            // if it consists of mapped superclasses these don't necessarily include the id field.
+            if ( ! ($parent && $rootEntityFound)) {
                 $this->completeIdGeneratorMapping($class);
             }
 
@@ -340,6 +332,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 $eventArgs = new \Doctrine\ORM\Event\LoadClassMetadataEventArgs($class, $this->em);
                 $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
             }
+
             $this->wakeupReflection($class, $this->getReflectionService());
 
             $this->validateRuntimeMetadata($class, $parent);
@@ -534,64 +527,95 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
      */
     private function completeIdGeneratorMapping(ClassMetadataInfo $class)
     {
-        $idGenType = $class->generatorType;
-        if ($idGenType == ClassMetadata::GENERATOR_TYPE_AUTO) {
-            if ($this->targetPlatform->prefersSequences()) {
-                $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
-            } else if ($this->targetPlatform->prefersIdentityColumns()) {
-                $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
-            } else {
-                $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_TABLE);
+        $preferredAutoGeneratorType = $this->getPreferredAutoGeneratorType();
+
+        foreach ($class->idGeneratorList as $fieldName => & $idGeneratorMapping) {
+            // Resolve "AUTO" strategy
+            if ($idGeneratorMapping['type'] === ClassMetadata::GENERATOR_TYPE_AUTO) {
+                $idGeneratorMapping['type'] = $preferredAutoGeneratorType;
+            }
+
+            // Create & assign an appropriate ID generator instance
+            switch ($idGeneratorMapping['type']) {
+                case ClassMetadata::GENERATOR_TYPE_IDENTITY:
+                    // For PostgreSQL IDENTITY (SERIAL) we need a sequence name. It defaults to
+                    // <table>_<column>_seq in PostgreSQL for SERIAL columns.
+                    // Not pretty but necessary and the simplest solution that currently works.
+                    $seqName = $this->targetPlatform instanceof Platforms\PostgreSQLPlatform
+                        ? $class->getTableName() . '_' . $class->columnNames[$class->identifier[0]] . '_seq'
+                        : null;
+
+                    $idGeneratorMapping['generator'] = new \Doctrine\ORM\Id\IdentityGenerator($seqName);
+                    break;
+
+                case ClassMetadata::GENERATOR_TYPE_SEQUENCE:
+                    // If there is no sequence definition yet, create a default definition
+                    $definition = $idGeneratorMapping['definition'];
+
+                    if (empty($definition)) {
+                        $sequenceName = $class->getTableName() . '_' . $class->getColumnName($fieldName) . '_seq';
+
+                        $definition = array(
+                            'sequenceName'   => $this->targetPlatform->fixSchemaElementName($sequenceName),
+                            'allocationSize' => 1,
+                            'initialValue'   => 1
+                        );
+
+                        $idGeneratorMapping['definition'] = $definition;
+                    }
+
+                    $idGeneratorMapping['generator'] = new \Doctrine\ORM\Id\SequenceGenerator(
+                        $definition['sequenceName'], $definition['allocationSize']
+                    );
+                    break;
+
+                case ClassMetadata::GENERATOR_TYPE_NONE:
+                    $idGeneratorMapping['generator'] = new \Doctrine\ORM\Id\AssignedGenerator();
+                    break;
+
+                case ClassMetadata::GENERATOR_TYPE_UUID:
+                    $idGeneratorMapping['generator'] = new \Doctrine\ORM\Id\UuidGenerator();
+                    break;
+
+                case ClassMetadata::GENERATOR_TYPE_TABLE:
+                    throw new ORMException("TableGenerator not yet implemented.");
+
+                case ClassMetadata::GENERATOR_TYPE_CUSTOM:
+                    $definition = $idGeneratorMapping['definition'];
+
+                    if ( ! isset($definition['class'])) {
+                        throw new ORMException("Missing custom generation definition in property '" . $fieldName . "': class.");
+                    }
+
+                    if ( ! class_exists($definition['class'])) {
+                        throw new ORMException("Can't instantiate custom generator in property '" . $fieldName . "': " . $definition['class']);
+                    }
+
+                    $idGeneratorMapping['generator'] = new $definition['class'];
+                    break;
+
+                default:
+                    throw new ORMException("Unknown generator type: " . $class->generatorType);
             }
         }
+    }
 
-        // Create & assign an appropriate ID generator instance
-        switch ($class->generatorType) {
-            case ClassMetadata::GENERATOR_TYPE_IDENTITY:
-                // For PostgreSQL IDENTITY (SERIAL) we need a sequence name. It defaults to
-                // <table>_<column>_seq in PostgreSQL for SERIAL columns.
-                // Not pretty but necessary and the simplest solution that currently works.
-                $seqName = $this->targetPlatform instanceof Platforms\PostgreSQLPlatform ?
-                        $class->getTableName() . '_' . $class->columnNames[$class->identifier[0]] . '_seq' :
-                        null;
-                $class->setIdGenerator(new \Doctrine\ORM\Id\IdentityGenerator($seqName));
-                break;
-            case ClassMetadata::GENERATOR_TYPE_SEQUENCE:
-                // If there is no sequence definition yet, create a default definition
-                $definition = $class->sequenceGeneratorDefinition;
-                if ( ! $definition) {
-                    $sequenceName = $class->getTableName() . '_' . $class->getSingleIdentifierColumnName() . '_seq';
-                    $definition['sequenceName'] = $this->targetPlatform->fixSchemaElementName($sequenceName);
-                    $definition['allocationSize'] = 1;
-                    $definition['initialValue'] = 1;
-                    $class->setSequenceGeneratorDefinition($definition);
-                }
-                $sequenceGenerator = new \Doctrine\ORM\Id\SequenceGenerator(
-                    $definition['sequenceName'],
-                    $definition['allocationSize']
-                );
-                $class->setIdGenerator($sequenceGenerator);
-                break;
-            case ClassMetadata::GENERATOR_TYPE_NONE:
-                $class->setIdGenerator(new \Doctrine\ORM\Id\AssignedGenerator());
-                break;
-            case ClassMetadata::GENERATOR_TYPE_UUID:
-                $class->setIdGenerator(new \Doctrine\ORM\Id\UuidGenerator());
-                break;
-            case ClassMetadata::GENERATOR_TYPE_TABLE:
-                throw new ORMException("TableGenerator not yet implemented.");
-                break;
-            case ClassMetadata::GENERATOR_TYPE_CUSTOM:
-                $definition = $class->customGeneratorDefinition;
-                if (!class_exists($definition['class'])) {
-                    throw new ORMException("Can't instantiate custom generator : " .
-                        $definition['class']);
-                }
-                $class->setIdGenerator(new $definition['class']);
-                break;
-            default:
-                throw new ORMException("Unknown generator type: " . $class->generatorType);
+    /**
+     * Retrieve the preferred auto generator type based on platform suggestion.
+     *
+     * @return integer
+     */
+    protected function getPreferredAutoGeneratorType()
+    {
+        if ($this->targetPlatform->prefersSequences()) {
+            return ClassMetadata::GENERATOR_TYPE_SEQUENCE;
         }
+
+        if ($this->targetPlatform->prefersIdentityColumns()) {
+            return ClassMetadata::GENERATOR_TYPE_IDENTITY;
+        }
+
+        return ClassMetadata::GENERATOR_TYPE_TABLE;
     }
 
     /**

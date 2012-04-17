@@ -57,7 +57,7 @@ class PhpExporter extends AbstractExporter
         }
 
         if ($metadata->inheritanceType) {
-            $lines[] = '$metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_' . $this->_getInheritanceTypeString($metadata->inheritanceType) . ');';
+            $lines[] = '$metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_' . $this->getInheritanceTypeString($metadata->inheritanceType) . ');';
         }
 
         if ($metadata->customRepositoryClassName) {
@@ -77,7 +77,7 @@ class PhpExporter extends AbstractExporter
         }
 
         if ($metadata->changeTrackingPolicy) {
-            $lines[] = '$metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_' . $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy) . ');';
+            $lines[] = '$metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_' . $this->getChangeTrackingPolicyString($metadata->changeTrackingPolicy) . ');';
         }
 
         if ($metadata->lifecycleCallbacks) {
@@ -90,19 +90,35 @@ class PhpExporter extends AbstractExporter
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
             $lines[] = '$metadata->mapField(' . $this->_varExport($fieldMapping) . ');';
-        }
 
-        if ($generatorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-            $lines[] = '$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_' . $generatorType . ');';
+            if ( ! isset($fieldMapping['id'])) {
+                continue;
+            }
+
+            $idGenerator         = $metadata->idGeneratorList[$fieldMapping['fieldName']];
+            $generatorType       = $idGenerator['type'];
+            $generatorDefinition = $idGenerator['definition'];
+
+            if ($generatorTypeString = $this->getIdGeneratorTypeString($generatorType)) {
+                $lines[] = '$metadata->addIdGenerator('
+                         . $this->_varExport($fieldMapping['fieldName']) . ', '
+                         . 'ClassMetadataInfo::GENERATOR_TYPE_' . $generatorTypeString . ', '
+                         . $this->_varExport($generatorDefinition)
+                         . ');';
+            }
+
+
         }
 
         foreach ($metadata->associationMappings as $associationMapping) {
             $cascade = array('remove', 'persist', 'refresh', 'merge', 'detach');
+
             foreach ($cascade as $key => $value) {
                 if ( ! $associationMapping['isCascade'.ucfirst($value)]) {
                     unset($cascade[$key]);
                 }
             }
+
             $associationMappingArray = array(
                 'fieldName'    => $associationMapping['fieldName'],
                 'targetEntity' => $associationMapping['targetEntity'],
