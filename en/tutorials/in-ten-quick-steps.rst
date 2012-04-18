@@ -177,7 +177,7 @@ with another setup just take a look into the :doc:`Installation help
 
         public function addComment($text)
         {
-            $this->comments[] = $new Comment($this, $text);
+            $this->comments[] = new Comment($this, $text);
         }
     }
 
