@@ -221,6 +221,39 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($classes, array_keys($p->getValue($this->_generator)));
     }
 
+    /**
+     * @group DDC-1784
+     */
+    public function testGenerateEntityWithSequenceGenerator()
+    {
+        $metadata               = new ClassMetadataInfo($this->_namespace . '\DDC1784Entity');
+        $metadata->namespace    = $this->_namespace;
+        $metadata->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
+        $metadata->setSequenceGeneratorDefinition(array(
+            'sequenceName'      => 'DDC1784_ID_SEQ',
+            'allocationSize'    => 1,
+            'initialValue'      => 2
+        ));
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+
+        $filename = $this->_tmpDir . DIRECTORY_SEPARATOR
+                  . $this->_namespace . DIRECTORY_SEPARATOR . 'DDC1784Entity.php';
+        
+        $this->assertFileExists($filename);
+        require_once $filename;
+
+
+        $reflection = new \ReflectionProperty($metadata->name, 'id');
+        $docComment = $reflection->getDocComment();
+
+        $this->assertContains('@Id', $docComment);
+        $this->assertContains('@Column(name="id", type="integer")', $docComment);
+        $this->assertContains('@GeneratedValue(strategy="SEQUENCE")', $docComment);
+        $this->assertContains('@SequenceGenerator(sequenceName="DDC1784_ID_SEQ", allocationSize=1, initialValue=2)', $docComment);
+    }
+
+
     public function getParseTokensInEntityFileData()
     {
         return array(
