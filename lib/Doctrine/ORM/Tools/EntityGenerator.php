@@ -802,7 +802,15 @@ public function <methodName>()
         $variableType = $typeHint ? $typeHint . ' ' : null;
 
         $types = \Doctrine\DBAL\Types\Type::getTypesMap();
-        $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : null;
+        $typehints = \Doctrine\DBAL\Types\Type::getTypeHintsMap();
+
+        if ($typeHint && ! isset($types[$typeHint])) {
+            $methodTypeHint = '\\' . $typeHint . ' ';
+        } elseif ($typeHint && isset($typehints[$typeHint])) {
+            $methodTypeHint = '\\' . $typehints[$typeHint] . ' ';
+        } else {
+            $methodTypeHint = null;
+        }
 
         $replacements = array(
           '<description>'       => ucfirst($type) . ' ' . $fieldName,
