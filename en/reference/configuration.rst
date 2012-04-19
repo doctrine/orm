@@ -177,7 +177,7 @@ setup methods:
 These setup commands make several assumptions:
 
 -  If `$devMode` is true always use an ``ArrayCache`` and set ``setAutoGenerateProxyClasses(true)``.
--  If `$devMode` is false, check for Caches in the order APC, Xcache, Memcache (127.0.0.1:11211) unless `$cache` is passed as fourth argument.
+-  If `$devMode` is false, check for Caches in the order APC, Xcache, Memcache (127.0.0.1:11211), Redis (127.0.0.1:6379) unless `$cache` is passed as fourth argument.
 -  If `$devMode` is false, set ``setAutoGenerateProxyClasses(false)``
 -  If third argument `$proxyDir` is not set, use the systems temporary directory.
 
@@ -280,6 +280,7 @@ The recommended implementations for production are:
 -  ``Doctrine\Common\Cache\ApcCache``
 -  ``Doctrine\Common\Cache\MemcacheCache``
 -  ``Doctrine\Common\Cache\XcacheCache``
+-  ``Doctrine\Common\Cache\RedisCache``
 
 For development you should use the
 ``Doctrine\Common\Cache\ArrayCache`` which only caches data on a
@@ -310,6 +311,7 @@ The recommended implementations for production are:
 -  ``Doctrine\Common\Cache\ApcCache``
 -  ``Doctrine\Common\Cache\MemcacheCache``
 -  ``Doctrine\Common\Cache\XcacheCache``
+-  ``Doctrine\Common\Cache\RedisCache``
 
 For development you should use the
 ``Doctrine\Common\Cache\ArrayCache`` which only caches data on a
