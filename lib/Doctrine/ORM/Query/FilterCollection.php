@@ -141,6 +141,18 @@ class FilterCollection
 
         return $filter;
     }
+    
+    /**
+     * Checks whether filter with given name is defined.
+     * 
+     * @param string $name Name of the filter.
+     *
+     * @return boolean
+     */
+    public function has($name)
+    {
+        return null !== $this->config->getFilterClassName($name);
+    }
 
     /**
      * Get an enabled filter from the collection.
