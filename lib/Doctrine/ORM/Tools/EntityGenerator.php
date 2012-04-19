@@ -1062,11 +1062,11 @@ public function <methodName>()
                     }
 
                     if (isset($metadata->sequenceGeneratorDefinition['allocationSize'])) {
-                        $sequenceGenerator[] = 'allocationSize="' . $metadata->sequenceGeneratorDefinition['allocationSize'] . '"';
+                        $sequenceGenerator[] = 'allocationSize=' . $metadata->sequenceGeneratorDefinition['allocationSize'];
                     }
 
                     if (isset($metadata->sequenceGeneratorDefinition['initialValue'])) {
-                        $sequenceGenerator[] = 'initialValue="' . $metadata->sequenceGeneratorDefinition['initialValue'] . '"';
+                        $sequenceGenerator[] = 'initialValue=' . $metadata->sequenceGeneratorDefinition['initialValue'];
                     }
 
                     $lines[] = $this->_spaces . ' * @' . $this->_annotationsPrefix . 'SequenceGenerator(' . implode(', ', $sequenceGenerator) . ')';
