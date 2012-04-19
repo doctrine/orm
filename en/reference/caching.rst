@@ -100,6 +100,28 @@ driver by itself.
     $cacheDriver = new \Doctrine\Common\Cache\XcacheCache();
     $cacheDriver->save('cache_id', 'my_data');
 
+Redis
+~~~~~
+
+In order to use the Redis cache driver you must have it compiled
+and enabled in your php.ini. You can read about what is Redis
+`from here <http://redis.io/>`_. Also check
+`here <https://github.com/nicolasff/phpredis/>`_ for how you can use
+and install Redis PHP extension.
+
+Below is a simple example of how you could use the Redis cache
+driver by itself.
+
+.. code-block:: php
+
+    <?php
+    $redis = new Redis();
+    $redis->connect('redis_host', 6379);
+
+    $cacheDriver = new \Doctrine\Common\Cache\RedisCache();
+    $cacheDriver->setRedis($redis);
+    $cacheDriver->save('cache_id', 'my_data');
+
 Using Cache Drivers
 -------------------
 
