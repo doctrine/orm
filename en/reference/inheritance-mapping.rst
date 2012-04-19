@@ -261,7 +261,7 @@ have a foreign key pointing from the id column to the root table id
 column and cascading on delete.
 
 
-Overrieds
+Overrides
 ---------
 Used to override a mapping for an entity field or relationship.
 May be applied to an entity that extends a mapped superclass
