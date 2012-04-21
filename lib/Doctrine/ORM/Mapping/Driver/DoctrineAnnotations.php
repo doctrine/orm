@@ -62,6 +62,5 @@ require_once __DIR__.'/../SqlResultSetMapping.php';
 require_once __DIR__.'/../SqlResultSetMappings.php';
 require_once __DIR__.'/../AssociationOverride.php';
 require_once __DIR__.'/../AssociationOverrides.php';
-require_once __DIR__.'/../AssociationOverrides.php';
 require_once __DIR__.'/../AttributeOverride.php';
 require_once __DIR__.'/../AttributeOverrides.php';
