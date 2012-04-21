@@ -571,7 +571,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * NamingStrategy determining the default column and table names
      *
-     * @var \Doctrine\ORM\NamingStrategy
+     * @var \Doctrine\ORM\Mapping\NamingStrategy
      */
     protected $namingStrategy;
 
@@ -1238,7 +1238,7 @@ class ClassMetadataInfo implements ClassMetadata
         $mapping['isOwningSide'] = true; // assume owning side until we hit mappedBy
 
         // unset optional indexBy attribute if its empty
-        if (!isset($mapping['indexBy']) || !$mapping['indexBy']) {
+        if ( ! isset($mapping['indexBy']) || !$mapping['indexBy']) {
             unset($mapping['indexBy']);
         }
 
@@ -1364,7 +1364,7 @@ class ClassMetadataInfo implements ClassMetadata
             foreach ($mapping['joinColumns'] as $key => &$joinColumn) {
                 if ($mapping['type'] === self::ONE_TO_ONE && ! $this->isInheritanceTypeSingleTable()) {
                     if (count($mapping['joinColumns']) == 1) {
-                        if (! isset($mapping['id']) || ! $mapping['id']) {
+                        if ( ! isset($mapping['id']) || ! $mapping['id']) {
                             $joinColumn['unique'] = true;
                         }
                     } else {
@@ -1383,7 +1383,7 @@ class ClassMetadataInfo implements ClassMetadata
             }
 
             if ($uniqueContraintColumns) {
-                if (!$this->table) {
+                if ( ! $this->table) {
                     throw new \RuntimeException("ClassMetadataInfo::setTable() has to be called before defining a one to one relationship.");
                 }
                 $this->table['uniqueConstraints'][$mapping['fieldName']."_uniq"] = array(
@@ -1800,6 +1800,90 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::invalidInheritanceType($this->name, $type);
         }
         $this->inheritanceType = $type;
+    }
+
+    /**
+     * Sets the association to override association mapping of property for an entity relationship.
+     *
+     * @param string $fieldName
+     * @param array $overrideMapping
+     */
+    public function setAssociationOverride($fieldName, array $overrideMapping)
+    {
+        if ( ! isset($this->associationMappings[$fieldName])) {
+            throw MappingException::invalidOverrideFieldName($this->name, $fieldName);
+        }
+
+        $mapping = $this->associationMappings[$fieldName];
+
+        if (isset($overrideMapping['joinColumns'])) {
+            $mapping['joinColumns'] = $overrideMapping['joinColumns'];
+        }
+
+        if (isset($overrideMapping['joinTable'])) {
+            $mapping['joinTable'] = $overrideMapping['joinTable'];
+        }
+
+        $mapping['joinColumnFieldNames']        = null;
+        $mapping['joinTableColumns']            = null;
+        $mapping['sourceToTargetKeyColumns']    = null;
+        $mapping['relationToSourceKeyColumns']  = null;
+        $mapping['relationToTargetKeyColumns']  = null;
+        
+        switch ($mapping['type']) {
+            case self::ONE_TO_ONE:
+                $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+                break;
+            case self::ONE_TO_MANY:
+                $mapping = $this->_validateAndCompleteOneToManyMapping($mapping);
+                break;
+            case self::MANY_TO_ONE:
+                $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+                break;
+            case self::MANY_TO_MANY:
+                $mapping = $this->_validateAndCompleteManyToManyMapping($mapping);
+                break;
+        }
+
+        $this->associationMappings[$fieldName] = $mapping;
+    }
+
+     /**
+     * Sets the override for a mapped field.
+     *
+     * @param string $fieldName
+     * @param array $mapping
+     */
+    public function setAttributeOverride($fieldName, array $overrideMapping)
+    {
+        if ( ! isset($this->fieldMappings[$fieldName])) {
+            throw MappingException::invalidOverrideFieldName($this->name, $fieldName);
+        }
+
+        $mapping = $this->fieldMappings[$fieldName];
+
+        if (isset($mapping['id'])) {
+            $overrideMapping['id'] = $mapping['id'];
+        }
+
+        if ( ! isset($overrideMapping['type']) || $overrideMapping['type'] === null) {
+            $overrideMapping['type'] = $mapping['type'];
+        }
+
+        if ( ! isset($overrideMapping['fieldName']) || $overrideMapping['fieldName'] === null) {
+            $overrideMapping['fieldName'] = $mapping['fieldName'];
+        }
+
+        if ($overrideMapping['type'] !== $mapping['type']) {
+            throw MappingException::invalidOverrideFieldType($this->name, $fieldName);
+        }
+
+        unset($this->fieldMappings[$fieldName]);
+        unset($this->fieldNames[$mapping['columnName']]);
+        unset($this->columnNames[$mapping['fieldName']]);
+        $this->_validateAndCompleteFieldMapping($overrideMapping);
+
+        $this->fieldMappings[$fieldName] = $overrideMapping;
     }
 
     /**
@@ -2362,7 +2446,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getSingleAssociationJoinColumnName($fieldName)
     {
-        if (!$this->isAssociationWithSingleJoinColumn($fieldName)) {
+        if ( ! $this->isAssociationWithSingleJoinColumn($fieldName)) {
             throw MappingException::noSingleAssociationJoinColumnFound($this->name, $fieldName);
         }
         return $this->associationMappings[$fieldName]['joinColumns'][0]['name'];
@@ -2376,7 +2460,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getSingleAssociationReferencedJoinColumnName($fieldName)
     {
-        if (!$this->isAssociationWithSingleJoinColumn($fieldName)) {
+        if ( ! $this->isAssociationWithSingleJoinColumn($fieldName)) {
             throw MappingException::noSingleAssociationJoinColumnFound($this->name, $fieldName);
         }
         return $this->associationMappings[$fieldName]['joinColumns'][0]['referencedColumnName'];

@@ -20,17 +20,37 @@
 namespace Doctrine\ORM\Mapping;
 
 /**
+ * This annotation is used to override association mapping of property for an entity relationship.
+ *
+ * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * @since   2.3
+ *
  * @Annotation
- * @Target({"PROPERTY","ANNOTATION"})
+ * @Target("ANNOTATION")
  */
-final class JoinTable implements Annotation
+final class AssociationOverride implements Annotation
 {
-    /** @var string */
+
+    /**
+     * The name of the relationship property whose mapping is being overridden
+     * 
+     * @var string 
+     */
     public $name;
-    /** @var string */
-    public $schema;
-    /** @var array<\Doctrine\ORM\Mapping\JoinColumn> */
-    public $joinColumns = array();
-    /** @var array<\Doctrine\ORM\Mapping\JoinColumn> */
-    public $inverseJoinColumns = array();
+
+    /**
+     * The join column that is being mapped to the persistent attribute.
+     *
+     * @var array<\Doctrine\ORM\Mapping\JoinColumn>
+     */
+    public $joinColumns;
+
+
+    /**
+     * The join table that maps the relationship.
+     *
+     * @var \Doctrine\ORM\Mapping\JoinTable
+     */
+    public $joinTable;
+
 }
