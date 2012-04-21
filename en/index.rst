@@ -84,6 +84,9 @@ Advanced Topics
 * **Filtering entities**:
   :doc:`Filters <reference/filters>`
 
+* **Implementing a NamingStrategy**:
+  :doc:`NamingStrategy <reference/namingstrategy>`
+
 * **Performance**:
   :doc:`Improving Performance <reference/improving-performance>` |
   :doc:`Caching <reference/caching>` |

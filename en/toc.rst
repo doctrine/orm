@@ -50,6 +50,9 @@ Reference Guide
    reference/metadata-drivers
    reference/best-practices
    reference/limitations-and-known-issues
+   tutorials/pagination.rst
+   reference/filters.rst
+   reference/namingstrategy.rst
 
 
 Cookbook
