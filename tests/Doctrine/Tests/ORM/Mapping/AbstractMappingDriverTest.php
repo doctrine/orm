@@ -463,7 +463,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-<<<<<<< HEAD
      * @group DDC-889
      * @expectedException Doctrine\ORM\Mapping\MappingException
      * @expectedExceptionMessage Class "Doctrine\Tests\Models\DDC889\DDC889Class" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass" is not a valid entity or mapped super class.
@@ -487,7 +486,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-<<<<<<< HEAD
      * @group DDC-1663
      */
     public function testNamedNativeQuery()
