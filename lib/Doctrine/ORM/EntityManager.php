@@ -494,6 +494,7 @@ class EntityManager implements ObjectManager
      * this EntityManager as NEW. Do not pass detached entities to the persist operation.
      *
      * @param object $object The instance to make managed and persistent.
+     * @return object Entity Manager
      */
     public function persist($entity)
     {
@@ -504,6 +505,8 @@ class EntityManager implements ObjectManager
         $this->errorIfClosed();
 
         $this->unitOfWork->persist($entity);
+        
+        return $this; 
     }
 
     /**
