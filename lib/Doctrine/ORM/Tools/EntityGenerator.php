@@ -97,6 +97,14 @@ class EntityGenerator
 
     private $_fieldVisibility = 'private';
 
+    /** Map of field types requiring a core php class as a type hint */
+    private $_phpTypes = array(
+        \Doctrine\DBAL\Types\Type::DATE => 'DateTime',
+        \Doctrine\DBAL\Types\Type::DATETIME => 'DateTime',
+        \Doctrine\DBAL\Types\Type::DATETIMETZ => 'DateTime',
+        \Doctrine\DBAL\Types\Type::TIME => 'DateTime',
+    );
+
     private static $_classTemplate =
 '<?php
 
@@ -802,12 +810,11 @@ public function <methodName>()
         $variableType = $typeHint ? $typeHint . ' ' : null;
 
         $types = \Doctrine\DBAL\Types\Type::getTypesMap();
-        $typehints = \Doctrine\DBAL\Types\Type::getTypeHintsMap();
 
         if ($typeHint && ! isset($types[$typeHint])) {
             $methodTypeHint = '\\' . $typeHint . ' ';
-        } elseif ($typeHint && isset($typehints[$typeHint])) {
-            $methodTypeHint = '\\' . $typehints[$typeHint] . ' ';
+        } elseif ($typeHint && isset($this->_phpTypes[$typeHint])) {
+            $methodTypeHint = '\\' . $this->_phpTypes[$typeHint] . ' ';
         } else {
             $methodTypeHint = null;
         }
