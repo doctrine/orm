@@ -155,7 +155,7 @@ built-in mapping types:
    integer.
 -  ``bigint``: Type that maps a database BIGINT to a PHP string.
 -  ``boolean``: Type that maps an SQL boolean to a PHP boolean.
--  ``decimal``: Type that maps an SQL DECIMAL to a PHP double.
+-  ``decimal``: Type that maps an SQL DECIMAL to a PHP string.
 -  ``date``: Type that maps an SQL DATETIME to a PHP DateTime
    object.
 -  ``time``: Type that maps an SQL TIME to a PHP DateTime object.
