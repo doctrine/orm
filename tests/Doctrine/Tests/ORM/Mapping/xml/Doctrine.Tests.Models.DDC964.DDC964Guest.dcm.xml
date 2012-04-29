@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+         
+    <entity name="Doctrine\Tests\Models\DDC964\DDC964Guest">
+        <attribute-overrides>
+            <attribute-override name="id">
+                <field column="guest_id" length="140"/>
+            </attribute-override>
+            <attribute-override name="name">
+                <field column="guest_name" type="string" length="240" nullable="false" unique="true" />
+            </attribute-override>
+        </attribute-overrides>
+    </entity>
+        
+</doctrine-mapping>
