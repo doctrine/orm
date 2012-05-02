@@ -20,16 +20,15 @@
 //Check if Composer autoload.php exists
 if(file_exists('../../../autoload.php')) {
     require_once '../../../autoload.php';
+} else {
+    require_once 'Doctrine/Common/ClassLoader.php';
+
+    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
+    $classLoader->register();
+
+    $classLoader = new \Doctrine\Common\ClassLoader('Symfony', 'Doctrine');
+    $classLoader->register();
 }
-
-require_once 'Doctrine/Common/ClassLoader.php';
-
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
-$classLoader->register();
-
-$classLoader = new \Doctrine\Common\ClassLoader('Symfony', 'Doctrine');
-$classLoader->register();
-
 $configFile = getcwd() . DIRECTORY_SEPARATOR . 'cli-config.php';
 
 $helperSet = null;
