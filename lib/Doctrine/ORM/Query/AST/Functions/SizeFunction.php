@@ -109,7 +109,7 @@ class SizeFunction extends FunctionNode
      */
     public function parse(\Doctrine\ORM\Query\Parser $parser)
     {
-        $parser->match(Lexer::T_SIZE);
+        $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
 
         $this->collectionPathExpression = $parser->CollectionValuedPathExpression();

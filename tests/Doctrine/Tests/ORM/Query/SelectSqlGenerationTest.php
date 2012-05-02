@@ -374,6 +374,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group DDC-1802
+     */
+    public function testSupportsNotBetweenForSizeFunction()
+    {
+        $this->assertSqlGeneration(
+            "SELECT m.name FROM Doctrine\Tests\Models\StockExchange\Market m WHERE SIZE(m.stocks) NOT BETWEEN ?1 AND ?2",
+            "SELECT e0_.name AS name0 FROM exchange_markets e0_ WHERE (SELECT COUNT(*) FROM exchange_stocks e1_ WHERE e1_.market_id = e0_.id) NOT BETWEEN ? AND ?"
+        );
+    }
+
     public function testSupportsFunctionalExpressionsInWherePart()
     {
         $this->assertSqlGeneration(
@@ -469,6 +480,17 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :id NOT IN (1)',
             'SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3 FROM cms_users c0_ WHERE ? NOT IN (1)'
+        );
+    }
+
+    /**
+     * @group DDC-1802
+     */
+    public function testSupportsNotInExpressionForModFunction()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE MOD(u.id, 5) NOT IN(1,3,4)",
+            "SELECT c0_.name AS name0 FROM cms_users c0_ WHERE MOD(c0_.id, 5) NOT IN (1, 3, 4)"
         );
     }
 
