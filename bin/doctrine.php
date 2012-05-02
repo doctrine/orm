@@ -18,8 +18,8 @@
  */
 
 //Check if Composer autoload.php exists
-if(file_exists('../../../autoload.php')) {
-    require_once '../../../autoload.php';
+if(file_exists(__DIR__ . '/../../../autoload.php')) {
+    require_once __dir__ . '/../../../autoload.php';
 } else {
     require_once 'Doctrine/Common/ClassLoader.php';
 
