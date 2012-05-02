@@ -17,6 +17,11 @@
  * <http://www.doctrine-project.org>.
  */
 
+//Check if Composer autoload.php exists
+if(file_exists('../../../autoload.php')) {
+    require_once '../../../autoload.php';
+}
+
 require_once 'Doctrine/Common/ClassLoader.php';
 
 $classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
