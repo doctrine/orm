@@ -14,8 +14,10 @@
     "require": {
         "php": ">=5.3.2",
         "ext-pdo": "*",
-        "doctrine/dbal": "dev-master",
-        "symfony/console" : "2.0.12"
+        "doctrine/dbal": "dev-master"
+    },
+    "suggest": {
+        "symfony/console": "Required for use with Doctrine CLI"
     },
     "autoload": {
         "psr-0": { "Doctrine\\ORM": "lib/" }
