@@ -97,6 +97,11 @@ class QueryBuilder
     private $_maxResults = null;
 
     /**
+     * @var array Keeps root entity alias names for join entities.
+     */
+    private $joinRootAliases = array();
+
+    /**
      * Initializes a new <tt>QueryBuilder</tt> that uses the given <tt>EntityManager</tt>.
      *
      * @param EntityManager $em The EntityManager to use.
@@ -217,6 +222,32 @@ class QueryBuilder
             ->setParameters($this->_params, $this->_paramTypes)
             ->setFirstResult($this->_firstResult)
             ->setMaxResults($this->_maxResults);
+    }
+
+    /**
+     * Finds the root entity alias of the joined entity.
+     *
+     * @param string $alias The alias of the new join entity
+     * @param string $parentAlias The parent entity alias of the join relationship
+     * @return string
+     */
+    private function findRootAlias($alias, $parentAlias)
+    {
+        $rootAlias = null;
+
+        if (in_array($parentAlias, $this->getRootAliases())) {
+            $rootAlias = $parentAlias;
+        } elseif (isset($this->joinRootAliases[$parentAlias])) {
+            $rootAlias = $this->joinRootAliases[$parentAlias];
+        } else {
+            // Should never happen with correct joining order. Might be
+            // thoughtful to throw exception instead.
+            $rootAlias = $this->getRootAlias();
+        }
+
+        $this->joinRootAliases[$alias] = $rootAlias;
+
+        return $rootAlias;
     }
 
     /**
@@ -667,11 +698,9 @@ class QueryBuilder
      */
     public function innerJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
-        $rootAlias = substr($join, 0, strpos($join, '.'));
+        $parentAlias = substr($join, 0, strpos($join, '.'));
 
-        if ( ! in_array($rootAlias, $this->getRootAliases())) {
-            $rootAlias = $this->getRootAlias();
-        }
+        $rootAlias = $this->findRootAlias($alias, $parentAlias);
 
         $join = new Expr\Join(
             Expr\Join::INNER_JOIN, $join, $alias, $conditionType, $condition, $indexBy
@@ -703,11 +732,9 @@ class QueryBuilder
      */
     public function leftJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
-        $rootAlias = substr($join, 0, strpos($join, '.'));
+        $parentAlias = substr($join, 0, strpos($join, '.'));
 
-        if ( ! in_array($rootAlias, $this->getRootAliases())) {
-            $rootAlias = $this->getRootAlias();
-        }
+        $rootAlias = $this->findRootAlias($alias, $parentAlias);
 
         $join = new Expr\Join(
             Expr\Join::LEFT_JOIN, $join, $alias, $conditionType, $condition, $indexBy
