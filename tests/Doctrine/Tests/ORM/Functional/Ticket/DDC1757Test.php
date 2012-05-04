@@ -10,14 +10,14 @@ class DDC1757Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testFailingCase()
     {
-		$qb = $this->_em->createQueryBuilder();
-		/* @var $qb \Doctrine\ORM\QueryBuilder */
+        $qb = $this->_em->createQueryBuilder();
+        /* @var $qb \Doctrine\ORM\QueryBuilder */
 
-		$qb->select('_a')
-				->from(__NAMESPACE__ . '\DDC1757A', '_a')
-				->from(__NAMESPACE__ . '\DDC1757B', '_b')
-				->join('_b.c', '_c')
-				->join('_c.d', '_d');
+        $qb->select('_a')
+            ->from(__NAMESPACE__ . '\DDC1757A', '_a')
+            ->from(__NAMESPACE__ . '\DDC1757B', '_b')
+            ->join('_b.c', '_c')
+            ->join('_c.d', '_d');
 
         $q = $qb->getQuery();
         $dql = $q->getDQL();
@@ -37,7 +37,7 @@ class DDC1757A
     /**
      * @Column(type="integer")
      * @Id
-	 * @GeneratedValue(strategy="AUTO")
+     * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 }
@@ -50,7 +50,7 @@ class DDC1757B
     /**
      * @Column(type="integer")
      * @Id
-	 * @GeneratedValue(strategy="AUTO")
+     * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
@@ -72,7 +72,7 @@ class DDC1757C
      */
     public $id;
 
-     /**
+    /**
      * @OneToOne(targetEntity="DDC1757D")
      */
     private $d;
