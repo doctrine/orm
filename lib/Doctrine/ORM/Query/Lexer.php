@@ -98,18 +98,16 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_OUTER               = 144;
     const T_SELECT              = 145;
     const T_SET                 = 146;
-    const T_SIZE                = 147;
-    const T_SOME                = 148;
-    const T_SUM                 = 149;
-    const T_THEN                = 150;
-    const T_TRAILING            = 151;
-    const T_TRUE                = 152;
-    const T_UPDATE              = 153;
-    const T_WHEN                = 154;
-    const T_WHERE               = 155;
-    const T_WITH                = 156;
-    const T_PARTIAL             = 157;
-    const T_MOD                 = 158;
+    const T_SOME                = 147;
+    const T_SUM                 = 148;
+    const T_THEN                = 149;
+    const T_TRAILING            = 150;
+    const T_TRUE                = 151;
+    const T_UPDATE              = 152;
+    const T_WHEN                = 153;
+    const T_WHERE               = 154;
+    const T_WITH                = 155;
+    const T_PARTIAL             = 156;
 
     /**
      * Creates a new query scanner object.
