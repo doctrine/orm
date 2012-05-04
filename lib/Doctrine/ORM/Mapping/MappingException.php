@@ -298,6 +298,17 @@ class MappingException extends \Doctrine\ORM\ORMException
         );
     }
 
+    public static function duplicateDiscriminatorEntry($className, array $entries, array $map)
+    {
+        return new self(
+            "The entries " . implode(', ',  $entries) . " in discriminator map of class '" . $className . "' is duplicated. " .
+            "If the discriminator map is automatically generated you have to convert it to an explicit discriminator map now. " .
+            "The entries of the current map are: @DiscriminatorMap({" . implode(', ', array_map(
+                function($a, $b) { return "'$a': '$b'"; }, array_keys($map), array_values($map)
+            )) . "})"
+        );
+    }
+
     public static function missingDiscriminatorMap($className)
     {
         return new self("Entity class '$className' is using inheritance but no discriminator map was defined.");

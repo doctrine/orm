@@ -153,6 +153,45 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFalse($em->getMetadataFactory()->isTransient('CMS:CmsArticle'));
     }
 
+    public function testAddDefaultDiscriminatorMap()
+    {
+        $cmf = new ClassMetadataFactory();
+        $driver = $this->createAnnotationDriver(array(__DIR__ . '/../../Models/JoinedInheritanceType/'));
+        $em = $this->_createEntityManager($driver);
+        $cmf->setEntityManager($em);
+
+        $rootMetadata = $cmf->getMetadataFor('Doctrine\Tests\Models\JoinedInheritanceType\RootClass');
+        $childMetadata = $cmf->getMetadataFor('Doctrine\Tests\Models\JoinedInheritanceType\ChildClass');
+        $anotherChildMetadata = $cmf->getMetadataFor('Doctrine\Tests\Models\JoinedInheritanceType\AnotherChildClass');
+        $rootDiscriminatorMap = $rootMetadata->discriminatorMap;
+        $childDiscriminatorMap = $childMetadata->discriminatorMap;
+        $anotherChildDiscriminatorMap = $anotherChildMetadata->discriminatorMap;
+
+        $rootClass = 'Doctrine\Tests\Models\JoinedInheritanceType\RootClass';
+        $childClass = 'Doctrine\Tests\Models\JoinedInheritanceType\ChildClass';
+        $anotherChildClass = 'Doctrine\Tests\Models\JoinedInheritanceType\AnotherChildClass';
+
+        $rootClassKey = array_search($rootClass, $rootDiscriminatorMap);
+        $childClassKey = array_search($childClass, $rootDiscriminatorMap);
+        $anotherChildClassKey = array_search($anotherChildClass, $rootDiscriminatorMap);
+
+        $this->assertEquals('rootclass', $rootClassKey);
+        $this->assertEquals('childclass', $childClassKey);
+        $this->assertEquals('anotherchildclass', $anotherChildClassKey);
+
+        $this->assertEquals($childDiscriminatorMap, $rootDiscriminatorMap);
+        $this->assertEquals($anotherChildDiscriminatorMap, $rootDiscriminatorMap);
+
+        // ClassMetadataFactory::addDefaultDiscriminatorMap shouldn't be called again, because the
+        // discriminator map is already cached
+        $cmf = $this->getMock('Doctrine\ORM\Mapping\ClassMetadataFactory', array('addDefaultDiscriminatorMap'));
+        $cmf->setEntityManager($em);
+        $cmf->expects($this->never())
+            ->method('addDefaultDiscriminatorMap');
+
+        $rootMetadata = $cmf->getMetadataFor('Doctrine\Tests\Models\JoinedInheritanceType\RootClass');
+    }
+
     protected function _createEntityManager($metadataDriver)
     {
         $driverMock = new DriverMock();

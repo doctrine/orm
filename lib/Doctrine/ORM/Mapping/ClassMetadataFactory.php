@@ -340,6 +340,10 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
             $class->setParentClasses($visited);
 
+            if ( $class->isRootEntity() && ! $class->isInheritanceTypeNone() && ! $class->discriminatorMap) {
+                $this->addDefaultDiscriminatorMap($class);
+            }
+
             if ($this->evm->hasListeners(Events::loadClassMetadata)) {
                 $eventArgs = new \Doctrine\ORM\Event\LoadClassMetadataEventArgs($class, $this->em);
                 $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
@@ -408,6 +412,95 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     protected function newClassMetadataInstance($className)
     {
         return new ClassMetadata($className, $this->em->getConfiguration()->getNamingStrategy());
+    }
+
+    /**
+     * Adds a default discriminator map if no one is given
+     *
+     * If an entity is of any inheritance type and does not contain a
+     * discrimiator map, then the map is generated automatically. This process
+     * is expensive computation wise.
+     *
+     * The automatically generated discriminator map contains the lowercase shortname of
+     * each class as key.
+     *
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     */
+    private function addDefaultDiscriminatorMap(ClassMetadata $class)
+    {
+        $allClasses = $this->driver->getAllClassNames();
+        $subClassesMetadata = array();
+        $fqcn = $class->getName();
+        $map = array($this->getShortName($class->name) => $fqcn);
+
+        $duplicates = array();
+        foreach ($allClasses as $subClassCandidate) {
+            if (is_subclass_of($subClassCandidate, $fqcn)) {
+                $shortName = $this->getShortName($subClassCandidate);
+
+                if (isset($map[$shortName])) {
+                    $duplicates[] = $shortName;
+                }
+
+                $map[$shortName] = $subClassCandidate;
+            }
+        }
+
+        if ($duplicates) {
+            throw MappingException::duplicateDiscriminatorEntry($class->name, $duplicates, $map);
+        }
+
+        $class->setDiscriminatorMap($map);
+    }
+
+    /**
+     * Get the lower-case shortname of a class.
+     *
+     * @param string $className
+     * @return string
+     */
+    private function getShortName($className)
+    {
+        if (strpos($className, "\\") === false) {
+            return strtolower($className);
+        }
+
+        $parts = explode("\\", $className);
+        return strtolower(end($parts));
+    }
+
+    /**
+     * Cache the metadata
+     *
+     * @param $className
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata
+     */
+    private function cacheMetadata($className, ClassMetadata $metadata)
+    {
+        $this->cacheDriver->save(
+            "$className\$CLASSMETADATA", $metadata, null
+        );
+    }
+
+    /**
+     * Verify if metadata is cached
+     *
+     * @param $className
+     * @return bool
+     */
+    private function cacheContainsMetadata($className)
+    {
+        return $this->cacheDriver->contains("$className\$CLASSMETADATA");
+    }
+
+    /**
+     * Fetch metadata from cache
+     *
+     * @param $className
+     */
+    private function fetchMetadataFromCache($className)
+    {
+        return $this->cacheDriver->fetch("$className\$CLASSMETADATA");
     }
 
     /**
