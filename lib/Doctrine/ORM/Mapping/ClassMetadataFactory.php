@@ -317,8 +317,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
             $class->setParentClasses($visited);
 
-            // Calculate Discriminator Map if needed and if no discriminator map is set
-            if ($class->isInheritanceTypeJoined() && empty($class->discriminatorMap)) {
+            if ( $class->isRootEntity() && ! $class->isInheritanceTypeNone() && ! $class->discriminatorMap) {
                 $this->addDefaultDiscriminatorMap($class);
             }
 
@@ -394,6 +393,13 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     /**
      * Adds a default discriminator map if no one is given
      *
+     * If an entity is of any inheritance type and does not contain a
+     * discrimiator map, then the map is generated automatically. This process
+     * is expensive computation wise.
+     *
+     * The automatically generated discriminator map contains the lowercase shortname of
+     * each class as key.
+     *
      * @param \Doctrine\ORM\Mapping\ClassMetadata $class
      */
     private function addDefaultDiscriminatorMap(ClassMetadata $class)
@@ -401,43 +407,42 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
         $allClasses = $this->driver->getAllClassNames();
         $subClassesMetadata = array();
         $fqcn = $class->getName();
-        $map = array(str_replace('\\', '.', $fqcn) => $fqcn);
+        $map = array($this->getShortName($class->name) => $fqcn);
 
-        foreach ($allClasses as $c) {
-            if (is_subclass_of($c, $fqcn)) {
-                if (isset($this->loadedMetadata[$c])) {
-                    $subClassMetadata = $this->loadedMetadata[$c];
-                } else {
-                    $subClassMetadata = $this->newClassMetadataInstance($c);
-                    $this->driver->loadMetadataForClass($c, $subClassMetadata);
+        $duplicates = array();
+        foreach ($allClasses as $subClassCandidate) {
+            if (is_subclass_of($subClassCandidate, $fqcn)) {
+                $shortName = $this->getShortName($subClassCandidate);
+
+                if (isset($map[$shortName])) {
+                    $duplicates[] = $shortName;
                 }
 
-                if (!$subClassMetadata->isMappedSuperclass) {
-                    $map[str_replace('\\', '.', $c)] = $c;
-                    $subClassesMetadata[$c] = $subClassMetadata;
-                }
+                $map[$shortName] = $subClassCandidate;
             }
+        }
+
+        if ($duplicates) {
+            throw MappingException::duplicateDiscriminatorEntry($class->name, $duplicates, $map);
         }
 
         $class->setDiscriminatorMap($map);
+    }
 
-        // Now we set the discriminator map for the subclasses already loaded
-        foreach ($subClassesMetadata as $subClassFqcn => $subClassMetadata) {
-            $subClassMetadata->setDiscriminatorMap($map);
-
-            // We need to overwrite the cached version of the metadata, because
-            // it was cached without the discriminator map
-            if ($this->cacheDriver && $this->cacheContainsMetadata($subClassFqcn)) {
-                // If subclass metadata is not already loaded, it's incomplete so
-                // we reload it again from cache
-                if (!isset($this->loadedMetadata[$subClassFqcn])) {
-                    $subClassMetadata = $this->fetchMetadataFromCache($subClassFqcn);
-                    $subClassMetadata->setDiscriminatorMap($map);
-                }
-
-                $this->cacheMetadata($subClassFqcn, $subClassMetadata);
-            }
+    /**
+     * Get the lower-case shortname of a class.
+     *
+     * @param string $className
+     * @return string
+     */
+    private function getShortName($className)
+    {
+        if (strpos($className, "\\") === false) {
+            return strtolower($className);
         }
+
+        $parts = explode("\\", $className);
+        return strtolower(end($parts));
     }
 
     /**

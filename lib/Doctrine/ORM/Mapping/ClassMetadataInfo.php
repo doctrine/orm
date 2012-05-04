@@ -1341,6 +1341,16 @@ class ClassMetadataInfo
     }
 
     /**
+     * Check if this entity is the root in any entity-inheritance-hierachy.
+     *
+     * @return bool
+     */
+    public function isRootEntity()
+    {
+        return $this->name == $this->rootEntityName;
+    }
+
+    /**
      * Checks whether a mapped association field is inherited from a superclass.
      *
      * @param string $fieldName

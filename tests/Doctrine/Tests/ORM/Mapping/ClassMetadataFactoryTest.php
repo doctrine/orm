@@ -127,7 +127,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($em->getMetadataFactory()->isTransient('CMS:CmsUser'));
         $this->assertFalse($em->getMetadataFactory()->isTransient('CMS:CmsArticle'));
     }
-    
+
     public function testAddDefaultDiscriminatorMap()
     {
         $cmf = new ClassMetadataFactory();
@@ -150,9 +150,9 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $childClassKey = array_search($childClass, $rootDiscriminatorMap);
         $anotherChildClassKey = array_search($anotherChildClass, $rootDiscriminatorMap);
 
-        $this->assertEquals(str_replace('\\', '.', $rootClass), $rootClassKey);
-        $this->assertFalse($childClassKey);
-        $this->assertEquals(str_replace('\\', '.', $anotherChildClassKey), $anotherChildClassKey);
+        $this->assertEquals('rootclass', $rootClassKey);
+        $this->assertEquals('childclass', $childClassKey);
+        $this->assertEquals('anotherchildclass', $anotherChildClassKey);
 
         $this->assertEquals($childDiscriminatorMap, $rootDiscriminatorMap);
         $this->assertEquals($anotherChildDiscriminatorMap, $rootDiscriminatorMap);
