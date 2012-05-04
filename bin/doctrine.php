@@ -17,9 +17,9 @@
  * <http://www.doctrine-project.org>.
  */
 
-//Check if Composer autoload.php exists
-if(file_exists(__DIR__ . '/../../../autoload.php')) {
-    require_once __dir__ . '/../../../autoload.php';
+if (file_exists(__DIR__ . '/../../../autoload.php')) {
+    // doctrine is part of a composer installation
+    require_once __DIR__ . '/../../../autoload.php';
 } else {
     require_once 'Doctrine/Common/ClassLoader.php';
 
