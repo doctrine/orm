@@ -478,6 +478,13 @@ class ClassMetadataInfo implements ClassMetadata
     public $associationMappings = array();
 
     /**
+     * An array of quoted columns (to include all quoted columns of the Entity)
+     *
+     * @var array
+     */
+    public $quotedColumns = array();
+
+    /**
      * READ-ONLY: Flag indicating whether the identifier/primary key of the class is composite.
      *
      * @var boolean
@@ -1184,7 +1191,8 @@ class ClassMetadataInfo implements ClassMetadata
         } else {
             if ($mapping['columnName'][0] == '`') {
                 $mapping['columnName'] = trim($mapping['columnName'], '`');
-                $mapping['quoted'] = true;
+                //$mapping['quoted'] = true; //remove this atavizm
+                $this->quotedColumns[$mapping['columnName']] = true;
             }
         }
 
@@ -1351,6 +1359,13 @@ class ClassMetadataInfo implements ClassMetadata
 
         if (isset($mapping['joinColumns']) && $mapping['joinColumns']) {
             $mapping['isOwningSide'] = true;
+            foreach ($mapping['joinColumns'] as &$joinColumns)
+            {
+                if ($joinColumns['name'][0] == '`') {
+                    $joinColumns['name'] = trim($joinColumns['name'], '`');
+                    $this->quotedColumns[$joinColumns['name']] = true;
+                }
+            }
         }
 
         if ($mapping['isOwningSide']) {
@@ -2679,7 +2694,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getQuotedColumnName($field, $platform)
     {
-        return isset($this->fieldMappings[$field]['quoted'])
+        return isset($this->quotedColumns[$this->columnNames[$field]])
             ? $platform->quoteIdentifier($this->fieldMappings[$field]['columnName'])
             : $this->fieldMappings[$field]['columnName'];
     }
