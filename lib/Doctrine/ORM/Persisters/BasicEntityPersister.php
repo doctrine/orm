@@ -32,7 +32,8 @@ use PDO,
     Doctrine\ORM\Mapping\MappingException,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Events,
-    Doctrine\ORM\Event\LifecycleEventArgs;
+    Doctrine\ORM\Event\LifecycleEventArgs,
+    Doctrine\Common\Util\ClassUtils;
 
 /**
  * A BasicEntityPersiter maps an entity to a single table in a relational database.
@@ -1499,7 +1500,7 @@ class BasicEntityPersister
      */
     private function getIndividualValue($value)
     {
-        if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(get_class($value))) {
+        if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
             if ($this->_em->getUnitOfWork()->getEntityState($value) === UnitOfWork::STATE_MANAGED) {
                 $idValues = $this->_em->getUnitOfWork()->getEntityIdentifier($value);
             } else {

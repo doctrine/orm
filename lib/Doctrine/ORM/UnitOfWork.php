@@ -886,7 +886,7 @@ class UnitOfWork implements PropertyChangedListener
         $hasListeners          = $this->evm->hasListeners(Events::postPersist);
 
         foreach ($this->entityInsertions as $oid => $entity) {
-            if (get_class($entity) !== $className) {
+            if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
                 continue;
             }
 
@@ -945,7 +945,7 @@ class UnitOfWork implements PropertyChangedListener
         $hasPostUpdateListeners          = $this->evm->hasListeners(Events::postUpdate);
 
         foreach ($this->entityUpdates as $oid => $entity) {
-            if ( ! (get_class($entity) === $className || $entity instanceof Proxy && get_parent_class($entity) === $className)) {
+            if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
                 continue;
             }
 
@@ -992,7 +992,7 @@ class UnitOfWork implements PropertyChangedListener
         $hasListeners = $this->evm->hasListeners(Events::postRemove);
 
         foreach ($this->entityDeletions as $oid => $entity) {
-            if ( ! (get_class($entity) == $className || $entity instanceof Proxy && get_parent_class($entity) == $className)) {
+            if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
                 continue;
             }
 
@@ -1043,7 +1043,7 @@ class UnitOfWork implements PropertyChangedListener
         $newNodes = array();
 
         foreach ($entityChangeSet as $entity) {
-            $className = get_class($entity);
+            $className = $this->em->getClassMetadata(get_class($entity))->name;
 
             if ($calc->hasClass($className)) {
                 continue;
@@ -1357,7 +1357,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // db lookup
-                if ($this->getEntityPersister(get_class($entity))->exists($entity)) {
+                if ($this->getEntityPersister($class->name)->exists($entity)) {
                     return self::STATE_DETACHED;
                 }
 
@@ -1374,7 +1374,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // db lookup
-                if ($this->getEntityPersister(get_class($entity))->exists($entity)) {
+                if ($this->getEntityPersister($class->name)->exists($entity)) {
                     return self::STATE_DETACHED;
                 }
 
@@ -2151,13 +2151,12 @@ class UnitOfWork implements PropertyChangedListener
             throw ORMInvalidArgumentException::entityNotManaged($entity);
         }
 
-        $entityName = get_class($entity);
-        $class = $this->em->getClassMetadata($entityName);
+        $class = $this->em->getClassMetadata(get_class($entity));
 
         switch ($lockMode) {
             case \Doctrine\DBAL\LockMode::OPTIMISTIC;
                 if ( ! $class->isVersioned) {
-                    throw OptimisticLockException::notVersioned($entityName);
+                    throw OptimisticLockException::notVersioned($class->name);
                 }
 
                 if ($lockVersion === null) {

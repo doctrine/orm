@@ -22,7 +22,7 @@ namespace Doctrine\ORM;
 use Doctrine\DBAL\Types\Type,
     Doctrine\DBAL\Cache\QueryCacheProfile,
     Doctrine\ORM\Query\QueryException,
-    Doctrine\ORM\Internal\Hydration\CacheHydrator;
+    Doctrine\Common\Util\ClassUtils;
 
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
@@ -241,7 +241,7 @@ abstract class AbstractQuery
 
                 return $value;
 
-            case is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(get_class($value)):
+            case is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value)):
                 return $this->convertObjectParameterToScalarValue($value);
 
             default:
