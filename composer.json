@@ -16,8 +16,8 @@
         "ext-pdo": "*",
         "doctrine/dbal": "dev-master"
     },
-    "suggest": {
-        "symfony/console": "Required for use with Doctrine CLI"
+    "require-dev": {
+        "symfony/console": "2.x"
     },
     "autoload": {
         "psr-0": { "Doctrine\\ORM": "lib/" }
