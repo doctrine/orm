@@ -218,7 +218,20 @@ abstract class AbstractHydrator
                         // Meta column (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
                         $fieldName     = $this->_rsm->metaMappings[$key];
                         $classMetadata = $this->_em->getClassMetadata($this->_rsm->aliasMap[$this->_rsm->columnOwnerMap[$key]]);
-
+                        //First try to determine type by searching fieldmappings
+                        if (isset($classMetadata->fieldNames[$fieldName]) && isset($classMetadata->fieldMappings[$classMetadata->fieldNames[$fieldName]]['type'])) {
+                            $cache[$key]['type'] = Type::getType($classMetadata->fieldMappings[$classMetadata->fieldNames[$fieldName]]['type']);
+                        } else {
+                            //if there is no type information in Entity we have no choice but to look into linked entities
+                            foreach ($classMetadata->associationMappings as $assoc) {
+                                foreach ($assoc['joinColumns'] as $joinColumn) {
+                                    if ($joinColumn['name'] == $fieldName) {
+                                        $cache[$key]['type'] = Type::getType($this->determineAssocColumnType($joinColumn['referencedColumnName'],$assoc['targetEntity']));
+                                        break 2;
+                                    }
+                                }
+                            }
+                        }
                         $cache[$key]['isMetaColumn'] = true;
                         $cache[$key]['fieldName']    = $fieldName;
                         $cache[$key]['dqlAlias']     = $this->_rsm->columnOwnerMap[$key];
@@ -248,7 +261,7 @@ abstract class AbstractHydrator
 
             if (isset($cache[$key]['isMetaColumn'])) {
                 if ( ! isset($rowData[$dqlAlias][$cache[$key]['fieldName']]) && $value !== null) {
-                    $rowData[$dqlAlias][$cache[$key]['fieldName']] = $value;
+                    $rowData[$dqlAlias][$cache[$key]['fieldName']] = isset ($cache[$key]['type']) ? $cache[$key]['type']->convertToPHPValue($value, $this->_platform) : $value;
                     if ($cache[$key]['isIdentifier']) {
                         $nonemptyComponents[$dqlAlias] = true;
                     }
@@ -272,6 +285,23 @@ abstract class AbstractHydrator
         }
 
         return $rowData;
+    }
+
+    /**
+     * Try to determine column type by analizing targetEntity field mappings
+     * 
+     * @param string $columnName
+     * @param string $targetEntityClass
+     */
+    private function determineAssocColumnType($columnName, $targetEntityClass)
+    {
+        $targetEntity = $this->_em->getClassMetadata($targetEntityClass);
+        $targetField = $targetEntity->fieldNames[$columnName];
+        if ( isset ($targetField)) {
+            return $targetEntity->fieldMappings[$targetField]['type'];
+        } else {
+            return 'string';
+        }
     }
 
     /**
