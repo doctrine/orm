@@ -74,3 +74,8 @@ Will now return a collection of arrays with index "user" pointing to the User ob
 Thousands of lines were completely reviewed and optimized for best performance.
 Removed redundancy and improved code readability made now internal Doctrine code easier to understand.
 Also, Doctrine 2.2 now is around 10-15% faster than 2.1.
+
+# EntityManager#find(null)
+
+Previously EntityManager#find(null) returned null. It now throws an exception.
+
