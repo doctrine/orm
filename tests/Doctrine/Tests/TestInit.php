@@ -6,29 +6,34 @@ namespace Doctrine\Tests;
 
 error_reporting(E_ALL | E_STRICT);
 
-require_once __DIR__ . '/../../../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
-
-if (isset($GLOBALS['DOCTRINE_COMMON_PATH'])) {
-    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Common', $GLOBALS['DOCTRINE_COMMON_PATH']);
+if (file_exists(__DIR__ . '/../../../../../autoload.php')) {
+    // installed as vendor through composer
+    require_once __DIR__ . '/../../../../../autoload.php';
 } else {
-    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Common', __DIR__ . '/../../../lib/vendor/doctrine-common/lib');
-}
-$classLoader->register();
+    require_once __DIR__ . '/../../../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
 
-if (isset($GLOBALS['DOCTRINE_DBAL_PATH'])) {
-    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\DBAL', $GLOBALS['DOCTRINE_DBAL_PATH']);
-} else {
-    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\DBAL', __DIR__ . '/../../../lib/vendor/doctrine-dbal/lib');
-}
-$classLoader->register();
+    if (isset($GLOBALS['DOCTRINE_COMMON_PATH'])) {
+        $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Common', $GLOBALS['DOCTRINE_COMMON_PATH']);
+    } else {
+        $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Common', __DIR__ . '/../../../lib/vendor/doctrine-common/lib');
+    }
+    $classLoader->register();
 
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\ORM', __DIR__ . '/../../../lib');
-$classLoader->register();
+    if (isset($GLOBALS['DOCTRINE_DBAL_PATH'])) {
+        $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\DBAL', $GLOBALS['DOCTRINE_DBAL_PATH']);
+    } else {
+        $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\DBAL', __DIR__ . '/../../../lib/vendor/doctrine-dbal/lib');
+    }
+    $classLoader->register();
+
+    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\ORM', __DIR__ . '/../../../lib');
+    $classLoader->register();
+
+    $classLoader = new \Doctrine\Common\ClassLoader('Symfony', __DIR__ . "/../../../lib/vendor");
+    $classLoader->register();
+}
 
 $classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Tests', __DIR__ . '/../../');
-$classLoader->register();
-
-$classLoader = new \Doctrine\Common\ClassLoader('Symfony', __DIR__ . "/../../../lib/vendor");
 $classLoader->register();
 
 if (!file_exists(__DIR__."/Proxies")) {

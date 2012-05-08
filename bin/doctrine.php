@@ -17,14 +17,18 @@
  * <http://www.doctrine-project.org>.
  */
 
-require_once 'Doctrine/Common/ClassLoader.php';
+if (file_exists(__DIR__ . '/../../../autoload.php')) {
+    // doctrine is part of a composer installation
+    require_once __DIR__ . '/../../../autoload.php';
+} else {
+    require_once 'Doctrine/Common/ClassLoader.php';
 
-$classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
-$classLoader->register();
+    $classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
+    $classLoader->register();
 
-$classLoader = new \Doctrine\Common\ClassLoader('Symfony', 'Doctrine');
-$classLoader->register();
-
+    $classLoader = new \Doctrine\Common\ClassLoader('Symfony');
+    $classLoader->register();
+}
 $configFile = getcwd() . DIRECTORY_SEPARATOR . 'cli-config.php';
 
 $helperSet = null;

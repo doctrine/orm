@@ -16,7 +16,11 @@
         "ext-pdo": "*",
         "doctrine/dbal": "dev-master"
     },
+    "require-dev": {
+        "symfony/console": "2.x"
+    },
     "autoload": {
         "psr-0": { "Doctrine\\ORM": "lib/" }
-    }
+    },
+    "bin":["bin/doctrine"]
 }
