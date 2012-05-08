@@ -160,7 +160,7 @@ class Setup
      * @param Cache $cache
      * @return Configuration
      */
-    static public function createConfiguration($isDevMode = false, $proxyDir = null, Cache $cache = null)
+    static public function createConfiguration($isDevMode = false, Cache $cache = null, $proxyDir = null)
     {
         $proxyDir = $proxyDir ?: sys_get_temp_dir();
         if ($isDevMode === false && $cache === null) {
