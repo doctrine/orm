@@ -803,8 +803,7 @@ class EntityManager implements ObjectManager
             default:
                 throw new \InvalidArgumentException("Invalid argument: " . $conn);
         }
-
-        return new EntityManager($conn, $config, $conn->getEventManager());
+        return new static($conn, $config, $conn->getEventManager());
     }
 
     /**
