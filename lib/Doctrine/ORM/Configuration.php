@@ -629,4 +629,34 @@ class Configuration extends \Doctrine\DBAL\Configuration
         
         return $this->_attributes['namingStrategy'];
     }
+
+    /**
+     * Set quote strategy class.
+     *
+     * @since 2.4
+     * @param string $namingStrategy
+     */
+    public function setQuoteStrategyClassName($className)
+    {
+        $quoteStrategy = 'Doctrine\Mapping\AbstractQuoteStrategy';
+
+        if ($className !== $quoteStrategy && ! is_subclass_of($className, $quoteStrategy)) {
+            throw new \InvalidArgumentException("Invalid quote strategy class");
+        }
+        
+        $this->_attributes['quoteStrategyClassName'] = $namingStrategy;
+    }
+
+    /**
+     * Get quote strategy class.
+     *
+     * @since 2.4
+     * @return string
+     */
+    public function getQuoteStrategyClassName()
+    {
+        return isset($this->_attributes['quoteStrategyClassName'])
+            ? $this->_attributes['quoteStrategyClassName']
+            : 'Doctrine\Mapping\DefaultQuoteStrategy';
+    }
 }
