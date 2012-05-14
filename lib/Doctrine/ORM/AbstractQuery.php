@@ -62,6 +62,11 @@ abstract class AbstractQuery
     const HYDRATE_SIMPLEOBJECT = 5;
 
     /**
+     * Hydrate using arbitrary objects (non-entities).
+     */
+    const HYDRATE_ARBITRARY_OBJECT = 6;
+
+    /**
      * @var array The parameter map of this query.
      */
     protected $_params = array();
