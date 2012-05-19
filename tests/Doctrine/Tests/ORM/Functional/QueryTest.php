@@ -619,4 +619,41 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals($userC->id, $q->getParameter(1));
     }
+
+
+    /**
+     * @group DDC-1822
+     */
+    public function testUnexpectedResultException()
+    {
+        $dql            = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u";
+        $u1             = new CmsUser;
+        $u2             = new CmsUser;
+        $u1->name       = 'Fabio B. Silva';
+        $u1->username   = 'FabioBatSilva';
+        $u1->status     = 'developer';
+        $u2->name       = 'Test';
+        $u2->username   = 'test';
+        $u2->status     = 'tester';
+
+        try {
+            $this->_em->createQuery($dql)->getSingleResult();
+            $this->fail('Expected exception "\Doctrine\ORM\NoResultException".');
+        } catch (\Doctrine\ORM\UnexpectedResultException $exc) {
+            $this->assertInstanceOf('\Doctrine\ORM\NoResultException', $exc);
+        }
+
+
+        $this->_em->persist($u1);
+        $this->_em->persist($u2);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        try {
+            $this->_em->createQuery($dql)->getSingleResult();
+            $this->fail('Expected exception "\Doctrine\ORM\NonUniqueResultException".');
+        } catch (\Doctrine\ORM\UnexpectedResultException $exc) {
+            $this->assertInstanceOf('\Doctrine\ORM\NonUniqueResultException', $exc);
+        }
+    }
 }
