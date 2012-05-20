@@ -14,9 +14,14 @@
     "require": {
         "php": ">=5.3.2",
         "ext-pdo": "*",
-        "doctrine/dbal": "dev-master"
+        "doctrine/dbal": "2.3.*"
     },
     "autoload": {
         "psr-0": { "Doctrine\\ORM": "lib/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.3.x-dev"
+        }
     }
 }
