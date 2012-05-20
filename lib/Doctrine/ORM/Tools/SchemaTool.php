@@ -231,7 +231,7 @@ class SchemaTool
 
             if (isset($class->table['uniqueConstraints'])) {
                 foreach ($class->table['uniqueConstraints'] as $indexName => $indexData) {
-                    $table->addUniqueIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName);
+                    $table->addUniqueIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, $indexData[ 'accessMethod' ] );
                 }
             }
 

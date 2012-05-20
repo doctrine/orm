@@ -109,15 +109,19 @@ class ClassMetadataBuilder
      *
      * @param array $columns
      * @param string $name
+     * @param string $accessMethod
      * @return ClassMetadataBuilder
      */
-    public function addIndex(array $columns, $name)
+    public function addIndex(array $columns, $name, $accessMethod = null )
     {
         if (!isset($this->cm->table['indexes'])) {
             $this->cm->table['indexes'] = array();
         }
 
-        $this->cm->table['indexes'][$name] = array('columns' => $columns);
+        $this->cm->table['indexes'][$name] = array(
+            'columns' => $columns,
+            'accessMethod' => $accessMethod
+        );
 
         return $this;
     }
