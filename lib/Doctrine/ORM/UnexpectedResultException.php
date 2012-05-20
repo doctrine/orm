@@ -20,15 +20,12 @@
 namespace Doctrine\ORM;
 
 /**
- * Exception thrown when an ORM query unexpectedly does not return any results.
+ * Exception for a unexpected query result.
  *
- * @author robo
- * @since 2.0
+ * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * @since   2.3
  */
-class NoResultException extends UnexpectedResultException
+class UnexpectedResultException extends ORMException
 {
-    public function __construct()
-    {
-        parent::__construct('No result was found for query although at least one row was expected.');
-    }
+
 }
