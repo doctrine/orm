@@ -37,14 +37,19 @@ use Doctrine\ORM\Query\AST\PathExpression;
  */
 class QueryException extends \Doctrine\ORM\ORMException
 {
-    public static function syntaxError($message)
+    public static function dqlError($dql)
     {
-        return new self('[Syntax Error] ' . $message);
+        return new self($dql);
     }
 
-    public static function semanticalError($message)
+    public static function syntaxError($message, $previous = null)
     {
-        return new self('[Semantical Error] ' . $message);
+        return new self('[Syntax Error] ' . $message, 0, $previous);
+    }
+
+    public static function semanticalError($message, $previous = null)
+    {
+        return new self('[Semantical Error] ' . $message, 0, $previous);
     }
 
     public static function invalidLockMode()

@@ -377,7 +377,7 @@ class Parser
         $message .= ($expected !== '') ? "Expected {$expected}, got " : 'Unexpected ';
         $message .= ($this->_lexer->lookahead === null) ? 'end of string.' : "'{$token['value']}'";
 
-        throw QueryException::syntaxError($message);
+        throw QueryException::syntaxError($message, QueryException::dqlError($this->_query->getDQL()));
     }
 
     /**
@@ -410,7 +410,7 @@ class Parser
         // Building informative message
         $message = 'line 0, col ' . $tokenPos . " near '" . $tokenStr . "': Error: " . $message;
 
-        throw QueryException::semanticalError($message);
+        throw QueryException::semanticalError($message, QueryException::dqlError($this->_query->getDQL()));
     }
 
     /**
@@ -1381,7 +1381,7 @@ class Parser
      *
      * NewValue ::= SimpleArithmeticExpression | "NULL"
      *
-     * SimpleArithmeticExpression covers all *Primary grammar rules and also SimplEntityExpression
+     * SimpleArithmeticExpression covers all *Primary grammar rules and also SimpleEntityExpression
      */
     public function NewValue()
     {
@@ -2483,7 +2483,8 @@ class Parser
     /**
      * ArithmeticPrimary ::= SingleValuedPathExpression | Literal | "(" SimpleArithmeticExpression ")"
      *          | FunctionsReturningNumerics | AggregateExpression | FunctionsReturningStrings
-     *          | FunctionsReturningDatetime | IdentificationVariable | ResultVariable | CaseExpression
+     *          | FunctionsReturningDatetime | IdentificationVariable | ResultVariable
+     *          | InputParameter | CaseExpression
      */
     public function ArithmeticPrimary()
     {

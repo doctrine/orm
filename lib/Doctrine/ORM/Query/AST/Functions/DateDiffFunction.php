@@ -24,7 +24,7 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\Parser;
 
 /**
- * "DATE_DIFF(date1, date2)"
+ * "DATE_DIFF" "(" ArithmeticPrimary "," ArithmeticPrimary ")"
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
