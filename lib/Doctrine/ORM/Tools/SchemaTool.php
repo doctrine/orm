@@ -27,13 +27,15 @@ use Doctrine\ORM\ORMException,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Internal\CommitOrderCalculator,
     Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs,
-    Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
+    Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs,
+    Doctrine\DBAL\Schema\Comparator,
+    Doctrine\DBAL\Schema\ComparatorInterface;
 
 /**
  * The SchemaTool is a tool to create/drop/update database schemas based on
  * <tt>ClassMetadata</tt> class descriptors.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -61,6 +63,11 @@ class SchemaTool
     private $quoteStrategy;
 
     /**
+     * @var \Doctrine\DBAL\Schema\ComparatorInterface
+     */
+    protected $comparator;
+
+    /**
      * Initializes a new SchemaTool instance that uses the connection of the
      * provided EntityManager.
      *
@@ -71,6 +78,17 @@ class SchemaTool
         $this->em               = $em;
         $this->platform         = $em->getConnection()->getDatabasePlatform();
         $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
+        $this->comparator = new Comparator();
+    }
+
+    /**
+     * Sets a custom comparator implementation
+     *
+     * @param ComparatorInterface $comparator
+     */
+    public function setComparator(ComparatorInterface $comparator)
+    {
+        $this->comparator = $comparator;
     }
 
     /**
@@ -706,12 +724,9 @@ class SchemaTool
     public function getUpdateSchemaSql(array $classes, $saveMode=false)
     {
         $sm = $this->em->getConnection()->getSchemaManager();
-
         $fromSchema = $sm->createSchema();
         $toSchema = $this->getSchemaFromMetadata($classes);
-
-        $comparator = new \Doctrine\DBAL\Schema\Comparator();
-        $schemaDiff = $comparator->compare($fromSchema, $toSchema);
+        $schemaDiff = $this->comparator->compare($fromSchema, $toSchema);
 
         if ($saveMode) {
             return $schemaDiff->toSaveSql($this->platform);
