@@ -354,10 +354,10 @@ IN() Expression:
     <?php
     $query = $em->createQuery('SELECT u.name FROM CmsUser u WHERE u.id IN(46)');
     $usernames = $query->getResult();
-    
+
     $query = $em->createQuery('SELECT u FROM CmsUser u WHERE u.id IN (1, 2)');
     $users = $query->getResult();
-    
+
     $query = $em->createQuery('SELECT u FROM CmsUser u WHERE u.id NOT IN (1)');
     $users = $query->getResult();
 
@@ -369,7 +369,7 @@ CONCAT() DQL Function:
     $query = $em->createQuery("SELECT u.id FROM CmsUser u WHERE CONCAT(u.name, 's') = ?1");
     $query->setParameter(1, 'Jess');
     $ids = $query->getResult();
-    
+
     $query = $em->createQuery('SELECT CONCAT(u.id, u.name) FROM CmsUser u WHERE u.id = ?1');
     $query->setParameter(1, 321);
     $idUsernames = $query->getResult();
@@ -416,6 +416,14 @@ hierarchies:
     $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF Doctrine\Tests\Models\Company\CompanyEmployee');
     $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF ?1');
     $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u NOT INSTANCE OF ?1');
+
+Get all users visible on a given website that have chosen certain gender:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT u FROM User u WHERE u.gender IN (SELECT IDENTITY(agl.gender) FROM Site s JOIN s.activeGenderList agl WHERE s.id = ?1)');
+
 
 Partial Object Syntax
 ^^^^^^^^^^^^^^^^^^^^^
@@ -539,6 +547,7 @@ The following functions are supported in SELECT, WHERE and HAVING
 clauses:
 
 
+-  IDENTITY(single\_association\_path\_expression) - Retrieve the foreign key column of association of the owning side
 -  ABS(arithmetic\_expression)
 -  CONCAT(str1, str2)
 -  CURRENT\_DATE() - Return the current date
@@ -613,7 +622,7 @@ You can register custom DQL functions in your ORM Configuration:
     $config->addCustomStringFunction($name, $class);
     $config->addCustomNumericFunction($name, $class);
     $config->addCustomDatetimeFunction($name, $class);
-    
+
     $em = EntityManager::create($dbParams, $config);
 
 The functions have to return either a string, numeric or datetime
@@ -625,30 +634,30 @@ classes have to implement the base class :
 
     <?php
     namespace MyProject\Query\AST;
-    
+
     use \Doctrine\ORM\Query\AST\Functions\FunctionNode;
     use \Doctrine\ORM\Query\Lexer;
 
     class MysqlFloor extends FunctionNode
     {
         public $simpleArithmeticExpression;
-    
+
         public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
         {
             return 'FLOOR(' . $sqlWalker->walkSimpleArithmeticExpression(
                 $this->simpleArithmeticExpression
             ) . ')';
         }
-    
+
         public function parse(\Doctrine\ORM\Query\Parser $parser)
         {
             $lexer = $parser->getLexer();
-    
+
             $parser->match(Lexer::T_IDENTIFIER);
             $parser->match(Lexer::T_OPEN_PARENTHESIS);
-    
+
             $this->simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
-    
+
             $parser->match(Lexer::T_CLOSE_PARENTHESIS);
         }
     }
@@ -683,7 +692,7 @@ scenario it is a generic Person and Employee example:
 
     <?php
     namespace Entities;
-    
+
     /**
      * @Entity
      * @InheritanceType("SINGLE_TABLE")
@@ -697,15 +706,15 @@ scenario it is a generic Person and Employee example:
          * @GeneratedValue
          */
         protected $id;
-    
+
         /**
          * @Column(type="string", length=50)
          */
         protected $name;
-    
+
         // ...
     }
-    
+
     /**
      * @Entity
      */
@@ -715,7 +724,7 @@ scenario it is a generic Person and Employee example:
          * @Column(type="string", length=50)
          */
         private $department;
-    
+
         // ...
     }
 
@@ -838,10 +847,10 @@ Alternatively you can create an empty ``Query`` instance and invoke
 
     <?php
     // $em instanceof EntityManager
-    
+
     // example1: passing a DQL string
     $q = $em->createQuery('select u from MyProject\Model\User u');
-    
+
     // example2: using setDql
     $q = $em->createQuery();
     $q->setDql('select u from MyProject\Model\User u');
@@ -1096,9 +1105,9 @@ creating a class which extends ``AbstractHydrator``:
 
     <?php
     namespace MyProject\Hydrators;
-    
+
     use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
-    
+
     class CustomHydrator extends AbstractHydrator
     {
         protected function _hydrateAll()
@@ -1170,20 +1179,20 @@ Result Cache API:
     <?php
     $query = $em->createQuery('SELECT u FROM MyProject\Model\User u WHERE u.id = ?1');
     $query->setParameter(1, 12);
-    
+
     $query->setResultCacheDriver(new ApcCache());
-    
+
     $query->useResultCache(true)
           ->setResultCacheLifeTime($seconds = 3600);
-    
+
     $result = $query->getResult(); // cache miss
-    
+
     $query->expireResultCache(true);
     $result = $query->getResult(); // forced expire, cache miss
-    
+
     $query->setResultCacheId('my_query_result');
     $result = $query->getResult(); // saved in given result cache id.
-    
+
     // or call useResultCache() with all parameters:
     $query->useResultCache(true, $seconds = 3600, 'my_query_result');
     $result = $query->getResult(); // cache hit!
@@ -1358,33 +1367,33 @@ Identifiers
 
     /* Alias Identification usage (the "u" of "u.name") */
     IdentificationVariable ::= identifier
-    
+
     /* Alias Identification declaration (the "u" of "FROM User u") */
     AliasIdentificationVariable :: = identifier
-    
+
     /* identifier that must be a class name (the "User" of "FROM User u") */
     AbstractSchemaName ::= identifier
-    
+
     /* identifier that must be a field (the "name" of "u.name") */
     /* This is responsible to know if the field exists in Object, no matter if it's a relation or a simple field */
     FieldIdentificationVariable ::= identifier
-    
+
     /* identifier that must be a collection-valued association field (to-many) (the "Phonenumbers" of "u.Phonenumbers") */
     CollectionValuedAssociationField ::= FieldIdentificationVariable
-    
+
     /* identifier that must be a single-valued association field (to-one) (the "Group" of "u.Group") */
     SingleValuedAssociationField ::= FieldIdentificationVariable
-    
+
     /* identifier that must be an embedded class state field (for the future) */
     EmbeddedClassStateField ::= FieldIdentificationVariable
-    
+
     /* identifier that must be a simple state field (name, email, ...) (the "name" of "u.name") */
     /* The difference between this and FieldIdentificationVariable is only semantical, because it points to a single field (not mapping to a relation) */
     SimpleStateField ::= FieldIdentificationVariable
-    
+
     /* Alias ResultVariable declaration (the "total" of "COUNT(*) AS total") */
     AliasResultVariable = identifier
-    
+
     /* ResultVariable identifier usage of mapped field aliases (the "total" of "COUNT(*) AS total") */
     ResultVariable = identifier
 
@@ -1395,27 +1404,24 @@ Path Expressions
 
     /* "u.Group" or "u.Phonenumbers" declarations */
     JoinAssociationPathExpression             ::= IdentificationVariable "." (CollectionValuedAssociationField | SingleValuedAssociationField)
-    
+
     /* "u.Group" or "u.Phonenumbers" usages */
     AssociationPathExpression                 ::= CollectionValuedPathExpression | SingleValuedAssociationPathExpression
-    
+
     /* "u.name" or "u.Group" */
     SingleValuedPathExpression                ::= StateFieldPathExpression | SingleValuedAssociationPathExpression
-    
+
     /* "u.name" or "u.Group.name" */
-    StateFieldPathExpression                  ::= IdentificationVariable "." StateField | SingleValuedAssociationPathExpression "." StateField
-    
+    StateFieldPathExpression                  ::= IdentificationVariable "." StateField
+
     /* "u.Group" */
     SingleValuedAssociationPathExpression     ::= IdentificationVariable "." SingleValuedAssociationField
 
     /* "u.Group.Permissions" */
-    CollectionValuedPathExpression            ::= IdentificationVariable "." {SingleValuedAssociationField "."}* CollectionValuedAssociationField
-    
+    CollectionValuedPathExpression            ::= IdentificationVariable "." CollectionValuedAssociationField
+
     /* "name" */
     StateField                                ::= {EmbeddedClassStateField "."}* SimpleStateField
-    
-    /* "u.name" or "u.address.zip" (address = EmbeddedClassStateField) */
-    SimpleStateFieldPathExpression            ::= IdentificationVariable "." StateField
 
 Clauses
 ~~~~~~~
@@ -1439,10 +1445,10 @@ Items
 
 .. code-block:: php
 
-    UpdateItem  ::= IdentificationVariable "." (StateField | SingleValuedAssociationField) "=" NewValue
-    OrderByItem ::= (ResultVariable | SingleValuedPathExpression) ["ASC" | "DESC"]
-    GroupByItem ::= IdentificationVariable | SingleValuedPathExpression
-    NewValue    ::= ScalarExpression | SimpleEntityExpression | "NULL"
+    UpdateItem  ::= SingleValuedPathExpression "=" NewValue
+    OrderByItem ::= (SimpleArithmeticExpression | SingleValuedPathExpression | ScalarExpression | ResultVariable) ["ASC" | "DESC"]
+    GroupByItem ::= IdentificationVariable | ResultVariable | SingleValuedPathExpression
+    NewValue    ::= SimpleArithmeticExpression | "NULL"
 
 From, Join and Index by
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -1453,18 +1459,16 @@ From, Join and Index by
     SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | (AssociationPathExpression ["AS"] AliasIdentificationVariable)
     JoinVariableDeclaration                    ::= Join [IndexBy]
     RangeVariableDeclaration                   ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
-    Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression
-                                                   ["AS"] AliasIdentificationVariable ["WITH" ConditionalExpression]
-    IndexBy                                    ::= "INDEX" "BY" SimpleStateFieldPathExpression
+    Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression ["AS"] AliasIdentificationVariable ["WITH" ConditionalExpression]
+    IndexBy                                    ::= "INDEX" "BY" StateFieldPathExpression
 
 Select Expressions
 ~~~~~~~~~~~~~~~~~~
 
 .. code-block:: php
 
-    SelectExpression        ::= IdentificationVariable | PartialObjectExpression | (AggregateExpression | "(" Subselect ")"  | FunctionDeclaration | ScalarExpression) [["AS"] AliasResultVariable]
-    SimpleSelectExpression  ::= ScalarExpression | IdentificationVariable |
-                                (AggregateExpression [["AS"] AliasResultVariable])
+    SelectExpression        ::= (IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression) [["AS"] ["HIDDEN"] AliasResultVariable]
+    SimpleSelectExpression  ::= (StateFieldPathExpression | IdentificationVariable | FunctionDeclaration | AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable]
     PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
     PartialFieldSet         ::= "{" SimpleStateField {"," SimpleStateField}* "}"
 
@@ -1519,15 +1523,15 @@ Arithmetic Expressions
     ArithmeticFactor           ::= [("+" | "-")] ArithmeticPrimary
     ArithmeticPrimary          ::= SingleValuedPathExpression | Literal | "(" SimpleArithmeticExpression ")"
                                    | FunctionsReturningNumerics | AggregateExpression | FunctionsReturningStrings
-                                   | FunctionsReturningDatetime | IdentificationVariable | InputParameter | CaseExpression
+                                   | FunctionsReturningDatetime | IdentificationVariable | ResultVariable
+                                   | InputParameter | CaseExpression
 
 Scalar and Type Expressions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: php
 
-    ScalarExpression       ::= SimpleArithmeticExpression | StringPrimary | DateTimePrimary | StateFieldPathExpression
-                               BooleanPrimary | EntityTypeExpression | CaseExpression
+    ScalarExpression       ::= SimpleArithmeticExpression | StringPrimary | DateTimePrimary | StateFieldPathExpression | BooleanPrimary | CaseExpression | InstanceOfExpression
     StringExpression       ::= StringPrimary | "(" Subselect ")"
     StringPrimary          ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression | CaseExpression
     BooleanExpression      ::= BooleanPrimary | "(" Subselect ")"
@@ -1554,13 +1558,13 @@ Case Expressions
 
 .. code-block:: php
 
-    CaseExpression        ::= GeneralCaseExpression | SimpleCaseExpression | CoalesceExpression | NullifExpression 
-    GeneralCaseExpression ::= "CASE" WhenClause {WhenClause}* "ELSE" ScalarExpression "END" 
-    WhenClause            ::= "WHEN" ConditionalExpression "THEN" ScalarExpression 
-    SimpleCaseExpression  ::= "CASE" CaseOperand SimpleWhenClause {SimpleWhenClause}* "ELSE" ScalarExpression "END" 
-    CaseOperand           ::= StateFieldPathExpression | TypeDiscriminator 
-    SimpleWhenClause      ::= "WHEN" ScalarExpression "THEN" ScalarExpression 
-    CoalesceExpression    ::= "COALESCE" "(" ScalarExpression {"," ScalarExpression}* ")" 
+    CaseExpression        ::= GeneralCaseExpression | SimpleCaseExpression | CoalesceExpression | NullifExpression
+    GeneralCaseExpression ::= "CASE" WhenClause {WhenClause}* "ELSE" ScalarExpression "END"
+    WhenClause            ::= "WHEN" ConditionalExpression "THEN" ScalarExpression
+    SimpleCaseExpression  ::= "CASE" CaseOperand SimpleWhenClause {SimpleWhenClause}* "ELSE" ScalarExpression "END"
+    CaseOperand           ::= StateFieldPathExpression | TypeDiscriminator
+    SimpleWhenClause      ::= "WHEN" ScalarExpression "THEN" ScalarExpression
+    CoalesceExpression    ::= "COALESCE" "(" ScalarExpression {"," ScalarExpression}* ")"
     NullifExpression      ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
 
 Other Expressions
@@ -1573,10 +1577,10 @@ QUANTIFIED/BETWEEN/COMPARISON/LIKE/NULL/EXISTS
     QuantifiedExpression     ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"
     BetweenExpression        ::= ArithmeticExpression ["NOT"] "BETWEEN" ArithmeticExpression "AND" ArithmeticExpression
     ComparisonExpression     ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression )
-    InExpression             ::= StateFieldPathExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
+    InExpression             ::= SingleValuedPathExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
     InstanceOfExpression     ::= IdentificationVariable ["NOT"] "INSTANCE" ["OF"] (InstanceOfParameter | "(" InstanceOfParameter {"," InstanceOfParameter}* ")")
     InstanceOfParameter      ::= AbstractSchemaName | InputParameter
-    LikeExpression           ::= StringExpression ["NOT"] "LIKE" string ["ESCAPE" char]
+    LikeExpression           ::= StringExpression ["NOT"] "LIKE" StringPrimary ["ESCAPE" char]
     NullComparisonExpression ::= (SingleValuedPathExpression | InputParameter) "IS" ["NOT"] "NULL"
     ExistsExpression         ::= ["NOT"] "EXISTS" "(" Subselect ")"
     ComparisonOperator       ::= "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="
@@ -1587,21 +1591,31 @@ Functions
 .. code-block:: php
 
     FunctionDeclaration ::= FunctionsReturningStrings | FunctionsReturningNumerics | FunctionsReturningDateTime
-    
+
     FunctionsReturningNumerics ::=
             "LENGTH" "(" StringPrimary ")" |
             "LOCATE" "(" StringPrimary "," StringPrimary ["," SimpleArithmeticExpression]")" |
-            "ABS" "(" SimpleArithmeticExpression ")" | "SQRT" "(" SimpleArithmeticExpression ")" |
+            "ABS" "(" SimpleArithmeticExpression ")" |
+            "SQRT" "(" SimpleArithmeticExpression ")" |
             "MOD" "(" SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
-            "SIZE" "(" CollectionValuedPathExpression ")"
-    
-    FunctionsReturningDateTime ::= "CURRENT_DATE" | "CURRENT_TIME" | "CURRENT_TIMESTAMP"
-    
+            "SIZE" "(" CollectionValuedPathExpression ")" |
+            "DATE_DIFF" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
+            "BIT_AND" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
+            "BIT_OR" "(" ArithmeticPrimary "," ArithmeticPrimary ")"
+
+    FunctionsReturningDateTime ::=
+            "CURRENT_DATE" |
+            "CURRENT_TIME" |
+            "CURRENT_TIMESTAMP" |
+            "DATE_ADD" "(" ArithmeticPrimary "," ArithmeticPrimary "," StringPrimary ")" |
+            "DATE_SUB" "(" ArithmeticPrimary "," ArithmeticPrimary "," StringPrimary ")"
+
     FunctionsReturningStrings ::=
             "CONCAT" "(" StringPrimary "," StringPrimary ")" |
             "SUBSTRING" "(" StringPrimary "," SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
             "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
             "LOWER" "(" StringPrimary ")" |
-            "UPPER" "(" StringPrimary ")"
+            "UPPER" "(" StringPrimary ")" |
+            "IDENTITY" "(" SingleValuedAssociationPathExpression ")"
 
 
