@@ -84,6 +84,6 @@ EOT
             $output->write('<info>[Database] OK - The database schema is in sync with the mapping files.</info>' . "\n");
         }
 
-        exit($exit);
+        return $exit;
     }
 }
