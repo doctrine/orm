@@ -17,12 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-if (!@include __DIR__ . '/../../../autoload.php') {
-   die(<<<'EOT'
-This command can only be run when Doctrine is installed through Composer.
-EOT
-   );
-}
+require_once 'Doctrine/Common/ClassLoader.php';
 
 $classLoader = new \Doctrine\Common\ClassLoader('Doctrine');
 $classLoader->register();

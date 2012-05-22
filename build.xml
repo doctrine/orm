@@ -19,7 +19,7 @@
     -->
     <fileset id="bin-scripts" dir="./bin">
         <include name="doctrine"/>
-        <include name="doctrine.php"/>
+        <include name="doctrine-pear.php"/>
         <include name="doctrine.bat"/>
     </fileset>
 
@@ -104,7 +104,7 @@
            <ignore>Symfony/Component/Console/</ignore>
            <release>
                 <install as="doctrine" name="bin/doctrine" />
-                <install as="doctrine.php" name="bin/doctrine.php" />
+                <install as="doctrine.php" name="bin/doctrine-pear.php" />
                 <install as="doctrine.bat" name="bin/doctrine.bat" />
            </release>
            <replacement path="bin/doctrine" type="pear-config" from="@php_bin@" to="php_bin" />
