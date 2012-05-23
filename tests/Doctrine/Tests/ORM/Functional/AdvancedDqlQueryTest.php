@@ -128,14 +128,16 @@ class AdvancedDqlQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
             'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1')->getResult()) > 0);
     }
 
-    /*public function testDeleteAs()
+    public function testDeleteAs()
     {
         $dql = 'DELETE Doctrine\Tests\Models\Company\CompanyEmployee AS p';
         $this->_em->createQuery($dql)->getResult();
 
-        $this->assertEquals(0, count($this->_em->createQuery(
-            'SELECT count(p) FROM Doctrine\Tests\Models\Company\CompanyEmployee p')->getResult()));
-    }*/
+        $dql = 'SELECT count(p) FROM Doctrine\Tests\Models\Company\CompanyEmployee p';
+        $result = $this->_em->createQuery($dql)->getSingleScalarResult();
+
+        $this->assertEquals(0, $result);
+    }
 
     public function generateFixture()
     {
