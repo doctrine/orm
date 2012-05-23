@@ -29,4 +29,6 @@ final class Index implements Annotation
     public $name;
     /** @var array<string> */
     public $columns;
+    /** @var string */
+    public $accessMethod;
 }
