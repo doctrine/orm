@@ -108,12 +108,20 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         // Create temporary id table
         $conn->executeUpdate($this->_createTempTableSql);
 
-        // Insert identifiers
-        $numDeleted = $conn->executeUpdate($this->_insertSql, $params, $types);
+        try {
+            // Insert identifiers
+            $numDeleted = $conn->executeUpdate($this->_insertSql, $params, $types);
 
-        // Execute DELETE statements
-        foreach ($this->_sqlStatements as $sql) {
-            $conn->executeUpdate($sql);
+            // Execute DELETE statements
+            foreach ($this->_sqlStatements as $sql) {
+                $conn->executeUpdate($sql);
+            }
+        } catch (\Exception $exception) {
+            // FAILURE! Drop temporary table to avoid possible collisions
+            $conn->executeUpdate($this->_dropTempTableSql);
+
+            // Re-throw exception
+            throw $exception;
         }
 
         // Drop temporary table

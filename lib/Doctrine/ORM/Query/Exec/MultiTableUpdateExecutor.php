@@ -150,24 +150,32 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         // Create temporary id table
         $conn->executeUpdate($this->_createTempTableSql);
 
-        // Insert identifiers. Parameters from the update clause are cut off.
-        $numUpdated = $conn->executeUpdate(
-            $this->_insertSql,
-            array_slice($params, $this->_numParametersInUpdateClause),
-            array_slice($types, $this->_numParametersInUpdateClause)
-        );
+        try {
+            // Insert identifiers. Parameters from the update clause are cut off.
+            $numUpdated = $conn->executeUpdate(
+                $this->_insertSql,
+                array_slice($params, $this->_numParametersInUpdateClause),
+                array_slice($types, $this->_numParametersInUpdateClause)
+            );
 
-        // Execute UPDATE statements
-        for ($i=0, $count=count($this->_sqlStatements); $i<$count; ++$i) {
-            $parameters = array();
-            $types      = array();
+            // Execute UPDATE statements
+            for ($i=0, $count=count($this->_sqlStatements); $i<$count; ++$i) {
+                $parameters = array();
+                $types      = array();
 
-            if (isset($this->_sqlParameters[$i])) {
-                $parameters = isset($this->_sqlParameters[$i]['parameters']) ? $this->_sqlParameters[$i]['parameters'] : array();
-                $types = isset($this->_sqlParameters[$i]['types']) ? $this->_sqlParameters[$i]['types'] : array();
+                if (isset($this->_sqlParameters[$i])) {
+                    $parameters = isset($this->_sqlParameters[$i]['parameters']) ? $this->_sqlParameters[$i]['parameters'] : array();
+                    $types = isset($this->_sqlParameters[$i]['types']) ? $this->_sqlParameters[$i]['types'] : array();
+                }
+
+                $conn->executeUpdate($this->_sqlStatements[$i], $parameters, $types);
             }
+        } catch (\Exception $exception) {
+            // FAILURE! Drop temporary table to avoid possible collisions
+            $conn->executeUpdate($this->_dropTempTableSql);
 
-            $conn->executeUpdate($this->_sqlStatements[$i], $parameters, $types);
+            // Re-throw exception
+            throw $exception;
         }
 
         // Drop temporary table
