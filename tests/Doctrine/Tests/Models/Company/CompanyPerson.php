@@ -53,21 +53,29 @@ class CompanyPerson
      * @GeneratedValue
      */
     private $id;
+
     /**
      * @Column
      */
     private $name;
+
     /**
      * @OneToOne(targetEntity="CompanyPerson")
-     * @JoinColumn(name="spouse_id", referencedColumnName="id")
+     * @JoinColumn(name="spouse_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $spouse;
 
     /**
      * @ManyToMany(targetEntity="CompanyPerson")
-     * @JoinTable(name="company_persons_friends",
-            joinColumns={@JoinColumn(name="person_id", referencedColumnName="id")},
-            inverseJoinColumns={@JoinColumn(name="friend_id", referencedColumnName="id")})
+     * @JoinTable(
+     *     name="company_persons_friends",
+     *     joinColumns={
+     *         @JoinColumn(name="person_id", referencedColumnName="id", onDelete="CASCADE")
+     *     },
+     *     inverseJoinColumns={
+     *         @JoinColumn(name="friend_id", referencedColumnName="id", onDelete="CASCADE")
+     *     }
+     * )
      */
     private $friends;
 
