@@ -701,12 +701,13 @@ final class PersistentCollection implements Collection
      */
     public function __clone()
     {
-        $this->initialize();
-        $this->owner = null;
-
         if (is_object($this->coll)) {
             $this->coll = clone $this->coll;
         }
+
+        $this->initialize();
+        $this->owner = null;
+
         $this->snapshot = array();
         $this->changed();
     }
