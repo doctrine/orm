@@ -30,13 +30,6 @@ namespace Doctrine\ORM\Mapping;
  */
 class DefaultNamingStrategy implements NamingStrategy
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function setClassName($className) 
-    {
-        
-    }
     
     /**
      * {@inheritdoc}
