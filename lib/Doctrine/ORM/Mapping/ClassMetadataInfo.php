@@ -1180,7 +1180,7 @@ class ClassMetadataInfo implements ClassMetadata
 
         // Complete fieldName and columnName mapping
         if ( ! isset($mapping['columnName'])) {
-            $mapping['columnName'] = $this->namingStrategy->propertyToColumnName($mapping['fieldName']);
+            $mapping['columnName'] = $this->namingStrategy->propertyToColumnName($mapping['fieldName'], $this->name);
         } else {
             if ($mapping['columnName'][0] == '`') {
                 $mapping['columnName'] = trim($mapping['columnName'], '`');
@@ -1357,8 +1357,8 @@ class ClassMetadataInfo implements ClassMetadata
             if ( ! isset($mapping['joinColumns']) || ! $mapping['joinColumns']) {
                 // Apply default join column
                 $mapping['joinColumns'] = array(array(
-                    'name' => $this->namingStrategy->joinColumnName($mapping['fieldName']),
-                    'referencedColumnName' => $this->namingStrategy->referenceColumnName()
+                    'name' => $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name),
+                    'referencedColumnName' => $this->namingStrategy->referenceColumnName($this->name)
                 ));
             }
 
@@ -1374,10 +1374,10 @@ class ClassMetadataInfo implements ClassMetadata
                     }
                 }
                 if (empty($joinColumn['name'])) {
-                    $joinColumn['name'] = $this->namingStrategy->joinColumnName($mapping['fieldName']);
+                    $joinColumn['name'] = $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name);
                 }
                 if (empty($joinColumn['referencedColumnName'])) {
-                    $joinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
+                    $joinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName($this->name);
                 }
                 $mapping['sourceToTargetKeyColumns'][$joinColumn['name']] = $joinColumn['referencedColumnName'];
                 $mapping['joinColumnFieldNames'][$joinColumn['name']] = isset($joinColumn['fieldName'])
@@ -1440,27 +1440,27 @@ class ClassMetadataInfo implements ClassMetadata
         if ($mapping['isOwningSide']) {
             // owning side MUST have a join table
             if ( ! isset($mapping['joinTable']['name'])) {
-                $mapping['joinTable']['name'] = $this->namingStrategy->joinTableName($mapping['sourceEntity'], $mapping['targetEntity'], $mapping['fieldName']);
+                $mapping['joinTable']['name'] = $this->namingStrategy->joinTableName($mapping['sourceEntity'], $mapping['targetEntity'], $mapping['fieldName'], $this->name);
             }
             if ( ! isset($mapping['joinTable']['joinColumns'])) {
                 $mapping['joinTable']['joinColumns'] = array(array(
-                        'name' => $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity']),
-                        'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
+                        'name' => $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $this->name),
+                        'referencedColumnName' => $this->namingStrategy->referenceColumnName($this->name),
                         'onDelete' => 'CASCADE'));
             }
             if ( ! isset($mapping['joinTable']['inverseJoinColumns'])) {
                 $mapping['joinTable']['inverseJoinColumns'] = array(array(
-                        'name' => $this->namingStrategy->joinKeyColumnName($mapping['targetEntity']),
-                        'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
+                        'name' => $this->namingStrategy->joinKeyColumnName($mapping['targetEntity'], $this->name),
+                        'referencedColumnName' => $this->namingStrategy->referenceColumnName($this->name),
                         'onDelete' => 'CASCADE'));
             }
 
             foreach ($mapping['joinTable']['joinColumns'] as &$joinColumn) {
                 if (empty($joinColumn['name'])) {
-                    $joinColumn['name'] = $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $joinColumn['referencedColumnName']);
+                    $joinColumn['name'] = $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $joinColumn['referencedColumnName'], $this->name);
                 }
                 if (empty($joinColumn['referencedColumnName'])) {
-                    $joinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
+                    $joinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName($this->name);
                 }
                 if (isset($joinColumn['onDelete']) && strtolower($joinColumn['onDelete']) == 'cascade') {
                     $mapping['isOnDeleteCascade'] = true;
@@ -1471,10 +1471,10 @@ class ClassMetadataInfo implements ClassMetadata
 
             foreach ($mapping['joinTable']['inverseJoinColumns'] as &$inverseJoinColumn) {
                 if (empty($inverseJoinColumn['name'])) {
-                    $inverseJoinColumn['name'] = $this->namingStrategy->joinKeyColumnName($mapping['targetEntity'], $inverseJoinColumn['referencedColumnName']);
+                    $inverseJoinColumn['name'] = $this->namingStrategy->joinKeyColumnName($mapping['targetEntity'], $inverseJoinColumn['referencedColumnName'], $this->name);
                 }
                 if (empty($inverseJoinColumn['referencedColumnName'])) {
-                    $inverseJoinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
+                    $inverseJoinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName($this->name);
                 }
                 if (isset($inverseJoinColumn['onDelete']) && strtolower($inverseJoinColumn['onDelete']) == 'cascade') {
                     $mapping['isOnDeleteCascade'] = true;

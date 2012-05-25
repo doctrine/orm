@@ -42,24 +42,27 @@ interface NamingStrategy
      * Return a column name for a property
      *
      * @param string $propertyName A property
+     * @param string $className The fully-qualified class name
      * @return string A column name
      */
-    function propertyToColumnName($propertyName);
+    function propertyToColumnName($propertyName, $className = null);
 
     /**
      * Return the default reference column name
-     *
+     *     
+     * @param string $className The fully-qualified class name
      * @return string A column name
      */
-    function referenceColumnName();
+    function referenceColumnName($className = null);
 
     /**
      * Return a join column name for a property
      *
      * @param string $propertyName A property
+     * @param string $className The fully-qualified class name
      * @return string A join column name
      */
-    function joinColumnName($propertyName);
+    function joinColumnName($propertyName, $className = null);
 
     /**
      * Return a join table name
@@ -67,16 +70,18 @@ interface NamingStrategy
      * @param string $sourceEntity The source entity
      * @param string $targetEntity The target entity
      * @param string $propertyName A property
+     * @param string $className The fully-qualified class name
      * @return string A join table name
      */
-    function joinTableName($sourceEntity, $targetEntity, $propertyName = null);
+    function joinTableName($sourceEntity, $targetEntity, $propertyName = null, $className = null);
 
     /**
      * Return the foreign key column name for the given parameters
      *
      * @param string $entityName A entity
      * @param string $referencedColumnName A property
+     * @param string $className The fully-qualified class name
      * @return string A join column name
      */
-    function joinKeyColumnName($entityName, $referencedColumnName = null);
+    function joinKeyColumnName($entityName, $referencedColumnName = null, $className = null);
 }
