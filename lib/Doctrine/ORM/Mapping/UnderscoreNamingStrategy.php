@@ -37,6 +37,14 @@ class UnderscoreNamingStrategy implements NamingStrategy
     private $case;
 
     /**
+     * {@inheritdoc}
+     */
+    public function setClassName($className) 
+    {
+        
+    }
+    
+    /**
      * Underscore naming strategy construct
      *
      * @param integer $case CASE_LOWER | CASE_UPPER
