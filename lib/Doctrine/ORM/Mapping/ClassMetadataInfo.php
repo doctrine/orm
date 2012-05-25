@@ -1358,7 +1358,7 @@ class ClassMetadataInfo implements ClassMetadata
                 // Apply default join column
                 $mapping['joinColumns'] = array(array(
                     'name' => $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name),
-                    'referencedColumnName' => $this->namingStrategy->referenceColumnName()
+                    'referencedColumnName' => $this->namingStrategy->referenceColumnName($this->name)
                 ));
             }
 

@@ -64,7 +64,7 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function joinColumnName($propertyName, $className = null)
     {
-        return $propertyName . '_' . $this->referenceColumnName();
+        return $propertyName . '_' . $this->referenceColumnName($className);
     }
 
     /**
@@ -82,6 +82,6 @@ class DefaultNamingStrategy implements NamingStrategy
     public function joinKeyColumnName($entityName, $referencedColumnName = null, $className = null)
     {
         return strtolower($this->classToTableName($entityName) . '_' .
-                ($referencedColumnName ?: $this->referenceColumnName()));
+                ($referencedColumnName ?: $this->referenceColumnName($className)));
     }
 }
