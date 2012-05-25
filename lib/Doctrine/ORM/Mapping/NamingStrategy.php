@@ -31,6 +31,17 @@ namespace Doctrine\ORM\Mapping;
 interface NamingStrategy
 {
     /**
+     * Set the class name at any time, implementations can
+     * create more robust naming strategies:
+     * i.e. always add a table prefix (based on class name)
+     * to column names. See ClassMetadataInfo.php
+     *
+     * @param $className The fully-qualified class name
+     * @return null
+     */
+    function setClassName($className);
+
+    /**
      * Return a table name for an entity class
      *
      * @param string $className The fully-qualified class name

@@ -601,6 +601,11 @@ class ClassMetadataInfo implements ClassMetadata
         $this->name = $entityName;
         $this->rootEntityName = $entityName;
         $this->namingStrategy = $namingStrategy ?: new DefaultNamingStrategy();
+        /**
+         * Allow implementations to store the dynamic class name first in execution,
+         * after initialization
+         */
+        $this->namingStrategy->setClassName($this->name);
     }
 
     /**
