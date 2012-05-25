@@ -33,6 +33,14 @@ class DefaultNamingStrategy implements NamingStrategy
     /**
      * {@inheritdoc}
      */
+    public function setClassName($className) 
+    {
+        
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
     public function classToTableName($className)
     {
         if (strpos($className, '\\') !== false) {
