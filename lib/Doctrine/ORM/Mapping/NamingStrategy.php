@@ -62,7 +62,7 @@ interface NamingStrategy
      * @param string $className The fully-qualified class name
      * @return string A join column name
      */
-    function joinColumnName($propertyName, $className = null);
+    function joinColumnName($propertyName = null, $className = null);
 
     /**
      * Return a join table name
