@@ -143,7 +143,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals(0, $this->getCacheSize($cache));
         $query->getResult();
-        $this->assertEquals(1, $this->getCacheSize($cache));
+        $this->assertEquals(2, $this->getCacheSize($cache));
 
         return $query;
     }

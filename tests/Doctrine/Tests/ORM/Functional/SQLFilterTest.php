@@ -301,18 +301,18 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setQueryCacheDriver($cache);
 
         $query->getResult();
-        $this->assertEquals(1, sizeof($cacheDataReflection->getValue($cache)));
+        $this->assertEquals(2, sizeof($cacheDataReflection->getValue($cache)));
 
         $conf = $this->_em->getConfiguration();
         $conf->addFilter("locale", "\Doctrine\Tests\ORM\Functional\MyLocaleFilter");
         $this->_em->getFilters()->enable("locale");
 
         $query->getResult();
-        $this->assertEquals(2, sizeof($cacheDataReflection->getValue($cache)));
+        $this->assertEquals(3, sizeof($cacheDataReflection->getValue($cache)));
 
         // Another time doesn't add another cache entry
         $query->getResult();
-        $this->assertEquals(2, sizeof($cacheDataReflection->getValue($cache)));
+        $this->assertEquals(3, sizeof($cacheDataReflection->getValue($cache)));
     }
 
     public function testQueryGeneration_DependsOnFilters()

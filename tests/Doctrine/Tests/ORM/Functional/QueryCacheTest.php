@@ -44,12 +44,12 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setQueryCacheDriver($cache);
 
         $query->getResult();
-        $this->assertEquals(1, $this->getCacheSize($cache));
+        $this->assertEquals(2, $this->getCacheSize($cache));
 
         $query->setHint('foo', 'bar');
 
         $query->getResult();
-        $this->assertEquals(2, $this->getCacheSize($cache));
+        $this->assertEquals(3, $this->getCacheSize($cache));
 
         return $query;
     }
@@ -104,18 +104,16 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
-        $cache = $this->getMock('Doctrine\Common\Cache\ArrayCache', array('doFetch', 'doSave', 'doGetStats'));
-        $cache->expects($this->at(0))
-              ->method('doFetch')
-              ->with($this->isType('string'))
-              ->will($this->returnValue(false));
-        $cache->expects($this->at(1))
-              ->method('doSave')
-              ->with($this->isType('string'), $this->isInstanceOf('Doctrine\ORM\Query\ParserResult'), $this->equalTo(null));
+        $cache = new \Doctrine\Common\Cache\ArrayCache();
 
         $query->setQueryCacheDriver($cache);
 
         $users = $query->getResult();
+
+        $data = $this->cacheDataReflection->getValue($cache);
+        $this->assertEquals(2, count($data));
+
+        $this->assertInstanceOf('Doctrine\ORM\Query\ParserResult', array_pop($data));
     }
 
     public function testQueryCache_HitDoesNotSaveParserResult()
@@ -136,7 +134,8 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $cache = $this->getMock('Doctrine\Common\Cache\CacheProvider',
                 array('doFetch', 'doContains', 'doSave', 'doDelete', 'doFlush', 'doGetStats'));
-        $cache->expects($this->once())
+        $cache->expects($this->at(0))->method('doFetch')->will($this->returnValue(1));
+        $cache->expects($this->at(1))
               ->method('doFetch')
               ->with($this->isType('string'))
               ->will($this->returnValue($parserResultMock));
