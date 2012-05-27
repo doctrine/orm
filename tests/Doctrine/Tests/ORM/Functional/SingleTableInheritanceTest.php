@@ -367,4 +367,13 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $contract->getSalesPerson());
     }
+
+    /**
+     * @group DDC-1770
+     */
+    public function testTwoSingleTableInheritanceInFromClause()
+    {
+        $dql = 'SELECT f1,f2 FROM Doctrine\Tests\Models\Company\CompanyFixContract f1, Doctrine\Tests\Models\Company\CompanyFixContract f2';
+        $result = $this->_em->createQuery($dql)->getResult();
+    }
 }

@@ -19,7 +19,6 @@ class PersistentCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         } catch (\Exception $e) {
 
         }
-        PersistentObject::setObjectManager($this->_em);
     }
 
     public function testPersist()
@@ -32,7 +31,7 @@ class PersistentCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $collectionHolder = $this->_em->find(__NAMESPACE__ . '\PersistentCollectionHolder', $collectionHolder->getId());
+        $collectionHolder = $this->_em->find(__NAMESPACE__ . '\PersistentCollectionHolder', $collectionHolder->id);
         $collectionHolder->getCollection();
 
         $content = new PersistentCollectionContent('second element');
@@ -46,19 +45,19 @@ class PersistentCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 /**
  * @Entity
  */
-class PersistentCollectionHolder extends PersistentObject
+class PersistentCollectionHolder
 {
     /**
      * @Id @Column(type="integer") @GeneratedValue
      * @var int
      */
-    protected $id;
+    public $id;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
      * @ManyToMany(targetEntity="PersistentCollectionContent", cascade={"all"})
      */
-    protected $collection;
+    public $collection;
 
     public function __construct()
     {
@@ -86,13 +85,13 @@ class PersistentCollectionHolder extends PersistentObject
 /**
  * @Entity
  */
-class PersistentCollectionContent extends PersistentObject
+class PersistentCollectionContent
 {
 
     /**
      * @Id @Column(type="integer") @GeneratedValue
      * @var int
      */
-    protected $id;
+    public $id;
 
 }
