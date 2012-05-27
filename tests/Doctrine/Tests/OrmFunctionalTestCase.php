@@ -208,7 +208,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM Directory');
         }
         if (isset($this->_usedModelSets['ddc117'])) {
-            return;
             $conn->executeUpdate('DELETE FROM ddc117editor_ddc117translation');
             $conn->executeUpdate('DELETE FROM DDC117Editor');
             $conn->executeUpdate('DELETE FROM DDC117ApproveChanges');
