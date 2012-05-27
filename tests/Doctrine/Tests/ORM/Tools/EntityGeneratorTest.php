@@ -115,7 +115,6 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $metadata = $this->generateBookEntityFixture();
 
         $book = $this->newInstance($metadata);
-
         $this->assertTrue(class_exists($metadata->name), "Class does not exist.");
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', '__construct'), "EntityGeneratorBook::__construct() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getId'), "EntityGeneratorBook::getId() missing.");
@@ -124,7 +123,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'setAuthor'), "EntityGeneratorBook::setAuthor() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getAuthor'), "EntityGeneratorBook::getAuthor() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getComments'), "EntityGeneratorBook::getComments() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'addEntityGeneratorComment'), "EntityGeneratorBook::addEntityGeneratorComment() missing.");
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'addComment'), "EntityGeneratorBook::addComment() missing.");
 
         $this->assertEquals('published', $book->getStatus());
 
@@ -136,7 +135,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($author, $book->getAuthor());
 
         $comment = new EntityGeneratorComment();
-        $book->addEntityGeneratorComment($comment);
+        $book->addComment($comment);
         $this->assertInstanceOf('Doctrine\Common\Collections\ArrayCollection', $book->getComments());
         $this->assertEquals(new \Doctrine\Common\Collections\ArrayCollection(array($comment)), $book->getComments());
     }

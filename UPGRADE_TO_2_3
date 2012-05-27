@@ -1,3 +1,9 @@
+# EntityGenerator add*() method generation
+
+When generating an add*() method for a collection the EntityGenerator will now not
+use the Type-Hint to get the singular for the collection name, but use the field-name
+and strip a trailing "s" character if there is one.
+
 # Merge copies non persisted properties too
 
 When merging an entity in UoW not only mapped properties are copied, but also others.
