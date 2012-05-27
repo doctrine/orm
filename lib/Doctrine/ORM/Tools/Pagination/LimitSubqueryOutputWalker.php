@@ -123,7 +123,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         }
 
         // Build the counter query
-        $sql = sprintf('SELECT DISTINCT %s FROM (%s) AS _dctrn_result',
+        $sql = sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result',
             implode(', ', $sqlIdentifier), $sql);
 
         // Apply the limit and offset
