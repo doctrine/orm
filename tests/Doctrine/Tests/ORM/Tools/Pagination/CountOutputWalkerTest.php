@@ -14,7 +14,7 @@ class CountOutputWalkerTest extends PaginationTestCase
         $query->setFirstResult(null)->setMaxResults(null);
 
         $this->assertEquals(
-            "SELECT COUNT(*) AS _dctrn_count FROM (SELECT DISTINCT id0 FROM (SELECT b0_.id AS id0, c1_.id AS id1, a2_.id AS id2, a2_.name AS name3, b0_.author_id AS author_id4, b0_.category_id AS category_id5 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id INNER JOIN Author a2_ ON b0_.author_id = a2_.id) AS _dctrn_result) AS _dctrn_table", $query->getSql()
+            "SELECT COUNT(*) AS dctrn_count FROM (SELECT DISTINCT id0 FROM (SELECT b0_.id AS id0, c1_.id AS id1, a2_.id AS id2, a2_.name AS name3, b0_.author_id AS author_id4, b0_.category_id AS category_id5 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id INNER JOIN Author a2_ ON b0_.author_id = a2_.id) dctrn_result) dctrn_table", $query->getSql()
         );
     }
 
@@ -26,7 +26,7 @@ class CountOutputWalkerTest extends PaginationTestCase
         $query->setFirstResult(null)->setMaxResults(null);
 
         $this->assertEquals(
-            "SELECT COUNT(*) AS _dctrn_count FROM (SELECT DISTINCT id0 FROM (SELECT a0_.id AS id0, a0_.name AS name1, sum(a0_.name) AS sclr2 FROM Author a0_) AS _dctrn_result) AS _dctrn_table", $query->getSql()
+            "SELECT COUNT(*) AS dctrn_count FROM (SELECT DISTINCT id0 FROM (SELECT a0_.id AS id0, a0_.name AS name1, sum(a0_.name) AS sclr2 FROM Author a0_) dctrn_result) dctrn_table", $query->getSql()
         );
     }
 
@@ -38,7 +38,7 @@ class CountOutputWalkerTest extends PaginationTestCase
         $query->setFirstResult(null)->setMaxResults(null);
 
         $this->assertEquals(
-            "SELECT COUNT(*) AS _dctrn_count FROM (SELECT DISTINCT id1 FROM (SELECT count(u0_.id) AS sclr0, g1_.id AS id1, u0_.id AS id2 FROM groups g1_ LEFT JOIN user_group u2_ ON g1_.id = u2_.group_id LEFT JOIN User u0_ ON u0_.id = u2_.user_id GROUP BY g1_.id HAVING sclr0 > 0) AS _dctrn_result) AS _dctrn_table", $query->getSql()
+            "SELECT COUNT(*) AS dctrn_count FROM (SELECT DISTINCT id1 FROM (SELECT count(u0_.id) AS sclr0, g1_.id AS id1, u0_.id AS id2 FROM groups g1_ LEFT JOIN user_group u2_ ON g1_.id = u2_.group_id LEFT JOIN User u0_ ON u0_.id = u2_.user_id GROUP BY g1_.id HAVING sclr0 > 0) dctrn_result) dctrn_table", $query->getSql()
         );
     }
 }
