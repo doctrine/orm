@@ -68,10 +68,10 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     protected function _createMetadataDriver($type, $path)
     {
         $mappingDriver = array(
-            'php' => 'PHPDriver',
+            'php'        => 'PHPDriver',
             'annotation' => 'AnnotationDriver',
-            'xml' => 'XmlDriver',
-            'yaml' => 'YamlDriver',
+            'xml'        => 'XmlDriver',
+            'yaml'       => 'YamlDriver',
         );
         $this->assertArrayHasKey($type, $mappingDriver, "There is no metadata driver for the type '" . $type . "'.");
         $driverName = $mappingDriver[$type];
@@ -185,7 +185,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
      * @depends testIdentifierIsExported
      * @param ClassMetadataInfo $class
      */
-    public function testFieldsAreExpored($class)
+    public function testFieldsAreExported($class)
     {
         $this->assertTrue(isset($class->fieldMappings['id']['id']) && $class->fieldMappings['id']['id'] === true);
         $this->assertEquals('id', $class->fieldMappings['id']['fieldName']);
@@ -206,13 +206,12 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     }
 
     /**
-     * @depends testFieldsAreExpored
+     * @depends testFieldsAreExported
      * @param ClassMetadataInfo $class
      */
     public function testOneToOneAssociationsAreExported($class)
     {
         $this->assertTrue(isset($class->associationMappings['address']));
-        //$this->assertTrue($class->associationMappings['address'] instanceof \Doctrine\ORM\Mapping\OneToOneMapping);
         $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\Address', $class->associationMappings['address']['targetEntity']);
         $this->assertEquals('address_id', $class->associationMappings['address']['joinColumns'][0]['name']);
         $this->assertEquals('id', $class->associationMappings['address']['joinColumns'][0]['referencedColumnName']);
@@ -226,6 +225,15 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertTrue($class->associationMappings['address']['orphanRemoval']);
 
         return $class;
+    }
+
+    /**
+     * @depends testFieldsAreExported
+     */
+    public function testManyToOneAssociationsAreExported($class)
+    {
+        $this->assertTrue(isset($class->associationMappings['mainGroup']));
+        $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\Group', $class->associationMappings['mainGroup']['targetEntity']);
     }
 
     /**
