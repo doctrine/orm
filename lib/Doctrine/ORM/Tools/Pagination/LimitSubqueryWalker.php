@@ -74,6 +74,10 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         }
 
         $identifier = $parent['metadata']->getSingleIdentifierFieldName();
+        if (isset($parent['metadata']->associationMappings[$identifier])) {
+            throw new \RuntimeException("Paginating an entity with foreign key as identifier only works when using the Output Walkers. Call Paginator#setUseOutputWalkers(true) before iterating the paginator.");
+        }
+
         $this->_getQuery()->setHint(
             self::IDENTIFIER_TYPE,
             Type::getType($parent['metadata']->getTypeOfField($identifier))
