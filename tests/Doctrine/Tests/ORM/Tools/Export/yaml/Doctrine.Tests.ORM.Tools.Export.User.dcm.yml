@@ -27,6 +27,9 @@ Doctrine\Tests\ORM\Tools\Export\User:
       cascade: [ remove, persist ]
       inversedBy: user
       orphanRemoval: true
+  manyToOne:
+    mainGroup:
+      targetEntity: Doctrine\Tests\ORM\Tools\Export\Group
   oneToMany:
     phonenumbers:
       targetEntity: Doctrine\Tests\ORM\Tools\Export\Phonenumber

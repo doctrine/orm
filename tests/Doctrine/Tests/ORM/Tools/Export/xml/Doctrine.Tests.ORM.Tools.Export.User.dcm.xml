@@ -4,9 +4,9 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                           http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-                              
+
     <entity name="Doctrine\Tests\ORM\Tools\Export\User" table="cms_users">
-        
+
         <lifecycle-callbacks>
             <lifecycle-callback type="prePersist" method="doStuffOnPrePersist"/>
             <lifecycle-callback type="prePersist" method="doOtherStuffOnPrePersistToo"/>
@@ -16,15 +16,17 @@
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>
-        
+
         <field name="name" column="name" type="string" length="50" nullable="true" unique="true" />
         <field name="email" column="user_email" type="string" column-definition="CHAR(32) NOT NULL" />
-        
+
         <one-to-one field="address" target-entity="Doctrine\Tests\ORM\Tools\Export\Address" inversed-by="user" orphan-removal="true">
             <cascade><cascade-persist /></cascade>
             <join-column name="address_id" referenced-column-name="id" on-delete="CASCADE" on-update="CASCADE"/>
         </one-to-one>
-        
+
+        <many-to-one field="mainGroup" target-entity="Doctrine\Tests\ORM\Tools\Export\Group" />
+
         <one-to-many field="phonenumbers" target-entity="Doctrine\Tests\ORM\Tools\Export\Phonenumber" mapped-by="user" orphan-removal="true">
             <cascade>
                 <cascade-persist/>
@@ -34,7 +36,17 @@
                 <order-by-field name="number" direction="ASC" />
             </order-by>
         </one-to-many>
-        
+
+        <one-to-many field="interests" target-entity="Doctrine\Tests\ORM\Tools\Export\Interests" mapped-by="user" orphan-removal="true">
+            <cascade>
+                <cascade-refresh/>
+                <cascade-persist/>
+                <cascade-merge/>
+                <cascade-detach/>
+                <cascade-remove/>
+            </cascade>
+        </one-to-many>
+
         <many-to-many field="groups" target-entity="Doctrine\Tests\ORM\Tools\Export\Group">
             <cascade>
                 <cascade-all/>
@@ -48,7 +60,7 @@
                 </inverse-join-columns>
             </join-table>
         </many-to-many>
-        
+
     </entity>
 
 </doctrine-mapping>
