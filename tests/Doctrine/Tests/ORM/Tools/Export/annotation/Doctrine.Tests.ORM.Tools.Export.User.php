@@ -29,6 +29,11 @@ class User
     public $address;
 
     /**
+     * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Tools\Export\Group")
+     */
+    public $mainGroup;
+
+    /**
      *
      * @OneToMany(targetEntity="Doctrine\Tests\ORM\Tools\Export\Phonenumber", mappedBy="user", cascade={"persist", "merge"}, orphanRemoval=true)
      * @OrderBy({"number"="ASC"})
