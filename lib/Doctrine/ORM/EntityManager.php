@@ -741,6 +741,9 @@ class EntityManager implements ObjectManager
             case Query::HYDRATE_SIMPLEOBJECT:
                 return new Internal\Hydration\SimpleObjectHydrator($this);
 
+            case Query::HYDRATE_ARBITRARY_OBJECT:
+                return new Internal\Hydration\ArbitraryObjectHydrator($this);
+
             default:
                 if (($class = $this->config->getCustomHydrationMode($hydrationMode)) !== null) {
                     return new $class($this);
