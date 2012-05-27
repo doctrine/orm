@@ -545,5 +545,18 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $repo = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
         $repo->findBy(array('status' => 'test'), array('username' => 'INVALID'));
     }
+
+    /**
+     * @group DDC-1713
+     */
+    public function testFindByAssocationArray()
+    {
+        $repo = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsArticle');
+        $data = $repo->findBy(array('user' => array(1, 2, 3)));
+
+        $query = array_pop($this->_sqlLoggerStack->queries);
+        $this->assertEquals(array(1,2,3), $query['params'][0]);
+        $this->assertEquals(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY, $query['types'][0]);
+    }
 }
 
