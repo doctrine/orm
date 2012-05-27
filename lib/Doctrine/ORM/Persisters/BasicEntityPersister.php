@@ -1524,6 +1524,10 @@ class BasicEntityPersister
     {
         $criteria = $this->_class->getIdentifierValues($entity);
 
+        if ( ! $criteria) {
+            return false;
+        }
+
         if ($extraConditions) {
             $criteria = array_merge($criteria, $extraConditions);
         }

@@ -448,4 +448,23 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $manager = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $manager->getId());
         $this->assertEquals(1, count($manager->getFriends()));
     }
+
+    /**
+     * @group DDC-1777
+     */
+    public function testExistsSubclass()
+    {
+        $manager = new CompanyManager();
+        $manager->setName('gblanco');
+        $manager->setSalary(1234);
+        $manager->setTitle('Awesome!');
+        $manager->setDepartment('IT');
+
+        $this->assertFalse($this->_em->getUnitOfWork()->getEntityPersister(get_class($manager))->exists($manager));
+
+        $this->_em->persist($manager);
+        $this->_em->flush();
+
+        $this->assertTrue($this->_em->getUnitOfWork()->getEntityPersister(get_class($manager))->exists($manager));
+    }
 }
