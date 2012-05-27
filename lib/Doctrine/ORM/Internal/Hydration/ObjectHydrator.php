@@ -54,7 +54,6 @@ class ObjectHydrator extends AbstractHydrator
     private $_rootAliases = array();
     private $_initializedCollections = array();
     private $_existingCollections = array();
-    //private $_createdEntities;
 
 
     /** @override */
@@ -516,6 +515,22 @@ class ObjectHydrator extends AbstractHydrator
             foreach ($scalars as $name => $value) {
                 $result[$resultKey][$name] = $value;
             }
+        }
+    }
+
+    /**
+     * When executed in a hydrate() loop we may have to clear internal state to
+     * decrease memory consumption.
+     */
+    public function onClear($eventArgs)
+    {
+        parent::onClear($eventArgs);
+
+        $aliases              = array_keys($this->_identifierMap);
+        $this->_identifierMap = array();
+
+        foreach ($aliases as $alias) {
+            $this->_identifierMap[$alias] = array();
         }
     }
 }
