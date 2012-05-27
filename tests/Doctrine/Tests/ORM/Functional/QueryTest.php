@@ -227,6 +227,42 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
     }
 
+    public function testIterateResultClearEveryCycle()
+    {
+        $article1 = new CmsArticle;
+        $article1->topic = "Doctrine 2";
+        $article1->text = "This is an introduction to Doctrine 2.";
+
+        $article2 = new CmsArticle;
+        $article2->topic = "Symfony 2";
+        $article2->text = "This is an introduction to Symfony 2.";
+
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query    = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a");
+        $articles = $query->iterate();
+
+        $iteratedCount = 0;
+        $topics = array();
+        foreach($articles AS $row) {
+            $article  = $row[0];
+            $topics[] = $article->topic;
+
+            $this->_em->clear();
+
+            $iteratedCount++;
+        }
+
+        $this->assertEquals(array("Doctrine 2", "Symfony 2"), $topics);
+        $this->assertEquals(2, $iteratedCount);
+
+        $this->_em->flush();
+    }
+
     /**
      * @expectedException \Doctrine\ORM\Query\QueryException
      */
