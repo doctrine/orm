@@ -106,7 +106,7 @@ class DDC1209_3
 {
     /**
      * @Id
-     * @Column(type="datetime")
+     * @Column(type="datetime", name="ddc1203_date")
      */
     private $date;
 

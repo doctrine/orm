@@ -68,7 +68,7 @@ class ReadOnlyEntity
     public $id;
     /** @column(type="string") */
     public $name;
-    /** @Column(type="integer") */
+    /** @Column(type="integer", name="number_col") */
     public $number;
 
     public function __construct($name, $number)

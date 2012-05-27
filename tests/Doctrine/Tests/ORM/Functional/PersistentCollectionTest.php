@@ -17,7 +17,6 @@ class PersistentCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\PersistentCollectionContent'),
             ));
         } catch (\Exception $e) {
-
         }
     }
 
@@ -56,6 +55,7 @@ class PersistentCollectionHolder
     /**
      * @var \Doctrine\Common\Collections\Collection
      * @ManyToMany(targetEntity="PersistentCollectionContent", cascade={"all"})
+     * @JoinTable(name="pcholder_content_mm")
      */
     public $collection;
 

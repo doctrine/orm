@@ -44,11 +44,10 @@ class DDC1040Test extends \Doctrine\Tests\OrmFunctionalTestCase
                   ->setParameter('author', $user)
                   ->getResult();
 
-        $dql = "SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.topic = :topic AND a.user = :author AND a.user = :author  AND a.text = :text";
+        $dql = "SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.topic = :topic AND a.user = :author AND a.user = :author";
         $farticle = $this->_em->createQuery($dql)
                   ->setParameter('author', $user)
                   ->setParameter('topic', 'This is John Galt speaking!')
-                  ->setParameter('text', 'Yadda Yadda!')
                   ->getSingleResult();
 
         $this->assertSame($article, $farticle);
@@ -70,12 +69,11 @@ class DDC1040Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($article);
         $this->_em->flush();
 
-        $dql = "SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.topic = ?1 AND a.user = ?2 AND a.user = ?3 AND a.text = ?4";
+        $dql = "SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.topic = ?1 AND a.user = ?2 AND a.user = ?3";
         $farticle = $this->_em->createQuery($dql)
                   ->setParameter(1, 'This is John Galt speaking!')
                   ->setParameter(2, $user)
                   ->setParameter(3, $user)
-                  ->setParameter(4, 'Yadda Yadda!')
                   ->getSingleResult();
 
         $this->assertSame($article, $farticle);
