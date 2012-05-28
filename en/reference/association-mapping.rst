@@ -223,9 +223,15 @@ One-To-Many, Unidirectional with Join Table
 A unidirectional one-to-many association can be mapped through a
 join table. From Doctrine's point of view, it is simply mapped as a
 unidirectional many-to-many whereby a unique constraint on one of
-the join columns enforces the one-to-many cardinality. The
-following example sets up such a unidirectional one-to-many
-association:
+the join columns enforces the one-to-many cardinality.
+
+.. note::
+
+    One-To-Many uni-directional relations with join-table only
+    work using the @ManyToMany annotation and a unique-constraint.
+
+
+The following example sets up such a unidirectional one-to-many association:
 
 .. configuration-block::
 
@@ -246,7 +252,8 @@ association:
              **/
             private $phonenumbers;
 
-            public function __construct() {
+            public function __construct()
+            {
                 $this->phonenumbers = new \Doctrine\Common\Collections\ArrayCollection();
             }
 
@@ -293,11 +300,6 @@ association:
                     referencedColumnName: id
                     unique: true
 
-.. note::
-
-    One-To-Many uni-directional relations with join-table only
-    work using the @ManyToMany annotation and a unique-constraint.
-
 
 Generates the following MySQL Schema:
 
@@ -322,6 +324,7 @@ Generates the following MySQL Schema:
 
     ALTER TABLE users_phonenumbers ADD FOREIGN KEY (user_id) REFERENCES User(id);
     ALTER TABLE users_phonenumbers ADD FOREIGN KEY (phonenumber_id) REFERENCES Phonenumber(id);
+
 
 Many-To-One, Unidirectional
 ---------------------------
