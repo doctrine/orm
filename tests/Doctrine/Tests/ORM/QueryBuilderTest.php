@@ -19,8 +19,12 @@
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 use Doctrine\ORM\QueryBuilder,
-    Doctrine\ORM\Query\Expr;
+    Doctrine\ORM\Query\Expr,
+    Doctrine\ORM\Query\Parameter,
+    Doctrine\ORM\Query\ParameterTypeInferer;
 
 require_once __DIR__ . '/../TestInit.php';
 
@@ -385,7 +389,9 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->where('u.id = :id')
             ->setParameter('id', 1);
 
-        $this->assertEquals(array('id' => 1), $qb->getParameters());
+        $parameter = new Parameter('id', 1, ParameterTypeInferer::inferType(1));
+
+        $this->assertEquals($parameter, $qb->getParameter('id'));
     }
 
     public function testSetParameters()
@@ -395,9 +401,13 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
            ->where($qb->expr()->orx('u.username = :username', 'u.username = :username2'));
 
-        $qb->setParameters(array('username' => 'jwage', 'username2' => 'jonwage'));
+        $parameters = new ArrayCollection();
+        $parameters->add(new Parameter('username', 'jwage'));
+        $parameters->add(new Parameter('username2', 'jonwage'));
 
-        $this->assertEquals(array('username' => 'jwage', 'username2' => 'jonwage'), $qb->getQuery()->getParameters());
+        $qb->setParameters($parameters);
+
+        $this->assertEquals($parameters, $qb->getQuery()->getParameters());
     }
 
 
@@ -408,8 +418,12 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
            ->where('u.id = :id');
 
-        $qb->setParameters(array('id' => 1));
-        $this->assertEquals(array('id' => 1), $qb->getParameters());
+        $parameters = new ArrayCollection();
+        $parameters->add(new Parameter('id', 1));
+
+        $qb->setParameters($parameters);
+
+        $this->assertEquals($parameters, $qb->getParameters());
     }
 
     public function testGetParameter()
@@ -419,8 +433,12 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.id = :id');
 
-        $qb->setParameters(array('id' => 1));
-        $this->assertEquals(1, $qb->getParameter('id'));
+        $parameters = new ArrayCollection();
+        $parameters->add(new Parameter('id', 1));
+
+        $qb->setParameters($parameters);
+
+        $this->assertEquals($parameters->first(), $qb->getParameter('id'));
     }
 
     public function testMultipleWhere()
@@ -536,6 +554,7 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $qb->setParameter('name', 'romanb');
 
         $q1 = $qb->getQuery();
+
         $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name', $q1->getDql());
         $this->assertEquals(1, count($q1->getParameters()));
 

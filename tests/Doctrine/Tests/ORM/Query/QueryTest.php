@@ -3,6 +3,9 @@
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Collections\ArrayCollection;
+
+use Doctrine\ORM\Query\Parameter;
 
 class QueryTest extends \Doctrine\Tests\OrmTestCase
 {
@@ -16,21 +19,34 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
     public function testGetParameters()
     {
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1");
-        $this->assertEquals(array(), $query->getParameters());
+
+        $parameters = new ArrayCollection();
+
+        $this->assertEquals($parameters, $query->getParameters());
     }
 
     public function testGetParameters_HasSomeAlready()
     {
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1");
         $query->setParameter(2, 84);
-        $this->assertEquals(array(2 => 84), $query->getParameters());
+
+        $parameters = new ArrayCollection();
+        $parameters->add(new Parameter(2, 84));
+
+        $this->assertEquals($parameters, $query->getParameters());
     }
 
     public function testSetParameters()
     {
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1");
-        $query->setParameters(array(1 => 'foo', 2 => 'bar'));
-        $this->assertEquals(array(1 => 'foo', 2 => 'bar'), $query->getParameters());
+
+        $parameters = new ArrayCollection();
+        $parameters->add(new Parameter(1, 'foo'));
+        $parameters->add(new Parameter(2, 'bar'));
+
+        $query->setParameters($parameters);
+
+        $this->assertEquals($parameters, $query->getParameters());
     }
 
     public function testFree()
@@ -40,7 +56,7 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
 
         $query->free();
 
-        $this->assertEquals(array(), $query->getParameters());
+        $this->assertEquals(0, count($query->getParameters()));
     }
 
     public function testClone()
@@ -54,7 +70,7 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
         $cloned = clone $query;
 
         $this->assertEquals($dql, $cloned->getDql());
-        $this->assertEquals(array(), $cloned->getParameters());
+        $this->assertEquals(0, count($cloned->getParameters()));
         $this->assertFalse($cloned->getHint('foo'));
     }
 
@@ -68,7 +84,7 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
           ->setHint('foo', 'bar')
           ->setHint('bar', 'baz')
           ->setParameter(1, 'bar')
-          ->setParameters(array(2 => 'baz'))
+          ->setParameters(new ArrayCollection(array(new Parameter(2, 'baz'))))
           ->setResultCacheDriver(null)
           ->setResultCacheId('foo')
           ->setDql('foo')
@@ -129,7 +145,7 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-1697
      */
-    public function testKeyValueParameters()
+    public function testCollectionParameters()
     {
         $cities = array(
             0 => "Paris",
@@ -142,8 +158,9 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
                 ->setParameter('cities', $cities);
 
         $parameters = $query->getParameters();
+        $parameter  = $parameters->first();
 
-        $this->assertArrayHasKey('cities', $parameters);
-        $this->assertEquals($cities, $parameters['cities']);
+        $this->assertEquals('cities', $parameter->getName());
+        $this->assertEquals($cities, $parameter->getValue());
     }
 }

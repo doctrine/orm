@@ -58,19 +58,30 @@ final class NativeQuery extends AbstractQuery
      */
     protected function _doExecute()
     {
-        $params = $this->_params;
-        $types  = $this->_paramTypes;
+        $parameters = array();
+        $types      = array();
 
-        if ($params && is_int(key($params))) {
-            ksort($params);
+        foreach ($this->getParameters()->getIterator() as $parameter) {
+            $name  = $parameter->getName();
+            $value = $this->processParameterValue($parameter->getValue());
+            $type  = ($parameter->getValue() === $value)
+                ? $parameter->getType()
+                : Query\ParameterTypeInferer::inferType($value);
+
+            $parameters[$name] = $value;
+            $types[$name]      = $type;
+        }
+
+        if ($parameters && is_int(key($parameters))) {
+            ksort($parameters);
             ksort($types);
 
-            $params = array_values($params);
-            $types  = array_values($types);
+            $parameters = array_values($parameters);
+            $types      = array_values($types);
         }
 
         return $this->_em->getConnection()->executeQuery(
-            $this->_sql, $params, $types, $this->_queryCacheProfile
+            $this->_sql, $parameters, $types, $this->_queryCacheProfile
         );
     }
 }

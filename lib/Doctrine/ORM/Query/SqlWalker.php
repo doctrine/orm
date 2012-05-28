@@ -1687,7 +1687,6 @@ class SqlWalker implements TreeWalker
             // InputParameter
             case ($entityExpr instanceof AST\InputParameter):
                 $dqlParamKey = $entityExpr->name;
-                $entity      = $this->_query->getParameter($dqlParamKey);
                 $entitySql   = '?';
                 break;
 
@@ -1853,8 +1852,7 @@ class SqlWalker implements TreeWalker
 
         $dqlAlias = $instanceOfExpr->identificationVariable;
         $discrClass = $class = $this->_queryComponents[$dqlAlias]['metadata'];
-        $fieldName = null;
-
+        
         if ($class->discriminatorColumn) {
             $discrClass = $this->_em->getClassMetadata($class->rootEntityName);
         }
@@ -1871,7 +1869,8 @@ class SqlWalker implements TreeWalker
             if ($parameter instanceof AST\InputParameter) {
                 // We need to modify the parameter value to be its correspondent mapped value
                 $dqlParamKey = $parameter->name;
-                $paramValue  = $this->_query->getParameter($dqlParamKey);
+                $dqlParam    = $this->_query->getParameter($dqlParamKey);
+                $paramValue  = $this->_query->processParameterValue($dqlParam->getValue());
 
                 if ( ! ($paramValue instanceof \Doctrine\ORM\Mapping\ClassMetadata)) {
                     throw QueryException::invalidParameterType('ClassMetadata', get_class($paramValue));

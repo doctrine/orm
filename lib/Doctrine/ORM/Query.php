@@ -19,10 +19,13 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\DBAL\LockMode,
-    Doctrine\ORM\Query\Parser,
-    Doctrine\ORM\Query\ParserResult,
-    Doctrine\ORM\Query\QueryException;
+use Doctrine\Common\Collections\ArrayCollection;
+
+use Doctrine\DBAL\LockMode;
+
+use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\ParserResult;
+use Doctrine\ORM\Query\QueryException;
 
 /**
  * A Query object represents a DQL query.
@@ -248,7 +251,7 @@ final class Query extends AbstractQuery
         // Prepare parameters
         $paramMappings = $this->_parserResult->getParameterMappings();
 
-        if (count($paramMappings) != count($this->_params)) {
+        if (count($paramMappings) != count($this->parameters)) {
             throw QueryException::invalidParameterNumber();
         }
 
@@ -269,17 +272,23 @@ final class Query extends AbstractQuery
      */
     private function processParameterMappings($paramMappings)
     {
-        $sqlParams = $types = array();
+        $sqlParams = array();
+        $types     = array();
 
-        foreach ($this->_params as $key => $value) {
+        foreach ($this->parameters->getIterator() as $parameter) {
+            $key = $parameter->getName();
+
             if ( ! isset($paramMappings[$key])) {
                 throw QueryException::unknownParameter($key);
             }
 
-            if (isset($this->_paramTypes[$key])) {
-                foreach ($paramMappings[$key] as $position) {
-                    $types[$position] = $this->_paramTypes[$key];
-                }
+            $value = $this->processParameterValue($parameter->getValue());
+            $type  = ($parameter->getValue() === $value)
+                ? $parameter->getType()
+                : Query\ParameterTypeInferer::inferType($value);
+
+            foreach ($paramMappings[$key] as $position) {
+                $types[$position] = $type;
             }
 
             $sqlPositions = $paramMappings[$key];
@@ -517,15 +526,15 @@ final class Query extends AbstractQuery
      * Executes the query and returns an IterableResult that can be used to incrementally
      * iterated over the result.
      *
-     * @param array $params The query parameters.
+     * @param \Doctrine\Common\Collections\ArrayCollection $parameters The query parameters.
      * @param integer $hydrationMode The hydration mode to use.
      * @return \Doctrine\ORM\Internal\Hydration\IterableResult
      */
-    public function iterate(array $params = array(), $hydrationMode = self::HYDRATE_OBJECT)
+    public function iterate(ArrayCollection $parameters = null, $hydrationMode = self::HYDRATE_OBJECT)
     {
         $this->setHint(self::HINT_INTERNAL_ITERATION, true);
 
-        return parent::iterate($params, $hydrationMode);
+        return parent::iterate($parameters, $hydrationMode);
     }
 
     /**
