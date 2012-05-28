@@ -166,14 +166,15 @@ abstract class AbstractQuery
      */
     public function getParameter($key)
     {
-        foreach ($this->parameters->getIterator() as $parameter) {
-            // Must not be identical because of string to integer conversion
-            if ($parameter->getName() == $key) {
-                return $parameter;
+        $filteredParameters = $this->parameters->filter(
+            function ($parameter) use ($key)
+            {
+                // Must not be identical because of string to integer conversion
+                return ($key == $parameter->getName());
             }
-        }
+        );
 
-        return null;
+        return count($filteredParameters) ? $filteredParameters->first() : null;
     }
 
     /**
