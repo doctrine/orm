@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 use Doctrine\ORM\Query\Expr;
 
 /**
@@ -77,14 +79,9 @@ class QueryBuilder
     private $_dql;
 
     /**
-     * @var array The query parameters.
+     * @var \Doctrine\Common\Collections\ArrayCollection The query parameters.
      */
-    private $_params = array();
-
-    /**
-     * @var array The parameter type map of this query.
-     */
-    private $_paramTypes = array();
+    private $parameters = array();
 
     /**
      * @var integer The index of the first result to retrieve.
@@ -109,6 +106,7 @@ class QueryBuilder
     public function __construct(EntityManager $em)
     {
         $this->_em = $em;
+        $this->parameters = new ArrayCollection();
     }
 
     /**
@@ -218,8 +216,10 @@ class QueryBuilder
      */
     public function getQuery()
     {
+        $parameters = clone $this->parameters;
+
         return $this->_em->createQuery($this->getDQL())
-            ->setParameters($this->_params, $this->_paramTypes)
+            ->setParameters($parameters)
             ->setFirstResult($this->_firstResult)
             ->setMaxResults($this->_maxResults);
     }
@@ -355,10 +355,7 @@ class QueryBuilder
      */
     public function setParameter($key, $value, $type = null)
     {
-        $key = trim($key, ':');
-
-        $this->_paramTypes[$key] = $type ?: Query\ParameterTypeInferer::inferType($value);
-        $this->_params[$key]     = $value;
+        $this->parameters->add(new Query\Parameter($key, $value, $type));
 
         return $this;
     }
@@ -371,20 +368,18 @@ class QueryBuilder
      *         ->select('u')
      *         ->from('User', 'u')
      *         ->where('u.id = :user_id1 OR u.id = :user_id2')
-     *         ->setParameters(array(
-     *             'user_id1' => 1,
-     *             'user_id2' => 2
-              ));
+     *         ->setParameters(new ArrayCollection(array(
+     *             new Parameter('user_id1', 1),
+     *             new Parameter('user_id2', 2)
+              )));
      * </code>
      *
-     * @param array $params The query parameters to set.
+     * @param \Doctrine\Common\Collections\ArrayCollections $params The query parameters to set.
      * @return QueryBuilder This QueryBuilder instance.
      */
-    public function setParameters(array $params, array $types = array())
+    public function setParameters(ArrayCollection $parameters)
     {
-        foreach ($params as $key => $value) {
-            $this->setParameter($key, $value, isset($types[$key]) ? $types[$key] : null);
-        }
+        $this->parameters = $parameters;
 
         return $this;
     }
@@ -396,18 +391,25 @@ class QueryBuilder
      */
     public function getParameters()
     {
-        return $this->_params;
+        return $this->parameters;
     }
 
     /**
      * Gets a (previously set) query parameter of the query being constructed.
      *
      * @param mixed $key The key (index or name) of the bound parameter.
+     *
      * @return mixed The value of the bound parameter.
      */
     public function getParameter($key)
     {
-        return isset($this->_params[$key]) ? $this->_params[$key] : null;
+        foreach ($this->parameters->getIterator() as $parameter) {
+            if ($parameter->getName() === $key) {
+                return $parameter;
+            }
+        }
+
+        return null;
     }
 
     /**
