@@ -19,9 +19,11 @@
 
 namespace Doctrine\ORM\Query\Exec;
 
-use Doctrine\DBAL\Connection,
-    Doctrine\DBAL\Types\Type,
-    Doctrine\ORM\Query\AST;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types\Type;
+
+use Doctrine\ORM\Query\ParameterTypeInferer;
+use Doctrine\ORM\Query\AST;
 
 /**
  * Executes the SQL statements for bulk DQL UPDATE statements on classes in
@@ -105,9 +107,16 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
                     //FIXME: parameters can be more deeply nested. traverse the tree.
                     //FIXME (URGENT): With query cache the parameter is out of date. Move to execute() stage.
                     if ($newValue instanceof AST\InputParameter) {
-                        $paramKey = $newValue->name;
-                        $this->_sqlParameters[$i]['parameters'][] = $sqlWalker->getQuery()->getParameter($paramKey);
-                        $this->_sqlParameters[$i]['types'][] = $sqlWalker->getQuery()->getParameterType($paramKey);
+                        $parameterName = $newValue->name;
+                        $parameter     = $sqlWalker->getQuery()->getParameter($parameterName);
+
+                        $value = $sqlWalker->getQuery()->processParameterValue($parameter->getValue());
+                        $type  = ($parameter->getValue() === $value)
+                            ? $parameter->getType()
+                            : ParameterTypeInferer::inferType($value);
+
+                        $this->_sqlParameters[$i]['parameters'][] = $value;
+                        $this->_sqlParameters[$i]['types'][] = $type;
 
                         ++$this->_numParametersInUpdateClause;
                     }

@@ -19,10 +19,13 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     private $cacheDataReflection;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->cacheDataReflection = new \ReflectionProperty("Doctrine\Common\Cache\ArrayCache", "data");
         $this->cacheDataReflection->setAccessible(true);
+
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 

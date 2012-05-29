@@ -2,11 +2,16 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 use Doctrine\DBAL\Connection;
-use Doctrine\Tests\Models\CMS\CmsUser,
-    Doctrine\Tests\Models\CMS\CmsArticle;
+
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Parameter;
+
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\CMS\CmsArticle;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -151,7 +156,20 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testSetParameters()
     {
         $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?1 AND u.status = ?2');
+
+        $parameters = new ArrayCollection();
+        $parameters->add(new Parameter(1, 'jwage'));
+        $parameters->add(new Parameter(2, 'active'));
+
+        $q->setParameters($parameters);
+        $users = $q->getResult();
+    }
+
+    public function testSetParametersBackwardsCompatible()
+    {
+        $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?1 AND u.status = ?2');
         $q->setParameters(array(1 => 'jwage', 2 => 'active'));
+        
         $users = $q->getResult();
     }
 
@@ -176,7 +194,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $articleId = $article1->id;
 
         $query = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.topic = ?1");
-        $articles = $query->iterate(array(1 => 'Doctrine 2'), Query::HYDRATE_ARRAY);
+        $articles = $query->iterate(new ArrayCollection(array(new Parameter(1, 'Doctrine 2'))), Query::HYDRATE_ARRAY);
 
         $found = array();
         foreach ($articles AS $article) {
@@ -520,10 +538,10 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status = :a AND u.id IN (:b)");
-        $query->setParameters(array(
-            'b' => array($user1->id, $user2->id, $user3->id),
-            'a' => 'developer',
-        ));
+        $query->setParameters(new ArrayCollection(array(
+            new Parameter('b', array($user1->id, $user2->id, $user3->id)),
+            new Parameter('a', 'developer')
+        )));
         $result = $query->getResult();
 
         $this->assertEquals(3, count($result));
@@ -639,7 +657,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-1651
      */
-    public function testSetParameterBindingSingleIdentifierObjectConverted()
+    public function testSetParameterBindingSingleIdentifierObject()
     {
         $userC = new CmsUser;
         $userC->name = 'Jonathan';
@@ -653,7 +671,10 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $q = $this->_em->createQuery("SELECT DISTINCT u from Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1");
         $q->setParameter(1, $userC);
 
-        $this->assertEquals($userC->id, $q->getParameter(1));
+        $this->assertEquals($userC, $q->getParameter(1)->getValue());
+
+        // Parameter is not converted before, but it should be converted during execution. Test should not fail here
+        $q->getResult();
     }
 
 
