@@ -526,11 +526,11 @@ final class Query extends AbstractQuery
      * Executes the query and returns an IterableResult that can be used to incrementally
      * iterated over the result.
      *
-     * @param \Doctrine\Common\Collections\ArrayCollection $parameters The query parameters.
+     * @param \Doctrine\Common\Collections\ArrayCollection|array $parameters The query parameters.
      * @param integer $hydrationMode The hydration mode to use.
      * @return \Doctrine\ORM\Internal\Hydration\IterableResult
      */
-    public function iterate(ArrayCollection $parameters = null, $hydrationMode = self::HYDRATE_OBJECT)
+    public function iterate($parameters = null, $hydrationMode = self::HYDRATE_OBJECT)
     {
         $this->setHint(self::HINT_INTERNAL_ITERATION, true);
 

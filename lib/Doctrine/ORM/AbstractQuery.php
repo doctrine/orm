@@ -180,12 +180,16 @@ abstract class AbstractQuery
     /**
      * Sets a collection of query parameters.
      *
-     * @param \Doctrine\Common\Collections\ArrayCollection $parameters
+     * @param \Doctrine\Common\Collections\ArrayCollection|array $parameters
      *
      * @return \Doctrine\ORM\AbstractQuery This query instance.
      */
-    public function setParameters(ArrayCollection $parameters)
+    public function setParameters($parameters)
     {
+        if (is_array($parameters)) {
+            $parameters = new ArrayCollection($parameters);
+        }
+
         $this->parameters = $parameters;
 
         return $this;
@@ -659,17 +663,17 @@ abstract class AbstractQuery
      * Executes the query and returns an IterableResult that can be used to incrementally
      * iterate over the result.
      *
-     * @param \Doctrine\Common\Collections\ArrayCollection $parameters The query parameters.
+     * @param \Doctrine\Common\Collections\ArrayCollection|array $parameters The query parameters.
      * @param integer $hydrationMode The hydration mode to use.
      * @return \Doctrine\ORM\Internal\Hydration\IterableResult
      */
-    public function iterate(ArrayCollection $parameters = null, $hydrationMode = null)
+    public function iterate($parameters = null, $hydrationMode = null)
     {
         if ($hydrationMode !== null) {
             $this->setHydrationMode($hydrationMode);
         }
 
-        if ($parameters) {
+        if ( ! empty($parameters)) {
             $this->setParameters($parameters);
         }
 
@@ -683,17 +687,17 @@ abstract class AbstractQuery
     /**
      * Executes the query.
      *
-     * @param \Doctrine\Common\Collections\ArrayCollection $parameters Query parameters.
+     * @param \Doctrine\Common\Collections\ArrayCollection|array $parameters Query parameters.
      * @param integer $hydrationMode Processing mode to be used during the hydration process.
      * @return mixed
      */
-    public function execute(ArrayCollection $parameters = null, $hydrationMode = null)
+    public function execute($parameters = null, $hydrationMode = null)
     {
         if ($hydrationMode !== null) {
             $this->setHydrationMode($hydrationMode);
         }
 
-        if ($parameters) {
+        if ( ! empty($parameters)) {
             $this->setParameters($parameters);
         }
 
