@@ -275,7 +275,7 @@ final class Query extends AbstractQuery
         $sqlParams = array();
         $types     = array();
 
-        foreach ($this->parameters->getIterator() as $parameter) {
+        foreach ($this->parameters as $parameter) {
             $key = $parameter->getName();
 
             if ( ! isset($paramMappings[$key])) {

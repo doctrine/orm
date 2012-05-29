@@ -762,7 +762,7 @@ abstract class AbstractQuery
     {
         $parameters = array();
 
-        foreach ($this->getParameters()->getIterator() as $parameter) {
+        foreach ($this->getParameters() as $parameter) {
             $parameters[$parameter->getName()] = $this->processParameterValue($parameter->getValue());
         }
 
