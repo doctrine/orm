@@ -355,7 +355,24 @@ class QueryBuilder
      */
     public function setParameter($key, $value, $type = null)
     {
-        $this->parameters->add(new Query\Parameter($key, $value, $type));
+        $filteredParameters = $this->parameters->filter(
+            function ($parameter) use ($key)
+            {
+                // Must not be identical because of string to integer conversion
+                return ($key == $parameter->getName());
+            }
+        );
+
+        if (count($filteredParameters)) {
+            $parameter = $filteredParameters->first();
+            $parameter->setValue($value, $type);
+
+            return $this;
+        }
+
+        $parameter = new Query\Parameter($key, $value, $type);
+
+        $this->parameters->add($parameter);
 
         return $this;
     }
@@ -374,11 +391,24 @@ class QueryBuilder
               )));
      * </code>
      *
-     * @param \Doctrine\Common\Collections\ArrayCollections $params The query parameters to set.
+     * @param \Doctrine\Common\Collections\ArrayCollection|array $params The query parameters to set.
      * @return QueryBuilder This QueryBuilder instance.
      */
-    public function setParameters(ArrayCollection $parameters)
+    public function setParameters($parameters)
     {
+        // BC compatibility with 2.3-
+        if (is_array($parameters)) {
+            $parameterCollection = new ArrayCollection();
+
+            foreach ($parameters as $key => $value) {
+                $parameter = new Query\Parameter($key, $value);
+
+                $parameterCollection->add($parameter);
+            }
+
+            $parameters = $parameterCollection;
+        }
+
         $this->parameters = $parameters;
 
         return $this;
@@ -387,7 +417,7 @@ class QueryBuilder
     /**
      * Gets all defined query parameters for the query being constructed.
      *
-     * @return array The currently defined query parameters.
+     * @return \Doctrine\Common\Collections\ArrayCollection The currently defined query parameters.
      */
     public function getParameters()
     {
@@ -403,13 +433,15 @@ class QueryBuilder
      */
     public function getParameter($key)
     {
-        foreach ($this->parameters->getIterator() as $parameter) {
-            if ($parameter->getName() === $key) {
-                return $parameter;
+        $filteredParameters = $this->parameters->filter(
+            function ($parameter) use ($key)
+            {
+                // Must not be identical because of string to integer conversion
+                return ($key == $parameter->getName());
             }
-        }
+        );
 
-        return null;
+        return count($filteredParameters) ? $filteredParameters->first() : null;
     }
 
     /**

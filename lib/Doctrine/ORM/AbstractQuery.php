@@ -150,7 +150,7 @@ abstract class AbstractQuery
     /**
      * Get all defined parameters.
      *
-     * @return array The defined query parameters.
+     * @return \Doctrine\Common\Collections\ArrayCollection The defined query parameters.
      */
     public function getParameters()
     {
