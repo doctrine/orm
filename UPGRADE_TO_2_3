@@ -20,8 +20,8 @@ not when they are set.
 
 Also, related functions were affected:
 
-* execute(ArrayCollection $parameters, $hydrationMode)
-* iterate(ArrayCollection $parameters, $hydrationMode)
-* setParameters(ArrayCollection $parameters)
-* getParameters()
-* getParameter($key)
+* execute($parameters, $hydrationMode) the argument $parameters can be either an key=>value array or an ArrayCollection instance
+* iterate($parameters, $hydrationMode) the argument $parameters can be either an key=>value array or an ArrayCollection instance
+* setParameters($parameters) the argument $parameters can be either an key=>value array or an ArrayCollection instance
+* getParameters() now returns ArrayCollection instead of array
+* getParameter($key) now returns Parameter instance instead of parameter value
