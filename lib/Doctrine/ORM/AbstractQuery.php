@@ -186,8 +186,17 @@ abstract class AbstractQuery
      */
     public function setParameters($parameters)
     {
+        // BC compatibility with 2.3-
         if (is_array($parameters)) {
-            $parameters = new ArrayCollection($parameters);
+            $parameterCollection = new ArrayCollection();
+
+            foreach ($parameters as $key => $value) {
+                $parameter = new Query\Parameter($key, $value);
+
+                $parameterCollection->add($parameter);
+            }
+
+            $parameters = $parameterCollection;
         }
 
         $this->parameters = $parameters;

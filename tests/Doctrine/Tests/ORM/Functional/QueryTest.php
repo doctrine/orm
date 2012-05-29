@@ -165,6 +165,14 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $users = $q->getResult();
     }
 
+    public function testSetParametersBackwardsCompatible()
+    {
+        $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?1 AND u.status = ?2');
+        $q->setParameters(array(1 => 'jwage', 2 => 'active'));
+        
+        $users = $q->getResult();
+    }
+
     /**
      * @group DDC-1070
      */
