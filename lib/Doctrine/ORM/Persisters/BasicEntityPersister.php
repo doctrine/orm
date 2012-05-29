@@ -1438,37 +1438,39 @@ class BasicEntityPersister
      */
     private function getType($field, $value)
     {
-        switch (true) {
-            case (isset($this->_class->fieldMappings[$field])):
-                $type = $this->_class->fieldMappings[$field]['type'];
-                break;
+        $type = $this->getRecursiveType($field, $this->_class);
+        if (is_array($value)) {
+            $type = Type::getType( $type )->getBindingType();
+            $type += Connection::ARRAY_PARAM_OFFSET;
+        }
+        return $type;
+    }
 
-            case (isset($this->_class->associationMappings[$field])):
-                $assoc = $this->_class->associationMappings[$field];
+    /**
+     * Infer (recursively) field type to be used by parameter type casting.
+     * @see getType($field, $value)
+     * 
+     * @param string $field
+     * @param mixed $value
+     * @return integer
+     */
+     private function getRecursiveType($field, ClassMetadata $class)
+     {
+        switch (true) {
+            case (isset($class->fieldMappings[$field])):
+                return $class->fieldMappings[$field]['type'];
+            case (isset($class->associationMappings[$field])):
+                $assoc = $class->associationMappings[$field];
 
                 if (count($assoc['sourceToTargetKeyColumns']) > 1) {
                     throw Query\QueryException::associationPathCompositeKeyNotSupported();
                 }
 
                 $targetClass  = $this->_em->getClassMetadata($assoc['targetEntity']);
-                $targetColumn = $assoc['joinColumns'][0]['referencedColumnName'];
-                $type         = null;
-
-                if (isset($targetClass->fieldNames[$targetColumn])) {
-                    $type = $targetClass->fieldMappings[$targetClass->fieldNames[$targetColumn]]['type'];
-                }
-
-                break;
-
+                return $this->getRecursiveType($targetClass->identifier[0], $targetClass);
             default:
-                $type = null;
-        }
-        if (is_array($value)) {
-            $type = Type::getType( $type )->getBindingType();
-            $type += Connection::ARRAY_PARAM_OFFSET;
-        }
-
-        return $type;
+               return null;
+        }   
     }
 
     /**
@@ -1507,8 +1509,10 @@ class BasicEntityPersister
                 $class = $this->_em->getClassMetadata(get_class($value));
                 $idValues = $class->getIdentifierValues($value);
             }
-
-            $value = $idValues[key($idValues)];
+            $value = reset($idValues);
+            if (is_object($value)){
+                $value = $this->getIndividualValue($value);
+            }
         }
 
         return $value;
