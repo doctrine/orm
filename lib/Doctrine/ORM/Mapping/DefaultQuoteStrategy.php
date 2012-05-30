@@ -32,17 +32,31 @@ namespace Doctrine\ORM\Mapping;
 class DefaultQuoteStrategy extends QuoteStrategy
 {
 
+    /**
+     * Checks if the given identifier is quoted
+     *
+     * @param   string $identifier
+     * @return  string
+     */
     public function isQuotedIdentifier($identifier)
     {
         return strlen($identifier) > 0 && $identifier[0] === '`';
     }
 
+    /**
+     * Gets the uquoted column name.
+     * 
+     * @param   string $identifier
+     * @return  string
+     */
     public function getUnquotedIdentifier($identifier)
     {
         return trim($identifier, '`');
     } 
 
     /**
+     * Gets the (possibly quoted) column name for safe use in an SQL statement.
+     * 
      * @param   string $fieldName
      * @param   ClassMetadata $class
      * @return  string
@@ -55,8 +69,7 @@ class DefaultQuoteStrategy extends QuoteStrategy
     }
 
     /**
-     * Gets the (possibly quoted) primary table name of this class for safe use
-     * in an SQL statement.
+     * Gets the (possibly quoted) primary table name for safe use in an SQL statement.
      *
      * @param   ClassMetadata $class
      * @return  string
@@ -93,7 +106,7 @@ class DefaultQuoteStrategy extends QuoteStrategy
         $quotedColumnNames = array();
 
         foreach ($class->identifier as $fieldName) {
-            if (isset($this->fieldMappings[$fieldName])) {
+            if (isset($class->fieldMappings[$fieldName])) {
                 $quotedColumnNames[] = $this->getColumnName($fieldName, $class);
 
                 continue;
@@ -118,8 +131,10 @@ class DefaultQuoteStrategy extends QuoteStrategy
     }
 
     /**
-     * @param   string $columnName
-     * @param   string $counter
+     * Gets the column alias.
+     *
+     * @param   string  $columnName
+     * @param   integer $counter
      * @param   ClassMetadata $class
      * @return  string
      */

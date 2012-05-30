@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 require_once __DIR__ . '/../../TestInit.php';
 
 /**
- * @group DDC-1719
+ * @group DDC-1845
  */
 class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
 {
@@ -78,20 +78,19 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
     
     public function testJoinTableName()
     {
-        $cm = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
-        $cm->mapManyToMany(array(
+        $cm1 = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $cm2 = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        
+        $cm1->mapManyToMany(array(
             'fieldName'     => 'user',
             'targetEntity'  => 'CmsUser',
             'inversedBy'    => 'users',
             'joinTable'     => array(
-                    'name'  => '`cmsaddress_cmsuser`'
-                )
+                'name'  => '`cmsaddress_cmsuser`'
             )
-        );
-        $this->assertEquals('"cmsaddress_cmsuser"', $this->strategy->getJoinTableName('user', $cm));
+        ));
         
-        $cm = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
-        $cm->mapManyToMany(array(
+        $cm2->mapManyToMany(array(
             'fieldName'     => 'user',
             'targetEntity'  => 'CmsUser',
             'inversedBy'    => 'users',
@@ -100,7 +99,58 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
                 )
             )
         );
-        $this->assertEquals('cmsaddress_cmsuser', $this->strategy->getJoinTableName('user', $cm));
 
+        $this->assertEquals('"cmsaddress_cmsuser"', $this->strategy->getJoinTableName('user', $cm1));
+        $this->assertEquals('cmsaddress_cmsuser', $this->strategy->getJoinTableName('user', $cm2));
+       
+    }
+
+    public function testIdentifierColumnNames()
+    {
+        $cm1 = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $cm2 = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+
+        $cm1->mapField(array(
+            'id'            => true,
+            'fieldName'     => 'id',
+            'columnName'    => '`id`',
+        ));
+
+        $cm2->mapField(array(
+            'id'            => true,
+            'fieldName'     => 'id',
+            'columnName'    => 'id',
+        ));
+
+        $this->assertEquals(array('"id"'), $this->strategy->getIdentifierColumnNames($cm1));
+        $this->assertEquals(array('id'), $this->strategy->getIdentifierColumnNames($cm2));
+    }
+
+
+    public function testColumnAlias()
+    {
+        $i = 0;
+        $this->assertEquals('columnName0', $this->strategy->getColumnAlias('columnName', $i++));
+        $this->assertEquals('column_name1', $this->strategy->getColumnAlias('column_name', $i++));
+        $this->assertEquals('COLUMN_NAME2', $this->strategy->getColumnAlias('COLUMN_NAME', $i++));
+        $this->assertEquals('COLUMNNAME3', $this->strategy->getColumnAlias('COLUMN-NAME-', $i++));
+    }
+
+    public function testQuoteJoinColumnNames()
+    {
+        $this->markTestIncomplete();
+
+        $cm = $this->createClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
+
+        $cm->mapOneToOne(array(
+            'id'            => true,
+            'fieldName'     => 'article',
+            'targetEntity'  => 'Doctrine\Tests\Models\DDC117\DDC117Article',
+            'joinColumns'    => array(array(
+                'name'  => '`article`'
+            )),
+        ));
+
+        $this->assertEquals(array('"article"'), $this->strategy->getIdentifierColumnNames($cm));
     }
 }
