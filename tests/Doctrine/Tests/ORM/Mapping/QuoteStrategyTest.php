@@ -100,8 +100,8 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
             )
         );
 
-        $this->assertEquals('"cmsaddress_cmsuser"', $this->strategy->getJoinTableName('user', $cm1));
-        $this->assertEquals('cmsaddress_cmsuser', $this->strategy->getJoinTableName('user', $cm2));
+        $this->assertEquals('"cmsaddress_cmsuser"', $this->strategy->getJoinTableName($cm1->associationMappings['user'], $cm1));
+        $this->assertEquals('cmsaddress_cmsuser', $this->strategy->getJoinTableName($cm2->associationMappings['user'], $cm2));
        
     }
 

@@ -71,12 +71,11 @@ class DefaultQuoteStrategy extends QuoteStrategy
     /**
      * {@inheritdoc}
      */
-    public function getJoinTableName($relation, ClassMetadata $class)
+    public function getJoinTableName(array $association, ClassMetadata $class)
     {
-        $assoc = $class->associationMappings[$relation];
-        return isset($assoc['joinTable']['quoted']) 
-            ? $this->platform->quoteIdentifier($assoc['joinTable']['name'])
-            : $assoc['joinTable']['name'];
+        return isset($association['joinTable']['quoted'])
+            ? $this->platform->quoteIdentifier($association['joinTable']['name'])
+            : $association['joinTable']['name'];
     }
 
     /**

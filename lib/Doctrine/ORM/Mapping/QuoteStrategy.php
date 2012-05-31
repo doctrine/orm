@@ -85,7 +85,7 @@ abstract class QuoteStrategy
      * @param   ClassMetadata $class
      * @return  string
      */
-    abstract public function getJoinTableName($relation, ClassMetadata $class);
+    abstract public function getJoinTableName(array $association, ClassMetadata $class);
 
     /**
      * Gets the (possibly quoted) identifier column names for safe use in an SQL statement.
