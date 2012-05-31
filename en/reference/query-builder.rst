@@ -356,7 +356,7 @@ complete list of supported helper methods available:
         // Example - $qb->expr()->trim('u.firstname')
         public function trim($x); // Returns Expr\Func
 
-        // Example - $qb->expr()->concat('u.firstname', $qb->expr()->concat(' ', 'u.lastname'))
+        // Example - $qb->expr()->concat('u.firstname', $qb->expr()->concat($qb->expr()->literal(' '), 'u.lastname'))
         public function concat($x, $y); // Returns Expr\Func
 
         // Example - $qb->expr()->substr('u.firstname', 0, 1)
