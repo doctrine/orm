@@ -46,4 +46,63 @@ abstract class QuoteStrategy
         $this->platform = $platform;
     }
 
+    /**
+     * Checks if the given identifier is quoted
+     *
+     * @param   string $identifier
+     * @return  string
+     */
+    abstract public function isQuotedIdentifier($identifier);
+
+    /**
+     * Gets the uquoted column name.
+     *
+     * @param   string $identifier
+     * @return  string
+     */
+    abstract public function getUnquotedIdentifier($identifier);
+
+    /**
+     * Gets the (possibly quoted) column name for safe use in an SQL statement.
+     *
+     * @param   string $fieldName
+     * @param   ClassMetadata $class
+     * @return  string
+     */
+    abstract public function getColumnName($fieldName, ClassMetadata $class);
+
+    /**
+     * Gets the (possibly quoted) primary table name for safe use in an SQL statement.
+     *
+     * @param   ClassMetadata $class
+     * @return  string
+     */
+    abstract public function getTableName(ClassMetadata $class);
+
+    /**
+     * Gets the (possibly quoted) name of the join table.
+     *
+     * @param   ClassMetadata $class
+     * @return  string
+     */
+    abstract public function getJoinTableName($relation, ClassMetadata $class);
+
+    /**
+     * Gets the (possibly quoted) identifier column names for safe use in an SQL statement.
+     *
+     * @param   ClassMetadata $class
+     * @return  array
+     */
+    abstract public function getIdentifierColumnNames(ClassMetadata $class);
+
+    /**
+     * Gets the column alias.
+     *
+     * @param   string  $columnName
+     * @param   integer $counter
+     * @param   ClassMetadata $class
+     * @return  string
+     */
+    abstract public function getColumnAlias($columnName, $counter, ClassMetadata $class = null);
+
 }

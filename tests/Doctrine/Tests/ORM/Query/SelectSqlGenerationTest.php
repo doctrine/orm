@@ -1641,6 +1641,27 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    /**
+     * @group DDC-1719
+     */
+    public function testStripNonAlphanumericCharactersFromAlias()
+    {
+        $this->assertSqlGeneration(
+            'SELECT e FROM Doctrine\Tests\Models\DDC1719\DDC1719Entity e',
+            'SELECT d0_."entity-id" AS entityid0, d0_."entity-value" AS entityvalue1 FROM "ddc-1719-entity" d0_'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT e.value FROM Doctrine\Tests\Models\DDC1719\DDC1719Entity e ORDER BY e.value',
+            'SELECT d0_."entity-value" AS entityvalue0 FROM "ddc-1719-entity" d0_ ORDER BY d0_."entity-value" ASC'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT TRIM(e.value) FROM Doctrine\Tests\Models\DDC1719\DDC1719Entity e ORDER BY e.value',
+            'SELECT TRIM(d0_."entity-value") AS sclr0 FROM "ddc-1719-entity" d0_ ORDER BY d0_."entity-value" ASC'
+        );
+    }
+
 }
 
 

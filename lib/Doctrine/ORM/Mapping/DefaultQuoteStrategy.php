@@ -33,10 +33,7 @@ class DefaultQuoteStrategy extends QuoteStrategy
 {
 
     /**
-     * Checks if the given identifier is quoted
-     *
-     * @param   string $identifier
-     * @return  string
+     * {@inheritdoc}
      */
     public function isQuotedIdentifier($identifier)
     {
@@ -44,10 +41,7 @@ class DefaultQuoteStrategy extends QuoteStrategy
     }
 
     /**
-     * Gets the uquoted column name.
-     * 
-     * @param   string $identifier
-     * @return  string
+     * {@inheritdoc}
      */
     public function getUnquotedIdentifier($identifier)
     {
@@ -55,11 +49,7 @@ class DefaultQuoteStrategy extends QuoteStrategy
     } 
 
     /**
-     * Gets the (possibly quoted) column name for safe use in an SQL statement.
-     * 
-     * @param   string $fieldName
-     * @param   ClassMetadata $class
-     * @return  string
+     * {@inheritdoc}
      */
     public function getColumnName($fieldName, ClassMetadata $class)
     {
@@ -69,10 +59,7 @@ class DefaultQuoteStrategy extends QuoteStrategy
     }
 
     /**
-     * Gets the (possibly quoted) primary table name for safe use in an SQL statement.
-     *
-     * @param   ClassMetadata $class
-     * @return  string
+     * {@inheritdoc}
      */
     public function getTableName(ClassMetadata $class)
     {
@@ -82,10 +69,7 @@ class DefaultQuoteStrategy extends QuoteStrategy
     }
 
     /**
-     * Gets the (possibly quoted) name of the join table.
-     *
-     * @param   ClassMetadata $class
-     * @return  string
+     * {@inheritdoc}
      */
     public function getJoinTableName($relation, ClassMetadata $class)
     {
@@ -96,10 +80,7 @@ class DefaultQuoteStrategy extends QuoteStrategy
     }
 
     /**
-     * Gets the (possibly quoted) identifier column names for safe use in an SQL statement.
-     *
-     * @param   ClassMetadata $class
-     * @return  array
+     * {@inheritdoc}
      */
     public function getIdentifierColumnNames(ClassMetadata $class)
     {
@@ -131,12 +112,7 @@ class DefaultQuoteStrategy extends QuoteStrategy
     }
 
     /**
-     * Gets the column alias.
-     *
-     * @param   string  $columnName
-     * @param   integer $counter
-     * @param   ClassMetadata $class
-     * @return  string
+     * {@inheritdoc}
      */
     public function getColumnAlias($columnName, $counter, ClassMetadata $class = null)
     {

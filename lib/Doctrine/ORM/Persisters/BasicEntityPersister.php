@@ -171,6 +171,13 @@ class BasicEntityPersister
     protected $_sqlTableAliases = array();
 
     /**
+     * The quote strategy.
+     *
+     * @var \Doctrine\ORM\Mapping\QuoteStrategy
+     */
+    private $quoteStrategy;
+
+    /**
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
      * and persists instances of the class described by the given ClassMetadata descriptor.
      *
@@ -179,10 +186,11 @@ class BasicEntityPersister
      */
     public function __construct(EntityManager $em, ClassMetadata $class)
     {
-        $this->_em = $em;
-        $this->_class = $class;
-        $this->_conn = $em->getConnection();
-        $this->_platform = $this->_conn->getDatabasePlatform();
+        $this->_em              = $em;
+        $this->_class           = $class;
+        $this->_conn            = $em->getConnection();
+        $this->quoteStrategy    = $em->getQuoteStrategy();
+        $this->_platform        = $this->_conn->getDatabasePlatform();
     }
 
     /**
@@ -1573,11 +1581,7 @@ class BasicEntityPersister
      */
     public function getSQLColumnAlias($columnName)
     {
-        // Trim the column alias to the maximum identifier length of the platform.
-        // If the alias is to long, characters are cut off from the beginning.
-        return $this->_platform->getSQLResultCasing(
-            substr($columnName . $this->_sqlAliasCounter++, -$this->_platform->getMaxIdentifierLength())
-        );
+        return $this->quoteStrategy->getColumnAlias($columnName, $this->_sqlAliasCounter++);
     }
 
     /**

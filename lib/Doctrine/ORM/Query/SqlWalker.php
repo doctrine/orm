@@ -286,11 +286,7 @@ class SqlWalker implements TreeWalker
      */
     public function getSQLColumnAlias($columnName)
     {
-        // Trim the column alias to the maximum identifier length of the platform.
-        // If the alias is to long, characters are cut off from the beginning.
-        return $this->platform->getSQLResultCasing(
-            substr($columnName . $this->aliasCounter++, -$this->platform->getMaxIdentifierLength())
-        );
+        return $this->quoteStrategy->getColumnAlias($columnName, $this->aliasCounter++);
     }
 
     /**

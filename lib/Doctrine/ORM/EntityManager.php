@@ -139,11 +139,9 @@ class EntityManager implements ObjectManager
         $this->config       = $config;
         $this->eventManager = $eventManager;
 
-        $quoteStrategyClassName     = $config->getQuoteStrategyClassName();
-        $metadataFactoryClassName   = $config->getClassMetadataFactoryName();
+        $metadataFactoryClassName = $config->getClassMetadataFactoryName();
         
-        $this->quoteStrategy    = new $quoteStrategyClassName($conn->getDatabasePlatform());
-        $this->metadataFactory  = new $metadataFactoryClassName;
+        $this->metadataFactory = new $metadataFactoryClassName;
         $this->metadataFactory->setEntityManager($this);
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
 
@@ -183,6 +181,11 @@ class EntityManager implements ObjectManager
      */
     public function getQuoteStrategy()
     {
+        if ($this->quoteStrategy === null) {
+            $className              = $this->getConfiguration()->getQuoteStrategyClassName();
+            $this->quoteStrategy    = new $className($this->getConnection()->getDatabasePlatform());
+        }
+
         return $this->quoteStrategy;
     }
 
