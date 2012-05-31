@@ -4,7 +4,7 @@ Inheritance Mapping
 Mapped Superclasses
 -------------------
 
-An mapped superclass is an abstract or concrete class that provides
+A mapped superclass is an abstract or concrete class that provides
 persistent entity state and mapping information for its subclasses,
 but which is not itself an entity. Typically, the purpose of such a
 mapped superclass is to define state and mapping information that
@@ -142,7 +142,7 @@ very performant.
 There is a general performance consideration with Single Table
 Inheritance: If the target-entity of a many-to-one or one-to-one 
 association is an STI entity, it is preferable for performance reasons that it 
-be a leaf entity in the inheritance heirarchy, (ie. have no subclasses). 
+be a leaf entity in the inheritance hierarchy, (ie. have no subclasses). 
 Otherwise Doctrine *CANNOT* create proxy instances
 of this entity and will *ALWAYS* load the entity eagerly.
 
@@ -245,7 +245,7 @@ subtypes after such a query is not safe.
 There is a general performance consideration with Class Table
 Inheritance: If the target-entity of a many-to-one or one-to-one 
 association is a CTI entity, it is preferable for performance reasons that it 
-be a leaf entity in the inheritance heirarchy, (ie. have no subclasses). 
+be a leaf entity in the inheritance hierarchy, (ie. have no subclasses). 
 Otherwise Doctrine *CANNOT* create proxy instances
 of this entity and will *ALWAYS* load the entity eagerly.
 
