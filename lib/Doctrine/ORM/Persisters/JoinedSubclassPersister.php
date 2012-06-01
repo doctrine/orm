@@ -105,7 +105,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $tableName = $cm->getTableName();
 
         $this->_owningTableMap[$fieldName] = $tableName;
-        $this->_quotedTableMap[$tableName] = $cm->getQuotedTableName($this->_platform);
+        $this->_quotedTableMap[$tableName] = $this->quoteStrategy->getTableName($cm);
 
         return $tableName;
     }
@@ -225,7 +225,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             // Make sure the table with the version column is updated even if no columns on that
             // table were affected.
             if ($isVersioned && ! isset($updateData[$versionedTable])) {
-                $this->_updateTable($entity, $versionedClass->getQuotedTableName($this->_platform), array(), true);
+                $this->_updateTable($entity, $this->quoteStrategy->getTableName($versionedClass), array(), true);
 
                 $id = $this->_em->getUnitOfWork()->getEntityIdentifier($entity);
                 $this->assignDefaultVersionValue($entity, $id);
@@ -247,11 +247,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         // delete the row from the root table. Cascades do the rest.
         if ($this->_platform->supportsForeignKeyConstraints()) {
             $this->_conn->delete(
-                $this->_em->getClassMetadata($this->_class->rootEntityName)->getQuotedTableName($this->_platform), $id
+                $this->quoteStrategy->getTableName($this->_em->getClassMetadata($this->_class->rootEntityName)), $id
             );
         } else {
             // Delete from all tables individually, starting from this class' table up to the root table.
-            $this->_conn->delete($this->_class->getQuotedTableName($this->_platform), $id);
+            $this->_conn->delete($this->quoteStrategy->getTableName($this->_class), $id);
 
             foreach ($this->_class->parentClasses as $parentClass) {
                 $this->_conn->delete(

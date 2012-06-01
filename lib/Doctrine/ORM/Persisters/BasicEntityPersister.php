@@ -175,7 +175,7 @@ class BasicEntityPersister
      *
      * @var \Doctrine\ORM\Mapping\QuoteStrategy
      */
-    private $quoteStrategy;
+    protected $quoteStrategy;
 
     /**
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
@@ -295,7 +295,7 @@ class BasicEntityPersister
 
         //FIXME: Order with composite keys might not be correct
         $sql = 'SELECT ' . $versionFieldColumnName
-             . ' FROM ' . $versionedClass->getQuotedTableName($this->_platform)
+             . ' FROM ' . $this->quoteStrategy->getTableName($versionedClass)
              . ' WHERE ' . implode(' = ? AND ', $identifier) . ' = ?';
         $value = $this->_conn->fetchColumn($sql, array_values((array)$id));
 
@@ -469,7 +469,7 @@ class BasicEntityPersister
         $identifier = $this->_em->getUnitOfWork()->getEntityIdentifier($entity);
         $this->deleteJoinTableRecords($identifier);
 
-        $id = array_combine($this->quoteStrategy->getIdentifierColumnNames($this->_class), $identifier);
+        $id = array_combine($this->_class->getIdentifierColumnNames(), $identifier);
         $this->_conn->delete($this->quoteStrategy->getTableName($this->_class), $id);
     }
 

@@ -61,7 +61,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     protected function _getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
         $columnName = $class->columnNames[$field];
-        $sql = $this->_getSQLTableAlias($class->name, $alias == 'r' ? '' : $alias) . '.' . $class->getQuotedColumnName($field, $this->_platform);
+        $sql = $this->_getSQLTableAlias($class->name, $alias == 'r' ? '' : $alias) . '.' . $this->quoteStrategy->getColumnName($field, $class);
         $columnAlias = $this->getSQLColumnAlias($columnName);
         $this->_rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
 

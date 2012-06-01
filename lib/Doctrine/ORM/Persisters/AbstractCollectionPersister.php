@@ -46,15 +46,23 @@ abstract class AbstractCollectionPersister
     protected $_uow;
 
     /**
+     * The quote strategy.
+     *
+     * @var \Doctrine\ORM\Mapping\QuoteStrategy
+     */
+    protected $quoteStrategy;
+
+    /**
      * Initializes a new instance of a class derived from AbstractCollectionPersister.
      *
      * @param \Doctrine\ORM\EntityManager $em
      */
     public function __construct(EntityManager $em)
     {
-        $this->_em = $em;
-        $this->_uow = $em->getUnitOfWork();
-        $this->_conn = $em->getConnection();
+        $this->_em              = $em;
+        $this->_uow             = $em->getUnitOfWork();
+        $this->_conn            = $em->getConnection();
+        $this->quoteStrategy    = $em->getQuoteStrategy();
     }
 
     /**
