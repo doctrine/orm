@@ -249,6 +249,25 @@ class SchemaValidator
             }
         }
 
+        foreach ($class->lifecycleCallbacks as $name => $callbacks) {
+            foreach ($callbacks as $callback) {
+                if (!$class->reflClass->hasMethod($callback)) {
+                    $ce[] = "A lifecycle callback for event '" . $name . "' is defined on non-existing method ".
+                        " '" . $class->name . "#" . $callback . "'.";
+                    continue;
+                }
+
+                $method = $class->reflClass->getMethod($callback);
+                if (!$method->isPublic()) {
+                    $ce[] = "A lifecycle callback for event '" . $name . "' is defined on "
+                        . ($method->isProtected() ? 'protected' : 'private')
+                        . " method '" . $class->name . "#" . $callback
+                        . "'. Only public methods can be used as callbacks.";
+                    continue;
+                }
+            }
+        }
+
         return $ce;
     }
 
