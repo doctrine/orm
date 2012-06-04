@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\DDC1719\DDC1719Entity;
+use Doctrine\Tests\Models\Quote\SimpleEntity;
 
 require_once __DIR__ . '/../../../TestInit.php';
 
@@ -12,7 +12,7 @@ require_once __DIR__ . '/../../../TestInit.php';
 class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
 
-    const CLASS_NAME = '\Doctrine\Tests\Models\DDC1719\DDC1719Entity';
+    const CLASS_NAME = '\Doctrine\Tests\Models\Quote\SimpleEntity';
 
     protected function setUp()
     {
@@ -27,8 +27,8 @@ class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testCreateRetreaveUpdateDelete()
     {
-        $e1 = new DDC1719Entity('Bar 1');
-        $e2 = new DDC1719Entity('Foo 1');
+        $e1 = new SimpleEntity('Bar 1');
+        $e2 = new SimpleEntity('Foo 1');
 
         // Create
         $this->_em->persist($e1);

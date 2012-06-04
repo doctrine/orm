@@ -82,10 +82,10 @@ class BasicEntityPersisterTypeValueSqlTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testStripNonAlphanumericCharactersFromSelectColumnListSQL()
     {
-        $persister  = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata('Doctrine\Tests\Models\DDC1719\DDC1719Entity'));
+        $persister  = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\SimpleEntity'));
         $method     = new \ReflectionMethod($persister, '_getSelectColumnListSQL');
         $method->setAccessible(true);
 
-        $this->assertEquals('t0."entity-id" AS entityid1, t0."entity-value" AS entityvalue2', $method->invoke($persister));
+        $this->assertEquals('t0."simple-entity-id" AS simpleentityid1, t0."simple-entity-value" AS simpleentityvalue2', $method->invoke($persister));
     }
 }

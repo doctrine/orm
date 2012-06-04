@@ -1373,14 +1373,22 @@ class ClassMetadataInfo implements ClassMetadata
                         $uniqueContraintColumns[] = $joinColumn['name'];
                     }
                 }
+
                 if (empty($joinColumn['name'])) {
                     $joinColumn['name'] = $this->namingStrategy->joinColumnName($mapping['fieldName']);
                 }
+
                 if (empty($joinColumn['referencedColumnName'])) {
                     $joinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
                 }
+
                 if ($joinColumn['name'][0] == '`') {
                     $joinColumn['name']   = trim($joinColumn['name'], '`');
+                    $joinColumn['quoted'] = true;
+                }
+
+                if ($joinColumn['referencedColumnName'][0] == '`') {
+                    $joinColumn['referencedColumnName']   = trim($joinColumn['referencedColumnName'], '`');
                     $joinColumn['quoted'] = true;
                 }
 
@@ -1464,12 +1472,25 @@ class ClassMetadataInfo implements ClassMetadata
                 if (empty($joinColumn['name'])) {
                     $joinColumn['name'] = $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $joinColumn['referencedColumnName']);
                 }
+
                 if (empty($joinColumn['referencedColumnName'])) {
                     $joinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
                 }
+
+                if ($joinColumn['name'][0] == '`') {
+                    $joinColumn['name']   = trim($joinColumn['name'], '`');
+                    $joinColumn['quoted'] = true;
+                }
+
+                if ($joinColumn['referencedColumnName'][0] == '`') {
+                    $joinColumn['referencedColumnName']   = trim($joinColumn['referencedColumnName'], '`');
+                    $joinColumn['quoted'] = true;
+                }
+
                 if (isset($joinColumn['onDelete']) && strtolower($joinColumn['onDelete']) == 'cascade') {
                     $mapping['isOnDeleteCascade'] = true;
                 }
+
                 $mapping['relationToSourceKeyColumns'][$joinColumn['name']] = $joinColumn['referencedColumnName'];
                 $mapping['joinTableColumns'][] = $joinColumn['name'];
             }
@@ -1478,12 +1499,25 @@ class ClassMetadataInfo implements ClassMetadata
                 if (empty($inverseJoinColumn['name'])) {
                     $inverseJoinColumn['name'] = $this->namingStrategy->joinKeyColumnName($mapping['targetEntity'], $inverseJoinColumn['referencedColumnName']);
                 }
+
                 if (empty($inverseJoinColumn['referencedColumnName'])) {
                     $inverseJoinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
                 }
+
+                if ($inverseJoinColumn['name'][0] == '`') {
+                    $inverseJoinColumn['name']   = trim($inverseJoinColumn['name'], '`');
+                    $inverseJoinColumn['quoted'] = true;
+                }
+
+                if ($inverseJoinColumn['referencedColumnName'][0] == '`') {
+                    $inverseJoinColumn['referencedColumnName']   = trim($inverseJoinColumn['referencedColumnName'], '`');
+                    $inverseJoinColumn['quoted'] = true;
+                }
+
                 if (isset($inverseJoinColumn['onDelete']) && strtolower($inverseJoinColumn['onDelete']) == 'cascade') {
                     $mapping['isOnDeleteCascade'] = true;
                 }
+
                 $mapping['relationToTargetKeyColumns'][$inverseJoinColumn['name']] = $inverseJoinColumn['referencedColumnName'];
                 $mapping['joinTableColumns'][] = $inverseJoinColumn['name'];
             }

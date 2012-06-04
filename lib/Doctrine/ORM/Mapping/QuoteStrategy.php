@@ -25,8 +25,6 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 /**
  * A set of rules for determining the physical column, alias and table quotes
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
  * @since   2.3
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
@@ -44,22 +42,6 @@ abstract class QuoteStrategy
     {
         $this->platform = $platform;
     }
-
-    /**
-     * Checks if the given identifier is quoted
-     *
-     * @param   string $identifier
-     * @return  string
-     */
-    abstract public function isQuotedIdentifier($identifier);
-
-    /**
-     * Gets the uquoted column name.
-     *
-     * @param   string $identifier
-     * @return  string
-     */
-    abstract public function getUnquotedIdentifier($identifier);
 
     /**
      * Gets the (possibly quoted) column name for safe use in an SQL statement.

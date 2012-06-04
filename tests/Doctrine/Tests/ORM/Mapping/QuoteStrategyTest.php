@@ -26,7 +26,6 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
         $this->strategy = new DefaultQuoteStrategy($em->getConnection()->getDatabasePlatform());
     }
 
-
     /**
      * @param   string $className
      * @return \Doctrine\ORM\Mapping\ClassMetadata
@@ -37,21 +36,6 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
 
         return $cm;
-    }
-
-
-    public function testIsQuotedIdentifier()
-    {
-        $this->assertTrue($this->strategy->isQuotedIdentifier('`table_name`'));
-        $this->assertFalse($this->strategy->isQuotedIdentifier('table_name'));
-        $this->assertFalse($this->strategy->isQuotedIdentifier(null));
-        $this->assertFalse($this->strategy->isQuotedIdentifier(''));
-    }
-
-    public function testGetUnquotedIdentifier()
-    {
-        $this->assertEquals('table_name' ,$this->strategy->getUnquotedIdentifier('`table_name`'));
-        $this->assertEquals('table_name' ,$this->strategy->getUnquotedIdentifier('table_name'));
     }
 
     public function testGetColumnName()

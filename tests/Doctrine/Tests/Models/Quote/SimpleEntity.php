@@ -1,23 +1,23 @@
 <?php
 
-namespace Doctrine\Tests\Models\DDC1719;
+namespace Doctrine\Tests\Models\Quote;
 
 /**
  * @Entity
- * @Table(name="`ddc-1719-entity`")
+ * @Table(name="`ddc-1719-simple-entity`")
  */
-class DDC1719Entity
+class SimpleEntity
 {
 
     /**
      * @Id
-     * @Column(type="integer", name="`entity-id`")
+     * @Column(type="integer", name="`simple-entity-id`")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(type="string", name="`entity-value`")
+     * @Column(type="string", name="`simple-entity-value`")
      */
     public $value;
 

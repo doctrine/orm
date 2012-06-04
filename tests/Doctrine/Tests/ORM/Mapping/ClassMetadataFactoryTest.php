@@ -243,6 +243,80 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
         return $cm1;
     }
+
+    /**
+    * @group DDC-1845
+    */
+    public function testQuoteMetadata()
+    {
+        $cmf    = new ClassMetadataFactory();
+        $driver = $this->createAnnotationDriver(array(__DIR__ . '/../../Models/Quote/'));
+        $em     = $this->_createEntityManager($driver);
+        $cmf->setEntityManager($em);
+
+
+        $userMetadata       = $cmf->getMetadataFor('Doctrine\Tests\Models\Quote\User');
+        $phoneMetadata      = $cmf->getMetadataFor('Doctrine\Tests\Models\Quote\Phone');
+        $groupMetadata      = $cmf->getMetadataFor('Doctrine\Tests\Models\Quote\Group');
+        $addressMetadata    = $cmf->getMetadataFor('Doctrine\Tests\Models\Quote\Address');
+
+
+        // Phone Class Metadata
+        $this->assertTrue($phoneMetadata->fieldMappings['number']['quoted']);
+        $this->assertEquals('phone-number', $phoneMetadata->fieldMappings['number']['columnName']);
+
+        $user = $phoneMetadata->associationMappings['user'];
+        $this->assertTrue($user['joinColumns'][0]['quoted']);
+        $this->assertEquals('user-id', $user['joinColumns'][0]['name']);
+        $this->assertEquals('user-id', $user['joinColumns'][0]['referencedColumnName']);
+
+
+
+        // User Class Metadata
+        $this->assertTrue($groupMetadata->fieldMappings['id']['quoted']);
+        $this->assertTrue($groupMetadata->fieldMappings['name']['quoted']);
+
+        $this->assertEquals('user-id', $userMetadata->fieldMappings['id']['columnName']);
+        $this->assertEquals('user-name', $userMetadata->fieldMappings['name']['columnName']);
+
+
+        
+        // Address Class Metadata
+        $this->assertTrue($addressMetadata->fieldMappings['id']['quoted']);
+        $this->assertTrue($addressMetadata->fieldMappings['zip']['quoted']);
+
+        $this->assertEquals('address-id', $addressMetadata->fieldMappings['id']['columnName']);
+        $this->assertEquals('address-zip', $addressMetadata->fieldMappings['zip']['columnName']);
+
+        $user = $addressMetadata->associationMappings['user'];
+        $this->assertTrue($user['joinColumns'][0]['quoted']);
+        $this->assertEquals('user-id', $user['joinColumns'][0]['name']);
+        $this->assertEquals('user-id', $user['joinColumns'][0]['referencedColumnName']);
+
+
+
+        // User Class Metadata
+        $this->assertTrue($userMetadata->fieldMappings['id']['quoted']);
+        $this->assertTrue($userMetadata->fieldMappings['name']['quoted']);
+        
+        $this->assertEquals('user-id', $userMetadata->fieldMappings['id']['columnName']);
+        $this->assertEquals('user-name', $userMetadata->fieldMappings['name']['columnName']);
+
+        
+        $address = $userMetadata->associationMappings['address'];
+        $this->assertTrue($address['joinColumns'][0]['quoted']);
+        $this->assertEquals('address-id', $address['joinColumns'][0]['name']);
+        $this->assertEquals('address-id', $address['joinColumns'][0]['referencedColumnName']);
+
+        $groups = $userMetadata->associationMappings['groups'];
+        $this->assertTrue($groups['joinTable']['joinColumns'][0]['quoted']);
+        $this->assertEquals('user-id', $groups['joinTable']['joinColumns'][0]['name']);
+        $this->assertEquals('user-id', $groups['joinTable']['joinColumns'][0]['referencedColumnName']);
+
+        $this->assertTrue($groups['joinTable']['inverseJoinColumns'][0]['quoted']);
+        $this->assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['name']);
+        $this->assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['referencedColumnName']);
+    }
 }
 
 /* Test subject class with overriden factory method for mocking purposes */

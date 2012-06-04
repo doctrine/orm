@@ -23,29 +23,11 @@ namespace Doctrine\ORM\Mapping;
 /**
  * A set of rules for determining the physical column, alias and table quotes
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
- * @since   2.4
+ * @since   2.3
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class DefaultQuoteStrategy extends QuoteStrategy
 {
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isQuotedIdentifier($identifier)
-    {
-        return strlen($identifier) > 0 && $identifier[0] === '`';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getUnquotedIdentifier($identifier)
-    {
-        return trim($identifier, '`');
-    } 
 
     /**
      * {@inheritdoc}
