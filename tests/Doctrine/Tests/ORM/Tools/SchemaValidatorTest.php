@@ -9,7 +9,7 @@ require_once __DIR__ . '/../../TestInit.php';
 class SchemaValidatorTest extends \Doctrine\Tests\OrmTestCase
 {
     /**
-     * @var EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
     private $em = null;
 
@@ -136,6 +136,38 @@ class SchemaValidatorTest extends \Doctrine\Tests\OrmTestCase
             "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\DDC1649Two'."
         ), $ce);
     }
+
+    /**
+     * @group DDC-1852
+     */
+    public function testInvalidLifecycleCallbacks()
+    {
+        $nonPublicCallbacks = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC1852InvalidLifecycleCallbacks');
+
+        // annotation driver allows callbacks mapping public properties only. Mocking XML/YAML/PHP driver behavior here
+        $nonPublicCallbacks->lifecycleCallbacks = array(
+            \Doctrine\ORM\Events::prePersist => array(
+                'somePrivateMethod',
+                'someProtectedMethod',
+                'someNonExistingMethod',
+            ),
+        );
+        $ce = $this->validator->validateClass($nonPublicCallbacks);
+
+        $this->assertEquals(
+            array(
+                "A lifecycle callback for event 'prePersist' is defined on private method '"
+                    . __NAMESPACE__ . "\DDC1852InvalidLifecycleCallbacks#somePrivateMethod'."
+                    . " Only public methods can be used as callbacks.",
+                "A lifecycle callback for event 'prePersist' is defined on protected method '"
+                    . __NAMESPACE__ . "\DDC1852InvalidLifecycleCallbacks#someProtectedMethod'."
+                    . " Only public methods can be used as callbacks.",
+                "A lifecycle callback for event 'prePersist' is defined on non-existing method  '"
+                    . __NAMESPACE__ . "\DDC1852InvalidLifecycleCallbacks#someNonExistingMethod'.",
+            ),
+            $ce
+        );
+    }
 }
 
 /**
@@ -204,7 +236,7 @@ class DDC1587ValidEntity1
     private $name;
 
     /**
-     * @var Identifier
+     * @var DDC1587ValidEntity2
      *
      * @OneToOne(targetEntity="DDC1587ValidEntity2", cascade={"all"}, mappedBy="agent")
      * @JoinColumn(name="pk", referencedColumnName="pk_agent")
@@ -263,5 +295,18 @@ class DDC1649Three
     /** @Id @ManyToOne(targetEntity="DDC1649Two") @JoinColumn(name="id",
      * referencedColumnName="id") */
     private $two;
+}
+
+/**
+ * @Entity
+ * @HasLifecycleCallbacks
+ */
+class DDC1852InvalidLifecycleCallbacks
+{
+    /** @Id @Column */
+    private $id;
+
+    private function somePrivateMethod() {}
+    protected function someProtectedMethod() {}
 }
 
