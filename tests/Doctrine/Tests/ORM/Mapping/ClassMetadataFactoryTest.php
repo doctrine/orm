@@ -309,7 +309,9 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('address-id', $address['joinColumns'][0]['referencedColumnName']);
 
         $groups = $userMetadata->associationMappings['groups'];
+        $this->assertTrue($groups['joinTable']['quoted']);
         $this->assertTrue($groups['joinTable']['joinColumns'][0]['quoted']);
+        $this->assertEquals('quote-users-groups', $groups['joinTable']['name']);
         $this->assertEquals('user-id', $groups['joinTable']['joinColumns'][0]['name']);
         $this->assertEquals('user-id', $groups['joinTable']['joinColumns'][0]['referencedColumnName']);
 
