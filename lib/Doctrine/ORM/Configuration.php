@@ -638,7 +638,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setQuoteStrategyClassName($className)
     {
-        $quoteStrategy = 'Doctrine\ORM\Mapping\AbstractQuoteStrategy';
+        $quoteStrategy = 'Doctrine\ORM\Mapping\QuoteStrategy';
 
         if ($className !== $quoteStrategy && ! is_subclass_of($className, $quoteStrategy)) {
             throw new \InvalidArgumentException("Invalid quote strategy class");
