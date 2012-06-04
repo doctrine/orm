@@ -45,7 +45,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $mapping = $coll->getMapping();
         $class   = $this->_em->getClassMetadata(get_class($coll->getOwner()));
 
-        return 'DELETE FROM ' . $class->getQuotedJoinTableName($mapping, $this->_conn->getDatabasePlatform())
+        return 'DELETE FROM ' . $this->quoteStrategy->getJoinTableName($mapping, $class)
              . ' WHERE ' . implode(' = ? AND ', $mapping['joinTableColumns']) . ' = ?';
     }
 

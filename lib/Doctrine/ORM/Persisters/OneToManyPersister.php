@@ -45,7 +45,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $mapping = $coll->getMapping();
         $class   = $this->_em->getClassMetadata($mapping['targetEntity']);
 
-        return 'DELETE FROM ' . $class->getQuotedTableName($this->_conn->getDatabasePlatform())
+        return 'DELETE FROM ' . $this->quoteStrategy->getTableName($class)
              . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
     }
 
@@ -127,7 +127,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         }
 
         $sql = 'SELECT count(*)'
-             . ' FROM ' . $targetClass->getQuotedTableName($this->_conn->getDatabasePlatform()) . ' t'
+             . ' FROM ' . $this->quoteStrategy->getTableName($targetClass) . ' t'
              . ' WHERE ' . implode(' AND ', $whereClauses);
 
         return $this->_conn->fetchColumn($sql, $params);
@@ -204,7 +204,7 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         $mapping = $coll->getMapping();
         $class   = $this->_em->getClassMetadata($mapping['targetEntity']);
-        $sql     = 'DELETE FROM ' . $class->getQuotedTableName($this->_conn->getDatabasePlatform())
+        $sql     = 'DELETE FROM ' . $this->quoteStrategy->getTableName($class)
                  . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
 
         return (bool) $this->_conn->executeUpdate($sql, $this->_getDeleteRowSQLParameters($coll, $element));
