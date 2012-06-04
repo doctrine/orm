@@ -47,17 +47,18 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
      */
     public function __construct(AST\Node $AST, $sqlWalker)
     {
-        $em = $sqlWalker->getEntityManager();
-        $conn = $em->getConnection();
-        $platform = $conn->getDatabasePlatform();
+        $em             = $sqlWalker->getEntityManager();
+        $conn           = $em->getConnection();
+        $platform       = $conn->getDatabasePlatform();
+        $quoteStrategy  = $em->getQuoteStrategy();
 
-        $primaryClass = $em->getClassMetadata($AST->deleteClause->abstractSchemaName);
-        $primaryDqlAlias = $AST->deleteClause->aliasIdentificationVariable;
-        $rootClass = $em->getClassMetadata($primaryClass->rootEntityName);
+        $primaryClass       = $em->getClassMetadata($AST->deleteClause->abstractSchemaName);
+        $primaryDqlAlias    = $AST->deleteClause->aliasIdentificationVariable;
+        $rootClass          = $em->getClassMetadata($primaryClass->rootEntityName);
 
-        $tempTable = $platform->getTemporaryTableName($rootClass->getTemporaryIdTableName());
-        $idColumnNames = $rootClass->getIdentifierColumnNames();
-        $idColumnList = implode(', ', $idColumnNames);
+        $tempTable      = $platform->getTemporaryTableName($rootClass->getTemporaryIdTableName());
+        $idColumnNames  = $rootClass->getIdentifierColumnNames();
+        $idColumnList   = implode(', ', $idColumnNames);
 
         // 1. Create an INSERT INTO temptable ... SELECT identifiers WHERE $AST->getWhereClause()
         $sqlWalker->setSQLTableAlias($primaryClass->getTableName(), 't0', $primaryDqlAlias);
@@ -80,7 +81,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         // 3. Create and store DELETE statements
         $classNames = array_merge($primaryClass->parentClasses, array($primaryClass->name), $primaryClass->subClasses);
         foreach (array_reverse($classNames) as $className) {
-            $tableName = $em->getClassMetadata($className)->getQuotedTableName($platform);
+            $tableName = $quoteStrategy->getTableName($em->getClassMetadata($className));
             $this->_sqlStatements[] = 'DELETE FROM ' . $tableName
                     . ' WHERE (' . $idColumnList . ') IN (' . $idSubselect . ')';
         }

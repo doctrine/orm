@@ -2644,6 +2644,42 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Gets the (possibly quoted) identifier column names for safe use in an SQL statement.
+     *
+     * @param AbstractPlatform $platform
+     * @return array
+     */
+    public function getQuotedIdentifierColumnNames($platform)
+    {
+        $quotedColumnNames = array();
+
+        foreach ($this->identifier as $idProperty) {
+            if (isset($this->fieldMappings[$idProperty])) {
+                $quotedColumnNames[] = isset($this->fieldMappings[$idProperty]['quoted'])
+                    ? $platform->quoteIdentifier($this->fieldMappings[$idProperty]['columnName'])
+                    : $this->fieldMappings[$idProperty]['columnName'];
+
+                continue;
+            }
+
+            // Association defined as Id field
+            $joinColumns            = $this->associationMappings[$idProperty]['joinColumns'];
+            $assocQuotedColumnNames = array_map(
+                function ($joinColumn) {
+                    return isset($joinColumn['quoted'])
+                        ? $platform->quoteIdentifier($joinColumn['name'])
+                        : $joinColumn['name'];
+                },
+                $joinColumns
+            );
+
+            $quotedColumnNames = array_merge($quotedColumnNames, $assocQuotedColumnNames);
+        }
+
+        return $quotedColumnNames;
+    }
+
+    /**
      * Gets the (possibly quoted) column name of a mapped field for safe use
      * in an SQL statement.
      *
