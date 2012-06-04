@@ -217,7 +217,7 @@ class SchemaTool
             $pkColumns = array();
             foreach ($class->identifier as $identifierField) {
                 if (isset($class->fieldMappings[$identifierField])) {
-                    $pkColumns[] = $this->quoteStrategy->getColumnName($identifierField, $class);
+                    $pkColumns[] = $class->getColumnName($identifierField);
                 } else if (isset($class->associationMappings[$identifierField])) {
                     /* @var $assoc \Doctrine\ORM\Mapping\OneToOne */
                     $assoc = $class->associationMappings[$identifierField];
@@ -226,6 +226,7 @@ class SchemaTool
                     }
                 }
             }
+
             if (!$table->hasIndex('primary')) {
                 $table->setPrimaryKey($pkColumns);
             }

@@ -138,8 +138,6 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
 
     public function testQuoteJoinColumnNames()
     {
-        $this->markTestIncomplete();
-
         $cm = $this->createClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
 
         $cm->mapOneToOne(array(

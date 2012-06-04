@@ -1379,6 +1379,11 @@ class ClassMetadataInfo implements ClassMetadata
                 if (empty($joinColumn['referencedColumnName'])) {
                     $joinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
                 }
+                if ($joinColumn['name'][0] == '`') {
+                    $joinColumn['name']   = trim($joinColumn['name'], '`');
+                    $joinColumn['quoted'] = true;
+                }
+
                 $mapping['sourceToTargetKeyColumns'][$joinColumn['name']] = $joinColumn['referencedColumnName'];
                 $mapping['joinColumnFieldNames'][$joinColumn['name']] = isset($joinColumn['fieldName'])
                         ? $joinColumn['fieldName'] : $joinColumn['name'];

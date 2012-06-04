@@ -469,7 +469,7 @@ class BasicEntityPersister
         $identifier = $this->_em->getUnitOfWork()->getEntityIdentifier($entity);
         $this->deleteJoinTableRecords($identifier);
 
-        $id = array_combine($this->_class->getIdentifierColumnNames(), $identifier);
+        $id = array_combine($this->quoteStrategy->getIdentifierColumnNames($this->_class), $identifier);
         $this->_conn->delete($this->quoteStrategy->getTableName($this->_class), $id);
     }
 

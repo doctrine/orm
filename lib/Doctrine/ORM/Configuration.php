@@ -633,7 +633,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Set quote strategy class.
      *
-     * @since 2.4
+     * @since 2.3
      * @param string $className
      */
     public function setQuoteStrategyClassName($className)
@@ -650,7 +650,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Get quote strategy class.
      *
-     * @since 2.4
+     * @since 2.3
      * @return string
      */
     public function getQuoteStrategyClassName()

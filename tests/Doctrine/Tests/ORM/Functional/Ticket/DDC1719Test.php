@@ -16,8 +16,6 @@ class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     protected function setUp()
     {
-        $this->markTestIncomplete();
-
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(array(
