@@ -255,7 +255,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             foreach ($this->_class->parentClasses as $parentClass) {
                 $this->_conn->delete(
-                    $this->_em->getClassMetadata($parentClass)->getQuotedTableName($this->_platform), $id
+                    $this->quoteStrategy->getTableName($this->_em->getClassMetadata($parentClass)), $id
                 );
             }
         }
@@ -321,7 +321,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         foreach ($this->_class->parentClasses as $parentClassName) {
             $parentClass = $this->_em->getClassMetadata($parentClassName);
             $tableAlias = $this->_getSQLTableAlias($parentClassName);
-            $joinSql .= ' INNER JOIN ' . $parentClass->getQuotedTableName($this->_platform) . ' ' . $tableAlias . ' ON ';
+            $joinSql .= ' INNER JOIN ' . $this->quoteStrategy->getTableName($parentClass) . ' ' . $tableAlias . ' ON ';
             $first = true;
 
             foreach ($idColumns as $idColumn) {
@@ -361,7 +361,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             }
 
             // Add LEFT JOIN
-            $joinSql .= ' LEFT JOIN ' . $subClass->getQuotedTableName($this->_platform) . ' ' . $tableAlias . ' ON ';
+            $joinSql .= ' LEFT JOIN ' . $this->quoteStrategy->getTableName($subClass) . ' ' . $tableAlias . ' ON ';
             $first = true;
 
             foreach ($idColumns as $idColumn) {
@@ -400,7 +400,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         return $this->_platform->modifyLimitQuery('SELECT ' . $this->_selectColumnListSql
-                . ' FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' ' . $baseTableAlias
+                . ' FROM ' . $this->quoteStrategy->getTableName($this->_class) . ' ' . $baseTableAlias
                 . $joinSql
                 . ($conditionSql != '' ? ' WHERE ' . $conditionSql : '') . $orderBySql, $limit, $offset)
                 . $lockSql;
@@ -422,7 +422,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         foreach ($this->_class->parentClasses as $parentClassName) {
             $parentClass = $this->_em->getClassMetadata($parentClassName);
             $tableAlias = $this->_getSQLTableAlias($parentClassName);
-            $joinSql .= ' INNER JOIN ' . $parentClass->getQuotedTableName($this->_platform) . ' ' . $tableAlias . ' ON ';
+            $joinSql .= ' INNER JOIN ' . $this->quoteStrategy->getTableName($parentClass) . ' ' . $tableAlias . ' ON ';
             $first = true;
 
             foreach ($idColumns as $idColumn) {
@@ -432,7 +432,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             }
         }
 
-        return 'FROM ' . $this->_class->getQuotedTableName($this->_platform) . ' ' . $baseTableAlias . $joinSql;
+        return 'FROM ' .$this->quoteStrategy->getTableName($this->_class) . ' ' . $baseTableAlias . $joinSql;
     }
 
     /* Ensure this method is never called. This persister overrides _getSelectEntitiesSQL directly. */
@@ -463,7 +463,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 }
             } else if ($this->_class->name != $this->_class->rootEntityName ||
                     ! $this->_class->isIdGeneratorIdentity() || $this->_class->identifier[0] != $name) {
-                $columns[] = $this->_class->getQuotedColumnName($name, $this->_platform);
+                $columns[] = $this->quoteStrategy->getColumnName($name, $this->_class);
             }
         }
 
