@@ -36,7 +36,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     /** {@inheritdoc} */
     protected function _getDiscriminatorColumnTableName()
     {
-        return $this->_class->getTableName();
+        return $this->quoteStrategy->getTableName($this->_class);
     }
 
     /** {@inheritdoc} */
