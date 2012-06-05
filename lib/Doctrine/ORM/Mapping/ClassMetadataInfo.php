@@ -2567,9 +2567,10 @@ class ClassMetadataInfo implements ClassMetadata
      * The definition must have the following structure:
      * <code>
      * array(
-     *     'sequenceName' => 'name',
+     *     'sequenceName'   => 'name',
      *     'allocationSize' => 20,
-     *     'initialValue' => 1
+     *     'initialValue'   => 1
+     *     'quoted'         => 1
      * )
      * </code>
      *
@@ -2577,6 +2578,11 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function setSequenceGeneratorDefinition(array $definition)
     {
+        if (isset($definition['name']) && $definition['name'] == '`') {
+            $definition['name']   = trim($definition['name'], '`');
+            $definition['quoted'] = true;
+        }
+
         $this->sequenceGeneratorDefinition = $definition;
     }
 

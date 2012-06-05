@@ -22,8 +22,19 @@ class Group
     public $name;
 
     /**
+     * @ManyToOne(targetEntity="Group", cascade={"persist"})
+     * @JoinColumn(name="`parent-id`", referencedColumnName="`group-id`")
+     */
+    public $parent;
+
+    /**
      * @ManyToMany(targetEntity="User", mappedBy="groups")
      */
     public $users;
 
+    public function __construct($name = null, Group $parent =  null)
+    {
+        $this->name     = $name;
+        $this->parent   = $parent;
+    }
 }

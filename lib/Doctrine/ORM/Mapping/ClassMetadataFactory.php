@@ -648,23 +648,40 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 // For PostgreSQL IDENTITY (SERIAL) we need a sequence name. It defaults to
                 // <table>_<column>_seq in PostgreSQL for SERIAL columns.
                 // Not pretty but necessary and the simplest solution that currently works.
-                $seqName = $this->targetPlatform instanceof Platforms\PostgreSQLPlatform ?
-                        $class->getTableName() . '_' . $class->columnNames[$class->identifier[0]] . '_seq' :
-                        null;
-                $class->setIdGenerator(new \Doctrine\ORM\Id\IdentityGenerator($seqName));
+                $sequenceName = null;
+                if($this->targetPlatform instanceof Platforms\PostgreSQLPlatform) {
+                    $fieldName      = $class->getSingleIdentifierFieldName();
+                    $columnName     = $class->getSingleIdentifierColumnName();
+                    $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
+                    $sequenceName   = $class->getTableName() . '_' . $columnName . '_seq';
+                    $definition = array(
+                        'sequenceName' => $this->targetPlatform->fixSchemaElementName($sequenceName)
+                    );
+                    if ($quoted) {
+                        $definition['quoted'] = true;
+                    }
+                    $sequenceName = $this->em->getQuoteStrategy()->getSequenceName($definition, $class);
+                }
+                $class->setIdGenerator(new \Doctrine\ORM\Id\IdentityGenerator($sequenceName));
                 break;
             case ClassMetadata::GENERATOR_TYPE_SEQUENCE:
                 // If there is no sequence definition yet, create a default definition
                 $definition = $class->sequenceGeneratorDefinition;
                 if ( ! $definition) {
-                    $sequenceName = $class->getTableName() . '_' . $class->getSingleIdentifierColumnName() . '_seq';
-                    $definition['sequenceName'] = $this->targetPlatform->fixSchemaElementName($sequenceName);
-                    $definition['allocationSize'] = 1;
-                    $definition['initialValue'] = 1;
+                    $fieldName      = $class->getSingleIdentifierFieldName();
+                    $columnName     = $class->getSingleIdentifierColumnName();
+                    $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
+                    $sequenceName   = $class->getTableName() . '_' . $columnName . '_seq';
+                    $definition['sequenceName']     = $this->targetPlatform->fixSchemaElementName($sequenceName);
+                    $definition['allocationSize']   = 1;
+                    $definition['initialValue']     = 1;
+                    if ($quoted) {
+                        $definition['quoted'] = true;
+                    }
                     $class->setSequenceGeneratorDefinition($definition);
                 }
                 $sequenceGenerator = new \Doctrine\ORM\Id\SequenceGenerator(
-                    $definition['sequenceName'],
+                    $this->em->getQuoteStrategy()->getSequenceName($definition, $class),
                     $definition['allocationSize']
                 );
                 $class->setIdGenerator($sequenceGenerator);

@@ -1080,10 +1080,11 @@ class BasicEntityPersister
             foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
                 if ($columnList) $columnList .= ', ';
 
+                $quotedColumn     = $this->quoteStrategy->getJoinColumnName($srcColumn, $assoc, $this->_class);
                 $resultColumnName = $this->getSQLColumnAlias($srcColumn);
                 $columnList .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )
-                             . '.' . $srcColumn . ' AS ' . $resultColumnName;
-                $this->_rsm->addMetaResult($alias, $resultColumnName, $srcColumn, isset($assoc['id']) && $assoc['id'] === true);
+                             . '.' . $quotedColumn . ' AS ' . $resultColumnName;
+                $this->_rsm->addMetaResult($alias, $resultColumnName, $quotedColumn, isset($assoc['id']) && $assoc['id'] === true);
             }
         }
 
@@ -1191,7 +1192,7 @@ class BasicEntityPersister
 
                 if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
                     foreach ($assoc['targetToSourceKeyColumns'] as $sourceCol) {
-                        $columns[] = $sourceCol;
+                        $columns[] = $this->quoteStrategy->getJoinColumnName($sourceCol, $assoc, $this->_class);
                     }
                 }
             } else if ($this->_class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $this->_class->identifier[0] != $name) {

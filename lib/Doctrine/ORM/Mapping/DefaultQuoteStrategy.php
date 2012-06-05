@@ -52,6 +52,37 @@ class DefaultQuoteStrategy extends QuoteStrategy
     /**
      * {@inheritdoc}
      */
+    public function getSequenceName(array $definition, ClassMetadata $class)
+    {
+        return isset($definition['quoted'])
+                ? $this->platform->quoteSingleIdentifier($definition['sequenceName'])
+                : $definition['sequenceName'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getJoinColumnName($columnName, array $association, ClassMetadata $class)
+    {
+        if( !isset($association['joinColumns'])) {
+            return $columnName;
+        }
+
+        foreach ($association['joinColumns'] as $joinColumn) {
+            if($joinColumn['name'] === $columnName) {
+                if (isset($joinColumn['quoted'])) {
+                    return $this->platform->quoteIdentifier($columnName);
+                }
+                return $columnName;
+            }
+        }
+
+        return $columnName;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getJoinTableName(array $association, ClassMetadata $class)
     {
         return isset($association['joinTable']['quoted'])

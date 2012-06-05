@@ -25,8 +25,8 @@ class DDC1151Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals("CREATE INDEX IDX_88A3259AC5AD08A ON ddc1151user_ddc1151group (ddc1151user_id)", $sql[2]);
         $this->assertEquals("CREATE INDEX IDX_88A32597357E0B1 ON ddc1151user_ddc1151group (ddc1151group_id)", $sql[3]);
         $this->assertEquals("CREATE TABLE \"Group\" (id INT NOT NULL, PRIMARY KEY(id))", $sql[4]);
-        $this->assertEquals("CREATE SEQUENCE User_id_seq INCREMENT BY 1 MINVALUE 1 START 1", $sql[5]);
-        $this->assertEquals("CREATE SEQUENCE Group_id_seq INCREMENT BY 1 MINVALUE 1 START 1", $sql[6]);
+        $this->assertEquals("CREATE SEQUENCE \"User_id_seq\" INCREMENT BY 1 MINVALUE 1 START 1", $sql[5]);
+        $this->assertEquals("CREATE SEQUENCE \"Group_id_seq\" INCREMENT BY 1 MINVALUE 1 START 1", $sql[6]);
         $this->assertEquals("ALTER TABLE ddc1151user_ddc1151group ADD CONSTRAINT FK_88A3259AC5AD08A FOREIGN KEY (ddc1151user_id) REFERENCES \"User\" (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[7]);
         $this->assertEquals("ALTER TABLE ddc1151user_ddc1151group ADD CONSTRAINT FK_88A32597357E0B1 FOREIGN KEY (ddc1151group_id) REFERENCES \"Group\" (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE", $sql[8]);
     }

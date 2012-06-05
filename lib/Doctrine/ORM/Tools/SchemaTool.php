@@ -217,12 +217,12 @@ class SchemaTool
             $pkColumns = array();
             foreach ($class->identifier as $identifierField) {
                 if (isset($class->fieldMappings[$identifierField])) {
-                    $pkColumns[] = $class->getColumnName($identifierField);
+                    $pkColumns[] = $this->quoteStrategy->getColumnName($identifierField, $class);
                 } else if (isset($class->associationMappings[$identifierField])) {
                     /* @var $assoc \Doctrine\ORM\Mapping\OneToOne */
                     $assoc = $class->associationMappings[$identifierField];
                     foreach ($assoc['joinColumns'] as $joinColumn) {
-                        $pkColumns[] = $joinColumn['name'];
+                        $pkColumns[] = $this->quoteStrategy->getJoinColumnName($joinColumn['name'], $assoc, $class);
                     }
                 }
             }
@@ -252,11 +252,11 @@ class SchemaTool
             $processedClasses[$class->name] = true;
 
             if ($class->isIdGeneratorSequence() && $class->name == $class->rootEntityName) {
-                $seqDef = $class->sequenceGeneratorDefinition;
-
-                if (!$schema->hasSequence($seqDef['sequenceName'])) {
+                $seqDef     = $class->sequenceGeneratorDefinition;
+                $quotedName = $this->quoteStrategy->getSequenceName($seqDef, $class);
+                if ( ! $schema->hasSequence($quotedName)) {
                     $schema->createSequence(
-                        $seqDef['sequenceName'],
+                        $quotedName,
                         $seqDef['allocationSize'],
                         $seqDef['initialValue']
                     );
@@ -523,9 +523,10 @@ class SchemaTool
                 );
             }
 
-            $primaryKeyColumns[] = $columnName;
-            $localColumns[] = $columnName;
-            $foreignColumns[] = $joinColumn['referencedColumnName'];
+            $primaryKeyColumns[]    = $columnName;
+            $localColumns[]         = $columnName;
+            $foreignColumns[]       = $joinColumn['referencedColumnName'];
+            $quotedColumnName       = $this->quoteStrategy->getJoinColumnName($columnName, $mapping, $class);
 
             if ( ! $theJoinTable->hasColumn($joinColumn['name'])) {
                 // Only add the column to the table if it does not exist already.
@@ -551,7 +552,7 @@ class SchemaTool
                     $columnOptions['precision'] = $fieldMapping['precision'];
                 }
 
-                $theJoinTable->addColumn($columnName, $fieldMapping['type'], $columnOptions);
+                $theJoinTable->addColumn($quotedColumnName, $fieldMapping['type'], $columnOptions);
             }
 
             if (isset($joinColumn['unique']) && $joinColumn['unique'] == true) {

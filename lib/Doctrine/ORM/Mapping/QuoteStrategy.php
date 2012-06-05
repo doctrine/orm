@@ -61,12 +61,31 @@ abstract class QuoteStrategy
     abstract public function getTableName(ClassMetadata $class);
 
     /**
+     * Gets the (possibly quoted) sequence name for safe use in an SQL statement.
+     *
+     * @param   array $definition
+     * @param   ClassMetadata $class
+     * @return  string
+     */
+    abstract public function getSequenceName(array $definition, ClassMetadata $class);
+
+    /**
      * Gets the (possibly quoted) name of the join table.
      *
+     * @param   array $association
      * @param   ClassMetadata $class
      * @return  string
      */
     abstract public function getJoinTableName(array $association, ClassMetadata $class);
+
+    /**
+     * Gets the (possibly quoted) join column name.
+     *
+     * @param   array $association
+     * @param   ClassMetadata $class
+     * @return  string
+     */
+    abstract public function getJoinColumnName($columnName, array $association, ClassMetadata $class);
 
     /**
      * Gets the (possibly quoted) identifier column names for safe use in an SQL statement.

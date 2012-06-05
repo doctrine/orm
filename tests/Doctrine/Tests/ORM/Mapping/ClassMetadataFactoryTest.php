@@ -272,13 +272,17 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
 
 
 
-        // User Class Metadata
+        // User Group Metadata
         $this->assertTrue($groupMetadata->fieldMappings['id']['quoted']);
         $this->assertTrue($groupMetadata->fieldMappings['name']['quoted']);
 
         $this->assertEquals('user-id', $userMetadata->fieldMappings['id']['columnName']);
         $this->assertEquals('user-name', $userMetadata->fieldMappings['name']['columnName']);
 
+        $user = $groupMetadata->associationMappings['parent'];
+        $this->assertTrue($user['joinColumns'][0]['quoted']);
+        $this->assertEquals('parent-id', $user['joinColumns'][0]['name']);
+        $this->assertEquals('group-id', $user['joinColumns'][0]['referencedColumnName']);
 
         
         // Address Class Metadata
