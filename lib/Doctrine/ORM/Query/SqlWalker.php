@@ -2046,8 +2046,8 @@ class SqlWalker implements TreeWalker
     public function walkArithmeticExpression($arithmeticExpr)
     {
         return ($arithmeticExpr->isSimpleArithmeticExpression())
-                ? $this->walkSimpleArithmeticExpression($arithmeticExpr->simpleArithmeticExpression)
-                : '(' . $this->walkSubselect($arithmeticExpr->subselect) . ')';
+            ? $this->walkSimpleArithmeticExpression($arithmeticExpr->simpleArithmeticExpression)
+            : '(' . $this->walkSubselect($arithmeticExpr->subselect) . ')';
     }
 
     /**
