@@ -264,9 +264,8 @@ Important Implementation Notes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can easily get the optimistic locking workflow wrong if you
-compare the wrong versions. Say you have Alice and Bob accessing a
-hypothetical bank account:
-
+compare the wrong versions. Say you have Alice and Bob editing a
+hypothetical blog post:
 
 -  Alice reads the headline of the blog post being "Foo", at
    optimistic lock version 1 (GET Request)
