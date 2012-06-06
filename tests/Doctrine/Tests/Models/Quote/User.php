@@ -40,7 +40,8 @@ class User
      *      joinColumns={
      *          @JoinColumn(
      *              name="`user-id`",
-     *              referencedColumnName="`user-id`")
+     *              referencedColumnName="`user-id`"
+     *          )
      *      },
      *      inverseJoinColumns={
      *          @JoinColumn(

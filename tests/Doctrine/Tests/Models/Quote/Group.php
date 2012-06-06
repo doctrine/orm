@@ -22,6 +22,8 @@ class Group
     public $name;
 
     /**
+     * @var Group
+     *
      * @ManyToOne(targetEntity="Group", cascade={"persist"})
      * @JoinColumn(name="`parent-id`", referencedColumnName="`group-id`")
      */

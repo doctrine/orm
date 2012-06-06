@@ -513,8 +513,10 @@ class SchemaTool
         $foreignTableName   = $this->quoteStrategy->getTableName($class);
 
         foreach ($joinColumns as $joinColumn) {
-            $columnName = $joinColumn['name'];
-            list($definingClass, $referencedFieldName) = $this->getDefiningClass($class, $joinColumn['referencedColumnName']);
+            $columnName             = $joinColumn['name'];
+            $referencedColumnName   = $joinColumn['referencedColumnName'];
+
+            list($definingClass, $referencedFieldName) = $this->getDefiningClass($class, $referencedColumnName);
 
             if (!$definingClass) {
                 throw new \Doctrine\ORM\ORMException(
@@ -523,12 +525,14 @@ class SchemaTool
                 );
             }
 
-            $primaryKeyColumns[]    = $columnName;
-            $localColumns[]         = $columnName;
-            $foreignColumns[]       = $joinColumn['referencedColumnName'];
             $quotedColumnName       = $this->quoteStrategy->getJoinColumnName($columnName, $mapping, $class);
+            $quotedRefColumnName    = $this->quoteStrategy->getReferencedJoinColumnName($referencedColumnName, $mapping, $class);
 
-            if ( ! $theJoinTable->hasColumn($joinColumn['name'])) {
+            $primaryKeyColumns[]    = $quotedColumnName;
+            $localColumns[]         = $quotedColumnName;
+            $foreignColumns[]       = $quotedRefColumnName;
+
+            if ( ! $theJoinTable->hasColumn($quotedColumnName)) {
                 // Only add the column to the table if it does not exist already.
                 // It might exist already if the foreign key is mapped into a regular
                 // property as well.
@@ -556,7 +560,7 @@ class SchemaTool
             }
 
             if (isset($joinColumn['unique']) && $joinColumn['unique'] == true) {
-                $uniqueConstraints[] = array('columns' => array($columnName));
+                $uniqueConstraints[] = array('columns' => array($quotedColumnName));
             }
 
             if (isset($joinColumn['onDelete'])) {

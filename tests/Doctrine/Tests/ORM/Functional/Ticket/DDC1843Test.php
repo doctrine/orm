@@ -16,14 +16,16 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     protected function setUp()
     {
-        $this->markTestIncomplete();
         parent::setUp();
 
-        $this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
         try {
             $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(self::CLASS_NAME),
+                //$this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\User'),
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Group'),
+                //$this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Phone'),
+                //$this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Address'),
             ));
         } catch(\Exception $e) {
             $this->fail($e->getMessage());
@@ -70,42 +72,63 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($e3Id, $e3->id);
         $this->assertEquals($e4Id, $e4->id);
 
-        return;
 
-        $this->assertEquals('Bar 1', $e1->value);
-        $this->assertEquals('Foo 1', $e2->value);
+        $this->assertEquals('Parent Bar 1', $e1->name);
+        $this->assertEquals('Parent Foo 2', $e2->name);
+        $this->assertEquals('Bar 3', $e3->name);
+        $this->assertEquals('Foo 4', $e4->name);
 
-        $e1->value = 'Bar 2';
-        $e2->value = 'Foo 2';
+        $e1->name = 'Parent Bar 11';
+        $e2->name = 'Parent Foo 22';
+        $e3->name = 'Bar 33';
+        $e4->name = 'Foo 44';
 
         // Update
         $this->_em->persist($e1);
         $this->_em->persist($e2);
+        $this->_em->persist($e3);
+        $this->_em->persist($e4);
         $this->_em->flush();
 
-        $this->assertEquals('Bar 2', $e1->value);
-        $this->assertEquals('Foo 2', $e2->value);
+        $this->assertEquals('Parent Bar 11', $e1->name);
+        $this->assertEquals('Parent Foo 22', $e2->name);
+        $this->assertEquals('Bar 33', $e3->name);
+        $this->assertEquals('Foo 44', $e4->name);
 
         $this->assertInstanceOf(self::CLASS_NAME, $e1);
         $this->assertInstanceOf(self::CLASS_NAME, $e2);
+        $this->assertInstanceOf(self::CLASS_NAME, $e3);
+        $this->assertInstanceOf(self::CLASS_NAME, $e4);
 
         $this->assertEquals($e1Id, $e1->id);
         $this->assertEquals($e2Id, $e2->id);
+        $this->assertEquals($e3Id, $e3->id);
+        $this->assertEquals($e4Id, $e4->id);
 
-        $this->assertEquals('Bar 2', $e1->value);
-        $this->assertEquals('Foo 2', $e2->value);
+        $this->assertEquals('Parent Bar 11', $e1->name);
+        $this->assertEquals('Parent Foo 22', $e2->name);
+        $this->assertEquals('Bar 33', $e3->name);
+        $this->assertEquals('Foo 44', $e4->name);
+
+        $this->markTestIncomplete();
 
         // Delete
         $this->_em->remove($e1);
         $this->_em->remove($e2);
+        $this->_em->remove($e3);
+        $this->_em->remove($e4);
         $this->_em->flush();
 
 
-        $e1 = $this->_em->find(self::CLASS_NAME, $e1Id);
-        $e2 = $this->_em->find(self::CLASS_NAME, $e2Id);
+        $this->assertInstanceOf(self::CLASS_NAME, $e1);
+        $this->assertInstanceOf(self::CLASS_NAME, $e2);
+        $this->assertInstanceOf(self::CLASS_NAME, $e3);
+        $this->assertInstanceOf(self::CLASS_NAME, $e4);
 
         $this->assertNull($e1);
         $this->assertNull($e2);
+        $this->assertNull($e3);
+        $this->assertNull($e4);
     }
 
 }

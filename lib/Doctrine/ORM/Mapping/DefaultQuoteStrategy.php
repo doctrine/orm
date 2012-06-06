@@ -64,12 +64,33 @@ class DefaultQuoteStrategy extends QuoteStrategy
      */
     public function getJoinColumnName($columnName, array $association, ClassMetadata $class)
     {
-        if( !isset($association['joinColumns'])) {
+        if( ! isset($association['joinColumns'])) {
             return $columnName;
         }
 
         foreach ($association['joinColumns'] as $joinColumn) {
             if($joinColumn['name'] === $columnName) {
+                if (isset($joinColumn['quoted'])) {
+                    return $this->platform->quoteIdentifier($columnName);
+                }
+                return $columnName;
+            }
+        }
+
+        return $columnName;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getReferencedJoinColumnName($columnName, array $association, ClassMetadata $class)
+    {
+        if( ! isset($association['joinColumns'])) {
+            return $columnName;
+        }
+
+        foreach ($association['joinColumns'] as $joinColumn) {
+            if($joinColumn['referencedColumnName'] === $columnName) {
                 if (isset($joinColumn['quoted'])) {
                     return $this->platform->quoteIdentifier($columnName);
                 }
