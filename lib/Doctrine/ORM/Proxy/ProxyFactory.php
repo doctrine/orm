@@ -273,7 +273,6 @@ class <proxyClassName> extends \<className> implements \Doctrine\ORM\Proxy\Proxy
     public function __load()
     {
         if (!$this->__isInitialized__ && $this->_entityPersister) {
-            $this->__isInitialized__ = true;
 
             if (method_exists($this, "__wakeup")) {
                 // call this after __isInitialized__to avoid infinite recursion
@@ -286,6 +285,7 @@ class <proxyClassName> extends \<className> implements \Doctrine\ORM\Proxy\Proxy
                 throw new \Doctrine\ORM\EntityNotFoundException();
             }
             unset($this->_entityPersister, $this->_identifier);
+            $this->__isInitialized__ = true;
         }
     }
     
@@ -299,7 +299,6 @@ class <proxyClassName> extends \<className> implements \Doctrine\ORM\Proxy\Proxy
     public function __clone()
     {
         if (!$this->__isInitialized__ && $this->_entityPersister) {
-            $this->__isInitialized__ = true;
             $class = $this->_entityPersister->getClassMetadata();
             $original = $this->_entityPersister->load($this->_identifier);
             if ($original === null) {
@@ -309,6 +308,7 @@ class <proxyClassName> extends \<className> implements \Doctrine\ORM\Proxy\Proxy
                 $reflProperty->setValue($this, $reflProperty->getValue($original));
             }
             unset($this->_entityPersister, $this->_identifier);
+            $this->__isInitialized__ = true;
         }
         <cloneImpl>
     }
