@@ -136,6 +136,7 @@ following set of classes. Put them into `entities/Bug.php`,
 
 .. code-block:: php
 
+    <?php
     // User.php
     class User
     {
@@ -160,7 +161,7 @@ following set of classes. Put them into `entities/Bug.php`,
 
 .. warning::
 
-    Properties should never be public when working when using Doctrine.
+    Properties should never be public when using Doctrine.
     This will lead to bugs with the way lazy loading works in Doctrine.
 
 You see that all properties have getters and setters except `$id`.
