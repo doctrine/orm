@@ -905,11 +905,62 @@ class Parser
         $qComp = $this->_queryComponents[$identVariable];
         $class = $qComp['metadata'];
 
-        if ( ! isset($class->associationMappings[$field])) {
+        if ( ! $class->hasAssociation($field)) {
             $this->semanticalError('Class ' . $class->name . ' has no association named ' . $field);
         }
 
-        return new AST\JoinAssociationPathExpression($identVariable, $field);
+        if ($this->_lexer->isNextToken(Lexer::T_AS)) {
+            $this->match(Lexer::T_AS);
+        }
+
+        $token = $this->_lexer->lookahead;
+        $aliasIdentificationVariable = $this->AliasIdentificationVariable();
+
+        // Building queryComponent
+        $joinQueryComponent = array(
+            'metadata'     => $this->_em->getClassMetadata($class->associationMappings[$field]['targetEntity']),
+            'parent'       => $identVariable,
+            'relation'     => $class->getAssociationMapping($field),
+            'map'          => null,
+            'nestingLevel' => $this->_nestingLevel,
+            'token'        => $this->_lexer->lookahead
+        );
+
+        $this->_queryComponents[$aliasIdentificationVariable] = $joinQueryComponent;
+
+        return new AST\JoinAssociationPathExpression($identVariable, $field, $aliasIdentificationVariable);
+    }
+
+    /**
+     * JoinClassPathExpression ::= Class alias
+     *
+     * @return \Doctrine\ORM\Query\AST\JoinClassPathExpression
+     */
+    public function JoinClassPathExpression()
+    {
+        $abstractSchemaName = $this->AbstractSchemaName();
+
+        if ($this->_lexer->isNextToken(Lexer::T_AS)) {
+            $this->match(Lexer::T_AS);
+        }
+
+        $token = $this->_lexer->lookahead;
+        $aliasIdentificationVariable = $this->AliasIdentificationVariable();
+        $classMetadata = $this->_em->getClassMetadata($abstractSchemaName);
+
+        // Building queryComponent
+        $queryComponent = array(
+            'metadata'     => $classMetadata,
+            'parent'       => null,
+            'relation'     => null,
+            'map'          => null,
+            'nestingLevel' => $this->_nestingLevel,
+            'token'        => $token
+        );
+
+        $this->_queryComponents[$aliasIdentificationVariable] = $queryComponent;
+
+        return new AST\JoinClassPathExpression($abstractSchemaName, $aliasIdentificationVariable);
     }
 
     /**
@@ -1570,41 +1621,19 @@ class Parser
 
         $this->match(Lexer::T_JOIN);
 
-        $joinPathExpression = $this->JoinAssociationPathExpression();
+        $next = $this->_lexer->glimpse();
+        if ($next['type'] === Lexer::T_DOT) {
+            $joinPathExpression = $this->JoinAssociationPathExpression();
+        } else {
+            $joinPathExpression = $this->JoinClassPathExpression();
 
-        if ($this->_lexer->isNextToken(Lexer::T_AS)) {
-            $this->match(Lexer::T_AS);
+            if (!$this->_lexer->isNextToken(Lexer::T_WITH)) {
+                $this->syntaxError('WITH');
+            }
         }
-
-        $token = $this->_lexer->lookahead;
-        $aliasIdentificationVariable = $this->AliasIdentificationVariable();
-
-        // Verify that the association exists.
-        $parentClass = $this->_queryComponents[$joinPathExpression->identificationVariable]['metadata'];
-        $assocField  = $joinPathExpression->associationField;
-
-        if ( ! $parentClass->hasAssociation($assocField)) {
-            $this->semanticalError(
-                "Class " . $parentClass->name . " has no association named '$assocField'."
-            );
-        }
-
-        $targetClassName = $parentClass->associationMappings[$assocField]['targetEntity'];
-
-        // Building queryComponent
-        $joinQueryComponent = array(
-            'metadata'     => $this->_em->getClassMetadata($targetClassName),
-            'parent'       => $joinPathExpression->identificationVariable,
-            'relation'     => $parentClass->getAssociationMapping($assocField),
-            'map'          => null,
-            'nestingLevel' => $this->_nestingLevel,
-            'token'        => $token
-        );
-
-        $this->_queryComponents[$aliasIdentificationVariable] = $joinQueryComponent;
 
         // Create AST node
-        $join = new AST\Join($joinType, $joinPathExpression, $aliasIdentificationVariable);
+        $join = new AST\Join($joinType, $joinPathExpression);
 
         // Check for ad-hoc Join conditions
         if ($this->_lexer->isNextToken(Lexer::T_WITH)) {
