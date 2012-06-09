@@ -17,11 +17,12 @@
  * <http://www.doctrine-project.org>.
  */
 
-if (!@include __DIR__ . '/../../../autoload.php') {
-   die(<<<'EOT'
-This command can only be run when Doctrine is installed through Composer.
-EOT
-   );
+$previousDir = null;
+$currentDir = __DIR__;
+
+while ($previousDir !== $currentDir && !@include_once($currentDir . '/vendor/autoload.php')) {
+    $previousDir = $currentDir;
+    $currentDir = dirname($currentDir);
 }
 
 $configFile = getcwd() . DIRECTORY_SEPARATOR . 'cli-config.php';
