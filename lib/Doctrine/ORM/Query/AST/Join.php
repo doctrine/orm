@@ -40,15 +40,13 @@ class Join extends Node
     const JOIN_TYPE_INNER = 3;
 
     public $joinType = self::JOIN_TYPE_INNER;
-    public $joinAssociationPathExpression = null;
-    public $aliasIdentificationVariable = null;
+    public $joinPathExpression = null;
     public $conditionalExpression = null;
 
-    public function __construct($joinType, $joinAssocPathExpr, $aliasIdentVar)
+    public function __construct($joinType, $joinPathExpr)
     {
         $this->joinType = $joinType;
-        $this->joinAssociationPathExpression = $joinAssocPathExpr;
-        $this->aliasIdentificationVariable = $aliasIdentVar;
+        $this->joinAssociationPathExpression = $joinPathExpr;
     }
 
     public function dispatch($sqlWalker)
