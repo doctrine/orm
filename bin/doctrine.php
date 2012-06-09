@@ -17,14 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-$previousDir = null;
-$currentDir = __DIR__;
-
-while ($previousDir !== $currentDir && !@include_once($currentDir . '/vendor/autoload.php')) {
-    $previousDir = $currentDir;
-    $currentDir = dirname($currentDir);
-}
-
+(@include_once __DIR__ . '/../vendor/autoload.php') || @include_once __DIR__ . '/../../../autoload.php';
 $configFile = getcwd() . DIRECTORY_SEPARATOR . 'cli-config.php';
 
 $helperSet = null;
