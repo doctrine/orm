@@ -27,7 +27,8 @@ use ReflectionException,
     Doctrine\Common\Persistence\Mapping\ReflectionService,
     Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface,
     Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory,
-    Doctrine\ORM\Id\IdentityGenerator;
+    Doctrine\ORM\Id\IdentityGenerator,
+    Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -84,126 +85,90 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     /**
      * {@inheritDoc}
-
      */
-    protected function loadMetadata($name)
+    protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents)
     {
-        if ( ! $this->initialized) {
-            $this->initialize();
+        /* @var $class ClassMetadata */
+        /* @var $parent ClassMetadata */
+        if ($parent) {
+            $class->setInheritanceType($parent->inheritanceType);
+            $class->setDiscriminatorColumn($parent->discriminatorColumn);
+            $class->setIdGeneratorType($parent->generatorType);
+            $this->addInheritedFields($class, $parent);
+            $this->addInheritedRelations($class, $parent);
+            $class->setIdentifier($parent->identifier);
+            $class->setVersioned($parent->isVersioned);
+            $class->setVersionField($parent->versionField);
+            $class->setDiscriminatorMap($parent->discriminatorMap);
+            $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
+            $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
+
+            if ($parent->isMappedSuperclass) {
+                $class->setCustomRepositoryClass($parent->customRepositoryClassName);
+            }
         }
 
-        $loaded = array();
+        // Invoke driver
+        try {
+            $this->driver->loadMetadataForClass($class->getName(), $class);
+        } catch (ReflectionException $e) {
+            throw MappingException::reflectionFailure($class->getName(), $e);
+        }
 
-        $parentClasses = $this->getParentClasses($name);
-        $parentClasses[] = $name;
-
-        // Move down the hierarchy of parent classes, starting from the topmost class
-        $parent = null;
-        $rootEntityFound = false;
-        $visited = array();
-        foreach ($parentClasses as $className) {
-            if ($this->hasMetadataFor($className)) {
-                $parent = $this->getMetadataFor($className);
-                if ( ! $parent->isMappedSuperclass) {
-                    $rootEntityFound = true;
-                    array_unshift($visited, $className);
-                }
-                continue;
+        // If this class has a parent the id generator strategy is inherited.
+        // However this is only true if the hierarchy of parents contains the root entity,
+        // if it consists of mapped superclasses these don't necessarily include the id field.
+        if ($parent && $rootEntityFound) {
+            if ($parent->isIdGeneratorSequence()) {
+                $class->setSequenceGeneratorDefinition($parent->sequenceGeneratorDefinition);
+            } else if ($parent->isIdGeneratorTable()) {
+                $class->tableGeneratorDefinition = $parent->tableGeneratorDefinition;
             }
 
-            $class = $this->newClassMetadataInstance($className);
-            $this->initializeReflection($class, $this->getReflectionService());
-
-            if ($parent) {
-                $class->setInheritanceType($parent->inheritanceType);
-                $class->setDiscriminatorColumn($parent->discriminatorColumn);
+            if ($parent->generatorType) {
                 $class->setIdGeneratorType($parent->generatorType);
-                $this->addInheritedFields($class, $parent);
-                $this->addInheritedRelations($class, $parent);
-                $class->setIdentifier($parent->identifier);
-                $class->setVersioned($parent->isVersioned);
-                $class->setVersionField($parent->versionField);
-                $class->setDiscriminatorMap($parent->discriminatorMap);
-                $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
-                $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
-                if ($parent->isMappedSuperclass) {
-                    $class->setCustomRepositoryClass($parent->customRepositoryClassName);
-                }
             }
 
-            // Invoke driver
-            try {
-                $this->driver->loadMetadataForClass($className, $class);
-            } catch (ReflectionException $e) {
-                throw MappingException::reflectionFailure($className, $e);
+            if ($parent->idGenerator) {
+                $class->setIdGenerator($parent->idGenerator);
             }
-
-            // If this class has a parent the id generator strategy is inherited.
-            // However this is only true if the hierarchy of parents contains the root entity,
-            // if it consists of mapped superclasses these don't necessarily include the id field.
-            if ($parent && $rootEntityFound) {
-                if ($parent->isIdGeneratorSequence()) {
-                    $class->setSequenceGeneratorDefinition($parent->sequenceGeneratorDefinition);
-                } else if ($parent->isIdGeneratorTable()) {
-                    $class->tableGeneratorDefinition = $parent->tableGeneratorDefinition;
-                }
-                if ($parent->generatorType) {
-                    $class->setIdGeneratorType($parent->generatorType);
-                }
-                if ($parent->idGenerator) {
-                    $class->setIdGenerator($parent->idGenerator);
-                }
-            } else {
-                $this->completeIdGeneratorMapping($class);
-            }
-
-            if ($parent && $parent->isInheritanceTypeSingleTable()) {
-                $class->setPrimaryTable($parent->table);
-            }
-
-            if ($parent && $parent->containsForeignIdentifier) {
-                $class->containsForeignIdentifier = true;
-            }
-
-            if ($parent && !empty ($parent->namedQueries)) {
-                $this->addInheritedNamedQueries($class, $parent);
-            }
-
-            if ($parent && !empty ($parent->namedNativeQueries)) {
-                $this->addInheritedNamedNativeQueries($class, $parent);
-            }
-
-            if ($parent && !empty ($parent->sqlResultSetMappings)) {
-                $this->addInheritedSqlResultSetMappings($class, $parent);
-            }
-
-            $class->setParentClasses($visited);
-
-            if ( $class->isRootEntity() && ! $class->isInheritanceTypeNone() && ! $class->discriminatorMap) {
-                $this->addDefaultDiscriminatorMap($class);
-            }
-
-            if ($this->evm->hasListeners(Events::loadClassMetadata)) {
-                $eventArgs = new \Doctrine\ORM\Event\LoadClassMetadataEventArgs($class, $this->em);
-                $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
-            }
-            $this->wakeupReflection($class, $this->getReflectionService());
-
-            $this->validateRuntimeMetadata($class, $parent);
-
-            $this->setMetadataFor($className, $class);
-
-            $parent = $class;
-
-            if ( ! $class->isMappedSuperclass) {
-                $rootEntityFound = true;
-                array_unshift($visited, $className);
-            }
-
-            $loaded[] = $className;
+        } else {
+            $this->completeIdGeneratorMapping($class);
         }
 
-        return $loaded;
+        if ($parent && $parent->isInheritanceTypeSingleTable()) {
+            $class->setPrimaryTable($parent->table);
+        }
+
+        if ($parent && $parent->containsForeignIdentifier) {
+            $class->containsForeignIdentifier = true;
+        }
+
+        if ($parent && !empty ($parent->namedQueries)) {
+            $this->addInheritedNamedQueries($class, $parent);
+        }
+
+        if ($parent && !empty ($parent->namedNativeQueries)) {
+            $this->addInheritedNamedNativeQueries($class, $parent);
+        }
+
+        if ($parent && !empty ($parent->sqlResultSetMappings)) {
+            $this->addInheritedSqlResultSetMappings($class, $parent);
+        }
+
+        $class->setParentClasses($nonSuperclassParents);
+
+        if ( $class->isRootEntity() && ! $class->isInheritanceTypeNone() && ! $class->discriminatorMap) {
+            $this->addDefaultDiscriminatorMap($class);
+        }
+
+        if ($this->evm->hasListeners(Events::loadClassMetadata)) {
+            $eventArgs = new LoadClassMetadataEventArgs($class, $this->em);
+            $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
+        }
+
+        $this->wakeupReflection($class, $this->getReflectionService());
+        $this->validateRuntimeMetadata($class, $parent);
     }
 
     /**
@@ -585,16 +550,5 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function getDriver()
     {
         return $this->driver;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function doLoadMetadata($class, $parent, $rootEntityFound)
-    {
-        throw new \LogicException(
-            'Not implemented because Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory '
-            . 'behavior differs in how Doctrine\ORM\Mapping\MetadataFactory works'
-        );
     }
 }
