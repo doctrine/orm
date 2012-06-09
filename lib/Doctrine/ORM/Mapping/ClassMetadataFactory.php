@@ -382,7 +382,6 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
         $class->validateIdentifier();
         $class->validateAssocations();
-        $class->validateLifecycleCallbacks($this->getReflectionService());
 
         // verify inheritance
         if (!$class->isMappedSuperclass && !$class->isInheritanceTypeNone()) {

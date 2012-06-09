@@ -144,14 +144,7 @@ class SchemaValidatorTest extends \Doctrine\Tests\OrmTestCase
     {
         $nonPublicCallbacks = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC1852InvalidLifecycleCallbacks');
 
-        // annotation driver allows callbacks mapping public properties only. Mocking XML/YAML/PHP driver behavior here
-        $nonPublicCallbacks->lifecycleCallbacks = array(
-            \Doctrine\ORM\Events::prePersist => array(
-                'somePrivateMethod',
-                'someProtectedMethod',
-                'someNonExistingMethod',
-            ),
-        );
+        $nonPublicCallbacks->lifecycleCallbacks[\Doctrine\ORM\Events::prePersist][] = 'someNonExistingMethod';
         $ce = $this->validator->validateClass($nonPublicCallbacks);
 
         $this->assertEquals(
@@ -299,14 +292,16 @@ class DDC1649Three
 
 /**
  * @Entity
- * @HasLifecycleCallbacks
  */
 class DDC1852InvalidLifecycleCallbacks
 {
     /** @Id @Column */
     private $id;
 
+    /** @PrePersist */
     private function somePrivateMethod() {}
+
+    /** @PrePersist */
     protected function someProtectedMethod() {}
 }
 
