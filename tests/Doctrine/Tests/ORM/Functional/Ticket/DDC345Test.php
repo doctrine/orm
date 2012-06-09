@@ -103,7 +103,6 @@ class DDC345Group
 
 /**
  * @Entity
- * @HasLifecycleCallbacks
  * @Table(name="ddc345_memberships", uniqueConstraints={
  *      @UniqueConstraint(name="ddc345_memship_fks", columns={"user_id","group_id"})
  * })

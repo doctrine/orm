@@ -184,7 +184,7 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 
-/** @Entity @HasLifecycleCallbacks */
+/** @Entity */
 class LifecycleCallbackTestUser {
     /** @Id @Column(type="integer") @GeneratedValue */
     private $id;
@@ -203,7 +203,6 @@ class LifecycleCallbackTestUser {
 
 /**
  * @Entity
- * @HasLifecycleCallbacks
  * @Table(name="lc_cb_test_entity")
  */
 class LifecycleCallbackTestEntity
@@ -288,7 +287,7 @@ class LifecycleCallbackCascader
     }
 }
 
-/** @MappedSuperclass @HasLifecycleCallbacks */
+/** @MappedSuperclass */
 class LifecycleCallbackParentEntity {
     /** @PrePersist */
     function doStuff() {

@@ -262,7 +262,6 @@ class MappedSuperClassInheritence
  * @Entity
  * @InheritanceType("JOINED")
  * @DiscriminatorMap({"parent" = "AnnotationParent", "child" = "AnnotationChild"})
- * @HasLifecycleCallbacks
  */
 class AnnotationParent
 {
@@ -288,10 +287,7 @@ class AnnotationParent
     }
 }
 
-/**
- * @Entity
- * @HasLifecycleCallbacks
- */
+/** @Entity */
 class AnnotationChild extends AnnotationParent
 {
 

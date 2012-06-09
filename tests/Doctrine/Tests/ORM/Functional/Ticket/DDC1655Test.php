@@ -89,7 +89,6 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
  *    "foo" = "DDC1655Foo",
  *    "bar" = "DDC1655Bar"
  * })
- * @HasLifecycleCallbacks
  */
 class DDC1655Foo
 {
@@ -112,10 +111,7 @@ class DDC1655Foo
     }
 }
 
-/**
- * @Entity
- * @HasLifecycleCallbacks
- */
+/** @Entity */
 class DDC1655Bar extends DDC1655Foo
 {
     public $subLoaded;

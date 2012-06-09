@@ -481,7 +481,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     {
 
         $factory = $this->createClassMetadataFactory();
-        
+
         $factory->getMetadataFor('Doctrine\Tests\Models\DDC889\DDC889Entity');
     }
 
@@ -490,7 +490,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testNamedNativeQuery()
     {
-        
+
         $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
 
         //named native query
@@ -519,7 +519,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertArrayHasKey('mapping-count', $class->sqlResultSetMappings);
         $this->assertArrayHasKey('mapping-find-all', $class->sqlResultSetMappings);
         $this->assertArrayHasKey('mapping-without-fields', $class->sqlResultSetMappings);
-        
+
         $findAllMapping = $class->getSqlResultSetMapping('mapping-find-all');
         $this->assertEquals('mapping-find-all', $findAllMapping['name']);
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddress', $findAllMapping['entities'][0]['entityClass']);
@@ -531,7 +531,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('mapping-without-fields', $withoutFieldsMapping['name']);
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddress', $withoutFieldsMapping['entities'][0]['entityClass']);
         $this->assertEquals(array(), $withoutFieldsMapping['entities'][0]['fields']);
-        
+
         $countMapping = $class->getSqlResultSetMapping('mapping-count');
         $this->assertEquals('mapping-count', $countMapping['name']);
         $this->assertEquals(array('name'=>'count'), $countMapping['columns'][0]);
@@ -619,7 +619,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $adminMetadata  = $factory->getMetadataFor('Doctrine\Tests\Models\DDC964\DDC964Admin');
         $guestMetadata  = $factory->getMetadataFor('Doctrine\Tests\Models\DDC964\DDC964Guest');
 
-        
+
         // assert groups association mappings
         $this->assertArrayHasKey('groups', $guestMetadata->associationMappings);
         $this->assertArrayHasKey('groups', $adminMetadata->associationMappings);
@@ -678,7 +678,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($guestAddress['isCascadeRefresh'], $adminAddress['isCascadeRefresh']);
         $this->assertEquals($guestAddress['isCascadeMerge'], $adminAddress['isCascadeMerge']);
         $this->assertEquals($guestAddress['isCascadeDetach'], $adminAddress['isCascadeDetach']);
-        
+
         // assert override
         $this->assertEquals('address_id', $guestAddress['joinColumns'][0]['name']);
         $this->assertEquals(array('address_id'=>'id'), $guestAddress['sourceToTargetKeyColumns']);
@@ -735,7 +735,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
 
 /**
  * @Entity
- * @HasLifecycleCallbacks
  * @Table(
  *  name="cms_users",
  *  uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"})},
@@ -1037,7 +1036,7 @@ class DDC807Entity
      * @GeneratedValue(strategy="NONE")
      **/
    public $id;
-   
+
    public static function loadMetadata(ClassMetadataInfo $metadata)
     {
          $metadata->mapField(array(
