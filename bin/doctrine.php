@@ -17,13 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-if (!@include __DIR__ . '/../../../autoload.php') {
-   die(<<<'EOT'
-This command can only be run when Doctrine is installed through Composer.
-EOT
-   );
-}
-
+(@include_once __DIR__ . '/../vendor/autoload.php') || @include_once __DIR__ . '/../../../autoload.php';
 $configFile = getcwd() . DIRECTORY_SEPARATOR . 'cli-config.php';
 
 $helperSet = null;
