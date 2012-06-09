@@ -36,11 +36,13 @@ class JoinAssociationPathExpression extends Node
 {
     public $identificationVariable;
     public $associationField;
+    public $aliasIdentificationVariable = null;
 
-    public function __construct($identificationVariable, $associationField)
+    public function __construct($identificationVariable, $associationField, $aliasIdentVar)
     {
         $this->identificationVariable = $identificationVariable;
         $this->associationField = $associationField;
+        $this->aliasIdentificationVariable = $aliasIdentVar;
     }
 
     public function dispatch($sqlWalker)

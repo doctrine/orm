@@ -16,41 +16,32 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * Join ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression
- *          ["AS"] AliasIdentificationVariable [("ON" | "WITH") ConditionalExpression]
+ * JoinClassPathExpression ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
- * @since   2.0
- * @version $Revision: 3938 $
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
+ * @since   2.3
+ * @author  Alexander <iam.asm89@gmail.com>
  */
-class Join extends Node
+class JoinClassPathExpression extends Node
 {
-    const JOIN_TYPE_LEFT = 1;
-    const JOIN_TYPE_LEFTOUTER = 2;
-    const JOIN_TYPE_INNER = 3;
+    public $abstractSchemaName;
+    public $aliasIdentificationVariable;
 
-    public $joinType = self::JOIN_TYPE_INNER;
-    public $joinPathExpression = null;
-    public $conditionalExpression = null;
-
-    public function __construct($joinType, $joinPathExpr)
+    public function __construct($abstractSchemaName, $aliasIdentificationVar)
     {
-        $this->joinType = $joinType;
-        $this->joinAssociationPathExpression = $joinPathExpr;
+        $this->abstractSchemaName = $abstractSchemaName;
+        $this->aliasIdentificationVariable = $aliasIdentificationVar;
     }
 
-    public function dispatch($sqlWalker)
+    public function dispatch($walker)
     {
-        return $sqlWalker->walkJoin($this);
+        return $sqlWalker->walkJoinPathExpression($this);
     }
 }
