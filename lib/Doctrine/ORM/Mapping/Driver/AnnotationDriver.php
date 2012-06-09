@@ -532,50 +532,47 @@ class AnnotationDriver implements Driver
             }
         }
 
-        // Evaluate @HasLifecycleCallbacks annotation
-        if (isset($classAnnotations['Doctrine\ORM\Mapping\HasLifecycleCallbacks'])) {
-            foreach ($class->getMethods() as $method) {
-                // filter for the declaring class only, callbacks from parents will already be registered.
-                if ($method->isPublic() && $method->getDeclaringClass()->getName() == $class->name) {
-                    $annotations = $this->_reader->getMethodAnnotations($method);
+        foreach ($class->getMethods() as $method) {
+            // filter for the declaring class only, callbacks from parents will already be registered.
+            if ($method->getDeclaringClass()->getName() == $class->name) {
+                $annotations = $this->_reader->getMethodAnnotations($method);
 
-                    if ($annotations && is_numeric(key($annotations))) {
-                        foreach ($annotations as $annot) {
-                            $annotations[get_class($annot)] = $annot;
-                        }
+                if ($annotations && is_numeric(key($annotations))) {
+                    foreach ($annotations as $annot) {
+                        $annotations[get_class($annot)] = $annot;
                     }
+                }
 
-                    if (isset($annotations['Doctrine\ORM\Mapping\PrePersist'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::prePersist);
-                    }
+                if (isset($annotations['Doctrine\ORM\Mapping\PrePersist'])) {
+                    $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::prePersist);
+                }
 
-                    if (isset($annotations['Doctrine\ORM\Mapping\PostPersist'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postPersist);
-                    }
+                if (isset($annotations['Doctrine\ORM\Mapping\PostPersist'])) {
+                    $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postPersist);
+                }
 
-                    if (isset($annotations['Doctrine\ORM\Mapping\PreUpdate'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preUpdate);
-                    }
+                if (isset($annotations['Doctrine\ORM\Mapping\PreUpdate'])) {
+                    $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preUpdate);
+                }
 
-                    if (isset($annotations['Doctrine\ORM\Mapping\PostUpdate'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postUpdate);
-                    }
+                if (isset($annotations['Doctrine\ORM\Mapping\PostUpdate'])) {
+                    $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postUpdate);
+                }
 
-                    if (isset($annotations['Doctrine\ORM\Mapping\PreRemove'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preRemove);
-                    }
+                if (isset($annotations['Doctrine\ORM\Mapping\PreRemove'])) {
+                    $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preRemove);
+                }
 
-                    if (isset($annotations['Doctrine\ORM\Mapping\PostRemove'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postRemove);
-                    }
+                if (isset($annotations['Doctrine\ORM\Mapping\PostRemove'])) {
+                    $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postRemove);
+                }
 
-                    if (isset($annotations['Doctrine\ORM\Mapping\PostLoad'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postLoad);
-                    }
+                if (isset($annotations['Doctrine\ORM\Mapping\PostLoad'])) {
+                    $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postLoad);
+                }
 
-                    if (isset($annotations['Doctrine\ORM\Mapping\PreFlush'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preFlush);
-                    }
+                if (isset($annotations['Doctrine\ORM\Mapping\PreFlush'])) {
+                    $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preFlush);
                 }
             }
         }
