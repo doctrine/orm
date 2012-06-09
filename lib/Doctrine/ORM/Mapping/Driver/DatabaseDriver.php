@@ -24,12 +24,13 @@ use Doctrine\DBAL\Schema\AbstractSchemaManager,
     Doctrine\Common\Persistence\Mapping\Driver\MappingDriver,
     Doctrine\Common\Persistence\Mapping\ClassMetadata,
     Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\Common\Util\Inflector;
+    Doctrine\Common\Util\Inflector,
+    Doctrine\ORM\Mapping\MappingException;
 
 /**
  * The DatabaseDriver reverse engineers the mapping metadata from a database.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -115,7 +116,7 @@ class DatabaseDriver implements MappingDriver
 
         $this->tables = $this->manyToManyTables = $this->classToTableNames = array();
         foreach ($tables as $tableName => $table) {
-            /* @var $table Table */
+            /* @var $table \Doctrine\DBAL\Schema\Table */
             if ($this->_sm->getDatabasePlatform()->supportsForeignKeyConstraints()) {
                 $foreignKeys = $table->getForeignKeys();
             } else {
@@ -189,13 +190,13 @@ class DatabaseDriver implements MappingDriver
         $fieldMappings = array();
         foreach ($columns as $column) {
             $fieldMapping = array();
-            
+
             if (in_array($column->getName(), $allForeignKeyColumns)) {
                 continue;
             } else if ($primaryKeyColumns && in_array($column->getName(), $primaryKeyColumns)) {
                 $fieldMapping['id'] = true;
             }
-            
+
             $fieldMapping['fieldName'] = $this->getFieldNameForColumn($tableName, $column->getName(), false);
             $fieldMapping['columnName'] = $column->getName();
             $fieldMapping['type'] = strtolower((string) $column->getType());
@@ -306,7 +307,7 @@ class DatabaseDriver implements MappingDriver
                     'referencedColumnName' => $fkCols[$i],
                 );
             }
-            
+
             //Here we need to check if $cols are the same as $primaryKeyColums
             if (!array_diff($cols,$primaryKeyColumns)) {
                 $metadata->mapOneToOne($associationMapping);

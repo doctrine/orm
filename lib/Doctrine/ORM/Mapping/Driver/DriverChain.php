@@ -44,14 +44,14 @@ class DriverChain implements MappingDriver
     /**
      * The default driver
      *
-     * @var Driver
+     * @var MappingDriver
      */
     private $defaultDriver;
 
     /**
      * Get the default driver.
      *
-     * @return Driver
+     * @return MappingDriver
      */
     public function getDefaultDriver()
     {
@@ -94,6 +94,8 @@ class DriverChain implements MappingDriver
      *
      * @param string $className
      * @param ClassMetadata $metadata
+     * @throws MappingException
+     * @return
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {

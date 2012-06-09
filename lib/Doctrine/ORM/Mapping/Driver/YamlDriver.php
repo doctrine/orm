@@ -134,7 +134,7 @@ class YamlDriver extends FileDriver
                         $entities[] = $entityResult;
                     }
                 }
-                
+
 
                 if (isset($resultSetMapping['columnResult'])) {
                     foreach ($resultSetMapping['columnResult'] as $columnResultAnnot) {
@@ -571,7 +571,7 @@ class YamlDriver extends FileDriver
      * Constructs a joinColumn mapping array based on the information
      * found in the given join column element.
      *
-     * @param $joinColumnElement The array join column element
+     * @param array $joinColumnElement The array join column element
      * @return array The mapping array.
      */
     private function joinColumnToArray($joinColumnElement)
@@ -580,7 +580,7 @@ class YamlDriver extends FileDriver
         if (isset($joinColumnElement['referencedColumnName'])) {
             $joinColumn['referencedColumnName'] = (string) $joinColumnElement['referencedColumnName'];
         }
-        
+
         if (isset($joinColumnElement['name'])) {
             $joinColumn['name'] = (string) $joinColumnElement['name'];
         }
@@ -660,7 +660,7 @@ class YamlDriver extends FileDriver
         }
 
         if (isset($column['version']) && $column['version']) {
-            $metadata->setVersionMapping($mapping);
+            $mapping['version'] = $column['version'];
         }
 
         if (isset($column['columnDefinition'])) {

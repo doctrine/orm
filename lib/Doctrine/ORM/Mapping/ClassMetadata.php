@@ -19,8 +19,6 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use ReflectionClass, ReflectionProperty;
-
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
  * of an entity and it's associations.

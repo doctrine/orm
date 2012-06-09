@@ -53,7 +53,7 @@ class XmlDriver extends FileDriver
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         $xmlRoot = $this->getElement($className);
-        
+
         if ($xmlRoot->getName() == 'entity') {
             if (isset($xmlRoot['repository-class'])) {
                 $metadata->setCustomRepositoryClass((string)$xmlRoot['repository-class']);
@@ -235,7 +235,7 @@ class XmlDriver extends FileDriver
         foreach ($mappings as $mapping) {
              $metadata->mapField($mapping);
         }
-        
+
         // Evaluate <id ...> mappings
         $associationIds = array();
         foreach ($xmlRoot->id as $idElement) {
@@ -550,7 +550,7 @@ class XmlDriver extends FileDriver
     /**
      * Parses (nested) option elements.
      *
-     * @param $options The XML element.
+     * @param SimpleXMLElement $options the XML element.
      * @return array The options array.
      */
     private function _parseOptions(SimpleXMLElement $options)
@@ -580,7 +580,7 @@ class XmlDriver extends FileDriver
      * Constructs a joinColumn mapping array based on the information
      * found in the given SimpleXMLElement.
      *
-     * @param $joinColumnElement The XML element.
+     * @param SimpleXMLElement $joinColumnElement the XML element.
      * @return array The mapping array.
      */
     private function joinColumnToArray(SimpleXMLElement $joinColumnElement)
@@ -618,43 +618,43 @@ class XmlDriver extends FileDriver
     private function columnToArray(SimpleXMLElement $fieldMapping)
     {
         $mapping = array(
-            'fieldName' => (string)$fieldMapping['name'],
+            'fieldName' => (string) $fieldMapping['name'],
         );
 
         if (isset($fieldMapping['type'])) {
-            $mapping['type'] = (string)$fieldMapping['type'];
+            $mapping['type'] = (string) $fieldMapping['type'];
         }
 
         if (isset($fieldMapping['column'])) {
-            $mapping['columnName'] = (string)$fieldMapping['column'];
+            $mapping['columnName'] = (string) $fieldMapping['column'];
         }
 
         if (isset($fieldMapping['length'])) {
-            $mapping['length'] = (int)$fieldMapping['length'];
+            $mapping['length'] = (int) $fieldMapping['length'];
         }
 
         if (isset($fieldMapping['precision'])) {
-            $mapping['precision'] = (int)$fieldMapping['precision'];
+            $mapping['precision'] = (int) $fieldMapping['precision'];
         }
 
         if (isset($fieldMapping['scale'])) {
-            $mapping['scale'] = (int)$fieldMapping['scale'];
+            $mapping['scale'] = (int) $fieldMapping['scale'];
         }
 
         if (isset($fieldMapping['unique'])) {
-            $mapping['unique'] = ((string)$fieldMapping['unique'] == "false") ? false : true;
+            $mapping['unique'] = ((string) $fieldMapping['unique'] == "false") ? false : true;
         }
 
         if (isset($fieldMapping['nullable'])) {
-            $mapping['nullable'] = ((string)$fieldMapping['nullable'] == "false") ? false : true;
+            $mapping['nullable'] = ((string) $fieldMapping['nullable'] == "false") ? false : true;
         }
 
         if (isset($fieldMapping['version']) && $fieldMapping['version']) {
-            $metadata->setVersionMapping($mapping);
+            $mapping['version'] = $fieldMapping['version'];
         }
 
         if (isset($fieldMapping['column-definition'])) {
-            $mapping['columnDefinition'] = (string)$fieldMapping['column-definition'];
+            $mapping['columnDefinition'] = (string) $fieldMapping['column-definition'];
         }
 
         if (isset($fieldMapping->options)) {
@@ -667,7 +667,7 @@ class XmlDriver extends FileDriver
     /**
      * Gathers a list of cascade options found in the given cascade element.
      *
-     * @param $cascadeElement The cascade element.
+     * @param SimpleXMLElement $cascadeElement the cascade element.
      * @return array The list of cascade options.
      */
     private function _getCascadeMappings($cascadeElement)

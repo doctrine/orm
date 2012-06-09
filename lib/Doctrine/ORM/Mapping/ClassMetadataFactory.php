@@ -26,11 +26,12 @@ use ReflectionException,
     Doctrine\ORM\Events,
     Doctrine\Common\Persistence\Mapping\ReflectionService,
     Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface,
-    Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
+    Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory,
+    Doctrine\ORM\Id\IdentityGenerator;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
- * metadata mapping informations of a class which describes how a class should be mapped
+ * metadata mapping information of a class which describes how a class should be mapped
  * to a relational database.
  *
  * @since   2.0
@@ -47,7 +48,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private $em;
 
     /**
-     * @var AbstractPlatform
+     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
      */
     private $targetPlatform;
 
@@ -62,7 +63,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private $evm;
 
     /**
-     * @param EntityManager $$em
+     * @param EntityManager $em
+     * @return void
      */
     public function setEntityManager(EntityManager $em)
     {
@@ -137,13 +139,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
 
             // If this class has a parent the id generator strategy is inherited.
-            // However this is only true if the hierachy of parents contains the root entity,
-            // if it consinsts of mapped superclasses these don't necessarily include the id field.
+            // However this is only true if the hierarchy of parents contains the root entity,
+            // if it consists of mapped superclasses these don't necessarily include the id field.
             if ($parent && $rootEntityFound) {
                 if ($parent->isIdGeneratorSequence()) {
                     $class->setSequenceGeneratorDefinition($parent->sequenceGeneratorDefinition);
                 } else if ($parent->isIdGeneratorTable()) {
-                    $class->getTableGeneratorDefinition($parent->tableGeneratorDefinition);
+                    $class->tableGeneratorDefinition = $parent->tableGeneratorDefinition;
                 }
                 if ($parent->generatorType) {
                     $class->setIdGeneratorType($parent->generatorType);
@@ -208,7 +210,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * Validate runtime metadata is correctly defined.
      *
      * @param ClassMetadata $class
-     * @param ClassMetadata $parent
+     * @param $parent
+     * @throws MappingException
+     * @return void
      */
     protected function validateRuntimeMetadata($class, $parent)
     {
@@ -231,11 +235,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     throw MappingException::missingDiscriminatorColumn($class->name);
                 }
             } else if ($parent && !$class->reflClass->isAbstract() && !in_array($class->name, array_values($class->discriminatorMap))) {
-                // enforce discriminator map for all entities of an inheritance hierachy, otherwise problems will occur.
+                // enforce discriminator map for all entities of an inheritance hierarchy, otherwise problems will occur.
                 throw MappingException::mappedClassNotPartOfDiscriminatorMap($class->name, $class->rootEntityName);
             }
         } else if ($class->isMappedSuperclass && $class->name == $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
-            // second condition is necessary for mapped superclasses in the middle of an inheritance hierachy
+            // second condition is necessary for mapped superclasses in the middle of an inheritance hierarchy
             throw MappingException::noInheritanceOnMappedSuperClass($class->name);
         }
     }
@@ -252,18 +256,19 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * Adds a default discriminator map if no one is given
      *
      * If an entity is of any inheritance type and does not contain a
-     * discrimiator map, then the map is generated automatically. This process
+     * discriminator map, then the map is generated automatically. This process
      * is expensive computation wise.
      *
-     * The automatically generated discriminator map contains the lowercase shortname of
+     * The automatically generated discriminator map contains the lowercase short name of
      * each class as key.
      *
      * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     * @throws MappingException
+     * @return void
      */
     private function addDefaultDiscriminatorMap(ClassMetadata $class)
     {
         $allClasses = $this->driver->getAllClassNames();
-        $subClassesMetadata = array();
         $fqcn = $class->getName();
         $map = array($this->getShortName($class->name) => $fqcn);
 
@@ -288,7 +293,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     }
 
     /**
-     * Get the lower-case shortname of a class.
+     * Get the lower-case short name of a class.
      *
      * @param string $className
      * @return string
@@ -330,6 +335,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
      * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     * @throws MappingException
+     * @return void
      */
     private function addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
@@ -427,7 +434,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * Completes the ID generator mapping. If "auto" is specified we choose the generator
      * most appropriate for the targeted database platform.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param ClassMetadataInfo $class
+     * @throws ORMException
+     * @return void
      */
     private function completeIdGeneratorMapping(ClassMetadataInfo $class)
     {
@@ -549,6 +558,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService)
     {
+        /* @var $class ClassMetadata */
         $class->wakeupReflection($reflService);
     }
 
@@ -557,6 +567,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService)
     {
+        /* @var $class ClassMetadata */
         $class->initializeReflection($reflService);
     }
 
