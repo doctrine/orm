@@ -65,7 +65,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     /**
      * @param EntityManager $em
-     * @return void
      */
     public function setEntityManager(EntityManager $em)
     {
@@ -144,15 +143,15 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->containsForeignIdentifier = true;
         }
 
-        if ($parent && !empty ($parent->namedQueries)) {
+        if ($parent && !empty($parent->namedQueries)) {
             $this->addInheritedNamedQueries($class, $parent);
         }
 
-        if ($parent && !empty ($parent->namedNativeQueries)) {
+        if ($parent && !empty($parent->namedNativeQueries)) {
             $this->addInheritedNamedNativeQueries($class, $parent);
         }
 
-        if ($parent && !empty ($parent->sqlResultSetMappings)) {
+        if ($parent && !empty($parent->sqlResultSetMappings)) {
             $this->addInheritedSqlResultSetMappings($class, $parent);
         }
 
@@ -177,7 +176,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * @param ClassMetadata $class
      * @param $parent
      * @throws MappingException
-     * @return void
      */
     protected function validateRuntimeMetadata($class, $parent)
     {
@@ -229,7 +227,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @param \Doctrine\ORM\Mapping\ClassMetadata $class
      * @throws MappingException
-     * @return void
      */
     private function addDefaultDiscriminatorMap(ClassMetadata $class)
     {
@@ -301,7 +298,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
      * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
      * @throws MappingException
-     * @return void
      */
     private function addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
@@ -401,7 +397,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @param ClassMetadataInfo $class
      * @throws ORMException
-     * @return void
      */
     private function completeIdGeneratorMapping(ClassMetadataInfo $class)
     {
@@ -496,26 +491,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             default:
                 throw new ORMException("Unknown generator type: " . $class->generatorType);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @todo remove after doctrine/common#138 is merged
-     */
-    public function isTransient($class)
-    {
-        if ( ! $this->initialized) {
-            $this->initialize();
-        }
-
-        // Check for namespace alias
-        if (strpos($class, ':') !== false) {
-            list($namespaceAlias, $simpleClassName) = explode(':', $class);
-            $class = $this->getFqcnFromAlias($namespaceAlias, $simpleClassName);
-        }
-
-        return $this->driver->isTransient($class);
     }
 
     /**
