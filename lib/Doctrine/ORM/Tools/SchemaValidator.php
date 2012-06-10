@@ -259,11 +259,8 @@ class SchemaValidator
 
                 $method = $class->reflClass->getMethod($callback);
                 if (!$method->isPublic()) {
-                    $ce[] = "A lifecycle callback for event '" . $name . "' is defined on "
-                        . ($method->isProtected() ? 'protected' : 'private')
-                        . " method '" . $class->name . "#" . $callback
-                        . "'. Only public methods can be used as callbacks.";
-                    continue;
+                    $ce[] = "A lifecycle callback for event '" . $name . "' is defined on " . ($method->isProtected() ? 'protected' : 'private')
+                        . " method '" . $class->name . "#" . $callback . "'. Only public methods can be used as callbacks.";
                 }
             }
         }
