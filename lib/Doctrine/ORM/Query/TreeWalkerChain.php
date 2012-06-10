@@ -148,15 +148,15 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a JoinVariableDeclaration AST node and creates the corresponding SQL.
+     * Walks down a Join AST node and creates the corresponding SQL.
      *
-     * @param JoinVariableDeclaration $joinVarDecl
+     * @param Join $join
      * @return string The SQL.
      */
-    public function walkJoinVariableDeclaration($joinVarDecl)
+    public function walkJoin($join)
     {
         foreach ($this->_walkers as $walker) {
-            $walker->walkJoinVariableDeclaration($joinVarDecl);
+            $walker->walkJoin($join);
         }
     }
 

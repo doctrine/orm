@@ -24,10 +24,8 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * JoinAssociationPathExpression ::= IdentificationVariable "." (SingleValuedAssociationField | CollectionValuedAssociationField)
  *
- * 
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision: 3938 $
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
@@ -36,17 +34,15 @@ class JoinAssociationPathExpression extends Node
 {
     public $identificationVariable;
     public $associationField;
-    public $aliasIdentificationVariable = null;
 
-    public function __construct($identificationVariable, $associationField, $aliasIdentVar)
+    public function __construct($identificationVariable, $associationField)
     {
         $this->identificationVariable = $identificationVariable;
-        $this->associationField = $associationField;
-        $this->aliasIdentificationVariable = $aliasIdentVar;
+        $this->associationField       = $associationField;
     }
 
     public function dispatch($sqlWalker)
     {
-        return $sqlWalker->walkJoinPathExpression($this);
+        return $sqlWalker->walkPathExpression($this);
     }
 }

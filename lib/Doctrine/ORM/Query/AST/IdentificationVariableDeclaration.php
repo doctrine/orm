@@ -36,13 +36,13 @@ class IdentificationVariableDeclaration extends Node
 {
     public $rangeVariableDeclaration = null;
     public $indexBy = null;
-    public $joinVariableDeclarations = array();
+    public $joins   = array();
 
-    public function __construct($rangeVariableDecl, $indexBy, array $joinVariableDecls)
+    public function __construct($rangeVariableDecl, $indexBy, array $joins)
     {
         $this->rangeVariableDeclaration = $rangeVariableDecl;
         $this->indexBy = $indexBy;
-        $this->joinVariableDeclarations = $joinVariableDecls;
+        $this->joins = $joins;
     }
 
     public function dispatch($sqlWalker)
