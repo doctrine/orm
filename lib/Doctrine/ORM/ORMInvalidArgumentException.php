@@ -62,10 +62,10 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
                             . " To solve this issue: Either explicitly call EntityManager#persist()"
                             . " on this unknown entity or configure cascade persist "
                             . " this association in the mapping for example @ManyToOne(..,cascade={\"persist\"})."
-                            . method_exists($entry, '__toString') ? 
+                            . (method_exists($entry, '__toString') ?
                                 "":
                                 " If you cannot find out which entity causes the problem"
-                               ." implement '" . $assoc['targetEntity'] . "#__toString()' to get a clue.");
+                               ." implement '" . $assoc['targetEntity'] . "#__toString()' to get a clue."));
     }
 
     static public function detachedEntityFoundThroughRelationship(array $assoc, $entry)
