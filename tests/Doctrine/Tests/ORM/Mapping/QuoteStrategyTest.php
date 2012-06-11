@@ -135,4 +135,38 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals(array('"article"'), $this->strategy->getIdentifierColumnNames($cm));
     }
+
+    public function testJoinColumnName()
+    {
+        $cm = $this->createClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
+
+        $cm->mapOneToOne(array(
+            'id'            => true,
+            'fieldName'     => 'article',
+            'targetEntity'  => 'Doctrine\Tests\Models\DDC117\DDC117Article',
+            'joinColumns'    => array(array(
+                'name'  => '`article`'
+            )),
+        ));
+
+        $joinColumn = $cm->associationMappings['article']['joinColumns'][0];
+        $this->assertEquals('"article"',$this->strategy->getJoinColumnName($joinColumn, $cm));
+    }
+
+    public function testReferencedJoinColumnName()
+    {
+        $cm = $this->createClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
+
+        $cm->mapOneToOne(array(
+            'id'            => true,
+            'fieldName'     => 'article',
+            'targetEntity'  => 'Doctrine\Tests\Models\DDC117\DDC117Article',
+            'joinColumns'    => array(array(
+                'name'  => '`article`'
+            )),
+        ));
+
+        $joinColumn = $cm->associationMappings['article']['joinColumns'][0];
+        $this->assertEquals('"id"',$this->strategy->getReferencedJoinColumnName($joinColumn, $cm));
+    }
 }
