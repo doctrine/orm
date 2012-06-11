@@ -10,7 +10,6 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class User
 {
-
     /**
      * @Id
      * @GeneratedValue
@@ -30,7 +29,7 @@ class User
 
     /**
      * @JoinColumn(name="`address-id`", referencedColumnName="`address-id`")
-     * @OneToOne(targetEntity="Address", mappedBy="user", cascade={"persist"})
+     * @OneToOne(targetEntity="Address", mappedBy="user", cascade={"persist"}, fetch="EAGER")
      */
     public $address;
 
@@ -59,4 +58,26 @@ class User
         $this->groups = new ArrayCollection;
     }
 
+
+    public function getPhones()
+    {
+        return $this->phones;
+    }
+
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+
+    public function setAddress(Address $address) {
+        if ($this->address !== $address) {
+            $this->address = $address;
+            $address->setUser($this);
+        }
+    }
 }

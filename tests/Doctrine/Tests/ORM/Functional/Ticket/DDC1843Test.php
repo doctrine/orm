@@ -7,18 +7,15 @@ use Doctrine\Tests\Models\Quote\Group;
 require_once __DIR__ . '/../../../TestInit.php';
 
 /**
+ * @group DDC-1845
  * @group DDC-1843
  */
 class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
 
-    const CLASS_NAME = '\Doctrine\Tests\Models\Quote\Group';
-
     protected function setUp()
     {
         parent::setUp();
-
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
         try {
             $this->_schemaTool->createSchema(array(
@@ -28,7 +25,6 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Address'),
             ));
         } catch(\Exception $e) {
-            $this->fail($e->getMessage());
         }
     }
 
@@ -57,15 +53,15 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $e4Id   = $e4->id;
 
         // Retreave
-        $e1     = $this->_em->find(self::CLASS_NAME, $e1Id);
-        $e2     = $this->_em->find(self::CLASS_NAME, $e2Id);
-        $e3     = $this->_em->find(self::CLASS_NAME, $e3Id);
-        $e4     = $this->_em->find(self::CLASS_NAME, $e4Id);
+        $e1     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e1Id);
+        $e2     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e2Id);
+        $e3     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e3Id);
+        $e4     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e4Id);
 
-        $this->assertInstanceOf(self::CLASS_NAME, $e1);
-        $this->assertInstanceOf(self::CLASS_NAME, $e2);
-        $this->assertInstanceOf(self::CLASS_NAME, $e3);
-        $this->assertInstanceOf(self::CLASS_NAME, $e4);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e1);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e2);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e3);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e4);
 
         $this->assertEquals($e1Id, $e1->id);
         $this->assertEquals($e2Id, $e2->id);
@@ -95,10 +91,10 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Bar 33', $e3->name);
         $this->assertEquals('Foo 44', $e4->name);
 
-        $this->assertInstanceOf(self::CLASS_NAME, $e1);
-        $this->assertInstanceOf(self::CLASS_NAME, $e2);
-        $this->assertInstanceOf(self::CLASS_NAME, $e3);
-        $this->assertInstanceOf(self::CLASS_NAME, $e4);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e1);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e2);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e3);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e4);
 
         $this->assertEquals($e1Id, $e1->id);
         $this->assertEquals($e2Id, $e2->id);
@@ -120,16 +116,16 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
 
-        $this->assertInstanceOf(self::CLASS_NAME, $e1);
-        $this->assertInstanceOf(self::CLASS_NAME, $e2);
-        $this->assertInstanceOf(self::CLASS_NAME, $e3);
-        $this->assertInstanceOf(self::CLASS_NAME, $e4);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e1);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e2);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e3);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e4);
 
         // Retreave
-        $e1     = $this->_em->find(self::CLASS_NAME, $e1Id);
-        $e2     = $this->_em->find(self::CLASS_NAME, $e2Id);
-        $e3     = $this->_em->find(self::CLASS_NAME, $e3Id);
-        $e4     = $this->_em->find(self::CLASS_NAME, $e4Id);
+        $e1     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e1Id);
+        $e2     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e2Id);
+        $e3     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e3Id);
+        $e4     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e4Id);
 
         $this->assertNull($e1);
         $this->assertNull($e2);

@@ -133,6 +133,15 @@ class BasicEntityPersister
     protected $_columnTypes = array();
 
     /**
+     * The map of quoted column names.
+     *
+     * @var array
+     * @see _prepareInsertData($entity)
+     * @see _prepareUpdateData($entity)
+     */
+    protected $quotedColumns = array();
+
+    /**
      * The INSERT SQL statement used for entities handled by this persister.
      * This SQL is only generated once per request, if at all.
      *
@@ -358,6 +367,8 @@ class BasicEntityPersister
                     $type = Type::getType($this->_columnTypes[$columnName]);
                     $placeholder = $type->convertToDatabaseValueSQL('?', $this->_platform);
                 }
+            } else if(isset($this->quotedColumns[$columnName])) {
+                $column = $this->quotedColumns[$columnName];
             }
 
             $set[] = $column . ' = ' . $placeholder;
@@ -546,7 +557,13 @@ class BasicEntityPersister
                 $targetClass = $this->_em->getClassMetadata($assoc['targetEntity']);
                 $owningTable = $this->getOwningTable($field);
 
-                foreach ($assoc['sourceToTargetKeyColumns'] as $sourceColumn => $targetColumn) {
+                foreach ($assoc['joinColumns'] as $joinColumn) {
+                    $sourceColumn =  $joinColumn['name'];
+                    $targetColumn =  $joinColumn['referencedColumnName'];
+
+                    $quotedColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->_class);
+                    $this->quotedColumns[$sourceColumn] = $quotedColumn;
+
                     if ($newVal === null) {
                         $result[$owningTable][$sourceColumn] = null;
                     } else if ($targetClass->containsForeignIdentifier) {

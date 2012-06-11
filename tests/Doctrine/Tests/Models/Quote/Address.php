@@ -27,4 +27,28 @@ class Address
      */
     public $user;
 
+
+    public function setUser(User $user) {
+        if ($this->user !== $user) {
+            $this->user = $user;
+            $user->setAddress($this);
+        }
+    }
+
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getZip()
+    {
+        return $this->zip;
+    }
+
+    public function getUser()
+    {
+        return $this->user;
+    }
+
 }
