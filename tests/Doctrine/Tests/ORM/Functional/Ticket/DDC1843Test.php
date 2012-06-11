@@ -22,10 +22,10 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         try {
             $this->_schemaTool->createSchema(array(
-                //$this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\User'),
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\User'),
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Group'),
-                //$this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Phone'),
-                //$this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Address'),
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Phone'),
+                $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Address'),
             ));
         } catch(\Exception $e) {
             $this->fail($e->getMessage());
@@ -110,20 +110,26 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Bar 33', $e3->name);
         $this->assertEquals('Foo 44', $e4->name);
 
-        $this->markTestIncomplete();
-
         // Delete
-        $this->_em->remove($e1);
-        $this->_em->remove($e2);
-        $this->_em->remove($e3);
         $this->_em->remove($e4);
+        $this->_em->remove($e3);
+        $this->_em->remove($e2);
+        $this->_em->remove($e1);
+        
         $this->_em->flush();
+        $this->_em->clear();
 
 
         $this->assertInstanceOf(self::CLASS_NAME, $e1);
         $this->assertInstanceOf(self::CLASS_NAME, $e2);
         $this->assertInstanceOf(self::CLASS_NAME, $e3);
         $this->assertInstanceOf(self::CLASS_NAME, $e4);
+
+        // Retreave
+        $e1     = $this->_em->find(self::CLASS_NAME, $e1Id);
+        $e2     = $this->_em->find(self::CLASS_NAME, $e2Id);
+        $e3     = $this->_em->find(self::CLASS_NAME, $e3Id);
+        $e4     = $this->_em->find(self::CLASS_NAME, $e4Id);
 
         $this->assertNull($e1);
         $this->assertNull($e2);

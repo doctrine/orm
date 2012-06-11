@@ -420,11 +420,16 @@ class BasicEntityPersister
                 // @Todo this only covers scenarios with no inheritance or of the same level. Is there something
                 // like self-referential relationship between different levels of an inheritance hierachy? I hope not!
                 $selfReferential = ($mapping['targetEntity'] == $mapping['sourceEntity']);
+                $otherKeys       = array();
+                $keys            = array();
 
                 if ( ! $mapping['isOwningSide']) {
-                    $relatedClass = $this->_em->getClassMetadata($mapping['targetEntity']);
-                    $mapping = $relatedClass->associationMappings[$mapping['mappedBy']];
-                    $keys = array_keys($mapping['relationToTargetKeyColumns']);
+                    $relatedClass   = $this->_em->getClassMetadata($mapping['targetEntity']);
+                    $mapping        = $relatedClass->associationMappings[$mapping['mappedBy']];
+
+                    foreach ($mapping['joinTable']['inverseJoinColumns'] as $joinColumn) {
+                        $keys[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $relatedClass);
+                    }
 
                     if ($selfReferential) {
                         $otherKeys = array_keys($mapping['relationToSourceKeyColumns']);
@@ -438,16 +443,12 @@ class BasicEntityPersister
                 }
 
                 if ( ! isset($mapping['isOnDeleteCascade'])) {
-                    $this->_conn->delete(
-                        $this->quoteStrategy->getJoinTableName($mapping, $this->_class),
-                        array_combine($keys, $identifier)
-                    );
+
+                    $joinTableName = $this->quoteStrategy->getJoinTableName($mapping, $this->_class);
+                    $this->_conn->delete($joinTableName, array_combine($keys, $identifier));
 
                     if ($selfReferential) {
-                        $this->_conn->delete(
-                            $this->quoteStrategy->getJoinTableName($mapping, $this->_class),
-                            array_combine($otherKeys, $identifier)
-                        );
+                        $this->_conn->delete($joinTableName,array_combine($otherKeys, $identifier));
                     }
                 }
             }
