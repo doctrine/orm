@@ -432,13 +432,20 @@ class BasicEntityPersister
                     }
 
                     if ($selfReferential) {
-                        $otherKeys = array_keys($mapping['relationToSourceKeyColumns']);
+                        foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
+                            $otherKeys[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $relatedClass);
+                        }
                     }
                 } else {
-                    $keys = array_keys($mapping['relationToSourceKeyColumns']);
+
+                    foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
+                        $keys[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->_class);
+                    }
 
                     if ($selfReferential) {
-                        $otherKeys = array_keys($mapping['relationToTargetKeyColumns']);
+                        foreach ($mapping['joinTable']['inverseJoinColumns'] as $joinColumn) {
+                            $otherKeys[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->_class);
+                        }
                     }
                 }
 
