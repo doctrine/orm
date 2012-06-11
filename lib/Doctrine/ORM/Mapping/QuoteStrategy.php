@@ -81,20 +81,20 @@ abstract class QuoteStrategy
     /**
      * Gets the (possibly quoted) join column name.
      *
-     * @param   array $association
+     * @param   array $joinColumn
      * @param   ClassMetadata $class
      * @return  string
      */
-    abstract public function getJoinColumnName($columnName, array $association, ClassMetadata $class);
+    abstract public function getJoinColumnName(array $joinColumn, ClassMetadata $class);
 
     /**
      * Gets the (possibly quoted) join column name.
      *
-     * @param   array $association
+     * @param   array $joinColumn
      * @param   ClassMetadata $class
      * @return  string
      */
-    abstract public function getReferencedJoinColumnName($columnName, array $association, ClassMetadata $class);
+    abstract public function getReferencedJoinColumnName(array $joinColumn, ClassMetadata $class);
 
     /**
      * Gets the (possibly quoted) identifier column names for safe use in an SQL statement.

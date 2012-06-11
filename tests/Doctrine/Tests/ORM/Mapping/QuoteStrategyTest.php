@@ -120,7 +120,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('COLUMNNAME3', $this->strategy->getColumnAlias('COLUMN-NAME-', $i++));
     }
 
-    public function testQuoteJoinColumnNames()
+    public function testQuoteIdentifierJoinColumns()
     {
         $cm = $this->createClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
 

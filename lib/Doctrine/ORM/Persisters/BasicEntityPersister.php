@@ -1077,13 +1077,14 @@ class BasicEntityPersister
         $columnList = '';
 
         if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
-            foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
+            foreach ($assoc['joinColumns'] as $joinColumn) {
+
                 if ($columnList) $columnList .= ', ';
 
-                $quotedColumn     = $this->quoteStrategy->getJoinColumnName($srcColumn, $assoc, $this->_class);
-                $resultColumnName = $this->getSQLColumnAlias($srcColumn);
-                $columnList .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )
-                             . '.' . $quotedColumn . ' AS ' . $resultColumnName;
+                $quotedColumn     = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->_class);
+                $resultColumnName = $this->getSQLColumnAlias($joinColumn['name']);
+                $columnList      .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )
+                                    . '.' . $quotedColumn . ' AS ' . $resultColumnName;
                 $this->_rsm->addMetaResult($alias, $resultColumnName, $quotedColumn, isset($assoc['id']) && $assoc['id'] === true);
             }
         }
@@ -1189,10 +1190,9 @@ class BasicEntityPersister
 
             if (isset($this->_class->associationMappings[$name])) {
                 $assoc = $this->_class->associationMappings[$name];
-
                 if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
-                    foreach ($assoc['targetToSourceKeyColumns'] as $sourceCol) {
-                        $columns[] = $this->quoteStrategy->getJoinColumnName($sourceCol, $assoc, $this->_class);
+                    foreach ($assoc['joinColumns'] as $joinColumn) {
+                        $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->_class);
                     }
                 }
             } else if ($this->_class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $this->_class->identifier[0] != $name) {

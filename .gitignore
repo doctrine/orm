@@ -9,3 +9,8 @@ lib/Doctrine/DBAL
 /.settings/
 .buildpath
 .project
+/.AppleDouble/
+/bin/.AppleDouble/
+/lib/.AppleDouble/
+/tests/.AppleDouble/
+/tools/.AppleDouble/

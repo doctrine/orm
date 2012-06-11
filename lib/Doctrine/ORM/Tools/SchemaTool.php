@@ -36,7 +36,6 @@ use Doctrine\ORM\ORMException,
  * 
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision$
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
@@ -222,7 +221,7 @@ class SchemaTool
                     /* @var $assoc \Doctrine\ORM\Mapping\OneToOne */
                     $assoc = $class->associationMappings[$identifierField];
                     foreach ($assoc['joinColumns'] as $joinColumn) {
-                        $pkColumns[] = $this->quoteStrategy->getJoinColumnName($joinColumn['name'], $assoc, $class);
+                        $pkColumns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class);
                     }
                 }
             }
@@ -513,10 +512,8 @@ class SchemaTool
         $foreignTableName   = $this->quoteStrategy->getTableName($class);
 
         foreach ($joinColumns as $joinColumn) {
-            $columnName             = $joinColumn['name'];
-            $referencedColumnName   = $joinColumn['referencedColumnName'];
 
-            list($definingClass, $referencedFieldName) = $this->getDefiningClass($class, $referencedColumnName);
+            list($definingClass, $referencedFieldName) = $this->getDefiningClass($class, $joinColumn['referencedColumnName']);
 
             if (!$definingClass) {
                 throw new \Doctrine\ORM\ORMException(
@@ -525,8 +522,8 @@ class SchemaTool
                 );
             }
 
-            $quotedColumnName       = $this->quoteStrategy->getJoinColumnName($columnName, $mapping, $class);
-            $quotedRefColumnName    = $this->quoteStrategy->getReferencedJoinColumnName($referencedColumnName, $mapping, $class);
+            $quotedColumnName       = $this->quoteStrategy->getJoinColumnName($joinColumn, $class);
+            $quotedRefColumnName    = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $class);
 
             $primaryKeyColumns[]    = $quotedColumnName;
             $localColumns[]         = $quotedColumnName;
