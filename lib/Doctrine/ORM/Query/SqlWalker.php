@@ -835,22 +835,17 @@ class SqlWalker implements TreeWalker
             case ($assoc['type'] & ClassMetadata::TO_ONE):
                 $conditions = array();
 
-                foreach ($assoc['sourceToTargetKeyColumns'] as $sourceColumn => $targetColumn) {
-                    if ($relation['isOwningSide']) {
-                        $quotedTargetColumn = ($targetClass->containsForeignIdentifier && !isset($targetClass->fieldNames[$targetColumn]))
-                            ? $targetColumn // Join columns cannot be quoted.
-                            : $targetClass->getQuotedColumnName($targetClass->fieldNames[$targetColumn], $this->platform);
+                 foreach ($assoc['joinColumns'] as $joinColumn) {
+                    $quotedSourceColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
+                    $quotedTargetColumn = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $targetClass, $this->platform);
 
-                        $conditions[] = $sourceTableAlias . '.' . $sourceColumn . ' = ' . $targetTableAlias . '.' . $quotedTargetColumn;
+                    if ($relation['isOwningSide']) {
+                        $conditions[] = $sourceTableAlias . '.' . $quotedSourceColumn . ' = ' . $targetTableAlias . '.' . $quotedTargetColumn;
 
                         continue;
                     }
 
-                    $quotedTargetColumn = ($sourceClass->containsForeignIdentifier && !isset($sourceClass->fieldNames[$targetColumn]))
-                        ? $targetColumn // Join columns cannot be quoted.
-                        : $sourceClass->getQuotedColumnName($sourceClass->fieldNames[$targetColumn], $this->platform);
-
-                    $conditions[] = $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $targetTableAlias . '.' . $sourceColumn;
+                    $conditions[] = $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $targetTableAlias . '.' . $quotedSourceColumn;
                 }
 
                 // Apply remaining inheritance restrictions
@@ -878,15 +873,14 @@ class SqlWalker implements TreeWalker
 
                 $conditions      = array();
                 $relationColumns = ($relation['isOwningSide'])
-                    ? $assoc['relationToSourceKeyColumns']
-                    : $assoc['relationToTargetKeyColumns'];
+                    ? $assoc['joinTable']['joinColumns']
+                    : $assoc['joinTable']['inverseJoinColumns'];
 
-                foreach ($relationColumns as $relationColumn => $sourceColumn) {
-                    $quotedTargetColumn = ($sourceClass->containsForeignIdentifier && !isset($sourceClass->fieldNames[$sourceColumn]))
-                            ? $sourceColumn // Join columns cannot be quoted.
-                            : $sourceClass->getQuotedColumnName($sourceClass->fieldNames[$sourceColumn], $this->platform);
+                foreach ($relationColumns as $joinColumn) {
+                    $quotedSourceColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
+                    $quotedTargetColumn = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $targetClass, $this->platform);
 
-                    $conditions[] = $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableAlias . '.' . $relationColumn;
+                    $conditions[] = $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableAlias . '.' . $quotedSourceColumn;
                 }
 
                 $sql .= $joinTableName . ' ' . $joinTableAlias . ' ON ' . implode(' AND ', $conditions);
@@ -896,15 +890,14 @@ class SqlWalker implements TreeWalker
 
                 $conditions      = array();
                 $relationColumns = ($relation['isOwningSide'])
-                    ? $assoc['relationToTargetKeyColumns']
-                    : $assoc['relationToSourceKeyColumns'];
+                    ? $assoc['joinTable']['inverseJoinColumns']
+                    : $assoc['joinTable']['joinColumns'];
 
-                foreach ($relationColumns as $relationColumn => $targetColumn) {
-                    $quotedTargetColumn = ($targetClass->containsForeignIdentifier && !isset($targetClass->fieldNames[$targetColumn]))
-                            ? $targetColumn // Join columns cannot be quoted.
-                            : $targetClass->getQuotedColumnName($targetClass->fieldNames[$targetColumn], $this->platform);
+                foreach ($relationColumns as $joinColumn) {
+                    $quotedSourceColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
+                    $quotedTargetColumn = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $targetClass, $this->platform);
 
-                    $conditions[] = $targetTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableAlias . '.' . $relationColumn;
+                    $conditions[] = $targetTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableAlias . '.' . $quotedSourceColumn;
                 }
 
                 // Apply remaining inheritance restrictions

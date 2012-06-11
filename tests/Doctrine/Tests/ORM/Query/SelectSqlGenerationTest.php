@@ -1662,8 +1662,42 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
-}
+   /**
+    * @group DDC-1845
+    */
+    public function testQuotedWalkJoinVariableDeclaration()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u, a FROM Doctrine\Tests\Models\Quote\User u JOIN u.address a',
+            'SELECT q0_."user-id" AS userid0, q0_."user-name" AS username1, q1_."address-id" AS addressid2, q1_."address-zip" AS addresszip3 FROM "quote-user" q0_ INNER JOIN "quote-address" q1_ ON q0_."address-id" = q1_."address-id"'
+        );
 
+        $this->assertSqlGeneration(
+            'SELECT u, p FROM Doctrine\Tests\Models\Quote\User u JOIN u.phones p',
+            'SELECT q0_."user-id" AS userid0, q0_."user-name" AS username1, q1_."phone-number" AS phonenumber2 FROM "quote-user" q0_ INNER JOIN "quote-phone" q1_ ON q0_."user-id" = q1_."user-id"'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT u, g FROM Doctrine\Tests\Models\Quote\User u JOIN u.groups g',
+            'SELECT q0_."user-id" AS userid0, q0_."user-name" AS username1, q1_."group-id" AS groupid2, q1_."group-name" AS groupname3 FROM "quote-user" q0_ INNER JOIN "quote-users-groups" q2_ ON q0_."user-id" = q2_."user-id" INNER JOIN "quote-group" q1_ ON q1_."group-id" = q2_."group-id"'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT a, u FROM Doctrine\Tests\Models\Quote\Address a JOIN a.user u',
+            'SELECT q0_."address-id" AS addressid0, q0_."address-zip" AS addresszip1, q1_."user-id" AS userid2, q1_."user-name" AS username3 FROM "quote-address" q0_ INNER JOIN "quote-user" q1_ ON q0_."user-id" = q1_."user-id"'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT g, u FROM Doctrine\Tests\Models\Quote\Group g JOIN g.users u',
+            'SELECT q0_."group-id" AS groupid0, q0_."group-name" AS groupname1, q1_."user-id" AS userid2, q1_."user-name" AS username3 FROM "quote-group" q0_ INNER JOIN "quote-users-groups" q2_ ON q0_."group-id" = q2_."group-id" INNER JOIN "quote-user" q1_ ON q1_."user-id" = q2_."user-id"'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT g, p FROM Doctrine\Tests\Models\Quote\Group g JOIN g.parent p',
+            'SELECT q0_."group-id" AS groupid0, q0_."group-name" AS groupname1, q1_."group-id" AS groupid2, q1_."group-name" AS groupname3 FROM "quote-group" q0_ INNER JOIN "quote-group" q1_ ON q0_."parent-id" = q1_."group-id"'
+        );
+    }
+}
 
 class MyAbsFunction extends \Doctrine\ORM\Query\AST\Functions\FunctionNode
 {
