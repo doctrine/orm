@@ -18,8 +18,6 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-
         try {
             $this->_schemaTool->createSchema(array(
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\User'),
@@ -28,9 +26,7 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Address'),
             ));
         } catch(\Exception $e) {
-            //$this->fail($e->getMessage());
         }
-
     }
 
     public function testCreateRetreaveUpdateDelete()
@@ -53,11 +49,41 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertNotNull($user->id);
-        $this->markTestIncomplete();
+        $id = $user->id;
+        $this->assertNotNull($id);
 
-        $user   = $this->_em->find('Doctrine\Tests\Models\Quote\User', $user->id);
+        
+        $user       = $this->_em->find('Doctrine\Tests\Models\Quote\User', $id);
+        $address    = $user->getAddress();
 
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Address', $user->getAddress());
+
+        $this->assertEquals('FabioBatSilva', $user->name);
+        $this->assertEquals('12345', $address->zip);
+
+
+        $user->name     = 'FabioBatSilva1';
+        $user->address  = null;
+
+        $this->_em->persist($user);
+        $this->_em->remove($address);
+        $this->_em->flush();
+        $this->_em->clear();
+
+
+        $user = $this->_em->find('Doctrine\Tests\Models\Quote\User', $id);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
+        $this->assertNull($user->getAddress());
+
+        $this->assertEquals('FabioBatSilva1', $user->name);
+        
+        
+        $this->_em->remove($user);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $this->assertNull($this->_em->find('Doctrine\Tests\Models\Quote\User', $id));
     }
 
 }

@@ -1048,7 +1048,10 @@ class BasicEntityPersister
                     $this->_selectJoinSql .= ' ' . $this->quoteStrategy->getTableName($eagerEntity) . ' ' . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) .' ON ';
 
                     $tableAlias = $this->_getSQLTableAlias($assoc['targetEntity'], $assocAlias);
-                    foreach ($assoc['sourceToTargetKeyColumns'] as $sourceCol => $targetCol) {
+                    foreach ($assoc['joinColumns'] as $joinColumn) {
+                        $sourceCol = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->_class);
+                        $targetCol = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $this->_class);
+
                         if ( ! $first) {
                             $this->_selectJoinSql .= ' AND ';
                         }
