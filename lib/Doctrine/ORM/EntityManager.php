@@ -62,13 +62,6 @@ class EntityManager implements ObjectManager
      */
     private $metadataFactory;
 
-     /**
-     * The quote strategy.
-     *
-     * @var \Doctrine\ORM\Mapping\QuoteStrategy.
-     */
-    private $quoteStrategy;
-
     /**
      * The EntityRepository instances.
      *
@@ -140,7 +133,7 @@ class EntityManager implements ObjectManager
         $this->eventManager = $eventManager;
 
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
-        
+
         $this->metadataFactory = new $metadataFactoryClassName;
         $this->metadataFactory->setEntityManager($this);
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
@@ -172,21 +165,6 @@ class EntityManager implements ObjectManager
     public function getMetadataFactory()
     {
         return $this->metadataFactory;
-    }
-
-    /**
-     * Gets the quote strategy.
-     *
-     * @return \Doctrine\ORM\Mapping\QuoteStrategy
-     */
-    public function getQuoteStrategy()
-    {
-        if ($this->quoteStrategy === null) {
-            $className              = $this->getConfiguration()->getQuoteStrategyClassName();
-            $this->quoteStrategy    = new $className($this->getConnection()->getDatabasePlatform());
-        }
-
-        return $this->quoteStrategy;
     }
 
     /**

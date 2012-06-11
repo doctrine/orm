@@ -58,7 +58,7 @@ class SchemaTool
      *
      * @var \Doctrine\ORM\Mapping\QuoteStrategy
      */
-    protected $quoteStrategy;
+    private $quoteStrategy;
 
     /**
      * Initializes a new SchemaTool instance that uses the connection of the
@@ -69,8 +69,8 @@ class SchemaTool
     public function __construct(EntityManager $em)
     {
         $this->em               = $em;
-        $this->quoteStrategy    = $em->getQuoteStrategy();
         $this->platform         = $em->getConnection()->getDatabasePlatform();
+        $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
     }
 
     /**
@@ -145,7 +145,7 @@ class SchemaTool
                 continue;
             }
 
-            $table      = $schema->createTable($this->quoteStrategy->getTableName($class));
+            $table      = $schema->createTable($this->quoteStrategy->getTableName($class, $this->platform));
             $columns    = array(); // table columns
 
             if ($class->isInheritanceTypeSingleTable()) {
@@ -172,7 +172,7 @@ class SchemaTool
                 $pkColumns = array();
                 foreach ($class->fieldMappings as $fieldName => $mapping) {
                     if ( ! isset($mapping['inherited'])) {
-                        $columnName = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class);
+                        $columnName = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class, $this->platform);
                         $this->_gatherColumn($class, $mapping, $table);
 
                         if ($class->isIdentifier($fieldName)) {
@@ -191,7 +191,7 @@ class SchemaTool
                     /* @var \Doctrine\ORM\Mapping\ClassMetadata $class */
                     $idMapping = $class->fieldMappings[$class->identifier[0]];
                     $this->_gatherColumn($class, $idMapping, $table);
-                    $columnName = $this->quoteStrategy->getColumnName($class->identifier[0], $class);
+                    $columnName = $this->quoteStrategy->getColumnName($class->identifier[0], $class, $this->platform);
                     // TODO: This seems rather hackish, can we optimize it?
                     $table->getColumn($columnName)->setAutoincrement(false);
 
@@ -199,7 +199,7 @@ class SchemaTool
 
                     // Add a FK constraint on the ID column
                     $table->addUnnamedForeignKeyConstraint(
-                        $this->quoteStrategy->getTableName($this->em->getClassMetadata($class->rootEntityName)),
+                        $this->quoteStrategy->getTableName($this->em->getClassMetadata($class->rootEntityName), $this->platform),
                         array($columnName), array($columnName), array('onDelete' => 'CASCADE')
                     );
                 }
@@ -216,12 +216,12 @@ class SchemaTool
             $pkColumns = array();
             foreach ($class->identifier as $identifierField) {
                 if (isset($class->fieldMappings[$identifierField])) {
-                    $pkColumns[] = $this->quoteStrategy->getColumnName($identifierField, $class);
+                    $pkColumns[] = $this->quoteStrategy->getColumnName($identifierField, $class, $this->platform);
                 } else if (isset($class->associationMappings[$identifierField])) {
                     /* @var $assoc \Doctrine\ORM\Mapping\OneToOne */
                     $assoc = $class->associationMappings[$identifierField];
                     foreach ($assoc['joinColumns'] as $joinColumn) {
-                        $pkColumns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class);
+                        $pkColumns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
                     }
                 }
             }
@@ -252,7 +252,7 @@ class SchemaTool
 
             if ($class->isIdGeneratorSequence() && $class->name == $class->rootEntityName) {
                 $seqDef     = $class->sequenceGeneratorDefinition;
-                $quotedName = $this->quoteStrategy->getSequenceName($seqDef, $class);
+                $quotedName = $this->quoteStrategy->getSequenceName($seqDef, $class, $this->platform);
                 if ( ! $schema->hasSequence($quotedName)) {
                     $schema->createSequence(
                         $quotedName,
@@ -328,7 +328,7 @@ class SchemaTool
             $column = $this->_gatherColumn($class, $mapping, $table);
 
             if ($class->isIdentifier($mapping['fieldName'])) {
-                $pkColumns[] = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class);
+                $pkColumns[] = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class, $this->platform);
             }
         }
 
@@ -351,7 +351,7 @@ class SchemaTool
      */
     private function _gatherColumn($class, array $mapping, $table)
     {
-        $columnName = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class);
+        $columnName = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class, $this->platform);
         $columnType = $mapping['type'];
 
         $options = array();
@@ -441,7 +441,7 @@ class SchemaTool
                 // create join table
                 $joinTable = $mapping['joinTable'];
 
-                $theJoinTable = $schema->createTable($this->quoteStrategy->getJoinTableName($mapping, $foreignClass));
+                $theJoinTable = $schema->createTable($this->quoteStrategy->getJoinTableName($mapping, $foreignClass, $this->platform));
 
                 $primaryKeyColumns = $uniqueConstraints = array();
 
@@ -509,7 +509,7 @@ class SchemaTool
         $localColumns       = array();
         $foreignColumns     = array();
         $fkOptions          = array();
-        $foreignTableName   = $this->quoteStrategy->getTableName($class);
+        $foreignTableName   = $this->quoteStrategy->getTableName($class, $this->platform);
 
         foreach ($joinColumns as $joinColumn) {
 
@@ -522,8 +522,8 @@ class SchemaTool
                 );
             }
 
-            $quotedColumnName       = $this->quoteStrategy->getJoinColumnName($joinColumn, $class);
-            $quotedRefColumnName    = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $class);
+            $quotedColumnName       = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+            $quotedRefColumnName    = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $class, $this->platform);
 
             $primaryKeyColumns[]    = $quotedColumnName;
             $localColumns[]         = $quotedColumnName;

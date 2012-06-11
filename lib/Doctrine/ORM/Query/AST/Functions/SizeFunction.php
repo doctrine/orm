@@ -42,7 +42,8 @@ class SizeFunction extends FunctionNode
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        $quoteStrategy  = $sqlWalker->getEntityManager()->getQuoteStrategy();
+        $platform       = $sqlWalker->getEntityManager()->getConnection()->getDatabasePlatform();
+        $quoteStrategy  = $sqlWalker->getEntityManager()->getConfiguration()->getQuoteStrategy();
         $dqlAlias       = $this->collectionPathExpression->identificationVariable;
         $assocField     = $this->collectionPathExpression->field;
 
@@ -56,7 +57,7 @@ class SizeFunction extends FunctionNode
             $targetTableAlias   = $sqlWalker->getSQLTableAlias($targetClass->getTableName());
             $sourceTableAlias   = $sqlWalker->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
-            $sql .= $quoteStrategy->getTableName($targetClass) . ' ' . $targetTableAlias . ' WHERE ';
+            $sql .= $quoteStrategy->getTableName($targetClass, $platform) . ' ' . $targetTableAlias . ' WHERE ';
 
             $owningAssoc = $targetClass->associationMappings[$assoc['mappedBy']];
 
@@ -67,7 +68,7 @@ class SizeFunction extends FunctionNode
 
                 $sql .= $targetTableAlias . '.' . $sourceColumn
                       . ' = '
-                      . $sourceTableAlias . '.' . $quoteStrategy->getColumnName($class->fieldNames[$targetColumn], $class);
+                      . $sourceTableAlias . '.' . $quoteStrategy->getColumnName($class->fieldNames[$targetColumn], $class, $platform);
             }
         } else { // many-to-many
             $targetClass = $sqlWalker->getEntityManager()->getClassMetadata($assoc['targetEntity']);
@@ -80,7 +81,7 @@ class SizeFunction extends FunctionNode
             $sourceTableAlias = $sqlWalker->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
             // join to target table
-            $sql .= $quoteStrategy->getJoinTableName($owningAssoc, $targetClass) . ' ' . $joinTableAlias . ' WHERE ';
+            $sql .= $quoteStrategy->getJoinTableName($owningAssoc, $targetClass, $platform) . ' ' . $joinTableAlias . ' WHERE ';
 
             $joinColumns = $assoc['isOwningSide']
                 ? $joinTable['joinColumns']
@@ -92,7 +93,7 @@ class SizeFunction extends FunctionNode
                 if ($first) $first = false; else $sql .= ' AND ';
 
                 $sourceColumnName = $quoteStrategy->getColumnName(
-                    $class->fieldNames[$joinColumn['referencedColumnName']], $class
+                    $class->fieldNames[$joinColumn['referencedColumnName']], $class, $platform
                 );
 
                 $sql .= $joinTableAlias . '.' . $joinColumn['name']

@@ -50,7 +50,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         $em             = $sqlWalker->getEntityManager();
         $conn           = $em->getConnection();
         $platform       = $conn->getDatabasePlatform();
-        $quoteStrategy  = $em->getQuoteStrategy();
+        $quoteStrategy  = $em->getConfiguration()->getQuoteStrategy();
 
         $primaryClass       = $em->getClassMetadata($AST->deleteClause->abstractSchemaName);
         $primaryDqlAlias    = $AST->deleteClause->aliasIdentificationVariable;
@@ -81,7 +81,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         // 3. Create and store DELETE statements
         $classNames = array_merge($primaryClass->parentClasses, array($primaryClass->name), $primaryClass->subClasses);
         foreach (array_reverse($classNames) as $className) {
-            $tableName = $quoteStrategy->getTableName($em->getClassMetadata($className));
+            $tableName = $quoteStrategy->getTableName($em->getClassMetadata($className), $platform);
             $this->_sqlStatements[] = 'DELETE FROM ' . $tableName
                     . ' WHERE (' . $idColumnList . ') IN (' . $idSubselect . ')';
         }

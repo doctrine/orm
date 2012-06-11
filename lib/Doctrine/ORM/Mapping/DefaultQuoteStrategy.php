@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
  * A set of rules for determining the physical column, alias and table quotes
@@ -26,85 +28,84 @@ namespace Doctrine\ORM\Mapping;
  * @since   2.3
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-class DefaultQuoteStrategy extends QuoteStrategy
+class DefaultQuoteStrategy implements QuoteStrategy
 {
 
     /**
      * {@inheritdoc}
      */
-    public function getColumnName($fieldName, ClassMetadata $class)
+    public function getColumnName($fieldName, ClassMetadata $class, AbstractPlatform $platform)
     {
         return isset($class->fieldMappings[$fieldName]['quoted'])
-            ? $this->platform->quoteIdentifier($class->fieldMappings[$fieldName]['columnName'])
+            ? $platform->quoteIdentifier($class->fieldMappings[$fieldName]['columnName'])
             : $class->fieldMappings[$fieldName]['columnName'];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getTableName(ClassMetadata $class)
+    public function getTableName(ClassMetadata $class, AbstractPlatform $platform)
     {
         return isset($class->table['quoted']) 
-                ? $this->platform->quoteIdentifier($class->table['name'])
+                ? $platform->quoteIdentifier($class->table['name'])
                 : $class->table['name'];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSequenceName(array $definition, ClassMetadata $class)
+    public function getSequenceName(array $definition, ClassMetadata $class, AbstractPlatform $platform)
     {
         return isset($definition['quoted'])
-                ? $this->platform->quoteSingleIdentifier($definition['sequenceName'])
+                ? $platform->quoteIdentifier($definition['sequenceName'])
                 : $definition['sequenceName'];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getJoinColumnName(array $joinColumn, ClassMetadata $class)
+    public function getJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform)
     {
         return isset($joinColumn['quoted'])
-            ? $this->platform->quoteIdentifier($joinColumn['name'])
+            ? $platform->quoteIdentifier($joinColumn['name'])
             : $joinColumn['name'];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getReferencedJoinColumnName(array $joinColumn, ClassMetadata $class)
+    public function getReferencedJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform)
     {
         return isset($joinColumn['quoted'])
-            ? $this->platform->quoteIdentifier($joinColumn['referencedColumnName'])
+            ? $platform->quoteIdentifier($joinColumn['referencedColumnName'])
             : $joinColumn['referencedColumnName'];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getJoinTableName(array $association, ClassMetadata $class)
+    public function getJoinTableName(array $association, ClassMetadata $class, AbstractPlatform $platform)
     {
         return isset($association['joinTable']['quoted'])
-            ? $this->platform->quoteIdentifier($association['joinTable']['name'])
+            ? $platform->quoteIdentifier($association['joinTable']['name'])
             : $association['joinTable']['name'];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getIdentifierColumnNames(ClassMetadata $class)
+    public function getIdentifierColumnNames(ClassMetadata $class, AbstractPlatform $platform)
     {
         $quotedColumnNames = array();
 
         foreach ($class->identifier as $fieldName) {
             if (isset($class->fieldMappings[$fieldName])) {
-                $quotedColumnNames[] = $this->getColumnName($fieldName, $class);
+                $quotedColumnNames[] = $this->getColumnName($fieldName, $class, $platform);
 
                 continue;
             }
 
             // Association defined as Id field
-            $platform               = $this->platform;
             $joinColumns            = $class->associationMappings[$fieldName]['joinColumns'];
             $assocQuotedColumnNames = array_map(
                 function ($joinColumn) use ($platform) {
@@ -124,16 +125,16 @@ class DefaultQuoteStrategy extends QuoteStrategy
     /**
      * {@inheritdoc}
      */
-    public function getColumnAlias($columnName, $counter, ClassMetadata $class = null)
+    public function getColumnAlias($columnName, $counter, AbstractPlatform $platform, ClassMetadata $class = null)
     {
         // Trim the column alias to the maximum identifier length of the platform.
         // If the alias is to long, characters are cut off from the beginning.
         // And strip non alphanumeric characters
         $columnName = $columnName . $counter;
-        $columnName = substr($columnName, -$this->platform->getMaxIdentifierLength());
+        $columnName = substr($columnName, -$platform->getMaxIdentifierLength());
         $columnName = preg_replace('/[^A-Za-z0-9_]/', '', $columnName);
 
-        return $this->platform->getSQLResultCasing($columnName);
+        return $platform->getSQLResultCasing($columnName);
     }
 
 }

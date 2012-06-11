@@ -660,7 +660,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                     if ($quoted) {
                         $definition['quoted'] = true;
                     }
-                    $sequenceName = $this->em->getQuoteStrategy()->getSequenceName($definition, $class);
+                    $sequenceName = $this->em->getConfiguration()->getQuoteStrategy()->getSequenceName($definition, $class, $this->targetPlatform);
                 }
                 $class->setIdGenerator(new \Doctrine\ORM\Id\IdentityGenerator($sequenceName));
                 break;
@@ -681,7 +681,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                     $class->setSequenceGeneratorDefinition($definition);
                 }
                 $sequenceGenerator = new \Doctrine\ORM\Id\SequenceGenerator(
-                    $this->em->getQuoteStrategy()->getSequenceName($definition, $class),
+                    $this->em->getConfiguration()->getQuoteStrategy()->getSequenceName($definition, $class, $this->targetPlatform),
                     $definition['allocationSize']
                 );
                 $class->setIdGenerator($sequenceGenerator);

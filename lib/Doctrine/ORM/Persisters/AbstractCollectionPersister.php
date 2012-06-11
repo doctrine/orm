@@ -46,6 +46,13 @@ abstract class AbstractCollectionPersister
     protected $_uow;
 
     /**
+     * The database platform.
+     *
+     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
+     */
+    protected $platform;
+    
+    /**
      * The quote strategy.
      *
      * @var \Doctrine\ORM\Mapping\QuoteStrategy
@@ -62,7 +69,8 @@ abstract class AbstractCollectionPersister
         $this->_em              = $em;
         $this->_uow             = $em->getUnitOfWork();
         $this->_conn            = $em->getConnection();
-        $this->quoteStrategy    = $em->getQuoteStrategy();
+        $this->platform         = $this->_conn->getDatabasePlatform();
+        $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
     }
 
     /**

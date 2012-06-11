@@ -26,6 +26,7 @@ use Doctrine\Common\Cache\Cache,
     Doctrine\ORM\Mapping\Driver\Driver,
     Doctrine\ORM\Mapping\Driver\AnnotationDriver,
     Doctrine\ORM\Mapping\NamingStrategy,
+    Doctrine\ORM\Mapping\QuoteStrategy,
     Doctrine\ORM\Mapping\DefaultNamingStrategy;
 
 /**
@@ -631,32 +632,28 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Set quote strategy class.
+     * Set quote strategy.
      *
      * @since 2.3
-     * @param string $className
+     * @param Doctrine\ORM\Mapping\QuoteStrategy $quoteStrategy
      */
-    public function setQuoteStrategyClassName($className)
+    public function setQuoteStrategy(QuoteStrategy $quoteStrategy)
     {
-        $quoteStrategy = 'Doctrine\ORM\Mapping\QuoteStrategy';
-
-        if ($className !== $quoteStrategy && ! is_subclass_of($className, $quoteStrategy)) {
-            throw new \InvalidArgumentException("Invalid quote strategy class");
-        }
-        
-        $this->_attributes['quoteStrategyClassName'] = $namingStrategy;
+        $this->_attributes['quoteStrategy'] = $namingStrategy;
     }
 
     /**
-     * Get quote strategy class.
+     * Get quote strategy.
      *
      * @since 2.3
-     * @return string
+     * @return Doctrine\ORM\Mapping\QuoteStrategy
      */
-    public function getQuoteStrategyClassName()
+    public function getQuoteStrategy()
     {
-        return isset($this->_attributes['quoteStrategyClassName'])
-            ? $this->_attributes['quoteStrategyClassName']
-            : 'Doctrine\ORM\Mapping\DefaultQuoteStrategy';
+        if ( ! isset($this->_attributes['quoteStrategy'])) {
+            $this->_attributes['quoteStrategy'] = new \Doctrine\ORM\Mapping\DefaultQuoteStrategy();
+        }
+
+        return $this->_attributes['quoteStrategy'];
     }
 }

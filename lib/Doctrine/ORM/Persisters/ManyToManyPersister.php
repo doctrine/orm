@@ -45,7 +45,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $mapping = $coll->getMapping();
         $class   = $this->_em->getClassMetadata(get_class($coll->getOwner()));
 
-        return 'DELETE FROM ' . $this->quoteStrategy->getJoinTableName($mapping, $class)
+        return 'DELETE FROM ' . $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform)
              . ' WHERE ' . implode(' = ? AND ', $mapping['joinTableColumns']) . ' = ?';
     }
 
@@ -81,7 +81,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $mapping    = $coll->getMapping();
         $columns    = $mapping['joinTableColumns'];
         $class      = $this->_em->getClassMetadata(get_class($coll->getOwner()));
-        $joinTable  = $this->quoteStrategy->getJoinTableName($mapping, $class);
+        $joinTable  = $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform);
 
         return 'INSERT INTO ' . $joinTable . ' (' . implode(', ', $columns) . ')'
              . ' VALUES (' . implode(', ', array_fill(0, count($columns), '?')) . ')';
@@ -151,7 +151,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $class      = $this->_em->getClassMetadata(get_class($coll->getOwner()));
         $mapping    = $coll->getMapping();
-        $joinTable  = $this->quoteStrategy->getJoinTableName($mapping, $class);
+        $joinTable  = $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform);
 
         return 'DELETE FROM ' . $joinTable
              . ' WHERE ' . implode(' = ? AND ', array_keys($mapping['relationToSourceKeyColumns'])) . ' = ?';
@@ -224,7 +224,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         $sql = 'SELECT COUNT(*)'
-            . ' FROM ' . $this->quoteStrategy->getJoinTableName($mapping, $class) . ' t'
+            . ' FROM ' . $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform) . ' t'
             . $joinTargetEntitySQL
             . ' WHERE ' . implode(' AND ', $whereClauses);
 
@@ -326,7 +326,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $targetId = $uow->getEntityIdentifier($element);
         }
 
-        $quotedJoinTable = $this->quoteStrategy->getJoinTableName($mapping, $sourceClass);
+        $quotedJoinTable = $this->quoteStrategy->getJoinTableName($mapping, $sourceClass, $this->platform);
         $whereClauses    = array();
         $params          = array();
 
@@ -387,7 +387,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $joinTargetEntitySQL = '';
         if ($filterSql = $this->generateFilterConditionSQL($targetClass, 'te')) {
             $joinTargetEntitySQL = ' JOIN '
-                . $this->quoteStrategy->getTableName($targetClass) . ' te'
+                . $this->quoteStrategy->getTableName($targetClass, $this->platform) . ' te'
                 . ' ON';
 
             $joinTargetEntitySQLClauses = array();
