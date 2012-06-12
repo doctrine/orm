@@ -1,7 +1,7 @@
 Ordering To-Many Assocations
 ----------------------------
 
-There use-cases you will want to sort collections when they are
+There are use-cases when you'll want to sort collections when they are
 retrieved from the database. In userland you do this as long as you
 haven't initially saved an entity with its associations into the
 database. To retrieve a sorted collection from the database you can
