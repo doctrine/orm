@@ -25,8 +25,9 @@ use Doctrine\Common\Cache\Cache,
     Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\ORM\Mapping\Driver\Driver,
     Doctrine\ORM\Mapping\Driver\AnnotationDriver,
-    Doctrine\ORM\Mapping\NamingStrategy,
     Doctrine\ORM\Mapping\QuoteStrategy,
+    Doctrine\ORM\Mapping\DefaultQuoteStrategy,
+    Doctrine\ORM\Mapping\NamingStrategy,
     Doctrine\ORM\Mapping\DefaultNamingStrategy;
 
 /**
@@ -651,7 +652,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function getQuoteStrategy()
     {
         if ( ! isset($this->_attributes['quoteStrategy'])) {
-            $this->_attributes['quoteStrategy'] = new \Doctrine\ORM\Mapping\DefaultQuoteStrategy();
+            $this->_attributes['quoteStrategy'] = new DefaultQuoteStrategy();
         }
 
         return $this->_attributes['quoteStrategy'];
