@@ -18,7 +18,7 @@
         "symfony/console": "2.*"
     },
     "suggest": {
-        "symfony/yaml": "If you want to using YAML Metadata Mapping Driver"
+        "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
     },
     "autoload": {
         "psr-0": { "Doctrine\\ORM": "lib/" }
