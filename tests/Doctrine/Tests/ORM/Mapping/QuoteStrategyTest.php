@@ -44,6 +44,20 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
         return $cm;
     }
 
+    public function testConfiguration()
+    {
+        $em     = $this->_getTestEntityManager();
+        $config = $em->getConfiguration();
+
+        $this->assertInstanceOf('Doctrine\ORM\Mapping\QuoteStrategy', $config->getQuoteStrategy());
+        $this->assertInstanceOf('Doctrine\ORM\Mapping\DefaultQuoteStrategy', $config->getQuoteStrategy());
+
+        $config->setQuoteStrategy(new MyQuoteStrategy());
+
+        $this->assertInstanceOf('Doctrine\ORM\Mapping\QuoteStrategy', $config->getQuoteStrategy());
+        $this->assertInstanceOf('Doctrine\Tests\ORM\Mapping\MyQuoteStrategy', $config->getQuoteStrategy());
+    }
+
     public function testGetColumnName()
     {
         $cm = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
@@ -175,4 +189,9 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
         $joinColumn = $cm->associationMappings['article']['joinColumns'][0];
         $this->assertEquals('"id"',$this->strategy->getReferencedJoinColumnName($joinColumn, $cm, $this->platform));
     }
+}
+
+class MyQuoteStrategy extends \Doctrine\ORM\Mapping\DefaultQuoteStrategy
+{
+
 }

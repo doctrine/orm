@@ -47,8 +47,8 @@ class DefaultQuoteStrategy implements QuoteStrategy
     public function getTableName(ClassMetadata $class, AbstractPlatform $platform)
     {
         return isset($class->table['quoted']) 
-                ? $platform->quoteIdentifier($class->table['name'])
-                : $class->table['name'];
+            ? $platform->quoteIdentifier($class->table['name'])
+            : $class->table['name'];
     }
 
     /**
@@ -57,8 +57,8 @@ class DefaultQuoteStrategy implements QuoteStrategy
     public function getSequenceName(array $definition, ClassMetadata $class, AbstractPlatform $platform)
     {
         return isset($definition['quoted'])
-                ? $platform->quoteIdentifier($definition['sequenceName'])
-                : $definition['sequenceName'];
+            ? $platform->quoteIdentifier($definition['sequenceName'])
+            : $definition['sequenceName'];
     }
 
     /**

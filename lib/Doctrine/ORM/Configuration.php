@@ -639,7 +639,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setQuoteStrategy(QuoteStrategy $quoteStrategy)
     {
-        $this->_attributes['quoteStrategy'] = $namingStrategy;
+        $this->_attributes['quoteStrategy'] = $quoteStrategy;
     }
 
     /**
