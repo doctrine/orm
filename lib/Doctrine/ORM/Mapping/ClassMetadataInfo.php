@@ -1623,6 +1623,14 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Fetch the READ-ONLY parent classes
+     */
+    public function getParentClasses()
+    {
+        return $this->parentClasses;
+    }
+
+    /**
      * Sets the parent class names.
      * Assumes that the class names in the passed array are in the order:
      * directParent -> directParentParent -> directParentParentParent ... -> root.
