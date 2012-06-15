@@ -61,8 +61,8 @@ class EntityRepository implements ObjectRepository
     public function __construct($em, Mapping\ClassMetadata $class)
     {
         $this->_entityName = $class->name;
-        $this->_em = $em;
-        $this->_class = $class;
+        $this->_em         = $em;
+        $this->_class      = $class;
     }
 
     /**
@@ -100,7 +100,7 @@ class EntityRepository implements ObjectRepository
         $queryMapping   = $this->_class->getNamedNativeQuery($queryName);
         $rsm            = new Query\ResultSetMappingBuilder($this->_em);
         $rsm->addNamedNativeQueryMapping($this->_class, $queryMapping);
-        
+
         return $this->_em->createNativeQuery($queryMapping['query'], $rsm);
     }
 
