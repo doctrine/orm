@@ -347,8 +347,8 @@ final class Query extends AbstractQuery
     /**
      * Returns the cache driver used for query caching.
      *
-     * @return CacheDriver The cache driver used for query caching or NULL, if this
-     * 					   Query does not use query caching.
+     * @return CacheDriver The cache driver used for query caching or NULL, if
+     *                     this Query does not use query caching.
      */
     public function getQueryCacheDriver()
     {
