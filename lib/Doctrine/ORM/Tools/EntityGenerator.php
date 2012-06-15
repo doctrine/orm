@@ -37,7 +37,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo,
  *     $generator->setUpdateEntityIfExists(true);
  *     $generator->generate($classes, '/path/to/generate/entities');
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
@@ -235,7 +235,10 @@ public function <methodName>()
      * @var string
      */
     private static $constructorMethodTemplate =
-'public function __construct()
+'/**
+ * Constructor
+ */
+public function __construct()
 {
 <spaces><collections>
 }
@@ -975,10 +978,10 @@ public function <methodName>()
 
         if ($this->generateAnnotations) {
             $lines[] = $this->spaces . ' *';
-            
+
             if (isset($associationMapping['id']) && $associationMapping['id']) {
                 $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Id';
-            
+
                 if ($generatorType = $this->getIdGeneratorTypeString($metadata->generatorType)) {
                     $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'GeneratedValue(strategy="' . $generatorType . '")';
                 }
