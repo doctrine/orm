@@ -19,8 +19,6 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\DBAL\Connection;
-
 /**
  * Hydrator that produces flat, rectangular results of scalar data.
  * The created result is almost the same as a regular SQL result set, except

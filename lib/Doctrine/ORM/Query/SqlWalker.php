@@ -1852,7 +1852,7 @@ class SqlWalker implements TreeWalker
 
         $dqlAlias = $instanceOfExpr->identificationVariable;
         $discrClass = $class = $this->_queryComponents[$dqlAlias]['metadata'];
-        
+
         if ($class->discriminatorColumn) {
             $discrClass = $this->_em->getClassMetadata($class->rootEntityName);
         }
@@ -2046,8 +2046,8 @@ class SqlWalker implements TreeWalker
     public function walkArithmeticExpression($arithmeticExpr)
     {
         return ($arithmeticExpr->isSimpleArithmeticExpression())
-        	? $this->walkSimpleArithmeticExpression($arithmeticExpr->simpleArithmeticExpression)
-        	: '(' . $this->walkSubselect($arithmeticExpr->subselect) . ')';
+            ? $this->walkSimpleArithmeticExpression($arithmeticExpr->simpleArithmeticExpression)
+            : '(' . $this->walkSubselect($arithmeticExpr->subselect) . ')';
     }
 
     /**
