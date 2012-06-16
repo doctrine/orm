@@ -26,30 +26,31 @@ Getting Started
 ---------------
 
 * **Tutorial**:
-  :doc:`Getting Started <tutorials/getting-started>` |
-  :doc:`In 10 quick steps <tutorials/in-ten-quick-steps>`
+  :doc:`Getting Started <tutorials/getting-started>`
 
-* **Reference**:
+* **Introduction**:
+  :doc:`In 10 quick steps <tutorials/in-ten-quick-steps>` |
   :doc:`Architecture <reference/architecture>` |
+  :doc:`Limitations and knowns issues <reference/limitations-and-known-issues>`
+
+* **Setup**:
   :doc:`Installation <reference/installation>` |
   :doc:`Configuration <reference/configuration>` |
-  :doc:`Tools <reference/tools>` |
-  :doc:`Limitations and knowns issues <reference/limitations-and-known-issues>`
+  :doc:`Tools <reference/tools>`
 
 Mapping Objects onto a Database
 -------------------------------
 
-* **Basic Reference**:
-  :doc:`Objects and Fields <reference/basic-mapping>` |
+* **Mapping**:
+  :doc:`Objects <reference/basic-mapping>` |
   :doc:`Associations <reference/association-mapping>` |
   :doc:`Inheritance <reference/inheritance-mapping>`
 
-* **Mapping Driver References**:
+* **Drivers**:
+  :doc:`Docblock Annotations <reference/annotations-reference>` |
   :doc:`XML <reference/xml-mapping>` |
   :doc:`YAML <reference/yaml-mapping>` |
-  :doc:`Docblock Annotations <reference/annotations-reference>` |
-  :doc:`PHP Mapping <reference/php-mapping>` |
-  :doc:`Metadata Drivers <reference/metadata-drivers>`
+  :doc:`PHP <reference/php-mapping>`
 
 Working with Objects
 --------------------
@@ -60,41 +61,35 @@ Working with Objects
   :doc:`Events <reference/events>`
 
 * **Query Reference**:
-  :doc:`Doctrine Query Language (DQL) <reference/dql-doctrine-query-language>` |
+  :doc:`DQL <reference/dql-doctrine-query-language>` |
   :doc:`QueryBuilder <reference/query-builder>` |
-  :doc:`Native SQL Queries <reference/native-sql>`
+  :doc:`Native SQL <reference/native-sql>`
 
-* **UnitOfWork dissected**:
-  :doc:`Doctrine Internals explained <reference/unitofwork>` |
-  :doc:`Owning and Inverse Side Associations <reference/unitofwork-associations>`
-
-* **Tutorials**:
-  :doc:`Indexed associations <tutorials/working-with-indexed-associations>` |
-  :doc:`Extra Lazy Assocations <tutorials/extra-lazy-associations>` |
-  :doc:`Composite Primary Keys <tutorials/composite-primary-keys>` |
-  :doc:`Ordered associations <tutorials/ordered-associations>` |
-  :doc:`Pagination <tutorials/pagination>`
+* **Internals**:
+  :doc:`Internals explained <reference/unitofwork>` |
+  :doc:`Associations <reference/unitofwork-associations>`
 
 Advanced Topics
 ---------------
 
-* **Database Integration**:
-  :doc:`Transactions and Concurrency <reference/transactions-and-concurrency>`
+  * :doc:`Transactions and Concurrency <reference/transactions-and-concurrency>`
+  * :doc:`Filters <reference/filters>`
+  * :doc:`NamingStrategy <reference/namingstrategy>`
+  * :doc:`Improving Performance <reference/improving-performance>` 
+  * :doc:`Caching <reference/caching>` 
+  * :doc:`Partial Objects <reference/partial-objects>` 
+  * :doc:`Change Tracking Policies <reference/change-tracking-policies>`
+  * :doc:`Best Practices <reference/best-practices>`
+  * :doc:`Metadata Drivers <reference/metadata-drivers>`
 
-* **Filtering entities**:
-  :doc:`Filters <reference/filters>`
+Tutorials
+---------
 
-* **Implementing a NamingStrategy**:
-  :doc:`NamingStrategy <reference/namingstrategy>`
-
-* **Performance**:
-  :doc:`Improving Performance <reference/improving-performance>` |
-  :doc:`Caching <reference/caching>` |
-  :doc:`Partial Objects <reference/partial-objects>` |
-  :doc:`Change Tracking Policies <reference/change-tracking-policies>`
-
-* **Best Practices**:
-  :doc:`Best Practices <reference/best-practices>`
+  * :doc:`Indexed associations <tutorials/working-with-indexed-associations>` |
+  * :doc:`Extra Lazy Assocations <tutorials/extra-lazy-associations>` |
+  * :doc:`Composite Primary Keys <tutorials/composite-primary-keys>` |
+  * :doc:`Ordered associations <tutorials/ordered-associations>` |
+  * :doc:`Pagination <tutorials/pagination>`
 
 Cookbook
 --------
@@ -102,7 +97,7 @@ Cookbook
 * **Patterns**:
   :doc:`Aggregate Fields <cookbook/aggregate-fields>` |
   :doc:`Decorator Pattern <cookbook/decorator-pattern>` |
-  :doc:`Strategy Pattern <cookbook/strategy-cookbook-introduction>` |
+  :doc:`Strategy Pattern <cookbook/strategy-cookbook-introduction>` 
 
 * **DQL Extension Points**:
   :doc:`DQL Custom Walkers <cookbook/dql-custom-walkers>` |
