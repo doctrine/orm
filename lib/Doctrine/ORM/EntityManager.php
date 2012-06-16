@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM;
 
-use Closure, Exception,
+use Exception,
     Doctrine\Common\EventManager,
     Doctrine\Common\Persistence\ObjectManager,
     Doctrine\DBAL\Connection,
@@ -210,15 +210,19 @@ class EntityManager implements ObjectManager
      * If an exception occurs during execution of the function or flushing or transaction commit,
      * the transaction is rolled back, the EntityManager closed and the exception re-thrown.
      *
-     * @param Closure $func The function to execute transactionally.
+     * @param callable $func The function to execute transactionally.
      * @return mixed Returns the non-empty value returned from the closure or true instead
      */
-    public function transactional(Closure $func)
+    public function transactional($func)
     {
+        if (!is_callable($func)) {
+            throw new \InvalidArgumentException('Expected argument of type "callable", got "' . gettype($func) . '"');
+        }
+
         $this->conn->beginTransaction();
 
         try {
-            $return = $func($this);
+            $return = call_user_func($func, $this);
 
             $this->flush();
             $this->conn->commit();

@@ -155,4 +155,21 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals('foo', $return);
     }
+
+    public function testTransactionalAcceptsVariousCallables()
+    {
+        $this->assertSame('callback', $this->_em->transactional(array($this, 'transactionalCallback')));
+    }
+
+    public function testTransactionalThrowsInvalidArgumentExceptionIfNonCallablePassed()
+    {
+        $this->setExpectedException('InvalidArgumentException', 'Expected argument of type "callable", got "object"');
+        $this->_em->transactional($this);
+    }
+
+    public function transactionalCallback($em)
+    {
+        $this->assertSame($this->_em, $em);
+        return 'callback';
+    }
 }
