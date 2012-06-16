@@ -21,7 +21,7 @@ setup for the latest code in trunk.
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+                       https://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
     
         ...
     
@@ -99,7 +99,7 @@ of several common elements:
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                              http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+                              http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
     
         <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
     
@@ -733,7 +733,7 @@ entity relationship. You can define this in XML with the "association-key" attri
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+                        http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
          <entity name="Application\Model\ArticleAttribute">
             <id name="article" association-key="true" />
