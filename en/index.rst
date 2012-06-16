@@ -30,7 +30,7 @@ Getting Started
 
 * **Introduction**:
   :doc:`In 10 quick steps <tutorials/in-ten-quick-steps>` |
-  :doc:`Architecture <reference/architecture>` |
+  :doc:`Architecture <reference/architecture>`
 
 * **Setup**:
   :doc:`Installation <reference/installation>` |
