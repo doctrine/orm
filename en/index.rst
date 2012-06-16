@@ -30,8 +30,8 @@ Getting Started
   :doc:`In 10 quick steps <tutorials/in-ten-quick-steps>`
 
 * **Reference**:
-  :doc:`Introduction <reference/introduction>` |
   :doc:`Architecture <reference/architecture>` |
+  :doc:`Installation <reference/installation>` |
   :doc:`Configuration <reference/configuration>` |
   :doc:`Tools <reference/tools>` |
   :doc:`Limitations and knowns issues <reference/limitations-and-known-issues>`

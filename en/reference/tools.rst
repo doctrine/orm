@@ -8,7 +8,7 @@ The Doctrine Console is a Command Line Interface tool for
 simplifying common tasks during the development of a project that
 uses Doctrine 2.
 
-Take a look at the `Configuration <reference/configuration>` for more
+Take a look at the :doc:`Configuration <configuration>` for more
 information how to setup the console command.
 
 Getting Help

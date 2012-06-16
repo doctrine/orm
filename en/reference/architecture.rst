@@ -5,8 +5,69 @@ This chapter gives an overview of the overall architecture,
 terminology and constraints of Doctrine 2. It is recommended to
 read this chapter carefully.
 
+Using an Object-Relational Mapper
+---------------------------------
+
+As the term ORM already hints at, Doctrine 2 aims to simplify the
+translation between database rows and the PHP object model. The
+primary use case for Doctrine are therefore applications that
+utilize the Object-Oriented Programming Paradigm. For applications
+that not primarily work with objects Doctrine 2 is not suited very
+well.
+
+Requirements
+------------
+
+Doctrine 2 requires a minimum of PHP 5.3.0. For greatly improved
+performance it is also recommended that you use APC with PHP.
+
+Doctrine 2 Packages
+-------------------
+
+Doctrine 2 is divided into three main packages.
+
+-  Common
+-  DBAL (includes Common)
+-  ORM (includes DBAL+Common)
+
+This manual mainly covers the ORM package, sometimes touching parts
+of the underlying DBAL and Common packages. The Doctrine code base
+is split in to these packages for a few reasons and they are to...
+
+
+-  ...make things more maintainable and decoupled
+-  ...allow you to use the code in Doctrine Common without the ORM
+   or DBAL
+-  ...allow you to use the DBAL without the ORM
+
+The Common Package
+~~~~~~~~~~~~~~~~~~
+
+The Common package contains highly reusable components that have no
+dependencies beyond the package itself (and PHP, of course). The
+root namespace of the Common package is ``Doctrine\Common``.
+
+The DBAL Package
+~~~~~~~~~~~~~~~~
+
+The DBAL package contains an enhanced database abstraction layer on
+top of PDO but is not strongly bound to PDO. The purpose of this
+layer is to provide a single API that bridges most of the
+differences between the different RDBMS vendors. The root namespace
+of the DBAL package is ``Doctrine\DBAL``.
+
+The ORM Package
+~~~~~~~~~~~~~~~
+
+The ORM package contains the object-relational mapping toolkit that
+provides transparent relational persistence for plain PHP objects.
+The root namespace of the ORM package is ``Doctrine\ORM``.
+
+Terminology
+-----------
+
 Entities
---------
+~~~~~~~~
 
 An entity is a lightweight, persistent domain object. An entity can
 be any regular PHP class observing the following restrictions:
@@ -38,7 +99,9 @@ polymorphic queries. Both abstract and concrete classes can be
 entities. Entities may extend non-entity classes as well as entity
 classes, and non-entity classes may extend entity classes.
 
-    **TIP** The constructor of an entity is only ever invoked when
+.. note::
+
+    The constructor of an entity is only ever invoked when
     *you* construct a new instance with the *new* keyword. Doctrine
     never calls entity constructors, thus you are free to use them as
     you wish and even have it require arguments of any type.
@@ -101,7 +164,7 @@ work well with any potential cyclic object references (at least we
 did not find a way yet, if you did, please contact us).
 
 The EntityManager
------------------
+~~~~~~~~~~~~~~~~~
 
 The ``EntityManager`` class is a central access point to the ORM
 functionality provided by Doctrine 2. The ``EntityManager`` API is

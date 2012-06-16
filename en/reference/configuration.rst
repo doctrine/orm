@@ -4,24 +4,10 @@ Configuration
 Bootstrapping Doctrine is a relatively simple procedure that
 roughly exists of four steps:
 
--  Installation
+-  `Installation <reference/installation>`
 -  Making sure Doctrine class files can be loaded on demand.
 -  Obtaining an EntityManager instance.
 -  Optional: Configuration of the Console Tool
-
-Installation
-------------
-
-`Composer <http://www.getcomposer.org>`_ is the suggested installation method for Doctrine.
-Define the following requirement in your ``composer.json`` file:
-
-    {
-        "require": {
-            "doctrine/orm": "*"
-        }
-    }
-
-Then run the composer command. 
 
 Class loading
 -------------
