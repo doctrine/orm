@@ -192,8 +192,6 @@ class EntityManager implements ObjectManager
 
     /**
      * Starts a transaction on the underlying database connection.
-     *
-     * @deprecated Use {@link getConnection}.beginTransaction().
      */
     public function beginTransaction()
     {
@@ -234,8 +232,6 @@ class EntityManager implements ObjectManager
 
     /**
      * Commits a transaction on the underlying database connection.
-     *
-     * @deprecated Use {@link getConnection}.commit().
      */
     public function commit()
     {
@@ -244,8 +240,6 @@ class EntityManager implements ObjectManager
 
     /**
      * Performs a rollback on the underlying database connection.
-     *
-     * @deprecated Use {@link getConnection}.rollback().
      */
     public function rollback()
     {
