@@ -1,16 +1,28 @@
-Getting Started
-===============
+Getting Started: Code First
+===========================
 
-Doctrine 2 is an object-relational mapper (ORM) for PHP 5.3.0+ that provides transparent persistence for PHP objects.
-It uses the Data Mapper pattern at the heart of this project, aiming for a complete separation of
-the domain/business logic from the persistence in a relational
-database management system. The benefit of Doctrine for the
-programmer is the ability to focus solely on the object-oriented business logic and
-worry about persistence only as a secondary task. This doesn't mean
-persistence is not important to Doctrine 2, however it is our
-belief that there are considerable benefits for object-oriented
-programming if persistence and entities are kept perfectly
+.. note:: *Development Workflows*
+
+    When you :doc:`Code First <getting-started>`, you
+    start with developing Objects and then map them onto your database. When
+    you :doc:`Model First <getting-started-models>`, you are modelling your application using tools (for
+    example UML) and generate database schema and PHP code from this model.
+    When you have a :doc:`Database First <getting-started-database>`, then you already have a database schema
+    and generate the correspdongin PHP code from it.
+
+Doctrine 2 is an object-relational mapper (ORM) for PHP 5.3.0+ that provides
+transparent persistence for PHP objects.  It uses the Data Mapper pattern at
+the heart of this project, aiming for a complete separation of the
+domain/business logic from the persistence in a relational database management
+system. The benefit of Doctrine for the programmer is the ability to focus
+solely on the object-oriented business logic and worry about persistence only
+as a secondary task. This doesn't mean persistence is not important to Doctrine
+2, however it is our belief that there are considerable benefits for
+object-oriented programming if persistence and entities are kept perfectly
 separated.
+
+Starting with the object-oriented model is called the *Code First* approach to
+Doctrine.
 
 .. note::
 

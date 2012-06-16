@@ -26,7 +26,9 @@ Getting Started
 ---------------
 
 * **Tutorial**:
-  :doc:`Getting Started <tutorials/getting-started>`
+  :doc:`Code First <tutorials/getting-started>` |
+  :doc:`Model First <tutorials/getting-started-models>` |
+  :doc:`Database First <tutorials/getting-started-database>`
 
 * **Introduction**:
   :doc:`In 10 quick steps <tutorials/in-ten-quick-steps>` |
