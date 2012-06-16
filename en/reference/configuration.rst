@@ -1,18 +1,40 @@
 Configuration
 =============
 
-Bootstrapping
--------------
-
 Bootstrapping Doctrine is a relatively simple procedure that
-roughly exists of just 2 steps:
+roughly exists of four steps:
 
-
+-  Installation
 -  Making sure Doctrine class files can be loaded on demand.
 -  Obtaining an EntityManager instance.
+-  Optional: Configuration of the Console Tool
+
+Installation
+------------
+
+`Composer <http://www.getcomposer.org>`_ is the suggested installation method for Doctrine.
+Define the following requirement in your ``composer.json`` file:
+
+    {
+        "require": {
+            "doctrine/orm": "*"
+        }
+    }
+
+Then run the composer command. 
 
 Class loading
-~~~~~~~~~~~~~
+-------------
+
+Autoloading is taken care of by Composer. You just have to include the composer autoload file in your project:
+
+.. code-block:: php
+
+    <?php
+    // Include Composer Autoload
+    require_once "vendor/autoload.php";
+
+Skip the rest of this section unless you are using another installation method.
 
 Lets start with the class loading setup. We need to set up some
 class loaders (often called "autoloader") so that Doctrine class
@@ -41,7 +63,6 @@ different types of Doctrine Installations:
 
     This assumes you've created some kind of script to test
     the following code in. Something like a ``test.php`` file.
-
 
 PEAR
 ^^^^
@@ -91,11 +112,44 @@ the autoloading of the Symfony Console and YAML component,
 which are optional dependencies for Doctrine 2.
 
 Obtaining an EntityManager
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------
 
 Once you have prepared the class loading, you acquire an
 *EntityManager* instance. The EntityManager class is the primary
 access point to ORM functionality provided by Doctrine.
+
+Quick Configuration Example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The above example is a complete setup of the required options for Doctrine.
+You can have this step of your code much simpler and use one of the predefined
+setup methods:
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ORM\Tools\Setup;
+    use Doctrine\ORM\EntityManager;
+
+    $paths = array("/path/to/entities-or-mapping-files");
+    $isDevMode = false;
+
+    $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
+    $em = EntityManager::create($dbParams, $config);
+
+    // or if you prefer yaml or xml
+    $config = Setup::createXMLMetadataConfiguration($paths, $isDevMode);
+    $config = Setup::createYAMLMetadataConfiguration($paths, $isDevMode);
+
+These setup commands make several assumptions:
+
+-  If `$devMode` is true always use an ``ArrayCache`` and set ``setAutoGenerateProxyClasses(true)``.
+-  If `$devMode` is false, check for Caches in the order APC, Xcache, Memcache (127.0.0.1:11211), Redis (127.0.0.1:6379) unless `$cache` is passed as fourth argument.
+-  If `$devMode` is false, set ``setAutoGenerateProxyClasses(false)``
+-  If third argument `$proxyDir` is not set, use the systems temporary directory.
+
+Full Configuration Example
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The configuration of the EntityManager requires a
 ``Doctrine\ORM\Configuration`` instance as well as some database
@@ -140,7 +194,7 @@ steps of configuration.
 .. note::
 
     Do not use Doctrine without a metadata and query cache!
-    Doctrine is highly optimized for working with caches. The main
+    Doctrine is optimized for working with caches. The main
     parts in Doctrine that are optimized for caching are the metadata
     mapping information with the metadata cache and the DQL to SQL
     conversions with the query cache. These 2 caches require only an
@@ -150,36 +204,6 @@ steps of configuration.
     an opcode-cache (which is highly recommended anyway) and a very
     fast in-memory cache storage that you can use for the metadata and
     query caches as seen in the previous code snippet.
-
-Configuration Shortcuts
-~~~~~~~~~~~~~~~~~~~~~~~
-
-The above example is a complete setup of the required options for Doctrine.
-You can have this step of your code much simpler and use one of the predefined
-setup methods:
-
-.. code-block:: php
-
-    <?php
-    use Doctrine\ORM\Tools\Setup;
-    use Doctrine\ORM\EntityManager;
-
-    $paths = array("/path/to/entities-or-mapping-files");
-    $isDevMode = false;
-
-    $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
-    $em = EntityManager::create($dbParams, $config);
-
-    // or if you prefer yaml or xml
-    $config = Setup::createXMLMetadataConfiguration($paths, $isDevMode);
-    $config = Setup::createYAMLMetadataConfiguration($paths, $isDevMode);
-
-These setup commands make several assumptions:
-
--  If `$devMode` is true always use an ``ArrayCache`` and set ``setAutoGenerateProxyClasses(true)``.
--  If `$devMode` is false, check for Caches in the order APC, Xcache, Memcache (127.0.0.1:11211), Redis (127.0.0.1:6379) unless `$cache` is passed as fourth argument.
--  If `$devMode` is false, set ``setAutoGenerateProxyClasses(false)``
--  If third argument `$proxyDir` is not set, use the systems temporary directory.
 
 Configuration Options
 ---------------------
@@ -536,3 +560,27 @@ That will be available for all entities without a custom repository class.
 
 The default value is ``Doctrine\ORM\EntityRepository``.
 Any repository class must be a subclass of EntityRepository otherwise you got an ORMException
+
+Setting up the Console
+----------------------
+
+Doctrine uses the Symfony Console component for generating the command
+line interface. You can take a look at the ``bin/doctrine.php``
+script and the ``Doctrine\ORM\Tools\Console\ConsoleRunner`` command
+for inspiration how to setup the cli.
+
+If you installed Doctrine 2 through Composer, then the Doctrine command is
+available to you in the bin-dir, by default at ``vendor/.bin/doctrine``.
+
+If you installed Doctrine 2 through PEAR, the ``doctrine`` command
+line tool should already be available to you.
+
+In general the required code looks like this:
+
+.. code-block:: php
+
+    $cli = new Application('Doctrine Command Line Interface', \Doctrine\ORM\Version::VERSION);
+    $cli->setCatchExceptions(true);
+    $cli->setHelperSet($helperSet);
+    Doctrine\ORM\Tools\Console\ConsoleRunner::addCommands($cli);
+    $cli->run();

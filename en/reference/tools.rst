@@ -8,15 +8,8 @@ The Doctrine Console is a Command Line Interface tool for
 simplifying common tasks during the development of a project that
 uses Doctrine 2.
 
-Installation
-~~~~~~~~~~~~
-
-If you installed Doctrine 2 through PEAR, the ``doctrine`` command
-line tool should already be available to you. Y
-
-In any other case you should create a project specific doctrine command
-on your own. This is a combination of the PEAR ``doctrine`` commands
-code and some of your own bootstrap code.
+Take a look at the `Configuration <reference/configuration>` for more
+information how to setup the console command.
 
 Getting Help
 ~~~~~~~~~~~~
@@ -30,23 +23,6 @@ about the use of generate entities for example, you can call:
 
     doctrine orm:generate-entities --help
 
-Setting up the Console
-----------------------
-
-Doctrine uses the Symfony Console component for generating the command
-line interface. You can take a look at the ``bin/doctrine.php``
-script and the ``Doctrine\ORM\Tools\Console\ConsoleRunner`` command
-for inspiration how to setup the cli.
-
-In general the required code looks like this:
-
-.. code-block:: php
-
-        $cli = new Application('Doctrine Command Line Interface', \Doctrine\ORM\Version::VERSION);
-        $cli->setCatchExceptions(true);
-        $cli->setHelperSet($helperSet);
-        Doctrine\ORM\Tools\Console\ConsoleRunner::addCommands($cli);
-        $cli->run();
 
 Configuration (PEAR)
 ~~~~~~~~~~~~~~~~~~~~
@@ -94,18 +70,10 @@ sample ``cli-config.php`` file looks as follows:
 
     <?php
     // cli-config.php
-    use Doctrine\ORM\Tools\Setup;
-    use Doctrine\ORM\EntityManager;
+    require_once 'my_bootstrap.php';
 
-    require 'Doctrine/ORM/Tools/Setup.php';
-
-    Doctrine\ORM\Tools\Setup::registerAutoloadPEAR();
-
-    $paths = array("/path/to/entities-or-mapping-files");
-    $isDevMode = false;
-
-    $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
-    $em = EntityManager::create($dbParams, $config);
+    // Any way to access the EntityManager from  your application
+    $em = GetMyEntityManager();
     
     $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
         'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
@@ -116,7 +84,6 @@ It is important to define a correct HelperSet that Doctrine binary
 script will ultimately use. The Doctrine Binary will automatically
 find the first instance of HelperSet in the global variable
 namespace and use this.
-
 
 .. note:: 
 
@@ -136,22 +103,15 @@ there whenever you want to access the Doctrine console.
     <?php
     // doctrine.php - Put in your application root
 
-    use Doctrine\ORM\Tools\Setup;
-    use Doctrine\ORM\EntityManager;
     use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
     use Doctrine\DBAL\Tools\Console\Helper\EntityManagerHelper;
     use Doctrine\ORM\Tools\Console\ConsoleRunner;
     use Symfony\Component\Console\Helper\HelperSet;
 
-    $lib = "/path/to/doctrine2-orm/lib";
-    require $lib . '/Doctrine/ORM/Tools/Setup.php';
-    Setup::registerAutoloadDirectory($lib);
+    require_once 'my_bootstrap.php';
 
-    $paths = array("/path/to/entities-or-mapping-files");
-    $isDevMode = false;
-
-    $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
-    $em = EntityManager::create($dbParams, $config);
+    // Any way to access the EntityManager from  your application
+    $em = GetMyEntityManager();
     
     $helperSet = new HelperSet(array(
         'db' => new ConnectionHelper($em->getConnection()),
@@ -160,50 +120,6 @@ there whenever you want to access the Doctrine console.
 
     ConsoleRunner::run($helperSet);
  
-Adding own commands
-~~~~~~~~~~~~~~~~~~~
-
-You can also add your own commands on-top of the Doctrine supported
-tools if you are using a manually built (Non-PEAR) binary.
-
-To include a new command on Doctrine Console, you need to do modify the
-``doctrine.php`` file a little:
-
-.. code-block:: php
-
-    <?php
-    // doctrine.php
-    use Symfony\Component\Console\Helper\Application;
-
-    // as before ...
-
-    // replace the ConsoleRunner::run() statement with:
-    $cli = new Application('Doctrine Command Line Interface', \Doctrine\ORM\Version::VERSION);
-    $cli->setCatchExceptions(true);
-    $cli->setHelperSet($helperSet);
-
-    // Register All Doctrine Commands
-    ConsoleRunner::addCommands($cli);
-
-    // Register your own command
-    $cli->addCommand(new \MyProject\Tools\Console\Commands\MyCustomCommand);
-
-    // Runs console application
-    $cli->run();
-
-Additionally, include multiple commands (and overriding previously
-defined ones) is possible through the command:
-
-.. code-block:: php
-
-    <?php
-
-    $cli->addCommands(array(
-        new \MyProject\Tools\Console\Commands\MyCustomCommand(),
-        new \MyProject\Tools\Console\Commands\SomethingCommand(),
-        new \MyProject\Tools\Console\Commands\AnotherCommand(),
-        new \MyProject\Tools\Console\Commands\OneMoreCommand(),
-    ));
 
 Command Overview
 ~~~~~~~~~~~~~~~~
@@ -518,4 +434,47 @@ You can also reverse engineer a database using the
     a useful domain model.
 
 
+Adding own commands
+-------------------
 
+You can also add your own commands on-top of the Doctrine supported
+tools if you are using a manually built (Non-PEAR) binary.
+
+To include a new command on Doctrine Console, you need to do modify the
+``doctrine.php`` file a little:
+
+.. code-block:: php
+
+    <?php
+    // doctrine.php
+    use Symfony\Component\Console\Helper\Application;
+
+    // as before ...
+
+    // replace the ConsoleRunner::run() statement with:
+    $cli = new Application('Doctrine Command Line Interface', \Doctrine\ORM\Version::VERSION);
+    $cli->setCatchExceptions(true);
+    $cli->setHelperSet($helperSet);
+
+    // Register All Doctrine Commands
+    ConsoleRunner::addCommands($cli);
+
+    // Register your own command
+    $cli->addCommand(new \MyProject\Tools\Console\Commands\MyCustomCommand);
+
+    // Runs console application
+    $cli->run();
+
+Additionally, include multiple commands (and overriding previously
+defined ones) is possible through the command:
+
+.. code-block:: php
+
+    <?php
+
+    $cli->addCommands(array(
+        new \MyProject\Tools\Console\Commands\MyCustomCommand(),
+        new \MyProject\Tools\Console\Commands\SomethingCommand(),
+        new \MyProject\Tools\Console\Commands\AnotherCommand(),
+        new \MyProject\Tools\Console\Commands\OneMoreCommand(),
+    ));
