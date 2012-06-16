@@ -31,12 +31,13 @@ Getting Started
 * **Introduction**:
   :doc:`In 10 quick steps <tutorials/in-ten-quick-steps>` |
   :doc:`Architecture <reference/architecture>` |
-  :doc:`Limitations and knowns issues <reference/limitations-and-known-issues>`
 
 * **Setup**:
   :doc:`Installation <reference/installation>` |
   :doc:`Configuration <reference/configuration>` |
   :doc:`Tools <reference/tools>`
+
+* :doc:`Limitations and knowns issues <reference/limitations-and-known-issues>`
 
 Mapping Objects onto a Database
 -------------------------------
@@ -85,10 +86,10 @@ Advanced Topics
 Tutorials
 ---------
 
-  * :doc:`Indexed associations <tutorials/working-with-indexed-associations>` |
-  * :doc:`Extra Lazy Assocations <tutorials/extra-lazy-associations>` |
-  * :doc:`Composite Primary Keys <tutorials/composite-primary-keys>` |
-  * :doc:`Ordered associations <tutorials/ordered-associations>` |
+  * :doc:`Indexed associations <tutorials/working-with-indexed-associations>`
+  * :doc:`Extra Lazy Assocations <tutorials/extra-lazy-associations>`
+  * :doc:`Composite Primary Keys <tutorials/composite-primary-keys>`
+  * :doc:`Ordered associations <tutorials/ordered-associations>`
   * :doc:`Pagination <tutorials/pagination>`
 
 Cookbook
