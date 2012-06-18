@@ -12,9 +12,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
 
-use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsArticle;
-
 require_once __DIR__ . '/../../TestInit.php';
 
 /**
