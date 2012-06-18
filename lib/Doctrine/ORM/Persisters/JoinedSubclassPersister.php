@@ -19,11 +19,14 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\ORM\ORMException,
-    Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\DBAL\LockMode,
-    Doctrine\DBAL\Types\Type,
-    Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query\ResultSetMapping;
+
+use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\Types\Type;
+
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * The joined subclass persister maps a single entity instance to several tables in the
@@ -264,7 +267,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    protected function _getSelectEntitiesSQL(array $criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null, array $orderBy = null)
+    protected function _getSelectEntitiesSQL($criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null, array $orderBy = null)
     {
         $idColumns = $this->_class->getIdentifierColumnNames();
         $baseTableAlias = $this->_getSQLTableAlias($this->_class->name);
@@ -373,7 +376,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         $joinSql .= ($assoc != null && $assoc['type'] == ClassMetadata::MANY_TO_MANY) ? $this->_getSelectManyToManyJoinSQL($assoc) : '';
 
-        $conditionSql = $this->_getSelectConditionSQL($criteria, $assoc);
+        $conditionSql = ($criteria instanceof Criteria)
+            ? $this->_getSelectConditionCriteriaSQL($criteria)
+            : $this->_getSelectConditionSQL($criteria, $assoc);
 
         // If the current class in the root entity, add the filters
         if ($filterSql = $this->generateFilterConditionSQL($this->_em->getClassMetadata($this->_class->rootEntityName), $this->_getSQLTableAlias($this->_class->rootEntityName))) {
