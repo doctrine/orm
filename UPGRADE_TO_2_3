@@ -25,3 +25,11 @@ Also, related functions were affected:
 * setParameters($parameters) the argument $parameters can be either an key=>value array or an ArrayCollection instance
 * getParameters() now returns ArrayCollection instead of array
 * getParameter($key) now returns Parameter instance instead of parameter value
+
+# Lifecycle Callbacks
+
+The `@HasLifecycleCallbacks` has been deprecated: you can now put the lifecycle annotations on your entities' public
+methods without having to annotate the class itself. Also, the CLI tools can now detect invalid lifecycle callbacks.
+
+* Public method `Doctrine\ORM\Mapping\ClassMetadataInfo#validateLifecycleCallbacks` has been removed.
+* Public static method `Doctrine\ORM\Mapping\MappingException#lifecycleCallbackMethodNotFound` has been removed.

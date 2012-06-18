@@ -902,23 +902,6 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Validate lifecycle callbacks
-     *
-     * @param ReflectionService $reflService
-     * @return void
-     */
-    public function validateLifecycleCallbacks($reflService)
-    {
-        foreach ($this->lifecycleCallbacks as $event => $callbacks) {
-            foreach ($callbacks as $callbackFuncName) {
-                if ( ! $reflService->hasPublicMethod($this->name, $callbackFuncName)) {
-                    throw MappingException::lifecycleCallbackMethodNotFound($this->name, $callbackFuncName);
-                }
-            }
-        }
-    }
-
-    /**
      * Gets the ReflectionClass instance of the mapped class.
      *
      * @return ReflectionClass
@@ -1831,7 +1814,7 @@ class ClassMetadataInfo implements ClassMetadata
         $mapping['sourceToTargetKeyColumns']    = null;
         $mapping['relationToSourceKeyColumns']  = null;
         $mapping['relationToTargetKeyColumns']  = null;
-        
+
         switch ($mapping['type']) {
             case self::ONE_TO_ONE:
                 $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);

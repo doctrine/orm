@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping;
 
 /**
+ * @deprecated This annotation is currently unused and will probably removed with future releases
  * @Annotation
  * @Target("CLASS")
  */

@@ -682,10 +682,6 @@ public function __construct()
             if ($metadata->customRepositoryClassName) {
                 $lines[count($lines) - 1] .= '(repositoryClass="' . $metadata->customRepositoryClassName . '")';
             }
-
-            if (isset($metadata->lifecycleCallbacks) && $metadata->lifecycleCallbacks) {
-                $lines[] = ' * @' . $this->annotationsPrefix . 'HasLifecycleCallbacks';
-            }
         }
 
         $lines[] = ' */';

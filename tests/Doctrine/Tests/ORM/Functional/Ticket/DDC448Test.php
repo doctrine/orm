@@ -53,7 +53,6 @@ class DDC448MainTable
 /**
  * @Entity
  * @Table(name="connectedClass")
- * @HasLifecycleCallbacks
  */
 class DDC448ConnectedClass
 {

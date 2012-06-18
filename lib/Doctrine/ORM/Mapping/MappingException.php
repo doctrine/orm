@@ -144,7 +144,7 @@ class MappingException extends \Doctrine\ORM\ORMException
     {
         return new self('Result set mapping named "'.$resultName.'" in "'.$entity.' requires a field name.');
     }
-    
+
     public static function nameIsMandatoryForSqlResultSetMapping($className)
     {
         return new self("Result set mapping name on entity class '$className' is not defined.");
@@ -411,11 +411,6 @@ class MappingException extends \Doctrine\ORM\ORMException
             "to be properly mapped in the inheritance hierachy. Alternatively you can make '".$className."' an abstract class " .
             "to avoid this exception from occuring."
         );
-    }
-
-    public static function lifecycleCallbackMethodNotFound($className, $methodName)
-    {
-        return new self("Entity '" . $className . "' has no method '" . $methodName . "' to be registered as lifecycle callback.");
     }
 
     public static function invalidFetchMode($className, $annotation)

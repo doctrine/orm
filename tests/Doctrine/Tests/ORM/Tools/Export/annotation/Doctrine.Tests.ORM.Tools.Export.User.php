@@ -4,7 +4,6 @@ namespace Doctrine\Tests\ORM\Tools\Export;
 
 /**
  * @Entity
- * @HasLifecycleCallbacks
  * @Table(name="cms_users")
  */
 class User
