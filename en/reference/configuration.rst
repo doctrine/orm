@@ -120,6 +120,13 @@ setup methods:
     $paths = array("/path/to/entities-or-mapping-files");
     $isDevMode = false;
 
+    $dbParams = array(
+        'driver'   => 'pdo_mysql',
+        'user'     => 'root',
+        'password' => '',
+        'dbname'   => 'foo',
+    );
+
     $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
     $em = EntityManager::create($dbParams, $config);
 
