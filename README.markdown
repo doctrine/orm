@@ -13,7 +13,7 @@ without requiring unnecessary code duplication.
 ## More resources:
 
 * [Website](http://www.doctrine-project.org)
-* [Documentation](http://www.doctrine-project.org/projects/orm/2.0/docs/reference/introduction/en)
+* [Documentation](http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/index.html)
 * [Issue Tracker](http://www.doctrine-project.org/jira/browse/DDC)
 * [Downloads](http://github.com/doctrine/doctrine2/downloads)
 
