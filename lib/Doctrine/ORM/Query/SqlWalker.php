@@ -1021,7 +1021,7 @@ class SqlWalker implements TreeWalker
                     $sql .= ' AND (' . $this->walkConditionalExpression($condExpr) . ')';
                 }
                 break;
-                    }
+        }
 
         return $sql;
     }
