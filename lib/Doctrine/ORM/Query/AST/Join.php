@@ -25,30 +25,26 @@ namespace Doctrine\ORM\Query\AST;
  * Join ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression
  *          ["AS"] AliasIdentificationVariable [("ON" | "WITH") ConditionalExpression]
  *
- * 
  * @link    www.doctrine-project.org
  * @since   2.0
- * @version $Revision: 3938 $
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
 class Join extends Node
 {
-    const JOIN_TYPE_LEFT = 1;
+    const JOIN_TYPE_LEFT      = 1;
     const JOIN_TYPE_LEFTOUTER = 2;
-    const JOIN_TYPE_INNER = 3;
+    const JOIN_TYPE_INNER     = 3;
 
     public $joinType = self::JOIN_TYPE_INNER;
-    public $joinAssociationPathExpression = null;
-    public $aliasIdentificationVariable = null;
+    public $joinAssociationDeclaration = null;
     public $conditionalExpression = null;
 
-    public function __construct($joinType, $joinAssocPathExpr, $aliasIdentVar)
+    public function __construct($joinType, $joinAssociationDeclaration)
     {
         $this->joinType = $joinType;
-        $this->joinAssociationPathExpression = $joinAssocPathExpr;
-        $this->aliasIdentificationVariable = $aliasIdentVar;
+        $this->joinAssociationDeclaration = $joinAssociationDeclaration;
     }
 
     public function dispatch($sqlWalker)

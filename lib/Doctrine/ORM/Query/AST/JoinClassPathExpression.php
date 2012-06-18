@@ -15,38 +15,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
+ * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * IdentificationVariableDeclaration ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}*
+ * JoinClassPathExpression ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
  *
- * 
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
- * @since   2.0
- * @version $Revision: 3938 $
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
+ * @since   2.3
+ * @author  Alexander <iam.asm89@gmail.com>
  */
-class IdentificationVariableDeclaration extends Node
+class JoinClassPathExpression extends Node
 {
-    public $rangeVariableDeclaration = null;
-    public $indexBy = null;
-    public $joins   = array();
+    public $abstractSchemaName;
+    public $aliasIdentificationVariable;
 
-    public function __construct($rangeVariableDecl, $indexBy, array $joins)
+    public function __construct($abstractSchemaName, $aliasIdentificationVar)
     {
-        $this->rangeVariableDeclaration = $rangeVariableDecl;
-        $this->indexBy = $indexBy;
-        $this->joins = $joins;
+        $this->abstractSchemaName = $abstractSchemaName;
+        $this->aliasIdentificationVariable = $aliasIdentificationVar;
     }
 
-    public function dispatch($sqlWalker)
+    public function dispatch($walker)
     {
-        return $sqlWalker->walkIdentificationVariableDeclaration($this);
+        return $sqlWalker->walkJoinPathExpression($this);
     }
 }

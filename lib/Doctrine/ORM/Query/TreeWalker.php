@@ -91,12 +91,12 @@ interface TreeWalker
     function walkHavingClause($havingClause);
 
     /**
-     * Walks down a JoinVariableDeclaration AST node and creates the corresponding SQL.
+     * Walks down a Join AST node and creates the corresponding SQL.
      *
-     * @param JoinVariableDeclaration $joinVarDecl
+     * @param Join $joinVarDecl
      * @return string The SQL.
      */
-    function walkJoinVariableDeclaration($joinVarDecl);
+    function walkJoin($join);
 
     /**
      * Walks down a SelectExpression AST node and generates the corresponding SQL.

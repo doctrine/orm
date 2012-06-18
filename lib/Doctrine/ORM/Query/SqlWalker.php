@@ -705,23 +705,10 @@ class SqlWalker implements TreeWalker
         $sqlParts = array();
 
         foreach ($identificationVarDecls as $identificationVariableDecl) {
-            $sql = '';
+            $sql = $this->walkRangeVariableDeclaration($identificationVariableDecl->rangeVariableDeclaration);
 
-            $rangeDecl = $identificationVariableDecl->rangeVariableDeclaration;
-            $dqlAlias = $rangeDecl->aliasIdentificationVariable;
-
-            $this->_rootAliases[] = $dqlAlias;
-
-            $class = $this->_em->getClassMetadata($rangeDecl->abstractSchemaName);
-            $sql .= $class->getQuotedTableName($this->_platform) . ' '
-                  . $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
-
-            if ($class->isInheritanceTypeJoined()) {
-                $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
-            }
-
-            foreach ($identificationVariableDecl->joinVariableDeclarations as $joinVarDecl) {
-                $sql .= $this->walkJoinVariableDeclaration($joinVarDecl);
+            foreach ($identificationVariableDecl->joins as $join) {
+                $sql .= $this->walkJoin($join);
             }
 
             if ($identificationVariableDecl->indexBy) {
@@ -742,6 +729,174 @@ class SqlWalker implements TreeWalker
         }
 
         return ' FROM ' . implode(', ', $sqlParts);
+    }
+
+    /**
+     * Walks down a RangeVariableDeclaration AST node, thereby generating the appropriate SQL.
+     *
+     * @return string
+     */
+    public function walkRangeVariableDeclaration($rangeVariableDeclaration)
+    {
+        $class    = $this->_em->getClassMetadata($rangeVariableDeclaration->abstractSchemaName);
+        $dqlAlias = $rangeVariableDeclaration->aliasIdentificationVariable;
+
+        $this->_rootAliases[] = $dqlAlias;
+
+        $sql = $class->getQuotedTableName($this->_platform) . ' '
+             . $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
+
+        if ($class->isInheritanceTypeJoined()) {
+            $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
+        }
+
+        return $sql;
+    }
+
+    /**
+     * Walks down a JoinAssociationDeclaration AST node, thereby generating the appropriate SQL.
+     *
+     * @return string
+     */
+    public function walkJoinAssociationDeclaration($joinAssociationDeclaration, $joinType = AST\Join::JOIN_TYPE_INNER)
+    {
+        $sql = '';
+
+        $associationPathExpression = $joinAssociationDeclaration->joinAssociationPathExpression;
+        $joinedDqlAlias            = $joinAssociationDeclaration->aliasIdentificationVariable;
+        $indexBy                   = $joinAssociationDeclaration->indexBy;
+
+        $relation        = $this->_queryComponents[$joinedDqlAlias]['relation'];
+        $targetClass     = $this->_em->getClassMetadata($relation['targetEntity']);
+        $sourceClass     = $this->_em->getClassMetadata($relation['sourceEntity']);
+        $targetTableName = $targetClass->getQuotedTableName($this->_platform);
+
+        $targetTableAlias = $this->getSQLTableAlias($targetClass->getTableName(), $joinedDqlAlias);
+        $sourceTableAlias = $this->getSQLTableAlias($sourceClass->getTableName(), $associationPathExpression->identificationVariable);
+
+        // Ensure we got the owning side, since it has all mapping info
+        $assoc = ( ! $relation['isOwningSide']) ? $targetClass->associationMappings[$relation['mappedBy']] : $relation;
+
+        if ($this->_query->getHint(Query::HINT_INTERNAL_ITERATION) == true && (!$this->_query->getHint(self::HINT_DISTINCT) || isset($this->_selectedClasses[$joinedDqlAlias]))) {
+            if ($relation['type'] == ClassMetadata::ONE_TO_MANY || $relation['type'] == ClassMetadata::MANY_TO_MANY) {
+                throw QueryException::iterateWithFetchJoinNotAllowed($assoc);
+            }
+        }
+
+        // This condition is not checking ClassMetadata::MANY_TO_ONE, because by definition it cannot
+        // be the owning side and previously we ensured that $assoc is always the owning side of the associations.
+        // The owning side is necessary at this point because only it contains the JoinColumn information.
+        switch (true) {
+            case ($assoc['type'] & ClassMetadata::TO_ONE):
+                $conditions = array();
+
+                foreach ($assoc['sourceToTargetKeyColumns'] as $sourceColumn => $targetColumn) {
+                    if ($relation['isOwningSide']) {
+                        $quotedTargetColumn = ($targetClass->containsForeignIdentifier && !isset($targetClass->fieldNames[$targetColumn]))
+                            ? $targetColumn // Join columns cannot be quoted.
+                            : $targetClass->getQuotedColumnName($targetClass->fieldNames[$targetColumn], $this->_platform);
+
+                        $conditions[] = $sourceTableAlias . '.' . $sourceColumn . ' = ' . $targetTableAlias . '.' . $quotedTargetColumn;
+
+                        continue;
+                    }
+
+                    $quotedTargetColumn = ($sourceClass->containsForeignIdentifier && !isset($sourceClass->fieldNames[$targetColumn]))
+                        ? $targetColumn // Join columns cannot be quoted.
+                        : $sourceClass->getQuotedColumnName($sourceClass->fieldNames[$targetColumn], $this->_platform);
+
+                    $conditions[] = $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $targetTableAlias . '.' . $sourceColumn;
+                }
+
+                // Apply remaining inheritance restrictions
+                $discrSql = $this->_generateDiscriminatorColumnConditionSQL(array($joinedDqlAlias));
+
+                if ($discrSql) {
+                    $conditions[] = $discrSql;
+                }
+
+                // Apply the filters
+                $filterExpr = $this->generateFilterConditionSQL($targetClass, $targetTableAlias);
+
+                if ($filterExpr) {
+                    $conditions[] = $filterExpr;
+                }
+
+                $sql .= $targetTableName . ' ' . $targetTableAlias . ' ON ' . implode(' AND ', $conditions);
+                break;
+
+            case ($assoc['type'] == ClassMetadata::MANY_TO_MANY):
+                // Join relation table
+                $joinTable      = $assoc['joinTable'];
+                $joinTableAlias = $this->getSQLTableAlias($joinTable['name'], $joinedDqlAlias);
+                $joinTableName  = $sourceClass->getQuotedJoinTableName($assoc, $this->_platform);
+
+                $conditions      = array();
+                $relationColumns = ($relation['isOwningSide'])
+                    ? $assoc['relationToSourceKeyColumns']
+                    : $assoc['relationToTargetKeyColumns'];
+
+                foreach ($relationColumns as $relationColumn => $sourceColumn) {
+                    $quotedTargetColumn = ($sourceClass->containsForeignIdentifier && !isset($sourceClass->fieldNames[$sourceColumn]))
+                            ? $sourceColumn // Join columns cannot be quoted.
+                            : $sourceClass->getQuotedColumnName($sourceClass->fieldNames[$sourceColumn], $this->_platform);
+
+                    $conditions[] = $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableAlias . '.' . $relationColumn;
+                }
+
+                $sql .= $joinTableName . ' ' . $joinTableAlias . ' ON ' . implode(' AND ', $conditions);
+
+                // Join target table
+                $sql .= ($joinType == AST\Join::JOIN_TYPE_LEFT || $joinType == AST\Join::JOIN_TYPE_LEFTOUTER) ? ' LEFT JOIN ' : ' INNER JOIN ';
+
+                $conditions      = array();
+                $relationColumns = ($relation['isOwningSide'])
+                    ? $assoc['relationToTargetKeyColumns']
+                    : $assoc['relationToSourceKeyColumns'];
+
+                foreach ($relationColumns as $relationColumn => $targetColumn) {
+                    $quotedTargetColumn = ($targetClass->containsForeignIdentifier && !isset($targetClass->fieldNames[$targetColumn]))
+                            ? $targetColumn // Join columns cannot be quoted.
+                            : $targetClass->getQuotedColumnName($targetClass->fieldNames[$targetColumn], $this->_platform);
+
+                    $conditions[] = $targetTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableAlias . '.' . $relationColumn;
+                }
+
+                // Apply remaining inheritance restrictions
+                $discrSql = $this->_generateDiscriminatorColumnConditionSQL(array($joinedDqlAlias));
+
+                if ($discrSql) {
+                    $conditions[] = $discrSql;
+                }
+
+                // Apply the filters
+                $filterExpr = $this->generateFilterConditionSQL($targetClass, $targetTableAlias);
+
+                if ($filterExpr) {
+                    $conditions[] = $filterExpr;
+                }
+
+                $sql .= $targetTableName . ' ' . $targetTableAlias . ' ON ' . implode(' AND ', $conditions);
+                break;
+        }
+
+        // FIXME: these should either be nested or all forced to be left joins (DDC-XXX)
+        if ($targetClass->isInheritanceTypeJoined()) {
+            $sql .= $this->_generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
+        }
+
+        // Apply the indexes
+        if ($indexBy) {
+            // For Many-To-One or One-To-One associations this obviously makes no sense, but is ignored silently.
+            $this->_rsm->addIndexBy(
+                $indexBy->simpleStateFieldPathExpression->identificationVariable,
+                $indexBy->simpleStateFieldPathExpression->field
+            );
+        } else if (isset($relation['indexBy'])) {
+            $this->_rsm->addIndexBy($joinedDqlAlias, $relation['indexBy']);
+        }
+
+        return $sql;
     }
 
     /**
@@ -799,169 +954,35 @@ class SqlWalker implements TreeWalker
     }
 
     /**
-     * Walks down a JoinVariableDeclaration AST node and creates the corresponding SQL.
+     * Walks down a Join AST node and creates the corresponding SQL.
      *
-     * @param JoinVariableDeclaration $joinVarDecl
      * @return string The SQL.
      */
-    public function walkJoinVariableDeclaration($joinVarDecl)
+    public function walkJoin($join)
     {
-        $join     = $joinVarDecl->join;
-        $joinType = $join->joinType;
-        $sql      = ($joinType == AST\Join::JOIN_TYPE_LEFT || $joinType == AST\Join::JOIN_TYPE_LEFTOUTER)
+        $joinType        = $join->joinType;
+        $joinDeclaration = $join->joinAssociationDeclaration;
+
+        $sql = ($joinType == AST\Join::JOIN_TYPE_LEFT || $joinType == AST\Join::JOIN_TYPE_LEFTOUTER)
             ? ' LEFT JOIN '
             : ' INNER JOIN ';
 
-        if ($joinVarDecl->indexBy) {
-            // For Many-To-One or One-To-One associations this obviously makes no sense, but is ignored silently.
-            $this->_rsm->addIndexBy(
-                $joinVarDecl->indexBy->simpleStateFieldPathExpression->identificationVariable,
-                $joinVarDecl->indexBy->simpleStateFieldPathExpression->field
-            );
-        }
+        switch (true) {
+            case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\RangeVariableDeclaration):
+                $sql .= $this->walkRangeVariableDeclaration($joinDeclaration)
+                      . ' ON (' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
+                break;
 
-        $joinAssocPathExpr = $join->joinAssociationPathExpression;
-        $joinedDqlAlias    = $join->aliasIdentificationVariable;
+            case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\JoinAssociationDeclaration):
+                $sql .= $this->walkJoinAssociationDeclaration($joinDeclaration, $joinType);
 
-        $relation        = $this->_queryComponents[$joinedDqlAlias]['relation'];
-        $targetClass     = $this->_em->getClassMetadata($relation['targetEntity']);
-        $sourceClass     = $this->_em->getClassMetadata($relation['sourceEntity']);
-        $targetTableName = $targetClass->getQuotedTableName($this->_platform);
-
-        $targetTableAlias = $this->getSQLTableAlias($targetClass->getTableName(), $joinedDqlAlias);
-        $sourceTableAlias = $this->getSQLTableAlias($sourceClass->getTableName(), $joinAssocPathExpr->identificationVariable);
-
-        // Ensure we got the owning side, since it has all mapping info
-        $assoc = ( ! $relation['isOwningSide']) ? $targetClass->associationMappings[$relation['mappedBy']] : $relation;
-        if ($this->_query->getHint(Query::HINT_INTERNAL_ITERATION) == true && (!$this->_query->getHint(self::HINT_DISTINCT) || isset($this->_selectedClasses[$joinedDqlAlias]))) {
-            if ($relation['type'] == ClassMetadata::ONE_TO_MANY || $relation['type'] == ClassMetadata::MANY_TO_MANY) {
-                throw QueryException::iterateWithFetchJoinNotAllowed($assoc);
-            }
-        }
-
-        if ($joinVarDecl->indexBy) {
-            // For Many-To-One or One-To-One associations this obviously makes no sense, but is ignored silently.
-            $this->_rsm->addIndexBy(
-                $joinVarDecl->indexBy->simpleStateFieldPathExpression->identificationVariable,
-                $joinVarDecl->indexBy->simpleStateFieldPathExpression->field
-            );
-        } else if (isset($relation['indexBy'])) {
-            $this->_rsm->addIndexBy($joinedDqlAlias, $relation['indexBy']);
-        }
-
-        // This condition is not checking ClassMetadata::MANY_TO_ONE, because by definition it cannot
-        // be the owning side and previously we ensured that $assoc is always the owning side of the associations.
-        // The owning side is necessary at this point because only it contains the JoinColumn information.
-        if ($assoc['type'] & ClassMetadata::TO_ONE) {
-            $sql .= $targetTableName . ' ' . $targetTableAlias . ' ON ';
-            $first = true;
-
-            foreach ($assoc['sourceToTargetKeyColumns'] as $sourceColumn => $targetColumn) {
-                if ( ! $first) $sql .= ' AND '; else $first = false;
-
-                if ($relation['isOwningSide']) {
-                    if ($targetClass->containsForeignIdentifier && !isset($targetClass->fieldNames[$targetColumn])) {
-                        $quotedTargetColumn = $targetColumn; // Join columns cannot be quoted.
-                    } else {
-                        $quotedTargetColumn = $targetClass->getQuotedColumnName($targetClass->fieldNames[$targetColumn], $this->_platform);
-                    }
-                    $sql .= $sourceTableAlias . '.' . $sourceColumn . ' = ' . $targetTableAlias . '.' . $quotedTargetColumn;
-                } else {
-                    if ($sourceClass->containsForeignIdentifier && !isset($sourceClass->fieldNames[$targetColumn])) {
-                        $quotedTargetColumn = $targetColumn; // Join columns cannot be quoted.
-                    } else {
-                        $quotedTargetColumn = $sourceClass->getQuotedColumnName($sourceClass->fieldNames[$targetColumn], $this->_platform);
-                    }
-                    $sql .= $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $targetTableAlias . '.' . $sourceColumn;
+                // Handle WITH clause
+                if (($condExpr = $join->conditionalExpression) !== null) {
+                    // Phase 2 AST optimization: Skip processment of ConditionalExpression
+                    // if only one ConditionalTerm is defined
+                    $sql .= ' AND (' . $this->walkConditionalExpression($condExpr) . ')';
                 }
-            }
-
-        } else if ($assoc['type'] == ClassMetadata::MANY_TO_MANY) {
-            // Join relation table
-            $joinTable = $assoc['joinTable'];
-            $joinTableAlias = $this->getSQLTableAlias($joinTable['name'], $joinedDqlAlias);
-            $sql .= $sourceClass->getQuotedJoinTableName($assoc, $this->_platform) . ' ' . $joinTableAlias . ' ON ';
-
-            $first = true;
-            if ($relation['isOwningSide']) {
-                foreach ($assoc['relationToSourceKeyColumns'] as $relationColumn => $sourceColumn) {
-                    if ( ! $first) $sql .= ' AND '; else $first = false;
-
-                    if ($sourceClass->containsForeignIdentifier && !isset($sourceClass->fieldNames[$sourceColumn])) {
-                        $quotedTargetColumn = $sourceColumn; // Join columns cannot be quoted.
-                    } else {
-                        $quotedTargetColumn = $sourceClass->getQuotedColumnName($sourceClass->fieldNames[$sourceColumn], $this->_platform);
-                    }
-
-                    $sql .= $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableAlias . '.' . $relationColumn;
-                }
-            } else {
-                foreach ($assoc['relationToTargetKeyColumns'] as $relationColumn => $targetColumn) {
-                    if ( ! $first) $sql .= ' AND '; else $first = false;
-
-                    if ($sourceClass->containsForeignIdentifier && !isset($sourceClass->fieldNames[$targetColumn])) {
-                        $quotedTargetColumn = $targetColumn; // Join columns cannot be quoted.
-                    } else {
-                        $quotedTargetColumn = $sourceClass->getQuotedColumnName($sourceClass->fieldNames[$targetColumn], $this->_platform);
-                    }
-
-                    $sql .= $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableAlias . '.' . $relationColumn;
-                }
-            }
-
-            // Join target table
-            $sql .= ($joinType == AST\Join::JOIN_TYPE_LEFT || $joinType == AST\Join::JOIN_TYPE_LEFTOUTER) ? ' LEFT JOIN ' : ' INNER JOIN ';
-            $sql .= $targetTableName . ' ' . $targetTableAlias . ' ON ';
-
-            $first = true;
-            if ($relation['isOwningSide']) {
-                foreach ($assoc['relationToTargetKeyColumns'] as $relationColumn => $targetColumn) {
-                    if ( ! $first) $sql .= ' AND '; else $first = false;
-
-                    if ($targetClass->containsForeignIdentifier && !isset($targetClass->fieldNames[$targetColumn])) {
-                        $quotedTargetColumn = $targetColumn; // Join columns cannot be quoted.
-                    } else {
-                        $quotedTargetColumn = $targetClass->getQuotedColumnName($targetClass->fieldNames[$targetColumn], $this->_platform);
-                    }
-
-                    $sql .= $targetTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableAlias . '.' . $relationColumn;
-                }
-            } else {
-                foreach ($assoc['relationToSourceKeyColumns'] as $relationColumn => $sourceColumn) {
-                    if ( ! $first) $sql .= ' AND '; else $first = false;
-
-                    if ($targetClass->containsForeignIdentifier && !isset($targetClass->fieldNames[$sourceColumn])) {
-                        $quotedTargetColumn = $sourceColumn; // Join columns cannot be quoted.
-                    } else {
-                        $quotedTargetColumn = $targetClass->getQuotedColumnName($targetClass->fieldNames[$sourceColumn], $this->_platform);
-                    }
-
-                    $sql .= $targetTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableAlias . '.' . $relationColumn;
-                }
-            }
-        }
-
-        // Apply the filters
-        if ($filterExpr = $this->generateFilterConditionSQL($targetClass, $targetTableAlias)) {
-            $sql .= ' AND ' . $filterExpr;
-        }
-
-        // Handle WITH clause
-        if (($condExpr = $join->conditionalExpression) !== null) {
-            // Phase 2 AST optimization: Skip processment of ConditionalExpression
-            // if only one ConditionalTerm is defined
-            $sql .= ' AND (' . $this->walkConditionalExpression($condExpr) . ')';
-        }
-
-        $discrSql = $this->_generateDiscriminatorColumnConditionSQL(array($joinedDqlAlias));
-
-        if ($discrSql) {
-            $sql .= ' AND ' . $discrSql;
-        }
-
-        // FIXME: these should either be nested or all forced to be left joins (DDC-XXX)
-        if ($targetClass->isInheritanceTypeJoined()) {
-            $sql .= $this->_generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
+                break;
         }
 
         return $sql;
@@ -1304,23 +1325,10 @@ class SqlWalker implements TreeWalker
         $sqlParts = array ();
 
         foreach ($identificationVarDecls as $subselectIdVarDecl) {
-            $sql = '';
+            $sql = $this->walkRangeVariableDeclaration($subselectIdVarDecl->rangeVariableDeclaration);
 
-            $rangeDecl = $subselectIdVarDecl->rangeVariableDeclaration;
-            $dqlAlias  = $rangeDecl->aliasIdentificationVariable;
-
-            $class = $this->_em->getClassMetadata($rangeDecl->abstractSchemaName);
-            $sql .= $class->getQuotedTableName($this->_platform) . ' '
-                  . $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
-
-            $this->_rootAliases[] = $dqlAlias;
-
-            if ($class->isInheritanceTypeJoined()) {
-                $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
-            }
-
-            foreach ($subselectIdVarDecl->joinVariableDeclarations as $joinVarDecl) {
-                $sql .= $this->walkJoinVariableDeclaration($joinVarDecl);
+            foreach ($subselectIdVarDecl->joins as $join) {
+                $sql .= $this->walkJoin($join);
             }
 
             $sqlParts[] = $this->_platform->appendLockHint($sql, $this->_query->getHint(Query::HINT_LOCK_MODE));
