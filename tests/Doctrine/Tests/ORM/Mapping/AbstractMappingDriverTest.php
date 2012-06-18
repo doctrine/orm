@@ -485,6 +485,14 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $factory->getMetadataFor('Doctrine\Tests\Models\DDC889\DDC889Entity');
     }
 
+    public function testNamedQuery()
+    {
+        $driver = $this->_loadDriver();
+        $class = $this->createClassMetadata(__NAMESPACE__.'\User');
+
+        $this->assertCount(1, $class->getNamedQueries(), sprintf("Named queries not processed correctly by driver %s", get_class($driver)));
+    }
+
     /**
      * @group DDC-1663
      */
@@ -742,6 +750,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
  *  indexes={@Index(name="name_idx", columns={"name"}), @Index(name="0", columns={"user_email"})},
  *  options={"foo": "bar", "baz": {"key": "val"}}
  * )
+ * @NamedQueries({@NamedQuery(name="all", query="SELECT u FROM __CLASS__ u")})
  */
 class User
 {
@@ -920,6 +929,10 @@ class User
                 'sequenceName' => 'tablename_seq',
                 'allocationSize' => 100,
                 'initialValue' => 1,
+            ));
+        $metadata->addNamedQuery(array(
+                'name' => 'all',
+                'query' => 'SELECT u FROM __CLASS__ u'
             ));
     }
 }

@@ -76,7 +76,7 @@ class XmlDriver extends AbstractFileDriver
         $metadata->setPrimaryTable($table);
 
         // Evaluate named queries
-        if (isset($xmlRoot['named-queries'])) {
+        if (isset($xmlRoot->{'named-queries'})) {
             foreach ($xmlRoot->{'named-queries'}->{'named-query'} as $namedQueryElement) {
                 $metadata->addNamedQuery(array(
                     'name'  => (string)$namedQueryElement['name'],
