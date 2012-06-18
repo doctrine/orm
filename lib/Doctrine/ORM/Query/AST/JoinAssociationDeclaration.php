@@ -15,36 +15,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
+<<<<<<< HEAD:lib/Doctrine/ORM/Query/AST/JoinVariableDeclaration.php
  * and is licensed under the MIT license. For more information, see
  * <http://www.phpdoctrine.org>.
+=======
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.doctrine-project.org>.
+>>>>>>> Updated PoC for multiple components DQL support.:lib/Doctrine/ORM/Query/AST/JoinAssociationDeclaration.php
  */
 
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * JoinVariableDeclaration ::= Join [IndexBy]
+ * JoinAssociationDeclaration ::= JoinAssociationPathExpression ["AS"] AliasIdentificationVariable
  *
- * 
  * @link    www.doctrine-project.org
- * @since   2.0
- * @version $Revision: 3938 $
+ * @since   2.3
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
-class JoinVariableDeclaration extends Node
+class JoinAssociationDeclaration extends Node
 {
-    public $join = null;
-    public $indexBy = null;
+    public $joinAssociationPathExpression;
+    public $aliasIdentificationVariable;
+    public $indexBy;
 
-    public function __construct($join, $indexBy)
+    public function __construct($joinAssociationPathExpression, $aliasIdentificationVariable, $indexBy)
     {
-        $this->join = $join;
-        $this->indexBy = $indexBy;
+        $this->joinAssociationPathExpression = $joinAssociationPathExpression;
+        $this->aliasIdentificationVariable   = $aliasIdentificationVariable;
+        $this->indexBy                       = $indexBy;
     }
 
     public function dispatch($sqlWalker)
     {
-        return $sqlWalker->walkJoinVariableDeclaration($this);
+        return $sqlWalker->walkJoinAssociationDeclaration($this);
     }
 }

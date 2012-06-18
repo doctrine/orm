@@ -5,13 +5,12 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
 
 use Doctrine\DBAL\Connection;
-
+use Doctrine\Tests\Models\CMS\CmsUser,
+    Doctrine\Tests\Models\CMS\CmsArticle,
+    Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
-
-use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsArticle;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -712,5 +711,73 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         } catch (\Doctrine\ORM\UnexpectedResultException $exc) {
             $this->assertInstanceOf('\Doctrine\ORM\NonUniqueResultException', $exc);
         }
+    }
+
+    public function testMultipleJoinComponentsUsingInnerJoin()
+    {
+        $userA = new CmsUser;
+        $userA->name = 'Benjamin';
+        $userA->username = 'beberlei';
+        $userA->status = 'developer';
+
+        $phonenumberA = new CmsPhonenumber;
+        $phonenumberA->phonenumber = '111111';
+        $userA->addPhonenumber($phonenumberA);
+
+        $userB = new CmsUser;
+        $userB->name = 'Alexander';
+        $userB->username = 'asm89';
+        $userB->status = 'developer';
+
+        $this->_em->persist($userA);
+        $this->_em->persist($userB);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery("
+            SELECT u, p
+              FROM Doctrine\Tests\Models\CMS\CmsUser u
+             INNER JOIN Doctrine\Tests\Models\CMS\CmsPhonenumber p WITH u = p.user
+        ");
+        $users = $query->execute();
+
+        $this->assertEquals(2, count($users));
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $users[1]);
+    }
+
+    public function testMultipleJoinComponentsUsingLeftJoin()
+    {
+        $userA = new CmsUser;
+        $userA->name = 'Benjamin';
+        $userA->username = 'beberlei';
+        $userA->status = 'developer';
+
+        $phonenumberA = new CmsPhonenumber;
+        $phonenumberA->phonenumber = '111111';
+        $userA->addPhonenumber($phonenumberA);
+
+        $userB = new CmsUser;
+        $userB->name = 'Alexander';
+        $userB->username = 'asm89';
+        $userB->status = 'developer';
+
+        $this->_em->persist($userA);
+        $this->_em->persist($userB);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery("
+            SELECT u, p
+              FROM Doctrine\Tests\Models\CMS\CmsUser u
+              LEFT JOIN Doctrine\Tests\Models\CMS\CmsPhonenumber p WITH u = p.user
+        ");
+        $users = $query->execute();
+
+        $this->assertEquals(4, count($users));
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $users[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[2]);
+        $this->assertNull($users[3]);
     }
 }

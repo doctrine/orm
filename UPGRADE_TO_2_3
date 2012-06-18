@@ -25,3 +25,8 @@ Also, related functions were affected:
 * setParameters($parameters) the argument $parameters can be either an key=>value array or an ArrayCollection instance
 * getParameters() now returns ArrayCollection instead of array
 * getParameter($key) now returns Parameter instance instead of parameter value
+
+# Query TreeWalker method renamed
+
+Internal changes were made to DQL and SQL generation. If you have implemented your own TreeWalker,
+you probably need to update it. The method walkJoinVariableDeclaration is now named walkJoin.
