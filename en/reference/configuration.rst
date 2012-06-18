@@ -120,6 +120,7 @@ setup methods:
     $paths = array("/path/to/entities-or-mapping-files");
     $isDevMode = false;
 
+    // the connection configuration
     $dbParams = array(
         'driver'   => 'pdo_mysql',
         'user'     => 'root',
@@ -140,6 +141,11 @@ These setup commands make several assumptions:
 -  If `$devMode` is false, check for Caches in the order APC, Xcache, Memcache (127.0.0.1:11211), Redis (127.0.0.1:6379) unless `$cache` is passed as fourth argument.
 -  If `$devMode` is false, set ``setAutoGenerateProxyClasses(false)``
 -  If third argument `$proxyDir` is not set, use the systems temporary directory.
+
+.. note::
+
+    You can learn more about the connection configuration in the
+    `Doctrine DBAL connection configuration reference <http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html>`_.
 
 Full Configuration Example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
