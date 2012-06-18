@@ -30,7 +30,6 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  */
 class DefaultQuoteStrategy implements QuoteStrategy
 {
-
     /**
      * {@inheritdoc}
      */
@@ -108,7 +107,8 @@ class DefaultQuoteStrategy implements QuoteStrategy
             // Association defined as Id field
             $joinColumns            = $class->associationMappings[$fieldName]['joinColumns'];
             $assocQuotedColumnNames = array_map(
-                function ($joinColumn) use ($platform) {
+                function ($joinColumn) use ($platform)
+                {
                     return isset($joinColumn['quoted'])
                         ? $platform->quoteIdentifier($joinColumn['name'])
                         : $joinColumn['name'];

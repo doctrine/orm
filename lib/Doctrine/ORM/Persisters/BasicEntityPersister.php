@@ -463,6 +463,7 @@ class BasicEntityPersister
                 if ( ! isset($mapping['isOnDeleteCascade'])) {
 
                     $joinTableName = $this->quoteStrategy->getJoinTableName($mapping, $this->_class, $this->_platform);
+
                     $this->_conn->delete($joinTableName, array_combine($keys, $identifier));
 
                     if ($selfReferential) {
@@ -486,9 +487,11 @@ class BasicEntityPersister
     public function delete($entity)
     {
         $identifier = $this->_em->getUnitOfWork()->getEntityIdentifier($entity);
+
         $this->deleteJoinTableRecords($identifier);
 
         $id = array_combine($this->quoteStrategy->getIdentifierColumnNames($this->_class, $this->_platform), $identifier);
+
         $this->_conn->delete($this->quoteStrategy->getTableName($this->_class, $this->_platform), $id);
     }
 
@@ -558,10 +561,10 @@ class BasicEntityPersister
                 $owningTable = $this->getOwningTable($field);
 
                 foreach ($assoc['joinColumns'] as $joinColumn) {
-                    $sourceColumn =  $joinColumn['name'];
-                    $targetColumn =  $joinColumn['referencedColumnName'];
-
+                    $sourceColumn = $joinColumn['name'];
+                    $targetColumn = $joinColumn['referencedColumnName'];
                     $quotedColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->_class, $this->_platform);
+
                     $this->quotedColumns[$sourceColumn] = $quotedColumn;
 
                     if ($newVal === null) {
@@ -1113,6 +1116,7 @@ class BasicEntityPersister
                 $resultColumnName = $this->getSQLColumnAlias($joinColumn['name']);
                 $columnList      .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )
                                     . '.' . $quotedColumn . ' AS ' . $resultColumnName;
+
                 $this->_rsm->addMetaResult($alias, $resultColumnName, $quotedColumn, isset($assoc['id']) && $assoc['id'] === true);
             }
         }
