@@ -1152,11 +1152,26 @@ class BasicEntityPersister
             $this->_insertSql = $insertSql;
 
             return $this->_insertSql;
+        } else {
+            $columns = array_unique($columns);
+            $values  = array();
+
+            foreach ($columns as $column) {
+                $placeholder = '?';
+
+                if (isset($this->_columnTypes[$column]) &&
+                    isset($this->_class->fieldMappings[$this->_class->fieldNames[$column]]['requireSQLConversion'])) {
+                    $type = Type::getType($this->_columnTypes[$column]);
+                    $placeholder = $type->convertToDatabaseValueSQL('?', $this->_platform);
+                }
+
+                $values[] = $placeholder;
+            }
         }
 
         $insertSql = 'INSERT INTO ' . $this->_class->getQuotedTableName($this->_platform)
-                . ' (' . implode(', ', array_keys($columns)) . ') VALUES'
-                . ' (' . implode(', ', array_values($columns)) . ')';
+                . ' (' . implode(', ', array_values($columns)) . ') VALUES'
+                . ' (' . implode(', ', $values) . ')';
 
         $this->_insertSql = $insertSql;
 
@@ -1173,9 +1188,7 @@ class BasicEntityPersister
      */
     protected function _getInsertColumnList()
     {
-        $columns = array();
-
-        return $this->_getClassMetadataInsertColumnList($this->_class, $columns);
+        return $this->_getClassMetadataInsertColumnList($this->_class, array());
     }
 
     /**
@@ -1193,28 +1206,32 @@ class BasicEntityPersister
                 continue;
             }
 
+            $newColumns = array();
+
             switch (true) {
                 case (isset($class->associationMappings[$name])):
-                    $columns = $this->_getInsertAssociationColumnList(
-                        $class, $class->associationMappings[$name], $columns
+                    $newColumns = $this->_getInsertAssociationColumnList(
+                        $class, $class->associationMappings[$name]
                     );
                     break;
 
                 case (isset($class->embeddedMappings[$name])):
-                    $columns = $this->_getInsertEmbeddedColumnList(
-                        $class, $class->embeddedMappings[$name], $columns
+                    $newColumns = $this->_getInsertEmbeddedColumnList(
+                        $class, $class->embeddedMappings[$name]
                     );
                     break;
 
                 case ($class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $class->identifier[0] != $name):
-                    $columns = $this->_getInsertFieldColumnList(
-                        $class, $class->fieldMappings[$name], $columns
+                    $newColumns = $this->_getInsertFieldColumnList(
+                        $class, $class->fieldMappings[$name]
                     );
                     break;
 
                 default:
                     // Do nothing
             }
+
+            $columns = array_merge($columns, $newColumns);
         }
 
         return $columns;
@@ -1225,15 +1242,21 @@ class BasicEntityPersister
      *
      * @param \Doctrine\ORM\Mapping\ClassMetadata $class
      * @param array $mapping
-     * @param array $columns
      * @return array
      */
-    private function _getInsertEmbeddedColumnList($class, $mapping, $columns)
+    private function _getInsertEmbeddedColumnList($class, $mapping)
     {
         $embedded   = $class->embeddedMappings[$mapping['fieldName']];
         $embeddable = $this->_em->getClassMetadata($embedded['class']);
 
-        return $this->_getClassMetadataInsertColumnList($embeddable, $columns);
+        $columns         = array();
+        $embeddedColumns = $this->_getClassMetadataInsertColumnList($embeddable, array());
+
+        foreach ($embeddedColumns as $embeddedColumnName => $embeddedColumnValue) {
+            $columns[] = $embedded['prefix'] . '_' . $embeddedColumnName;
+        }
+
+        return $columns;
     }
 
     /**
@@ -1241,14 +1264,15 @@ class BasicEntityPersister
      *
      * @param \Doctrine\ORM\Mapping\ClassMetadata $class
      * @param array $mapping
-     * @param array $columns
      * @return array
      */
-    private function _getInsertAssociationColumnList($class, $mapping, $columns)
+    private function _getInsertAssociationColumnList($class, $mapping)
     {
+        $columns = array();
+
         if ($mapping['isOwningSide'] && $mapping['type'] & ClassMetadata::TO_ONE) {
             foreach ($mapping['targetToSourceKeyColumns'] as $sourceCol) {
-                $columns[$sourceCol] = '?';
+                $columns[] = $sourceCol;
             }
         }
 
@@ -1260,21 +1284,16 @@ class BasicEntityPersister
      *
      * @param \Doctrine\ORM\Mapping\ClassMetadata $class
      * @param array $mapping
-     * @param array $columns
      * @return array
      */
-    private function _getInsertFieldColumnList($class, $mapping, $columns)
+    private function _getInsertFieldColumnList($class, $mapping)
     {
+        $columns = array();
+
         $name        = $mapping['fieldName'];
         $quotedName  = $class->getQuotedColumnName($name, $this->_platform);
-        $placeholder = '?';
 
-        if (isset($mapping['requireSQLConversion'])) {
-            $type = Type::getType($mapping['type']);
-            $placeholder = $type->convertToDatabaseValueSQL($placeholder, $this->_platform);
-        }
-
-        $columns[$quotedName] = $placeholder;
+        $columns[] = $quotedName;
 
         $this->_columnTypes[$name] = $mapping['type'];
 

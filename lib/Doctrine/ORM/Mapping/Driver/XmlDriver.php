@@ -263,19 +263,19 @@ class XmlDriver extends AbstractFileDriver
             }
         }
 
-        // Evaluate <embed-one ...> mappings
-        if (isset($xmlRoot->{'embed-one'})) {
-            foreach ($xmlRoot->{'embed-one'} as $embedOneMapping) {
+        // Evaluate <embedded ...> mappings
+        if (isset($xmlRoot->{'embedded'})) {
+            foreach ($xmlRoot->{'embedded'} as $embeddedMapping) {
                 $mapping = array(
-                    'fieldName' => (string) $embedOneMapping['name'],
-                    'class'     => (string) $embedOneMapping['class'],
+                    'fieldName' => (string) $embeddedMapping['name'],
+                    'class'     => (string) $embeddedMapping['class'],
                 );
 
-                if (isset($embedOneMapping['prefix'])) {
-                    $mapping['prefix'] = (string) $embedOneMapping['prefix'];
+                if (isset($embeddedMapping['prefix'])) {
+                    $mapping['prefix'] = (string) $embeddedMapping['prefix'];
                 }
 
-                $metadata->mapEmbedOne($mapping);
+                $metadata->mapEmbedded($mapping);
             }
         }
 

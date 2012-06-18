@@ -22,7 +22,7 @@ Doctrine\Tests\ORM\Mapping\User:
       type: string
       column: user_email
       columnDefinition: CHAR(32) NOT NULL
-  embedOne:
+  embedded:
     parents:
       class: Parents
   oneToOne:

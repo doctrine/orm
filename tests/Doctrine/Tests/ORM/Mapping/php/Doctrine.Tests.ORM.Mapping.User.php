@@ -34,7 +34,7 @@ $metadata->mapField(array(
    'columnName' => 'user_email',
    'columnDefinition' => 'CHAR(32) NOT NULL',
   ));
-$metadata->mapEmbedOne(array(
+$metadata->mapEmbedded(array(
     'fieldName' => 'parents',
     'class'     => 'Parents',
 ));

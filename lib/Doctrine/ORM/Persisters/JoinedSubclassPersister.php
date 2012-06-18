@@ -463,6 +463,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                         $columns[] = $sourceCol;
                     }
                 }
+            } else if (isset($this->_class->embeddedMappings[$name])) {
+                $embedded      = $this->_class->embeddedMappings[$name];
+                $embeddedClass = $this->_em->getClassMetadata($embedded['class']);
+
+                foreach ($embeddedClass->fieldMappings as $embeddedFieldName => $embeddedFieldMapping) {
+                    $columns[] = $embeddedClass->getQuotedColumnName($embeddedFieldName, $this->_platform);
+                }
             } else if ($this->_class->name != $this->_class->rootEntityName ||
                     ! $this->_class->isIdGeneratorIdentity() || $this->_class->identifier[0] != $name) {
                 $columns[] = $this->_class->getQuotedColumnName($name, $this->_platform);

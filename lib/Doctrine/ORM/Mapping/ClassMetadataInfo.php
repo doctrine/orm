@@ -1950,7 +1950,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array $mapping The embedded mapping.
      */
-    public function mapEmbedOne(array $mapping)
+    public function mapEmbedded(array $mapping)
     {
         $mapping         = $this->_validateAndCompleteEmbeddedMapping($mapping);
         $sourceFieldName = $mapping['fieldName'];

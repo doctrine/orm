@@ -143,6 +143,7 @@ class SchemaTool
             if ($class->isInheritanceTypeSingleTable()) {
                 $columns = $this->_gatherColumns($class, $table);
                 $this->_gatherRelationsSql($class, $table, $schema);
+                $this->_gatherEmbeddedsSql($class, $table, $schema);
 
                 // Add the discriminator column
                 $this->addDiscriminatorColumnDefinition($class, $table);
@@ -174,6 +175,7 @@ class SchemaTool
                 }
 
                 $this->_gatherRelationsSql($class, $table, $schema);
+                $this->_gatherEmbeddedsSql($class, $table, $schema);
 
                 // Add the discriminator column only to the root table
                 if ($class->name == $class->rootEntityName) {
@@ -203,6 +205,7 @@ class SchemaTool
             } else {
                 $this->_gatherColumns($class, $table);
                 $this->_gatherRelationsSql($class, $table, $schema);
+                $this->_gatherEmbeddedsSql($class, $table, $schema);
             }
 
             $pkColumns = array();
@@ -306,6 +309,8 @@ class SchemaTool
             if ($class->isIdentifier($mapping['fieldName'])) {
                 $pkColumns[] = $class->getQuotedColumnName($mapping['fieldName'], $this->_platform);
             }
+
+            $columns[] = $column;
         }
 
         // For now, this is a hack required for single table inheritence, since this method is called
@@ -433,6 +438,37 @@ class SchemaTool
                     $theJoinTable->addUniqueIndex($unique['columns'], is_numeric($indexName) ? null : $indexName);
                 }
             }
+        }
+    }
+
+    /**
+     * Gathers the SQL for properly setting up the embeddeds of the given class.
+     *
+     * @param ClassMetadata $class
+     * @param \Doctrine\DBAL\Schema\Table $table
+     * @param \Doctrine\DBAL\Schema\Schema $schema
+     * @return void
+     */
+    private function _gatherEmbeddedsSql($class, $table, $schema)
+    {
+        foreach ($class->embeddedMappings as $embeddedFieldMapping) {
+            \Doctrine\Common\Util\Debug::dump($embeddedFieldMapping, 6);
+
+            if (isset($embeddedFieldMapping['inherited'])) {
+                continue;
+            }
+
+            $embeddedClass = $this->_em->getClassMetadata($embeddedFieldMapping['class']);
+
+            // Map each individual field in an optimized way
+            foreach ($embeddedClass->fieldMappings as $fieldName => $mapping) {
+                // Override fieldName for prefix generation
+                $mapping['fieldName'] = $embeddedFieldMapping['prefix'] . '_' . $mapping['fieldName'];
+
+                $this->_gatherColumn($embeddedClass, $mapping, $table);
+            }
+
+            \Doctrine\Common\Util\Debug::dump($table, 6);
         }
     }
 

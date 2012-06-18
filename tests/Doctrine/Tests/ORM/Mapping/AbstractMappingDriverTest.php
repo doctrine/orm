@@ -149,7 +149,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      * @depends testIdentifier
      * @param ClassMetadata $class
      */
-    public function testEmbedOnes($class)
+    public function testEmbeddeds($class)
     {
         $this->assertEquals(1, count($class->embeddedMappings));
 
@@ -160,7 +160,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-     * @depends testEmbedOnes
+     * @depends testEmbeddeds
      * @param ClassMetadata $class
      */
     public function testAssocations($class)
@@ -462,7 +462,7 @@ class User
     public $email;
 
     /**
-     * @EmbedOne(class="Parents")
+     * @Embedded(class="Parents")
      */
     public $parents;
 
@@ -539,7 +539,7 @@ class User
            'columnName' => 'user_email',
            'columnDefinition' => 'CHAR(32) NOT NULL',
           ));
-        $metadata->mapEmbedOne(array(
+        $metadata->mapEmbedded(array(
             'fieldName' => 'parents',
             'class'     => 'Parents',
         ));
