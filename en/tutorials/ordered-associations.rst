@@ -27,6 +27,18 @@ can specify the ``@OrderBy`` in the following way:
         private $groups;
     }
 
+.. code-block:: xml
+
+    <doctrine-mapping>
+        <entity name="User">
+            <many-to-many field="groups" target-entity="Group">
+                <order-by>
+                    <order-by-field name="name" direction="ASC" />
+                </order-by>
+            </many-to-many>
+        </entity>
+    </doctrine-mapping>
+
 The DQL Snippet in OrderBy is only allowed to consist of
 unqualified, unquoted field names and of an optional ASC/DESC
 positional statement. Multiple Fields are separated by a comma (,).
