@@ -38,7 +38,7 @@ use Doctrine\Common\Annotations\AnnotationReader,
 class AnnotationDriver extends AbstractAnnotationDriver
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected $entityAnnotationClasses = array(
         'Doctrine\ORM\Mapping\Entity' => 1,
@@ -46,10 +46,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
     );
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadataInfo */
         $class = $metadata->getReflectionClass();
         if ( ! $class) {
             // this happens when running annotation driver in combination with
@@ -264,6 +265,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         // Evaluate annotations on properties/fields
+        /* @var $property \ReflectionProperty */
         foreach ($class->getProperties() as $property) {
             if ($metadata->isMappedSuperclass && ! $property->isPrivate()
                 ||
@@ -437,7 +439,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
         }
 
-         $attributeOverrides = array();
         // Evaluate AttributeOverrides annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\AttributeOverrides'])) {
             $attributeOverridesAnnot = $classAnnotations['Doctrine\ORM\Mapping\AttributeOverrides'];
@@ -449,6 +450,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
         // Evaluate @HasLifecycleCallbacks annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\HasLifecycleCallbacks'])) {
+            /* @var $method \ReflectionMethod */
             foreach ($class->getMethods() as $method) {
                 // filter for the declaring class only, callbacks from parents will already be registered.
                 if ($method->isPublic() && $method->getDeclaringClass()->getName() == $class->name) {
@@ -576,8 +578,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
     {
         if ($reader == null) {
             $reader = new AnnotationReader();
-            $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
         }
+
         return new self($reader, $paths);
     }
 }

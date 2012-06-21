@@ -58,18 +58,28 @@ class StaticPHPDriver implements MappingDriver
      */
     private $_fileExtension = '.php';
 
+    /**
+     * Constructor
+     *
+     * @param array $paths Paths where to look for mappings
+     */
     public function __construct($paths)
     {
         $this->addPaths((array) $paths);
     }
 
+    /**
+     * Add paths where to look for mappings
+     *
+     * @param array $paths
+     */
     public function addPaths(array $paths)
     {
         $this->_paths = array_unique(array_merge($this->_paths, $paths));
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
@@ -78,7 +88,6 @@ class StaticPHPDriver implements MappingDriver
 
     /**
      * {@inheritDoc}
-     * @todo Same code exists in AnnotationDriver, should we re-use it somehow or not worry about it?
      */
     public function getAllClassNames()
     {
@@ -99,8 +108,8 @@ class StaticPHPDriver implements MappingDriver
             }
 
             $iterator = new \RecursiveIteratorIterator(
-                            new \RecursiveDirectoryIterator($path),
-                            \RecursiveIteratorIterator::LEAVES_ONLY
+                new \RecursiveDirectoryIterator($path),
+                \RecursiveIteratorIterator::LEAVES_ONLY
             );
 
             foreach ($iterator as $file) {
@@ -130,7 +139,7 @@ class StaticPHPDriver implements MappingDriver
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isTransient($className)
     {

@@ -40,7 +40,7 @@ class XmlDriver extends FileDriver
     const DEFAULT_FILE_EXTENSION = '.dcm.xml';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
@@ -48,10 +48,12 @@ class XmlDriver extends FileDriver
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadataInfo */
+        /* @var $xmlRoot SimpleXMLElement */
         $xmlRoot = $this->getElement($className);
 
         if ($xmlRoot->getName() == 'entity') {
@@ -557,6 +559,7 @@ class XmlDriver extends FileDriver
     {
         $array = array();
 
+        /* @var $option SimpleXMLElement */
         foreach ($options as $option) {
             if ($option->count()) {
                 $value = $this->_parseOptions($option->children());
@@ -673,6 +676,7 @@ class XmlDriver extends FileDriver
     private function _getCascadeMappings($cascadeElement)
     {
         $cascades = array();
+        /* @var $action SimpleXmlElement */
         foreach ($cascadeElement->children() as $action) {
             // According to the JPA specifications, XML uses "cascade-persist"
             // instead of "persist". Here, both variations
@@ -685,7 +689,7 @@ class XmlDriver extends FileDriver
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function loadMappingFile($file)
     {

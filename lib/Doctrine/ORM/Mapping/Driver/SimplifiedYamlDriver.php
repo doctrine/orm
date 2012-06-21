@@ -33,7 +33,7 @@ class SimplifiedYamlDriver extends YamlDriver
     const DEFAULT_FILE_EXTENSION = '.orm.yml';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function __construct($prefixes, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {

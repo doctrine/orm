@@ -38,7 +38,7 @@ class YamlDriver extends FileDriver
     const DEFAULT_FILE_EXTENSION = '.dcm.yml';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
@@ -46,10 +46,11 @@ class YamlDriver extends FileDriver
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadataInfo */
         $element = $this->getElement($className);
 
         if ($element['type'] == 'entity') {
@@ -326,9 +327,9 @@ class YamlDriver extends FileDriver
                     if (isset($oneToOneElement['joinColumn'])) {
                         $joinColumns[] = $this->joinColumnToArray($oneToOneElement['joinColumn']);
                     } else if (isset($oneToOneElement['joinColumns'])) {
-                        foreach ($oneToOneElement['joinColumns'] as $name => $joinColumnElement) {
+                        foreach ($oneToOneElement['joinColumns'] as $joinColumnName => $joinColumnElement) {
                             if ( ! isset($joinColumnElement['name'])) {
-                                $joinColumnElement['name'] = $name;
+                                $joinColumnElement['name'] = $joinColumnName;
                             }
 
                             $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
@@ -408,9 +409,9 @@ class YamlDriver extends FileDriver
                 if (isset($manyToOneElement['joinColumn'])) {
                     $joinColumns[] = $this->joinColumnToArray($manyToOneElement['joinColumn']);
                 } else if (isset($manyToOneElement['joinColumns'])) {
-                    foreach ($manyToOneElement['joinColumns'] as $name => $joinColumnElement) {
+                    foreach ($manyToOneElement['joinColumns'] as $joinColumnName => $joinColumnElement) {
                         if ( ! isset($joinColumnElement['name'])) {
-                            $joinColumnElement['name'] = $name;
+                            $joinColumnElement['name'] = $joinColumnName;
                         }
 
                         $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
@@ -452,17 +453,17 @@ class YamlDriver extends FileDriver
                         $joinTable['schema'] = $joinTableElement['schema'];
                     }
 
-                    foreach ($joinTableElement['joinColumns'] as $name => $joinColumnElement) {
+                    foreach ($joinTableElement['joinColumns'] as $joinColumnName => $joinColumnElement) {
                         if ( ! isset($joinColumnElement['name'])) {
-                            $joinColumnElement['name'] = $name;
+                            $joinColumnElement['name'] = $joinColumnName;
                         }
 
                         $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumnElement);
                     }
 
-                    foreach ($joinTableElement['inverseJoinColumns'] as $name => $joinColumnElement) {
+                    foreach ($joinTableElement['inverseJoinColumns'] as $joinColumnName => $joinColumnElement) {
                         if ( ! isset($joinColumnElement['name'])) {
-                            $joinColumnElement['name'] = $name;
+                            $joinColumnElement['name'] = $joinColumnName;
                         }
 
                         $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumnElement);
@@ -671,7 +672,7 @@ class YamlDriver extends FileDriver
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function loadMappingFile($file)
     {

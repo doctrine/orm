@@ -33,7 +33,7 @@ class SimplifiedXmlDriver extends XmlDriver
     const DEFAULT_FILE_EXTENSION = '.orm.xml';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function __construct($prefixes, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {

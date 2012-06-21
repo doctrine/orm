@@ -152,7 +152,7 @@ class DatabaseDriver implements MappingDriver
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
@@ -318,7 +318,7 @@ class DatabaseDriver implements MappingDriver
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isTransient($className)
     {
@@ -326,11 +326,7 @@ class DatabaseDriver implements MappingDriver
     }
 
     /**
-     * Return all the class names supported by this driver.
-     *
-     * IMPORTANT: This method must return an array of class not tables names.
-     *
-     * @return array
+     * {@inheritDoc}
      */
     public function getAllClassNames()
     {

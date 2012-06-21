@@ -926,9 +926,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Gets the ReflectionClass instance of the mapped class.
-     *
-     * @return ReflectionClass
+     * {@inheritDoc}
      */
     public function getReflectionClass()
     {
@@ -1547,9 +1545,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Gets the identifier (primary key) field names of the class.
-     *
-     * @return mixed
+     * {@inheritDoc}
      */
     public function getIdentifierFieldNames()
     {
@@ -1607,10 +1603,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Checks whether the class has a (mapped) field with a certain name.
-     *
-     * @param string $fieldName
-     * @return bool
+     * {@inheritDoc}
      */
     public function hasField($fieldName)
     {
@@ -2080,7 +2073,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Adds a field mapping without completing/validating it.
      * This is mainly used to add inherited field mappings to derived classes.
      *
-     * @internal param array $fieldMapping
+     * @param array $fieldMapping
      * @return void
      */
     public function addInheritedFieldMapping(array $fieldMapping)
@@ -2292,7 +2285,8 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Registers a custom repository class for the entity class.
      *
-     * @param string $mapperClassName  The class name of the custom mapper.
+     * @param string $repositoryClassName The class name of the custom mapper.
+     * @return void
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
@@ -2474,10 +2468,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Checks whether the class has a mapped association with the given field name.
-     *
-     * @param string $fieldName
-     * @return boolean
+     * {@inheritDoc}
      */
     public function hasAssociation($fieldName)
     {
@@ -2485,11 +2476,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Checks whether the class has a mapped association for the specified field
-     * and if yes, checks whether it is a single-valued association (to-one).
-     *
-     * @param string $fieldName
-     * @return boolean TRUE if the association exists and is single-valued, FALSE otherwise.
+     * {@inheritDoc}
      */
     public function isSingleValuedAssociation($fieldName)
     {
@@ -2498,11 +2485,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Checks whether the class has a mapped association for the specified field
-     * and if yes, checks whether it is a collection-valued association (to-many).
-     *
-     * @param string $fieldName
-     * @return boolean TRUE if the association exists and is collection-valued, FALSE otherwise.
+     * {@inheritDoc}
      */
     public function isCollectionValuedAssociation($fieldName)
     {
@@ -2681,11 +2664,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * A numerically indexed list of field names of this persistent class.
-     *
-     * This array includes identifier fields if present on this class.
-     *
-     * @return array
+     * {@inheritDoc}
      */
     public function getFieldNames()
     {
@@ -2693,11 +2672,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * A numerically indexed list of association names of this persistent class.
-     *
-     * This array includes identifier associations if present on this class.
-     *
-     * @return array
+     * {@inheritDoc}
      */
     public function getAssociationNames()
     {
@@ -2705,11 +2680,8 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Returns the target class name of the given association.
-     *
-     * @param string $assocName
+     * {@inheritDoc}
      * @throws InvalidArgumentException
-     * @return string
      */
     public function getAssociationTargetClass($assocName)
     {
@@ -2721,9 +2693,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Get fully-qualified class name of this persistent class.
-     *
-     * @return string
+     * {@inheritDoc}
      */
     public function getName()
     {
@@ -2812,8 +2782,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * @param string $fieldName
-     * @return bool
+     * {@inheritDoc}
      */
     public function isAssociationInverseSide($fieldName)
     {
@@ -2821,8 +2790,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * @param string $fieldName
-     * @return string
+     * {@inheritDoc}
      */
     public function getAssociationMappedByTargetField($fieldName)
     {

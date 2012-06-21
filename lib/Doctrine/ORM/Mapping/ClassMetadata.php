@@ -20,22 +20,9 @@
 namespace Doctrine\ORM\Mapping;
 
 /**
- * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
- * of an entity and it's associations.
+ * {@inheritDoc}
  *
- * Once populated, ClassMetadata instances are usually cached in a serialized form.
- *
- * <b>IMPORTANT NOTE:</b>
- *
- * The fields of this class are only public for 2 reasons:
- * 1) To allow fast READ access.
- * 2) To drastically reduce the size of a serialized instance (private/protected members
- *    get the whole class name, namespace inclusive, prepended to every property in
- *    the serialized representation).
- *
- * @author Roman Borschel <roman@code-factory.org>
- * @author Jonathan H. Wage <jonwage@gmail.com>
- * @since 2.0
+ * @todo remove or rename ClassMetadataInfo to ClassMetadata
  */
 class ClassMetadata extends ClassMetadataInfo
 {

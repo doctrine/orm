@@ -34,7 +34,6 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata,
  * @author		Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author      Jonathan H. Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
- * @todo Rename: PHPDriver
  */
 class PHPDriver extends FileDriver
 {
@@ -47,7 +46,7 @@ class PHPDriver extends FileDriver
     protected $_metadata;
     
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
@@ -55,7 +54,7 @@ class PHPDriver extends FileDriver
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
@@ -64,7 +63,7 @@ class PHPDriver extends FileDriver
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function loadMappingFile($file)
     {
