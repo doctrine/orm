@@ -282,6 +282,11 @@ class UnitOfWork implements PropertyChangedListener
                 $this->collectionUpdates ||
                 $this->collectionDeletions ||
                 $this->orphanRemovals)) {
+
+            if ($this->evm->hasListeners(Events::postFlush)) {
+                $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->em));
+            }
+
             return; // Nothing to do.
         }
 
