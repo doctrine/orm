@@ -385,12 +385,12 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
         $class->validateLifecycleCallbacks($this->getReflectionService());
 
         // verify inheritance
-        if (!$class->isMappedSuperclass && !$class->isInheritanceTypeNone()) {
-            if (!$parent) {
+        if ( ! $class->isMappedSuperclass && !$class->isInheritanceTypeNone()) {
+            if ( ! $parent) {
                 if (count($class->discriminatorMap) == 0) {
                     throw MappingException::missingDiscriminatorMap($class->name);
                 }
-                if (!$class->discriminatorColumn) {
+                if ( ! $class->discriminatorColumn) {
                     throw MappingException::missingDiscriminatorColumn($class->name);
                 }
             } else if ($parent && !$class->reflClass->isAbstract() && !in_array($class->name, array_values($class->discriminatorMap))) {
@@ -562,7 +562,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     private function addInheritedNamedQueries(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->namedQueries as $name => $query) {
-            if (!isset ($subClass->namedQueries[$name])) {
+            if ( ! isset ($subClass->namedQueries[$name])) {
                 $subClass->addNamedQuery(array(
                     'name'  => $query['name'],
                     'query' => $query['query']
@@ -581,7 +581,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     private function addInheritedNamedNativeQueries(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->namedNativeQueries as $name => $query) {
-            if (!isset ($subClass->namedNativeQueries[$name])) {
+            if ( ! isset ($subClass->namedNativeQueries[$name])) {
                 $subClass->addNamedNativeQuery(array(
                     'name'              => $query['name'],
                     'query'             => $query['query'],
@@ -603,7 +603,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     private function addInheritedSqlResultSetMappings(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->sqlResultSetMappings as $name => $mapping) {
-            if (!isset ($subClass->sqlResultSetMappings[$name])) {
+            if ( ! isset ($subClass->sqlResultSetMappings[$name])) {
                 $entities = array();
                 foreach ($mapping['entities'] as $entity) {
                     $entities[] = array(
@@ -650,7 +650,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 // Not pretty but necessary and the simplest solution that currently works.
                 $sequenceName = null;
 
-                if($this->targetPlatform instanceof Platforms\PostgreSQLPlatform) {
+                if ($this->targetPlatform instanceof Platforms\PostgreSQLPlatform) {
                     $fieldName      = $class->getSingleIdentifierFieldName();
                     $columnName     = $class->getSingleIdentifierColumnName();
                     $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
@@ -668,6 +668,7 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
 
                 $class->setIdGenerator(new \Doctrine\ORM\Id\IdentityGenerator($sequenceName));
                 break;
+
             case ClassMetadata::GENERATOR_TYPE_SEQUENCE:
                 // If there is no sequence definition yet, create a default definition
                 $definition = $class->sequenceGeneratorDefinition;
@@ -696,23 +697,28 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
                 );
                 $class->setIdGenerator($sequenceGenerator);
                 break;
+
             case ClassMetadata::GENERATOR_TYPE_NONE:
                 $class->setIdGenerator(new \Doctrine\ORM\Id\AssignedGenerator());
                 break;
+
             case ClassMetadata::GENERATOR_TYPE_UUID:
                 $class->setIdGenerator(new \Doctrine\ORM\Id\UuidGenerator());
                 break;
+
             case ClassMetadata::GENERATOR_TYPE_TABLE:
                 throw new ORMException("TableGenerator not yet implemented.");
                 break;
+
             case ClassMetadata::GENERATOR_TYPE_CUSTOM:
                 $definition = $class->customGeneratorDefinition;
-                if (!class_exists($definition['class'])) {
+                if ( ! class_exists($definition['class'])) {
                     throw new ORMException("Can't instantiate custom generator : " .
                         $definition['class']);
                 }
                 $class->setIdGenerator(new $definition['class']);
                 break;
+
             default:
                 throw new ORMException("Unknown generator type: " . $class->generatorType);
         }

@@ -367,7 +367,7 @@ class BasicEntityPersister
                     $type = Type::getType($this->_columnTypes[$columnName]);
                     $placeholder = $type->convertToDatabaseValueSQL('?', $this->_platform);
                 }
-            } else if(isset($this->quotedColumns[$columnName])) {
+            } else if (isset($this->quotedColumns[$columnName])) {
                 $column = $this->quotedColumns[$columnName];
             }
 
@@ -467,7 +467,7 @@ class BasicEntityPersister
                     $this->_conn->delete($joinTableName, array_combine($keys, $identifier));
 
                     if ($selfReferential) {
-                        $this->_conn->delete($joinTableName,array_combine($otherKeys, $identifier));
+                        $this->_conn->delete($joinTableName, array_combine($otherKeys, $identifier));
                     }
                 }
             }
@@ -1105,23 +1105,22 @@ class BasicEntityPersister
      */
     protected function _getSelectColumnAssociationSQL($field, $assoc, ClassMetadata $class, $alias = 'r')
     {
-        $columnList = '';
+        $columnList = array();
 
         if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
-            foreach ($assoc['joinColumns'] as $joinColumn) {
 
-                if ($columnList) $columnList .= ', ';
+            foreach ($assoc['joinColumns'] as $joinColumn) {
 
                 $quotedColumn     = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->_class, $this->_platform);
                 $resultColumnName = $this->getSQLColumnAlias($joinColumn['name']);
-                $columnList      .= $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )
+                $columnList[]     = $this->_getSQLTableAlias($class->name, ($alias == 'r' ? '' : $alias) )
                                     . '.' . $quotedColumn . ' AS ' . $resultColumnName;
 
                 $this->_rsm->addMetaResult($alias, $resultColumnName, $quotedColumn, isset($assoc['id']) && $assoc['id'] === true);
             }
         }
 
-        return $columnList;
+        return implode(', ', $columnList);
     }
 
     /**
@@ -1598,7 +1597,7 @@ class BasicEntityPersister
     {
         // if one of the join columns is nullable, return left join
         foreach ($joinColumns as $joinColumn) {
-             if (!isset($joinColumn['nullable']) || $joinColumn['nullable']) {
+             if ( ! isset($joinColumn['nullable']) || $joinColumn['nullable']) {
                  return 'LEFT JOIN';
              }
         }

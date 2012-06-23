@@ -226,7 +226,7 @@ class SchemaTool
                 }
             }
 
-            if (!$table->hasIndex('primary')) {
+            if ( ! $table->hasIndex('primary')) {
                 $table->setPrimaryKey($pkColumns);
             }
 
@@ -290,7 +290,7 @@ class SchemaTool
     {
         $discrColumn = $class->discriminatorColumn;
 
-        if (!isset($discrColumn['type']) || (strtolower($discrColumn['type']) == 'string' && $discrColumn['length'] === null)) {
+        if ( ! isset($discrColumn['type']) || (strtolower($discrColumn['type']) == 'string' && $discrColumn['length'] === null)) {
             $discrColumn['type'] = 'string';
             $discrColumn['length'] = 255;
         }
@@ -515,7 +515,7 @@ class SchemaTool
 
             list($definingClass, $referencedFieldName) = $this->getDefiningClass($class, $joinColumn['referencedColumnName']);
 
-            if (!$definingClass) {
+            if ( ! $definingClass) {
                 throw new \Doctrine\ORM\ORMException(
                     "Column name `".$joinColumn['referencedColumnName']."` referenced for relation from ".
                     $mapping['sourceEntity'] . " towards ". $mapping['targetEntity'] . " does not exist."
@@ -638,7 +638,7 @@ class SchemaTool
         $sm = $this->em->getConnection()->getSchemaManager();
         $fullSchema = $sm->createSchema();
         foreach ($fullSchema->getTables() as $table) {
-            if (!$schema->hasTable($table->getName())) {
+            if ( ! $schema->hasTable($table->getName())) {
                 foreach ($table->getForeignKeys() as $foreignKey) {
                     /* @var $foreignKey \Doctrine\DBAL\Schema\ForeignKeyConstraint */
                     if ($schema->hasTable($foreignKey->getForeignTableName())) {
