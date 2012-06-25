@@ -104,7 +104,7 @@ class HydratorMockStatement implements \IteratorAggregate, \Doctrine\DBAL\Driver
         return $this->_resultSet;
     }
 
-    public function setFetchMode($fetchMode)
+    public function setFetchMode($fetchStyle, $arg2 = null, $arg3 = null)
     {
 
     }
