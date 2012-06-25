@@ -50,20 +50,20 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
      */
     public function __construct(AST\Node $AST, $sqlWalker)
     {
-        $em = $sqlWalker->getEntityManager();
-        $conn = $em->getConnection();
-        $platform = $conn->getDatabasePlatform();
+        $em             = $sqlWalker->getEntityManager();
+        $conn           = $em->getConnection();
+        $platform       = $conn->getDatabasePlatform();
+        $quoteStrategy  = $em->getConfiguration()->getQuoteStrategy();
 
-        $updateClause = $AST->updateClause;
+        $updateClause   = $AST->updateClause;
+        $primaryClass   = $sqlWalker->getEntityManager()->getClassMetadata($updateClause->abstractSchemaName);
+        $rootClass      = $em->getClassMetadata($primaryClass->rootEntityName);
 
-        $primaryClass = $sqlWalker->getEntityManager()->getClassMetadata($updateClause->abstractSchemaName);
-        $rootClass = $em->getClassMetadata($primaryClass->rootEntityName);
+        $updateItems    = $updateClause->updateItems;
 
-        $updateItems = $updateClause->updateItems;
-
-        $tempTable = $platform->getTemporaryTableName($rootClass->getTemporaryIdTableName());
-        $idColumnNames = $rootClass->getIdentifierColumnNames();
-        $idColumnList = implode(', ', $idColumnNames);
+        $tempTable      = $platform->getTemporaryTableName($rootClass->getTemporaryIdTableName());
+        $idColumnNames  = $rootClass->getIdentifierColumnNames();
+        $idColumnList   = implode(', ', $idColumnNames);
 
         // 1. Create an INSERT INTO temptable ... SELECT identifiers WHERE $AST->getWhereClause()
         $sqlWalker->setSQLTableAlias($primaryClass->getTableName(), 't0', $updateClause->aliasIdentificationVariable);
@@ -86,7 +86,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         foreach (array_reverse($classNames) as $className) {
             $affected = false;
             $class = $em->getClassMetadata($className);
-            $updateSql = 'UPDATE ' . $class->getQuotedTableName($platform) . ' SET ';
+            $updateSql = 'UPDATE ' . $quoteStrategy->getTableName($class, $platform) . ' SET ';
 
             foreach ($updateItems as $updateItem) {
                 $field = $updateItem->pathExpression->field;
