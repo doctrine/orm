@@ -76,4 +76,16 @@ class BasicEntityPersisterTypeValueSqlTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals('t0.customInteger = ABS(?) AND t0.child_id = ?', $sql);
     }
+
+    /**
+     * @group DDC-1719
+     */
+    public function testStripNonAlphanumericCharactersFromSelectColumnListSQL()
+    {
+        $persister  = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\SimpleEntity'));
+        $method     = new \ReflectionMethod($persister, '_getSelectColumnListSQL');
+        $method->setAccessible(true);
+
+        $this->assertEquals('t0."simple-entity-id" AS simpleentityid1, t0."simple-entity-value" AS simpleentityvalue2', $method->invoke($persister));
+    }
 }

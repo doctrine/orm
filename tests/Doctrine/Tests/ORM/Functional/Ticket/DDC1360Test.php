@@ -21,7 +21,7 @@ class DDC1360Test extends OrmFunctionalTestCase
 
         $this->assertEquals(array(
             'CREATE TABLE "user"."user" (id INT NOT NULL, PRIMARY KEY(id))',
-            'CREATE SEQUENCE "user".user_id_seq INCREMENT BY 1 MINVALUE 1 START 1',
+            'CREATE SEQUENCE "user"."user_id_seq" INCREMENT BY 1 MINVALUE 1 START 1',
         ), $sql);
     }
 }

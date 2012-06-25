@@ -1181,11 +1181,11 @@ class ClassMetadataInfo implements ClassMetadata
         // Complete fieldName and columnName mapping
         if ( ! isset($mapping['columnName'])) {
             $mapping['columnName'] = $this->namingStrategy->propertyToColumnName($mapping['fieldName']);
-        } else {
-            if ($mapping['columnName'][0] == '`') {
-                $mapping['columnName'] = trim($mapping['columnName'], '`');
-                $mapping['quoted'] = true;
-            }
+        }
+
+        if ($mapping['columnName'][0] === '`') {
+            $mapping['columnName']  = trim($mapping['columnName'], '`');
+            $mapping['quoted']      = true;
         }
 
         $this->columnNames[$mapping['fieldName']] = $mapping['columnName'];
@@ -1295,8 +1295,8 @@ class ClassMetadataInfo implements ClassMetadata
         // Mandatory and optional attributes for either side
         if ( ! $mapping['mappedBy']) {
             if (isset($mapping['joinTable']) && $mapping['joinTable']) {
-                if (isset($mapping['joinTable']['name']) && $mapping['joinTable']['name'][0] == '`') {
-                    $mapping['joinTable']['name'] = trim($mapping['joinTable']['name'], '`');
+                if (isset($mapping['joinTable']['name']) && $mapping['joinTable']['name'][0] === '`') {
+                    $mapping['joinTable']['name']   = trim($mapping['joinTable']['name'], '`');
                     $mapping['joinTable']['quoted'] = true;
                 }
             }
@@ -1373,12 +1373,25 @@ class ClassMetadataInfo implements ClassMetadata
                         $uniqueContraintColumns[] = $joinColumn['name'];
                     }
                 }
+
                 if (empty($joinColumn['name'])) {
                     $joinColumn['name'] = $this->namingStrategy->joinColumnName($mapping['fieldName']);
                 }
+
                 if (empty($joinColumn['referencedColumnName'])) {
                     $joinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
                 }
+
+                if ($joinColumn['name'][0] === '`') {
+                    $joinColumn['name']   = trim($joinColumn['name'], '`');
+                    $joinColumn['quoted'] = true;
+                }
+
+                if ($joinColumn['referencedColumnName'][0] === '`') {
+                    $joinColumn['referencedColumnName'] = trim($joinColumn['referencedColumnName'], '`');
+                    $joinColumn['quoted']               = true;
+                }
+
                 $mapping['sourceToTargetKeyColumns'][$joinColumn['name']] = $joinColumn['referencedColumnName'];
                 $mapping['joinColumnFieldNames'][$joinColumn['name']] = isset($joinColumn['fieldName'])
                         ? $joinColumn['fieldName'] : $joinColumn['name'];
@@ -1459,12 +1472,25 @@ class ClassMetadataInfo implements ClassMetadata
                 if (empty($joinColumn['name'])) {
                     $joinColumn['name'] = $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $joinColumn['referencedColumnName']);
                 }
+
                 if (empty($joinColumn['referencedColumnName'])) {
                     $joinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
                 }
+
+                if ($joinColumn['name'][0] === '`') {
+                    $joinColumn['name']   = trim($joinColumn['name'], '`');
+                    $joinColumn['quoted'] = true;
+                }
+
+                if ($joinColumn['referencedColumnName'][0] === '`') {
+                    $joinColumn['referencedColumnName'] = trim($joinColumn['referencedColumnName'], '`');
+                    $joinColumn['quoted']               = true;
+                }
+
                 if (isset($joinColumn['onDelete']) && strtolower($joinColumn['onDelete']) == 'cascade') {
                     $mapping['isOnDeleteCascade'] = true;
                 }
+
                 $mapping['relationToSourceKeyColumns'][$joinColumn['name']] = $joinColumn['referencedColumnName'];
                 $mapping['joinTableColumns'][] = $joinColumn['name'];
             }
@@ -1473,12 +1499,25 @@ class ClassMetadataInfo implements ClassMetadata
                 if (empty($inverseJoinColumn['name'])) {
                     $inverseJoinColumn['name'] = $this->namingStrategy->joinKeyColumnName($mapping['targetEntity'], $inverseJoinColumn['referencedColumnName']);
                 }
+
                 if (empty($inverseJoinColumn['referencedColumnName'])) {
                     $inverseJoinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
                 }
+
+                if ($inverseJoinColumn['name'][0] === '`') {
+                    $inverseJoinColumn['name']   = trim($inverseJoinColumn['name'], '`');
+                    $inverseJoinColumn['quoted'] = true;
+                }
+
+                if ($inverseJoinColumn['referencedColumnName'][0] === '`') {
+                    $inverseJoinColumn['referencedColumnName']  = trim($inverseJoinColumn['referencedColumnName'], '`');
+                    $inverseJoinColumn['quoted']                = true;
+                }
+
                 if (isset($inverseJoinColumn['onDelete']) && strtolower($inverseJoinColumn['onDelete']) == 'cascade') {
                     $mapping['isOnDeleteCascade'] = true;
                 }
+
                 $mapping['relationToTargetKeyColumns'][$inverseJoinColumn['name']] = $inverseJoinColumn['referencedColumnName'];
                 $mapping['joinTableColumns'][] = $inverseJoinColumn['name'];
             }
@@ -1945,12 +1984,12 @@ class ClassMetadataInfo implements ClassMetadata
     public function setPrimaryTable(array $table)
     {
         if (isset($table['name'])) {
-            if ($table['name'][0] == '`') {
-                $this->table['name'] = str_replace("`", "", $table['name']);
-                $this->table['quoted'] = true;
-            } else {
-                $this->table['name'] = $table['name'];
+            if ($table['name'][0] === '`') {
+                $table['name']          = trim($table['name'], '`');
+                $this->table['quoted']  = true;
             }
+
+            $this->table['name'] = $table['name'];
         }
 
         if (isset($table['indexes'])) {
@@ -2528,9 +2567,10 @@ class ClassMetadataInfo implements ClassMetadata
      * The definition must have the following structure:
      * <code>
      * array(
-     *     'sequenceName' => 'name',
+     *     'sequenceName'   => 'name',
      *     'allocationSize' => 20,
-     *     'initialValue' => 1
+     *     'initialValue'   => 1
+     *     'quoted'         => 1
      * )
      * </code>
      *
@@ -2538,6 +2578,11 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function setSequenceGeneratorDefinition(array $definition)
     {
+        if (isset($definition['name']) && $definition['name'] == '`') {
+            $definition['name']   = trim($definition['name'], '`');
+            $definition['quoted'] = true;
+        }
+
         $this->sequenceGeneratorDefinition = $definition;
     }
 
@@ -2646,6 +2691,8 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets the (possibly quoted) identifier column names for safe use in an SQL statement.
      *
+     * @deprecated Deprecated since version 2.3 in favor of \Doctrine\ORM\Mapping\QuoteStrategy
+     *
      * @param AbstractPlatform $platform
      * @return array
      */
@@ -2680,8 +2727,9 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Gets the (possibly quoted) column name of a mapped field for safe use
-     * in an SQL statement.
+     * Gets the (possibly quoted) column name of a mapped field for safe use  in an SQL statement.
+     * 
+     * @deprecated Deprecated since version 2.3 in favor of \Doctrine\ORM\Mapping\QuoteStrategy
      *
      * @param string $field
      * @param AbstractPlatform $platform
@@ -2695,8 +2743,9 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Gets the (possibly quoted) primary table name of this class for safe use
-     * in an SQL statement.
+     * Gets the (possibly quoted) primary table name of this class for safe use in an SQL statement.
+     *
+     * @deprecated Deprecated since version 2.3 in favor of \Doctrine\ORM\Mapping\QuoteStrategy
      *
      * @param AbstractPlatform $platform
      * @return string
@@ -2708,6 +2757,8 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * Gets the (possibly quoted) name of the join table.
+     *
+     * @deprecated Deprecated since version 2.3 in favor of \Doctrine\ORM\Mapping\QuoteStrategy
      *
      * @param AbstractPlatform $platform
      * @return string
