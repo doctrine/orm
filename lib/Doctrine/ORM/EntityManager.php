@@ -227,7 +227,7 @@ class EntityManager implements ObjectManager
             $this->flush();
             $this->conn->commit();
 
-            return $return ?: true;
+            return $return;
         } catch (Exception $e) {
             $this->close();
             $this->conn->rollback();
