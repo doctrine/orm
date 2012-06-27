@@ -1160,7 +1160,7 @@ class BasicEntityPersister
             $conditions[]       = $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableName . '.' . $quotedSourceColumn;
         }
 
-        return  ' INNER JOIN ' . $joinTableName . ' ON ' . implode(' AND ', $conditions);
+        return ' INNER JOIN ' . $joinTableName . ' ON ' . implode(' AND ', $conditions);
     }
 
     /**

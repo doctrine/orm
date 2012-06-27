@@ -126,7 +126,7 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertCount(1, $user->getGroups());
     }
 
-     public function testClearAll()
+    public function testClearAll()
     {
         $user   = $this->user;
         $u1Id   = $user->id;
@@ -154,5 +154,20 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($u1Id, $user->id);
 
         $this->assertCount(0, $user->getGroups());
+    }
+
+    public function testCountExtraLazy()
+    {
+        $user   = $this->user;
+        $u1Id   = $user->id;
+        $user   = $this->_em->find('Doctrine\Tests\Models\Quote\User', $u1Id);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
+        $this->assertEquals('FabioBatSilva', $user->name);
+        $this->assertEquals($u1Id, $user->id);
+
+        $this->assertCount(0, $user->extraLazyGroups);
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $user->getGroups()->get(0));
+        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $user->getGroups()->get(1));
     }
 }
