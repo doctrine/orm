@@ -40,11 +40,20 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function _getDeleteRowSQL(PersistentCollection $coll)
     {
+        $columns = array();
         $mapping = $coll->getMapping();
         $class   = $this->_em->getClassMetadata(get_class($coll->getOwner()));
 
+        foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
+            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+        }
+
+        foreach ($mapping['joinTable']['inverseJoinColumns'] as $joinColumn) {
+            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+        }
+
         return 'DELETE FROM ' . $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform)
-             . ' WHERE ' . implode(' = ? AND ', $mapping['joinTableColumns']) . ' = ?';
+             . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
     }
 
     /**
@@ -155,12 +164,17 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function _getDeleteSQL(PersistentCollection $coll)
     {
-        $class      = $this->_em->getClassMetadata(get_class($coll->getOwner()));
+        $columns    = array();
         $mapping    = $coll->getMapping();
+        $class      = $this->_em->getClassMetadata(get_class($coll->getOwner()));
         $joinTable  = $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform);
 
+        foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
+            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+        }
+
         return 'DELETE FROM ' . $joinTable
-             . ' WHERE ' . implode(' = ? AND ', array_keys($mapping['relationToSourceKeyColumns'])) . ' = ?';
+             . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
     }
 
     /**
