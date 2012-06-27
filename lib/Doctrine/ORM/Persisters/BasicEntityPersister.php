@@ -1140,28 +1140,27 @@ class BasicEntityPersister
      */
     protected function _getSelectManyToManyJoinSQL(array $manyToMany)
     {
+        $conditions         = array();
+        $association        = $manyToMany;
+        $sourceTableAlias   = $this->_getSQLTableAlias($this->_class->name);
 
-        $conditions       = array();
-        $sourceTableAlias = $this->_getSQLTableAlias($this->_class->name);
+        if ( ! $manyToMany['isOwningSide']) {
+            $targetEntity   = $this->_em->getClassMetadata($manyToMany['targetEntity']);
+            $association    = $targetEntity->associationMappings[$manyToMany['mappedBy']];
+        }
 
-        $association = ($manyToMany['isOwningSide'])
-            ? $manyToMany 
-            : $this->_em->getClassMetadata($manyToMany['targetEntity'])
-                ->associationMappings[$manyToMany['mappedBy']];
-
-        $relationColumns  = ($manyToMany['isOwningSide'])
+        $joinTableName  = $this->quoteStrategy->getJoinTableName($association, $this->_class, $this->_platform);
+        $joinColumns    = ($manyToMany['isOwningSide'])
             ? $association['joinTable']['inverseJoinColumns']
             : $association['joinTable']['joinColumns'];
 
-        $joinTableName    = $this->quoteStrategy->getJoinTableName($association, $this->_class, $this->_platform);
-        foreach ($relationColumns as $joinColumn) {
+        foreach ($joinColumns as $joinColumn) {
             $quotedSourceColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->_class, $this->_platform);
             $quotedTargetColumn = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $this->_class, $this->_platform);
-
-            $conditions[] = $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableName . '.' . $quotedSourceColumn;
+            $conditions[]       = $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableName . '.' . $quotedSourceColumn;
         }
 
-         return  ' INNER JOIN ' . $joinTableName . ' ON ' . implode(' AND ', $conditions);
+        return  ' INNER JOIN ' . $joinTableName . ' ON ' . implode(' AND ', $conditions);
     }
 
     /**
