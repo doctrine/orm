@@ -34,7 +34,7 @@ class User
     public $address;
 
     /**
-     * @ManyToMany(targetEntity="Group", inversedBy="users", cascade={"persist"})
+     * @ManyToMany(targetEntity="Group", inversedBy="users", cascade={"all"})
      * @JoinTable(name="`quote-users-groups`",
      *      joinColumns={
      *          @JoinColumn(

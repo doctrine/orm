@@ -76,10 +76,18 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function _getInsertRowSQL(PersistentCollection $coll)
     {
+        $columns    = array();
         $mapping    = $coll->getMapping();
-        $columns    = $mapping['joinTableColumns'];
         $class      = $this->_em->getClassMetadata(get_class($coll->getOwner()));
         $joinTable  = $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform);
+
+        foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
+            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+        }
+
+        foreach ($mapping['joinTable']['inverseJoinColumns'] as $joinColumn) {
+            $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+        }
 
         return 'INSERT INTO ' . $joinTable . ' (' . implode(', ', $columns) . ')'
              . ' VALUES (' . implode(', ', array_fill(0, count($columns), '?')) . ')';

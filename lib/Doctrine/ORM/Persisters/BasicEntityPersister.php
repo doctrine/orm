@@ -846,7 +846,11 @@ class BasicEntityPersister
         if ($assoc['isOwningSide']) {
             $quotedJoinTable = $this->quoteStrategy->getJoinTableName($assoc, $sourceClass, $this->_platform);
 
-            foreach ($assoc['relationToSourceKeyColumns'] as $relationKeyColumn => $sourceKeyColumn) {
+            foreach ($assoc['joinTable']['joinColumns'] as $joinColumn) {
+                $relationKeyColumn  = $joinColumn['name'];
+                $sourceKeyColumn    = $joinColumn['referencedColumnName'];
+                $quotedKeyColumn    = $this->quoteStrategy->getJoinColumnName($joinColumn, $sourceClass, $this->_platform);
+
                 if ($sourceClass->containsForeignIdentifier) {
                     $field = $sourceClass->getFieldForColumn($sourceKeyColumn);
                     $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
@@ -856,9 +860,9 @@ class BasicEntityPersister
                         $value = $value[$this->_em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity'])->identifier[0]];
                     }
 
-                    $criteria[$quotedJoinTable . "." . $relationKeyColumn] = $value;
+                    $criteria[$quotedJoinTable . "." . $quotedKeyColumn] = $value;
                 } else if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
-                    $criteria[$quotedJoinTable . "." . $relationKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
+                    $criteria[$quotedJoinTable . "." . $quotedKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
                     throw MappingException::joinColumnMustPointToMappedField(
                         $sourceClass->name, $sourceKeyColumn
@@ -870,7 +874,11 @@ class BasicEntityPersister
             $quotedJoinTable = $this->quoteStrategy->getJoinTableName($owningAssoc, $sourceClass, $this->_platform);
 
             // TRICKY: since the association is inverted source and target are flipped
-            foreach ($owningAssoc['relationToTargetKeyColumns'] as $relationKeyColumn => $sourceKeyColumn) {
+            foreach ($owningAssoc['joinTable']['inverseJoinColumns'] as $joinColumn) {
+                $relationKeyColumn  = $joinColumn['name'];
+                $sourceKeyColumn    = $joinColumn['referencedColumnName'];
+                $quotedKeyColumn    = $this->quoteStrategy->getJoinColumnName($joinColumn, $sourceClass, $this->_platform);
+
                 if ($sourceClass->containsForeignIdentifier) {
                     $field = $sourceClass->getFieldForColumn($sourceKeyColumn);
                     $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
@@ -880,9 +888,9 @@ class BasicEntityPersister
                         $value = $value[$this->_em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity'])->identifier[0]];
                     }
 
-                    $criteria[$quotedJoinTable . "." . $relationKeyColumn] = $value;
+                    $criteria[$quotedJoinTable . "." . $quotedKeyColumn] = $value;
                 } else if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
-                    $criteria[$quotedJoinTable . "." . $relationKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
+                    $criteria[$quotedJoinTable . "." . $quotedKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
                     throw MappingException::joinColumnMustPointToMappedField(
                         $sourceClass->name, $sourceKeyColumn
@@ -1132,31 +1140,28 @@ class BasicEntityPersister
      */
     protected function _getSelectManyToManyJoinSQL(array $manyToMany)
     {
-        if ($manyToMany['isOwningSide']) {
-            $owningAssoc = $manyToMany;
-            $joinClauses = $manyToMany['relationToTargetKeyColumns'];
-        } else {
-            $owningAssoc = $this->_em->getClassMetadata($manyToMany['targetEntity'])->associationMappings[$manyToMany['mappedBy']];
-            $joinClauses = $owningAssoc['relationToSourceKeyColumns'];
+
+        $conditions       = array();
+        $sourceTableAlias = $this->_getSQLTableAlias($this->_class->name);
+
+        $association = ($manyToMany['isOwningSide'])
+            ? $manyToMany 
+            : $this->_em->getClassMetadata($manyToMany['targetEntity'])
+                ->associationMappings[$manyToMany['mappedBy']];
+
+        $relationColumns  = ($manyToMany['isOwningSide'])
+            ? $association['joinTable']['inverseJoinColumns']
+            : $association['joinTable']['joinColumns'];
+
+        $joinTableName    = $this->quoteStrategy->getJoinTableName($association, $this->_class, $this->_platform);
+        foreach ($relationColumns as $joinColumn) {
+            $quotedSourceColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->_class, $this->_platform);
+            $quotedTargetColumn = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $this->_class, $this->_platform);
+
+            $conditions[] = $sourceTableAlias . '.' . $quotedTargetColumn . ' = ' . $joinTableName . '.' . $quotedSourceColumn;
         }
 
-        $joinTableName = $this->quoteStrategy->getJoinTableName($owningAssoc, $this->_class, $this->_platform);
-        $joinSql = '';
-
-        foreach ($joinClauses as $joinTableColumn => $sourceColumn) {
-            if ($joinSql != '') $joinSql .= ' AND ';
-
-            if ($this->_class->containsForeignIdentifier && ! isset($this->_class->fieldNames[$sourceColumn])) {
-                $quotedColumn = $sourceColumn; // join columns cannot be quoted
-            } else {
-                $quotedColumn = $this->quoteStrategy->getColumnName($this->_class->fieldNames[$sourceColumn], $this->_class, $this->_platform);
-            }
-
-            $joinSql .= $this->_getSQLTableAlias($this->_class->name) . '.' . $quotedColumn . ' = '
-                      . $joinTableName . '.' . $joinTableColumn;
-        }
-
-        return ' INNER JOIN ' . $joinTableName . ' ON ' . $joinSql;
+         return  ' INNER JOIN ' . $joinTableName . ' ON ' . implode(' AND ', $conditions);
     }
 
     /**
