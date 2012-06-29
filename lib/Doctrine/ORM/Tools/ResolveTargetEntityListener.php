@@ -67,6 +67,12 @@ class ResolveTargetEntityListener
                 $this->remapAssociation($cm, $mapping);
             }
         }
+
+        foreach ($this->resolveTargetEntities as $interface => $data) {
+            if ($data['targetEntity'] == $cm->getName()) {
+                $args->getEntityManager()->getMetadataFactory()->setMetadataFor($interface, $cm);
+            }
+        }
     }
 
     private function remapAssociation($classMetadata, $mapping)
