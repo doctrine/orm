@@ -235,7 +235,7 @@ abstract class AbstractHydrator
                         continue 2;
                 }
 
-                if (isset ($this->_rsm->newObjectMappings[$key])) {
+                if (isset($this->_rsm->newObjectMappings[$key])) {
                     $cache[$key]['isNewObjectParameter'] = true;
                     $cache[$key]['argIndex']    = $this->_rsm->newObjectMappings[$key]['argIndex'];
                     $cache[$key]['objIndex']    = $this->_rsm->newObjectMappings[$key]['objIndex'];
@@ -243,7 +243,7 @@ abstract class AbstractHydrator
                 }
             }
 
-            if (isset ($cache[$key]['isNewObjectParameter'])) {
+            if (isset($cache[$key]['isNewObjectParameter'])) {
                 $argIndex = $cache[$key]['argIndex'];
                 $objIndex = $cache[$key]['objIndex'];
                 $rowData['newObjects'][$objIndex]['class'] = $cache[$key]['class'];

@@ -1630,7 +1630,7 @@ class Parser
     }
 
     /**
-     * NewObjectExpression ::= "NEW" IdentificationVariable "(" SelectExpression {"," SelectExpression}* ")"
+     * NewObjectExpression ::= "NEW" IdentificationVariable "(" NewObjectArg {"," NewObjectArg}* ")"
      * @return \Doctrine\ORM\Query\AST\NewObjectExpression
      */
     public function NewObjectExpression()
@@ -1643,19 +1643,19 @@ class Parser
         if ( ! class_exists($className, true)) {
             $this->semanticalError("Class '$className' is not defined.", $this->_lexer->token);
         }
-        
+
         $class = new \ReflectionClass($className);
         if($class->getConstructor() === null) {
             $this->semanticalError("Class '$className' has not a valid contructor.", $this->_lexer->token);
         }
 
         $this->match(Lexer::T_OPEN_PARENTHESIS);
-        
-        $args[] = $this->SelectExpression();
+
+        $args[] = $this->NewObjectArg();
         while ($this->_lexer->isNextToken(Lexer::T_COMMA)) {
             $this->match(Lexer::T_COMMA);
 
-            $args[] = $this->SelectExpression();
+            $args[] = $this->NewObjectArg();
         }
 
         $this->match(Lexer::T_CLOSE_PARENTHESIS);
@@ -1664,10 +1664,41 @@ class Parser
             $this->semanticalError("Number of arguments does not match definition.", $this->_lexer->token);
         }
 
-        $expression = new AST\NewObjectExpression($className, $args);
+        return new AST\NewObjectExpression($className, $args);;
+    }
 
-        // @TODO : Defer NewObjectExpression validation ?
-        return $expression;
+    /**
+     * @return \Doctrine\ORM\Query\AST\SimpleSelectExpression
+     */
+    public function NewObjectArg()
+    {
+        $peek = $this->_lexer->glimpse();
+
+        switch (true) {
+            case ($peek['type'] === Lexer::T_DOT):
+                $expression = $this->StateFieldPathExpression();
+
+                return new AST\SimpleSelectExpression($expression);
+
+            case ($peek['type'] !== Lexer::T_OPEN_PARENTHESIS):
+                $expression = $this->IdentificationVariable();
+
+                return new AST\SimpleSelectExpression($expression);
+
+            case ($this->_isFunction()):
+                // SUM(u.id) + COUNT(u.id)
+                if ($this->_isMathOperator($this->_peekBeyondClosingParenthesis())) {
+                    return new AST\SimpleSelectExpression($this->ScalarExpression());
+                }
+                // COUNT(u.id)
+                if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
+                    return new AST\SimpleSelectExpression($this->AggregateExpression());
+                }
+                // IDENTITY(u)
+                return new AST\SimpleSelectExpression($this->FunctionDeclaration());
+        }
+
+        $this->semanticalError("Unsupported expression");
     }
 
     /**

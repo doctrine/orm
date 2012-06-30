@@ -6,12 +6,12 @@ class CmsUserDTO
 {
     public $name;
     public $email;
-    public $city;
+    public $address;
 
-    public function __construct($name = null, $email = null, $city = null)
+    public function __construct($name = null, $email = null, $address = null)
     {
-        $this->name  = $name;
-        $this->email = $email;
-        $this->city  = $city;
+        $this->name     = $name;
+        $this->email    = $email;
+        $this->address  = $address;
     }
 }

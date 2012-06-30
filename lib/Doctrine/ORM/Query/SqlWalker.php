@@ -1229,25 +1229,28 @@ class SqlWalker implements TreeWalker
                 break;
 
             case ($expr instanceof AST\NewObjectExpression):
-                $sqlSelectExpressions = array();
-                $this->_rsm->newObjectMappings['className'] = $expr->className;
 
-                $sqlSelectExpressions   = array();
-                $objIndex               = $this->newObjectCounter ++;
-                foreach ($expr->args as $key => $e) {
+                $sqlSelectExpressions = array();
+                $objIndex             = $this->newObjectCounter ++;
+                foreach ($expr->args as $argIndex => $e) {
+
+                    $resultAlias            = $this->scalarResultCounter++;
+                    $columnAlias            = $this->getSQLColumnAlias('sclr') . $resultAlias;
                     $resultAliasMap         = $this->scalarResultAliasMap;
-                    $sqlSelectExpressions[] = $this->walkSelectExpression($e);
-                    $scalarResultAliasMap   = array_diff($this->scalarResultAliasMap, $resultAliasMap);
-                    foreach ($scalarResultAliasMap as $aliasMap) {
-                        $this->_rsm->newObjectMappings[$aliasMap] = array(
-                            'className' => $expr->className,
-                            'objIndex'  => $objIndex,
-                            'argIndex'  => $key
-                        );
-                    }
+                    $sqlSelectExpressions[] = $this->walkSimpleSelectExpression($e) . ' AS ' . $columnAlias;
+
+
+                    $this->scalarResultAliasMap[$resultAlias] = $columnAlias;
+                    $this->rsm->addScalarResult($columnAlias, $resultAlias, 'string');
+                    
+                    $this->rsm->newObjectMappings[$columnAlias] = array(
+                        'className' => $expr->className,
+                        'objIndex'  => $objIndex,
+                        'argIndex'  => $argIndex
+                    );
                 }
 
-                $sql .= implode(', ', $sqlSelectExpressions);
+                $sql .= implode(',', $sqlSelectExpressions);
                 break;
 
             default:
