@@ -1680,10 +1680,8 @@ class Parser
 
                 return new AST\SimpleSelectExpression($expression);
 
-            case ($peek['type'] !== Lexer::T_OPEN_PARENTHESIS):
-                $expression = $this->IdentificationVariable();
-
-                return new AST\SimpleSelectExpression($expression);
+            case ($this->_lexer->lookahead['type'] === Lexer::T_NEW):
+                return $this->NewObjectExpression();
 
             case ($this->_isFunction()):
                 // SUM(u.id) + COUNT(u.id)

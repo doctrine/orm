@@ -129,7 +129,11 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 new Doctrine\Tests\Models\CMS\CmsUserDTO(
                     u.name,
                     e.email,
-                    new Doctrine\Tests\Models\CMS\CmsUserDTO(a.country, a.city, a.zip)
+                    new Doctrine\Tests\Models\CMS\CmsUserDTO(
+                        a.country,
+                        a.city,
+                        a.zip
+                    )
                 )
             FROM
                 Doctrine\Tests\Models\CMS\CmsUser u

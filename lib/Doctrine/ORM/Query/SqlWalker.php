@@ -1229,28 +1229,7 @@ class SqlWalker implements TreeWalker
                 break;
 
             case ($expr instanceof AST\NewObjectExpression):
-
-                $sqlSelectExpressions = array();
-                $objIndex             = $this->newObjectCounter ++;
-                foreach ($expr->args as $argIndex => $e) {
-
-                    $resultAlias            = $this->scalarResultCounter++;
-                    $columnAlias            = $this->getSQLColumnAlias('sclr') . $resultAlias;
-                    $resultAliasMap         = $this->scalarResultAliasMap;
-                    $sqlSelectExpressions[] = $this->walkSimpleSelectExpression($e) . ' AS ' . $columnAlias;
-
-
-                    $this->scalarResultAliasMap[$resultAlias] = $columnAlias;
-                    $this->rsm->addScalarResult($columnAlias, $resultAlias, 'string');
-                    
-                    $this->rsm->newObjectMappings[$columnAlias] = array(
-                        'className' => $expr->className,
-                        'objIndex'  => $objIndex,
-                        'argIndex'  => $argIndex
-                    );
-                }
-
-                $sql .= implode(',', $sqlSelectExpressions);
+                $sql .= $this->walkNewObject($expr);
                 break;
 
             default:
@@ -1417,6 +1396,47 @@ class SqlWalker implements TreeWalker
     {
         return 'SELECT' . ($simpleSelectClause->isDistinct ? ' DISTINCT' : '')
              . $this->walkSimpleSelectExpression($simpleSelectClause->simpleSelectExpression);
+    }
+
+    /**
+     * @param AST\NewObjectExpression
+     * @return string The SQL.
+     */
+    public function walkNewObject($newObjectExpression)
+    {
+
+        $sqlSelectExpressions = array();
+        $objIndex             = $this->newObjectCounter ++;
+        foreach ($newObjectExpression->args as $argIndex => $e) {
+
+            $resultAlias            = $this->scalarResultCounter++;
+            $columnAlias            = $this->getSQLColumnAlias('sclr') . $resultAlias;
+            $resultAliasMap         = $this->scalarResultAliasMap;
+
+            switch (true) {
+                case $e instanceof AST\NewObjectExpression:
+
+                    $sqlSelectExpressions[] = $e->dispatch($this);
+
+                    break;
+
+                default:
+                    $sqlSelectExpressions[] = $e->dispatch($this) . ' AS ' . $columnAlias;
+                    break;
+            }
+
+
+            $this->scalarResultAliasMap[$resultAlias] = $columnAlias;
+            $this->rsm->addScalarResult($columnAlias, $resultAlias, 'string');
+
+            $this->rsm->newObjectMappings[$columnAlias] = array(
+                'className' => $newObjectExpression->className,
+                'objIndex'  => $objIndex,
+                'argIndex'  => $argIndex
+            );
+        }
+
+        return implode(',', $sqlSelectExpressions);
     }
 
     /**
