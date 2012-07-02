@@ -83,7 +83,7 @@ class GenerateEntitiesCommand extends Console\Command\Command
         ->setHelp(<<<EOT
 Generate entity classes and method stubs from your mapping information.
 
-If you use the <comment>--update-entities</comment> or <comment>--regenerate-entities</comment> flags your exisiting
+If you use the <comment>--update-entities</comment> or <comment>--regenerate-entities</comment> flags your existing
 code gets overwritten. The EntityGenerator will only append new code to your
 file and will not delete the old code. However this approach may still be prone
 to error and we suggest you use code repositories such as GIT or SVN to make
