@@ -200,6 +200,7 @@ public function <methodName>()
 public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
 {
 <spaces>$this-><fieldName> = $<variableName>;
+
 <spaces>return $this;
 }';
 
@@ -216,6 +217,7 @@ public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
 <spaces>$this-><fieldName>[] = $<variableName>;
+
 <spaces>return $this;
 }';
 
