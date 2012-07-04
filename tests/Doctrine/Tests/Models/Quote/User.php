@@ -34,7 +34,7 @@ class User
     public $address;
 
     /**
-     * @ManyToMany(targetEntity="Group", inversedBy="users", cascade={"persist"})
+     * @ManyToMany(targetEntity="Group", inversedBy="users", cascade={"all"})
      * @JoinTable(name="`quote-users-groups`",
      *      joinColumns={
      *          @JoinColumn(
@@ -51,6 +51,25 @@ class User
      * )
      */
     public $groups;
+
+    /**
+     * @ManyToMany(targetEntity="Group", inversedBy="users", cascade={"all"}, fetch="EXTRA_LAZY")
+     * @JoinTable(name="`quote-extra-lazy-users-groups`",
+     *      joinColumns={
+     *          @JoinColumn(
+     *              name="`user-id`",
+     *              referencedColumnName="`user-id`"
+     *          )
+     *      },
+     *      inverseJoinColumns={
+     *          @JoinColumn(
+     *              name="`group-id`",
+     *              referencedColumnName="`group-id`"
+     *          )
+     *      }
+     * )
+     */
+    public $extraLazyGroups;
 
     public function __construct()
     {
