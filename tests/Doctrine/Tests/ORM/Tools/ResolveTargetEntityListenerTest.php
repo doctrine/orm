@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Tools;
 
-use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
 
@@ -30,7 +29,7 @@ class ResolveTargetEntityListenerTest extends \Doctrine\Tests\OrmTestCase
         $this->em = $this->_getTestEntityManager();
         $this->em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
         $this->factory = $this->em->getMetadataFactory();
-        $this->listener = new ResolveTargetEntityListener;
+        $this->listener = new ResolveTargetEntityListener();
     }
 
     /**
@@ -49,7 +48,7 @@ class ResolveTargetEntityListenerTest extends \Doctrine\Tests\OrmTestCase
             'Doctrine\Tests\ORM\Tools\TargetEntity',
             array()
         );
-        $evm->addEventListener(Events::loadClassMetadata, $this->listener);
+        $evm->addEventSubscriber($this->listener);
 
         $this->assertNotNull($this->factory->getMetadataFor('Doctrine\Tests\ORM\Tools\ResolveTargetInterface'));
 
