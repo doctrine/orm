@@ -19,9 +19,13 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use BadMethodCallException;
+use InvalidArgumentException;
+use RuntimeException;
 use Doctrine\DBAL\Types\Type;
 use ReflectionClass;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\ClassLoader;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -617,7 +621,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Gets a ReflectionProperty for a specific field of the mapped class.
      *
      * @param string $name
-     * @return ReflectionProperty
+     * @return \ReflectionProperty
      */
     public function getReflectionProperty($name)
     {
@@ -627,13 +631,13 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets the ReflectionProperty for the single identifier field.
      *
-     * @return ReflectionProperty
+     * @return \ReflectionProperty
      * @throws BadMethodCallException If the class has a composite identifier.
      */
     public function getSingleIdReflectionProperty()
     {
         if ($this->isIdentifierComposite) {
-            throw new \BadMethodCallException("Class " . $this->name . " has a composite identifier.");
+            throw new BadMethodCallException("Class " . $this->name . " has a composite identifier.");
         }
         return $this->reflFields[$this->identifier[0]];
     }
@@ -831,7 +835,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Restores some state that can not be serialized/unserialized.
      *
-     * @param ReflectionService $reflService
+     * @param \Doctrine\Common\Persistence\Mapping\ReflectionService $reflService
      * @return void
      */
     public function wakeupReflection($reflService)
@@ -856,7 +860,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
      *
-     * @param ReflectionService $reflService The reflection service.
+     * @param \Doctrine\Common\Persistence\Mapping\ReflectionService $reflService The reflection service.
      */
     public function initializeReflection($reflService)
     {
@@ -873,6 +877,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Validate Identifier
      *
+     * @throws MappingException
      * @return void
      */
     public function validateIdentifier()
@@ -890,12 +895,13 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Validate association targets actually exist.
      *
+     * @throws MappingException
      * @return void
      */
     public function validateAssocations()
     {
         foreach ($this->associationMappings as $mapping) {
-            if ( ! \Doctrine\Common\ClassLoader::classExists($mapping['targetEntity']) ) {
+            if ( ! ClassLoader::classExists($mapping['targetEntity']) ) {
                 throw MappingException::invalidTargetEntityClass($mapping['targetEntity'], $this->name, $mapping['fieldName']);
             }
         }
@@ -904,12 +910,13 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Validate lifecycle callbacks
      *
-     * @param ReflectionService $reflService
+     * @param \Doctrine\Common\Persistence\Mapping\ReflectionService $reflService
+     * @throws MappingException
      * @return void
      */
     public function validateLifecycleCallbacks($reflService)
     {
-        foreach ($this->lifecycleCallbacks as $event => $callbacks) {
+        foreach ($this->lifecycleCallbacks as $callbacks) {
             foreach ($callbacks as $callbackFuncName) {
                 if ( ! $reflService->hasPublicMethod($this->name, $callbackFuncName)) {
                     throw MappingException::lifecycleCallbackMethodNotFound($this->name, $callbackFuncName);
@@ -919,9 +926,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Gets the ReflectionClass instance of the mapped class.
-     *
-     * @return ReflectionClass
+     * {@inheritDoc}
      */
     public function getReflectionClass()
     {
@@ -1032,7 +1037,8 @@ class ClassMetadataInfo implements ClassMetadata
      * reference to another object.
      *
      * @param string $fieldName  The field name.
-     * @return array  The field mapping.
+     * @throws MappingException
+     * @return array The field mapping.
      */
     public function getFieldMapping($fieldName)
     {
@@ -1048,6 +1054,7 @@ class ClassMetadataInfo implements ClassMetadata
      * @see ClassMetadataInfo::$associationMappings
      * @param string $fieldName  The field name that represents the association in
      *                           the object model.
+     * @throws MappingException
      * @return array The mapping.
      */
     public function getAssociationMapping($fieldName)
@@ -1165,7 +1172,8 @@ class ClassMetadataInfo implements ClassMetadata
      * Validates & completes the given field mapping.
      *
      * @param array $mapping  The field mapping to validated & complete.
-     * @return array  The validated and completed field mapping.
+     * @throws MappingException
+     * @return array The validated and completed field mapping.
      */
     protected function _validateAndCompleteFieldMapping(array &$mapping)
     {
@@ -1342,8 +1350,9 @@ class ClassMetadataInfo implements ClassMetadata
      * Validates & completes a one-to-one association mapping.
      *
      * @param array $mapping  The mapping to validate & complete.
-     * @return array The validated & completed mapping.
-     * @override
+     * @throws RuntimeException
+     * @throws MappingException
+     * @return array The validated & completed mapping.@override
      */
     protected function _validateAndCompleteOneToOneMapping(array $mapping)
     {
@@ -1363,7 +1372,7 @@ class ClassMetadataInfo implements ClassMetadata
             }
 
             $uniqueContraintColumns = array();
-            foreach ($mapping['joinColumns'] as $key => &$joinColumn) {
+            foreach ($mapping['joinColumns'] as &$joinColumn) {
                 if ($mapping['type'] === self::ONE_TO_ONE && ! $this->isInheritanceTypeSingleTable()) {
                     if (count($mapping['joinColumns']) == 1) {
                         if ( ! isset($mapping['id']) || ! $mapping['id']) {
@@ -1399,7 +1408,7 @@ class ClassMetadataInfo implements ClassMetadata
 
             if ($uniqueContraintColumns) {
                 if ( ! $this->table) {
-                    throw new \RuntimeException("ClassMetadataInfo::setTable() has to be called before defining a one to one relationship.");
+                    throw new RuntimeException("ClassMetadataInfo::setTable() has to be called before defining a one to one relationship.");
                 }
                 $this->table['uniqueConstraints'][$mapping['fieldName']."_uniq"] = array(
                     'columns' => $uniqueContraintColumns
@@ -1423,8 +1432,9 @@ class ClassMetadataInfo implements ClassMetadata
      * Validates and completes the mapping.
      *
      * @param array $mapping The mapping to validate and complete.
-     * @return array The validated and completed mapping.
-     * @override
+     * @throws MappingException
+     * @throws InvalidArgumentException
+     * @return array The validated and completed mapping.@override
      */
     protected function _validateAndCompleteOneToManyMapping(array $mapping)
     {
@@ -1440,7 +1450,7 @@ class ClassMetadataInfo implements ClassMetadata
 
         if (isset($mapping['orderBy'])) {
             if ( ! is_array($mapping['orderBy'])) {
-                throw new \InvalidArgumentException("'orderBy' is expected to be an array, not ".gettype($mapping['orderBy']));
+                throw new InvalidArgumentException("'orderBy' is expected to be an array, not ".gettype($mapping['orderBy']));
             }
         }
 
@@ -1527,7 +1537,7 @@ class ClassMetadataInfo implements ClassMetadata
 
         if (isset($mapping['orderBy'])) {
             if ( ! is_array($mapping['orderBy'])) {
-                throw new \InvalidArgumentException("'orderBy' is expected to be an array, not ".gettype($mapping['orderBy']));
+                throw new InvalidArgumentException("'orderBy' is expected to be an array, not ".gettype($mapping['orderBy']));
             }
         }
 
@@ -1535,9 +1545,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Gets the identifier (primary key) field names of the class.
-     *
-     * @return mixed
+     * {@inheritDoc}
      */
     public function getIdentifierFieldNames()
     {
@@ -1587,7 +1595,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets the mapped identifier field of this class.
      *
-     * @return string $identifier
+     * @return array|string $identifier
      */
     public function getIdentifier()
     {
@@ -1595,9 +1603,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Checks whether the class has a (mapped) field with a certain name.
-     *
-     * @return boolean
+     * {@inheritDoc}
      */
     public function hasField($fieldName)
     {
@@ -1607,6 +1613,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets an array containing all the column names.
      *
+     * @param array $fieldNames
      * @return array
      */
     public function getColumnNames(array $fieldNames = null)
@@ -1734,7 +1741,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function isIdGeneratorTable()
     {
-        $this->generatorType == self::GENERATOR_TYPE_TABLE;
+        return $this->generatorType == self::GENERATOR_TYPE_TABLE;
     }
 
     /**
@@ -1762,7 +1769,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Gets the type of a field.
      *
      * @param string $fieldName
-     * @return \Doctrine\DBAL\Types\Type
+     * @return \Doctrine\DBAL\Types\Type|string
      */
     public function getTypeOfField($fieldName)
     {
@@ -1773,6 +1780,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets the type of a column.
      *
+     * @param string $columnName
      * @return \Doctrine\DBAL\Types\Type
      */
     public function getTypeOfColumn($columnName)
@@ -1834,6 +1842,8 @@ class ClassMetadataInfo implements ClassMetadata
      * Sets the inheritance type used by the class and it's subclasses.
      *
      * @param integer $type
+     * @throws MappingException
+     * @return void
      */
     public function setInheritanceType($type)
     {
@@ -1848,6 +1858,8 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $fieldName
      * @param array $overrideMapping
+     * @throws MappingException
+     * @return void
      */
     public function setAssociationOverride($fieldName, array $overrideMapping)
     {
@@ -1870,7 +1882,7 @@ class ClassMetadataInfo implements ClassMetadata
         $mapping['sourceToTargetKeyColumns']    = null;
         $mapping['relationToSourceKeyColumns']  = null;
         $mapping['relationToTargetKeyColumns']  = null;
-        
+
         switch ($mapping['type']) {
             case self::ONE_TO_ONE:
                 $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
@@ -1889,11 +1901,14 @@ class ClassMetadataInfo implements ClassMetadata
         $this->associationMappings[$fieldName] = $mapping;
     }
 
-     /**
+    /**
      * Sets the override for a mapped field.
      *
      * @param string $fieldName
-     * @param array $mapping
+     * @param array $overrideMapping
+     * @throws MappingException
+     * @param array $overrideMapping
+     * @return void
      */
     public function setAttributeOverride($fieldName, array $overrideMapping)
     {
@@ -1930,7 +1945,8 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Checks whether a mapped field is inherited from an entity superclass.
      *
-     * @return boolean TRUE if the field is inherited, FALSE otherwise.
+     * @param string $fieldName
+     * @return bool TRUE if the field is inherited, FALSE otherwise.
      */
     public function isInheritedField($fieldName)
     {
@@ -2023,6 +2039,8 @@ class ClassMetadataInfo implements ClassMetadata
      * Adds a mapped field to the class.
      *
      * @param array $mapping The field mapping.
+     * @throws MappingException
+     * @return void
      */
     public function mapField(array $mapping)
     {
@@ -2039,6 +2057,8 @@ class ClassMetadataInfo implements ClassMetadata
      * This is mainly used to add inherited association mappings to derived classes.
      *
      * @param array $mapping
+     * @throws MappingException
+     * @return void
      */
     public function addInheritedAssociationMapping(array $mapping/*, $owningClassName = null*/)
     {
@@ -2053,7 +2073,8 @@ class ClassMetadataInfo implements ClassMetadata
      * Adds a field mapping without completing/validating it.
      * This is mainly used to add inherited field mappings to derived classes.
      *
-     * @param array $mapping
+     * @param array $fieldMapping
+     * @return void
      */
     public function addInheritedFieldMapping(array $fieldMapping)
     {
@@ -2247,6 +2268,8 @@ class ClassMetadataInfo implements ClassMetadata
      * Stores the association mapping.
      *
      * @param array $assocMapping
+     * @throws MappingException
+     * @return void
      */
     protected function _storeAssociationMapping(array $assocMapping)
     {
@@ -2262,7 +2285,8 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Registers a custom repository class for the entity class.
      *
-     * @param string $mapperClassName  The class name of the custom mapper.
+     * @param string $repositoryClassName The class name of the custom mapper.
+     * @return void
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
@@ -2277,8 +2301,8 @@ class ClassMetadataInfo implements ClassMetadata
      * Dispatches the lifecycle event of the given entity to the registered
      * lifecycle callbacks and lifecycle listeners.
      *
-     * @param string $event The lifecycle event.
-     * @param Entity $entity The Entity on which the event occured.
+     * @param string $lifecycleEvent The lifecycle event.
+     * @param \Object $entity The Entity on which the event occured.
      */
     public function invokeLifecycleCallbacks($lifecycleEvent, $entity)
     {
@@ -2335,6 +2359,10 @@ class ClassMetadataInfo implements ClassMetadata
      * Sets the discriminator column definition.
      *
      * @param array $columnDef
+     *
+     * @param $columnDef
+     * @throws MappingException
+     * @return void
      * @see getDiscriminatorColumn()
      */
     public function setDiscriminatorColumn($columnDef)
@@ -2382,6 +2410,8 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $name
      * @param string $className
+     * @throws MappingException
+     * @return void
      */
     public function addDiscriminatorMapClass($name, $className)
     {
@@ -2438,10 +2468,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Checks whether the class has a mapped association with the given field name.
-     *
-     * @param string $fieldName
-     * @return boolean
+     * {@inheritDoc}
      */
     public function hasAssociation($fieldName)
     {
@@ -2449,11 +2476,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Checks whether the class has a mapped association for the specified field
-     * and if yes, checks whether it is a single-valued association (to-one).
-     *
-     * @param string $fieldName
-     * @return boolean TRUE if the association exists and is single-valued, FALSE otherwise.
+     * {@inheritDoc}
      */
     public function isSingleValuedAssociation($fieldName)
     {
@@ -2462,11 +2485,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Checks whether the class has a mapped association for the specified field
-     * and if yes, checks whether it is a collection-valued association (to-many).
-     *
-     * @param string $fieldName
-     * @return boolean TRUE if the association exists and is collection-valued, FALSE otherwise.
+     * {@inheritDoc}
      */
     public function isCollectionValuedAssociation($fieldName)
     {
@@ -2493,6 +2512,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Return the single association join column (if any).
      *
      * @param string $fieldName
+     * @throws MappingException
      * @return string
      */
     public function getSingleAssociationJoinColumnName($fieldName)
@@ -2507,6 +2527,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Return the single association referenced join column name (if any).
      *
      * @param string $fieldName
+     * @throws MappingException
      * @return string
      */
     public function getSingleAssociationReferencedJoinColumnName($fieldName)
@@ -2523,6 +2544,7 @@ class ClassMetadataInfo implements ClassMetadata
      * This method is used in foreign-key as primary-key contexts.
      *
      * @param  string $columnName
+     * @throws MappingException
      * @return string
      */
     public function getFieldForColumn($columnName)
@@ -2545,7 +2567,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Sets the ID generator used to generate IDs for instances of this class.
      *
-     * @param AbstractIdGenerator $generator
+     * @param \Doctrine\ORM\Id\AbstractIdGenerator $generator
      */
     public function setIdGenerator($generator)
     {
@@ -2591,6 +2613,8 @@ class ClassMetadataInfo implements ClassMetadata
      * value to use depending on the column type.
      *
      * @param array $mapping   The version field mapping array
+     * @throws MappingException
+     * @return void
      */
     public function setVersionMapping(array &$mapping)
     {
@@ -2640,11 +2664,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * A numerically indexed list of field names of this persistent class.
-     *
-     * This array includes identifier fields if present on this class.
-     *
-     * @return array
+     * {@inheritDoc}
      */
     public function getFieldNames()
     {
@@ -2652,11 +2672,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * A numerically indexed list of association names of this persistent class.
-     *
-     * This array includes identifier associations if present on this class.
-     *
-     * @return array
+     * {@inheritDoc}
      */
     public function getAssociationNames()
     {
@@ -2664,24 +2680,20 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Returns the target class name of the given association.
-     *
-     * @param string $assocName
-     * @return string
+     * {@inheritDoc}
+     * @throws InvalidArgumentException
      */
     public function getAssociationTargetClass($assocName)
     {
         if ( ! isset($this->associationMappings[$assocName])) {
-            throw new \InvalidArgumentException("Association name expected, '" . $assocName ."' is not an association.");
+            throw new InvalidArgumentException("Association name expected, '" . $assocName ."' is not an association.");
         }
 
         return $this->associationMappings[$assocName]['targetEntity'];
     }
 
     /**
-     * Get fully-qualified class name of this persistent class.
-     *
-     * @return string
+     * {@inheritDoc}
      */
     public function getName()
     {
@@ -2693,7 +2705,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @deprecated Deprecated since version 2.3 in favor of \Doctrine\ORM\Mapping\QuoteStrategy
      *
-     * @param AbstractPlatform $platform
+     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      * @return array
      */
     public function getQuotedIdentifierColumnNames($platform)
@@ -2728,11 +2740,11 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * Gets the (possibly quoted) column name of a mapped field for safe use  in an SQL statement.
-     * 
+     *
      * @deprecated Deprecated since version 2.3 in favor of \Doctrine\ORM\Mapping\QuoteStrategy
      *
      * @param string $field
-     * @param AbstractPlatform $platform
+     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      * @return string
      */
     public function getQuotedColumnName($field, $platform)
@@ -2747,7 +2759,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @deprecated Deprecated since version 2.3 in favor of \Doctrine\ORM\Mapping\QuoteStrategy
      *
-     * @param AbstractPlatform $platform
+     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      * @return string
      */
     public function getQuotedTableName($platform)
@@ -2760,7 +2772,8 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @deprecated Deprecated since version 2.3 in favor of \Doctrine\ORM\Mapping\QuoteStrategy
      *
-     * @param AbstractPlatform $platform
+     * @param array $assoc
+     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      * @return string
      */
     public function getQuotedJoinTableName(array $assoc, $platform)
@@ -2769,8 +2782,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * @param string $fieldName
-     * @return bool
+     * {@inheritDoc}
      */
     public function isAssociationInverseSide($fieldName)
     {
@@ -2778,8 +2790,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * @param string $fieldName
-     * @return string
+     * {@inheritDoc}
      */
     public function getAssociationMappedByTargetField($fieldName)
     {

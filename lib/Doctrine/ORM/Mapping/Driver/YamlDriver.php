@@ -19,8 +19,10 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Mapping\MappingException;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata,
+    Doctrine\Common\Persistence\Mapping\Driver\FileDriver,
+    Doctrine\ORM\Mapping\MappingException,
+    Symfony\Component\Yaml\Yaml;
 
 /**
  * The YamlDriver reads the mapping metadata from yaml schema files.
@@ -31,18 +33,24 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo,
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @author Roman Borschel <roman@code-factory.org>
  */
-class YamlDriver extends AbstractFileDriver
+class YamlDriver extends FileDriver
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected $_fileExtension = '.dcm.yml';
+    const DEFAULT_FILE_EXTENSION = '.dcm.yml';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
+    public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
+        parent::__construct($locator, $fileExtension);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
+    {
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadataInfo */
         $element = $this->getElement($className);
 
         if ($element['type'] == 'entity') {
@@ -127,7 +135,7 @@ class YamlDriver extends AbstractFileDriver
                         $entities[] = $entityResult;
                     }
                 }
-                
+
 
                 if (isset($resultSetMapping['columnResult'])) {
                     foreach ($resultSetMapping['columnResult'] as $columnResultAnnot) {
@@ -319,9 +327,9 @@ class YamlDriver extends AbstractFileDriver
                     if (isset($oneToOneElement['joinColumn'])) {
                         $joinColumns[] = $this->joinColumnToArray($oneToOneElement['joinColumn']);
                     } else if (isset($oneToOneElement['joinColumns'])) {
-                        foreach ($oneToOneElement['joinColumns'] as $name => $joinColumnElement) {
+                        foreach ($oneToOneElement['joinColumns'] as $joinColumnName => $joinColumnElement) {
                             if ( ! isset($joinColumnElement['name'])) {
-                                $joinColumnElement['name'] = $name;
+                                $joinColumnElement['name'] = $joinColumnName;
                             }
 
                             $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
@@ -401,9 +409,9 @@ class YamlDriver extends AbstractFileDriver
                 if (isset($manyToOneElement['joinColumn'])) {
                     $joinColumns[] = $this->joinColumnToArray($manyToOneElement['joinColumn']);
                 } else if (isset($manyToOneElement['joinColumns'])) {
-                    foreach ($manyToOneElement['joinColumns'] as $name => $joinColumnElement) {
+                    foreach ($manyToOneElement['joinColumns'] as $joinColumnName => $joinColumnElement) {
                         if ( ! isset($joinColumnElement['name'])) {
-                            $joinColumnElement['name'] = $name;
+                            $joinColumnElement['name'] = $joinColumnName;
                         }
 
                         $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
@@ -445,17 +453,17 @@ class YamlDriver extends AbstractFileDriver
                         $joinTable['schema'] = $joinTableElement['schema'];
                     }
 
-                    foreach ($joinTableElement['joinColumns'] as $name => $joinColumnElement) {
+                    foreach ($joinTableElement['joinColumns'] as $joinColumnName => $joinColumnElement) {
                         if ( ! isset($joinColumnElement['name'])) {
-                            $joinColumnElement['name'] = $name;
+                            $joinColumnElement['name'] = $joinColumnName;
                         }
 
                         $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumnElement);
                     }
 
-                    foreach ($joinTableElement['inverseJoinColumns'] as $name => $joinColumnElement) {
+                    foreach ($joinTableElement['inverseJoinColumns'] as $joinColumnName => $joinColumnElement) {
                         if ( ! isset($joinColumnElement['name'])) {
-                            $joinColumnElement['name'] = $name;
+                            $joinColumnElement['name'] = $joinColumnName;
                         }
 
                         $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumnElement);
@@ -564,7 +572,7 @@ class YamlDriver extends AbstractFileDriver
      * Constructs a joinColumn mapping array based on the information
      * found in the given join column element.
      *
-     * @param $joinColumnElement The array join column element
+     * @param array $joinColumnElement The array join column element
      * @return array The mapping array.
      */
     private function joinColumnToArray($joinColumnElement)
@@ -573,7 +581,7 @@ class YamlDriver extends AbstractFileDriver
         if (isset($joinColumnElement['referencedColumnName'])) {
             $joinColumn['referencedColumnName'] = (string) $joinColumnElement['referencedColumnName'];
         }
-        
+
         if (isset($joinColumnElement['name'])) {
             $joinColumn['name'] = (string) $joinColumnElement['name'];
         }
@@ -653,7 +661,7 @@ class YamlDriver extends AbstractFileDriver
         }
 
         if (isset($column['version']) && $column['version']) {
-            $metadata->setVersionMapping($mapping);
+            $mapping['version'] = $column['version'];
         }
 
         if (isset($column['columnDefinition'])) {
@@ -664,10 +672,10 @@ class YamlDriver extends AbstractFileDriver
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    protected function _loadMappingFile($file)
+    protected function loadMappingFile($file)
     {
-        return \Symfony\Component\Yaml\Yaml::parse($file);
+        return Yaml::parse($file);
     }
 }

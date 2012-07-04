@@ -19,14 +19,10 @@
 
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
-use Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console\Input\InputInterface,
+use Symfony\Component\Console\Input\InputInterface,
     Symfony\Component\Console\Output\OutputInterface,
     Symfony\Component\Console\Command\Command,
-    Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper,
-    Doctrine\ORM\Tools\SchemaTool,
-    Doctrine\ORM\Mapping\Driver\AbstractFileDriver;
+    Doctrine\ORM\Tools\SchemaTool;
 
 abstract class AbstractCommand extends Command
 {

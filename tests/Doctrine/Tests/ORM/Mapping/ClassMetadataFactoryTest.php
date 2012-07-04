@@ -114,7 +114,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     public function testIsTransient()
     {
         $cmf = new ClassMetadataFactory();
-        $driver = $this->getMock('Doctrine\ORM\Mapping\Driver\Driver');
+        $driver = $this->getMock('Doctrine\Common\Persistence\Mapping\Driver\MappingDriver');
         $driver->expects($this->at(0))
                ->method('isTransient')
                ->with($this->equalTo('Doctrine\Tests\Models\CMS\CmsUser'))
@@ -136,7 +136,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     public function testIsTransientEntityNamespace()
     {
         $cmf = new ClassMetadataFactory();
-        $driver = $this->getMock('Doctrine\ORM\Mapping\Driver\Driver');
+        $driver = $this->getMock('Doctrine\Common\Persistence\Mapping\Driver\MappingDriver');
         $driver->expects($this->at(0))
                ->method('isTransient')
                ->with($this->equalTo('Doctrine\Tests\Models\CMS\CmsUser'))

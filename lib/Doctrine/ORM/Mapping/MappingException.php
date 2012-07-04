@@ -78,11 +78,6 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self("No mapping file found named '$fileName' for class '$entityName'.");
     }
 
-    public static function invalidMappingFile($entityName, $fileName)
-    {
-        return new self("Invalid mapping file '$fileName' for class '$entityName'.");
-    }
-
      /**
      * Exception for invalid property name override.
      *
@@ -144,7 +139,7 @@ class MappingException extends \Doctrine\ORM\ORMException
     {
         return new self('Result set mapping named "'.$resultName.'" in "'.$entity.' requires a field name.');
     }
-    
+
     public static function nameIsMandatoryForSqlResultSetMapping($className)
     {
         return new self("Result set mapping name on entity class '$className' is not defined.");
