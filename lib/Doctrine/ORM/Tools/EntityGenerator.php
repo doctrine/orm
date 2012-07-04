@@ -136,6 +136,23 @@ public function <methodName>(<methodTypeHint>$<variableName>)
 <spaces>return $this;
 }';
 
+    /**
+     * @var string
+     */
+    private static $_removeMethodTemplate =
+'/**
+ * <description>
+ *
+ * @param <variableType$<variableName>
+ */
+public function <methodName>(<methodTypeHint>$<variableName>)
+{
+<spaces>$this-><fieldName>->removeElement($<variableName>);
+}';
+
+    /**
+     * @var string
+     */
     private static $_lifecycleCallbackMethodTemplate =
 '/**
  * @<name>
@@ -672,6 +689,9 @@ public function <methodName>()
                 if ($code = $this->_generateEntityStubMethod($metadata, 'add', $associationMapping['fieldName'], $associationMapping['targetEntity'])) {
                     $methods[] = $code;
                 }
+                if ($code = $this->_generateEntityStubMethod($metadata, 'remove', $associationMapping['fieldName'], $associationMapping['targetEntity'])) {
+                    $methods[] = $code;
+                }
                 if ($code = $this->_generateEntityStubMethod($metadata, 'get', $associationMapping['fieldName'], 'Doctrine\Common\Collections\Collection')) {
                     $methods[] = $code;
                 }
@@ -756,12 +776,9 @@ public function <methodName>()
 
     private function _generateEntityStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null,  $defaultValue = null)
     {
-        if ($type == "add") {
-            $addMethod = explode("\\", $typeHint);
-            $addMethod = end($addMethod);
-            $methodName = $type . $addMethod;
-        } else {
-            $methodName = $type . Inflector::classify($fieldName);
+        $methodName = $type . Inflector::classify($fieldName);
+        if (in_array($type, array("add", "remove")) && substr($methodName, -1) == "s") {
+            $methodName = substr($methodName, 0, -1);
         }
 
         if ($this->_hasMethod($methodName, $metadata)) {
