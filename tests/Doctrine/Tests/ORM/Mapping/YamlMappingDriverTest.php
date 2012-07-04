@@ -27,7 +27,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
     public function testJoinTablesWithMappedSuperclassForYamlDriver()
     {
         $yamlDriver = $this->_loadDriver();
-        $yamlDriver->addPaths(array(__DIR__ . DIRECTORY_SEPARATOR . 'yaml'));
+        $yamlDriver->getLocator()->addPaths(array(__DIR__ . DIRECTORY_SEPARATOR . 'yaml'));
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($yamlDriver);
@@ -46,7 +46,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-1468
      *
-     * @expectedException Doctrine\ORM\Mapping\MappingException
+     * @expectedException Doctrine\Common\Persistence\Mapping\MappingException
      * @expectedExceptionMessage Invalid mapping file 'Doctrine.Tests.Models.Generic.SerializationModel.dcm.yml' for class 'Doctrine\Tests\Models\Generic\SerializationModel'.
      */
     public function testInvalidMappingFileException()
