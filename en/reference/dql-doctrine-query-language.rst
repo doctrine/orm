@@ -667,7 +667,9 @@ We will register the function by calling and can then use it:
 .. code-block:: php
 
     <?php
-    \Doctrine\ORM\Query\Parser::registerNumericFunction('FLOOR', 'MyProject\Query\MysqlFloor');
+    $config = $em->getConfiguration();
+    $config->registerNumericFunction('FLOOR', 'MyProject\Query\MysqlFloor');
+
     $dql = "SELECT FLOOR(person.salary * 1.75) FROM CompanyPerson person";
 
 Querying Inherited Classes
