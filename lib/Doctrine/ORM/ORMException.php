@@ -149,4 +149,9 @@ class ORMException extends Exception
     {
         return new self("The identifier $fieldName is missing for a query of " . $className);
     }
+
+    public static function overwriteInternalDQLFunctionNotAllowed($functionName)
+    {
+        return new self("It is not allowed to overwrite internal function '$functionName' in the DQL parser through user-defined functions.");
+    }
 }

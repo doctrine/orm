@@ -137,6 +137,22 @@ class Parser
     private $_identVariableExpressions = array();
 
     /**
+     * Check if a function is internally defined. Used to prevent overwriting
+     * of built-in functions through user-defined functions.
+     *
+     * @param string $functionName
+     * @return bool
+     */
+    static public function isInternalFunction($functionName)
+    {
+        $functionName = strtolower($functionName);
+
+        return isset(self::$_STRING_FUNCTIONS[$functionName])
+            || isset(self::$_DATETIME_FUNCTIONS[$functionName])
+            || isset(self::$_NUMERIC_FUNCTIONS[$functionName]);
+    }
+
+    /**
      * Creates a new query parser object.
      *
      * @param Query $query The Query to parse.

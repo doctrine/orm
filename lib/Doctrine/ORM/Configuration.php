@@ -380,6 +380,10 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function addCustomStringFunction($name, $className)
     {
+        if (Query\Parser::isInternalFunction($name)) {
+            throw ORMException::overwriteInternalDQLFunctionNotAllowed($name);
+        }
+
         $this->_attributes['customStringFunctions'][strtolower($name)] = $className;
     }
 
@@ -410,7 +414,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setCustomStringFunctions(array $functions)
     {
-        $this->_attributes['customStringFunctions'] = array_change_key_case($functions);
+        foreach ($functions as $name => $className) {
+            $this->addCustomStringFunction($name, $className);
+        }
     }
 
     /**
@@ -425,6 +431,10 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function addCustomNumericFunction($name, $className)
     {
+        if (Query\Parser::isInternalFunction($name)) {
+            throw ORMException::overwriteInternalDQLFunctionNotAllowed($name);
+        }
+
         $this->_attributes['customNumericFunctions'][strtolower($name)] = $className;
     }
 
@@ -455,7 +465,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setCustomNumericFunctions(array $functions)
     {
-        $this->_attributes['customNumericFunctions'] = array_change_key_case($functions);
+        foreach ($functions as $name => $className) {
+            $this->addCustomNumericFunction($name, $className);
+        }
     }
 
     /**
@@ -470,6 +482,10 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function addCustomDatetimeFunction($name, $className)
     {
+        if (Query\Parser::isInternalFunction($name)) {
+            throw ORMException::overwriteInternalDQLFunctionNotAllowed($name);
+        }
+
         $this->_attributes['customDatetimeFunctions'][strtolower($name)] = $className;
     }
 
@@ -500,7 +516,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setCustomDatetimeFunctions(array $functions)
     {
-        $this->_attributes['customDatetimeFunctions'] = array_change_key_case($functions);
+        foreach ($functions as $name => $className) {
+            $this->addCustomDatetimeFunction($name, $className);
+        }
     }
 
     /**
