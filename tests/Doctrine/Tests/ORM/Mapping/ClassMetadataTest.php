@@ -923,7 +923,8 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
-     * @group DDC-1575
+     * @group DDC-984
+     * @group DDC-559
      */
     public function testFullyQualifiedClassNameShouldBeGivenToNamingStrategyPropertyToColumnName()
     {
