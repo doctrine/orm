@@ -1248,6 +1248,15 @@ class BasicEntityPersister
             }
         }
 
+        foreach($columns as &$column) {
+            if ($column[0] !== $this->_platform->getIdentifierQuoteCharacter()) {
+                $quotedColumn = $this->_platform->quoteSingleIdentifier($column);
+                if (in_array($quotedColumn, $columns)) {
+                    $column = $quotedColumn;
+                }
+            }
+        }
+
         return $columns;
     }
 
