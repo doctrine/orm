@@ -526,4 +526,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         return $this->driver;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function isEntity(ClassMetadataInterface $class)
+    {
+        return isset($class->isMappedSuperclass) && $class->isMappedSuperclass === false;
+    }
 }
