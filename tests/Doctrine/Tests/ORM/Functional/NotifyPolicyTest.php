@@ -40,8 +40,15 @@ class NotifyPolicyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->persist($user);
         $this->_em->persist($group);
+
+        $this->assertEquals(1, count($user->listeners));
+        $this->assertEquals(1, count($group->listeners));
+
         $this->_em->flush();
         $this->_em->clear();
+
+        $this->assertEquals(1, count($user->listeners));
+        $this->assertEquals(1, count($group->listeners));
 
         $userId = $user->getId();
         $groupId = $group->getId();
@@ -51,6 +58,9 @@ class NotifyPolicyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(1, $user->getGroups()->count());
         $group = $this->_em->find(__NAMESPACE__.'\NotifyGroup', $groupId);
         $this->assertEquals(1, $group->getUsers()->count());
+
+        $this->assertEquals(1, count($user->listeners));
+        $this->assertEquals(1, count($group->listeners));
 
         $group2 = new NotifyGroup();
         $group2->setName('nerds');
@@ -62,6 +72,9 @@ class NotifyPolicyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->flush();
         $this->_em->clear();
+
+        $this->assertEquals(1, count($user->listeners));
+        $this->assertEquals(1, count($group->listeners));
 
         $group2Id = $group2->getId();
         unset($group2, $user);
@@ -77,7 +90,7 @@ class NotifyPolicyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 class NotifyBaseEntity implements NotifyPropertyChanged {
-    private $listeners = array();
+    public $listeners = array();
 
     public function addPropertyChangedListener(PropertyChangedListener $listener) {
         $this->listeners[] = $listener;

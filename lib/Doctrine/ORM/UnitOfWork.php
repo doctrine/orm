@@ -1118,6 +1118,10 @@ class UnitOfWork implements PropertyChangedListener
         if (isset($this->entityIdentifiers[$oid])) {
             $this->addToIdentityMap($entity);
         }
+
+        if ($entity instanceof NotifyPropertyChanged) {
+            $entity->addPropertyChangedListener($this);
+        }
     }
 
     /**
@@ -1295,10 +1299,6 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $this->identityMap[$className][$idHash] = $entity;
-
-        if ($entity instanceof NotifyPropertyChanged) {
-            $entity->addPropertyChangedListener($this);
-        }
 
         return true;
     }
@@ -2356,11 +2356,12 @@ class UnitOfWork implements PropertyChangedListener
             }
         } else {
             $entity = $this->newInstance($class);
-            $oid = spl_object_hash($entity);
+            $oid    = spl_object_hash($entity);
 
-            $this->entityIdentifiers[$oid] = $id;
-            $this->entityStates[$oid] = self::STATE_MANAGED;
+            $this->entityIdentifiers[$oid]  = $id;
+            $this->entityStates[$oid]       = self::STATE_MANAGED;
             $this->originalEntityData[$oid] = $data;
+
             $this->identityMap[$class->rootEntityName][$idHash] = $entity;
 
             if ($entity instanceof NotifyPropertyChanged) {
@@ -2790,6 +2791,10 @@ class UnitOfWork implements PropertyChangedListener
         $this->originalEntityData[$oid] = $data;
 
         $this->addToIdentityMap($entity);
+
+        if ($entity instanceof NotifyPropertyChanged) {
+            $entity->addPropertyChangedListener($this);
+        }
     }
 
     /**
