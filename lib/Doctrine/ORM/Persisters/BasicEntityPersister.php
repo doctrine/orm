@@ -702,9 +702,9 @@ class BasicEntityPersister
      *                  column or field names to values.
      * @param object $entity The entity to refresh.
      */
-    public function refresh(array $id, $entity)
+    public function refresh(array $id, $entity, $lockMode = 0)
     {
-        $sql = $this->_getSelectEntitiesSQL($id);
+        $sql = $this->_getSelectEntitiesSQL($id, null, $lockMode);
         list($params, $types) = $this->expandParameters($id);
         $stmt = $this->_conn->executeQuery($sql, $params, $types);
 

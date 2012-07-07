@@ -124,8 +124,15 @@ class EntityRepository implements ObjectRepository
                 return null;
             }
 
-            if ($lockMode !== LockMode::NONE) {
-                $this->_em->lock($entity, $lockMode, $lockVersion);
+            switch ($lockMode) {
+                case LockMode::OPTIMISTIC:
+                    $this->_em->lock($entity, $lockMode, $lockVersion);
+                    break;
+                case LockMode::PESSIMISTIC_READ:
+                case LockMode::PESSIMISTIC_WRITE:
+                    $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
+                    $persister->refresh($sortedId, $entity, $lockMode);
+                    break;
             }
 
             return $entity; // Hit!
