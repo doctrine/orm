@@ -5,7 +5,7 @@ namespace Doctrine\Tests\Mocks;
 class DriverConnectionMock implements \Doctrine\DBAL\Driver\Connection
 {
     public function prepare($prepareString) {}
-    public function query() {}
+    public function query() { return new StatementMock; }
     public function quote($input, $type=\PDO::PARAM_STR) {}
     public function exec($statement) {}
     public function lastInsertId($name = null) {}
