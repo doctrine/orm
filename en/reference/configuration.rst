@@ -12,6 +12,9 @@ roughly exists of four steps:
 Class loading
 -------------
 
+Composer
+^^^^^^^^
+
 Autoloading is taken care of by Composer. You just have to include the composer autoload file in your project:
 
 .. code-block:: php
