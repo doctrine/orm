@@ -28,7 +28,9 @@ use Doctrine\Common\Cache\Cache,
     Doctrine\ORM\Mapping\QuoteStrategy,
     Doctrine\ORM\Mapping\DefaultQuoteStrategy,
     Doctrine\ORM\Mapping\NamingStrategy,
-    Doctrine\ORM\Mapping\DefaultNamingStrategy;
+    Doctrine\ORM\Mapping\DefaultNamingStrategy,
+    Doctrine\Common\Annotations\SimpleAnnotationReader,
+    Doctrine\Common\Annotations\CachedReader;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -124,45 +126,30 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Add a new default annotation driver with a correctly configured annotation reader.
+     * Add a new default annotation driver with a correctly configured annotation reader. If $useSimpleAnnotationReader
+     * is true, the notation `@Entity` will work, otherwise, the notation `@ORM\Entity` will be supported.
      *
      * @param array $paths
-     * @return Mapping\Driver\AnnotationDriver
+     * @param bool $useSimpleAnnotationReader
+     * @return AnnotationDriver
      */
-    public function newDefaultAnnotationDriver($paths = array())
+    public function newDefaultAnnotationDriver($paths = array(), $useSimpleAnnotationReader = true)
     {
-        switch (true) {
-            case (version_compare(\Doctrine\Common\Version::VERSION, '2.2.0-DEV', '>=')):
-                // Register the ORM Annotations in the AnnotationRegistry
-                AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
+        AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
 
-                $reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-                $reader->addNamespace('Doctrine\ORM\Mapping');
+        if ($useSimpleAnnotationReader) {
+            // Register the ORM Annotations in the AnnotationRegistry
+            $reader = new SimpleAnnotationReader();
+            $reader->addNamespace('Doctrine\ORM\Mapping');
+            $cachedReader = new CachedReader($reader, new ArrayCache());
 
-                $reader = new \Doctrine\Common\Annotations\CachedReader($reader, new ArrayCache());
-                break;
-
-            case (version_compare(\Doctrine\Common\Version::VERSION, '2.1.0-DEV', '>=')):
-                // Register the ORM Annotations in the AnnotationRegistry
-                AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
-
-                $reader = new AnnotationReader();
-                $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-                $reader->setIgnoreNotImportedAnnotations(true);
-                $reader->setEnableParsePhpImports(false);
-
-                $reader = new \Doctrine\Common\Annotations\CachedReader(
-                    new \Doctrine\Common\Annotations\IndexedReader($reader), new ArrayCache()
-                );
-                break;
-
-            default:
-                $reader = new AnnotationReader();
-                $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-                break;
+            return new AnnotationDriver($cachedReader, (array) $paths);
         }
 
-        return new AnnotationDriver($reader, (array) $paths);
+        return new AnnotationDriver(
+            new CachedReader(new AnnotationReader(), new ArrayCache()),
+            (array) $paths
+        );
     }
 
     /**
@@ -180,8 +167,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Resolves a registered namespace alias to the full namespace.
      *
      * @param string $entityNamespaceAlias
+     * @throws ORMException
      * @return string
-     * @throws MappingException
      */
     public function getEntityNamespace($entityNamespaceAlias)
     {
@@ -195,8 +182,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Set the entity alias map
      *
-     * @param array $entityAliasMap
-     * @return void
+     * @param array $entityNamespaces
      */
     public function setEntityNamespaces(array $entityNamespaces)
     {
@@ -307,6 +293,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Gets a previously registered named DQL query.
      *
      * @param string $name The name of the query.
+     * @throws ORMException
      * @return string The DQL query.
      */
     public function getNamedQuery($name)
@@ -321,9 +308,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Adds a named native query to the configuration.
      *
-     * @param string $name The name of the query.
-     * @param string $sql The native SQL query string.
-     * @param ResultSetMapping $rsm The ResultSetMapping used for the results of the SQL query.
+     * @param string                 $name The name of the query.
+     * @param string                 $sql  The native SQL query string.
+     * @param Query\ResultSetMapping $rsm  The ResultSetMapping used for the results of the SQL query.
      */
     public function addNamedNativeQuery($name, $sql, Query\ResultSetMapping $rsm)
     {
@@ -333,9 +320,10 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the components of a previously registered named native query.
      *
-     * @param string $name The name of the query.
-     * @return array A tuple with the first element being the SQL string and the second
-     *          element being the ResultSetMapping.
+     * @param  string $name  The name of the query.
+     * @throws ORMException
+     * @return array         A tuple with the first element being the SQL string and the second
+     *                       element being the ResultSetMapping.
      */
     public function getNamedNativeQuery($name)
     {
@@ -377,6 +365,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name
      * @param string $className
+     * @throws ORMException
      */
     public function addCustomStringFunction($name, $className)
     {
@@ -428,6 +417,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name
      * @param string $className
+     * @throws ORMException
      */
     public function addCustomNumericFunction($name, $className)
     {
@@ -479,6 +469,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name
      * @param string $className
+     * @throws ORMException
      */
     public function addCustomDatetimeFunction($name, $className)
     {
@@ -548,7 +539,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Set a class metadata factory.
      *
-     * @param string $cmf
+     * @param string $cmfName
      */
     public function setClassMetadataFactoryName($cmfName)
     {
@@ -646,7 +637,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
         if ( ! isset($this->_attributes['namingStrategy'])) {
             $this->_attributes['namingStrategy'] = new DefaultNamingStrategy();
         }
-        
+
         return $this->_attributes['namingStrategy'];
     }
 
