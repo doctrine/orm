@@ -105,4 +105,92 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
         $this->assertEquals(4, $dropSequenceSQLs, "Expect 4 sequences to be dropped.");
     }
+
+    /**
+     * @group DDC-1657
+     */
+    public function testUpdateSchemaWithPostgreSQLSchema()
+    {
+        $classes = array(
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1657Screen'),
+            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1657Avatar'),
+        );
+        try {
+            $this->_em->getConnection()->exec("CREATE SCHEMA stonewood");
+        } catch(\Exception $e) {
+        }
+
+        $tool = new SchemaTool($this->_em);
+        $tool->createSchema($classes);
+
+        $sql = $tool->getUpdateSchemaSql($classes);
+        $this->assertCount(0, $sql, implode("\n", $sql));
+    }
+}
+
+/**
+ * @Entity
+ * @Table(name="stonewood.screen")
+ */
+class DDC1657Screen
+{
+    /**
+     * Identifier
+     * @var integer
+     *
+     * @Id
+     * @GeneratedValue(strategy="IDENTITY")
+     * @Column(name="pk", type="integer", nullable=false)
+     */
+    private $pk;
+
+    /**
+     * Title
+     * @var string
+     *
+     * @Column(name="title", type="string", length=255, nullable=false)
+     */
+    private $title;
+
+    /**
+     * Path
+     * @var string
+     *
+     * @Column(name="path", type="string", length=255, nullable=false)
+     */
+    private $path;
+
+    /**
+     * Register date
+     * @var Date
+     *
+     * @Column(name="ddate", type="date", nullable=false)
+     */
+    private $ddate;
+
+    /**
+     * Avatar
+     * @var Stonewood\Model\Entity\Avatar
+     *
+     * @ManyToOne(targetEntity="DDC1657Avatar")
+     * @JoinColumn(name="pk_avatar", referencedColumnName="pk", nullable=true, onDelete="CASCADE")
+     */
+    private $avatar;
+}
+
+/**
+ * @Entity
+ * @Table(name="stonewood.avatar")
+ */
+class DDC1657Avatar
+{
+    /**
+     * Identifier
+     * @var integer
+     *
+     * @Id
+     * @GeneratedValue(strategy="IDENTITY")
+     * @Column(name="pk", type="integer", nullable=false)
+     */
+    private $pk;
 }
