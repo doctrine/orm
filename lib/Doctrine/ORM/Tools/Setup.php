@@ -111,12 +111,13 @@ class Setup
      * @param boolean $isDevMode
      * @param string $proxyDir
      * @param Cache $cache
+     * @param bool $useSimpleAnnotationReader
      * @return Configuration
      */
-    static public function createAnnotationMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
+    static public function createAnnotationMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null, $useSimpleAnnotationReader = true)
     {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver($paths));
+        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver($paths, $useSimpleAnnotationReader));
         return $config;
     }
 

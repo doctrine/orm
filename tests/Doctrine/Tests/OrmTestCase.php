@@ -76,7 +76,7 @@ abstract class OrmTestCase extends DoctrineTestCase
         $config = new \Doctrine\ORM\Configuration();
 
         $config->setMetadataCacheImpl($metadataCache);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver());
+        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(), true));
         $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
