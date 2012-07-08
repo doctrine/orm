@@ -18,15 +18,6 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->useModelSet('taxi');
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\RideWithSurrogatePk'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1884Driver'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1884Car')
-            ));
-        } catch (\Exception $e) {
-            
-        }
         
         list($bimmer, $crysler, $merc, $volvo) = $this->createCars('Doctrine\Tests\Models\Taxi\Car');
         list($john, $foo) = $this->createDrivers('Doctrine\Tests\Models\Taxi\Driver');
@@ -55,27 +46,6 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($ride6);
         $this->_em->persist($ride7);
         $this->_em->persist($ride8);
-        
-        list($bimmer, $crysler, $merc, $volvo) = $this->createCars(__NAMESPACE__ . '\DDC1884Car');
-        list($john, $foo) = $this->createDrivers(__NAMESPACE__ . '\DDC1884Driver');
-        
-        $ride9  = new RideWithSurrogatePk();
-        $ride9->setDriver($john);
-        $ride9->setCar($crysler);
-        $ride10 = new RideWithSurrogatePk();
-        $ride10->setDriver($john);
-        $ride10->setCar($merc);
-        $ride11 = new RideWithSurrogatePk();
-        $ride11->setDriver($john);
-        $ride11->setCar($volvo);
-        $ride12 = new RideWithSurrogatePk();
-        $ride12->setDriver($foo);
-        $ride12->setCar($bimmer);
-        
-        $this->_em->persist($ride9);
-        $this->_em->persist($ride10);
-        $this->_em->persist($ride11);
-        $this->_em->persist($ride12);
         
         $this->_em->flush();
     }
@@ -115,15 +85,6 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
         
         return array($john, $foo);
     }
-    
-    protected function tearDown()
-    {
-        self::$_sharedConn->executeUpdate('DELETE FROM taxi_ride_with_surrogate_pk');
-        self::$_sharedConn->executeUpdate('DELETE FROM ddc1884_taxi_driver');
-        self::$_sharedConn->executeUpdate('DELETE FROM ddc1884_taxi_car');
-        parent::tearDown();
-    }
-
 
     /**
      * 1) Ride contains only columns that are part of its composite primary key
@@ -185,146 +146,5 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertCount(3, $result);
         $this->assertArrayHasKey('driver', $result[0]);
         $this->assertArrayHasKey('car', $result[0]);
-    }
-    
-    /**
-     * Just a test to show that it works as expected using a surrogate primary key 
-     */
-    public function testSelectFromInverseSideWithSurrogatePkUsingFetchJoins()
-    {
-        $qb = $this->_em->createQueryBuilder();
-
-        $result = $qb->select('d, dr, c')
-                     ->from('Doctrine\Tests\ORM\Functional\Ticket\DDC1884Driver', 'd')
-                     ->leftJoin('d.driverRides', 'dr')
-                     ->leftJoin('dr.car', 'c')
-                     ->where('d.name = ?1')
-                     ->setParameter(1, 'John Doe')
-                     ->getQuery()->getArrayResult();
-        
-        $this->assertCount(1, $result);
-        $this->assertArrayHasKey('driverRides', $result[0]);
-        $this->assertCount(3, $result[0]['driverRides']);
-    }
-    
-    public function testSelectFromOwningSideUsingFetchJoinsAndSurrogatePk()
-    {
-        $qb = $this->_em->createQueryBuilder();
-
-        $result =  $qb->select('r, d, c')
-                      ->from('Doctrine\Tests\ORM\Functional\Ticket\RideWithSurrogatePk', 'r')
-                      ->leftJoin('r.driver', 'd')
-                      ->leftJoin('r.car', 'c')
-                      ->where('d.name = ?1')
-                      ->setParameter(1, 'John Doe')
-                      ->getQuery()->getArrayResult();
-        
-        $this->assertCount(3, $result);
-        $this->assertArrayHasKey('driver', $result[0]);
-        $this->assertArrayHasKey('car', $result[0]);
-    }
-}
-
-/*
- * Model classes below are copies of the ones in Doctrine\Tests\Models\Taxi
- * except Ride below uses an surrogate primary key
- */
-
-/**
- * @Entity
- * @Table(name="taxi_ride_with_surrogate_pk")
- */
-class RideWithSurrogatePk
-{
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-    
-    /**
-     * @ManyToOne(targetEntity="DDC1884Driver", inversedBy="_driverRides")
-     * @JoinColumn(name="driver_id", referencedColumnName="id")
-     */
-    private $driver;
-    
-    /**
-     * @ManyToOne(targetEntity="DDC1884Car", inversedBy="_carRides")
-     * @JoinColumn(name="car", referencedColumnName="brand")
-     */
-    private $car;
-    
-    public function setDriver(DDC1884Driver $driver)
-    {
-        $this->driver = $driver;
-    }
-    
-    public function setCar(DDC1884Car $car)
-    {
-        $this->car = $car;
-    }
-}
-
-/**
- * @Entity
- * @Table(name="ddc1884_taxi_driver")
- */
-class DDC1884Driver
-{
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-    
-    /**
-     * @Column(type="string", length=255);
-     */
-    private $name;
-    
-    /**
-     * @OneToMany(targetEntity="RideWithSurrogatePk", mappedBy="driver")
-     */
-    private $driverRides;
-    
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-}
-
-/**
- * @Entity
- * @Table(name="ddc1884_taxi_car")
- */
-class DDC1884Car
-{
-    /**
-     * @Id
-     * @Column(type="string", length=25)
-     * @GeneratedValue(strategy="NONE")
-     */
-    private $brand;
-    
-    /**
-     * @Column(type="string", length=255);
-     */
-    private $model;
-    
-    /**
-     * @OneToMany(targetEntity="RideWithSurrogatePk", mappedBy="car")
-     */
-    private $carRides;
-    
-    public function setBrand($brand)
-    {
-        $this->brand = $brand;
-    }
-    
-    public function setModel($model)
-    {
-        $this->model = $model;
     }
 }
