@@ -208,7 +208,9 @@ class Paginator implements \Countable, \IteratorAggregate
     {
         /* @var $cloneQuery Query */
         $cloneQuery = clone $query;
-        $cloneQuery->setParameters($query->getParameters());
+
+        $cloneQuery->setParameters(clone $query->getParameters());
+
         foreach ($query->getHints() as $name => $value) {
             $cloneQuery->setHint($name, $value);
         }
