@@ -163,9 +163,13 @@ the life-time of their registered entities.
 -  loadClassMetadata - The loadClassMetadata event occurs after the
    mapping metadata for a class has been loaded from a mapping source
    (annotations/xml/yaml).
+-  preFlush - The preFlush event occurs at the very beginning of a flush 
+   operation. This event is not a lifecycle callback.
 -  onFlush - The onFlush event occurs after the change-sets of all
    managed entities are computed. This event is not a lifecycle
    callback.
+-  postFlush - The postFlush event occurs at the end of a flush operation. This
+   event is not a lifecycle callback.
 -  onClear - The onClear event occurs when the EntityManager#clear() operation is
    invoked, after all references to entities have been removed from the unit of
    work.
@@ -420,6 +424,27 @@ There are no restrictions to what methods can be called inside the
 ``preRemove`` event, except when the remove method itself was
 called during a flush operation.
 
+preFlush
+~~~~~~~~
+
+``preFlush`` is called at ``EntityManager#flush()`` before 
+anything else. ``EntityManager#flush()`` can be called safely 
+inside its listeners.
+
+.. code-block:: php
+
+    <?php
+
+    use Doctrine\ORM\Event\PreFlushEventArgs;
+
+    class PreFlushExampleListener
+    {
+        public function preFlush(PreFlushEventArgs $args)
+        {
+            // ...
+        }
+    }
+
 onFlush
 ~~~~~~~
 
@@ -482,6 +507,27 @@ The following restrictions apply to the onFlush event:
    explicitly trigger a re-computation of the changeset of the
    affected entity. This can be done by either calling
    ``$unitOfWork->recomputeSingleEntityChangeSet($classMetadata, $entity)``.
+
+postFlush
+~~~~~~~~~
+
+``postFlush`` is called at the end of ``EntityManager#flush()`` before the 
+lists of scheduled changes are cleared. ``EntityManager#flush()`` can be 
+called safely inside its listeners.
+
+.. code-block:: php
+
+    <?php
+
+    use Doctrine\ORM\Event\PostFlushEventArgs;
+
+    class PostFlushExampleListener
+    {
+        public function postFlush(PostFlushEventArgs $args)
+        {
+            // ...
+        }
+    }
 
 preUpdate
 ~~~~~~~~~
