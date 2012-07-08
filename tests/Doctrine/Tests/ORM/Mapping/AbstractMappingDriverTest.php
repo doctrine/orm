@@ -334,7 +334,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\Animal');
 
         $this->assertEquals(
-            array('name' => 'dtype', 'type' => 'string', 'length' => 255, 'fieldName' => 'dtype'),
+            array('name' => 'discr', 'type' => 'string', 'length' => '32', 'fieldName' => 'discr', 'columnDefinition' => null),
             $class->discriminatorColumn
         );
     }
@@ -941,6 +941,7 @@ class User
  * @Entity
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorMap({"cat" = "Cat", "dog" = "Dog"})
+ * @DiscriminatorColumn(name="discr", length=32, type="string")
  */
 abstract class Animal
 {

@@ -4,6 +4,10 @@ Doctrine\Tests\ORM\Mapping\Animal:
   discriminatorMap:
     cat: Cat
     dog: Dog
+  discriminatorColumn:
+    type: string
+    name: discr
+    length: 32
   id:
     id:
       type: integer

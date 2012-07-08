@@ -8,6 +8,7 @@
             <discriminator-mapping value="cat" class="Cat" />
             <discriminator-mapping value="dog" class="Dog" />
         </discriminator-map>
+        <discriminator-column name="discr" type="string" length="32" />
         <id name="id" type="integer" column="id">
             <generator strategy="CUSTOM" />
             <custom-id-generator class="stdClass" />
