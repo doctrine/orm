@@ -128,6 +128,17 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         count($paginator);
     }
 
+    public function testCloneQuery()
+    {
+        $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u";
+        $query = $this->_em->createQuery($dql);
+
+        $paginator = new Paginator($query);
+        $paginator->getIterator();
+
+        $this->assertTrue($query->getParameters()->isEmpty());
+    }
+
     public function populate()
     {
         for ($i = 0; $i < 3; $i++) {
