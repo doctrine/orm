@@ -1,14 +1,16 @@
-# EntityGenerator add*() method generation
+# Upgrade to 2.3
+
+## EntityGenerator add*() method generation
 
 When generating an add*() method for a collection the EntityGenerator will now not
 use the Type-Hint to get the singular for the collection name, but use the field-name
 and strip a trailing "s" character if there is one.
 
-# Merge copies non persisted properties too
+## Merge copies non persisted properties too
 
 When merging an entity in UoW not only mapped properties are copied, but also others.
 
-# Query, QueryBuilder and NativeQuery parameters *BC break*
+## Query, QueryBuilder and NativeQuery parameters *BC break*
 
 From now on, parameters in queries is an ArrayCollection instead of a simple array.
 This affects heavily the usage of setParameters(), because it will not append anymore
@@ -26,18 +28,22 @@ Also, related functions were affected:
 * getParameters() now returns ArrayCollection instead of array
 * getParameter($key) now returns Parameter instance instead of parameter value
 
-# Query TreeWalker method renamed
+## Query TreeWalker method renamed
 
 Internal changes were made to DQL and SQL generation. If you have implemented your own TreeWalker,
 you probably need to update it. The method walkJoinVariableDeclaration is now named walkJoin.
 
-# Metadata Drivers
+## Metadata Drivers
 
 Metadata drivers have been rewritten to reuse code from Doctrine\Common. Anyone who is using the
 `Doctrine\ORM\Mapping\Driver\Driver` interface should instead refer to
 `Doctrine\Common\Persistence\Mapping\Driver\MappingDriver`. Same applies to
 `Doctrine\ORM\Mapping\Driver\AbstractFileDriver`: you should now refer to
-`Doctrine\Common\Persistence\Mapping\Driver\FileDriver`.# ResultCache implementation rewritten
+`Doctrine\Common\Persistence\Mapping\Driver\FileDriver`.
+
+# Upgrade to 2.2
+
+## ResultCache implementation rewritten
 
 The result cache is completely rewritten and now works on the database result level, not inside the ORM AbstractQuery
 anymore. This means that for result cached queries the hydration will now always be performed again, regardless of
@@ -52,25 +58,25 @@ deprecated in favor of calling AbstractQuery#getQueryCacheProfile(). This method
 instance with access to result cache driver, lifetime and cache key.
 
 
-# EntityManager#getPartialReference() creates read-only entity
+## EntityManager#getPartialReference() creates read-only entity
 
 Entities returned from EntityManager#getPartialReference() are now marked as read-only if they
 haven't been in the identity map before. This means objects of this kind never lead to changes
 in the UnitOfWork.
 
 
-# Fields omitted in a partial DQL query or a native query are never updated
+## Fields omitted in a partial DQL query or a native query are never updated
 
 Fields of an entity that are not returned from a partial DQL Query or native SQL query
 will never be updated through an UPDATE statement.
 
 
-# Removed support for onUpdate in @JoinColumn
+## Removed support for onUpdate in @JoinColumn
 
 The onUpdate foreign key handling makes absolutely no sense in an ORM. Additionally Oracle doesn't even support it. Support for it is removed.
 
 
-# Changes in Annotation Handling
+## Changes in Annotation Handling
 
 There have been some changes to the annotation handling in Common 2.2 again, that affect how people with old configurations
 from 2.0 have to configure the annotation driver if they don't use `Configuration::newDefaultAnnotationDriver()`:
@@ -87,7 +93,7 @@ from 2.0 have to configure the annotation driver if they don't use `Configuratio
     $config->setMetadataDriverImpl($driver);
 
 
-# Scalar mappings can now be ommitted from DQL result
+## Scalar mappings can now be ommitted from DQL result
 
 You are now allowed to mark scalar SELECT expressions as HIDDEN an they are not hydrated anymore.
 Example:
@@ -97,7 +103,7 @@ SELECT u, SUM(a.id) AS HIDDEN numArticles FROM User u LEFT JOIN u.Articles a ORD
 Your result will be a collection of Users, and not an array with key 0 as User object instance and "numArticles" as the number of articles per user
 
 
-# Map entities as scalars in DQL result
+## Map entities as scalars in DQL result
 
 When hydrating to array or even a mixed result in object hydrator, previously you had the 0 index holding you entity instance.
 You are now allowed to alias this, providing more flexibility for you code.
@@ -108,18 +114,17 @@ SELECT u AS user FROM User u
 Will now return a collection of arrays with index "user" pointing to the User object instance.
 
 
-# Performance optimizations
+## Performance optimizations
 
 Thousands of lines were completely reviewed and optimized for best performance.
 Removed redundancy and improved code readability made now internal Doctrine code easier to understand.
 Also, Doctrine 2.2 now is around 10-15% faster than 2.1.
 
-# EntityManager#find(null)
+## EntityManager#find(null)
 
 Previously EntityManager#find(null) returned null. It now throws an exception.
 
-This document details all the possible changes that you should investigate when updating
-your project from Doctrine 2.0.x to 2.1
+# Upgrade to 2.1
 
 ## Interface for EntityRepository
 
