@@ -1,11 +1,32 @@
 # Upgrade to 2.3
 
-## Configuration
+## Configuration *BC Break*
 
-`Doctrine\ORM\Configuration#newDefaultAnnotationDriver` has been changed to reflect latest changes in Doctrine\Common.
-If you use it to have an AnnotationDriver configured with a SimpleAnnotationReader in your projects, you should from now
-on call `newDefaultAnnotationDriver` with its second parameter set to `true`. Otherwise, the default consumed reader
-will be the AnnotationReader, which uses the `@Namespace\AnnotationName` syntax.
+The default annotation syntax has been changed from `@Entity` to `@ORM\Entity`. If you still want to use the simplified
+version, you should use `Doctrine\Common\Annotations\SimpleAnnotationReader` for your AnnotationDriver or call
+`Doctrine\ORM\Configuration#newDefaultAnnotationDriver` with its second parameter set to `true`.
+
+ *  before:
+    ```php
+    <?php
+
+    /** @Entity */
+    class MyEntity
+    {
+    }
+    ```
+
+ *  after:
+    ```php
+    <?php
+
+    use Doctrine\ORM\Mapping as ORM;
+
+    /** @ORM\Entity */
+    class MyEntity
+    {
+    }
+    ```
 
 ## EntityGenerator add*() method generation
 
