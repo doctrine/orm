@@ -133,7 +133,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param bool $useSimpleAnnotationReader
      * @return AnnotationDriver
      */
-    public function newDefaultAnnotationDriver($paths = array(), $useSimpleAnnotationReader = false)
+    public function newDefaultAnnotationDriver($paths = array(), $useSimpleAnnotationReader = true)
     {
         AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
 

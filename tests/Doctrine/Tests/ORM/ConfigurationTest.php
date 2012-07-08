@@ -65,7 +65,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $paths = array(__DIR__);
         $reflectionClass = new ReflectionClass(__NAMESPACE__ . '\ConfigurationTestAnnotationReaderChecker');
 
-        $annotationDriver = $this->configuration->newDefaultAnnotationDriver($paths);
+        $annotationDriver = $this->configuration->newDefaultAnnotationDriver($paths, false);
         $reader = $annotationDriver->getReader();
         $annotation = $reader->getMethodAnnotation(
             $reflectionClass->getMethod('namespacedAnnotationMethod'),
@@ -73,7 +73,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         );
         $this->assertInstanceOf('Doctrine\ORM\Mapping\PrePersist', $annotation);
 
-        $annotationDriver = $this->configuration->newDefaultAnnotationDriver($paths, true);
+        $annotationDriver = $this->configuration->newDefaultAnnotationDriver($paths);
         $reader = $annotationDriver->getReader();
         $annotation = $reader->getMethodAnnotation(
             $reflectionClass->getMethod('simpleAnnotationMethod'),

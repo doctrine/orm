@@ -1,33 +1,5 @@
 # Upgrade to 2.3
 
-## Configuration *BC Break*
-
-The default annotation syntax has been changed from `@Entity` to `@ORM\Entity`. If you still want to use the simplified
-version, you should use `Doctrine\Common\Annotations\SimpleAnnotationReader` for your AnnotationDriver or call
-`Doctrine\ORM\Configuration#newDefaultAnnotationDriver` with its second parameter set to `true`.
-
- *  before:
-    ```php
-    <?php
-
-    /** @Entity */
-    class MyEntity
-    {
-    }
-    ```
-
- *  after:
-    ```php
-    <?php
-
-    use Doctrine\ORM\Mapping as ORM;
-
-    /** @ORM\Entity */
-    class MyEntity
-    {
-    }
-    ```
-
 ## EntityGenerator add*() method generation
 
 When generating an add*() method for a collection the EntityGenerator will now not
