@@ -126,22 +126,23 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Add a new default annotation driver with a correctly configured annotation reader. If $useDefaultNamespace is
-     * to true, the notation `@Entity` will work, otherwise, the notation `@ORM\Entity` will be supported.
+     * Add a new default annotation driver with a correctly configured annotation reader. If $useSimpleAnnotationReader
+     * is true, the notation `@Entity` will work, otherwise, the notation `@ORM\Entity` will be supported.
      *
      * @param array $paths
-     * @param bool $useDefaultNamespace
+     * @param bool $useSimpleAnnotationReader
      * @return AnnotationDriver
      */
-    public function newDefaultAnnotationDriver($paths = array(), $useDefaultNamespace = false)
+    public function newDefaultAnnotationDriver($paths = array(), $useSimpleAnnotationReader = false)
     {
         AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
 
-        if ($useDefaultNamespace) {
+        if ($useSimpleAnnotationReader) {
             // Register the ORM Annotations in the AnnotationRegistry
             $reader = new SimpleAnnotationReader();
             $reader->addNamespace('Doctrine\ORM\Mapping');
             $cachedReader = new CachedReader($reader, new ArrayCache());
+
             return new AnnotationDriver($cachedReader, (array) $paths);
         }
 

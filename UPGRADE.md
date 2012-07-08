@@ -1,5 +1,12 @@
 # Upgrade to 2.3
 
+## Configuration
+
+`Doctrine\ORM\Configuration#newDefaultAnnotationDriver` has been changed to reflect latest changes in Doctrine\Common.
+If you use it to have an AnnotationDriver configured with a SimpleAnnotationReader in your projects, you should from now
+on call `newDefaultAnnotationDriver` with its second parameter set to `true`. Otherwise, the default consumed reader
+will be the AnnotationReader, which uses the `@Namespace\AnnotationName` syntax.
+
 ## EntityGenerator add*() method generation
 
 When generating an add*() method for a collection the EntityGenerator will now not
@@ -315,7 +322,7 @@ the association. Example:
         private $user;
         //...
     }
-    
+
     // SINCE BETA1
     // User class DOES NOT CHANGE
     class Address
@@ -325,7 +332,7 @@ the association. Example:
         private $user;
         //...
     }
-    
+
 Thus, the inversedBy attribute is the counterpart to the mappedBy attribute. This change
 was necessary to enable some simplifications and further performance improvements. We
 apologize for the inconvenience.
@@ -344,7 +351,7 @@ had a DQL query like this:
 
     [sql]
     SELECT u.id, u.name FROM User u
-    
+
 Since BETA1, simple state field path expressions in the select clause are used to select
 object fields as plain scalar values (something that was not possible before).
 To achieve the same result as previously (that is, a partial object with only id and name populated)
@@ -427,7 +434,7 @@ With new required method AbstractTask::buildDocumentation, its implementation de
 # Upgrade from 2.0-ALPHA2 to 2.0-ALPHA3
 
 This section details the changes made to Doctrine 2.0-ALPHA3 to make it easier for you
-to upgrade your projects to use this version.  
+to upgrade your projects to use this version.
 
 ## CLI Changes
 
