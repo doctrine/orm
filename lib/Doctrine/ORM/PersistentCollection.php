@@ -19,10 +19,15 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\Common\Collections\Collection,
-    Doctrine\Common\Collections\ArrayCollection,
-    Closure;
+use Doctrine\ORM\Mapping\ClassMetadata;
+
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Selectable;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\ExpressionBuilder;
+
+use Closure;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
@@ -39,8 +44,13 @@ use Doctrine\ORM\Mapping\ClassMetadata,
  * @author    Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @todo      Design for inheritance to allow custom implementations?
  */
-final class PersistentCollection implements Collection
+final class PersistentCollection implements Collection, Selectable
 {
+    /**
+     * @var Doctrine\Common\Collections\ExpressionBuilder
+     */
+    static private $expressionBuilder;
+
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
      * This is used to create a diff of the collection at commit time.
@@ -789,4 +799,51 @@ final class PersistentCollection implements Collection
 
         $this->changed();
     }
+
+    /**
+     * Select all elements from a selectable that match the expression and
+     * return a new collection containing these elements.
+     *
+     * @param \Doctrine\Common\Collections\Criteria $criteria
+     * @return Collection
+     */
+    public function matching(Criteria $criteria)
+    {
+        if ($this->initialized) {
+            return $this->coll->matching($criteria);
+        }
+
+        if ($this->association['type'] !== ClassMetadata::ONE_TO_MANY) {
+            throw new \RuntimeException("Matching Criteria on PersistentCollection only works on OneToMany assocations at the moment.");
+        }
+
+        $targetClass = $this->em->getClassMetadata(get_class($this->owner));
+
+        $id              = $targetClass->getSingleIdReflectionProperty()->getValue($this->owner);
+        $builder         = $this->expr();
+        $ownerExpression = $builder->eq($this->backRefFieldName, $id);
+        $expression      = $criteria->getWhereExpression();
+        $expression      = $expression ? $builder->andX($expression, $ownerExpression) : $ownerExpression;
+
+        $criteria->where($expression);
+
+        $persister = $this->em->getUnitOfWork()->getEntityPersister($this->association['targetEntity']);
+
+        return new ArrayCollection($persister->loadCriteria($criteria));
+    }
+
+    /**
+     * Return Builder object that helps with building criteria expressions.
+     *
+     * @return \Doctrine\Common\Collections\ExpressionBuilder
+     */
+    public function expr()
+    {
+        if (self::$expressionBuilder === null) {
+            self::$expressionBuilder = new ExpressionBuilder();
+        }
+
+        return self::$expressionBuilder;
+    }
 }
+
