@@ -83,7 +83,7 @@ the UTC time at the time of the booking and the timezone the event happend in.
 
     namespace DoctrineExtensions\DBAL\Types;
 
-    use Doctrine\DBAL\Platforms\AbtractPlatform;
+    use Doctrine\DBAL\Platforms\AbstractPlatform;
     use Doctrine\DBAL\Types\ConversionException;
 
     class UTCDateTimeType extends DateTimeType
