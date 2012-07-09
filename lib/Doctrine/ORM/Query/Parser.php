@@ -1683,20 +1683,25 @@ class Parser
             case ($this->_lexer->lookahead['type'] === Lexer::T_NEW):
                 return $this->NewObjectExpression();
 
-            case ($this->_isFunction()):
-                // SUM(u.id) + COUNT(u.id)
-                if ($this->_isMathOperator($this->_peekBeyondClosingParenthesis())) {
-                    return new AST\SimpleSelectExpression($this->ScalarExpression());
+            default:
+                if ( ! ($this->_isFunction() || $this->_isAggregateFunction($this->_lexer->lookahead))) {
+                    $this->syntaxError();
                 }
-                // COUNT(u.id)
-                if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
-                    return new AST\SimpleSelectExpression($this->AggregateExpression());
-                }
-                // IDENTITY(u)
-                return new AST\SimpleSelectExpression($this->FunctionDeclaration());
-        }
 
-        $this->semanticalError("Unsupported expression");
+                // We may be in an ArithmeticExpression (find the matching ")" and inspect for Math operator)
+                $this->_lexer->peek(); // "("
+                $peek = $this->_peekBeyondClosingParenthesis();
+
+                if ($this->_isMathOperator($peek)) {
+                    return $this->SimpleArithmeticExpression();
+                }
+
+                if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
+                    return $this->AggregateExpression();
+                }
+
+                return $this->FunctionDeclaration();
+        }
     }
 
     /**
