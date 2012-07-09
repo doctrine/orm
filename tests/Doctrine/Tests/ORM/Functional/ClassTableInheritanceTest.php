@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 use Doctrine\Tests\Models\Company\CompanyPerson,
     Doctrine\Tests\Models\Company\CompanyEmployee,
     Doctrine\Tests\Models\Company\CompanyManager,
@@ -12,6 +10,8 @@ use Doctrine\Tests\Models\Company\CompanyPerson,
     Doctrine\Tests\Models\Company\CompanyAuction,
     Doctrine\Tests\Models\Company\CompanyRaffle,
     Doctrine\Tests\Models\Company\CompanyCar;
+
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
@@ -466,5 +466,32 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->assertTrue($this->_em->getUnitOfWork()->getEntityPersister(get_class($manager))->exists($manager));
+    }
+
+    /**
+     * @group DDC-1637
+     */
+    public function testMatching()
+    {
+        $manager = new CompanyManager();
+        $manager->setName('gblanco');
+        $manager->setSalary(1234);
+        $manager->setTitle('Awesome!');
+        $manager->setDepartment('IT');
+
+        $this->_em->persist($manager);
+        $this->_em->flush();
+
+        $repository = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyEmployee");
+        $users = $repository->matching(new Criteria(
+            $repository->expr()->eq('department', 'IT')
+        ));
+        $this->assertEquals(1, count($users));
+
+        $repository = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyManager");
+        $users = $repository->matching(new Criteria(
+            $repository->expr()->eq('department', 'IT')
+        ));
+        $this->assertEquals(1, count($users));
     }
 }
