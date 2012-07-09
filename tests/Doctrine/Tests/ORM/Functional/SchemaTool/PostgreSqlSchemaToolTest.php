@@ -124,6 +124,8 @@ class PostgreSqlSchemaToolTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $tool->createSchema($classes);
 
         $sql = $tool->getUpdateSchemaSql($classes);
+        $sql = array_filter($sql, function($sql) { return (strpos($sql, "DROP SEQUENCE stonewood.") === 0); });
+
         $this->assertCount(0, $sql, implode("\n", $sql));
     }
 }
