@@ -272,16 +272,15 @@ class UnitOfWork implements PropertyChangedListener
             $this->computeSingleEntityChangeSet($entity);
         }
 
-        if ( ! ($this->entityInsertions ||
-                $this->entityDeletions ||
-                $this->entityUpdates ||
-                $this->collectionUpdates ||
-                $this->collectionDeletions ||
-                $this->orphanRemovals)) {
-            return; // Nothing to do.
-        }
+        $anythingToDo =
+            $this->entityInsertions ||
+            $this->entityDeletions ||
+            $this->entityUpdates ||
+            $this->collectionUpdates ||
+            $this->collectionDeletions ||
+            $this->orphanRemovals;
 
-        if ($this->orphanRemovals) {
+        if ($anythingToDo && $this->orphanRemovals) {
             foreach ($this->orphanRemovals as $orphan) {
                 $this->remove($orphan);
             }
@@ -292,57 +291,59 @@ class UnitOfWork implements PropertyChangedListener
             $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->em));
         }
 
-        // Now we need a commit order to maintain referential integrity
-        $commitOrder = $this->getCommitOrder();
+        if ($anythingToDo) {
+            // Now we need a commit order to maintain referential integrity
+            $commitOrder = $this->getCommitOrder();
 
-        $conn = $this->em->getConnection();
-        $conn->beginTransaction();
+            $conn = $this->em->getConnection();
+            $conn->beginTransaction();
 
-        try {
-            if ($this->entityInsertions) {
-                foreach ($commitOrder as $class) {
-                    $this->executeInserts($class);
+            try {
+                if ($this->entityInsertions) {
+                    foreach ($commitOrder as $class) {
+                        $this->executeInserts($class);
+                    }
                 }
-            }
 
-            if ($this->entityUpdates) {
-                foreach ($commitOrder as $class) {
-                    $this->executeUpdates($class);
+                if ($this->entityUpdates) {
+                    foreach ($commitOrder as $class) {
+                        $this->executeUpdates($class);
+                    }
                 }
-            }
 
-            // Extra updates that were requested by persisters.
-            if ($this->extraUpdates) {
-                $this->executeExtraUpdates();
-            }
-
-            // Collection deletions (deletions of complete collections)
-            foreach ($this->collectionDeletions as $collectionToDelete) {
-                $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
-            }
-            // Collection updates (deleteRows, updateRows, insertRows)
-            foreach ($this->collectionUpdates as $collectionToUpdate) {
-                $this->getCollectionPersister($collectionToUpdate->getMapping())->update($collectionToUpdate);
-            }
-
-            // Entity deletions come last and need to be in reverse commit order
-            if ($this->entityDeletions) {
-                for ($count = count($commitOrder), $i = $count - 1; $i >= 0; --$i) {
-                    $this->executeDeletions($commitOrder[$i]);
+                // Extra updates that were requested by persisters.
+                if ($this->extraUpdates) {
+                    $this->executeExtraUpdates();
                 }
+
+                // Collection deletions (deletions of complete collections)
+                foreach ($this->collectionDeletions as $collectionToDelete) {
+                    $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
+                }
+                // Collection updates (deleteRows, updateRows, insertRows)
+                foreach ($this->collectionUpdates as $collectionToUpdate) {
+                    $this->getCollectionPersister($collectionToUpdate->getMapping())->update($collectionToUpdate);
+                }
+
+                // Entity deletions come last and need to be in reverse commit order
+                if ($this->entityDeletions) {
+                    for ($count = count($commitOrder), $i = $count - 1; $i >= 0; --$i) {
+                        $this->executeDeletions($commitOrder[$i]);
+                    }
+                }
+
+                $conn->commit();
+            } catch (Exception $e) {
+                $this->em->close();
+                $conn->rollback();
+
+                throw $e;
             }
 
-            $conn->commit();
-        } catch (Exception $e) {
-            $this->em->close();
-            $conn->rollback();
-
-            throw $e;
-        }
-
-        // Take new snapshots from visited collections
-        foreach ($this->visitedCollections as $coll) {
-            $coll->takeSnapshot();
+            // Take new snapshots from visited collections
+            foreach ($this->visitedCollections as $coll) {
+                $coll->takeSnapshot();
+            }
         }
 
         // Raise postFlush
