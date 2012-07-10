@@ -41,6 +41,12 @@ Metadata drivers have been rewritten to reuse code from Doctrine\Common. Anyone 
 `Doctrine\ORM\Mapping\Driver\AbstractFileDriver`: you should now refer to
 `Doctrine\Common\Persistence\Mapping\Driver\FileDriver`.
 
+Also, following mapping drivers have been removed, please use their replacements in Doctrine\Common as listed:
+
+ *  `Doctrine\ORM\Mapping\Driver\DriverChain`       => `Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain`
+ *  `Doctrine\ORM\Mapping\Driver\PHPDriver`         => `Doctrine\Common\Persistence\Mapping\Driver\PHPDriver`
+ *  `Doctrine\ORM\Mapping\Driver\StaticPHPDriver`   => `Doctrine\Common\Persistence\Mapping\Driver\StaticPHPDriver`
+
 # Upgrade to 2.2
 
 ## ResultCache implementation rewritten
