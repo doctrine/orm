@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\Driver\DriverChain;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain as DriverChain;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -45,7 +45,7 @@ class DriverChainTest extends \Doctrine\Tests\OrmTestCase
 
         $chain = new DriverChain();
 
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $this->setExpectedException('Doctrine\Common\Persistence\Mapping\MappingException');
         $chain->loadMetadataForClass($className, $classMetadata);
     }
 
