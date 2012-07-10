@@ -3,7 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\Driver\PHPDriver,
+    Doctrine\Common\Persistence\Mapping\Driver\PHPDriver,
     Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 
 require_once __DIR__ . '/../../TestInit.php';
@@ -28,7 +28,7 @@ class PHPMappingDriverTest extends AbstractMappingDriverTest
 
     /**
      * All class are entitier for php driver
-     * 
+     *
      * @group DDC-889
      */
     public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses()
