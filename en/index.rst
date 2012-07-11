@@ -89,7 +89,7 @@ Tutorials
 ---------
 
   * :doc:`Indexed associations <tutorials/working-with-indexed-associations>`
-  * :doc:`Extra Lazy Assocations <tutorials/extra-lazy-associations>`
+  * :doc:`Extra Lazy Associations <tutorials/extra-lazy-associations>`
   * :doc:`Composite Primary Keys <tutorials/composite-primary-keys>`
   * :doc:`Ordered associations <tutorials/ordered-associations>`
   * :doc:`Pagination <tutorials/pagination>`
