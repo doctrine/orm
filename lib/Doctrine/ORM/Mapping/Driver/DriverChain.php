@@ -19,85 +19,13 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver,
-    Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain,
-    Doctrine\Common\Persistence\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\MappingException;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain;
 
 /**
- * The DriverChain allows you to add multiple other mapping drivers for
- * certain namespaces
+ * {@inheritDoc}
  *
- * @since 2.0
- * @author Benjamin Eberlei <kontakt@beberlei.de>
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author Jonathan H. Wage <jonwage@gmail.com>
- * @author Roman Borschel <roman@code-factory.org>
+ * @deprecated this driver will be removed. Use Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain instead
  */
 class DriverChain extends MappingDriverChain
 {
-    /**
-     * The default driver
-     *
-     * @var MappingDriver
-     */
-    private $defaultDriver;
-
-    /**
-     * Get the default driver.
-     *
-     * @return MappingDriver|null
-     */
-    public function getDefaultDriver()
-    {
-        return $this->defaultDriver;
-    }
-
-    /**
-     * Set the default driver.
-     *
-     * @param MappingDriver $driver
-     */
-    public function setDefaultDriver(MappingDriver $driver)
-    {
-        $this->defaultDriver = $driver;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @throws MappingException
-     */
-    public function loadMetadataForClass($className, ClassMetadata $metadata)
-    {
-        /* @var $driver MappingDriver */
-        foreach ($this->getDrivers() as $namespace => $driver) {
-            if (strpos($className, $namespace) === 0) {
-                $driver->loadMetadataForClass($className, $metadata);
-                return;
-            }
-        }
-
-        if ($this->defaultDriver !== null) {
-            $this->defaultDriver->loadMetadataForClass($className, $metadata);
-            return;
-        }
-
-        throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function isTransient($className)
-    {
-        if (!parent::isTransient($className)) {
-            return false;
-        }
-
-        if ($this->defaultDriver !== null) {
-            return $this->defaultDriver->isTransient($className);
-        }
-
-        return true;
-    }
 }
