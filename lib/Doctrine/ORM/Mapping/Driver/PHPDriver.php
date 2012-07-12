@@ -19,60 +19,13 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata,
-    Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\Common\Persistence\Mapping\Driver\PHPDriver as CommonPHPDriver;
 
 /**
- * The PHPDriver includes php files which just populate ClassMetadata
- * instances with plain php code
+ * {@inheritDoc}
  *
- * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    	www.doctrine-project.org
- * @since   	2.0
- * @version     $Revision$
- * @author		Benjamin Eberlei <kontakt@beberlei.de>
- * @author		Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
+ * @deprecated this driver will be removed. Use Doctrine\Common\Persistence\Mapping\Driver\PHPDriver instead
  */
-class PHPDriver extends FileDriver
+class PHPDriver extends CommonPHPDriver
 {
-    const DEFAULT_FILE_EXTENSION = '.php';
-
-    /**
-     *
-     * @var ClassMetadata
-     */
-    protected $_metadata;
-    
-    /**
-     * {@inheritDoc}
-     */
-    public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
-    {
-        parent::__construct($locator, $fileExtension);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function loadMetadataForClass($className, ClassMetadata $metadata)
-    {
-        $this->_metadata = $metadata;
-        $this->getElement($className);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function loadMappingFile($file)
-    {
-        $result = array();
-        $metadata = $this->_metadata;
-        include $file;
-        // @todo cannot assume that the only loaded metadata is $metadata. Some
-        // decision about the preferred approach should be taken
-        $result[$metadata->getName()] = $metadata;
-        return $result;
-    }
 }
