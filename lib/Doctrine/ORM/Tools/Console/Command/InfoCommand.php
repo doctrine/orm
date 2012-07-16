@@ -27,7 +27,7 @@ use Symfony\Component\Console\Command\Command;
 /**
  * Show information about mapped entities
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.1
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
@@ -40,7 +40,7 @@ class InfoCommand extends Command
             ->setName('orm:info')
             ->setDescription('Show basic information about all mapped entities')
             ->setHelp(<<<EOT
-The <info>doctrine:mapping:info</info> shows basic information about which
+The <info>%command.name%</info> shows basic information about which
 entities exist and possibly if their mapping information contains errors or
 not.
 EOT
