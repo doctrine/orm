@@ -74,7 +74,7 @@ that even allows correct date-time handling with timezones:
 3. Save the Timezone in the Entity for persistence.
 
 Say we have an application for an international postal company and employees insert events regarding postal-package
-around the world, in their current timezones. To determine the exact time an event occoured means to save both
+around the world, in their current timezones. To determine the exact time an event occurred means to save both
 the UTC time at the time of the booking and the timezone the event happend in.
 
 .. code-block:: php
