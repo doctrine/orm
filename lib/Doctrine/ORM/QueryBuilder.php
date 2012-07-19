@@ -429,7 +429,7 @@ class QueryBuilder
      *
      * @param mixed $key The key (index or name) of the bound parameter.
      *
-     * @return mixed The value of the bound parameter.
+     * @return Query\Parameter|null The value of the bound parameter.
      */
     public function getParameter($key)
     {
@@ -1169,5 +1169,13 @@ class QueryBuilder
                 $this->_dqlParts[$part] = clone $elements;
             }
         }
+
+        $parameters = array();
+
+        foreach ($this->parameters as $parameter) {
+            $parameters[] = clone $parameter;
+        }
+
+        $this->parameters = new ArrayCollection($parameters);
     }
 }
