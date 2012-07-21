@@ -82,7 +82,7 @@ class SqlWalker implements TreeWalker
      *
      * @var integer
      */
-    private $newObjectCounter;
+    private $newObjectCounter = 0;
 
     /**
      * @var ParserResult
@@ -1409,15 +1409,12 @@ class SqlWalker implements TreeWalker
         $objIndex             = $this->newObjectCounter ++;
         foreach ($newObjectExpression->args as $argIndex => $e) {
 
-            $resultAlias            = $this->scalarResultCounter++;
-            $columnAlias            = $this->getSQLColumnAlias('sclr') . $resultAlias;
-            $resultAliasMap         = $this->scalarResultAliasMap;
+            $resultAlias = $this->scalarResultCounter++;
+            $columnAlias = $this->getSQLColumnAlias('sclr') . $resultAlias;
 
             switch (true) {
                 case $e instanceof AST\NewObjectExpression:
-
                     $sqlSelectExpressions[] = $e->dispatch($this);
-
                     break;
 
                 default:

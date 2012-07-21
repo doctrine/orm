@@ -141,7 +141,7 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 new Doctrine\Tests\Models\CMS\CmsUserDTO(
                     u.name,
                     e.email,
-                    new Doctrine\Tests\Models\CMS\CmsUserDTO(
+                    new Doctrine\Tests\Models\CMS\CmsAddressDTO(
                         a.country,
                         a.city,
                         a.zip
@@ -186,7 +186,7 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
             JOIN
                 u.phonenumbers p
             GROUP BY
-                u
+                u, e, a
             ORDER BY
                 u.name";
 
