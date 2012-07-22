@@ -338,7 +338,7 @@ class BasicEntityPersister
      *
      * Subclasses are also supposed to take care of versioning when overriding this method,
      * if necessary. The {@link updateTable} method can be used to apply the data retrieved
-     * from {@_prepareUpdateData} on the target tables, thereby optionally applying versioning.
+     * from {@prepareUpdateData} on the target tables, thereby optionally applying versioning.
      *
      * @param object $entity The entity to update.
      */

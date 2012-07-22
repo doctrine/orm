@@ -439,13 +439,17 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         return 'FROM ' .$this->quoteStrategy->getTableName($this->class, $this->platform) . ' ' . $baseTableAlias . $joinSql;
     }
 
-    /* Ensure this method is never called. This persister overrides _getSelectEntitiesSQL directly. */
+    /*
+     * Ensure this method is never called. This persister overrides getSelectEntitiesSQL directly.
+     */
     protected function getSelectColumnListSQL()
     {
         throw new \BadMethodCallException("Illegal invocation of ".__METHOD__.".");
     }
 
-    /** {@inheritdoc} */
+    /**
+     * {@inheritdoc} 
+     */
     protected function getInsertColumnList()
     {
         // Identifier columns must always come first in the column list of subclasses.
