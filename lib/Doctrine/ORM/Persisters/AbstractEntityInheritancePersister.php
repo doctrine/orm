@@ -60,14 +60,17 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
      */
     protected function getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
-        $columnName = $class->columnNames[$field];
-        $sql = $this->getSQLTableAlias($class->name, $alias == 'r' ? '' : $alias) . '.' . $this->quoteStrategy->getColumnName($field, $class, $this->platform);
+        $tableAlias  = $alias == 'r' ? '' : $alias;
+        $columnName  = $class->columnNames[$field];
         $columnAlias = $this->getSQLColumnAlias($columnName);
+        $sql         = $this->getSQLTableAlias($class->name, $tableAlias) . '.'
+                            . $this->quoteStrategy->getColumnName($field, $class, $this->platform);
+
         $this->rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
 
         if (isset($class->fieldMappings[$field]['requireSQLConversion'])) {
-            $type = Type::getType($class->getTypeOfField($field));
-            $sql = $type->convertToPHPValueSQL($sql, $this->platform);
+            $type   = Type::getType($class->getTypeOfField($field));
+            $sql    = $type->convertToPHPValueSQL($sql, $this->platform);
         }
 
         return $sql . ' AS ' . $columnAlias;
