@@ -281,84 +281,80 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
-        $anythingToDo =
-            $this->entityInsertions ||
-            $this->entityDeletions ||
-            $this->entityUpdates ||
-            $this->collectionUpdates ||
-            $this->collectionDeletions ||
-            $this->orphanRemovals;
+        if ( ! ($this->entityInsertions ||
+                $this->entityDeletions ||
+                $this->entityUpdates ||
+                $this->collectionUpdates ||
+                $this->collectionDeletions ||
+                $this->orphanRemovals)) {
+            $this->dispatchOnFlushEvent();
+            $this->dispatchPostFlushEvent();
 
-        if ($anythingToDo && $this->orphanRemovals) {
+            return; // Nothing to do.
+        }
+
+        if ($this->orphanRemovals) {
             foreach ($this->orphanRemovals as $orphan) {
                 $this->remove($orphan);
             }
         }
 
-        // Raise onFlush
-        if ($this->evm->hasListeners(Events::onFlush)) {
-            $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->em));
-        }
+        $this->dispatchOnFlushEvent();
 
-        if ($anythingToDo) {
-            // Now we need a commit order to maintain referential integrity
-            $commitOrder = $this->getCommitOrder();
+        // Now we need a commit order to maintain referential integrity
+        $commitOrder = $this->getCommitOrder();
 
-            $conn = $this->em->getConnection();
-            $conn->beginTransaction();
+        $conn = $this->em->getConnection();
+        $conn->beginTransaction();
 
-            try {
-                if ($this->entityInsertions) {
-                    foreach ($commitOrder as $class) {
-                        $this->executeInserts($class);
-                    }
+        try {
+            if ($this->entityInsertions) {
+                foreach ($commitOrder as $class) {
+                    $this->executeInserts($class);
                 }
-
-                if ($this->entityUpdates) {
-                    foreach ($commitOrder as $class) {
-                        $this->executeUpdates($class);
-                    }
-                }
-
-                // Extra updates that were requested by persisters.
-                if ($this->extraUpdates) {
-                    $this->executeExtraUpdates();
-                }
-
-                // Collection deletions (deletions of complete collections)
-                foreach ($this->collectionDeletions as $collectionToDelete) {
-                    $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
-                }
-                // Collection updates (deleteRows, updateRows, insertRows)
-                foreach ($this->collectionUpdates as $collectionToUpdate) {
-                    $this->getCollectionPersister($collectionToUpdate->getMapping())->update($collectionToUpdate);
-                }
-
-                // Entity deletions come last and need to be in reverse commit order
-                if ($this->entityDeletions) {
-                    for ($count = count($commitOrder), $i = $count - 1; $i >= 0; --$i) {
-                        $this->executeDeletions($commitOrder[$i]);
-                    }
-                }
-
-                $conn->commit();
-            } catch (Exception $e) {
-                $this->em->close();
-                $conn->rollback();
-
-                throw $e;
             }
 
-            // Take new snapshots from visited collections
-            foreach ($this->visitedCollections as $coll) {
-                $coll->takeSnapshot();
+            if ($this->entityUpdates) {
+                foreach ($commitOrder as $class) {
+                    $this->executeUpdates($class);
+                }
             }
+
+            // Extra updates that were requested by persisters.
+            if ($this->extraUpdates) {
+                $this->executeExtraUpdates();
+            }
+
+            // Collection deletions (deletions of complete collections)
+            foreach ($this->collectionDeletions as $collectionToDelete) {
+                $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
+            }
+            // Collection updates (deleteRows, updateRows, insertRows)
+            foreach ($this->collectionUpdates as $collectionToUpdate) {
+                $this->getCollectionPersister($collectionToUpdate->getMapping())->update($collectionToUpdate);
+            }
+
+            // Entity deletions come last and need to be in reverse commit order
+            if ($this->entityDeletions) {
+                for ($count = count($commitOrder), $i = $count - 1; $i >= 0; --$i) {
+                    $this->executeDeletions($commitOrder[$i]);
+                }
+            }
+
+            $conn->commit();
+        } catch (Exception $e) {
+            $this->em->close();
+            $conn->rollback();
+
+            throw $e;
         }
 
-        // Raise postFlush
-        if ($this->evm->hasListeners(Events::postFlush)) {
-            $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->em));
+        // Take new snapshots from visited collections
+        foreach ($this->visitedCollections as $coll) {
+            $coll->takeSnapshot();
         }
+
+        $this->dispatchPostFlushEvent();
 
         // Clear up
         $this->entityInsertions =
@@ -3153,5 +3149,19 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         return isset($this->readOnlyObjects[spl_object_hash($object)]);
+    }
+
+    private function dispatchOnFlushEvent()
+    {
+        if ($this->evm->hasListeners(Events::onFlush)) {
+            $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->em));
+        }
+    }
+
+    private function dispatchPostFlushEvent()
+    {
+        if ($this->evm->hasListeners(Events::postFlush)) {
+            $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->em));
+        }
     }
 }
