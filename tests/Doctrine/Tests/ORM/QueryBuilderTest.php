@@ -664,6 +664,23 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(2, $expr->count(), "Modifying the second query should affect the first one.");
     }
 
+    /**
+     * @group DDC-1933
+     */
+    public function testParametersAreCloned()
+    {
+        $originalQb = new QueryBuilder($this->_em);
+
+        $originalQb->setParameter('parameter1', 'value1');
+
+        $copy = clone $originalQb;
+        $copy->setParameter('parameter2', 'value2');
+
+        $this->assertCount(1, $originalQb->getParameters());
+        $this->assertSame('value1', $copy->getParameter('parameter1')->getValue());
+        $this->assertSame('value2', $copy->getParameter('parameter2')->getValue());
+    }
+
     public function testGetRootAlias()
     {
         $qb = $this->_em->createQueryBuilder()
