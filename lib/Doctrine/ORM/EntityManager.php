@@ -354,21 +354,82 @@ class EntityManager implements ObjectManager
 
         $this->unitOfWork->commit($entity);
     }
-
+    
     /**
      * Finds an Entity by its identifier.
      *
-     * This is just a convenient shortcut for getRepository($entityName)->find($id).
-     *
      * @param string $entityName
-     * @param mixed $identifier
-     * @param int $lockMode
-     * @param int $lockVersion
+     * @param mixed $id
+     * @param integer $lockMode
+     * @param integer $lockVersion
+     *
      * @return object
      */
-    public function find($entityName, $identifier, $lockMode = LockMode::NONE, $lockVersion = null)
+    public function find($entityName, $id, $lockMode = LockMode::NONE, $lockVersion = null)
     {
-        return $this->getRepository($entityName)->find($identifier, $lockMode, $lockVersion);
+        $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+
+        if ( ! is_array($id)) {
+            $id = array($class->identifier[0] => $id);
+        }
+
+        $sortedId = array();
+
+        foreach ($class->identifier as $identifier) {
+            if ( ! isset($id[$identifier])) {
+                throw ORMException::missingIdentifierField($class->name, $identifier);
+            }
+
+            $sortedId[$identifier] = $id[$identifier];
+        }
+
+        $unitOfWork = $this->getUnitOfWork();
+
+        // Check identity map first
+        if (($entity = $unitOfWork->tryGetById($sortedId, $class->rootEntityName)) !== false) {
+            if ( ! ($entity instanceof $class->name)) {
+                return null;
+            }
+
+            switch ($lockMode) {
+                case LockMode::OPTIMISTIC:
+                    $this->lock($entity, $lockMode, $lockVersion);
+                    break;
+
+                case LockMode::PESSIMISTIC_READ:
+                case LockMode::PESSIMISTIC_WRITE:
+                    $persister = $unitOfWork->getEntityPersister($class->name);
+                    $persister->refresh($sortedId, $entity, $lockMode);
+                    break;
+            }
+
+            return $entity; // Hit!
+        }
+
+        $persister = $unitOfWork->getEntityPersister($class->name);
+
+        switch ($lockMode) {
+            case LockMode::NONE:
+                return $persister->load($sortedId);
+
+            case LockMode::OPTIMISTIC:
+                if ( ! $class->isVersioned) {
+                    throw OptimisticLockException::notVersioned($class->name);
+                }
+
+                $entity = $persister->load($sortedId);
+
+                $unitOfWork->lock($entity, $lockMode, $lockVersion);
+
+                return $entity;
+
+            default:
+                if ( ! $this->getConnection()->isTransactionActive()) {
+                    throw TransactionRequiredException::transactionRequired();
+                }
+
+                return $persister->load($sortedId, null, null, array(), $lockMode);
+        }
     }
 
     /**

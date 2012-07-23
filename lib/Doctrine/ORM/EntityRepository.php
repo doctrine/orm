@@ -125,71 +125,15 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Finds an entity by its primary key / identifier.
      *
-     * @param $id The identifier.
-     * @param int $lockMode
-     * @param int $lockVersion
+     * @param mixed $id The identifier.
+     * @param integer $lockMode
+     * @param integer $lockVersion
+     *
      * @return object The entity.
      */
     public function find($id, $lockMode = LockMode::NONE, $lockVersion = null)
     {
-        if ( ! is_array($id)) {
-            $id = array($this->_class->identifier[0] => $id);
-        }
-
-        $sortedId = array();
-
-        foreach ($this->_class->identifier as $identifier) {
-            if ( ! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($this->_class->name, $identifier);
-            }
-
-            $sortedId[$identifier] = $id[$identifier];
-        }
-
-        // Check identity map first
-        if (($entity = $this->_em->getUnitOfWork()->tryGetById($sortedId, $this->_class->rootEntityName)) !== false) {
-            if ( ! ($entity instanceof $this->_class->name)) {
-                return null;
-            }
-
-            switch ($lockMode) {
-                case LockMode::OPTIMISTIC:
-                    $this->_em->lock($entity, $lockMode, $lockVersion);
-                    break;
-                case LockMode::PESSIMISTIC_READ:
-                case LockMode::PESSIMISTIC_WRITE:
-                    $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
-                    $persister->refresh($sortedId, $entity, $lockMode);
-                    break;
-            }
-
-            return $entity; // Hit!
-        }
-
-        $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
-
-        switch ($lockMode) {
-            case LockMode::NONE:
-                return $persister->load($sortedId);
-
-            case LockMode::OPTIMISTIC:
-                if ( ! $this->_class->isVersioned) {
-                    throw OptimisticLockException::notVersioned($this->_entityName);
-                }
-
-                $entity = $persister->load($sortedId);
-
-                $this->_em->getUnitOfWork()->lock($entity, $lockMode, $lockVersion);
-
-                return $entity;
-
-            default:
-                if ( ! $this->_em->getConnection()->isTransactionActive()) {
-                    throw TransactionRequiredException::transactionRequired();
-                }
-
-                return $persister->load($sortedId, null, null, array(), $lockMode);
-        }
+        return $this->_em->find($this->_entityName, $id, $lockMode, $lockVersion);
     }
 
     /**
