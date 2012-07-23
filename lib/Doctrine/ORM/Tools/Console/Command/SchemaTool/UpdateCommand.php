@@ -29,7 +29,7 @@ use Symfony\Component\Console\Input\InputArgument,
  * Command to generate the SQL needed to update the database schema to match
  * the current mapping information.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
@@ -68,20 +68,19 @@ class UpdateCommand extends AbstractCommand
             ),
         ));
 
-        $fullName = $this->getName();
         $this->setHelp(<<<EOT
-The <info>$fullName</info> command generates the SQL needed to
+The <info>%command.name%</info> command generates the SQL needed to
 synchronize the database schema with the current mapping metadata of the
 default entity manager.
 
 For example, if you add metadata for a new column to an entity, this command
 would generate and output the SQL needed to add the new column to the database:
 
-<info>$fullName --dump-sql</info>
+<info>%command.name% --dump-sql</info>
 
 Alternatively, you can execute the generated queries:
 
-<info>$fullName --force</info>
+<info>%command.name% --force</info>
 
 Finally, be aware that if the <info>--complete</info> option is passed, this
 task will drop all database assets (e.g. tables, etc) that are *not* described
