@@ -20,7 +20,6 @@
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Mapping\AssociationMapping,
     Doctrine\Common\Util\Inflector,
     Doctrine\DBAL\Types\Type;
 

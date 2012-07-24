@@ -96,7 +96,7 @@ class QueryException extends \Doctrine\ORM\ORMException
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\AssociationMapping $assoc
+     * @param array $assoc
      */
     public static function iterateWithFetchJoinCollectionNotAllowed($assoc)
     {
