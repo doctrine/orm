@@ -284,7 +284,7 @@ final class PersistentCollection implements Collection
     /**
      * INTERNAL: Gets the association mapping of the collection.
      *
-     * @return \Doctrine\ORM\Mapping\AssociationMapping
+     * @return array
      */
     public function getMapping()
     {
