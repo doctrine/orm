@@ -295,7 +295,7 @@ The following example sets up such a unidirectional one-to-many association:
                 joinColumns:
                   user_id:
                     referencedColumnName: id
-                inverseJoinColumns
+                inverseJoinColumns:
                   phonenumber_id:
                     referencedColumnName: id
                     unique: true
