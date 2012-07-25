@@ -27,7 +27,7 @@ use Symfony\Component\Console\Input\InputArgument,
 /**
  * Command to clear the metadata cache of the various cache drivers.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
@@ -52,20 +52,19 @@ class MetadataCommand extends Console\Command\Command
             )
         ));
 
-        $fullName = $this->getName();
         $this->setHelp(<<<EOT
-The <info>$fullName</info> command is meant to clear the metadata cache of associated Entity Manager.
+The <info>%command.name%</info> command is meant to clear the metadata cache of associated Entity Manager.
 It is possible to invalidate all cache entries at once - called delete -, or flushes the cache provider
 instance completely.
 
 The execution type differ on how you execute the command.
 If you want to invalidate the entries (and not delete from cache instance), this command would do the work:
 
-<info>$fullName</info>
+<info>%command.name%</info>
 
 Alternatively, if you want to flush the cache provider using this command:
 
-<info>$fullName --flush</info>
+<info>%command.name% --flush</info>
 
 Finally, be aware that if <info>--flush</info> option is passed, not all cache providers are able to flush entries,
 because of a limitation of its execution nature.
