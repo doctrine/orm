@@ -41,13 +41,13 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     }
 
     /** {@inheritdoc} */
-    protected function getSelectColumnListSQL()
+    protected function getSelectColumnsSQL()
     {
         if ($this->selectColumnListSql !== null) {
             return $this->selectColumnListSql;
         }
 
-        $columnList = parent::getSelectColumnListSQL();
+        $columnList = parent::getSelectColumnsSQL();
 
         $rootClass  = $this->em->getClassMetadata($this->class->rootEntityName);
         $tableAlias = $this->getSQLTableAlias($rootClass->name);
@@ -92,7 +92,9 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         return $this->selectColumnListSql;
     }
 
-    /** {@inheritdoc} */
+    /**
+     * {@inheritdoc}
+     */
     protected function getInsertColumnList()
     {
         $columns = parent::getInsertColumnList();
@@ -103,13 +105,17 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         return $columns;
     }
 
-    /** {@inheritdoc} */
+    /**
+     * {@inheritdoc}
+     */
     protected function getSQLTableAlias($className, $assocName = '')
     {
         return parent::getSQLTableAlias($this->class->rootEntityName, $assocName);
     }
 
-    /** {@inheritdoc} */
+    /**
+     * {@inheritdoc}
+     */
     protected function getSelectConditionSQL(array $criteria, $assoc = null)
     {
         $conditionSql = parent::getSelectConditionSQL($criteria, $assoc);
@@ -121,7 +127,9 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         return $conditionSql . $this->getSelectConditionDiscriminatorValueSQL();
     }
 
-    /** {@inheritdoc} */
+    /**
+     * {@inheritdoc}
+     */
     protected function getSelectConditionCriteriaSQL(Criteria $criteria)
     {
         $conditionSql = parent::getSelectConditionCriteriaSQL($criteria);
@@ -151,7 +159,9 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
                 . ' IN (' . implode(', ', $values) . ')';
     }
 
-    /** {@inheritdoc} */
+    /**
+     * {@inheritdoc}
+     */
     protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
     {
         // Ensure that the filters are applied to the root entity of the inheritance tree

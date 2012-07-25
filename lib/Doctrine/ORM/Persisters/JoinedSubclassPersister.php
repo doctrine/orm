@@ -266,7 +266,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    protected function getSelectEntitiesSQL($criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null, array $orderBy = null)
+    protected function getSelectSQL($criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null, array $orderBy = null)
     {
         $idColumns = $this->class->getIdentifierColumnNames();
         $baseTableAlias = $this->getSQLTableAlias($this->class->name);
@@ -442,7 +442,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /*
      * Ensure this method is never called. This persister overrides getSelectEntitiesSQL directly.
      */
-    protected function getSelectColumnListSQL()
+    protected function getSelectColumnsSQL()
     {
         throw new \BadMethodCallException("Illegal invocation of ".__METHOD__.".");
     }
