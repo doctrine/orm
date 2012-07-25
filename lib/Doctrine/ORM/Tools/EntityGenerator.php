@@ -143,7 +143,7 @@ public function <methodName>(<methodTypeHint>$<variableName>)
 '/**
  * <description>
  *
- * @param <variableType$<variableName>
+ * @param <variableType>$<variableName>
  */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
