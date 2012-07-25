@@ -589,13 +589,13 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @since 2.2
      * @param string $className
-     * @throws ORMException If not is a \Doctrine\ORM\EntityRepository
+     * @throws ORMException If not is a \Doctrine\Common\Persistence\ObjectRepository
      */
     public function setDefaultRepositoryClassName($className)
     {
-        $entityRepositoryClassName = 'Doctrine\ORM\EntityRepository';
+        $objectRepositoryClassName = 'Doctrine\Common\Persistence\ObjectRepository';
 
-        if ($className !== $entityRepositoryClassName && ! is_subclass_of($className, $entityRepositoryClassName)) {
+        if ($className !== $objectRepositoryClassName && ! is_subclass_of($className, $objectRepositoryClassName)) {
             throw ORMException::invalidEntityRepository($className);
         }
 
