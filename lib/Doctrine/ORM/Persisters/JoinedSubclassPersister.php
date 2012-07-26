@@ -269,7 +269,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $rootTable  = $this->quoteStrategy->getTableName($rootClass, $this->platform);
 
             $this->conn->delete($rootTable, $id);
-            $this->conn->delete($tableName, $identifier);
 
             return;
         }
