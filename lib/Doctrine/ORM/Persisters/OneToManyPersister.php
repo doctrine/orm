@@ -42,11 +42,13 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     protected function getDeleteRowSQL(PersistentCollection $coll)
     {
-        $mapping = $coll->getMapping();
-        $class   = $this->em->getClassMetadata($mapping['targetEntity']);
+        $mapping    = $coll->getMapping();
+        $class      = $this->em->getClassMetadata($mapping['targetEntity']);
+        $tableName  = $this->quoteStrategy->getTableName($class, $this->platform);
+        $idColumns  = $class->getIdentifierColumnNames();
 
-        return 'DELETE FROM ' . $this->quoteStrategy->getTableName($class, $this->platform)
-             . ' WHERE ' . implode('= ? AND ', $class->getIdentifierColumnNames()) . ' = ?';
+        return 'DELETE FROM ' . $tableName
+             . ' WHERE ' . implode('= ? AND ', $idColumns) . ' = ?';
     }
 
     /**
@@ -119,7 +121,8 @@ class OneToManyPersister extends AbstractCollectionPersister
         $whereClauses = array();
         $params       = array();
 
-        foreach ($targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'] as $joinColumn) {
+        $joinColumns = $targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'];
+        foreach ($joinColumns as $joinColumn) {
             $whereClauses[] = $joinColumn['name'] . ' = ?';
 
             $params[] = ($targetClass->containsForeignIdentifier)
