@@ -40,9 +40,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function getDeleteRowSQL(PersistentCollection $coll)
     {
-        $columns = array();
-        $mapping = $coll->getMapping();
-        $class   = $this->em->getClassMetadata(get_class($coll->getOwner()));
+        $columns    = array();
+        $mapping    = $coll->getMapping();
+        $class      = $this->em->getClassMetadata(get_class($coll->getOwner()));
+        $tableName  = $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform);
 
         foreach ($mapping['joinTable']['joinColumns'] as $joinColumn) {
             $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
@@ -52,7 +53,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
         }
 
-        return 'DELETE FROM ' . $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform)
+        return 'DELETE FROM ' . $tableName
              . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
     }
 
@@ -328,8 +329,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     private function getJoinTableRestrictions(PersistentCollection $coll, $element, $addFilters)
     {
-        $uow     = $this->em->getUnitOfWork();
-        $mapping = $filterMapping = $coll->getMapping();
+        $uow            = $this->em->getUnitOfWork();
+        $filterMapping  = $coll->getMapping();
+        $mapping        = $filterMapping;
 
         if ( ! $mapping['isOwningSide']) {
             $sourceClass = $this->em->getClassMetadata($mapping['targetEntity']);
@@ -392,32 +394,38 @@ class ManyToManyPersister extends AbstractCollectionPersister
     public function getFilterSql($mapping)
     {
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+        $rootClass   = $this->em->getClassMetadata($targetClass->rootEntityName);
+        $filterSql   = $this->generateFilterConditionSQL($rootClass, 'te');
 
-        if ($mapping['isOwningSide']) {
-            $joinColumns = $mapping['relationToTargetKeyColumns'];
-        } else {
-            $mapping = $targetClass->associationMappings[$mapping['mappedBy']];
-            $joinColumns = $mapping['relationToSourceKeyColumns'];
+        if ('' === $filterSql) {
+            return array('', '');
         }
 
-        $targetClass = $this->em->getClassMetadata($targetClass->rootEntityName);
+        $conditions  = array();
+        $association = $mapping;
+
+        if ( ! $mapping['isOwningSide']) {
+            $class       = $this->em->getClassMetadata($mapping['targetEntity']);
+            $association = $class->associationMappings[$mapping['mappedBy']];
+        }
 
         // A join is needed if there is filtering on the target entity
-        $joinTargetEntitySQL = '';
-        if ($filterSql = $this->generateFilterConditionSQL($targetClass, 'te')) {
-            $joinTargetEntitySQL = ' JOIN '
-                . $this->quoteStrategy->getTableName($targetClass, $this->platform) . ' te'
-                . ' ON';
+        $tableName   = $this->quoteStrategy->getTableName($rootClass, $this->platform);
+        $joinSql     = ' JOIN ' . $tableName . ' te' . ' ON';
+        $joinColumns = $mapping['isOwningSide']
+            ? $association['joinTable']['inverseJoinColumns']
+            : $association['joinTable']['joinColumns'];
 
-            $joinTargetEntitySQLClauses = array();
-            foreach ($joinColumns as $joinTableColumn => $targetTableColumn) {
-                $joinTargetEntitySQLClauses[] = ' t.' . $joinTableColumn . ' = ' . 'te.' . $targetTableColumn;
-            }
+        foreach ($joinColumns as $joinColumn) {
+            $joinColumnName = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
+            $refColumnName  = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $targetClass, $this->platform);
 
-            $joinTargetEntitySQL .= implode(' AND ', $joinTargetEntitySQLClauses);
+            $conditions[] = ' t.' . $joinColumnName . ' = ' . 'te.' . $refColumnName;
         }
 
-        return array($joinTargetEntitySQL, $filterSql);
+        $joinSql .= implode(' AND ', $conditions);
+
+        return array($joinSql, $filterSql);
     }
 
     /**
