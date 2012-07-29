@@ -413,31 +413,32 @@ class BasicEntityPersister
         $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
 
         foreach ($this->class->identifier as $idField) {
-            if (isset($this->class->associationMappings[$idField])) {
+            if ( ! isset($this->class->associationMappings[$idField])) {
 
-                $params[]       = $identifier[$idField];
-                $where[]        = $this->class->associationMappings[$idField]['joinColumns'][0]['name'];
-                $targetMapping  = $this->em->getClassMetadata($this->class->associationMappings[$idField]['targetEntity']);
-
-                switch (true) {
-                    case (isset($targetMapping->fieldMappings[$targetMapping->identifier[0]])):
-                        $types[] = $targetMapping->fieldMappings[$targetMapping->identifier[0]]['type'];
-                        break;
-
-                    case (isset($targetMapping->associationMappings[$targetMapping->identifier[0]])):
-                        $types[] = $targetMapping->associationMappings[$targetMapping->identifier[0]]['type'];
-                        break;
-
-                    default:
-                        throw ORMException::unrecognizedField($targetMapping->identifier[0]);
-                }
+                $params[]   = $identifier[$idField];
+                $types[]    = $this->class->fieldMappings[$idField]['type'];
+                $where[]    = $this->quoteStrategy->getColumnName($idField, $this->class, $this->platform);
 
                 continue;
             }
 
-            $params[]   = $identifier[$idField];
-            $types[]    = $this->class->fieldMappings[$idField]['type'];
-            $where[]    = $this->quoteStrategy->getColumnName($idField, $this->class, $this->platform);
+            $params[]       = $identifier[$idField];
+            $where[]        = $this->class->associationMappings[$idField]['joinColumns'][0]['name'];
+            $targetMapping  = $this->em->getClassMetadata($this->class->associationMappings[$idField]['targetEntity']);
+
+            switch (true) {
+                case (isset($targetMapping->fieldMappings[$targetMapping->identifier[0]])):
+                    $types[] = $targetMapping->fieldMappings[$targetMapping->identifier[0]]['type'];
+                    break;
+
+                case (isset($targetMapping->associationMappings[$targetMapping->identifier[0]])):
+                    $types[] = $targetMapping->associationMappings[$targetMapping->identifier[0]]['type'];
+                    break;
+
+                default:
+                    throw ORMException::unrecognizedField($targetMapping->identifier[0]);
+            }
+
         }
 
         if ($versioned) {
@@ -586,59 +587,68 @@ class BasicEntityPersister
 
             $newVal = $change[1];
 
-            if (isset($this->class->associationMappings[$field])) {
-                $assoc = $this->class->associationMappings[$field];
+            if ( ! isset($this->class->associationMappings[$field])) {
 
-                // Only owning side of x-1 associations can have a FK column.
-                if ( ! $assoc['isOwningSide'] || ! ($assoc['type'] & ClassMetadata::TO_ONE)) {
-                    continue;
-                }
-
-                if ($newVal !== null) {
-                    $oid = spl_object_hash($newVal);
-
-                    if (isset($this->queuedInserts[$oid]) || $uow->isScheduledForInsert($newVal)) {
-                        // The associated entity $newVal is not yet persisted, so we must
-                        // set $newVal = null, in order to insert a null value and schedule an
-                        // extra update on the UnitOfWork.
-                        $uow->scheduleExtraUpdate($entity, array(
-                            $field => array(null, $newVal)
-                        ));
-                        $newVal = null;
-                    }
-                }
-
-                if ($newVal !== null) {
-                    $newValId = $uow->getEntityIdentifier($newVal);
-                }
-
-                $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
-                $owningTable = $this->getOwningTable($field);
-
-                foreach ($assoc['joinColumns'] as $joinColumn) {
-                    $sourceColumn = $joinColumn['name'];
-                    $targetColumn = $joinColumn['referencedColumnName'];
-                    $quotedColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
-
-                    $this->quotedColumns[$sourceColumn] = $quotedColumn;
-
-                    if ($newVal === null) {
-                        $result[$owningTable][$sourceColumn] = null;
-                    } else if ($targetClass->containsForeignIdentifier) {
-                        $result[$owningTable][$sourceColumn] = $newValId[$targetClass->getFieldForColumn($targetColumn)];
-                    } else {
-                        $result[$owningTable][$sourceColumn] = $newValId[$targetClass->fieldNames[$targetColumn]];
-                    }
-
-                    $this->columnTypes[$sourceColumn] = $targetClass->getTypeOfColumn($targetColumn);
-                }
+                $columnName = $this->class->columnNames[$field];
+                $this->columnTypes[$columnName] = $this->class->fieldMappings[$field]['type'];
+                $result[$this->getOwningTable($field)][$columnName] = $newVal;
 
                 continue;
             }
-            
-            $columnName = $this->class->columnNames[$field];
-            $this->columnTypes[$columnName] = $this->class->fieldMappings[$field]['type'];
-            $result[$this->getOwningTable($field)][$columnName] = $newVal;
+
+            $assoc = $this->class->associationMappings[$field];
+
+            // Only owning side of x-1 associations can have a FK column.
+            if ( ! $assoc['isOwningSide'] || ! ($assoc['type'] & ClassMetadata::TO_ONE)) {
+                continue;
+            }
+
+            if ($newVal !== null) {
+                $oid = spl_object_hash($newVal);
+
+                if (isset($this->queuedInserts[$oid]) || $uow->isScheduledForInsert($newVal)) {
+                    // The associated entity $newVal is not yet persisted, so we must
+                    // set $newVal = null, in order to insert a null value and schedule an
+                    // extra update on the UnitOfWork.
+                    $uow->scheduleExtraUpdate($entity, array(
+                        $field => array(null, $newVal)
+                    ));
+                    $newVal = null;
+                }
+            }
+
+            if ($newVal !== null) {
+                $newValId = $uow->getEntityIdentifier($newVal);
+            }
+
+            $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+            $owningTable = $this->getOwningTable($field);
+
+            foreach ($assoc['joinColumns'] as $joinColumn) {
+                $sourceColumn = $joinColumn['name'];
+                $targetColumn = $joinColumn['referencedColumnName'];
+                $quotedColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
+
+                $this->quotedColumns[$sourceColumn] = $quotedColumn;
+                $this->columnTypes[$sourceColumn]   = $targetClass->getTypeOfColumn($targetColumn);
+
+                switch (true) {
+                    case $newVal === null:
+                        $value = null;
+                        break;
+
+                    case $targetClass->containsForeignIdentifier:
+                        $value = $newValId[$targetClass->getFieldForColumn($targetColumn)];
+                        break;
+
+                    default:
+                        $value = $newValId[$targetClass->fieldNames[$targetColumn]];
+                        break;
+                }
+
+                $result[$owningTable][$sourceColumn] = $value;
+            }
+
         }
 
         return $result;
@@ -747,31 +757,33 @@ class BasicEntityPersister
             if ($targetEntity !== null && $isInverseSingleValued) {
                 $targetClass->reflFields[$assoc['inversedBy']]->setValue($targetEntity, $sourceEntity);
             }
-        } else {
-            $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
-            $owningAssoc = $targetClass->getAssociationMapping($assoc['mappedBy']);
 
-            // TRICKY: since the association is specular source and target are flipped
-            foreach ($owningAssoc['targetToSourceKeyColumns'] as $sourceKeyColumn => $targetKeyColumn) {
-                if ( ! isset($sourceClass->fieldNames[$sourceKeyColumn])) {
-                    throw MappingException::joinColumnMustPointToMappedField(
-                        $sourceClass->name, $sourceKeyColumn
-                    );
-                }
+            return $targetEntity;
+        }
 
-                // unset the old value and set the new sql aliased value here. By definition
-                // unset($identifier[$targetKeyColumn] works here with how UnitOfWork::createEntity() calls this method.
-                $identifier[$this->getSQLTableAlias($targetClass->name) . "." . $targetKeyColumn] =
-                    $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
+        $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
+        $owningAssoc = $targetClass->getAssociationMapping($assoc['mappedBy']);
 
-                unset($identifier[$targetKeyColumn]);
+        // TRICKY: since the association is specular source and target are flipped
+        foreach ($owningAssoc['targetToSourceKeyColumns'] as $sourceKeyColumn => $targetKeyColumn) {
+            if ( ! isset($sourceClass->fieldNames[$sourceKeyColumn])) {
+                throw MappingException::joinColumnMustPointToMappedField(
+                    $sourceClass->name, $sourceKeyColumn
+                );
             }
 
-            $targetEntity = $this->load($identifier, null, $assoc);
+            // unset the old value and set the new sql aliased value here. By definition
+            // unset($identifier[$targetKeyColumn] works here with how UnitOfWork::createEntity() calls this method.
+            $identifier[$this->getSQLTableAlias($targetClass->name) . "." . $targetKeyColumn] =
+                $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
 
-            if ($targetEntity !== null) {
-                $targetClass->setFieldValue($targetEntity, $assoc['mappedBy'], $sourceEntity);
-            }
+            unset($identifier[$targetKeyColumn]);
+        }
+
+        $targetEntity = $this->load($identifier, null, $assoc);
+
+        if ($targetEntity !== null) {
+            $targetClass->setFieldValue($targetEntity, $assoc['mappedBy'], $sourceEntity);
         }
 
         return $targetEntity;
@@ -974,7 +986,6 @@ class BasicEntityPersister
 
         foreach ($joinColumns as $joinColumn) {
 
-            $relationKeyColumn  = $joinColumn['name'];
             $sourceKeyColumn    = $joinColumn['referencedColumnName'];
             $quotedKeyColumn    = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
 
