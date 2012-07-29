@@ -1326,10 +1326,7 @@ class ClassMetadataInfo implements ClassMetadata
         $mapping['sourceEntity'] = $this->name;
 
         if (isset($mapping['targetEntity'])) {
-            if (strlen($this->namespace) > 0 && strpos($mapping['targetEntity'], '\\') === false) {
-                $mapping['targetEntity'] = $this->namespace . '\\' . $mapping['targetEntity'];
-            }
-
+            $mapping['targetEntity'] = $this->fullyQualifiedClassName($mapping['targetEntity']);
             $mapping['targetEntity'] = ltrim($mapping['targetEntity'], '\\');
         }
 
@@ -1917,11 +1914,7 @@ class ClassMetadataInfo implements ClassMetadata
     public function setSubclasses(array $subclasses)
     {
         foreach ($subclasses as $subclass) {
-            if (strpos($subclass, '\\') === false && strlen($this->namespace)) {
-                $this->subClasses[] = $this->namespace . '\\' . $subclass;
-            } else {
-                $this->subClasses[] = $subclass;
-            }
+            $this->subClasses[] = $this->fullyQualifiedClassName($subclass);
         }
     }
 
@@ -2274,11 +2267,9 @@ class ClassMetadataInfo implements ClassMetadata
 
                 $queryMapping['isSelfClass'] = true;
                 $queryMapping['resultClass'] = $this->name;
-
-            } else if (strlen($this->namespace) > 0 && strpos($queryMapping['resultClass'], '\\') === false) {
-                $queryMapping['resultClass'] = $this->namespace . '\\' . $queryMapping['resultClass'];
             }
 
+            $queryMapping['resultClass'] = $this->fullyQualifiedClassName($queryMapping['resultClass']);
             $queryMapping['resultClass'] = ltrim($queryMapping['resultClass'], '\\');
         }
 
@@ -2317,10 +2308,9 @@ class ClassMetadataInfo implements ClassMetadata
                     $entityResult['isSelfClass'] = true;
                     $entityResult['entityClass'] = $this->name;
 
-                } else if (strlen($this->namespace) > 0 && strpos($entityResult['entityClass'], '\\') === false) {
-                    $entityResult['entityClass'] = $this->namespace . '\\' . $entityResult['entityClass'];
                 }
 
+                $entityResult['entityClass'] = $this->fullyQualifiedClassName($entityResult['entityClass']);
                 $resultMapping['entities'][$key]['entityClass'] = ltrim($entityResult['entityClass'], '\\');
                 $resultMapping['entities'][$key]['isSelfClass'] = $entityResult['isSelfClass'];
 
@@ -2432,11 +2422,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
-        if ($repositoryClassName !== null && strpos($repositoryClassName, '\\') === false
-                && strlen($this->namespace) > 0) {
-            $repositoryClassName = $this->namespace . '\\' . $repositoryClassName;
-        }
-        $this->customRepositoryClassName = $repositoryClassName;
+        $this->customRepositoryClassName = $this->fullyQualifiedClassName($repositoryClassName);
     }
 
     /**
@@ -2605,10 +2591,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function addDiscriminatorMapClass($name, $className)
     {
-        if (strlen($this->namespace) > 0 && strpos($className, '\\') === false) {
-            $className = $this->namespace . '\\' . $className;
-        }
-
+        $className = $this->fullyQualifiedClassName($className);
         $className = ltrim($className, '\\');
         $this->discriminatorMap[$name] = $className;
 
@@ -3029,5 +3012,18 @@ class ClassMetadataInfo implements ClassMetadata
             }
         }
         return $relations;
+    }
+
+    /**
+     * @param   string $className
+     * @return  string
+     */
+    public function fullyQualifiedClassName($className)
+    {
+        if ($className !== null && strpos($className, '\\') === false && strlen($this->namespace) > 0) {
+            return $this->namespace . '\\' . $className;
+        }
+
+        return $className;
     }
 }

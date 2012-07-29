@@ -385,9 +385,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
                 // Check for JoinTable annotations
                 if ($associationOverride->joinTable) {
-                    $joinTable      = null;
                     $joinTableAnnot = $associationOverride->joinTable;
-                    $joinTable = array(
+                    $joinTable      = array(
                         'name'      => $joinTableAnnot->name,
                         'schema'    => $joinTableAnnot->schema
                     );
@@ -421,17 +420,16 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $entityListenersAnnot = $classAnnotations['Doctrine\ORM\Mapping\EntityListeners'];
 
             foreach ($entityListenersAnnot->value as $listener) {
+                $listener = $metadata->fullyQualifiedClassName($listener);
 
                 if ( ! class_exists($listener)) {
                     throw new \InvalidArgumentException("Indefined class \"$listener\"");
                 }
 
                 $listener = new \ReflectionClass($listener);
-
                 foreach ($listener->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                     foreach ($this->getMethodCallbacks($method) as $value) {
-                        list($callback, $event) = $value;
-                        $metadata->addEntityListener($event, $listener->name, $callback);
+                        $metadata->addEntityListener($value[1], $listener->name, $value[0]);
                     }
                 }
             }
@@ -447,8 +445,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 }
 
                 foreach ($this->getMethodCallbacks($method) as $value) {
-                    list($callback, $event) = $value;
-                    $metadata->addLifecycleCallback($callback, $event);
+                    $metadata->addLifecycleCallback($value[0], $value[1]);
                 }
             }
         }
