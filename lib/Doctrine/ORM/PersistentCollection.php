@@ -294,7 +294,7 @@ final class PersistentCollection implements Collection, Selectable
     /**
      * INTERNAL: Gets the association mapping of the collection.
      *
-     * @return \Doctrine\ORM\Mapping\AssociationMapping
+     * @return array
      */
     public function getMapping()
     {
