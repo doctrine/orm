@@ -178,7 +178,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         // Composite identifier
-        $sourceClass = $this->_em->getClassMetadata(get_class($mapping->getOwner()));
+        $sourceClass = $this->_em->getClassMetadata(get_class($coll->getOwner()));
 
         foreach ($mapping['relationToSourceKeyColumns'] as $relColumn => $srcColumn) {
             $params[] = $identifier[$sourceClass->fieldNames[$srcColumn]];
