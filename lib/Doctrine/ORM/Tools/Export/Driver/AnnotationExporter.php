@@ -20,7 +20,6 @@
 namespace Doctrine\ORM\Tools\Export\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Mapping\AssociationMapping,
     Doctrine\ORM\Tools\EntityGenerator;
 
 /**

@@ -21,7 +21,6 @@ namespace Doctrine\ORM\Proxy;
 
 use Doctrine\ORM\EntityManager,
     Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\AssociationMapping,
     Doctrine\Common\Util\ClassUtils;
 
 /**
