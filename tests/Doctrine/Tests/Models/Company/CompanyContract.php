@@ -7,6 +7,7 @@ namespace Doctrine\Tests\Models\Company;
  * @Table(name="company_contracts")
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="discr", type="string")
+ * @EntityListeners({"Doctrine\Tests\Models\Company\ContractSubscriber"})
  * @DiscriminatorMap({
  *     "fix"       = "CompanyFixContract",
  *     "flexible"  = "CompanyFlexContract",

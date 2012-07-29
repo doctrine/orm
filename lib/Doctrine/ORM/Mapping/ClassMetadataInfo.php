@@ -26,6 +26,7 @@ use Doctrine\DBAL\Types\Type;
 use ReflectionClass;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\ClassLoader;
+use Doctrine\Common\EventArgs;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -435,6 +436,18 @@ class ClassMetadataInfo implements ClassMetadata
      * @var array
      */
     public $lifecycleCallbacks = array();
+
+    /**
+     * READ-ONLY: The registered entity listeners.
+     *
+     * @var array
+     */
+    public $entityListeners = array();
+
+    /**
+     * @var array entity listeners instances.
+     */
+    static private $entityListenerInstances = array();
 
     /**
      * READ-ONLY: The association mappings of this class.
@@ -2490,6 +2503,41 @@ class ClassMetadataInfo implements ClassMetadata
     public function setLifecycleCallbacks(array $callbacks)
     {
         $this->lifecycleCallbacks = $callbacks;
+    }
+
+    /**
+     * Adds a entity listener for entities of this class.
+     *
+     * @param string $callback
+     * @param string $eventName
+     */
+    public function addEntityListener($eventName, $class, $method)
+    {
+        $this->entityListeners[$eventName][] = array(
+            'class'     => $class,
+            'method'    => $method
+        );
+    }
+
+    /**
+     * Call the entity listeners.
+     *
+     * @param string $eventName                 The event name.
+     * @param object $entity                    An instance of the mapped entity
+     * @param \Doctrine\Common\EventArgs $arg   The Event args
+     */
+    public function dispatchEntityListeners($eventName, $entity, EventArgs $arg)
+    {
+        foreach ($this->entityListeners[$eventName] as $listener) {
+            $class  = $listener['class'];
+            $method = $listener['method'];
+
+            if ( ! isset(self::$entityListenerInstances[$class])) {
+                self::$entityListenerInstances[$class] = new $class();
+            }
+
+            self::$entityListenerInstances[$class]->{$method}($entity, $arg);
+        }
     }
 
     /**
