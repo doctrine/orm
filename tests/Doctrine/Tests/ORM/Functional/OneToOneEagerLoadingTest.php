@@ -21,6 +21,7 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\TrainDriver'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\TrainOwner'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Waggon'),
+                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\TrainOrder'),
             ));
         } catch(\Exception $e) {}
     }
@@ -181,6 +182,21 @@ class OneToOneEagerLoadingTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
         );
     }
+    
+    public function testEagerLoadingDoesNotBreakRefresh()
+    {
+        $train = new Train(new TrainOwner('Johannes'));
+        $order = new TrainOrder($train);
+        $this->_em->persist($train);
+        $this->_em->persist($order);
+        $this->_em->flush();
+        
+        $this->_em->getConnection()->exec("UPDATE TrainOrder SET train_id = NULL");
+        
+        $this->assertSame($train, $order->train);
+        $this->_em->refresh($order);
+        $this->assertNull($order->train);
+    }
 }
 
 /**
@@ -301,6 +317,23 @@ class Waggon
     public $train;
 
     public function setTrain($train)
+    {
+        $this->train = $train;
+    }
+}
+
+/**
+ * @Entity
+ */
+class TrainOrder
+{
+    /** @id @generatedValue @column(type="integer") */
+    public $id;
+
+    /** @OneToOne(targetEntity = "Train", fetch = "EAGER") */
+    public $train;
+    
+    public function __construct(Train $train)
     {
         $this->train = $train;
     }
