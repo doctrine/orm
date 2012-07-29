@@ -142,8 +142,12 @@ class AnnotationDriver implements Driver
 
         $classAnnotations = $this->_reader->getClassAnnotations($class);
 
-        if ($classAnnotations && is_numeric(key($classAnnotations))) {
-            foreach ($classAnnotations as $annot) {
+        if ($classAnnotations) {
+            foreach ($classAnnotations as $key => $annot) {
+                if ( ! is_numeric($key)) {
+                    continue;
+                }
+
                 $classAnnotations[get_class($annot)] = $annot;
             }
         }
@@ -432,8 +436,11 @@ class AnnotationDriver implements Driver
                 if ($method->isPublic() && $method->getDeclaringClass()->getName() == $class->name) {
                     $annotations = $this->_reader->getMethodAnnotations($method);
 
-                    if ($annotations && is_numeric(key($annotations))) {
-                        foreach ($annotations as $annot) {
+                    if ($annotations) {
+                        foreach ($annotations as $key => $annot) {
+                            if ( ! is_numeric($key)) {
+                                continue;
+                            }
                             $annotations[get_class($annot)] = $annot;
                         }
                     }
