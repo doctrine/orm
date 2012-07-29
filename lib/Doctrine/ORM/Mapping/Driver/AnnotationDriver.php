@@ -60,8 +60,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
         $classAnnotations = $this->reader->getClassAnnotations($class);
 
-        if ($classAnnotations && is_numeric(key($classAnnotations))) {
-            foreach ($classAnnotations as $annot) {
+        if ($classAnnotations) {
+            foreach($classAnnotations as $key=>&$annot) {
+                if(!is_numeric($key)) continue;
                 $classAnnotations[get_class($annot)] = $annot;
             }
         }
