@@ -26,5 +26,5 @@ namespace Doctrine\ORM\Persisters;
  */
 abstract class ElementCollectionPersister extends AbstractCollectionPersister
 {
-    //put your code here
+
 }
