@@ -13,6 +13,7 @@ Tutorials
    tutorials/composite-primary-keys
    tutorials/ordered-associations
    tutorials/in-ten-quick-steps
+   tutorials/override-mappings-with-annotations
 
 Reference Guide
 ---------------
