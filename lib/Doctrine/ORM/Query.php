@@ -21,6 +21,7 @@ namespace Doctrine\ORM;
 
 use Doctrine\DBAL\LockMode,
     Doctrine\ORM\Query\Parser,
+    Doctrine\ORM\Query\ParserResult,
     Doctrine\ORM\Query\QueryException;
 
 /**
@@ -218,7 +219,7 @@ final class Query extends AbstractQuery
         $hash   = $this->_getQueryCacheId();
         $cached = $this->_expireQueryCache ? false : $queryCache->fetch($hash);
 
-        if ($cached !== false) {
+        if ($cached instanceof ParserResult) {
             // Cache hit.
             $this->_parserResult = $cached;
 
