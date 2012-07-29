@@ -88,6 +88,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Routing\RoutingRouteBooking',
         ),
         'navigation' => array(
+            'Doctrine\Tests\Models\Navigation\NavUser',
             'Doctrine\Tests\Models\Navigation\NavCountry',
             'Doctrine\Tests\Models\Navigation\NavPhotos',
             'Doctrine\Tests\Models\Navigation\NavTour',
