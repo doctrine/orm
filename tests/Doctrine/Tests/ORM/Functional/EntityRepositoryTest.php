@@ -528,7 +528,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-753
      * @expectedException Doctrine\ORM\ORMException
-     * @expectedExceptionMessage Invalid repository class 'Doctrine\Tests\Models\DDC753\DDC753InvalidRepository'. it must be a Doctrine\ORM\EntityRepository.
+     * @expectedExceptionMessage Invalid repository class 'Doctrine\Tests\Models\DDC753\DDC753InvalidRepository'. It must be a Doctrine\Common\Persistence\ObjectRepository.
      */
     public function testSetDefaultRepositoryInvalidClassError()
     {

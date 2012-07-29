@@ -152,8 +152,7 @@ class ORMException extends Exception
 
     public static function invalidEntityRepository($className)
     {
-        return new self("Invalid repository class '".$className."'. ".
-                "it must be a Doctrine\\ORM\\EntityRepository.");
+        return new self("Invalid repository class '".$className."'. It must be a Doctrine\Common\Persistence\ObjectRepository.");
     }
 
     public static function missingIdentifierField($className, $fieldName)
