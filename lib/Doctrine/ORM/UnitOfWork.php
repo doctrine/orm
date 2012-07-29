@@ -488,8 +488,9 @@ class UnitOfWork implements PropertyChangedListener
                         }
                     } else if ($orgValue instanceof PersistentCollection && $orgValue !== $actualValue) {
                         // A PersistentCollection was de-referenced, so delete it.
-                        if  ( ! in_array($orgValue, $this->collectionDeletions, true)) {
-                            $this->collectionDeletions[] = $orgValue;
+                        $coid = spl_object_hash($orgValue);
+                        if ( ! isset($this->collectionDeletions[$coid]) ) {
+                            $this->collectionDeletions[$coid] = $orgValue;
                             $changeSet[$propName] = $orgValue; // Signal changeset, to-many assocs will be ignored.
                         }
 
@@ -593,10 +594,11 @@ class UnitOfWork implements PropertyChangedListener
     private function computeAssociationChanges($assoc, $value)
     {
         if ($value instanceof PersistentCollection && $value->isDirty()) {
+            $coid = spl_object_hash($value);
             if ($assoc['isOwningSide']) {
-                $this->collectionUpdates[] = $value;
+                $this->collectionUpdates[$coid] = $value;
             }
-            $this->visitedCollections[] = $value;
+            $this->visitedCollections[$coid] = $value;
         }
 
         // Look through the entities, and in any of their associations, for transient (new)
@@ -1930,12 +1932,12 @@ class UnitOfWork implements PropertyChangedListener
     {
         //TODO: if $coll is already scheduled for recreation ... what to do?
         // Just remove $coll from the scheduled recreations?
-        $this->collectionDeletions[] = $coll;
+        $this->collectionDeletions[spl_object_hash($coll)] = $coll;
     }
 
     public function isCollectionScheduledForDeletion(PersistentCollection $coll)
     {
-        return in_array($coll, $this->collectionsDeletions, true);
+        return isset( $this->collectionsDeletions[spl_object_hash($coll)] );
     }
 
     /**
