@@ -5,6 +5,7 @@ use Doctrine\Tests\Models\Navigation\NavCountry;
 use Doctrine\Tests\Models\Navigation\NavPointOfInterest;
 use Doctrine\Tests\Models\Navigation\NavTour;
 use Doctrine\Tests\Models\Navigation\NavPhotos;
+use Doctrine\Tests\Models\Navigation\NavUser;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -117,5 +118,27 @@ class CompositePrimaryKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->setExpectedException('Doctrine\ORM\ORMException', 'The identifier long is missing for a query of Doctrine\Tests\Models\Navigation\NavPointOfInterest');
         $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('key1' => 100));
+    }
+
+    /**
+     * @group DDC-1939
+     */
+    public function testDeleteCompositePersistentCollection()
+    {
+        $this->putGermanysBrandenburderTor();
+
+        $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('lat' => 100, 'long' => 200));
+        $poi->addVisitor(new NavUser("test1"));
+        $poi->addVisitor(new NavUser("test2"));
+
+        $this->_em->flush();
+
+        $poi->getVisitors()->clear();
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('lat' => 100, 'long' => 200));
+        $this->assertEquals(0, count($poi->getVisitors()));
     }
 }
