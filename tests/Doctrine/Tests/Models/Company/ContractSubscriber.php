@@ -5,7 +5,7 @@ namespace Doctrine\Tests\Models\Company;
 class ContractSubscriber
 {
     static public $prePersistCalls;
-    static public $postPersisCalls;
+    static public $postPersistCalls;
     static public $instances;
 
     public function __construct()
@@ -18,7 +18,7 @@ class ContractSubscriber
      */
     public function postPersistHandler(CompanyContract $contract)
     {
-        self::$postPersisCalls[] = func_get_args();
+        self::$postPersistCalls[] = func_get_args();
     }
 
     /**

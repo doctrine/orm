@@ -7,6 +7,7 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Company\ContractSubscriber;
+use Doctrine\Tests\Models\Company\FlexUltraContractSubscriber;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -803,11 +804,11 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
 
         $prePersist = $ultraClass->entityListeners[Events::prePersist][1];
         $this->assertEquals('Doctrine\Tests\Models\Company\FlexUltraContractSubscriber', $prePersist['class']);
-        $this->assertEquals('postPersistHandler1', $prePersist['method']);
+        $this->assertEquals('prePersistHandler1', $prePersist['method']);
         
         $prePersist = $ultraClass->entityListeners[Events::prePersist][2];
         $this->assertEquals('Doctrine\Tests\Models\Company\FlexUltraContractSubscriber', $prePersist['class']);
-        $this->assertEquals('postPersistHandler2', $prePersist['method']);
+        $this->assertEquals('prePersistHandler2', $prePersist['method']);
     }
 
     /**
@@ -823,9 +824,11 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $factory    = $this->createClassMetadataFactory($em);
         $flexClass  = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFixContract');
         $fixClass   = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFlexContract');
+        $ultraClass = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFlexUltraContract');
 
-        ContractSubscriber::$prePersistCalls = null;
-        ContractSubscriber::$postPersisCalls = null;
+        ContractSubscriber::$prePersistCalls    = null;
+        ContractSubscriber::$postPersistCalls   = null;
+        FlexUltraContractSubscriber::$prePersistCalls = null;
 
         $fix        = new CompanyFixContract();
         $fixArg     = new LifecycleEventArgs($fix, $em);
@@ -833,14 +836,33 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $flex       = new CompanyFlexContract();
         $flexArg    = new LifecycleEventArgs($fix, $em);
 
+        $ultra      = new CompanyFlexContract();
+        $ultraArg   = new LifecycleEventArgs($ultra, $em);
+
         $fixClass->dispatchEntityListeners(Events::prePersist, $fix, $fixArg);
         $flexClass->dispatchEntityListeners(Events::prePersist, $flex, $flexArg);
+        $ultraClass->dispatchEntityListeners(Events::prePersist, $ultra, $ultraArg);
+
+        $this->assertCount(3, ContractSubscriber::$prePersistCalls);
+        $this->assertCount(2, FlexUltraContractSubscriber::$prePersistCalls);
 
         $this->assertSame($fix, ContractSubscriber::$prePersistCalls[0][0]);
         $this->assertSame($fixArg, ContractSubscriber::$prePersistCalls[0][1]);
 
+        $this->assertSame($flex, ContractSubscriber::$prePersistCalls[1][0]);
+        $this->assertSame($flexArg, ContractSubscriber::$prePersistCalls[1][1]);
+
+        $this->assertSame($ultra, ContractSubscriber::$prePersistCalls[2][0]);
+        $this->assertSame($ultraArg, ContractSubscriber::$prePersistCalls[2][1]);
+
+        $this->assertSame($ultra, FlexUltraContractSubscriber::$prePersistCalls[0][0]);
+        $this->assertSame($ultraArg, FlexUltraContractSubscriber::$prePersistCalls[0][1]);
+
+        $this->assertSame($ultra, FlexUltraContractSubscriber::$prePersistCalls[1][0]);
+        $this->assertSame($ultraArg, FlexUltraContractSubscriber::$prePersistCalls[1][1]);
+
         $this->assertCount(1, ContractSubscriber::$instances);
-        $this->assertNull(ContractSubscriber::$postPersisCalls);
+        $this->assertNull(ContractSubscriber::$postPersistCalls);
     }
 
 }
