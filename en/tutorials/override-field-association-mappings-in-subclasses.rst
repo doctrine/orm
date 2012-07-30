@@ -1,5 +1,5 @@
-Override Mappings With Annotations
-----------------------------------
+Override Field Association Mappings In Subclasses
+-------------------------------------------------
 
 Sometimes there is a need to persist entities but override all or part of the
 mapping metadata. Sometimes also the mapping to override comes from entities
@@ -86,3 +86,5 @@ The case for just extending a class would be just the same but:
     {
         // ...
     }
+
+Overriding is also supported via XML and YAML.
