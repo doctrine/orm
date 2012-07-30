@@ -427,7 +427,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 }
 
                 $listener = new \ReflectionClass($listener);
+                /* @var $method \ReflectionMethod */
                 foreach ($listener->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+                    // find method callbacks.
                     foreach ($this->getMethodCallbacks($method) as $value) {
                         $metadata->addEntityListener($value[1], $listener->name, $value[0]);
                     }

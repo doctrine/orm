@@ -2,10 +2,14 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Mapping\Driver\XmlDriver,
-    Doctrine\ORM\Mapping\Driver\YamlDriver;
+use Doctrine\ORM\Events;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\Tests\Models\Company\CompanyFixContract;
+use Doctrine\Tests\Models\Company\CompanyFlexContract;
+use Doctrine\Tests\Models\Company\ContractSubscriber;
+
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -746,6 +750,39 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(240, $guestMetadata->fieldMappings['name']['length']);
         $this->assertFalse($guestMetadata->fieldMappings['name']['nullable']);
         $this->assertTrue($guestMetadata->fieldMappings['name']['unique']);
+    }
+
+    /**
+     * @group DDC-1955
+     */
+    public function testCallEntityListeners()
+    {
+        if ( ! ($this instanceof AnnotationDriverTest)) {
+            $this->markTestIncomplete();
+        }
+
+        $em         = $this->_getTestEntityManager();
+        $factory    = $this->createClassMetadataFactory($em);
+        $flexClass  = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFixContract');
+        $fixClass   = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFlexContract');
+
+        ContractSubscriber::$prePersistCalls = null;
+        ContractSubscriber::$postPersisCalls = null;
+
+        $fix        = new CompanyFixContract();
+        $fixArg     = new LifecycleEventArgs($fix, $em);
+
+        $flex       = new CompanyFlexContract();
+        $flexArg    = new LifecycleEventArgs($fix, $em);
+
+        $fixClass->dispatchEntityListeners(Events::prePersist, $fix, $fixArg);
+        $flexClass->dispatchEntityListeners(Events::prePersist, $flex, $flexArg);
+
+        $this->assertSame($fix, ContractSubscriber::$prePersistCalls[0][0]);
+        $this->assertSame($fixArg, ContractSubscriber::$prePersistCalls[0][1]);
+
+        $this->assertCount(1, ContractSubscriber::$instances);
+        $this->assertNull(ContractSubscriber::$postPersisCalls);
     }
 
 }
