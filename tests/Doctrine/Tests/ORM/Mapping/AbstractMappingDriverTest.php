@@ -755,6 +755,64 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group DDC-1955
      */
+    public function testEntityListeners()
+    {
+        if ( ! ($this instanceof AnnotationDriverTest)) {
+            $this->markTestIncomplete();
+        }
+
+        $em         = $this->_getTestEntityManager();
+        $factory    = $this->createClassMetadataFactory($em);
+        $superClass = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyContract');
+        $flexClass  = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFixContract');
+        $fixClass   = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFlexContract');
+        $ultraClass = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFlexUltraContract');
+
+        $this->assertArrayHasKey(Events::prePersist, $superClass->entityListeners);
+        $this->assertArrayHasKey(Events::postPersist, $superClass->entityListeners);
+
+        $this->assertCount(1, $superClass->entityListeners[Events::prePersist]);
+        $this->assertCount(1, $superClass->entityListeners[Events::postPersist]);
+
+        $postPersist = $superClass->entityListeners[Events::postPersist][0];
+        $prePersist  = $superClass->entityListeners[Events::prePersist][0];
+
+        $this->assertEquals('Doctrine\Tests\Models\Company\ContractSubscriber', $postPersist['class']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\ContractSubscriber', $prePersist['class']);
+        $this->assertEquals('postPersistHandler', $postPersist['method']);
+        $this->assertEquals('prePersistHandler', $prePersist['method']);
+
+        //Inherited listeners
+        $this->assertEquals($fixClass->entityListeners, $superClass->entityListeners);
+        $this->assertEquals($flexClass->entityListeners, $superClass->entityListeners);
+
+        //overrited listeners
+        $this->assertArrayHasKey(Events::postPersist, $ultraClass->entityListeners);
+        $this->assertArrayHasKey(Events::prePersist, $ultraClass->entityListeners);
+
+        $this->assertCount(1, $ultraClass->entityListeners[Events::postPersist]);
+        $this->assertCount(3, $ultraClass->entityListeners[Events::prePersist]);
+
+        $postPersist = $ultraClass->entityListeners[Events::postPersist][0];
+        $prePersist  = $ultraClass->entityListeners[Events::prePersist][0];
+
+        $this->assertEquals('Doctrine\Tests\Models\Company\ContractSubscriber', $postPersist['class']);
+        $this->assertEquals('Doctrine\Tests\Models\Company\ContractSubscriber', $prePersist['class']);
+        $this->assertEquals('postPersistHandler', $postPersist['method']);
+        $this->assertEquals('prePersistHandler', $prePersist['method']);
+
+        $prePersist = $ultraClass->entityListeners[Events::prePersist][1];
+        $this->assertEquals('Doctrine\Tests\Models\Company\FlexUltraContractSubscriber', $prePersist['class']);
+        $this->assertEquals('postPersistHandler1', $prePersist['method']);
+        
+        $prePersist = $ultraClass->entityListeners[Events::prePersist][2];
+        $this->assertEquals('Doctrine\Tests\Models\Company\FlexUltraContractSubscriber', $prePersist['class']);
+        $this->assertEquals('postPersistHandler2', $prePersist['method']);
+    }
+
+    /**
+     * @group DDC-1955
+     */
     public function testCallEntityListeners()
     {
         if ( ! ($this instanceof AnnotationDriverTest)) {

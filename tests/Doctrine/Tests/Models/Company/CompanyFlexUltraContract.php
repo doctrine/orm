@@ -4,6 +4,7 @@ namespace Doctrine\Tests\Models\Company;
 
 /**
  * @Entity
+ * @EntityListeners({"ContractSubscriber","FlexUltraContractSubscriber"})
  */
 class CompanyFlexUltraContract extends CompanyFlexContract
 {

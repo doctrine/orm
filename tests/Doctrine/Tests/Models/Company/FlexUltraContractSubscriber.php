@@ -2,7 +2,9 @@
 
 namespace Doctrine\Tests\Models\Company;
 
-class ContractSubscriber
+use Doctrine\ORM\Event\LifecycleEventArgs;
+
+class FlexUltraContractSubscriber
 {
     static public $prePersistCalls;
     static public $postPersisCalls;
@@ -14,9 +16,9 @@ class ContractSubscriber
     }
 
     /**
-     * @PostPersist
+     * @PrePersist
      */
-    public function postPersistHandler(CompanyContract $contract)
+    public function postPersistHandler1(CompanyContract $contract, LifecycleEventArgs $args)
     {
         self::$postPersisCalls[] = func_get_args();
     }
@@ -24,8 +26,8 @@ class ContractSubscriber
     /**
      * @PrePersist
      */
-    public function prePersistHandler(CompanyContract $contract)
+    public function postPersistHandler2(CompanyContract $contract, LifecycleEventArgs $args)
     {
-        self::$prePersistCalls[] = func_get_args();
+        self::$postPersisCalls[] = func_get_args();
     }
 }
