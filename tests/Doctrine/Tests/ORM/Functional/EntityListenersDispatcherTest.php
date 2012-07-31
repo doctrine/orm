@@ -47,7 +47,32 @@ class EntityListenersDispatcherTest extends \Doctrine\Tests\OrmFunctionalTestCas
 
     public function testPostLoadListeners()
     {
-        $this->markTestIncomplete();
+        $fix = new CompanyFixContract();
+        $fix->setFixPrice(2000);
+        
+        $this->_em->persist($fix);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        ContractSubscriber::$postLoadCalls  = array();
+
+        $dql = "SELECT f FROM Doctrine\Tests\Models\Company\CompanyFixContract f WHERE f.id = ?1";
+        $fix = $this->_em->createQuery($dql)->setParameter(1, $fix->getId())->getSingleResult();
+
+        $this->assertCount(1,ContractSubscriber::$instances);
+        $this->assertCount(1,ContractSubscriber::$postLoadCalls);
+
+        $this->assertSame($fix, ContractSubscriber::$postLoadCalls[0][0]);
+
+        $this->assertInstanceOf(
+            'Doctrine\Tests\Models\Company\CompanyFixContract',
+            ContractSubscriber::$postLoadCalls[0][0]
+        );
+
+        $this->assertInstanceOf(
+            'Doctrine\ORM\Event\LifecycleEventArgs',
+            ContractSubscriber::$postLoadCalls[0][1]
+        );
     }
 
     public function testPrePersistListeners()
