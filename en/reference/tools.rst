@@ -434,6 +434,52 @@ You can also reverse engineer a database using the
     a useful domain model.
 
 
+Runtime vs Development Mapping Validation
+-----------------------------------------
+
+For performance reasons Doctrine 2 has to skip some of the
+necessary validation of metadata mappings. You have to execute
+this validation in your development workflow to verify the
+associations are correctly defined.
+
+You can either use the Doctrine Command Line Tool:
+
+.. code-block:: php
+
+    doctrine orm:validate-schema
+
+Or you can trigger the validation manually:
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ORM\Tools\SchemaValidator;
+
+    $validator = new SchemaValidator($entityManager);
+    $errors = $validator->validateMapping();
+
+    if (count($errors) > 0) {
+        // Lots of errors!
+        echo implode("\n\n", $errors);
+    }
+
+If the mapping is invalid the errors array contains a positive
+number of elements with error messages.
+
+.. warning::
+
+    One mapping option that is not validated is the use of the referenced column name.
+    It has to point to the equivalent primary key otherwise Doctrine will not work.
+
+.. note::
+
+    One common error is to use a backlash in front of the
+    fully-qualified class-name. Whenever a FQCN is represented inside a
+    string (such as in your mapping definitions) you have to drop the
+    prefix backslash. PHP does this with ``get_class()`` or Reflection
+    methods for backwards compatibility reasons.
+
+
 Adding own commands
 -------------------
 
