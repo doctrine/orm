@@ -10,7 +10,7 @@ require_once __DIR__ . '/../../TestInit.php';
 /**
 * @group DDC-1955
 */
-class EntityListenersDispatcherTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
 
     protected function setUp()

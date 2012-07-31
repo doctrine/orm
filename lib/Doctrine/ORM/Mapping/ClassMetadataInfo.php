@@ -2434,10 +2434,10 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @return void
      */
-    public function invokeLifecycleCallbacks($lifecycleEvent, $entity)
+    public function invokeLifecycleCallbacks($lifecycleEvent, $entity, EventArgs $event)
     {
         foreach ($this->lifecycleCallbacks[$lifecycleEvent] as $callback) {
-            $entity->$callback();
+            $entity->$callback($event);
         }
     }
 
