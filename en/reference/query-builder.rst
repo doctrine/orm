@@ -76,32 +76,120 @@ STATE\_DIRTY. One ``QueryBuilder`` can be in two different states:
 Working with QueryBuilder
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-All helper methods in ``QueryBuilder`` actually rely on a single
-one: ``add()``. This method is responsible of building every piece
-of DQL. It takes 3 parameters: ``$dqlPartName``, ``$dqlPart`` and
-``$append`` (default=false)
 
+High level API methods
+^^^^^^^^^^^^^^^^^^^^^^
 
--  ``$dqlPartName``: Where the ``$dqlPart`` should be placed.
-   Possible values: select, from, where, groupBy, having, orderBy
--  ``$dqlPart``: What should be placed in ``$dqlPartName``. Accepts
-   a string or any instance of ``Doctrine\ORM\Query\Expr\*``
--  ``$append``: Optional flag (default=false) if the ``$dqlPart``
-   should override all previously defined items in ``$dqlPartName`` or
-   not
-
--
+To simplify even more the way you build a query in Doctrine, we can take
+advantage of what we call Helper methods. For all base code, there
+is a set of useful methods to simplify a programmer's life. To
+illustrate how to work with them, here is the same example 6
+re-written using ``QueryBuilder`` helper methods:
 
 .. code-block:: php
 
     <?php
     // $qb instanceof QueryBuilder
 
-    // example6: how to define: "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC" using QueryBuilder string support
-    $qb->add('select', 'u')
-       ->add('from', 'User u')
-       ->add('where', 'u.id = ?1')
-       ->add('orderBy', 'u.name ASC');
+    $qb->select('u')
+       ->from('User', 'u')
+       ->where('u.id = ?1')
+       ->orderBy('u.name', 'ASC');
+
+``QueryBuilder`` helper methods are considered the standard way to
+build DQL queries. Although it is supported, it should be avoided
+to use string based queries and greatly encouraged to use
+``$qb->expr()->*`` methods. Here is a converted example 8 to
+suggested standard way to build queries:
+
+.. code-block:: php
+
+    <?php
+    // $qb instanceof QueryBuilder
+
+    $qb->select(array('u')) // string 'u' is converted to array internally
+       ->from('User', 'u')
+       ->where($qb->expr()->orX(
+           $qb->expr()->eq('u.id', '?1'),
+           $qb->expr()->like('u.nickname', '?2')
+       ))
+       ->orderBy('u.surname', 'ASC'));
+
+Here is a complete list of helper methods available in ``QueryBuilder``:
+
+.. code-block:: php
+
+    <?php
+    class QueryBuilder
+    {
+        // Example - $qb->select('u')
+        // Example - $qb->select(array('u', 'p'))
+        // Example - $qb->select($qb->expr()->select('u', 'p'))
+        public function select($select = null);
+
+        // Example - $qb->delete('User', 'u')
+        public function delete($delete = null, $alias = null);
+
+        // Example - $qb->update('Group', 'g')
+        public function update($update = null, $alias = null);
+
+        // Example - $qb->set('u.firstName', $qb->expr()->literal('Arnold'))
+        // Example - $qb->set('u.numChilds', 'u.numChilds + ?1')
+        // Example - $qb->set('u.numChilds', $qb->expr()->sum('u.numChilds', '?1'))
+        public function set($key, $value);
+
+        // Example - $qb->from('Phonenumber', 'p')
+        public function from($from, $alias = null);
+
+        // Example - $qb->innerJoin('u.Group', 'g', Expr\Join::WITH, $qb->expr()->eq('u.status_id', '?1'))
+        // Example - $qb->innerJoin('u.Group', 'g', 'WITH', 'u.status = ?1')
+        public function innerJoin($join, $alias = null, $conditionType = null, $condition = null);
+
+        // Example - $qb->leftJoin('u.Phonenumbers', 'p', Expr\Join::WITH, $qb->expr()->eq('p.area_code', 55))
+        // Example - $qb->leftJoin('u.Phonenumbers', 'p', 'WITH', 'p.area_code = 55')
+        public function leftJoin($join, $alias = null, $conditionType = null, $condition = null);
+
+        // NOTE: ->where() overrides all previously set conditions
+        //
+        // Example - $qb->where('u.firstName = ?1', $qb->expr()->eq('u.surname', '?2'))
+        // Example - $qb->where($qb->expr()->andX($qb->expr()->eq('u.firstName', '?1'), $qb->expr()->eq('u.surname', '?2')))
+        // Example - $qb->where('u.firstName = ?1 AND u.surname = ?2')
+        public function where($where);
+
+        // Example - $qb->andWhere($qb->expr()->orX($qb->expr()->lte('u.age', 40), 'u.numChild = 0'))
+        public function andWhere($where);
+
+        // Example - $qb->orWhere($qb->expr()->between('u.id', 1, 10));
+        public function orWhere($where);
+
+        // NOTE: -> groupBy() overrides all previously set grouping conditions
+        //
+        // Example - $qb->groupBy('u.id')
+        public function groupBy($groupBy);
+
+        // Example - $qb->addGroupBy('g.name')
+        public function addGroupBy($groupBy);
+
+        // NOTE: -> having() overrides all previously set having conditions
+        //
+        // Example - $qb->having('u.salary >= ?1')
+        // Example - $qb->having($qb->expr()->gte('u.salary', '?1'))
+        public function having($having);
+
+        // Example - $qb->andHaving($qb->expr()->gt($qb->expr()->count('u.numChild'), 0))
+        public function andHaving($having);
+
+        // Example - $qb->orHaving($qb->expr()->lte('g.managerLevel', '100'))
+        public function orHaving($having);
+
+        // NOTE: -> orderBy() overrides all previously set ordering conditions
+        //
+        // Example - $qb->orderBy('u.surname', 'DESC')
+        public function orderBy($sort, $order = null);
+
+        // Example - $qb->addOrderBy('u.firstName')
+        public function addOrderBy($sort, $order = null); // Default $order = 'ASC'
+    }
 
 Binding parameters to your query
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -117,11 +205,10 @@ allowed. Binding parameters can simply be achieved as follows:
     <?php
     // $qb instanceof QueryBuilder
 
-    // example6: how to define: "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC" using QueryBuilder string support
-    $qb->add('select', 'u')
-       ->add('from', 'User u')
-       ->add('where', 'u.id = ?1')
-       ->add('orderBy', 'u.name ASC');
+    $qb->select('u')
+       ->from('User u')
+       ->where('u.id = ?1')
+       ->orderBy('u.name ASC');
        ->setParameter(1, 100); // Sets ?1 to 100, and thus we will fetch a user with u.id = 100
 
 You are not forced to enumerate your placeholders as the
@@ -132,15 +219,20 @@ alternative syntax is available:
     <?php
     // $qb instanceof QueryBuilder
 
-    // example6: how to define: "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC" using QueryBuilder string support
-    $qb->add('select', 'u')
-       ->add('from', 'User u')
-       ->add('where', 'u.id = :identifier')
-       ->add('orderBy', 'u.name ASC');
+    $qb->select('u')
+       ->from('User u')
+       ->where('u.id = :identifier')
+       ->orderBy('u.name ASC');
        ->setParameter('identifier', 100); // Sets :identifier to 100, and thus we will fetch a user with u.id = 100
 
 Note that numeric placeholders start with a ? followed by a number
 while the named placeholders start with a : followed by a string.
+
+Calling ``setParameter()`` automatically infers which type you are setting as
+value. This works for integers, arrays of strings/integers, DateTime instances
+and for managed entities. If you want to set a type explicitly you can call
+the third argument to ``setParameter()`` explicitly. It accepts either a PDO
+type or a DBAL Type name for conversion.
 
 If you've got several parameters to bind to your query, you can
 also use setParameters() instead of setParameter() with the
@@ -163,12 +255,29 @@ mentioned syntax with "getParameter()" or "getParameters()":
     // $qb instanceof QueryBuilder
 
     // See example above
-    $params = $qb->getParameters(array(1, 2));
+    $params = $qb->getParameters();
+    // $params instanceof \Doctrine\Common\Collections\ArrayCollection
+
     // Equivalent to
-    $param  = array($qb->getParameter(1), $qb->getParameter(2));
+    $param = $qb->getParameter(1);
+    // $param instanceof \Doctrine\ORM\Query\Parameter
 
 Note: If you try to get a parameter that was not bound yet,
 getParameter() simply returns NULL.
+
+The API of a Query Parameter is:
+
+.. code-block:: php
+
+    namespace Doctrine\ORM\Query;
+
+    class Parameter
+    {
+        public function getName();
+        public function getValue();
+        public function getType();
+        public function setValue($value, $type = null);
+    }
 
 Limiting the Result
 ^^^^^^^^^^^^^^^^^^^
@@ -213,29 +322,6 @@ a querybuilder instance into a Query object:
     $array = $query->getArrayResult();
     $scalar = $query->getScalarResult();
     $singleScalar = $query->getSingleScalarResult();
-
-Expr\* classes
-^^^^^^^^^^^^^^
-
-When you call ``add()`` with string, it internally evaluates to an
-instance of ``Doctrine\ORM\Query\Expr\Expr\*`` class. Here is the
-same query of example 6 written using
-``Doctrine\ORM\Query\Expr\Expr\*`` classes:
-
-.. code-block:: php
-
-    <?php
-    // $qb instanceof QueryBuilder
-
-    // example7: how to define: "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC" using QueryBuilder using Expr\* instances
-    $qb->add('select', new Expr\Select(array('u')))
-       ->add('from', new Expr\From('User', 'u'))
-       ->add('where', new Expr\Comparison('u.id', '=', '?1'))
-       ->add('orderBy', new Expr\OrderBy('u.name', 'ASC'));
-
-Of course this is the hardest way to build a DQL query in Doctrine.
-To simplify some of these efforts, we introduce what we call as
-``Expr`` helper class.
 
 The Expr class
 ^^^^^^^^^^^^^^
@@ -393,125 +479,62 @@ complete list of supported helper methods available:
         public function countDistinct($x); // Returns Expr\Func
     }
 
-Helper methods
-^^^^^^^^^^^^^^
 
-Until now we have described the lowest level (thought of as the
+Low Level API
+^^^^^^^^^^^^^
+
+Now we have describe the low level (thought of as the
 hardcore method) of creating queries. It may be useful to work at
 this level for optimization purposes, but most of the time it is
-preferred to work at a higher level of abstraction. To simplify
-even more the way you build a query in Doctrine, we can take
-advantage of what we call Helper methods. For all base code, there
-is a set of useful methods to simplify a programmer's life. To
-illustrate how to work with them, here is the same example 6
-re-written using ``QueryBuilder`` helper methods:
+preferred to work at a higher level of abstraction.
+
+All helper methods in ``QueryBuilder`` actually rely on a single
+one: ``add()``. This method is responsible of building every piece
+of DQL. It takes 3 parameters: ``$dqlPartName``, ``$dqlPart`` and
+``$append`` (default=false)
+
+
+-  ``$dqlPartName``: Where the ``$dqlPart`` should be placed.
+   Possible values: select, from, where, groupBy, having, orderBy
+-  ``$dqlPart``: What should be placed in ``$dqlPartName``. Accepts
+   a string or any instance of ``Doctrine\ORM\Query\Expr\*``
+-  ``$append``: Optional flag (default=false) if the ``$dqlPart``
+   should override all previously defined items in ``$dqlPartName`` or
+   not
+
+-
 
 .. code-block:: php
 
     <?php
     // $qb instanceof QueryBuilder
 
-    // example9: how to define: "SELECT u FROM User u WHERE u.id = ?1 ORDER BY u.name ASC" using QueryBuilder helper methods
-    $qb->select('u')
-       ->from('User', 'u')
-       ->where('u.id = ?1')
-       ->orderBy('u.name', 'ASC');
+    // example6: how to define: "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC" using QueryBuilder string support
+    $qb->add('select', 'u')
+       ->add('from', 'User u')
+       ->add('where', 'u.id = ?1')
+       ->add('orderBy', 'u.name ASC');
 
-``QueryBuilder`` helper methods are considered the standard way to
-build DQL queries. Although it is supported, it should be avoided
-to use string based queries and greatly encouraged to use
-``$qb->expr()->*`` methods. Here is a converted example 8 to
-suggested standard way to build queries:
+Expr\* classes
+^^^^^^^^^^^^^^
 
-.. code-block:: php
-
-    <?php
-    // $qb instanceof QueryBuilder
-
-    // example8: QueryBuilder port of: "SELECT u FROM User u WHERE u.id = ?1 OR u.nickname LIKE ?2 ORDER BY u.surname DESC" using QueryBuilder helper methods
-    $qb->select(array('u')) // string 'u' is converted to array internally
-       ->from('User', 'u')
-       ->where($qb->expr()->orX(
-           $qb->expr()->eq('u.id', '?1'),
-           $qb->expr()->like('u.nickname', '?2')
-       ))
-       ->orderBy('u.surname', 'ASC'));
-
-Here is a complete list of helper methods available in
-``QueryBuilder``:
+When you call ``add()`` with string, it internally evaluates to an
+instance of ``Doctrine\ORM\Query\Expr\Expr\*`` class. Here is the
+same query of example 6 written using
+``Doctrine\ORM\Query\Expr\Expr\*`` classes:
 
 .. code-block:: php
 
-    <?php
-    class QueryBuilder
-    {
-        // Example - $qb->select('u')
-        // Example - $qb->select(array('u', 'p'))
-        // Example - $qb->select($qb->expr()->select('u', 'p'))
-        public function select($select = null);
+   <?php
+   // $qb instanceof QueryBuilder
 
-        // Example - $qb->delete('User', 'u')
-        public function delete($delete = null, $alias = null);
+   // example7: how to define: "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC" using QueryBuilder using Expr\* instances
+   $qb->add('select', new Expr\Select(array('u')))
+      ->add('from', new Expr\From('User', 'u'))
+      ->add('where', new Expr\Comparison('u.id', '=', '?1'))
+      ->add('orderBy', new Expr\OrderBy('u.name', 'ASC'));
 
-        // Example - $qb->update('Group', 'g')
-        public function update($update = null, $alias = null);
-
-        // Example - $qb->set('u.firstName', $qb->expr()->literal('Arnold'))
-        // Example - $qb->set('u.numChilds', 'u.numChilds + ?1')
-        // Example - $qb->set('u.numChilds', $qb->expr()->sum('u.numChilds', '?1'))
-        public function set($key, $value);
-
-        // Example - $qb->from('Phonenumber', 'p')
-        public function from($from, $alias = null);
-
-        // Example - $qb->innerJoin('u.Group', 'g', Expr\Join::WITH, $qb->expr()->eq('u.status_id', '?1'))
-        // Example - $qb->innerJoin('u.Group', 'g', 'WITH', 'u.status = ?1')
-        public function innerJoin($join, $alias = null, $conditionType = null, $condition = null);
-
-        // Example - $qb->leftJoin('u.Phonenumbers', 'p', Expr\Join::WITH, $qb->expr()->eq('p.area_code', 55))
-        // Example - $qb->leftJoin('u.Phonenumbers', 'p', 'WITH', 'p.area_code = 55')
-        public function leftJoin($join, $alias = null, $conditionType = null, $condition = null);
-
-        // NOTE: ->where() overrides all previously set conditions
-        //
-        // Example - $qb->where('u.firstName = ?1', $qb->expr()->eq('u.surname', '?2'))
-        // Example - $qb->where($qb->expr()->andX($qb->expr()->eq('u.firstName', '?1'), $qb->expr()->eq('u.surname', '?2')))
-        // Example - $qb->where('u.firstName = ?1 AND u.surname = ?2')
-        public function where($where);
-
-        // Example - $qb->andWhere($qb->expr()->orX($qb->expr()->lte('u.age', 40), 'u.numChild = 0'))
-        public function andWhere($where);
-
-        // Example - $qb->orWhere($qb->expr()->between('u.id', 1, 10));
-        public function orWhere($where);
-
-        // NOTE: -> groupBy() overrides all previously set grouping conditions
-        //
-        // Example - $qb->groupBy('u.id')
-        public function groupBy($groupBy);
-
-        // Example - $qb->addGroupBy('g.name')
-        public function addGroupBy($groupBy);
-
-        // NOTE: -> having() overrides all previously set having conditions
-        //
-        // Example - $qb->having('u.salary >= ?1')
-        // Example - $qb->having($qb->expr()->gte('u.salary', '?1'))
-        public function having($having);
-
-        // Example - $qb->andHaving($qb->expr()->gt($qb->expr()->count('u.numChild'), 0))
-        public function andHaving($having);
-
-        // Example - $qb->orHaving($qb->expr()->lte('g.managerLevel', '100'))
-        public function orHaving($having);
-
-        // NOTE: -> orderBy() overrides all previously set ordering conditions
-        //
-        // Example - $qb->orderBy('u.surname', 'DESC')
-        public function orderBy($sort, $order = null);
-
-        // Example - $qb->addOrderBy('u.firstName')
-        public function addOrderBy($sort, $order = null); // Default $order = 'ASC'
-    }
-
+Of course this is the hardest way to build a DQL query in Doctrine.
+To simplify some of these efforts, we introduce what we call as
+``Expr`` helper class.
 
