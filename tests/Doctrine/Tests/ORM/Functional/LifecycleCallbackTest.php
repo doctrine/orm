@@ -389,7 +389,7 @@ class LifecycleCallbackEventArgEntity
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
-    /** @Column(type="integer") */
+    /** @Column() */
     public $value;
 
     public $calls = array();
