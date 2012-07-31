@@ -1136,3 +1136,4 @@ been associated with an EntityManager yet:
     $group = $entityManager->find('Group', $groupId);
     $user = new User();
     $user->getGroups()->add($group);
+

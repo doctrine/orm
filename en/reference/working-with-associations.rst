@@ -608,3 +608,82 @@ you have also removed the references for standing data and as well as one
 address reference. When flush is called not only are the references removed 
 but both the old standing data and the one address entity are also deleted 
 from the database.
+
+Filtering Collections
+---------------------
+
+.. filtering-collections:
+
+Collections have a filtering API that allows to slice parts of data from
+a collection. If the collection has not been loaded from the database yet,
+the filtering API can work on the SQL level to make optimized access to
+large collections.
+
+.. code-block:: php
+
+    <?php
+
+    use Doctrine\Common\Collections\Criteria;
+
+    $group          = $entityManager->find('Group', $groupId);
+    $userCollection = $group->getUsers();
+    $expr           = $userCollection->getExpressionBuilder();
+
+    $criteria = Criteria::create();
+    $criteria->where($expr->eq("birthday", "1982-02-17"));
+
+    $birthdayUsers = $userCollection->matching($criteria);
+
+The Criteria has a limited matching language that works both on the
+SQL and on the PHP collection level. This means you can use collection matching
+interchangeably, independent of in-memory or sql-backed collections.
+
+.. code-block:: php
+
+    <?php
+
+    use Doctrine\Common\Collections;
+
+    class Criteria
+    {
+        /**
+         * @return Criteria
+         */
+        static public function create();
+        /**
+         * @param Expression $where
+         * @return Criteria
+         */
+        public function where(Expression $where);
+        /**
+         * @param Expression $where
+         * @return Criteria
+         */
+        public function andWhere(Expression $where);
+        /**
+         * @param Expression $where
+         * @return Criteria
+         */
+        public function orWhere(Expression $where);
+        /**
+         * @param array $orderings
+         * @return Criteria
+         */
+        public function orderBy(array $orderings);
+        /**
+         * @param int $firstResult
+         * @return Criteria
+         */
+        public function setFirstResult($firstResult);
+        /**
+         * @param int $maxResults
+         * @return Criteria
+         */
+        public function setMaxResults($maxResults);
+        public function getOrderings();
+        public function getWhereExpresion();
+        public function getFirstResult();
+        public function getMaxResults();
+    }
+
+You can build expressions through the ExpressionBuilder
