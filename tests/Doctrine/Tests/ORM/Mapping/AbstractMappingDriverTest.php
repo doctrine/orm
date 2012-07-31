@@ -826,9 +826,9 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $fixClass   = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFlexContract');
         $ultraClass = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFlexUltraContract');
 
-        ContractSubscriber::$prePersistCalls    = null;
-        ContractSubscriber::$postPersistCalls   = null;
-        FlexUltraContractSubscriber::$prePersistCalls = null;
+        ContractSubscriber::$prePersistCalls    = array();
+        ContractSubscriber::$postPersistCalls   = array();
+        FlexUltraContractSubscriber::$prePersistCalls = array();
 
         $fix        = new CompanyFixContract();
         $fixArg     = new LifecycleEventArgs($fix, $em);
@@ -862,7 +862,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSame($ultraArg, FlexUltraContractSubscriber::$prePersistCalls[1][1]);
 
         $this->assertCount(1, ContractSubscriber::$instances);
-        $this->assertNull(ContractSubscriber::$postPersistCalls);
+        $this->assertEmpty(ContractSubscriber::$postPersistCalls);
     }
 
 }
