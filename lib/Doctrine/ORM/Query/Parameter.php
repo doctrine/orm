@@ -54,7 +54,7 @@ class Parameter
     {
         $this->name  = trim($name, ':');
 
-        $this->setValue($value);
+        $this->setValue($value, $type);
     }
 
     /**
