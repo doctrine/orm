@@ -343,13 +343,13 @@ class SingleTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyContract");
         $contracts = $repository->matching(new Criteria(
-            $repository->expr()->eq('salesPerson', $this->salesPerson->getId())
+            Criteria::expr()->eq('salesPerson', $this->salesPerson->getId())
         ));
         $this->assertEquals(3, count($contracts));
 
         $repository = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyFixContract");
         $contracts = $repository->matching(new Criteria(
-            $repository->expr()->eq('salesPerson', $this->salesPerson->getId())
+            Criteria::expr()->eq('salesPerson', $this->salesPerson->getId())
         ));
         $this->assertEquals(1, count($contracts));
     }

@@ -484,13 +484,13 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyEmployee");
         $users = $repository->matching(new Criteria(
-            $repository->expr()->eq('department', 'IT')
+            Criteria::expr()->eq('department', 'IT')
         ));
         $this->assertEquals(1, count($users));
 
         $repository = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyManager");
         $users = $repository->matching(new Criteria(
-            $repository->expr()->eq('department', 'IT')
+            Criteria::expr()->eq('department', 'IT')
         ));
         $this->assertEquals(1, count($users));
     }
