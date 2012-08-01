@@ -219,7 +219,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testAttributeOverridesMappingWithTrait()
     {
         if (!version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            $this->markTestSkipped('Invalid PHP version, unable to run this test.');
+            $this->markTestSkipped('This test is only for 5.4+.');
         }
 
         $factory       = $this->createClassMetadataFactory();
