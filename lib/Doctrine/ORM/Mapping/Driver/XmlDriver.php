@@ -556,6 +556,21 @@ class XmlDriver extends FileDriver
                 $metadata->addLifecycleCallback((string)$lifecycleCallback['method'], constant('Doctrine\ORM\Events::' . (string)$lifecycleCallback['type']));
             }
         }
+
+        // Evaluate entity listener
+        if (isset($xmlRoot->{'entity-listeners'})) {
+            foreach ($xmlRoot->{'entity-listeners'}->{'entity-listener'} as $listenerElement) {
+                $className  = (string) $listenerElement['class'];
+
+                foreach ($listenerElement as $type => $callbackElement) {
+                    list($prefix, $suffix)  = explode('-', $type);
+                    $eventName              = $prefix . ucfirst($suffix);
+                    $methodName             = (string) $callbackElement['method'];
+
+                    $metadata->addEntityListener($eventName, $className, $methodName);
+                }
+            }
+        }
     }
 
     /**

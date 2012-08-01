@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+                              
+    <entity name="Doctrine\Tests\Models\Company\CompanyFlexUltraContract">
+
+        <entity-listeners>
+            <entity-listener class="ContractSubscriber">
+                <pre-flush      method="preFlushHandler"/>
+                <post-load      method="postLoadHandler"/>
+
+                <post-persist   method="postPersistHandler"/>
+                <pre-persist    method="prePersistHandler"/>
+
+                <post-update    method="postPersistHandler"/>
+                <pre-update     method="preUpdateHandler"/>
+
+                <post-remove    method="postRemoveHandler"/>
+                <pre-remove     method="preRemoveHandler"/>
+            </entity-listener>
+
+            <entity-listener class="FlexUltraContractSubscriber">
+                <pre-persist method="prePersistHandler1"/>
+                <pre-persist method="prePersistHandler2"/>
+            </entity-listener>
+        </entity-listeners>
+
+        <field name="maxPrice" column="maxPrice" type="integer"/>
+
+        <!-- Other mappings -->
+    </entity>
+
+</doctrine-mapping>

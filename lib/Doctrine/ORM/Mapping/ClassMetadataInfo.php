@@ -2499,6 +2499,16 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function addEntityListener($eventName, $class, $method)
     {
+        $class = $this->fullyQualifiedClassName($class);
+
+        if ( ! class_exists($class)) {
+            throw MappingException::entityListenerClassNotFound($class, $this->name);
+        }
+
+        if ( !method_exists($class, $method)) {
+            throw MappingException::entityListenerMethodNotFound($class, $method, $this->name);
+        }
+
         $this->entityListeners[$eventName][] = array(
             'class'     => $class,
             'method'    => $method

@@ -419,19 +419,19 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($classAnnotations['Doctrine\ORM\Mapping\EntityListeners'])) {
             $entityListenersAnnot = $classAnnotations['Doctrine\ORM\Mapping\EntityListeners'];
 
-            foreach ($entityListenersAnnot->value as $listener) {
-                $listener = $metadata->fullyQualifiedClassName($listener);
+            foreach ($entityListenersAnnot->value as $item) {
+                $listenerClassName = $metadata->fullyQualifiedClassName($item);
 
-                if ( ! class_exists($listener)) {
-                    throw new \InvalidArgumentException("Indefined class \"$listener\"");
+                if ( ! class_exists($listenerClassName)) {
+                    throw MappingException::entityListenerClassNotFound($listenerClassName, $className);
                 }
 
-                $listener = new \ReflectionClass($listener);
+                $listenerClass = new \ReflectionClass($listenerClassName);
                 /* @var $method \ReflectionMethod */
-                foreach ($listener->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+                foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                     // find method callbacks.
                     foreach ($this->getMethodCallbacks($method) as $value) {
-                        $metadata->addEntityListener($value[1], $listener->name, $value[0]);
+                        $metadata->addEntityListener($value[1], $listenerClassName, $value[0]);
                     }
                 }
             }
