@@ -627,12 +627,20 @@ large collections.
 
     $group          = $entityManager->find('Group', $groupId);
     $userCollection = $group->getUsers();
-    $expr           = $userCollection->getExpressionBuilder();
 
-    $criteria = Criteria::create();
-    $criteria->where($expr->eq("birthday", "1982-02-17"));
+    $criteria = Criteria::create()
+        ->where(Criteria::expr()->eq("birthday", "1982-02-17"))
+        ->orderBy(array("username" => "ASC"))
+        ->setFirstResult(0)
+        ->setMaxResults(20)
+    ;
 
     $birthdayUsers = $userCollection->matching($criteria);
+
+.. tip::
+
+    You can move the access of slices of collections into dedicated methods of
+    an entity. For example ``Group#getTodaysBirthdayUsers()``.
 
 The Criteria has a limited matching language that works both on the
 SQL and on the PHP collection level. This means you can use collection matching
@@ -686,4 +694,19 @@ interchangeably, independent of in-memory or sql-backed collections.
         public function getMaxResults();
     }
 
-You can build expressions through the ExpressionBuilder
+You can build expressions through the ExpressionBuilder. It has the following
+methods:
+
+* ``andX($arg1, $arg2, ...)``
+* ``orX($arg1, $arg2, ...)``
+* ``eq($field, $value)``
+* ``gt($field, $value)``
+* ``lt($field, $value)``
+* ``lte($field, $value)``
+* ``gte($field, $value)``
+* ``neq($field, $value)``
+* ``isNull($field)``
+* ``in($field, array $values)``
+* ``notIn($field, array $values)``
+
+
