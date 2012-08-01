@@ -47,11 +47,6 @@ use Closure;
 final class PersistentCollection implements Collection, Selectable
 {
     /**
-     * @var Doctrine\Common\Collections\ExpressionBuilder
-     */
-    static private $expressionBuilder;
-
-    /**
      * A snapshot of the collection at the moment it was fetched from the database.
      * This is used to create a diff of the collection at commit time.
      *
@@ -820,7 +815,7 @@ final class PersistentCollection implements Collection, Selectable
         $targetClass = $this->em->getClassMetadata(get_class($this->owner));
 
         $id              = $targetClass->getSingleIdReflectionProperty()->getValue($this->owner);
-        $builder         = $this->expr();
+        $builder         = Criteria::expr();
         $ownerExpression = $builder->eq($this->backRefFieldName, $id);
         $expression      = $criteria->getWhereExpression();
         $expression      = $expression ? $builder->andX($expression, $ownerExpression) : $ownerExpression;
@@ -830,20 +825,6 @@ final class PersistentCollection implements Collection, Selectable
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->association['targetEntity']);
 
         return new ArrayCollection($persister->loadCriteria($criteria));
-    }
-
-    /**
-     * Return Builder object that helps with building criteria expressions.
-     *
-     * @return \Doctrine\Common\Collections\ExpressionBuilder
-     */
-    public function expr()
-    {
-        if (self::$expressionBuilder === null) {
-            self::$expressionBuilder = new ExpressionBuilder();
-        }
-
-        return self::$expressionBuilder;
     }
 }
 

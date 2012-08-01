@@ -43,11 +43,6 @@ use Doctrine\Common\Collections\ExpressionBuilder;
 class EntityRepository implements ObjectRepository, Selectable
 {
     /**
-     * @var Doctrine\Common\Collections\ExpressionBuilder
-     */
-    private static $expressionBuilder;
-
-    /**
      * @var string
      */
     protected $_entityName;
@@ -277,17 +272,5 @@ class EntityRepository implements ObjectRepository, Selectable
 
         return new ArrayCollection($persister->loadCriteria($criteria));
     }
-
-    /**
-     * Return Builder object that helps with building criteria expressions.
-     *
-     * @return \Doctrine\Common\Collections\ExpressionBuilder
-     */
-    public function expr()
-    {
-        if (self::$expressionBuilder === null) {
-            self::$expressionBuilder = new ExpressionBuilder();
-        }
-        return self::$expressionBuilder;
-    }
 }
+
