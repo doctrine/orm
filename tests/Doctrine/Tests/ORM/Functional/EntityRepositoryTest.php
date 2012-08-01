@@ -582,7 +582,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
         $users = $repository->matching(new Criteria(
-            $repository->expr()->eq('username', 'beberlei')
+            Criteria::expr()->eq('username', 'beberlei')
         ));
 
         $this->assertEquals(1, count($users));
@@ -597,7 +597,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
         $users = $repository->matching(new Criteria(
-            $repository->expr()->neq('username', 'beberlei')
+            Criteria::expr()->neq('username', 'beberlei')
         ));
 
         $this->assertEquals(3, count($users));
@@ -612,7 +612,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
         $users = $repository->matching(new Criteria(
-            $repository->expr()->in('username', array('beberlei', 'gblanco'))
+            Criteria::expr()->in('username', array('beberlei', 'gblanco'))
         ));
 
         $this->assertEquals(2, count($users));
@@ -627,7 +627,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
         $users = $repository->matching(new Criteria(
-            $repository->expr()->notIn('username', array('beberlei', 'gblanco', 'asm89'))
+            Criteria::expr()->notIn('username', array('beberlei', 'gblanco', 'asm89'))
         ));
 
         $this->assertEquals(1, count($users));
@@ -642,7 +642,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
         $users = $repository->matching(new Criteria(
-            $repository->expr()->lt('id', $firstUserId + 1)
+            Criteria::expr()->lt('id', $firstUserId + 1)
         ));
 
         $this->assertEquals(1, count($users));
@@ -657,7 +657,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
         $users = $repository->matching(new Criteria(
-            $repository->expr()->lte('id', $firstUserId + 1)
+            Criteria::expr()->lte('id', $firstUserId + 1)
         ));
 
         $this->assertEquals(2, count($users));
@@ -672,7 +672,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
         $users = $repository->matching(new Criteria(
-            $repository->expr()->gt('id', $firstUserId)
+            Criteria::expr()->gt('id', $firstUserId)
         ));
 
         $this->assertEquals(3, count($users));
@@ -687,7 +687,7 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
         $users = $repository->matching(new Criteria(
-            $repository->expr()->gte('id', $firstUserId)
+            Criteria::expr()->gte('id', $firstUserId)
         ));
 
         $this->assertEquals(4, count($users));
