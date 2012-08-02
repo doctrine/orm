@@ -1123,6 +1123,12 @@ class BasicEntityPersister
         $eagerAliasCounter = 0;
 
         foreach ($this->_class->associationMappings as $assocField => $assoc) {
+            $targetEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
+
+            if (isset($skipMapped[$assocField]) || isset($targetEntity->mappedAssociations[$assoc['mappedBy']])) {
+                continue;
+            }
+
             $assocColumnSQL = $this->_getSelectColumnAssociationSQL($assocField, $assoc, $this->_class);
 
             if ($assocColumnSQL) {
@@ -1132,23 +1138,21 @@ class BasicEntityPersister
             }
 
             if ($assoc['type'] & ClassMetadata::TO_ONE && ($assoc['fetch'] == ClassMetadata::FETCH_EAGER || !$assoc['isOwningSide'])) {
-                $eagerEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
-
-                if ($eagerEntity->inheritanceType != ClassMetadata::INHERITANCE_TYPE_NONE) {
+                if ($targetEntity->inheritanceType != ClassMetadata::INHERITANCE_TYPE_NONE) {
                     continue; // now this is why you shouldn't use inheritance
                 }
 
                 $assocAlias = 'e' . ($eagerAliasCounter++);
                 $this->_rsm->addJoinedEntityResult($assoc['targetEntity'], $assocAlias, 'r', $assocField);
 
-                foreach ($eagerEntity->fieldNames as $field) {
+                foreach ($targetEntity->fieldNames as $field) {
                     if ($columnList) $columnList .= ', ';
 
-                    $columnList .= $this->_getSelectColumnSQL($field, $eagerEntity, $assocAlias);
+                    $columnList .= $this->_getSelectColumnSQL($field, $targetEntity, $assocAlias);
                 }
 
-                foreach ($eagerEntity->associationMappings as $assoc2Field => $assoc2) {
-                    $assoc2ColumnSQL = $this->_getSelectColumnAssociationSQL($assoc2Field, $assoc2, $eagerEntity, $assocAlias);
+                foreach ($targetEntity->associationMappings as $assoc2Field => $assoc2) {
+                    $assoc2ColumnSQL = $this->_getSelectColumnAssociationSQL($assoc2Field, $assoc2, $targetEntity, $assocAlias);
 
                     if ($assoc2ColumnSQL) {
                         if ($columnList) $columnList .= ', ';
@@ -1159,7 +1163,7 @@ class BasicEntityPersister
 
                 if ($assoc['isOwningSide']) {
                     $this->_selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($assoc['joinColumns']);
-                    $this->_selectJoinSql .= ' ' . $this->quoteStrategy->getTableName($eagerEntity, $this->_platform) . ' ' . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) .' ON ';
+                    $this->_selectJoinSql .= ' ' . $this->quoteStrategy->getTableName($targetEntity, $this->_platform) . ' ' . $this->_getSQLTableAlias($targetEntity->name, $assocAlias) .' ON ';
 
                     $tableAlias = $this->_getSQLTableAlias($assoc['targetEntity'], $assocAlias);
                     foreach ($assoc['joinColumns'] as $joinColumn) {
@@ -1175,16 +1179,16 @@ class BasicEntityPersister
                     }
 
                     // Add filter SQL
-                    if ($filterSql = $this->generateFilterConditionSQL($eagerEntity, $tableAlias)) {
+                    if ($filterSql = $this->generateFilterConditionSQL($targetEntity, $tableAlias)) {
                         $this->_selectJoinSql .= ' AND ' . $filterSql;
                     }
                 } else {
-                    $eagerEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
-                    $owningAssoc = $eagerEntity->getAssociationMapping($assoc['mappedBy']);
+                    $targetEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
+                    $owningAssoc = $targetEntity->getAssociationMapping($assoc['mappedBy']);
 
                     $this->_selectJoinSql .= ' LEFT JOIN';
-                    $this->_selectJoinSql .= ' ' . $this->quoteStrategy->getTableName($eagerEntity, $this->_platform) . ' '
-                                           . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) . ' ON ';
+                    $this->_selectJoinSql .= ' ' . $this->quoteStrategy->getTableName($targetEntity, $this->_platform) . ' '
+                                           . $this->_getSQLTableAlias($targetEntity->name, $assocAlias) . ' ON ';
 
                     foreach ($owningAssoc['sourceToTargetKeyColumns'] as $sourceCol => $targetCol) {
                         if ( ! $first) {
