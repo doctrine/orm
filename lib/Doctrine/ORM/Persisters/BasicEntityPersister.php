@@ -1351,6 +1351,26 @@ class BasicEntityPersister
     }
 
     /**
+     * Gets the SQL snippet of a qualified mapped association descriminator column name for the given
+     * mapped association field name.
+     *
+     * @param array $assoc The mapped association.
+     * @param ClassMetadata $class The class that declares this field. The table this class is
+     *                             mapped to must own the column for the given field.
+     * @param string $alias
+     */
+    protected function _getSelectMappedAssociationDescriminatorColumnSQL(array $assoc, ClassMetadata $class, $alias = 'r')
+    {
+        $sql = $this->_getSQLTableAlias($class->name, $alias == 'r' ? '' : $alias)
+            . '.' . $this->quoteStrategy->getMappedAssociationDescriminatorColumnName($assoc, $class, $this->_platform);
+        $columnAlias = $this->getSQLColumnAlias($assoc['fieldMapping']['columnName']);
+
+        $this->_rsm->addFieldResult($alias, $columnAlias, $assoc['fieldMapping']['columnName']);
+
+        return $sql . ' AS ' . $columnAlias;
+    }
+
+    /**
      * Gets the SQL table alias for the given class name.
      *
      * @param string $className
