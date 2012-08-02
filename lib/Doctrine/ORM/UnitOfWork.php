@@ -539,7 +539,7 @@ class UnitOfWork implements PropertyChangedListener
             $changeSet = array();
 
             foreach ($actualData as $propName => $actualValue) {
-                if ( ! isset($class->associationMappings[$propName])) {
+                if ( ! isset($class->associationMappings[$propName]) || isset($class->mappedAssociations[$propName])) {
                     $changeSet[$propName] = array(null, $actualValue);
 
                     continue;
@@ -575,8 +575,8 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                // if regular field
-                if ( ! isset($class->associationMappings[$propName])) {
+                // if regular field or mapped association
+                if ( ! isset($class->associationMappings[$propName]) || isset($class->mappedAssociations[$propName])) {
                     if ($isChangeTrackingNotify) {
                         continue;
                     }
