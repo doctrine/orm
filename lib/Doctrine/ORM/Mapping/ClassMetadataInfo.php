@@ -823,6 +823,10 @@ class ClassMetadataInfo implements ClassMetadata
             $serialized[] = "customGeneratorDefinition";
         }
 
+        if ($this->mappedAssociations) {
+            $serialized[] = "mappedAssociations";
+        }
+
         return $serialized;
     }
 
@@ -860,6 +864,10 @@ class ClassMetadataInfo implements ClassMetadata
             $this->reflFields[$field] = isset($mapping['declared'])
                 ? $reflService->getAccessibleProperty($mapping['declared'], $field)
                 : $reflService->getAccessibleProperty($this->name, $field);
+        }
+
+        foreach ($this->mappedAssociations as $field => $mapping) {
+            $this->reflFields[$field] = $reflService->getAccessibleProperty($this->name, $field);
         }
     }
 
