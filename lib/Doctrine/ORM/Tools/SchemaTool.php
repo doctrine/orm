@@ -308,6 +308,25 @@ class SchemaTool
     }
 
     /**
+     * Get a portable column definition as required by the DBAL for the mapped association
+     * discriminator columns of a class.
+     *
+     * @param ClassMetadata $class
+     * @param Table $table
+     */
+    private function addMappedAssociationDiscriminatorColumnDefinitions($class, $table)
+    {
+        foreach ($class->getMappedAssociations() as $mappedAssociation) {
+            $fieldMapping = $mappedAssociation['fieldMapping'];
+            $options = array(
+                'length' => $fieldMapping['length'],
+                'notnull' => !$fieldMapping['nullable'],
+            );
+            $table->addColumn($fieldMapping['columnName'], $fieldMapping['type'], $options);
+        }
+    }
+
+    /**
      * Gathers the column definitions as required by the DBAL of all field mappings
      * found in the given class.
      *
