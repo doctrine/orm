@@ -2407,6 +2407,10 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
+            if (isset($class->mappedAssociations[$field]) && ($assoc['targetEntity'] = $data[$class->mappedAssociations[$field]['fieldMapping']['columnName']]) == null) {
+                continue;
+            }
+
             $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
             switch (true) {
