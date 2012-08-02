@@ -158,10 +158,12 @@ class SimpleObjectHydrator extends AbstractHydrator
                     return null;
                 }
 
+                $field = isset($class->mappedAssociationMappings[$this->_rsm->fieldMappings[$column]]) ? null : true;
+
                 return array(
                     'class' => $class,
                     'name'  => $this->_rsm->fieldMappings[$column],
-                    'field' => true,
+                    'field' => $field,
                 );
 
             case (isset($this->_rsm->relationMap[$column])):
