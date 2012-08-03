@@ -2483,7 +2483,7 @@ class UnitOfWork implements PropertyChangedListener
                         default:
                             switch (true) {
                                 // Populate mapped associations
-                                case ($class->mappedAssociations[$field]):
+                                case (isset($class->mappedAssociations[$field])):
                                     $newValue = $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity, $associatedId);
                                     break;
 
