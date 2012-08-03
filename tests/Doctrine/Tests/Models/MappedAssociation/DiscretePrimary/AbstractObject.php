@@ -23,6 +23,11 @@ class AbstractObject
      */
     private $description;
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
     public function setDescription($description)
     {
         $this->description = $description;
