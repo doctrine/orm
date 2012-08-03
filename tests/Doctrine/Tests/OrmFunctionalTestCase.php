@@ -124,6 +124,16 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\CustomType\CustomTypeParent',
             'Doctrine\Tests\Models\CustomType\CustomTypeUpperCase',
         ),
+        'mappedassociation' => array(
+            'Doctrine\Tests\Models\MappedAssociation\PrimaryIsForeign\FileFolder',
+            'Doctrine\Tests\Models\MappedAssociation\PrimaryIsForeign\AbstractContent',
+            'Doctrine\Tests\Models\MappedAssociation\PrimaryIsForeign\Paper',
+            'Doctrine\Tests\Models\MappedAssociation\PrimaryIsForeign\Photo',
+            'Doctrine\Tests\Models\MappedAssociation\DiscretePrimary\Shelf',
+            'Doctrine\Tests\Models\MappedAssociation\DiscretePrimary\AbstractObject',
+            'Doctrine\Tests\Models\MappedAssociation\DiscretePrimary\Book',
+            'Doctrine\Tests\Models\MappedAssociation\DiscretePrimary\Video',
+        ),
     );
 
     protected function useModelSet($setName)
@@ -237,6 +247,15 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM customtype_parents');
             $conn->executeUpdate('DELETE FROM customtype_children');
             $conn->executeUpdate('DELETE FROM customtype_uppercases');
+        }
+
+        if (isset($this->_usedModelSets['customtype'])) {
+            $conn->executeUpdate('DELETE FROM pif_paper');
+            $conn->executeUpdate('DELETE FROM pif_photo');
+            $conn->executeUpdate('DELETE FROM pif_filefolder');
+            $conn->executeUpdate('DELETE FROM dp_shelf');
+            $conn->executeUpdate('DELETE FROM dp_book');
+            $conn->executeUpdate('DELETE FROM dp_video');
         }
 
         $this->_em->clear();
