@@ -2505,7 +2505,7 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::entityListenerClassNotFound($class, $this->name);
         }
 
-        if ( !method_exists($class, $method)) {
+        if ( ! method_exists($class, $method)) {
             throw MappingException::entityListenerMethodNotFound($class, $method, $this->name);
         }
 
