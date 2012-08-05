@@ -15,7 +15,7 @@
                 <post-persist   method="postPersistHandler"/>
                 <pre-persist    method="prePersistHandler"/>
 
-                <post-update    method="postPersistHandler"/>
+                <post-update    method="postUpdateHandler"/>
                 <pre-update     method="preUpdateHandler"/>
 
                 <post-remove    method="postRemoveHandler"/>

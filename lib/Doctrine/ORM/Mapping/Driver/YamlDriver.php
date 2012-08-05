@@ -572,6 +572,17 @@ class YamlDriver extends FileDriver
                 }
             }
         }
+
+        // Evaluate entityListeners
+        if (isset($element['entityListeners'])) {
+            foreach ($element['entityListeners']  as $className => $entityListener) {
+                foreach ($entityListener as $eventName => $callbackElement){
+                    foreach ($callbackElement as $methodName){
+                        $metadata->addEntityListener($eventName, $className, $methodName);
+                    }
+                }
+            }
+        }
     }
 
     /**
