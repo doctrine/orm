@@ -439,11 +439,25 @@ class MappingException extends \Doctrine\ORM\ORMException
         ));
     }
 
-    public static function associationRequiredForMappedAssociation($className, $field) {
+    /**
+     * @param string $className
+     * @param string $field
+     *
+     * @return self
+     */
+    public static function associationRequiredForMappedAssociation($className, $field)
+    {
         return new self("One-to-one association required on '$className#$field' for mapped association.");
     }
 
-    public static function unsupportedAssociationForMappedAssociation($className, $field) {
+    /**
+     * @param string $className
+     * @param string $field
+     *
+     * @return self
+     */
+    public static function unsupportedAssociationForMappedAssociation($className, $field)
+    {
         return new self("Invalid association type on '$className#$field' for mapped association. Only one-to-one associations are supported.");
     }
 }

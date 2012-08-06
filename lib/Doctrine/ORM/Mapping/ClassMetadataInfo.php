@@ -2102,8 +2102,8 @@ class ClassMetadataInfo implements ClassMetadata
      * Add a mapped association to the class
      *
      * @param array $mapping
+     *
      * @throws MappingException
-     * @return void
      */
     public function addMappedAssociation(array $mapping)
     {

@@ -112,11 +112,11 @@ interface QuoteStrategy
     /**
      * Gets the (possibly quoted) mapped association descriminator column name
      *
-     * @param array $assoc
-     * @param ClassMetadata $class
+     * @param array            $assoc
+     * @param ClassMetadata    $class
      * @param AbstractPlatform $platform
-     * @return  string
      *
+     * @return string
      */
     function getMappedAssociationDescriminatorColumnName(array $assoc, ClassMetadata $class, AbstractPlatform $platform);
 

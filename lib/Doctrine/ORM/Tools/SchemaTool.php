@@ -316,7 +316,7 @@ class SchemaTool
      * discriminator columns of a class.
      *
      * @param ClassMetadata $class
-     * @param Table $table
+     * @param Table         $table
      */
     private function addMappedAssociationDiscriminatorColumnDefinitions($class, $table)
     {

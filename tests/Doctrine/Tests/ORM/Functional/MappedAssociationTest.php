@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\MappedAssociation\PrimaryIsForeign\FileFolder;
 use Doctrine\Tests\Models\MappedAssociation\PrimaryIsForeign\Paper;
 use Doctrine\Tests\Models\MappedAssociation\PrimaryIsForeign\Photo;
@@ -14,6 +12,8 @@ use Doctrine\Tests\Models\MappedAssociation\DiscretePrimary\Video;
 require_once __DIR__ . '/../../TestInit.php';
 
 /**
+ * Mapped association tests
+ *
  * @group Doctrine.MappedAssociation
  */
 class MappedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
@@ -31,6 +31,9 @@ class MappedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
     }
 
+    /**
+     * Test mapped association with mapped entity having primary key as a foreign key.
+     */
     public function testSimplePrimaryIsForeignMappedAssociation()
     {
         /**
@@ -151,6 +154,9 @@ class MappedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEmpty($results);
     }
 
+    /**
+     * Test mapped association with mapped entity have its own identifier and container owning side.
+     */
     public function testSimpleDiscretePrimaryMappedAssociation()
     {
         /**
