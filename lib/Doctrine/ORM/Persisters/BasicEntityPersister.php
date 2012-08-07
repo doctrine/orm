@@ -1339,7 +1339,7 @@ class BasicEntityPersister
                         $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->_class, $this->_platform);
                     }
                 }
-            } else if ($this->_class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $this->_class->identifier[0] != $name) {
+            } else if (($this->_class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $this->_class->identifier[0] != $name) && !isset($this->_class->mappedAssociations[$name])) {
                 $columns[] = $this->quoteStrategy->getColumnName($name, $this->_class, $this->_platform);
                 $this->_columnTypes[$name] = $this->_class->fieldMappings[$name]['type'];
             }
