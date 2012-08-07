@@ -748,6 +748,10 @@ class BasicEntityPersister
                 unset($identifier[$targetKeyColumn]);
             }
 
+            if (isset($targetClass->mappedAssociations[$owningAssoc['fieldName']]) && $owningAssoc['isOwningSide']) {
+                $identifier[$this->_getSQLTableAlias($targetClass->name) . "." . $targetClass->mappedAssociations[$owningAssoc['fieldName']]['fieldMapping']['columnName']] = $sourceClass->name;
+            }
+
             $targetEntity = $this->load($identifier, null, $assoc);
 
             if ($targetEntity !== null) {
