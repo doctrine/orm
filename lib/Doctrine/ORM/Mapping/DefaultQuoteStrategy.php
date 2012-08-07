@@ -55,7 +55,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
      */
     public function getTableName(ClassMetadata $class, AbstractPlatform $platform)
     {
-        return isset($class->table['quoted']) 
+        return isset($class->table['quoted'])
             ? $platform->quoteIdentifier($class->table['name'])
             : $class->table['name'];
     }
