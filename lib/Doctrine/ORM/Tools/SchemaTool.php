@@ -457,6 +457,14 @@ class SchemaTool
                 foreach($uniqueConstraints as $indexName => $unique) {
                     $table->addUniqueIndex($unique['columns'], is_numeric($indexName) ? null : $indexName);
                 }
+
+                if (isset($class->mappedAssociations[$fieldName]) && $foreignClass->isMappedSuperclass) {
+                    foreach ($table->getForeignKeys() as $fkName => $mapping) {
+                        if ($this->quoteStrategy->getTableName($foreignClass, $this->platform) == $mapping->getForeignTableName()) {
+                            $table->removeForeignKey($fkName);
+                        }
+                    }
+                }
             } else if ($mapping['type'] == ClassMetadata::ONE_TO_MANY && $mapping['isOwningSide']) {
                 //... create join table, one-many through join table supported later
                 throw ORMException::notSupported();
