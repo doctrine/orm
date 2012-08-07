@@ -43,6 +43,16 @@ class DefaultQuoteStrategy implements QuoteStrategy
     /**
      * {@inheritdoc}
      */
+    public function getMappedAssociationDiscriminatorColumnName(array $assoc, ClassMetadata $class, AbstractPlatform $platform)
+    {
+        return isset($assoc['fieldMapping']['quoted'])
+            ? $platform->quoteIdentifier($assoc['fieldMapping']['columnName'])
+            : $assoc['fieldMapping']['columnName'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getTableName(ClassMetadata $class, AbstractPlatform $platform)
     {
         return isset($class->table['quoted']) 
