@@ -563,6 +563,13 @@ class BasicEntityPersister
 
             $newVal = $change[1];
 
+            if (isset($this->_class->mappedAssociations[$field])) {
+                $fieldMapping = $this->_class->mappedAssociations[$field]['fieldMapping'];
+                $columnName = $fieldMapping['columnName'];
+                $this->_columnTypes[$columnName] = $fieldMapping['type'];
+                $result[$this->getOwningTable($field)][$columnName] = $newVal ? get_class($newVal) : $newVal;
+            }
+
             if (isset($this->_class->associationMappings[$field])) {
                 $assoc = $this->_class->associationMappings[$field];
 
