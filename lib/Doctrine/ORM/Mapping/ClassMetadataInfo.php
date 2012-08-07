@@ -2099,6 +2099,45 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Add a mapped association to the class
+     *
+     * @param array $mapping
+     *
+     * @throws MappingException
+     */
+    public function addMappedAssociation(array $mapping)
+    {
+        $fieldMapping = &$mapping['fieldMapping'];
+
+        if (!isset($fieldMapping['columnName'])) {
+            $fieldMapping['fieldName'] = $mapping['name'] . 'Class';
+            $fieldMapping['columnName'] = $this->namingStrategy->propertyToColumnName($fieldMapping['fieldName']);
+        } else {
+            $fieldMapping['fieldName'] = $fieldMapping['columnName'];
+        }
+
+        if ($fieldMapping['columnName'][0] === '`') {
+            $fieldMapping['columnName']  = trim($fieldMapping['columnName'], '`');
+            $fieldMapping['quoted']      = true;
+        }
+
+        $fieldMapping['type'] = 'string';
+
+        if (isset($this->fieldNames[$fieldMapping['columnName']])) {
+            throw MappingException::duplicateColumnName($this->name, $fieldMapping['columnName']);
+        }
+
+        if (!isset($this->associationMappings[$mapping['name']])) {
+            throw MappingException::associationRequiredForMappedAssociation($this->name, $fieldMapping['columnName']);
+        } elseif ($this->associationMappings[$mapping['name']]['type'] != self::ONE_TO_ONE || $this->associationMappings[$mapping['name']]['isOwningSide']) {
+            throw MappingException::unsupportedAssociationForMappedAssociation($this->name, $fieldMapping['columnName']);
+        }
+
+        $this->mappedAssociationMappings[$fieldMapping['columnName']] = $mapping['name'];
+        $this->mappedAssociations[$mapping['name']] = $mapping;
+    }
+
+    /**
      * INTERNAL:
      * Adds a named query to this class.
      *
