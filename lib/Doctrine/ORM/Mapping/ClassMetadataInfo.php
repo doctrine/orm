@@ -374,6 +374,13 @@ class ClassMetadataInfo implements ClassMetadata
     public $columnNames = array();
 
     /**
+     * READ-ONLY: The mapped associations of the class.
+     *
+     * @var array
+     */
+    public $mappedAssociations = array();
+
+    /**
      * READ-ONLY: The discriminator value of this class.
      *
      * <b>This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
