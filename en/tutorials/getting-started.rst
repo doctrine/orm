@@ -1431,6 +1431,11 @@ the previoiusly discussed query functionality in it:
 
 Dont forget to add a `require_once` call for this class to the bootstrap.php
 
+.. note::
+
+    **require_once gotcha**
+    Make sure you add the require_once call for `BugRepository.php` *after* the require_once call for `bootstrap_doctrine.php`, or you will get some class not found errors.
+
 To be able to use this query logic through ``$this->getEntityManager()->getRepository('Bug')``
 we have to adjust the metadata slightly.
 
