@@ -821,14 +821,13 @@ We also have to create a general bootstrap file for our application:
 
     <?php
     // bootstrap.php
+    if (!class_exists("Doctrine\Common\Version", false)) {
+        require_once "bootstrap_doctrine.php";
+    }
 
     require_once "entities/User.php";
     require_once "entities/Product.php";
     require_once "entities/Bug.php";
-
-    if (!class_exists("Doctrine\Common\Version", false)) {
-        require_once "bootstrap_doctrine.php";
-    }
 
 Generating the Database Schema
 ------------------------------
@@ -1430,13 +1429,6 @@ the previoiusly discussed query functionality in it:
     }
 
 Dont forget to add a `require_once` call for this class to the bootstrap.php
-
-.. note::
-
-    **require_once gotcha**
-
-    Make sure you add the require_once call for `BugRepository.php` *after* the require_once 
-    call for `bootstrap_doctrine.php`, or you will get some class not found errors.
 
 To be able to use this query logic through ``$this->getEntityManager()->getRepository('Bug')``
 we have to adjust the metadata slightly.
