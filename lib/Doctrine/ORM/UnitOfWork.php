@@ -2482,6 +2482,11 @@ class UnitOfWork implements PropertyChangedListener
 
                         default:
                             switch (true) {
+                                // Populate mapped associations
+                                case (isset($class->mappedAssociations[$field])):
+                                    $newValue = $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity, $associatedId);
+                                    break;
+
                                 // We are negating the condition here. Other cases will assume it is valid!
                                 case ($hints['fetchMode'][$class->name][$field] !== ClassMetadata::FETCH_EAGER):
                                     $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $associatedId);
