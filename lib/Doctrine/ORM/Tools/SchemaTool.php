@@ -213,6 +213,10 @@ class SchemaTool
                 $this->_gatherRelationsSql($class, $table, $schema);
             }
 
+            if ($class->hasMappedAssociations()) {
+                $this->addMappedAssociationDiscriminatorColumnDefinitions($class, $table);
+            }
+
             $pkColumns = array();
             foreach ($class->identifier as $identifierField) {
                 if (isset($class->fieldMappings[$identifierField])) {
