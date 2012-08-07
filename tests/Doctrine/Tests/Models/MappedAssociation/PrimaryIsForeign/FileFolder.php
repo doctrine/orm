@@ -8,7 +8,7 @@ namespace Doctrine\Tests\Models\MappedAssociation\PrimaryIsForeign;
  *      @NamedNativeQuery(
  *          name                = "get-class-by-id",
  *          resultSetMapping    = "get-class",
- *          query               = "SELECT contentClass from pif_filefolder WHERE id = ?"
+ *          query               = "SELECT contentclass from pif_filefolder WHERE id = ?"
  *      )
  * })
  *
@@ -17,7 +17,7 @@ namespace Doctrine\Tests\Models\MappedAssociation\PrimaryIsForeign;
  *          name    = "get-class",
  *          columns = {
  *              @ColumnResult(
- *                  name = "contentClass"
+ *                  name = "contentclass"
  *              )
  *          }
  *      )

@@ -8,7 +8,7 @@ namespace Doctrine\Tests\Models\MappedAssociation\DiscretePrimary;
  *      @NamedNativeQuery(
  *          name                = "get-class-by-id",
  *          resultSetMapping    = "get-class",
- *          query               = "SELECT objectClass from dp_shelf WHERE id = ?"
+ *          query               = "SELECT objectclass from dp_shelf WHERE id = ?"
  *      )
  * })
  *
@@ -17,7 +17,7 @@ namespace Doctrine\Tests\Models\MappedAssociation\DiscretePrimary;
  *          name    = "get-class",
  *          columns = {
  *              @ColumnResult(
- *                  name = "objectClass"
+ *                  name = "objectclass"
  *              )
  *          }
  *      )

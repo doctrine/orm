@@ -86,15 +86,15 @@ class MappedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $results = $query->setParameter(1, $id0)
             ->getResult();
-        $this->assertEquals($results[0]['contentClass'], null);
+        $this->assertEquals($results[0]['contentclass'], null);
 
         $results = $query->setParameter(1, $id1)
             ->getResult();
-        $this->assertEquals($results[0]['contentClass'], get_class($content1));
+        $this->assertEquals($results[0]['contentclass'], get_class($content1));
 
         $results = $query->setParameter(1, $id2)
             ->getResult();
-        $this->assertEquals($results[0]['contentClass'], get_class($content2));
+        $this->assertEquals($results[0]['contentclass'], get_class($content2));
 
         /**
          * Check can get container from mapped association
@@ -209,15 +209,15 @@ class MappedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $query->setParameter(1, $id0);
         $results = $query->getResult();
-        $this->assertEquals($results[0]['objectClass'], null);
+        $this->assertEquals($results[0]['objectclass'], null);
 
         $query = $query->setParameter(1, $id1);
         $results = $query->getResult();
-        $this->assertEquals($results[0]['objectClass'], get_class($object1));
+        $this->assertEquals($results[0]['objectclass'], get_class($object1));
 
         $results = $query->setParameter(1, $id2)
             ->getResult();
-        $this->assertEquals($results[0]['objectClass'], get_class($object2));
+        $this->assertEquals($results[0]['objectclass'], get_class($object2));
 
         /**
          * Check can get container from mapped association
