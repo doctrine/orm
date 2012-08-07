@@ -1103,6 +1103,24 @@ class BasicEntityPersister
             $columnList .= $this->_getSelectColumnSQL($field, $this->_class);
         }
 
+        $skipMapped = array();
+
+        // Add mapped association discriminator columns to select list
+        foreach ($this->_class->mappedAssociations as $mappedAssoc => $assoc) {
+            if ($columnList) {
+                $columnList .= ', ';
+            }
+
+            $columnList .= $this->_getSelectMappedAssociationDiscriminatorColumnSQL($assoc, $this->_class);
+
+            if (isset($this->_class->associationMappings[$mappedAssoc])) {
+                $targetMetadata = $this->_em->getClassMetadata($this->_class->associationMappings[$mappedAssoc]['targetEntity']);
+                if ($targetMetadata->isMappedSuperclass) {
+                    $skipMapped[$mappedAssoc] = true;
+                }
+            }
+        }
+
         $this->_selectJoinSql = '';
         $eagerAliasCounter = 0;
 
