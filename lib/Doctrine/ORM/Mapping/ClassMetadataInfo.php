@@ -2522,6 +2522,26 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Checks whether the class has any mapped associations.
+     *
+     * @return array
+     */
+    public function hasMappedAssociations()
+    {
+        return $this->mappedAssociations;
+    }
+
+    /**
+     * Return array of all mapped associations of the class.
+     *
+     * @return array
+     */
+    public function getMappedAssociations()
+    {
+        return $this->mappedAssociations;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function hasAssociation($fieldName)
