@@ -563,6 +563,13 @@ class BasicEntityPersister
 
             $newVal = $change[1];
 
+            if (isset($this->_class->mappedAssociations[$field])) {
+                $fieldMapping = $this->_class->mappedAssociations[$field]['fieldMapping'];
+                $columnName = $fieldMapping['columnName'];
+                $this->_columnTypes[$columnName] = $fieldMapping['type'];
+                $result[$this->getOwningTable($field)][$columnName] = $newVal ? get_class($newVal) : $newVal;
+            }
+
             if (isset($this->_class->associationMappings[$field])) {
                 $assoc = $this->_class->associationMappings[$field];
 
@@ -739,6 +746,10 @@ class BasicEntityPersister
                     $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
 
                 unset($identifier[$targetKeyColumn]);
+            }
+
+            if (isset($targetClass->mappedAssociations[$owningAssoc['fieldName']]) && $owningAssoc['isOwningSide']) {
+                $identifier[$this->_getSQLTableAlias($targetClass->name) . "." . $targetClass->mappedAssociations[$owningAssoc['fieldName']]['fieldMapping']['columnName']] = $sourceClass->name;
             }
 
             $targetEntity = $this->load($identifier, null, $assoc);
@@ -1096,10 +1107,34 @@ class BasicEntityPersister
             $columnList .= $this->_getSelectColumnSQL($field, $this->_class);
         }
 
+        $skipMapped = array();
+
+        // Add mapped association descriminator columns to select list
+        foreach ($this->_class->mappedAssociations as $mappedAssoc => $assoc) {
+            if ($columnList) {
+                $columnList .= ', ';
+            }
+
+            $columnList .= $this->_getSelectMappedAssociationDescriminatorColumnSQL($assoc, $this->_class);
+
+            if (isset($this->_class->associationMappings[$mappedAssoc])) {
+                $targetMetadata = $this->_em->getClassMetadata($this->_class->associationMappings[$mappedAssoc]['targetEntity']);
+                if ($targetMetadata->isMappedSuperclass && !$this->_class->associationMappings[$mappedAssoc]['isOwningSide']) {
+                    $skipMapped[$mappedAssoc] = true;
+                }
+            }
+        }
+
         $this->_selectJoinSql = '';
         $eagerAliasCounter = 0;
 
         foreach ($this->_class->associationMappings as $assocField => $assoc) {
+            $targetEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
+
+            if (isset($skipMapped[$assocField]) || isset($targetEntity->mappedAssociations[$assoc['mappedBy']])) {
+                continue;
+            }
+
             $assocColumnSQL = $this->_getSelectColumnAssociationSQL($assocField, $assoc, $this->_class);
 
             if ($assocColumnSQL) {
@@ -1109,23 +1144,21 @@ class BasicEntityPersister
             }
 
             if ($assoc['type'] & ClassMetadata::TO_ONE && ($assoc['fetch'] == ClassMetadata::FETCH_EAGER || !$assoc['isOwningSide'])) {
-                $eagerEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
-
-                if ($eagerEntity->inheritanceType != ClassMetadata::INHERITANCE_TYPE_NONE) {
+                if ($targetEntity->inheritanceType != ClassMetadata::INHERITANCE_TYPE_NONE) {
                     continue; // now this is why you shouldn't use inheritance
                 }
 
                 $assocAlias = 'e' . ($eagerAliasCounter++);
                 $this->_rsm->addJoinedEntityResult($assoc['targetEntity'], $assocAlias, 'r', $assocField);
 
-                foreach ($eagerEntity->fieldNames as $field) {
+                foreach ($targetEntity->fieldNames as $field) {
                     if ($columnList) $columnList .= ', ';
 
-                    $columnList .= $this->_getSelectColumnSQL($field, $eagerEntity, $assocAlias);
+                    $columnList .= $this->_getSelectColumnSQL($field, $targetEntity, $assocAlias);
                 }
 
-                foreach ($eagerEntity->associationMappings as $assoc2Field => $assoc2) {
-                    $assoc2ColumnSQL = $this->_getSelectColumnAssociationSQL($assoc2Field, $assoc2, $eagerEntity, $assocAlias);
+                foreach ($targetEntity->associationMappings as $assoc2Field => $assoc2) {
+                    $assoc2ColumnSQL = $this->_getSelectColumnAssociationSQL($assoc2Field, $assoc2, $targetEntity, $assocAlias);
 
                     if ($assoc2ColumnSQL) {
                         if ($columnList) $columnList .= ', ';
@@ -1136,7 +1169,7 @@ class BasicEntityPersister
 
                 if ($assoc['isOwningSide']) {
                     $this->_selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($assoc['joinColumns']);
-                    $this->_selectJoinSql .= ' ' . $this->quoteStrategy->getTableName($eagerEntity, $this->_platform) . ' ' . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) .' ON ';
+                    $this->_selectJoinSql .= ' ' . $this->quoteStrategy->getTableName($targetEntity, $this->_platform) . ' ' . $this->_getSQLTableAlias($targetEntity->name, $assocAlias) .' ON ';
 
                     $tableAlias = $this->_getSQLTableAlias($assoc['targetEntity'], $assocAlias);
                     foreach ($assoc['joinColumns'] as $joinColumn) {
@@ -1152,16 +1185,16 @@ class BasicEntityPersister
                     }
 
                     // Add filter SQL
-                    if ($filterSql = $this->generateFilterConditionSQL($eagerEntity, $tableAlias)) {
+                    if ($filterSql = $this->generateFilterConditionSQL($targetEntity, $tableAlias)) {
                         $this->_selectJoinSql .= ' AND ' . $filterSql;
                     }
                 } else {
-                    $eagerEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
-                    $owningAssoc = $eagerEntity->getAssociationMapping($assoc['mappedBy']);
+                    $targetEntity = $this->_em->getClassMetadata($assoc['targetEntity']);
+                    $owningAssoc = $targetEntity->getAssociationMapping($assoc['mappedBy']);
 
                     $this->_selectJoinSql .= ' LEFT JOIN';
-                    $this->_selectJoinSql .= ' ' . $this->quoteStrategy->getTableName($eagerEntity, $this->_platform) . ' '
-                                           . $this->_getSQLTableAlias($eagerEntity->name, $assocAlias) . ' ON ';
+                    $this->_selectJoinSql .= ' ' . $this->quoteStrategy->getTableName($targetEntity, $this->_platform) . ' '
+                                           . $this->_getSQLTableAlias($targetEntity->name, $assocAlias) . ' ON ';
 
                     foreach ($owningAssoc['sourceToTargetKeyColumns'] as $sourceCol => $targetCol) {
                         if ( ! $first) {
@@ -1303,6 +1336,11 @@ class BasicEntityPersister
                 continue;
             }
 
+            if (isset($this->_class->mappedAssociations[$name])) {
+                $columns[] = $columnName = $this->quoteStrategy->getMappedAssociationDescriminatorColumnName($this->_class->mappedAssociations[$name], $this->_class, $this->_platform);
+                $this->_columnTypes[$columnName] = $this->_class->mappedAssociations[$name]['fieldMapping']['type'];
+            }
+
             if (isset($this->_class->associationMappings[$name])) {
                 $assoc = $this->_class->associationMappings[$name];
                 if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
@@ -1310,7 +1348,7 @@ class BasicEntityPersister
                         $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->_class, $this->_platform);
                     }
                 }
-            } else if ($this->_class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $this->_class->identifier[0] != $name) {
+            } else if (($this->_class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $this->_class->identifier[0] != $name) && !isset($this->_class->mappedAssociations[$name])) {
                 $columns[] = $this->quoteStrategy->getColumnName($name, $this->_class, $this->_platform);
                 $this->_columnTypes[$name] = $this->_class->fieldMappings[$name]['type'];
             }
@@ -1339,6 +1377,27 @@ class BasicEntityPersister
             $type = Type::getType($class->getTypeOfField($field));
             $sql = $type->convertToPHPValueSQL($sql, $this->_platform);
         }
+
+        return $sql . ' AS ' . $columnAlias;
+    }
+
+    /**
+     * Gets the SQL snippet of a qualified mapped association descriminator column name for the given
+     * mapped association field name.
+     *
+     * @param array         $assoc The mapped association.
+     * @param ClassMetadata $class The class that declares this field. The table this class is mapped to must own the column for the given field.
+     * @param string        $alias Table alias
+     *
+     * @return string
+     */
+    protected function _getSelectMappedAssociationDescriminatorColumnSQL(array $assoc, ClassMetadata $class, $alias = 'r')
+    {
+        $sql = $this->_getSQLTableAlias($class->name, $alias == 'r' ? '' : $alias)
+            . '.' . $this->quoteStrategy->getMappedAssociationDescriminatorColumnName($assoc, $class, $this->_platform);
+        $columnAlias = $this->getSQLColumnAlias($assoc['fieldMapping']['columnName']);
+
+        $this->_rsm->addFieldResult($alias, $columnAlias, $assoc['fieldMapping']['columnName']);
 
         return $sql . ' AS ' . $columnAlias;
     }

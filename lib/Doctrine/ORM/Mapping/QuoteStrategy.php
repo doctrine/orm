@@ -109,4 +109,15 @@ interface QuoteStrategy
      */
     function getColumnAlias($columnName, $counter, AbstractPlatform $platform, ClassMetadata $class = null);
 
+    /**
+     * Gets the (possibly quoted) mapped association descriminator column name
+     *
+     * @param array            $assoc
+     * @param ClassMetadata    $class
+     * @param AbstractPlatform $platform
+     *
+     * @return string
+     */
+    function getMappedAssociationDescriminatorColumnName(array $assoc, ClassMetadata $class, AbstractPlatform $platform);
+
 }

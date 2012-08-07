@@ -374,6 +374,13 @@ class ClassMetadataInfo implements ClassMetadata
     public $columnNames = array();
 
     /**
+     * READ-ONLY: The mapped associations of the class.
+     *
+     * @var array
+     */
+    public $mappedAssociations = array();
+
+    /**
      * READ-ONLY: The discriminator value of this class.
      *
      * <b>This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
@@ -816,6 +823,10 @@ class ClassMetadataInfo implements ClassMetadata
             $serialized[] = "customGeneratorDefinition";
         }
 
+        if ($this->mappedAssociations) {
+            $serialized[] = "mappedAssociations";
+        }
+
         return $serialized;
     }
 
@@ -853,6 +864,10 @@ class ClassMetadataInfo implements ClassMetadata
             $this->reflFields[$field] = isset($mapping['declared'])
                 ? $reflService->getAccessibleProperty($mapping['declared'], $field)
                 : $reflService->getAccessibleProperty($this->name, $field);
+        }
+
+        foreach ($this->mappedAssociations as $field => $mapping) {
+            $this->reflFields[$field] = $reflService->getAccessibleProperty($this->name, $field);
         }
     }
 
@@ -2084,6 +2099,59 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Add a mapped association to the class
+     *
+     * @param array $mapping
+     *
+     * @throws MappingException
+     */
+    public function addMappedAssociation(array $mapping)
+    {
+        $fieldMapping = &$mapping['fieldMapping'];
+
+        if (!isset($fieldMapping['columnName'])) {
+            $fieldMapping['fieldName'] = $mapping['name'] . 'Class';
+            $fieldMapping['columnName'] = $this->namingStrategy->propertyToColumnName($fieldMapping['fieldName']);
+        } else {
+            $fieldMapping['fieldName'] = $fieldMapping['columnName'];
+        }
+
+        if ($fieldMapping['columnName'][0] === '`') {
+            $fieldMapping['columnName']  = trim($fieldMapping['columnName'], '`');
+            $fieldMapping['quoted']      = true;
+        }
+
+        $fieldMapping['type'] = 'string';
+
+        if (isset($this->fieldNames[$fieldMapping['columnName']])) {
+            throw MappingException::duplicateColumnName($this->name, $fieldMapping['columnName']);
+        }
+
+        if (!isset($this->associationMappings[$mapping['name']])) {
+            throw MappingException::associationRequiredForMappedAssociation($this->name, $fieldMapping['columnName']);
+        } elseif ($this->associationMappings[$mapping['name']]['type'] != self::ONE_TO_ONE) {
+            throw MappingException::unsupportedAssociationForMappedAssociation($this->name, $fieldMapping['columnName']);
+        } else {
+            // check unique
+            if ($this->associationMappings[$mapping['name']]['isOwningSide']) {
+                $uniqueContraintColumns = array($fieldMapping['columnName']);
+
+                foreach ($this->associationMappings[$mapping['name']]['joinColumns'] as &$joinColumn) {
+                    if (isset($joinColumn['unique'])) {
+                        unset($joinColumn['unique']);
+                    }
+                    $uniqueContraintColumns[] = $joinColumn['name'];
+                }
+                $this->table['uniqueConstraints'][$fieldMapping['fieldName'] . "_uniq"] = array(
+                    'columns' => $uniqueContraintColumns
+                );
+            }
+        }
+        $this->mappedAssociationMappings[$fieldMapping['columnName']] = $mapping['name'];
+        $this->mappedAssociations[$mapping['name']] = $mapping;
+    }
+
+    /**
      * INTERNAL:
      * Adds a named query to this class.
      *
@@ -2465,6 +2533,26 @@ class ClassMetadataInfo implements ClassMetadata
     public function hasSqlResultSetMapping($name)
     {
         return isset($this->sqlResultSetMappings[$name]);
+    }
+
+    /**
+     * Checks whether the class has any mapped associations.
+     *
+     * @return array
+     */
+    public function hasMappedAssociations()
+    {
+        return $this->mappedAssociations;
+    }
+
+    /**
+     * Return array of all mapped associations of the class.
+     *
+     * @return array
+     */
+    public function getMappedAssociations()
+    {
+        return $this->mappedAssociations;
     }
 
     /**

@@ -33,7 +33,7 @@ use Doctrine\ORM\ORMException,
  * The SchemaTool is a tool to create/drop/update database schemas based on
  * <tt>ClassMetadata</tt> class descriptors.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -198,7 +198,7 @@ class SchemaTool
                     $pkColumns[] = $columnName;
 
                     // Add a FK constraint on the ID column
-                    $table->addUnnamedForeignKeyConstraint(
+                    $table->addForeignKeyConstraint(
                         $this->quoteStrategy->getTableName($this->em->getClassMetadata($class->rootEntityName), $this->platform),
                         array($columnName), array($columnName), array('onDelete' => 'CASCADE')
                     );
@@ -211,6 +211,10 @@ class SchemaTool
             } else {
                 $this->_gatherColumns($class, $table);
                 $this->_gatherRelationsSql($class, $table, $schema);
+            }
+
+            if ($class->hasMappedAssociations()) {
+                $this->addMappedAssociationDiscriminatorColumnDefinitions($class, $table);
             }
 
             $pkColumns = array();
@@ -305,6 +309,25 @@ class SchemaTool
         }
 
         $table->addColumn($discrColumn['name'], $discrColumn['type'], $options);
+    }
+
+    /**
+     * Get a portable column definition as required by the DBAL for the mapped association
+     * discriminator columns of a class.
+     *
+     * @param ClassMetadata $class
+     * @param Table         $table
+     */
+    private function addMappedAssociationDiscriminatorColumnDefinitions($class, $table)
+    {
+        foreach ($class->getMappedAssociations() as $mappedAssociation) {
+            $fieldMapping = $mappedAssociation['fieldMapping'];
+            $options = array(
+                'length' => $fieldMapping['length'],
+                'notnull' => !$fieldMapping['nullable'],
+            );
+            $table->addColumn($fieldMapping['columnName'], $fieldMapping['type'], $options);
+        }
     }
 
     /**
@@ -433,6 +456,14 @@ class SchemaTool
 
                 foreach($uniqueConstraints as $indexName => $unique) {
                     $table->addUniqueIndex($unique['columns'], is_numeric($indexName) ? null : $indexName);
+                }
+
+                if (isset($class->mappedAssociations[$fieldName]) && $foreignClass->isMappedSuperclass) {
+                    foreach ($table->getForeignKeys() as $fkName => $mapping) {
+                        if ($this->quoteStrategy->getTableName($foreignClass, $this->platform) == $mapping->getForeignTableName()) {
+                            $table->removeForeignKey($fkName);
+                        }
+                    }
                 }
             } else if ($mapping['type'] == ClassMetadata::ONE_TO_MANY && $mapping['isOwningSide']) {
                 //... create join table, one-many through join table supported later
@@ -565,7 +596,7 @@ class SchemaTool
             }
         }
 
-        $theJoinTable->addUnnamedForeignKeyConstraint(
+        $theJoinTable->addForeignKeyConstraint(
             $foreignTableName, $localColumns, $foreignColumns, $fkOptions
         );
     }
