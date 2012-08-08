@@ -2088,6 +2088,14 @@ class UnitOfWork implements PropertyChangedListener
                     break;
 
                 case ($relatedEntities !== null):
+                    $relatedClass = $this->em->getClassMetadata(get_class($relatedEntities));
+                    foreach ($relatedClass->identifier as $relatedIdentifier) {
+                        if (isset($relatedClass->associationMappings[$relatedIdentifier]) && $relatedClass->associationMappings[$relatedIdentifier]['targetEntity'] == $class->name) {
+                            if ($relatedClass->reflFields[$relatedIdentifier]->getValue($relatedEntities) == null) {
+                                $relatedClass->reflFields[$relatedIdentifier]->setValue($relatedEntities, $entity);
+                            }
+                        }
+                    }
                     $this->doPersist($relatedEntities, $visited);
                     break;
 
