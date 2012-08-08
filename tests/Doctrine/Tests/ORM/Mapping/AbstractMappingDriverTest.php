@@ -758,9 +758,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testEntityListeners()
     {
-        if ( ! ($this instanceof AnnotationDriverTest)
-             && ! ($this instanceof XmlMappingDriverTest)
-             && ! ($this instanceof YamlMappingDriverTest)) {
+        if ($this instanceof PHPMappingDriverTest) {
             $this->markTestIncomplete();
         }
 
@@ -818,9 +816,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testCallEntityListeners()
     {
-        if ( ! ($this instanceof AnnotationDriverTest)
-             && ! ($this instanceof XmlMappingDriverTest)
-             && ! ($this instanceof YamlMappingDriverTest)) {
+        if ($this instanceof PHPMappingDriverTest) {
             $this->markTestIncomplete();
         }
 
