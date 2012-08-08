@@ -758,10 +758,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testEntityListeners()
     {
-        if ($this instanceof PHPMappingDriverTest) {
-            $this->markTestIncomplete();
-        }
-
         $em         = $this->_getTestEntityManager();
         $factory    = $this->createClassMetadataFactory($em);
         $superClass = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyContract');
@@ -816,10 +812,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testCallEntityListeners()
     {
-        if ($this instanceof PHPMappingDriverTest) {
-            $this->markTestIncomplete();
-        }
-
         $em         = $this->_getTestEntityManager();
         $factory    = $this->createClassMetadataFactory($em);
         $flexClass  = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFixContract');
