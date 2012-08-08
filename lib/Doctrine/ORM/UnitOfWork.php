@@ -640,6 +640,17 @@ class UnitOfWork implements PropertyChangedListener
         // Look for changes in associations of the entity
         foreach ($class->associationMappings as $field => $assoc) {
             if (($val = $class->reflFields[$field]->getValue($entity)) !== null) {
+                if ($assoc['type'] == ClassMetadata::ONE_TO_ONE && $assoc['isCascadePersist']) {
+                    $valClass = $this->em->getClassMetadata(get_class($val));
+                    foreach ($valClass->identifier as $valIdentifier) {
+                        if (isset($valClass->associationMappings[$valIdentifier]) && $valClass->associationMappings[$valIdentifier]['targetEntity'] == $class->name) {
+                            if ($valClass->reflFields[$valIdentifier]->getValue($val) == null) {
+                                $valClass->reflFields[$valIdentifier]->setValue($val, $entity);
+                            }
+                        }
+                    }
+                }
+
                 $this->computeAssociationChanges($assoc, $val);
                 if (!isset($this->entityChangeSets[$oid]) &&
                     $assoc['isOwningSide'] &&
@@ -2088,6 +2099,14 @@ class UnitOfWork implements PropertyChangedListener
                     break;
 
                 case ($relatedEntities !== null):
+                    $relatedClass = $this->em->getClassMetadata(get_class($relatedEntities));
+                    foreach ($relatedClass->identifier as $relatedIdentifier) {
+                        if (isset($relatedClass->associationMappings[$relatedIdentifier]) && $relatedClass->associationMappings[$relatedIdentifier]['targetEntity'] == $class->name) {
+                            if ($relatedClass->reflFields[$relatedIdentifier]->getValue($relatedEntities) == null) {
+                                $relatedClass->reflFields[$relatedIdentifier]->setValue($relatedEntities, $entity);
+                            }
+                        }
+                    }
                     $this->doPersist($relatedEntities, $visited);
                     break;
 
