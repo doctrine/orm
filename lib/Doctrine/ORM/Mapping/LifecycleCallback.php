@@ -21,28 +21,21 @@
 namespace Doctrine\ORM\Mapping;
 
 /**
- * The EntityListeners annotation specifies the callback listener classes to be used for an entity or mapped superclass.
- * The EntityListeners annotation may be applied to an entity class or mapped superclass.
- *
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since   2.4
  *
  * @Annotation
- * @Target("CLASS")
+ * @Target("ANNOTATION")
  */
-final class EntityListeners implements Annotation
+final class LifecycleCallback implements Annotation
 {
     /**
-     * Specifies the names of the entity listeners.
-     *
-     * @var array<string>
+     * @var string
      */
-    public $value = array();
+    public $event;
 
     /**
-     * Specifies the entity the entity lifecycle callbacks.
-     *
-     * @var array<\Doctrine\ORM\Mapping\LifecycleCallback>
+     * @var string
      */
-    public $callbacks = array();
+    public $method;
 }

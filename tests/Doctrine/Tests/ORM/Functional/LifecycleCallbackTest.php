@@ -254,6 +254,23 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $e->calls['postRemoveHandler']
         );
     }
+    /**
+    * @group DDC-1955
+    */
+    public function testEventListenersLifecycleCallback()
+    {
+        $e = new \Doctrine\Tests\Models\Company\CompanyPerson;
+        $e->setName('Fabio B. Silva');
+        
+        $this->_em->persist($e);
+        $this->_em->flush();
+
+        $this->assertCount(1, $e->prePersistHandlerCalls);
+        $this->assertInstanceOf(
+            'Doctrine\ORM\Event\LifecycleEventArgs',
+            $e->prePersistHandlerCalls[0]
+        );
+    }
 }
 
 /** @Entity @HasLifecycleCallbacks */
