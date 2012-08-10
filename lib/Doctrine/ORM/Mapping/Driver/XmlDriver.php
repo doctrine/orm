@@ -560,14 +560,30 @@ class XmlDriver extends FileDriver
         // Evaluate entity listener
         if (isset($xmlRoot->{'entity-listeners'})) {
             foreach ($xmlRoot->{'entity-listeners'}->{'entity-listener'} as $listenerElement) {
-                $className  = (string) $listenerElement['class'];
+                $listeners = array();
 
                 foreach ($listenerElement as $type => $callbackElement) {
-                    list($prefix, $suffix)  = explode('-', $type);
-                    $eventName              = $prefix . ucfirst($suffix);
-                    $methodName             = (string) $callbackElement['method'];
+                    list($prefix, $suffix) = explode('-', $type);
 
-                    $metadata->addEntityListener($eventName, $className, $methodName);
+                    $eventName   = $prefix . ucfirst($suffix);
+                    $methodName  = (string) $callbackElement['method'];
+                    $listeners[] = array($eventName, $methodName);
+
+                }
+
+                if (isset($listenerElement['class'])) {
+                    $className  = (string) $listenerElement['class'];
+
+                    foreach ($listeners as $item) {
+                        $metadata->addEntityListener($item[0], $className, $item[1]);
+                    }
+
+                    continue;
+                }
+
+                // evaluate as lifecycle callback if the listener class is not given.
+                foreach ($listeners as $item) {
+                    $metadata->addLifecycleCallback($item[1], $item[0]);
                 }
             }
         }

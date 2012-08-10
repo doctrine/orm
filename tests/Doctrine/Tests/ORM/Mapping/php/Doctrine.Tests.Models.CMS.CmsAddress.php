@@ -6,6 +6,29 @@ $metadata->setPrimaryTable(array(
    'name' => 'company_person',
 ));
 
+$metadata->mapField(array (
+    'id'        => true,
+    'fieldName' => 'id',
+    'type'      => 'integer',
+));
+
+$metadata->mapField(array (
+    'fieldName' => 'zip',
+    'length'    => 50,
+));
+
+$metadata->mapField(array (
+    'fieldName' => 'city',
+    'length'    => 50,
+));
+
+$metadata->mapOneToOne(array(
+    'fieldName'     => 'user',
+    'targetEntity'  => 'CmsUser',
+    'joinColumns'   => array(array('referencedColumnName' => 'id'))
+));
+
+$metadata->addLifecycleCallback('prePersistHandler', 'prePersist');
 
 $metadata->addNamedNativeQuery(array (
     'name'              => 'find-all',

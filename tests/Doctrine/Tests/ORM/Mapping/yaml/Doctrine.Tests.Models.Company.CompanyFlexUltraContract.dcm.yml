@@ -1,20 +1,25 @@
 Doctrine\Tests\Models\Company\CompanyFlexUltraContract:
   type: entity
+
   entityListeners:
-    ContractSubscriber:
-        preFlush: [preFlushHandler]
-        postLoad: [postLoadHandler]
-
-        postPersist: [postPersistHandler]
-        prePersist: [prePersistHandler]
-
-        postUpdate: [postUpdateHandler]
-        preUpdate: [preUpdateHandler]
-
-        postRemove: [postRemoveHandler]
-        preRemove: [preRemoveHandler]
+    listener[0]:
+      class : ContractSubscriber
       
-    FlexUltraContractSubscriber:
+      preFlush: [preFlushHandler]
+      postLoad: [postLoadHandler]
+
+      postPersist: [postPersistHandler]
+      prePersist: [prePersistHandler]
+
+      postUpdate: [postUpdateHandler]
+      preUpdate: [preUpdateHandler]
+
+      postRemove: [postRemoveHandler]
+      preRemove: [preRemoveHandler]
+      
+    listener[1]:
+      class : FlexUltraContractSubscriber
+
       prePersist: [prePersistHandler1, prePersistHandler2]
 
   fields:

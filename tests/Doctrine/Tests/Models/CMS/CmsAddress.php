@@ -59,6 +59,9 @@ namespace Doctrine\Tests\Models\CMS;
  *      )
  * })
  *
+ * @EntityListeners(callbacks = {
+ *      @LifecycleCallback(\Doctrine\ORM\Events::prePersist, method = "prePersistHandler")
+ * })
  */
 class CmsAddress
 {
@@ -94,6 +97,11 @@ class CmsAddress
      */
     public $user;
 
+    /**
+     * @var array
+     */
+    public $prePersistHandlerCalls = array();
+
     public function getId() {
         return $this->id;
     }
@@ -121,11 +129,40 @@ class CmsAddress
         }
     }
 
+    public function prePersistHandler($event)
+    {
+        $this->prePersistHandlerCalls[] = $event;
+    }
+
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
     {
         $metadata->setPrimaryTable(array(
            'name' => 'company_person',
         ));
+
+        $metadata->mapField(array (
+            'id'        => true,
+            'fieldName' => 'id',
+            'type'      => 'integer',
+        ));
+
+        $metadata->mapField(array (
+            'fieldName' => 'zip',
+            'length'    => 50,
+        ));
+
+        $metadata->mapField(array (
+            'fieldName' => 'city',
+            'length'    => 50,
+        ));
+
+        $metadata->mapOneToOne(array(
+            'fieldName'     => 'user',
+            'targetEntity'  => 'CmsUser',
+            'joinColumns'   => array(array('referencedColumnName' => 'id'))
+        ));
+
+        $metadata->addLifecycleCallback('prePersistHandler', 'prePersist');
 
         $metadata->addNamedNativeQuery(array (
             'name'              => 'find-all',

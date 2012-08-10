@@ -6,19 +6,22 @@ Doctrine\Tests\Models\Company\CompanyContract:
     fix: CompanyFixContract
     flexible: CompanyFlexContract
     flexultra: CompanyFlexUltraContract
+
   entityListeners:
-      ContractSubscriber:
-        preFlush: [preFlushHandler]
-        postLoad: [postLoadHandler]
+    listener[0]:
+      class : ContractSubscriber
 
-        postPersist: [postPersistHandler]
-        prePersist: [prePersistHandler]
+      preFlush: [preFlushHandler]
+      postLoad: [postLoadHandler]
 
-        postUpdate: [postUpdateHandler]
-        preUpdate: [preUpdateHandler]
+      postPersist: [postPersistHandler]
+      prePersist: [prePersistHandler]
 
-        postRemove: [postRemoveHandler]
-        preRemove: [preRemoveHandler]
+      postUpdate: [postUpdateHandler]
+      preUpdate: [preUpdateHandler]
+
+      postRemove: [postRemoveHandler]
+      preRemove: [preRemoveHandler]
 
   id:
     id:
