@@ -15,9 +15,6 @@ namespace Doctrine\Tests\Models\Company;
  *      "manager"   = "CompanyManager",
  *      "employee"  = "CompanyEmployee"
  * })
- * @EntityListeners(callbacks = {
- *      @LifecycleCallback(\Doctrine\ORM\Events::prePersist, method = "prePersistHandler")
- * })
  *
  * @NamedNativeQueries({
  *      @NamedNativeQuery(
@@ -82,8 +79,6 @@ class CompanyPerson
      */
     private $friends;
 
-    public $prePersistHandlerCalls = array();
-
     public function __construct() {
         $this->friends = new \Doctrine\Common\Collections\ArrayCollection;
     }
@@ -121,12 +116,6 @@ class CompanyPerson
             $this->spouse->setSpouse($this);
         }
     }
-
-    public function prePersistHandler($event)
-    {
-        $this->prePersistHandlerCalls[] = $event;
-    }
-
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
     {
