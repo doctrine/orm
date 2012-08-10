@@ -98,6 +98,61 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:element name="query" type="xs:string"/>
+
+  <xs:complexType name="pre-flush">
+    <xs:attribute name="method" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="post-load">
+    <xs:attribute name="method" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="pre-persist">
+    <xs:attribute name="method" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="post-persist">
+    <xs:attribute name="method" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="pre-update">
+    <xs:attribute name="method" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="post-update">
+    <xs:attribute name="method" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="pre-remove">
+    <xs:attribute name="method" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="post-remove">
+    <xs:attribute name="method" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="entity-listener">
+    <xs:sequence>
+      <xs:element name="pre-flush" type="orm:pre-flush" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="post-load" type="orm:post-load" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="pre-persist" type="orm:pre-persist" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="post-persist" type="orm:post-persist" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="pre-update" type="orm:pre-update" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="post-update" type="orm:post-update" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="pre-remove" type="orm:pre-remove" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="post-remove" type="orm:post-remove" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
+    </xs:sequence>
+    <xs:attribute name="class" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="entity-listeners">
+    <xs:sequence>
+      <xs:element name="entity-listener" type="orm:entity-listener" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="column-result">
     <xs:attribute name="name" type="xs:string" use="required" />
   </xs:complexType>
@@ -137,6 +192,7 @@
       <xs:element name="discriminator-column" type="orm:discriminator-column" minOccurs="0"/>
       <xs:element name="discriminator-map" type="orm:discriminator-map" minOccurs="0"/>
       <xs:element name="lifecycle-callbacks" type="orm:lifecycle-callbacks" minOccurs="0" maxOccurs="1" />
+      <xs:element name="entity-listeners" type="orm:entity-listeners" minOccurs="0" maxOccurs="1" />
       <xs:element name="named-queries" type="orm:named-queries" minOccurs="0" maxOccurs="1" />
       <xs:element name="named-native-queries" type="orm:named-native-queries" minOccurs="0" maxOccurs="1" />
       <xs:element name="id" type="orm:id" minOccurs="0" maxOccurs="unbounded" />

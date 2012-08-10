@@ -11,15 +11,12 @@
             <entity-listener class="ContractSubscriber">
                 <pre-flush      method="preFlushHandler"/>
                 <post-load      method="postLoadHandler"/>
-
-                <post-persist   method="postPersistHandler"/>
                 <pre-persist    method="prePersistHandler"/>
-
-                <post-update    method="postUpdateHandler"/>
+                <post-persist   method="postPersistHandler"/>
                 <pre-update     method="preUpdateHandler"/>
-
-                <post-remove    method="postRemoveHandler"/>
+                <post-update    method="postUpdateHandler"/>
                 <pre-remove     method="preRemoveHandler"/>
+                <post-remove    method="postRemoveHandler"/>
             </entity-listener>
 
             <entity-listener class="FlexUltraContractSubscriber">
