@@ -246,7 +246,7 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
             JOIN
                 u.phonenumbers p
             GROUP BY
-                u
+                u, e, a
             ORDER BY
                 u.name";
 
