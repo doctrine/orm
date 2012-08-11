@@ -2,12 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Collections\ArrayCollection;
-
-use Doctrine\DBAL\Connection;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsEmail;
-use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 
@@ -131,40 +127,6 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($this->fixtures[0]->address->city, $result[0]->address);
         $this->assertEquals($this->fixtures[1]->address->city, $result[1]->address);
         $this->assertEquals($this->fixtures[2]->address->city, $result[2]->address);
-    }
-
-    public function testShouldSupportNestedOperators()
-    {
-        $this->markTestIncomplete();
-        $dql = "
-            SELECT
-                new Doctrine\Tests\Models\CMS\CmsUserDTO(
-                    u.name,
-                    e.email,
-                    new Doctrine\Tests\Models\CMS\CmsAddressDTO(
-                        a.country,
-                        a.city,
-                        a.zip
-                    )
-                )
-            FROM
-                Doctrine\Tests\Models\CMS\CmsUser u
-            JOIN
-                u.email e
-            JOIN
-                u.address a
-            ORDER BY
-                u.name";
-
-        $query  = $this->_em->createQuery($dql);
-        $result = $query->getResult();
-
-        $this->assertCount(3, $result);
-
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]);
-
     }
 
     public function testShouldSupportAggregateFunctions()

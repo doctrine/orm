@@ -31,6 +31,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  * @author  Janne Vanhala <jpvanhal@cc.hut.fi>
+ * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class Parser
 {
@@ -1641,12 +1642,12 @@ class Parser
         $className = $this->_lexer->token['value'];
 
         if ( ! class_exists($className, true)) {
-            $this->semanticalError("Class '$className' is not defined.", $this->_lexer->token);
+            $this->semanticalError("Class \"$className\" is not defined.", $this->_lexer->token);
         }
 
         $class = new \ReflectionClass($className);
         if($class->getConstructor() === null) {
-            $this->semanticalError("Class '$className' has not a valid contructor.", $this->_lexer->token);
+            $this->semanticalError("Class \"$className\" has not a valid contructor.", $this->_lexer->token);
         }
 
         $this->match(Lexer::T_OPEN_PARENTHESIS);
@@ -1661,7 +1662,7 @@ class Parser
         $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
         if($class->getConstructor()->getNumberOfRequiredParameters() > sizeof($args)) {
-            $this->semanticalError("Number of arguments does not match definition.", $this->_lexer->token);
+            $this->semanticalError("Number of arguments does not match.", $this->_lexer->token);
         }
 
         return new AST\NewObjectExpression($className, $args);;
@@ -1679,9 +1680,6 @@ class Parser
                 $expression = $this->StateFieldPathExpression();
 
                 return new AST\SimpleSelectExpression($expression);
-
-            case ($this->_lexer->lookahead['type'] === Lexer::T_NEW):
-                return $this->NewObjectExpression();
 
             default:
                 if ( ! ($this->_isFunction() || $this->_isAggregateFunction($this->_lexer->lookahead))) {

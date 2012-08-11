@@ -34,6 +34,7 @@ use Doctrine\DBAL\LockMode,
  * @author Roman Borschel <roman@code-factory.org>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  * @author Alexander <iam.asm89@gmail.com>
+ * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since  2.0
  * @todo Rename: SQLWalker
  */
@@ -1410,7 +1411,7 @@ class SqlWalker implements TreeWalker
         foreach ($newObjectExpression->args as $argIndex => $e) {
 
             $resultAlias = $this->scalarResultCounter++;
-            $columnAlias = $this->getSQLColumnAlias('sclr') . $resultAlias;
+            $columnAlias = $this->getSQLColumnAlias('sclr');
 
             switch (true) {
                 case $e instanceof AST\NewObjectExpression:
@@ -1418,13 +1419,13 @@ class SqlWalker implements TreeWalker
                     break;
 
                 default:
-                    $sqlSelectExpressions[] = $e->dispatch($this) . ' AS ' . $columnAlias;
+                    $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
                     break;
             }
 
 
             $this->scalarResultAliasMap[$resultAlias] = $columnAlias;
-            $this->rsm->addScalarResult($columnAlias, $resultAlias, 'string');
+            $this->rsm->addScalarResult($columnAlias, $resultAlias);
 
             $this->rsm->newObjectMappings[$columnAlias] = array(
                 'className' => $newObjectExpression->className,
@@ -1433,7 +1434,7 @@ class SqlWalker implements TreeWalker
             );
         }
 
-        return implode(',', $sqlSelectExpressions);
+        return implode(', ', $sqlSelectExpressions);
     }
 
     /**
