@@ -1669,37 +1669,15 @@ class Parser
     }
 
     /**
+     * NewObjectArg ::= ScalarExpression
+     *
+     * @TODO - Maybe you should support other expressions and nested "new" operator
+     * 
      * @return \Doctrine\ORM\Query\AST\SimpleSelectExpression
      */
     public function NewObjectArg()
     {
-        $peek = $this->_lexer->glimpse();
-
-        switch (true) {
-            case ($peek['type'] === Lexer::T_DOT):
-                $expression = $this->StateFieldPathExpression();
-
-                return new AST\SimpleSelectExpression($expression);
-
-            default:
-                if ( ! ($this->_isFunction() || $this->_isAggregateFunction($this->_lexer->lookahead))) {
-                    $this->syntaxError();
-                }
-
-                // We may be in an ArithmeticExpression (find the matching ")" and inspect for Math operator)
-                $this->_lexer->peek(); // "("
-                $peek = $this->_peekBeyondClosingParenthesis();
-
-                if ($this->_isMathOperator($peek)) {
-                    return $this->SimpleArithmeticExpression();
-                }
-
-                if ($this->_isAggregateFunction($this->_lexer->lookahead['type'])) {
-                    return $this->AggregateExpression();
-                }
-
-                return $this->FunctionDeclaration();
-        }
+        return $this->ScalarExpression();
     }
 
     /**

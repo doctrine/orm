@@ -129,6 +129,116 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($this->fixtures[2]->address->city, $result[2]->address);
     }
 
+    public function testShouldSupportLiteral()
+    {
+        $dql = "
+            SELECT
+                new Doctrine\Tests\Models\CMS\CmsUserDTO(
+                    u.name,
+                    'fabio.bat.silva@gmail.com',
+                    FALSE,
+                    123
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            JOIN
+                u.phonenumbers p
+            GROUP BY
+                u, e, a
+            ORDER BY
+                u.name";
+
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
+
+        $this->assertCount(3, $result);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]);
+
+
+        $this->assertEquals($this->fixtures[0]->name, $result[0]->name);
+        $this->assertEquals($this->fixtures[1]->name, $result[1]->name);
+        $this->assertEquals($this->fixtures[2]->name, $result[2]->name);
+
+        $this->assertEquals('fabio.bat.silva@gmail.com', $result[0]->email);
+        $this->assertEquals('fabio.bat.silva@gmail.com', $result[1]->email);
+        $this->assertEquals('fabio.bat.silva@gmail.com', $result[2]->email);
+
+        $this->assertEquals(false, $result[0]->address);
+        $this->assertEquals(false, $result[1]->address);
+        $this->assertEquals(false, $result[2]->address);
+
+        $this->assertEquals(123, $result[0]->phonenumbers);
+        $this->assertEquals(123, $result[1]->phonenumbers);
+        $this->assertEquals(123, $result[2]->phonenumbers);
+    }
+
+    public function testShouldSupportSimpleArithmeticExpression()
+    {
+        $dql = "
+            SELECT
+                new Doctrine\Tests\Models\CMS\CmsUserDTO(
+                    u.name,
+                    e.email,
+                    a.city,
+                    a.id + u.id
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            JOIN
+                u.phonenumbers p
+            GROUP BY
+                u, e, a
+            ORDER BY
+                u.name";
+
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
+
+        $this->assertCount(3, $result);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]);
+
+        $this->assertEquals($this->fixtures[0]->name, $result[0]->name);
+        $this->assertEquals($this->fixtures[1]->name, $result[1]->name);
+        $this->assertEquals($this->fixtures[2]->name, $result[2]->name);
+
+        $this->assertEquals($this->fixtures[0]->email->email, $result[0]->email);
+        $this->assertEquals($this->fixtures[1]->email->email, $result[1]->email);
+        $this->assertEquals($this->fixtures[2]->email->email, $result[2]->email);
+
+        $this->assertEquals($this->fixtures[0]->address->city, $result[0]->address);
+        $this->assertEquals($this->fixtures[1]->address->city, $result[1]->address);
+        $this->assertEquals($this->fixtures[2]->address->city, $result[2]->address);
+
+        $this->assertEquals(
+            ($this->fixtures[0]->address->id + $this->fixtures[0]->id),
+            $result[0]->phonenumbers
+        );
+
+        $this->assertEquals(
+            ($this->fixtures[1]->address->id + $this->fixtures[1]->id),
+            $result[1]->phonenumbers
+        );
+
+        $this->assertEquals(
+            ($this->fixtures[2]->address->id + $this->fixtures[2]->id),
+            $result[2]->phonenumbers
+        );
+    }
+
     public function testShouldSupportAggregateFunctions()
     {
         $dql = "

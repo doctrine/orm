@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * NewObjectExpression ::= "NEW" IdentificationVariable "(" SelectExpression {"," SelectExpression}* ")"
+ * NewObjectExpression ::= "NEW" IdentificationVariable "(" NewObjectArg {"," NewObjectArg}* ")"
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org

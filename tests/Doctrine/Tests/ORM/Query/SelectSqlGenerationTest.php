@@ -1566,6 +1566,11 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
 
         $this->assertSqlGeneration(
+            'SELECT new Doctrine\Tests\Models\CMS\CmsUserDTO(u.name, e.email, a.id + u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.email e JOIN u.address a',
+            "SELECT c0_.name AS sclr0, c1_.email AS sclr1, c2_.id + c0_.id AS sclr2 FROM cms_users c0_ INNER JOIN cms_emails c1_ ON c0_.email_id = c1_.id INNER JOIN cms_addresses c2_ ON c0_.id = c2_.user_id"
+        );
+
+        $this->assertSqlGeneration(
             'SELECT new Doctrine\Tests\Models\CMS\CmsUserDTO(u.name, e.email, a.city, COUNT(p)) FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.email e JOIN u.address a JOIN u.phonenumbers p',
             'SELECT c0_.name AS sclr0, c1_.email AS sclr1, c2_.city AS sclr2, COUNT(c3_.phonenumber) AS sclr3 FROM cms_users c0_ INNER JOIN cms_emails c1_ ON c0_.email_id = c1_.id INNER JOIN cms_addresses c2_ ON c0_.id = c2_.user_id INNER JOIN cms_phonenumbers c3_ ON c0_.id = c3_.user_id'
         );

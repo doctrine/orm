@@ -1405,9 +1405,9 @@ class SqlWalker implements TreeWalker
      */
     public function walkNewObject($newObjectExpression)
     {
-
         $sqlSelectExpressions = array();
         $objIndex             = $this->newObjectCounter ++;
+
         foreach ($newObjectExpression->args as $argIndex => $e) {
 
             $resultAlias = $this->scalarResultCounter++;
@@ -1424,8 +1424,34 @@ class SqlWalker implements TreeWalker
             }
 
 
+            switch (true) {
+                case ($e instanceof AST\PathExpression):
+                    $fieldName = $e->field;
+                    $dqlAlias  = $e->identificationVariable;
+                    $qComp     = $this->queryComponents[$dqlAlias];
+                    $class     = $qComp['metadata'];
+                    $fieldType = $class->getTypeOfField($fieldName);
+                    break;
+
+                case ($e instanceof AST\Literal):
+                    switch ($e->type) {
+                        case AST\Literal::BOOLEAN:
+                            $fieldType = 'boolean';
+                            break;
+
+                        case AST\Literal::NUMERIC:
+                            $fieldType = is_float($e->value) ? 'float' : 'integer';
+                            break;
+                    }
+                    break;
+
+                default:
+                    $fieldType = 'string';
+                    break;
+            }
+
             $this->scalarResultAliasMap[$resultAlias] = $columnAlias;
-            $this->rsm->addScalarResult($columnAlias, $resultAlias);
+            $this->rsm->addScalarResult($columnAlias, $resultAlias, $fieldType);
 
             $this->rsm->newObjectMappings[$columnAlias] = array(
                 'className' => $newObjectExpression->className,
