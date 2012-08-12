@@ -389,8 +389,8 @@ class ObjectHydrator extends AbstractHydrator
                         }
 
                         $indexExists = isset($this->_identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]]);
-                        $index = $indexExists ? $this->_identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] : false;
-                        $indexIsValid = $index !== false ? isset($reflFieldValue[$index]) : false;
+                        $argIndex = $indexExists ? $this->_identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] : false;
+                        $indexIsValid = $argIndex !== false ? isset($reflFieldValue[$argIndex]) : false;
 
                         if ( ! $indexExists || ! $indexIsValid) {
                             if (isset($this->_existingCollections[$collKey])) {
@@ -417,7 +417,7 @@ class ObjectHydrator extends AbstractHydrator
                             }
                         } else {
                             // Update result pointer
-                            $this->_resultPointers[$dqlAlias] = $reflFieldValue[$index];
+                            $this->_resultPointers[$dqlAlias] = $reflFieldValue[$argIndex];
                         }
                     } else if ( ! $reflFieldValue) {
                         $reflFieldValue = $this->_initRelatedCollection($parentObject, $parentClass, $relationField, $parentAlias);
@@ -517,9 +517,9 @@ class ObjectHydrator extends AbstractHydrator
 
                 } else {
                     // Update result pointer
-                    $index = $this->_identifierMap[$dqlAlias][$id[$dqlAlias]];
-                    $this->_resultPointers[$dqlAlias] = $result[$index];
-                    $resultKey = $index;
+                    $argIndex = $this->_identifierMap[$dqlAlias][$id[$dqlAlias]];
+                    $this->_resultPointers[$dqlAlias] = $result[$argIndex];
+                    $resultKey = $argIndex;
                     /*if ($this->_rsm->isMixed) {
                         $result[] = $result[$index];
                         ++$this->_resultCounter;
@@ -549,13 +549,19 @@ class ObjectHydrator extends AbstractHydrator
                 $resultKey = $this->_resultCounter - 1;
             }
 
-            foreach ($newObjects as $newObject) {
-                $args   = array();
+            $count = count($newObjects);
+
+            foreach ($newObjects as $objIndex => $newObject) {
                 $class  = $newObject['class'];
-                foreach ($newObject['args'] as $index => $name) {
-                    $args[$index] = $result[$resultKey][$name];
+                $args   = $newObject['args'];
+                $obj    = $class->newInstanceArgs($args);
+
+                if ($count === 1) {
+                    $result[$resultKey] = $obj;
+                    continue;
                 }
-                $result[$resultKey] = $class->newInstanceArgs($args);
+
+                $result[$resultKey][$objIndex] = $obj;
             }
         }
 

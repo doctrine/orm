@@ -244,10 +244,14 @@ abstract class AbstractHydrator
             }
 
             if (isset($cache[$key]['isNewObjectParameter'])) {
+                $class    = $cache[$key]['class'];
                 $argIndex = $cache[$key]['argIndex'];
                 $objIndex = $cache[$key]['objIndex'];
-                $rowData['newObjects'][$objIndex]['class'] = $cache[$key]['class'];
-                $rowData['newObjects'][$objIndex]['args'][$argIndex] = $cache[$key]['fieldName'];
+                $value    = $cache[$key]['type']
+                    ->convertToPHPValue($value, $this->_platform);
+
+                $rowData['newObjects'][$objIndex]['class']           = $class;
+                $rowData['newObjects'][$objIndex]['args'][$argIndex] = $value;
             }
 
             if (isset($cache[$key]['isScalar'])) {
