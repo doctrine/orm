@@ -80,7 +80,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function propertyToColumnName($propertyName)
+    public function propertyToColumnName($propertyName, $className = null)
     {
         return $this->underscore($propertyName);
     }

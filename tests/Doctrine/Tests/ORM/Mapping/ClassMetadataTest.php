@@ -923,6 +923,26 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group DDC-984
+     * @group DDC-559
+     */
+    public function testFullyQualifiedClassNameShouldBeGivenToNamingStrategyPropertyToColumnName()
+    {
+        $namingStrategy = new MyPrefixNamingStrategy();
+        $metadata       = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', $namingStrategy);
+
+        $metadata->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+
+        $metadata->mapField(array('fieldName'=>'country'));
+        $metadata->mapField(array('fieldName'=>'city'));
+
+        $this->assertEquals($metadata->fieldNames, array(
+            'cmsaddress_country'   => 'country',
+            'cmsaddress_city'      => 'city'
+        ));
+    }
+
+    /**
      * @group DDC-1746
      */
     public function testInvalidCascade()
@@ -991,5 +1011,16 @@ class MyNamespacedNamingStrategy extends \Doctrine\ORM\Mapping\DefaultNamingStra
         }
 
         return strtolower($className);
+    }
+}
+
+class MyPrefixNamingStrategy extends \Doctrine\ORM\Mapping\DefaultNamingStrategy
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function propertyToColumnName($propertyName, $className = null)
+    {
+        return strtolower($this->classToTableName($className)) . '_' . $propertyName;
     }
 }
