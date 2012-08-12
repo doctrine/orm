@@ -302,6 +302,7 @@ class BasicEntityPersister
     protected function assignDefaultVersionValue($entity, $id)
     {
         $value = $this->fetchVersionValue($this->class, $id);
+
         $this->class->setFieldValue($entity, $this->class->versionField, $value);
     }
 
@@ -324,11 +325,9 @@ class BasicEntityPersister
              . ' FROM '  . $tableName
              . ' WHERE ' . implode(' = ? AND ', $identifier) . ' = ?';
 
-        $value = $this->conn->fetchColumn($sql, array_values((array)$id));
-        $value = Type::getType($versionedClass->fieldMappings[$versionField]['type'])
-                    ->convertToPHPValue($value, $this->platform);
+        $value = $this->conn->fetchColumn($sql, array_values((array) $id));
 
-        return $value;
+        return Type::getType($versionedClass->fieldMappings[$versionField]['type'])->convertToPHPValue($value, $this->platform);
     }
 
     /**
@@ -454,6 +453,7 @@ class BasicEntityPersister
                 case Type::INTEGER:
                     $set[] = $versionColumn . ' = ' . $versionColumn . ' + 1';
                     break;
+
                 case Type::DATETIME:
                     $set[] = $versionColumn . ' = CURRENT_TIMESTAMP';
                     break;
@@ -610,9 +610,8 @@ class BasicEntityPersister
                     // The associated entity $newVal is not yet persisted, so we must
                     // set $newVal = null, in order to insert a null value and schedule an
                     // extra update on the UnitOfWork.
-                    $uow->scheduleExtraUpdate($entity, array(
-                        $field => array(null, $newVal)
-                    ));
+                    $uow->scheduleExtraUpdate($entity, array($field => array(null, $newVal)));
+
                     $newVal = null;
                 }
             }
@@ -918,8 +917,7 @@ class BasicEntityPersister
             $rsm->addIndexBy('r', $assoc['indexBy']);
         }
 
-        return $this->em->newHydrator(Query::HYDRATE_OBJECT)
-                ->hydrateAll($stmt, $rsm, $hints);
+        return $this->em->newHydrator(Query::HYDRATE_OBJECT)->hydrateAll($stmt, $rsm, $hints);
     }
 
     /**
@@ -944,8 +942,7 @@ class BasicEntityPersister
             $rsm->addIndexBy('r', $assoc['indexBy']);
         }
 
-        return $this->em->newHydrator(Query::HYDRATE_OBJECT)
-            ->hydrateAll($stmt, $rsm, $hints);
+        return $this->em->newHydrator(Query::HYDRATE_OBJECT)->hydrateAll($stmt, $rsm, $hints);
     }
 
     /**
@@ -1059,11 +1056,10 @@ class BasicEntityPersister
         switch ($lockMode) {
             case LockMode::PESSIMISTIC_READ:
                 $lockSql = ' ' . $this->platform->getReadLockSql();
-
                 break;
+
             case LockMode::PESSIMISTIC_WRITE:
                 $lockSql = ' ' . $this->platform->getWriteLockSql();
-
                 break;
         }
 
@@ -1082,13 +1078,14 @@ class BasicEntityPersister
         $from   = ' FROM ' . $tableName . ' '. $tableAlias;
         $join   = $this->selectJoinSql . $joinSql;
         $where  = ($conditionSql ? ' WHERE ' . $conditionSql : '');
+        $lock   = $this->platform->appendLockHint($from, $lockMode);
+        $query  = $select
+            . $lock
+            . $join
+            . $where
+            . $orderBySql;
 
-        return $this->platform->modifyLimitQuery($select
-             . $this->platform->appendLockHint($from, $lockMode)
-             . $join
-             . $where
-             . $orderBySql, $limit, $offset)
-             . $lockSql;
+        return $this->platform->modifyLimitQuery($query, $limit, $offset) . $lockSql;
     }
 
     /**

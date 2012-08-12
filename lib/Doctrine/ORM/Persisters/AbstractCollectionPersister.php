@@ -87,6 +87,7 @@ abstract class AbstractCollectionPersister
         }
 
         $sql = $this->getDeleteSQL($coll);
+
         $this->conn->executeUpdate($sql, $this->getDeleteSQLParameters($coll));
     }
 
@@ -157,6 +158,7 @@ abstract class AbstractCollectionPersister
      * Count the size of this persistent collection
      *
      * @param   \Doctrine\ORM\PersistentCollection $coll
+     * 
      * @return  integer
      */
     public function count(PersistentCollection $coll)
@@ -170,6 +172,7 @@ abstract class AbstractCollectionPersister
      * @param   \Doctrine\ORM\PersistentCollection $coll
      * @param   integer $offset
      * @param   integer $length
+     *
      * @return  array
      */
     public function slice(PersistentCollection $coll, $offset, $length = null)
@@ -182,6 +185,7 @@ abstract class AbstractCollectionPersister
      *
      * @param   \Doctrine\ORM\PersistentCollection $coll
      * @param   mixed \Doctrine\ORM\PersistentCollection
+     *
      * @return  boolean
      */
     public function contains(PersistentCollection $coll, $element)
@@ -194,6 +198,7 @@ abstract class AbstractCollectionPersister
      *
      * @param   \Doctrine\ORM\PersistentCollection $coll
      * @param   mixed $key
+     *
      * @return  boolean
      */
     public function containsKey(PersistentCollection $coll, $key)
@@ -206,6 +211,7 @@ abstract class AbstractCollectionPersister
      *
      * @param   \Doctrine\ORM\PersistentCollection $coll
      * @param   object $element
+     *
      * @return  mixed
      */
     public function removeElement(PersistentCollection $coll, $element)
@@ -217,6 +223,7 @@ abstract class AbstractCollectionPersister
      * Remove an element by key
      *
      * @param   \Doctrine\ORM\PersistentCollection $coll
+     * 
      * @param   mixed $key
      */
     public function removeKey(PersistentCollection $coll, $key)
