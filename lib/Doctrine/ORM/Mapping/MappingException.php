@@ -692,10 +692,7 @@ class MappingException extends \Doctrine\ORM\ORMException
      */
     public static function entityListenerClassNotFound($listenerName, $className)
     {
-        return new self(sprintf(
-            'Entity Listener "%s" declared on "%s" not found.',
-            $listenerName, $className
-        ));
+        return new self(sprintf('Entity Listener "%s" declared on "%s" not found.', $listenerName, $className));
     }
 
     /**
@@ -707,10 +704,7 @@ class MappingException extends \Doctrine\ORM\ORMException
      */
     public static function entityListenerMethodNotFound($listenerName, $methodName, $className)
     {
-        return new self(sprintf(
-            'Entity Listener "%s" declared on "%s" has no method "%s".',
-            $listenerName, $className, $methodName
-        ));
+        return new self(sprintf('Entity Listener "%s" declared on "%s" has no method "%s".', $listenerName, $className, $methodName));
     }
 
     /**

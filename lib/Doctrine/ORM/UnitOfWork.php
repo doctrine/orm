@@ -977,7 +977,6 @@ class UnitOfWork implements PropertyChangedListener
         }
         
         foreach ($entities as $entity) {
-
             if ($hasListeners || $hasEntityListeners | $hasLifecycleCallbacks) {
                 $event = new LifecycleEventArgs($entity, $this->em);
             }

@@ -2311,6 +2311,7 @@ class ClassMetadataInfo implements ClassMetadata
                 }
 
                 $entityResult['entityClass'] = $this->fullyQualifiedClassName($entityResult['entityClass']);
+  
                 $resultMapping['entities'][$key]['entityClass'] = ltrim($entityResult['entityClass'], '\\');
                 $resultMapping['entities'][$key]['isSelfClass'] = $entityResult['isSelfClass'];
 
@@ -2496,6 +2497,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $callback
      * @param string $eventName
+     * @throws \Doctrine\ORM\Mapping\MappingException
      */
     public function addEntityListener($eventName, $class, $method)
     {
@@ -2510,8 +2512,8 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         $this->entityListeners[$eventName][] = array(
-            'class'     => $class,
-            'method'    => $method
+            'class'  => $class,
+            'method' => $method
         );
     }
 

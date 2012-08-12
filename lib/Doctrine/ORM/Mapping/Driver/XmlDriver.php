@@ -567,8 +567,8 @@ class XmlDriver extends FileDriver
 
                     $eventName   = $prefix . ucfirst($suffix);
                     $methodName  = (string) $callbackElement['method'];
-                    $listeners[] = array($eventName, $methodName);
 
+                    $listeners[] = array($eventName, $methodName);
                 }
 
                 if (isset($listenerElement['class'])) {
@@ -581,7 +581,7 @@ class XmlDriver extends FileDriver
                     continue;
                 }
 
-                // evaluate as lifecycle callback if the listener class is not given.
+                // Evaluate as lifecycle callback if the listener class is not given.
                 foreach ($listeners as $item) {
                     $metadata->addLifecycleCallback($item[1], $item[0]);
                 }

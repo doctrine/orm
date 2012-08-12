@@ -599,7 +599,7 @@ class YamlDriver extends FileDriver
                     continue;
                 }
 
-                // evaluate as lifecycle callback if the listener class is not given.
+                // Evaluate as lifecycle callback if the listener class is not given.
                 foreach ($listeners as $item){
                     $metadata->addLifecycleCallback($item[1], $item[0]);
                 }

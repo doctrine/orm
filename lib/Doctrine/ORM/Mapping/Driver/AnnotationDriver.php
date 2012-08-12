@@ -436,7 +436,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 }
             }
 
-            // evaluate as lifecycle callback if the listener class is not given.
+            // Evaluate as lifecycle callback if the listener class is not given.
             if(empty($entityListenersAnnot->value)) {
                 /* @var $method \Doctrine\ORM\Mapping\LifecycleCallback */
                 foreach ($entityListenersAnnot->callbacks as $callback) {
