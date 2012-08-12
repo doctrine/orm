@@ -450,4 +450,43 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($this->fixtures[1]->address->country, $result[1][1]->country);
         $this->assertEquals($this->fixtures[2]->address->country, $result[2][1]->country);
     }
+
+    /**
+     * @expectedException Doctrine\ORM\Query\QueryException
+     * @expectedExceptionMessage [Semantical Error] line 0, col 11 near '\InvalidClass(u.name)': Error: Class "\InvalidClass" is not defined.
+     */
+    public function testInvalidClassException()
+    {
+        $dql = "SELECT new \InvalidClass(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u";
+        $this->_em->createQuery($dql)->getResult();
+    }
+
+    /**
+     * @expectedException Doctrine\ORM\Query\QueryException
+     * @expectedExceptionMessage [Semantical Error] line 0, col 11 near '\stdClass(u.name)': Error: Class "\stdClass" has not a valid contructor.
+     */
+    public function testInvalidClassConstructorException()
+    {
+        $dql = "SELECT new \stdClass(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u";
+        $this->_em->createQuery($dql)->getResult();
+    }
+
+    /**
+     * @expectedException Doctrine\ORM\Query\QueryException
+     * @expectedExceptionMessage [Semantical Error] line 0, col 68 near ') FROM Doctrine\Tests\Models\CMS\CmsUser': Error: Number of arguments does not match.
+     */
+    public function testInvalidClassWithoutConstructorException()
+    {
+        $dql = "SELECT new Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u";
+        $this->_em->createQuery($dql)->getResult();
+    }
+}
+
+class ClassWithTooMuchArgs
+{
+    public function __construct($foo, $bar)
+    {
+        $this->foo = $foo;
+        $this->bor = $bar;
+    }
 }
