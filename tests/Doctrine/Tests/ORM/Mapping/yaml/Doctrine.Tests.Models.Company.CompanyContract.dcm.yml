@@ -9,7 +9,7 @@ Doctrine\Tests\Models\Company\CompanyContract:
 
   entityListeners:
     listener[0]:
-      class : ContractSubscriber
+      class : CompanyContractListener
 
       preFlush: [preFlushHandler]
       postLoad: [postLoadHandler]

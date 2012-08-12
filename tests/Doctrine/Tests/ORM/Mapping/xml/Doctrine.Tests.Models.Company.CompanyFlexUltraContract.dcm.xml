@@ -8,7 +8,7 @@
     <entity name="Doctrine\Tests\Models\Company\CompanyFlexUltraContract">
 
         <entity-listeners>
-            <entity-listener class="ContractSubscriber">
+            <entity-listener class="CompanyContractListener">
                 <pre-flush      method="preFlushHandler"/>
                 <post-load      method="postLoadHandler"/>
                 <pre-persist    method="prePersistHandler"/>
@@ -19,7 +19,7 @@
                 <post-remove    method="postRemoveHandler"/>
             </entity-listener>
 
-            <entity-listener class="FlexUltraContractSubscriber">
+            <entity-listener class="CompanyFlexUltraContractListener">
                 <pre-persist method="prePersistHandler1"/>
                 <pre-persist method="prePersistHandler2"/>
             </entity-listener>

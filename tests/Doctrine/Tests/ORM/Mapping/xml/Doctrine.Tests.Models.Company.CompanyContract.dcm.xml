@@ -14,7 +14,7 @@
         </discriminator-map>
 
         <entity-listeners>
-            <entity-listener class="ContractSubscriber">
+            <entity-listener class="CompanyContractListener">
                 <pre-flush      method="preFlushHandler"/>
                 <post-load      method="postLoadHandler"/>
                 

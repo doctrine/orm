@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\Models\Company;
 
-class ContractSubscriber
+class CompanyContractListener
 {
     static public $postPersistCalls;
     static public $prePersistCalls;

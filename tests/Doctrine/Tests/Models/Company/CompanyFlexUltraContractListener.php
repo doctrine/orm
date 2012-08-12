@@ -4,7 +4,7 @@ namespace Doctrine\Tests\Models\Company;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
 
-class FlexUltraContractSubscriber
+class CompanyFlexUltraContractListener
 {
     static public $prePersistCalls;
     static public $instances;

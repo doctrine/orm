@@ -3,7 +3,7 @@ Doctrine\Tests\Models\Company\CompanyFlexUltraContract:
 
   entityListeners:
     listener[0]:
-      class : ContractSubscriber
+      class : CompanyContractListener
       
       preFlush: [preFlushHandler]
       postLoad: [postLoadHandler]
@@ -18,7 +18,7 @@ Doctrine\Tests\Models\Company\CompanyFlexUltraContract:
       preRemove: [preRemoveHandler]
       
     listener[1]:
-      class : FlexUltraContractSubscriber
+      class : CompanyFlexUltraContractListener
 
       prePersist: [prePersistHandler1, prePersistHandler2]
 

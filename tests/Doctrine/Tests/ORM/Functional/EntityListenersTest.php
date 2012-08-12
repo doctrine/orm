@@ -3,7 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Company\CompanyFixContract;
-use Doctrine\Tests\Models\Company\ContractSubscriber;
+use Doctrine\Tests\Models\Company\CompanyContractListener;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -24,24 +24,24 @@ class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $fix = new CompanyFixContract();
         $fix->setFixPrice(2000);
 
-        ContractSubscriber::$preFlushCalls  = array();
+        CompanyContractListener::$preFlushCalls  = array();
 
         $this->_em->persist($fix);
         $this->_em->flush();
 
-        $this->assertCount(1,ContractSubscriber::$instances);
-        $this->assertCount(1,ContractSubscriber::$preFlushCalls);
+        $this->assertCount(1,CompanyContractListener::$instances);
+        $this->assertCount(1,CompanyContractListener::$preFlushCalls);
 
-        $this->assertSame($fix, ContractSubscriber::$preFlushCalls[0][0]);
+        $this->assertSame($fix, CompanyContractListener::$preFlushCalls[0][0]);
 
         $this->assertInstanceOf(
             'Doctrine\Tests\Models\Company\CompanyFixContract',
-            ContractSubscriber::$preFlushCalls[0][0]
+            CompanyContractListener::$preFlushCalls[0][0]
         );
 
         $this->assertInstanceOf(
             'Doctrine\ORM\Event\PreFlushEventArgs',
-            ContractSubscriber::$preFlushCalls[0][1]
+            CompanyContractListener::$preFlushCalls[0][1]
         );
     }
 
@@ -54,24 +54,24 @@ class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        ContractSubscriber::$postLoadCalls  = array();
+        CompanyContractListener::$postLoadCalls  = array();
 
         $dql = "SELECT f FROM Doctrine\Tests\Models\Company\CompanyFixContract f WHERE f.id = ?1";
         $fix = $this->_em->createQuery($dql)->setParameter(1, $fix->getId())->getSingleResult();
 
-        $this->assertCount(1,ContractSubscriber::$instances);
-        $this->assertCount(1,ContractSubscriber::$postLoadCalls);
+        $this->assertCount(1,CompanyContractListener::$instances);
+        $this->assertCount(1,CompanyContractListener::$postLoadCalls);
 
-        $this->assertSame($fix, ContractSubscriber::$postLoadCalls[0][0]);
+        $this->assertSame($fix, CompanyContractListener::$postLoadCalls[0][0]);
 
         $this->assertInstanceOf(
             'Doctrine\Tests\Models\Company\CompanyFixContract',
-            ContractSubscriber::$postLoadCalls[0][0]
+            CompanyContractListener::$postLoadCalls[0][0]
         );
 
         $this->assertInstanceOf(
             'Doctrine\ORM\Event\LifecycleEventArgs',
-            ContractSubscriber::$postLoadCalls[0][1]
+            CompanyContractListener::$postLoadCalls[0][1]
         );
     }
 
@@ -80,24 +80,24 @@ class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $fix = new CompanyFixContract();
         $fix->setFixPrice(2000);
 
-        ContractSubscriber::$prePersistCalls  = array();
+        CompanyContractListener::$prePersistCalls  = array();
 
         $this->_em->persist($fix);
         $this->_em->flush();
 
-        $this->assertCount(1,ContractSubscriber::$instances);
-        $this->assertCount(1,ContractSubscriber::$prePersistCalls);
+        $this->assertCount(1,CompanyContractListener::$instances);
+        $this->assertCount(1,CompanyContractListener::$prePersistCalls);
 
-        $this->assertSame($fix, ContractSubscriber::$prePersistCalls[0][0]);
+        $this->assertSame($fix, CompanyContractListener::$prePersistCalls[0][0]);
 
         $this->assertInstanceOf(
             'Doctrine\Tests\Models\Company\CompanyFixContract',
-            ContractSubscriber::$prePersistCalls[0][0]
+            CompanyContractListener::$prePersistCalls[0][0]
         );
 
         $this->assertInstanceOf(
             'Doctrine\ORM\Event\LifecycleEventArgs',
-            ContractSubscriber::$prePersistCalls[0][1]
+            CompanyContractListener::$prePersistCalls[0][1]
         );
     }
 
@@ -106,24 +106,24 @@ class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $fix = new CompanyFixContract();
         $fix->setFixPrice(2000);
 
-        ContractSubscriber::$postPersistCalls = array();
+        CompanyContractListener::$postPersistCalls = array();
 
         $this->_em->persist($fix);
         $this->_em->flush();
 
-        $this->assertCount(1,ContractSubscriber::$instances);
-        $this->assertCount(1,ContractSubscriber::$postPersistCalls);
+        $this->assertCount(1,CompanyContractListener::$instances);
+        $this->assertCount(1,CompanyContractListener::$postPersistCalls);
 
-        $this->assertSame($fix, ContractSubscriber::$postPersistCalls[0][0]);
+        $this->assertSame($fix, CompanyContractListener::$postPersistCalls[0][0]);
 
         $this->assertInstanceOf(
             'Doctrine\Tests\Models\Company\CompanyFixContract',
-            ContractSubscriber::$postPersistCalls[0][0]
+            CompanyContractListener::$postPersistCalls[0][0]
         );
 
         $this->assertInstanceOf(
             'Doctrine\ORM\Event\LifecycleEventArgs',
-            ContractSubscriber::$postPersistCalls[0][1]
+            CompanyContractListener::$postPersistCalls[0][1]
         );
     }
 
@@ -135,26 +135,26 @@ class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($fix);
         $this->_em->flush();
 
-        ContractSubscriber::$preUpdateCalls = array();
+        CompanyContractListener::$preUpdateCalls = array();
         
         $fix->setFixPrice(2000);
 
         $this->_em->persist($fix);
         $this->_em->flush();
 
-        $this->assertCount(1,ContractSubscriber::$instances);
-        $this->assertCount(1,ContractSubscriber::$preUpdateCalls);
+        $this->assertCount(1,CompanyContractListener::$instances);
+        $this->assertCount(1,CompanyContractListener::$preUpdateCalls);
 
-        $this->assertSame($fix, ContractSubscriber::$preUpdateCalls[0][0]);
+        $this->assertSame($fix, CompanyContractListener::$preUpdateCalls[0][0]);
 
         $this->assertInstanceOf(
             'Doctrine\Tests\Models\Company\CompanyFixContract',
-            ContractSubscriber::$preUpdateCalls[0][0]
+            CompanyContractListener::$preUpdateCalls[0][0]
         );
 
         $this->assertInstanceOf(
             'Doctrine\ORM\Event\PreUpdateEventArgs',
-            ContractSubscriber::$preUpdateCalls[0][1]
+            CompanyContractListener::$preUpdateCalls[0][1]
         );
     }
 
@@ -166,26 +166,26 @@ class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($fix);
         $this->_em->flush();
 
-        ContractSubscriber::$postUpdateCalls = array();
+        CompanyContractListener::$postUpdateCalls = array();
 
         $fix->setFixPrice(2000);
 
         $this->_em->persist($fix);
         $this->_em->flush();
 
-        $this->assertCount(1,ContractSubscriber::$instances);
-        $this->assertCount(1,ContractSubscriber::$postUpdateCalls);
+        $this->assertCount(1,CompanyContractListener::$instances);
+        $this->assertCount(1,CompanyContractListener::$postUpdateCalls);
 
-        $this->assertSame($fix, ContractSubscriber::$postUpdateCalls[0][0]);
+        $this->assertSame($fix, CompanyContractListener::$postUpdateCalls[0][0]);
 
         $this->assertInstanceOf(
             'Doctrine\Tests\Models\Company\CompanyFixContract',
-            ContractSubscriber::$postUpdateCalls[0][0]
+            CompanyContractListener::$postUpdateCalls[0][0]
         );
 
         $this->assertInstanceOf(
             'Doctrine\ORM\Event\LifecycleEventArgs',
-            ContractSubscriber::$postUpdateCalls[0][1]
+            CompanyContractListener::$postUpdateCalls[0][1]
         );
     }
 
@@ -197,24 +197,24 @@ class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($fix);
         $this->_em->flush();
 
-        ContractSubscriber::$preRemoveCalls = array();
+        CompanyContractListener::$preRemoveCalls = array();
 
         $this->_em->remove($fix);
         $this->_em->flush();
 
-        $this->assertCount(1,ContractSubscriber::$instances);
-        $this->assertCount(1,ContractSubscriber::$preRemoveCalls);
+        $this->assertCount(1,CompanyContractListener::$instances);
+        $this->assertCount(1,CompanyContractListener::$preRemoveCalls);
 
-        $this->assertSame($fix, ContractSubscriber::$preRemoveCalls[0][0]);
+        $this->assertSame($fix, CompanyContractListener::$preRemoveCalls[0][0]);
 
         $this->assertInstanceOf(
             'Doctrine\Tests\Models\Company\CompanyFixContract',
-            ContractSubscriber::$preRemoveCalls[0][0]
+            CompanyContractListener::$preRemoveCalls[0][0]
         );
 
         $this->assertInstanceOf(
             'Doctrine\ORM\Event\LifecycleEventArgs',
-            ContractSubscriber::$preRemoveCalls[0][1]
+            CompanyContractListener::$preRemoveCalls[0][1]
         );
     }
 
@@ -226,24 +226,24 @@ class EntityListenersTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($fix);
         $this->_em->flush();
 
-        ContractSubscriber::$postRemoveCalls = array();
+        CompanyContractListener::$postRemoveCalls = array();
 
         $this->_em->remove($fix);
         $this->_em->flush();
 
-        $this->assertCount(1,ContractSubscriber::$instances);
-        $this->assertCount(1,ContractSubscriber::$postRemoveCalls);
+        $this->assertCount(1,CompanyContractListener::$instances);
+        $this->assertCount(1,CompanyContractListener::$postRemoveCalls);
 
-        $this->assertSame($fix, ContractSubscriber::$postRemoveCalls[0][0]);
+        $this->assertSame($fix, CompanyContractListener::$postRemoveCalls[0][0]);
 
         $this->assertInstanceOf(
             'Doctrine\Tests\Models\Company\CompanyFixContract',
-            ContractSubscriber::$postRemoveCalls[0][0]
+            CompanyContractListener::$postRemoveCalls[0][0]
         );
 
         $this->assertInstanceOf(
             'Doctrine\ORM\Event\LifecycleEventArgs',
-            ContractSubscriber::$postRemoveCalls[0][1]
+            CompanyContractListener::$postRemoveCalls[0][1]
         );
     }
 }
