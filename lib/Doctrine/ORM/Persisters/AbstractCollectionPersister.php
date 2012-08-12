@@ -236,6 +236,7 @@ abstract class AbstractCollectionPersister
      * 
      * @param   \Doctrine\ORM\PersistentCollection $coll
      * @param   mixed $index
+     * 
      * @return  object
      */
     public function get(PersistentCollection $coll, $index)

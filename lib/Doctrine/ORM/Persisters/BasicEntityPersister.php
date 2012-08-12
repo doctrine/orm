@@ -381,7 +381,6 @@ class BasicEntityPersister
         $params = array();
 
         foreach ($updateData as $columnName => $value) {
-
             $placeholder = '?';
             $column      = $columnName;
 
@@ -503,7 +502,7 @@ class BasicEntityPersister
 
 
             if ($selfReferential) {
-                $otherColumns = ! $mapping['isOwningSide']
+                $otherColumns = (! $mapping['isOwningSide'])
                     ? $association['joinTable']['joinColumns']
                     : $association['joinTable']['inverseJoinColumns'];
             }
@@ -1109,9 +1108,9 @@ class BasicEntityPersister
                 throw ORMException::invalidOrientation($this->class->name, $fieldName);
             }
 
-            $tableAlias = isset($this->class->fieldMappings[$fieldName]['inherited']) ?
-                    $this->getSQLTableAlias($this->class->fieldMappings[$fieldName]['inherited'])
-                    : $baseTableAlias;
+            $tableAlias = isset($this->class->fieldMappings[$fieldName]['inherited'])
+                ? $this->getSQLTableAlias($this->class->fieldMappings[$fieldName]['inherited'])
+                : $baseTableAlias;
 
             $columnName = $this->quoteStrategy->getColumnName($fieldName, $this->class, $this->platform);
 
@@ -1197,7 +1196,6 @@ class BasicEntityPersister
             $joinTableName  = $this->quoteStrategy->getTableName($eagerEntity, $this->platform);
 
             if ($assoc['isOwningSide']) {
-                
                 $tableAlias           = $this->getSQLTableAlias($association['targetEntity'], $assocAlias);
                 $this->selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($association['joinColumns']);
                 
@@ -1309,14 +1307,12 @@ class BasicEntityPersister
             return $this->insertSql;
         }
 
-        $insertSql = '';
         $columns   = $this->getInsertColumnList();
+        $tableName = $this->quoteStrategy->getTableName($this->class, $this->platform);
 
         if (empty($columns)) {
-            $this->insertSql = $this->platform->getEmptyIdentityInsertSQL(
-                $this->quoteStrategy->getTableName($this->class, $this->platform),
-                $this->quoteStrategy->getColumnName($this->class->identifier[0], $this->class, $this->platform)
-            );
+            $identityColumn  = $this->quoteStrategy->getColumnName($this->class->identifier[0], $this->class, $this->platform);
+            $this->insertSql = $this->platform->getEmptyIdentityInsertSQL($tableName, $identityColumn);
 
             return $this->insertSql;
         }
@@ -1331,15 +1327,17 @@ class BasicEntityPersister
                 && isset($this->columnTypes[$this->class->fieldNames[$column]])
                 && isset($this->class->fieldMappings[$this->class->fieldNames[$column]]['requireSQLConversion'])) {
 
-                $type = Type::getType($this->columnTypes[$this->class->fieldNames[$column]]);
+                $type        = Type::getType($this->columnTypes[$this->class->fieldNames[$column]]);
                 $placeholder = $type->convertToDatabaseValueSQL('?', $this->platform);
             }
 
             $values[] = $placeholder;
         }
 
-        $this->insertSql = 'INSERT INTO ' . $this->quoteStrategy->getTableName($this->class, $this->platform)
-                . ' (' . implode(', ', $columns) . ') VALUES (' . implode(', ', $values) . ')';
+        $columns = implode(', ', $columns);
+        $values  = implode(', ', $values);
+
+        $this->insertSql = sprintf('INSERT INTO %s (%s) VALUES (%s)', $tableName, $columns, $values);
 
         return $this->insertSql;
     }
