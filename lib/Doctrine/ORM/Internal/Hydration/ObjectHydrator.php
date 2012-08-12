@@ -397,11 +397,11 @@ class ObjectHydrator extends AbstractHydrator
                     continue;
                 }
 
-                $parentClass = $this->ce[$this->_rsm->aliasMap[$parentAlias]];
-                $oid = spl_object_hash($parentObject);
-                $relationField = $this->_rsm->relationMap[$dqlAlias];
-                $relation = $parentClass->associationMappings[$relationField];
-                $reflField = $parentClass->reflFields[$relationField];
+                $parentClass    = $this->ce[$this->_rsm->aliasMap[$parentAlias]];
+                $oid            = spl_object_hash($parentObject);
+                $relationField  = $this->_rsm->relationMap[$dqlAlias];
+                $relation       = $parentClass->associationMappings[$relationField];
+                $reflField      = $parentClass->reflFields[$relationField];
 
                 // Check the type of the relation (many or single-valued)
                 if ( ! ($relation['type'] & ClassMetadata::TO_ONE)) {
@@ -415,9 +415,9 @@ class ObjectHydrator extends AbstractHydrator
                             $reflFieldValue = $this->initRelatedCollection($parentObject, $parentClass, $relationField, $parentAlias);
                         }
 
-                        $indexExists = isset($this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]]);
-                        $index = $indexExists ? $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] : false;
-                        $indexIsValid = $index !== false ? isset($reflFieldValue[$index]) : false;
+                        $indexExists    = isset($this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]]);
+                        $index          = $indexExists ? $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] : false;
+                        $indexIsValid   = $index !== false ? isset($reflFieldValue[$index]) : false;
 
                         if ( ! $indexExists || ! $indexIsValid) {
                             if (isset($this->existingCollections[$collKey])) {
@@ -514,6 +514,7 @@ class ObjectHydrator extends AbstractHydrator
                 // check for existing result from the iterations before
                 if ( ! isset($this->identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $this->getEntity($rowData[$dqlAlias], $dqlAlias);
+   
                     if ($this->_rsm->isMixed) {
                         $element = array($entityKey => $element);
                     }
@@ -585,6 +586,7 @@ class ObjectHydrator extends AbstractHydrator
 
                 if ($count === 1) {
                     $result[$resultKey] = $obj;
+                    
                     continue;
                 }
 
@@ -602,7 +604,7 @@ class ObjectHydrator extends AbstractHydrator
     {
         parent::onClear($eventArgs);
 
-        $aliases              = array_keys($this->identifierMap);
+        $aliases             = array_keys($this->identifierMap);
         $this->identifierMap = array();
 
         foreach ($aliases as $alias) {

@@ -581,28 +581,18 @@ class Parser
     private function processDeferredNewObjectExpressions($AST)
     {
         foreach ($this->deferredNewObjectExpressions as $deferredItem) {
-            $expression = $deferredItem['expression'];
-            $token      = $deferredItem['token'];
-            $className  = $expression->className;
-            $args       = $expression->args;
+            $expression     = $deferredItem['expression'];
+            $token          = $deferredItem['token'];
+            $className      = $expression->className;
+            $args           = $expression->args;
+            $fromClassName  = isset($AST->fromClause->identificationVariableDeclarations[0]->rangeVariableDeclaration->abstractSchemaName)
+                ? $AST->fromClause->identificationVariableDeclarations[0]->rangeVariableDeclaration->abstractSchemaName
+                : null;
 
-            //first from item
-            if ( strpos($className, '\\') === false
-                    && ! class_exists($className)
-                    && isset($AST->fromClause
-                        ->identificationVariableDeclarations[0]
-                        ->rangeVariableDeclaration
-                        ->abstractSchemaName)) {
-
-                $fromClassName = $AST->fromClause
-                    ->identificationVariableDeclarations[0]
-                    ->rangeVariableDeclaration
-                    ->abstractSchemaName;
-
-                if (strpos($fromClassName, '\\') !== false) {
-                    $fromClassName  = substr($fromClassName, 0 , strrpos($fromClassName, '\\'));
-                    $className      = $fromClassName . '\\' . $className;
-                }
+            // If the namespace is not given then assumes the first from entity namespace
+            if (strpos($className, '\\') === false && ! class_exists($className) && strpos($fromClassName, '\\') !== false) {
+                $namespace  = substr($fromClassName, 0 , strrpos($fromClassName, '\\'));
+                $className  = $namespace . '\\' . $className;
 
                 if (class_exists($className)) {
                     $expression->className = $className;
@@ -610,26 +600,21 @@ class Parser
             }
 
             if ( ! class_exists($className)) {
-                $this->semanticalError(sprintf(
-                    'Class "%s" is not defined.',
-                    $expression->className
-                ), $token);
+                $this->semanticalError(sprintf('Class "%s" is not defined.', $expression->className), $token);
             }
 
             $class = new \ReflectionClass($className);
 
-            if($class->getConstructor() === null) {
-                $this->semanticalError(sprintf(
-                    'Class "%s" has not a valid contructor.',
-                    $className
-                ), $token);
+            if ( ! $class->isInstantiable()) {
+                $this->semanticalError(sprintf('Class "%s" can not be instantiated.', $className), $token);
             }
 
-            if($class->getConstructor()->getNumberOfRequiredParameters() > sizeof($args)) {
-                $this->semanticalError(sprintf(
-                    'Number of arguments does not match with "%s" constructor declaration.',
-                    $className
-                ), $token);
+            if ($class->getConstructor() === null) {
+                $this->semanticalError(sprintf('Class "%s" has not a valid contructor.', $className), $token);
+            }
+
+            if ($class->getConstructor()->getNumberOfRequiredParameters() > sizeof($args)) {
+                $this->semanticalError(sprintf('Number of arguments does not match with "%s" constructor declaration.', $className), $token);
             }
         }
     }
@@ -1719,6 +1704,7 @@ class Parser
 
     /**
      * NewObjectExpression ::= "NEW" IdentificationVariable "(" NewObjectArg {"," NewObjectArg}* ")"
+     *
      * @return \Doctrine\ORM\Query\AST\NewObjectExpression
      */
     public function NewObjectExpression()
@@ -1732,6 +1718,7 @@ class Parser
         $this->match(Lexer::T_OPEN_PARENTHESIS);
 
         $args[] = $this->NewObjectArg();
+
         while ($this->lexer->isNextToken(Lexer::T_COMMA)) {
             $this->match(Lexer::T_COMMA);
 
@@ -2090,7 +2077,7 @@ class Parser
 
             // NewObjectExpression (New ClassName(id, name))
             case ($lookaheadType === Lexer::T_NEW):
-                $expression    = $this->NewObjectExpression();
+                $expression = $this->NewObjectExpression();
                 break;
             
             default:

@@ -236,10 +236,12 @@ abstract class AbstractHydrator
                 }
 
                 if (isset($this->_rsm->newObjectMappings[$key])) {
+                    $mapping = $this->_rsm->newObjectMappings[$key];
+
                     $cache[$key]['isNewObjectParameter'] = true;
-                    $cache[$key]['argIndex']    = $this->_rsm->newObjectMappings[$key]['argIndex'];
-                    $cache[$key]['objIndex']    = $this->_rsm->newObjectMappings[$key]['objIndex'];
-                    $cache[$key]['class']       = new \ReflectionClass($this->_rsm->newObjectMappings[$key]['className']);
+                    $cache[$key]['argIndex']             = $mapping['argIndex'];
+                    $cache[$key]['objIndex']             = $mapping['objIndex'];
+                    $cache[$key]['class']                = new \ReflectionClass($mapping['className']);
                 }
             }
 
@@ -247,8 +249,7 @@ abstract class AbstractHydrator
                 $class    = $cache[$key]['class'];
                 $argIndex = $cache[$key]['argIndex'];
                 $objIndex = $cache[$key]['objIndex'];
-                $value    = $cache[$key]['type']
-                    ->convertToPHPValue($value, $this->_platform);
+                $value    = $cache[$key]['type']->convertToPHPValue($value, $this->_platform);
 
                 $rowData['newObjects'][$objIndex]['class']           = $class;
                 $rowData['newObjects'][$objIndex]['args'][$argIndex] = $value;

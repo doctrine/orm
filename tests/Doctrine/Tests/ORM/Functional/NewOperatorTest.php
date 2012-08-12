@@ -504,6 +504,16 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = "SELECT new Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u";
         $this->_em->createQuery($dql)->getResult();
     }
+
+    /**
+     * @expectedException Doctrine\ORM\Query\QueryException
+     * @expectedExceptionMessage [Semantical Error] line 0, col 11 near 'Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor(u.name)': Error: Class "Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor" can not be instantiated.
+     */
+    public function testClassCantBeInstantiatedException()
+    {
+        $dql = "SELECT new Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u";
+        $this->_em->createQuery($dql)->getResult();
+    }
 }
 
 class ClassWithTooMuchArgs
@@ -512,5 +522,13 @@ class ClassWithTooMuchArgs
     {
         $this->foo = $foo;
         $this->bor = $bar;
+    }
+}
+
+class ClassWithPrivateConstructor
+{
+    private function __construct($foo)
+    {
+        $this->foo = $foo;
     }
 }

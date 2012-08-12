@@ -1406,15 +1406,14 @@ class SqlWalker implements TreeWalker
     public function walkNewObject($newObjectExpression)
     {
         $sqlSelectExpressions = array();
-        $objIndex             = $this->newObjectCounter ++;
+        $objIndex             = $this->newObjectCounter++;
 
         foreach ($newObjectExpression->args as $argIndex => $e) {
-
             $resultAlias = $this->scalarResultCounter++;
             $columnAlias = $this->getSQLColumnAlias('sclr');
 
             switch (true) {
-                case $e instanceof AST\NewObjectExpression:
+                case ($e instanceof AST\NewObjectExpression):
                     $sqlSelectExpressions[] = $e->dispatch($this);
                     break;
 
