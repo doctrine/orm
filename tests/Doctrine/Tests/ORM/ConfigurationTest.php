@@ -260,6 +260,18 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->configuration->setQuoteStrategy($quoteStrategy);
         $this->assertSame($quoteStrategy, $this->configuration->getQuoteStrategy());
     }
+
+    /**
+     * @group DDC-1955
+     */
+    public function testSetGetEntityListenerResolver()
+    {
+        $this->assertInstanceOf('Doctrine\ORM\Mapping\EntityListenerResolver', $this->configuration->getEntityListenerResolver());
+        $this->assertInstanceOf('Doctrine\ORM\Mapping\DefaultEntityListenerResolver', $this->configuration->getEntityListenerResolver());
+        $quoteStrategy = $this->getMock('Doctrine\ORM\Mapping\EntityListenerResolver');
+        $this->configuration->setEntityListenerResolver($quoteStrategy);
+        $this->assertSame($quoteStrategy, $this->configuration->getEntityListenerResolver());
+    }
 }
 
 class ConfigurationTestAnnotationReaderChecker

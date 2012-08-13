@@ -27,6 +27,7 @@ use ReflectionClass;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\ClassLoader;
 use Doctrine\Common\EventArgs;
+use Doctrine\ORM\Mapping\EntityListenerResolver;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -443,11 +444,6 @@ class ClassMetadataInfo implements ClassMetadata
      * @var array
      */
     public $entityListeners = array();
-
-    /**
-     * @var array entity listeners instances.
-     */
-    static private $entityListenerInstances = array();
 
     /**
      * READ-ONLY: The association mappings of this class.
@@ -2520,21 +2516,19 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Call the entity listeners.
      *
+     * @param \Doctrine\ORM\Mapping\EntityListenerResolver $resolver The Entity listener resolver.
      * @param string $eventName                 The event name.
      * @param object $entity                    An instance of the mapped entity
      * @param \Doctrine\Common\EventArgs $arg   The Event args
      */
-    public function dispatchEntityListeners($eventName, $entity, EventArgs $arg)
+    public function dispatchEntityListeners(EntityListenerResolver $resolver, $eventName, $entity, EventArgs $arg)
     {
         foreach ($this->entityListeners[$eventName] as $listener) {
-            $class  = $listener['class'];
-            $method = $listener['method'];
+            $class      = $listener['class'];
+            $method     = $listener['method'];
+            $instance   = $resolver->resolve($class);
 
-            if ( ! isset(self::$entityListenerInstances[$class])) {
-                self::$entityListenerInstances[$class] = new $class();
-            }
-
-            self::$entityListenerInstances[$class]->{$method}($entity, $arg);
+            $instance->{$method}($entity, $arg);
         }
     }
 

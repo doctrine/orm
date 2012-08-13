@@ -6,20 +6,14 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 
 class CompanyFlexUltraContractListener
 {
-    static public $prePersistCalls;
-    static public $instances;
-
-    public function __construct()
-    {
-        self::$instances[] = $this;
-    }
+    public $prePersistCalls;
 
     /**
      * @PrePersist
      */
     public function prePersistHandler1(CompanyContract $contract, LifecycleEventArgs $args)
     {
-        self::$prePersistCalls[] = func_get_args();
+        $this->prePersistCalls[] = func_get_args();
     }
 
     /**
@@ -27,6 +21,6 @@ class CompanyFlexUltraContractListener
      */
     public function prePersistHandler2(CompanyContract $contract, LifecycleEventArgs $args)
     {
-        self::$prePersistCalls[] = func_get_args();
+        $this->prePersistCalls[] = func_get_args();
     }
 }

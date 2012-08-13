@@ -219,6 +219,13 @@ class UnitOfWork implements PropertyChangedListener
     private $evm;
 
     /**
+     * The EntityListenerResolver used for dispatching events.
+     *
+     * @var \Doctrine\ORM\Mapping\EntityListenerResolver
+     */
+    private $entityListenerResolver;
+
+    /**
      * Orphaned entities that are scheduled for removal.
      *
      * @var array
@@ -246,8 +253,9 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function __construct(EntityManager $em)
     {
-        $this->em = $em;
-        $this->evm = $em->getEventManager();
+        $this->em                       = $em;
+        $this->evm                      = $em->getEventManager();
+        $this->entityListenerResolver   = $em->getConfiguration()->getEntityListenerResolver();
     }
 
     /**
@@ -525,7 +533,7 @@ class UnitOfWork implements PropertyChangedListener
 
         // Fire PreFlush entity listeners
         if ($hasEntityListeners) {
-            $class->dispatchEntityListeners(Events::preFlush, $entity, $event);
+            $class->dispatchEntityListeners($this->entityListenerResolver, Events::preFlush, $entity, $event);
         }
 
         $actualData = array();
@@ -836,7 +844,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($hasEntityListeners) {
-            $class->dispatchEntityListeners(Events::prePersist, $entity, $event);
+            $class->dispatchEntityListeners($this->entityListenerResolver, Events::prePersist, $entity, $event);
         }
 
         if ($hasListeners) {
@@ -986,7 +994,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($hasEntityListeners) {
-                $class->dispatchEntityListeners(Events::postPersist, $entity, $event);
+                $class->dispatchEntityListeners($this->entityListenerResolver, Events::postPersist, $entity, $event);
             }
 
             if ($hasListeners) {
@@ -1035,7 +1043,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($hasPreUpdateEntityListeners) {
-                $class->dispatchEntityListeners(Events::preUpdate, $entity, $preEvent);
+                $class->dispatchEntityListeners($this->entityListenerResolver, Events::preUpdate, $entity, $preEvent);
             }
 
             if ($hasPreUpdateListeners) {
@@ -1053,7 +1061,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($hasPostUpdateEntityListeners) {
-                $class->dispatchEntityListeners(Events::postUpdate, $entity, $postEvent);
+                $class->dispatchEntityListeners($this->entityListenerResolver, Events::postUpdate, $entity, $postEvent);
             }
 
             if ($hasPostUpdateListeners) {
@@ -1108,7 +1116,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($hasEntityListeners) {
-                $class->dispatchEntityListeners(Events::postRemove, $entity, $event);
+                $class->dispatchEntityListeners($this->entityListenerResolver, Events::postRemove, $entity, $event);
             }
 
             if ($hasListeners) {
@@ -1765,7 +1773,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 if ($hasEntityListeners) {
-                    $class->dispatchEntityListeners(Events::preRemove, $entity, $event);
+                    $class->dispatchEntityListeners($this->entityListenerResolver, Events::preRemove, $entity, $event);
                 }
 
                 if ($hasListeners) {
@@ -2781,7 +2789,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($hasEntityListeners) {
-                $class->dispatchEntityListeners(Events::postLoad, $entity, $event);
+                $class->dispatchEntityListeners($this->entityListenerResolver, Events::postLoad, $entity, $event);
             }
 
             if ($hasListeners) {

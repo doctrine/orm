@@ -29,6 +29,8 @@ use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\EntityListenerResolver;
+use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Annotations\CachedReader;
 
@@ -762,5 +764,31 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
 
         return $this->_attributes['quoteStrategy'];
+    }
+
+    /**
+     * Set the entity listener resolver.
+     *
+     * @since 2.4
+     * @param \Doctrine\ORM\Mapping\EntityListenerResolver $resolver
+     */
+    public function setEntityListenerResolver(EntityListenerResolver $resolver)
+    {
+        $this->_attributes['entityListenerResolver'] = $resolver;
+    }
+
+    /**
+     * Get the entity listener resolver.
+     *
+     * @since 2.4
+     * @return \Doctrine\ORM\Mapping\EntityListenerResolver
+     */
+    public function getEntityListenerResolver()
+    {
+        if ( ! isset($this->_attributes['entityListenerResolver'])) {
+            $this->_attributes['entityListenerResolver'] = new DefaultEntityListenerResolver();
+        }
+
+        return $this->_attributes['entityListenerResolver'];
     }
 }

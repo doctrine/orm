@@ -4,32 +4,25 @@ namespace Doctrine\Tests\Models\Company;
 
 class CompanyContractListener
 {
-    static public $postPersistCalls;
-    static public $prePersistCalls;
+    public $postPersistCalls;
+    public $prePersistCalls;
     
-    static public $postUpdateCalls;
-    static public $preUpdateCalls;
+    public $postUpdateCalls;
+    public $preUpdateCalls;
     
-    static public $postRemoveCalls;
-    static public $preRemoveCalls;
+    public $postRemoveCalls;
+    public $preRemoveCalls;
 
-    static public $preFlushCalls;
+    public $preFlushCalls;
     
-    static public $postLoadCalls;
+    public $postLoadCalls;
     
-    static public $instances;
-
-    public function __construct()
-    {
-        self::$instances[] = $this;
-    }
-
     /**
      * @PostPersist
      */
     public function postPersistHandler(CompanyContract $contract)
     {
-        self::$postPersistCalls[] = func_get_args();
+        $this->postPersistCalls[] = func_get_args();
     }
 
     /**
@@ -37,7 +30,7 @@ class CompanyContractListener
      */
     public function prePersistHandler(CompanyContract $contract)
     {
-        self::$prePersistCalls[] = func_get_args();
+        $this->prePersistCalls[] = func_get_args();
     }
 
     /**
@@ -45,7 +38,7 @@ class CompanyContractListener
      */
     public function postUpdateHandler(CompanyContract $contract)
     {
-        self::$postUpdateCalls[] = func_get_args();
+        $this->postUpdateCalls[] = func_get_args();
     }
 
     /**
@@ -53,7 +46,7 @@ class CompanyContractListener
      */
     public function preUpdateHandler(CompanyContract $contract)
     {
-        self::$preUpdateCalls[] = func_get_args();
+        $this->preUpdateCalls[] = func_get_args();
     }
 
     /**
@@ -61,7 +54,7 @@ class CompanyContractListener
      */
     public function postRemoveHandler(CompanyContract $contract)
     {
-        self::$postRemoveCalls[] = func_get_args();
+        $this->postRemoveCalls[] = func_get_args();
     }
 
     /**
@@ -69,7 +62,7 @@ class CompanyContractListener
      */
     public function preRemoveHandler(CompanyContract $contract)
     {
-        self::$preRemoveCalls[] = func_get_args();
+        $this->preRemoveCalls[] = func_get_args();
     }
 
     /**
@@ -77,7 +70,7 @@ class CompanyContractListener
      */
     public function preFlushHandler(CompanyContract $contract)
     {
-        self::$preFlushCalls[] = func_get_args();
+        $this->preFlushCalls[] = func_get_args();
     }
 
     /**
@@ -85,7 +78,7 @@ class CompanyContractListener
      */
     public function postLoadHandler(CompanyContract $contract)
     {
-        self::$postLoadCalls[] = func_get_args();
+        $this->postLoadCalls[] = func_get_args();
     }
 
 }
