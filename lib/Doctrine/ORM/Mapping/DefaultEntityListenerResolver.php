@@ -38,16 +38,15 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
      */
     public function clear($className = null)
     {
-        if ($className !== null) {
-
-            if (isset($this->instances[$className = trim($className, '\\')])) {
-                unset($this->instances[$className]);
-            }
+        if ($className === null) {
+            $this->instances = array();
 
             return;
         }
 
-        $this->instances = array();
+        if (isset($this->instances[$className = trim($className, '\\')])) {
+            unset($this->instances[$className]);
+        }
     }
 
     /**
