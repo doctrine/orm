@@ -56,7 +56,7 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
     public function register($object)
     {
         if ( ! is_object($object)) {
-            throw new \InvalidArgumentException(sprintf('An object was expected, but got "%s.', gettype($object)));
+            throw new \InvalidArgumentException(sprintf('An object was expected, but got "%s".', gettype($object)));
         }
 
         $this->instances[get_class($object)] = $object;

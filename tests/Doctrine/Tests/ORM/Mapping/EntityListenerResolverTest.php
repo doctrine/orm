@@ -9,7 +9,7 @@ require_once __DIR__ . '/../../TestInit.php';
 /**
  * @group DDC-1955
  */
-class ListenerResolverTest extends \Doctrine\Tests\OrmTestCase
+class EntityListenerResolverTest extends \Doctrine\Tests\OrmTestCase
 {
 
     /**
@@ -90,7 +90,7 @@ class ListenerResolverTest extends \Doctrine\Tests\OrmTestCase
 
     /**
      * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage An object was expected, but got "string.
+     * @expectedExceptionMessage An object was expected, but got "string".
      */
     public function testRegisterStringException()
     {
