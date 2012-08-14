@@ -206,6 +206,21 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('HydrationModeName'));
     }
 
+    public function testSetCustomHydrationModes()
+    {
+        $this->configuration->addCustomHydrationMode('HydrationModeName', __CLASS__);
+        $this->assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('HydrationModeName'));
+
+        $this->configuration->setCustomHydrationModes(
+            array(
+                'AnotherHydrationModeName' => __CLASS__
+            )
+        );
+
+        $this->assertNull($this->configuration->getCustomHydrationMode('HydrationModeName'));
+        $this->assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('AnotherHydrationModeName'));
+    }
+
     public function testSetGetClassMetadataFactoryName()
     {
         $this->assertSame('Doctrine\ORM\Mapping\ClassMetadataFactory', $this->configuration->getClassMetadataFactoryName());
