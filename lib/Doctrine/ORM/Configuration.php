@@ -519,7 +519,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setCustomHydrationModes($modes)
     {
-        foreach ($modes as $modeName, $hydrator) {
+        $this->_attributes['customHydrationMods'] = array();
+
+        foreach ($modes as $modeName => $hydrator) {
             $this->addCustomHydrationMode($modeName, $hydrator);
         }
     }
