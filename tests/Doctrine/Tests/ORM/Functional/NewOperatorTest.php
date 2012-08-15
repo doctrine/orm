@@ -153,6 +153,62 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]);
     }
 
+    public function testShouldSupportFromEntityNamespaceAlias()
+    {
+        $dql = "
+            SELECT
+                new CmsUserDTO(u.name, e.email, a.city)
+            FROM
+                cms:CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name";
+
+
+        $this->_em->getConfiguration()
+            ->addEntityNamespace('cms', 'Doctrine\Tests\Models\CMS');
+        
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
+
+        $this->assertCount(3, $result);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]);
+    }
+
+    public function testShouldSupportValueObjectNamespaceAlias()
+    {
+        $dql = "
+            SELECT
+                new cms:CmsUserDTO(u.name, e.email, a.city)
+            FROM
+                cms:CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name";
+
+
+        $this->_em->getConfiguration()
+            ->addEntityNamespace('cms', 'Doctrine\Tests\Models\CMS');
+
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
+
+        $this->assertCount(3, $result);
+
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]);
+    }
+
     public function testShouldSupportLiteralExpression()
     {
         $dql = "

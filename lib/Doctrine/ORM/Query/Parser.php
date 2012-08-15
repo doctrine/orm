@@ -1715,6 +1715,13 @@ class Parser
         $token      = $this->lexer->token;
         $className  = $token['value'];
 
+        if (strrpos($className, ':') !== false) {
+            list($namespaceAlias, $simpleClassName) = explode(':', $className);
+
+            $className = $this->em->getConfiguration()
+                ->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
+        }
+
         $this->match(Lexer::T_OPEN_PARENTHESIS);
 
         $args[] = $this->NewObjectArg();
