@@ -19,8 +19,8 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\DBAL\Connection,
-    Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * Provides an enclosed support for parameter infering.
@@ -46,25 +46,18 @@ class ParameterTypeInferer
      */
     public static function inferType($value)
     {
-        switch (true) {
-            case is_integer($value):
-                return Type::INTEGER;
+        if (is_integer($value)) {
+            return Type::INTEGER;
+        }
 
-            case ($value instanceof \DateTime):
-                return Type::DATETIME;
+        if ($value instanceof \DateTime) {
+            return Type::DATETIME;
+        }
 
-            case is_array($value):
-                $key = key($value);
-
-                if (is_integer($value[$key])) {
-                    return Connection::PARAM_INT_ARRAY;
-                }
-
-                return Connection::PARAM_STR_ARRAY;
-
-            default:
-                // Do nothing
-                break;
+        if (is_array($value)) {
+            return is_integer(current($value))
+                ? Connection::PARAM_INT_ARRAY
+                : Connection::PARAM_STR_ARRAY;
         }
 
         return \PDO::PARAM_STR;
