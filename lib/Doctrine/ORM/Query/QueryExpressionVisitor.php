@@ -45,7 +45,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
     );
 
     private $expr;
-    private $parameters;
+    private $parameters = array();
 
     /**
      * Constructor with internal initialization
@@ -53,7 +53,6 @@ class QueryExpressionVisitor extends ExpressionVisitor
     public function __construct()
     {
         $this->expr = new Expr();
-        $this->parameters = new ArrayCollection();
     }
 
     /**
@@ -64,7 +63,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      */
     public function getParameters()
     {
-        return $this->parameters;
+        return new ArrayCollection($this->parameters);
     }
 
     /**
@@ -121,11 +120,11 @@ class QueryExpressionVisitor extends ExpressionVisitor
 
         switch ($comparison->getOperator()) {
             case Comparison::IN:
-                $this->parameters->add($parameter);
+                $this->parameters[] = $parameter;
                 return $this->expr->in($comparison->getField(), $placeholder);
 
             case Comparison::NIN:
-                $this->parameters->add($parameter);
+                $this->parameters[] = $parameter;
                 return $this->expr->notIn($comparison->getField(), $placeholder);
 
             case Comparison::EQ:
@@ -133,20 +132,20 @@ class QueryExpressionVisitor extends ExpressionVisitor
                 if ($this->walkValue($comparison->getValue()) === null) {
                     return $this->expr->isNull($comparison->getField());
                 }
-                $this->parameters->add($parameter);
+                $this->parameters[] = $parameter;
                 return $this->expr->eq($comparison->getField(), $placeholder);
 
             case Comparison::NEQ:
                 if ($this->walkValue($comparison->getValue()) === null) {
                     return $this->expr->isNotNull($comparison->getField());
                 }
-                $this->parameters->add($parameter);
+                $this->parameters[] = $parameter;
                 return $this->expr->neq($comparison->getField(), $placeholder);
 
             default:
                 $operator = self::convertComparisonOperator($comparison->getOperator());
                 if ($operator) {
-                    $this->parameters->add($parameter);
+                    $this->parameters[] = $parameter;
                     return new Expr\Comparison(
                         $comparison->getField(),
                         $operator,
