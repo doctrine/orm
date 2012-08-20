@@ -50,7 +50,7 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
     }
 
     /**
-     * {@inheritdoc}"
+     * {@inheritdoc}
      */
     public function register($object)
     {

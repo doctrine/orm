@@ -415,7 +415,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
     }
 
-     /**
+    /**
      * Completes the ID generator mapping. If "auto" is specified we choose the generator
      * most appropriate for the targeted database platform.
      *
@@ -462,7 +462,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $sequenceName = $this->em->getConfiguration()->getQuoteStrategy()->getSequenceName($definition, $class, $this->targetPlatform);
                 }
 
-                $generator = ($fieldName && $class->fieldMappings[$fieldName]['type'] === "bigint")
+                $generator = ($fieldName && $class->fieldMappings[$fieldName]['type'] === 'bigint')
                     ? new BigIntegerIdentityGenerator($sequenceName)
                     : new IdentityGenerator($sequenceName);
 
