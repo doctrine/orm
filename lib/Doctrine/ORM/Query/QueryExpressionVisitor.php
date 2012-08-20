@@ -132,19 +132,16 @@ class QueryExpressionVisitor extends ExpressionVisitor
             case Comparison::IS:
                 if ($this->walkValue($comparison->getValue()) === null) {
                     return $this->expr->isNull($comparison->getField());
-                } else {
-                    $this->parameters->add($parameter);
-                    return $this->expr->eq($comparison->getField(), $placeholder);
                 }
+                $this->parameters->add($parameter);
+                return $this->expr->eq($comparison->getField(), $placeholder);
 
             case Comparison::NEQ:
                 if ($this->walkValue($comparison->getValue()) === null) {
                     return $this->expr->isNotNull($comparison->getField());
-                } else {
-                    $this->parameters->add($parameter);
-                    return $this->expr->neq($comparison->getField(), $placeholder);
                 }
-
+                $this->parameters->add($parameter);
+                return $this->expr->neq($comparison->getField(), $placeholder);
 
             default:
                 $operator = self::convertComparisonOperator($comparison->getOperator());
