@@ -1047,7 +1047,7 @@ class QueryBuilder
         }
 
         // Overwrite limits only if they was set in criteria
-        if (($firstResult  = $criteria->getFirstResult()) !== null) {
+        if (($firstResult = $criteria->getFirstResult()) !== null) {
             $this->setFirstResult($firstResult);
         }
         if (($maxResults = $criteria->getMaxResults()) !== null) {
