@@ -412,6 +412,18 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(10, $qb->getMaxResults());
     }
 
+    public function testAddCriteriaUndefinedLimit()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->setFirstResult(2)->setMaxResults(10);
+        $criteria = new Criteria();
+
+        $qb->addCriteria($criteria);
+
+        $this->assertEquals(2, $qb->getFirstResult());
+        $this->assertEquals(10, $qb->getMaxResults());
+    }
+
     public function testGetQuery()
     {
         $qb = $this->_em->createQueryBuilder()
