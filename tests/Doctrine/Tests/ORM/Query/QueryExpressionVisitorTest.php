@@ -134,4 +134,13 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals('value', $this->visitor->walkValue(new Value('value')));
     }
+
+    public function testClearParameters()
+    {
+        $this->visitor->getParameters()->add(new Parameter('field', 'value'));
+
+        $this->visitor->clearParameters();
+
+        $this->assertCount(0, $this->visitor->getParameters());
+    }
 }
