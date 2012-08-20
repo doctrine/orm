@@ -1024,7 +1024,7 @@ class QueryBuilder
      * Add criteria to query.
      * Add where expressions with AND operator.
      * Add orderings.
-     * Override firstResult and maxResults.
+     * Override firstResult and maxResults if they set.
      *
      * @param Criteria $criteria
      * @return QueryBuilder
@@ -1046,8 +1046,13 @@ class QueryBuilder
             }
         }
 
-        $this->setFirstResult($criteria->getFirstResult());
-        $this->setMaxResults($criteria->getMaxResults());
+        // Overwrite limits only if they was set in criteria
+        if (($firstResult  = $criteria->getFirstResult()) !== null) {
+            $this->setFirstResult($firstResult);
+        }
+        if (($maxResults = $criteria->getMaxResults()) !== null) {
+            $this->setMaxResults($maxResults);
+        }
 
         return $this;
     }
