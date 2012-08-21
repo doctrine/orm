@@ -1422,7 +1422,6 @@ class SqlWalker implements TreeWalker
                     break;
             }
 
-
             switch (true) {
                 case ($e instanceof AST\PathExpression):
                     $fieldName = $e->field;
