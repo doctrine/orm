@@ -48,7 +48,7 @@ class IdentityFunction extends FunctionNode
 
         $tableAlias = $sqlWalker->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
-        return $tableAlias . '.' . reset($assoc['targetToSourceKeyColumns']);;
+        return $tableAlias . '.' . reset($assoc['targetToSourceKeyColumns']);
     }
 
     /**

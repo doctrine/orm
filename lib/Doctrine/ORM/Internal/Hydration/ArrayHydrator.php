@@ -19,7 +19,9 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use PDO, Doctrine\DBAL\Connection, Doctrine\ORM\Mapping\ClassMetadata;
+use PDO;
+use Doctrine\DBAL\Connection;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * The ArrayHydrator produces a nested array "graph" that is often (not always)

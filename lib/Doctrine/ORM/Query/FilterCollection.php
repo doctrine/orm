@@ -19,8 +19,8 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\ORM\Configuration,
-    Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Collection class for all the query filters.
@@ -43,14 +43,14 @@ class FilterCollection
     /**
      * The used Configuration.
      *
-     * @var Doctrine\ORM\Configuration
+     * @var \Doctrine\ORM\Configuration
      */
     private $config;
 
     /**
      * The EntityManager that "owns" this FilterCollection instance.
      *
-     * @var Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
     private $em;
 
@@ -99,16 +99,18 @@ class FilterCollection
      *
      * @throws \InvalidArgumentException If the filter does not exist.
      *
-     * @return SQLFilter The enabled filter.
+     * @return \Doctrine\ORM\Query\Filter\SQLFilter The enabled filter.
      */
     public function enable($name)
     {
-        if (null === $filterClass = $this->config->getFilterClassName($name)) {
+        if (null === $filter = $this->config->getFilter($name)) {
             throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
         }
 
         if (!isset($this->enabledFilters[$name])) {
-            $this->enabledFilters[$name] = new $filterClass($this->em);
+            $this->enabledFilters[$name] = is_object($filter)
+                ? $filter
+                : new $filter($this->em);
 
             // Keep the enabled filters sorted for the hash
             ksort($this->enabledFilters);
@@ -125,7 +127,7 @@ class FilterCollection
      *
      * @param string $name Name of the filter.
      *
-     * @return SQLFilter The disabled filter.
+     * @return \Doctrine\ORM\Query\Filter\SQLFilter The disabled filter.
      *
      * @throws \InvalidArgumentException If the filter does not exist.
      */
@@ -147,7 +149,7 @@ class FilterCollection
      *
      * @param string $name Name of the filter.
      *
-     * @return SQLFilter The filter.
+     * @return \Doctrine\ORM\Query\Filter\SQLFilter The filter.
      *
      * @throws \InvalidArgumentException If the filter is not enabled.
      */

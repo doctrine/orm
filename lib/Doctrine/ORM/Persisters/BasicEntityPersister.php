@@ -19,8 +19,6 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use PDO;
-
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Connection;
@@ -33,8 +31,6 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Events;
-use Doctrine\ORM\Event\LifecycleEventArgs;
 
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Collections\Criteria;
@@ -808,10 +804,23 @@ class BasicEntityPersister
             return array(array(), array());
         }
 
-        $valueVisitor = new SqlValueVisitor($this->_class);
+        $valueVisitor = new SqlValueVisitor();
         $valueVisitor->dispatch($expression);
 
-        return $valueVisitor->getParamsAndTypes();
+        list($values, $types) = $valueVisitor->getParamsAndTypes();
+
+        $sqlValues = array();
+        foreach ($values as $value) {
+            $sqlValues[] = $this->getValue($value);
+        }
+
+        $sqlTypes = array();
+        foreach ($types as $type) {
+            list($field, $value) = $type;
+            $sqlTypes[] = $this->getType($field, $value);
+        }
+
+        return array($sqlValues, $sqlTypes);
     }
 
     /**
@@ -1671,7 +1680,7 @@ class BasicEntityPersister
     }
 
     /**
-     * Retrieve an invidiual parameter value
+     * Retrieve an individual parameter value
      *
      * @param mixed $value
      * @return mixed

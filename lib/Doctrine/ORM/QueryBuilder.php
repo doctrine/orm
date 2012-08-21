@@ -20,8 +20,10 @@
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
 
 use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\Query\QueryExpressionVisitor;
 
 /**
  * This class is responsible for building DQL query strings via an object oriented
@@ -1016,6 +1018,43 @@ class QueryBuilder
     public function addOrderBy($sort, $order = null)
     {
         return $this->add('orderBy', new Expr\OrderBy($sort, $order), true);
+    }
+
+    /**
+     * Add criteria to query.
+     * Add where expressions with AND operator.
+     * Add orderings.
+     * Override firstResult and maxResults if they set.
+     *
+     * @param Criteria $criteria
+     * @return QueryBuilder
+     */
+    public function addCriteria(Criteria $criteria)
+    {
+        $visitor = new QueryExpressionVisitor();
+
+        if ($whereExpression = $criteria->getWhereExpression()) {
+            $this->andWhere($visitor->dispatch($whereExpression));
+            foreach ($visitor->getParameters() as $parameter) {
+                $this->parameters->add($parameter);
+            }
+        }
+
+        if ($criteria->getOrderings()) {
+            foreach ($criteria->getOrderings() as $sort => $order) {
+                $this->addOrderBy($sort, $order);
+            }
+        }
+
+        // Overwrite limits only if they was set in criteria
+        if (($firstResult = $criteria->getFirstResult()) !== null) {
+            $this->setFirstResult($firstResult);
+        }
+        if (($maxResults = $criteria->getMaxResults()) !== null) {
+            $this->setMaxResults($maxResults);
+        }
+
+        return $this;
     }
 
     /**

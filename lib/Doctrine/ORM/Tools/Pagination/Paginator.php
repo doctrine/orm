@@ -19,10 +19,10 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\ORM\QueryBuilder,
-    Doctrine\ORM\Query,
-    Doctrine\ORM\Query\ResultSetMapping,
-    Doctrine\ORM\NoResultException;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\NoResultException;
 
 /**
  * Paginator
@@ -148,6 +148,7 @@ class Paginator implements \Countable, \IteratorAggregate
                 $this->count = 0;
             }
         }
+
         return $this->count;
     }
 
@@ -174,16 +175,18 @@ class Paginator implements \Countable, \IteratorAggregate
 
             $whereInQuery = $this->cloneQuery($this->query);
             // don't do this for an empty id array
-            if (count($ids) > 0) {
-                $namespace = WhereInWalker::PAGINATOR_ID_ALIAS;
+            if (count($ids) == 0) {
+                return new \ArrayIterator(array());
+            }
 
-                $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
-                $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, count($ids));
-                $whereInQuery->setFirstResult(null)->setMaxResults(null);
-                foreach ($ids as $i => $id) {
-                    $i++;
-                    $whereInQuery->setParameter("{$namespace}_{$i}", $id);
-                }
+            $namespace = WhereInWalker::PAGINATOR_ID_ALIAS;
+
+            $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
+            $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, count($ids));
+            $whereInQuery->setFirstResult(null)->setMaxResults(null);
+            foreach ($ids as $i => $id) {
+                $i++;
+                $whereInQuery->setParameter("{$namespace}_{$i}", $id);
             }
 
             $result = $whereInQuery->getResult($this->query->getHydrationMode());
@@ -194,6 +197,7 @@ class Paginator implements \Countable, \IteratorAggregate
                 ->getResult($this->query->getHydrationMode())
             ;
         }
+
         return new \ArrayIterator($result);
     }
 

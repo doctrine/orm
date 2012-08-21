@@ -25,7 +25,7 @@ use Doctrine\DBAL\Types\Type;
 /**
  * Provides an enclosed support for parameter infering.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
@@ -48,6 +48,10 @@ class ParameterTypeInferer
     {
         if (is_integer($value)) {
             return Type::INTEGER;
+        }
+
+        if (is_bool($value)) {
+            return Type::BOOLEAN;
         }
 
         if ($value instanceof \DateTime) {

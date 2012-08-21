@@ -19,10 +19,12 @@
 
 namespace Doctrine\ORM\Tools;
 
+use Doctrine\Common\Persistence\Proxy;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Use this logger to dump the identity map during the onFlush event. This is useful for debugging
@@ -72,11 +74,13 @@ class DebugUnitOfWorkListener
         fwrite($fh, "Flush Operation [".$this->context."] - Dumping identity map:\n");
         foreach ($identityMap as $className => $map) {
             fwrite($fh, "Class: ". $className . "\n");
+
             foreach ($map as $entity) {
                 fwrite($fh, " Entity: " . $this->getIdString($entity, $uow) . " " . spl_object_hash($entity)."\n");
                 fwrite($fh, "  Associations:\n");
 
                 $cm = $em->getClassMetadata($className);
+
                 foreach ($cm->associationMappings as $field => $assoc) {
                     fwrite($fh, "   " . $field . " ");
                     $value = $cm->reflFields[$field]->getValue($entity);
@@ -85,7 +89,7 @@ class DebugUnitOfWorkListener
                         if ($value === null) {
                             fwrite($fh, " NULL\n");
                         } else {
-                            if ($value instanceof Proxy && !$value->__isInitialized__) {
+                            if ($value instanceof Proxy && !$value->__isInitialized()) {
                                 fwrite($fh, "[PROXY] ");
                             }
 
@@ -95,8 +99,9 @@ class DebugUnitOfWorkListener
                         $initialized = !($value instanceof PersistentCollection) || $value->isInitialized();
                         if ($value === null) {
                             fwrite($fh, " NULL\n");
-                        } else if ($initialized) {
+                        } elseif ($initialized) {
                             fwrite($fh, "[INITIALIZED] " . $this->getType($value). " " . count($value) . " elements\n");
+
                             foreach ($value as $obj) {
                                 fwrite($fh, "    " . $this->getIdString($obj, $uow) . " " . spl_object_hash($obj)."\n");
                             }
@@ -110,6 +115,7 @@ class DebugUnitOfWorkListener
                 }
             }
         }
+
         fclose($fh);
     }
 
@@ -117,17 +123,19 @@ class DebugUnitOfWorkListener
     {
         if (is_object($var)) {
             $refl = new \ReflectionObject($var);
+
             return $refl->getShortname();
-        } else {
-            return gettype($var);
         }
+
+        return gettype($var);
     }
 
-    private function getIdString($entity, $uow)
+    private function getIdString($entity, UnitOfWork $uow)
     {
         if ($uow->isInIdentityMap($entity)) {
             $ids = $uow->getEntityIdentifier($entity);
             $idstring = "";
+
             foreach ($ids as $k => $v) {
                 $idstring .= $k."=".$v;
             }
@@ -136,13 +144,14 @@ class DebugUnitOfWorkListener
         }
 
         $state = $uow->getEntityState($entity);
+
         if ($state == UnitOfWork::STATE_NEW) {
             $idstring .= " [NEW]";
-        } else if ($state == UnitOfWork::STATE_REMOVED) {
+        } elseif ($state == UnitOfWork::STATE_REMOVED) {
             $idstring .= " [REMOVED]";
-        } else if ($state == UnitOfWork::STATE_MANAGED) {
+        } elseif ($state == UnitOfWork::STATE_MANAGED) {
             $idstring .= " [MANAGED]";
-        } else if ($state == UnitOfwork::STATE_DETACHED) {
+        } elseif ($state == UnitOfwork::STATE_DETACHED) {
             $idstring .= " [DETACHED]";
         }
 
