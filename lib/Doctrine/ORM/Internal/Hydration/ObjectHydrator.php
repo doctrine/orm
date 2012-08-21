@@ -81,8 +81,8 @@ class ObjectHydrator extends AbstractHydrator
     private $existingCollections = array();
 
 
-    /**
-     * @override 
+     /**
+     * {@inheritdoc}
      */
     protected function prepare()
     {

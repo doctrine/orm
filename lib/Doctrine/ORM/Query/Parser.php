@@ -71,7 +71,7 @@ class Parser
      * Expressions that were encountered during parsing of identifiers and expressions
      * and still need to be validated.
      */
-    
+
     /**
      * @var array
      */
@@ -81,12 +81,12 @@ class Parser
      * @var array
      */
     private $deferredPartialObjectExpressions = array();
-    
+
     /**
      * @var array
      */
     private $deferredPathExpressions = array();
-    
+
     /**
      * @var array
      */
@@ -589,18 +589,19 @@ class Parser
                 ? $AST->fromClause->identificationVariableDeclarations[0]->rangeVariableDeclaration->abstractSchemaName
                 : null;
 
-            // If the namespace is not given then assumes the first from entity namespace
+            // If the namespace is not given then assumes the first FROM entity namespace
             if (strpos($className, '\\') === false && ! class_exists($className) && strpos($fromClassName, '\\') !== false) {
                 $namespace  = substr($fromClassName, 0 , strrpos($fromClassName, '\\'));
-                $className  = $namespace . '\\' . $className;
+                $fqcn       = $namespace . '\\' . $className;
 
-                if (class_exists($className)) {
-                    $expression->className = $className;
+                if (class_exists($fqcn)) {
+                    $expression->className  = $fqcn;
+                    $className              = $fqcn;
                 }
             }
 
             if ( ! class_exists($className)) {
-                $this->semanticalError(sprintf('Class "%s" is not defined.', $expression->className), $token);
+                $this->semanticalError(sprintf('Class "%s" is not defined.', $className), $token);
             }
 
             $class = new \ReflectionClass($className);
@@ -613,7 +614,7 @@ class Parser
                 $this->semanticalError(sprintf('Class "%s" has not a valid contructor.', $className), $token);
             }
 
-            if ($class->getConstructor()->getNumberOfRequiredParameters() > sizeof($args)) {
+            if ($class->getConstructor()->getNumberOfRequiredParameters() > count($args)) {
                 $this->semanticalError(sprintf('Number of arguments does not match with "%s" constructor declaration.', $className), $token);
             }
         }
