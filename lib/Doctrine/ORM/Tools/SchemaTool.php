@@ -385,7 +385,13 @@ class SchemaTool
         }
 
         if (isset($mapping['options'])) {
-            $options['customSchemaOptions'] = $mapping['options'];
+            if (isset($mapping['options']['unsigned'])) {
+                $options['unsigned'] = $mapping['options']['unsigned'];
+                unset($mapping['options']['unsigned']);
+            }
+            if (!empty($mapping['options'])) {
+                $options['customSchemaOptions'] = $mapping['options'];
+            }
         }
 
         if ($class->isIdGeneratorIdentity() && $class->getIdentifierFieldNames() == array($mapping['fieldName'])) {
