@@ -1916,8 +1916,6 @@ class SqlWalker implements TreeWalker
                     throw QueryException::invalidParameterType('ClassMetadata', get_class($paramValue));
                 }
 
-                $this->parserResult->addParameterMapping($dqlParamKey, $this->sqlParamIndex++);
-
                 $entityClassName = $paramValue->name;
             } else {
                 // Get name from ClassMetadata to resolve aliases.
