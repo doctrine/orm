@@ -98,50 +98,9 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:element name="query" type="xs:string"/>
-
-  <xs:complexType name="pre-flush">
-    <xs:attribute name="method" type="xs:string"/>
-  </xs:complexType>
-
-  <xs:complexType name="post-load">
-    <xs:attribute name="method" type="xs:string"/>
-  </xs:complexType>
-
-  <xs:complexType name="pre-persist">
-    <xs:attribute name="method" type="xs:string"/>
-  </xs:complexType>
-
-  <xs:complexType name="post-persist">
-    <xs:attribute name="method" type="xs:string"/>
-  </xs:complexType>
-
-  <xs:complexType name="pre-update">
-    <xs:attribute name="method" type="xs:string"/>
-  </xs:complexType>
-
-  <xs:complexType name="post-update">
-    <xs:attribute name="method" type="xs:string"/>
-  </xs:complexType>
-
-  <xs:complexType name="pre-remove">
-    <xs:attribute name="method" type="xs:string"/>
-  </xs:complexType>
-
-  <xs:complexType name="post-remove">
-    <xs:attribute name="method" type="xs:string"/>
-  </xs:complexType>
-
   <xs:complexType name="entity-listener">
     <xs:sequence>
-      <xs:element name="pre-flush" type="orm:pre-flush" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="post-load" type="orm:post-load" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="pre-persist" type="orm:pre-persist" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="post-persist" type="orm:post-persist" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="pre-update" type="orm:pre-update" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="post-update" type="orm:post-update" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="pre-remove" type="orm:pre-remove" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="post-remove" type="orm:post-remove" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="lifecycle-callback" type="orm:lifecycle-callback" minOccurs="0" maxOccurs="unbounded"/>
       <xs:any minOccurs="1" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="class" type="xs:string"/>

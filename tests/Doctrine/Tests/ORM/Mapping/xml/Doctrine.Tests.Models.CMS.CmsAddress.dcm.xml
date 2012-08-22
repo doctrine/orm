@@ -23,7 +23,7 @@
 
         <entity-listeners>
             <entity-listener>
-                <pre-persist method="prePersistHandler"/>
+                <lifecycle-callback type="prePersist" method="prePersistHandler"/>
             </entity-listener>
         </entity-listeners>
 

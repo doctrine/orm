@@ -562,10 +562,8 @@ class XmlDriver extends FileDriver
             foreach ($xmlRoot->{'entity-listeners'}->{'entity-listener'} as $listenerElement) {
                 $listeners = array();
 
-                foreach ($listenerElement as $type => $callbackElement) {
-                    list($prefix, $suffix) = explode('-', $type);
-
-                    $eventName   = $prefix . ucfirst($suffix);
+                foreach ($listenerElement as $callbackElement) {
+                    $eventName   = (string) $callbackElement['type'];
                     $methodName  = (string) $callbackElement['method'];
 
                     $listeners[] = array($eventName, $methodName);
