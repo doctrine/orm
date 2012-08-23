@@ -158,6 +158,16 @@ class EntityManager implements ObjectManager
     }
 
     /**
+     * Sets the database connection
+     * 
+     * @var $connection \Doctrine\DBAL\Connection
+     */
+    public function setConnection(Connection $connection)
+    {
+        $this->connection = $connection;
+    }
+
+    /**
      * Gets the metadata factory used to gather the metadata of classes.
      *
      * @return \Doctrine\ORM\Mapping\ClassMetadataFactory
