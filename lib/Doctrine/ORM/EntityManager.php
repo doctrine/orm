@@ -160,7 +160,7 @@ class EntityManager implements ObjectManager
     /**
      * Sets the database connection
      * 
-     * @var $connection \Doctrine\DBAL\Connection
+     * @param $connection \Doctrine\DBAL\Connection
      */
     public function setConnection(Connection $connection)
     {
