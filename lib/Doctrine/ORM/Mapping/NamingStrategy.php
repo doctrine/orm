@@ -42,9 +42,10 @@ interface NamingStrategy
      * Return a column name for a property
      *
      * @param string $propertyName A property
+     * @param string $className The fully-qualified class name
      * @return string A column name
      */
-    function propertyToColumnName($propertyName);
+    function propertyToColumnName($propertyName, $className = null);
 
     /**
      * Return the default reference column name
