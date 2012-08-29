@@ -1188,7 +1188,7 @@ class ClassMetadataInfo implements ClassMetadata
 
         // Complete fieldName and columnName mapping
         if ( ! isset($mapping['columnName'])) {
-            $mapping['columnName'] = $this->namingStrategy->propertyToColumnName($mapping['fieldName'], $this->name);
+            $mapping['columnName'] = $this->namingStrategy->propertyToColumnName($mapping['fieldName']);
         }
 
         if ($mapping['columnName'][0] === '`') {
@@ -1465,7 +1465,6 @@ class ClassMetadataInfo implements ClassMetadata
             if ( ! isset($mapping['joinTable']['name'])) {
                 $mapping['joinTable']['name'] = $this->namingStrategy->joinTableName($mapping['sourceEntity'], $mapping['targetEntity'], $mapping['fieldName']);
             }
-
             if ( ! isset($mapping['joinTable']['joinColumns'])) {
                 $mapping['joinTable']['joinColumns'] = array(array(
                         'name' => $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity']),
