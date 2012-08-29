@@ -33,7 +33,7 @@ use Doctrine\ORM\Query\Parameter;
  * Convert Collection expressions to Query expressions
  *
  * @author Kirill chEbba Chebunin <iam@chebba.org>
- * @since 2.3
+ * @since 2.4
  */
 class QueryExpressionVisitor extends ExpressionVisitor
 {
