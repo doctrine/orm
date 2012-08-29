@@ -5,8 +5,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\Quote\Group;
 use Doctrine\Tests\Models\Quote\User;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 /**
  * @group DDC-1845
  * @group DDC-1885
