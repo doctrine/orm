@@ -124,6 +124,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\CustomType\CustomTypeParent',
             'Doctrine\Tests\Models\CustomType\CustomTypeUpperCase',
         ),
+        'mappedassociation' => array(
+            'Doctrine\Tests\Models\MappedAssociation\FileFolder',
+            'Doctrine\Tests\Models\MappedAssociation\AbstractContent',
+            'Doctrine\Tests\Models\MappedAssociation\Paper',
+            'Doctrine\Tests\Models\MappedAssociation\Photo',
+        ),
     );
 
     protected function useModelSet($setName)
@@ -237,6 +243,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM customtype_parents');
             $conn->executeUpdate('DELETE FROM customtype_children');
             $conn->executeUpdate('DELETE FROM customtype_uppercases');
+        }
+
+        if (isset($this->_usedModelSets['mappedassociation'])) {
+            $conn->executeUpdate('DELETE FROM paper');
+            $conn->executeUpdate('DELETE FROM photo');
+            $conn->executeUpdate('DELETE FROM file_folder');
         }
 
         $this->_em->clear();

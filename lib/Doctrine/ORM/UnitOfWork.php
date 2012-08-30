@@ -539,7 +539,7 @@ class UnitOfWork implements PropertyChangedListener
             $changeSet = array();
 
             foreach ($actualData as $propName => $actualValue) {
-                if ( ! isset($class->associationMappings[$propName])) {
+                if ( ! isset($class->associationMappings[$propName]) || isset($class->mappedAssociations[$propName])) {
                     $changeSet[$propName] = array(null, $actualValue);
 
                     continue;
@@ -575,8 +575,8 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                // if regular field
-                if ( ! isset($class->associationMappings[$propName])) {
+                // if regular field or mapped association
+                if ( ! isset($class->associationMappings[$propName]) || isset($class->mappedAssociations[$propName])) {
                     if ($isChangeTrackingNotify) {
                         continue;
                     }
@@ -2407,6 +2407,10 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
+            if (isset($class->mappedAssociations[$field]) && ($assoc['targetEntity'] = $data[$class->mappedAssociations[$field]['fieldMapping']['columnName']]) == null) {
+                continue;
+            }
+
             $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
             switch (true) {
@@ -2478,6 +2482,11 @@ class UnitOfWork implements PropertyChangedListener
 
                         default:
                             switch (true) {
+                                // Populate mapped associations
+                                case (isset($class->mappedAssociations[$field])):
+                                    $newValue = $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity, $associatedId);
+                                    break;
+
                                 // We are negating the condition here. Other cases will assume it is valid!
                                 case ($hints['fetchMode'][$class->name][$field] !== ClassMetadata::FETCH_EAGER):
                                     $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $associatedId);

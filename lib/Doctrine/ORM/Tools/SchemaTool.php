@@ -33,7 +33,7 @@ use Doctrine\ORM\ORMException,
  * The SchemaTool is a tool to create/drop/update database schemas based on
  * <tt>ClassMetadata</tt> class descriptors.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -213,6 +213,10 @@ class SchemaTool
                 $this->_gatherRelationsSql($class, $table, $schema);
             }
 
+            if ($class->hasMappedAssociations()) {
+                $this->addMappedAssociationDiscriminatorColumnDefinitions($class, $table);
+            }
+
             $pkColumns = array();
             foreach ($class->identifier as $identifierField) {
                 if (isset($class->fieldMappings[$identifierField])) {
@@ -305,6 +309,25 @@ class SchemaTool
         }
 
         $table->addColumn($discrColumn['name'], $discrColumn['type'], $options);
+    }
+
+    /**
+     * Get a portable column definition as required by the DBAL for the mapped association
+     * discriminator columns of a class.
+     *
+     * @param ClassMetadata $class
+     * @param Table         $table
+     */
+    private function addMappedAssociationDiscriminatorColumnDefinitions($class, $table)
+    {
+        foreach ($class->getMappedAssociations() as $mappedAssociation) {
+            $fieldMapping = $mappedAssociation['fieldMapping'];
+            $options = array(
+                'length' => $fieldMapping['length'],
+                'notnull' => !$fieldMapping['nullable'],
+            );
+            $table->addColumn($fieldMapping['columnName'], $fieldMapping['type'], $options);
+        }
     }
 
     /**
