@@ -47,16 +47,35 @@ class SqlValueVisitor extends ExpressionVisitor
     private $types  = array();
 
     /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
+     * Type Callback
+     *
+     * Called by this visitor to determine the type of a value
+     * 
+     * @var callable
      */
-    private $class;
+    private $typeCallback;
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata
+     * Value Callback
+     *
+     * Called by this visitor to generate a sql value from the given value
+     *
+     * Callback is passed two parameters:
+     *     - `Field` name of the field in a comparison
+     *     - `Value` value in a comparison
+     * 
+     * @var callable
      */
-    public function __construct(ClassMetadata $class)
+    private $valueCallback;
+
+    /**
+     * @param callable $typeCallback  Type Resolution Callback
+     * @param callable $valueCallback Value Resolution Callback
+     */
+    public function __construct(callable $typeCallback, callable $valueCallback)
     {
-        $this->class = $class;
+        $this->typeCallback  = $typeCallback;
+        $this->valueCallback = $valueCallback;
     }
 
     /**
@@ -68,11 +87,14 @@ class SqlValueVisitor extends ExpressionVisitor
      */
     public function walkComparison(Comparison $comparison)
     {
+        $typeCallback   = $this->typeCallback;
+        $valueCallback  = $this->valueCallback;
+
         $value          = $comparison->getValue()->getValue();
         $field          = $comparison->getField();
-
-        $this->values[] = $value;
-        $this->types[]  = $this->getType($field, $value);
+        
+        $this->values[] = $valueCallback($value);
+        $this->types[]  = $typeCallback($field, $value);
     }
 
     /**
@@ -109,18 +131,5 @@ class SqlValueVisitor extends ExpressionVisitor
     public function getParamsAndTypes()
     {
         return array($this->values, $this->types);
-    }
-
-    private function getType($field, $value)
-    {
-        $type = isset($this->class->fieldMappings[$field])
-            ? Type::getType($this->class->fieldMappings[$field]['type'])->getBindingType()
-            : \PDO::PARAM_STR;
-
-        if (is_array($value)) {
-            $type += Connection::ARRAY_PARAM_OFFSET;
-        }
-
-        return $type;
     }
 }
