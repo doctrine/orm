@@ -808,7 +808,15 @@ class BasicEntityPersister
             return array(array(), array());
         }
 
-        $valueVisitor = new SqlValueVisitor($this->_class);
+        $persister = $this;
+        $valueVisitor = new SqlValueVisitor(
+            function ($field, $value) use($persister) {
+                return $persister->getType($field, $value);
+            },
+            function ($value) use($persister) {
+                return $persister->getValue($value);
+            }
+        );
         $valueVisitor->dispatch($expression);
 
         return $valueVisitor->getParamsAndTypes();
