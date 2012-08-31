@@ -47,38 +47,6 @@ class SqlValueVisitor extends ExpressionVisitor
     private $types  = array();
 
     /**
-     * Type Callback
-     *
-     * Called by this visitor to determine the type of a value
-     * 
-     * @var callable
-     */
-    private $typeCallback;
-
-    /**
-     * Value Callback
-     *
-     * Called by this visitor to generate a sql value from the given value
-     *
-     * Callback is passed two parameters:
-     *     - `Field` name of the field in a comparison
-     *     - `Value` value in a comparison
-     * 
-     * @var callable
-     */
-    private $valueCallback;
-
-    /**
-     * @param callable $typeCallback  Type Resolution Callback
-     * @param callable $valueCallback Value Resolution Callback
-     */
-    public function __construct($typeCallback, $valueCallback)
-    {
-        $this->typeCallback  = $typeCallback;
-        $this->valueCallback = $valueCallback;
-    }
-
-    /**
      * Convert a comparison expression into the target query language output
      *
      * @param \Doctrine\Common\Collections\Expr\Comparison $comparison
@@ -87,14 +55,11 @@ class SqlValueVisitor extends ExpressionVisitor
      */
     public function walkComparison(Comparison $comparison)
     {
-        $typeCallback   = $this->typeCallback;
-        $valueCallback  = $this->valueCallback;
-
         $value          = $comparison->getValue()->getValue();
         $field          = $comparison->getField();
         
-        $this->values[] = $valueCallback($value);
-        $this->types[]  = $typeCallback($field, $value);
+        $this->values[] = $value;
+        $this->types[]  = array($field, $value);
     }
 
     /**
