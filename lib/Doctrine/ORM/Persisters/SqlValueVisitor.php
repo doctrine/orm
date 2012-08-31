@@ -72,7 +72,7 @@ class SqlValueVisitor extends ExpressionVisitor
      * @param callable $typeCallback  Type Resolution Callback
      * @param callable $valueCallback Value Resolution Callback
      */
-    public function __construct(callable $typeCallback, callable $valueCallback)
+    public function __construct($typeCallback, $valueCallback)
     {
         $this->typeCallback  = $typeCallback;
         $this->valueCallback = $valueCallback;
