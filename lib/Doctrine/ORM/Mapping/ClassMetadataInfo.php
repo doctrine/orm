@@ -1075,7 +1075,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets the mapped identifier field of this class.
      *
-     * @return string $identifier
+     * @return array $identifier
      */
     public function getIdentifier()
     {
