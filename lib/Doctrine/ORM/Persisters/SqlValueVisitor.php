@@ -47,19 +47,6 @@ class SqlValueVisitor extends ExpressionVisitor
     private $types  = array();
 
     /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
-     */
-    private $class;
-
-    /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata
-     */
-    public function __construct(ClassMetadata $class)
-    {
-        $this->class = $class;
-    }
-
-    /**
      * Convert a comparison expression into the target query language output
      *
      * @param \Doctrine\Common\Collections\Expr\Comparison $comparison
@@ -70,9 +57,9 @@ class SqlValueVisitor extends ExpressionVisitor
     {
         $value          = $comparison->getValue()->getValue();
         $field          = $comparison->getField();
-
+        
         $this->values[] = $value;
-        $this->types[]  = $this->getType($field, $value);
+        $this->types[]  = array($field, $value);
     }
 
     /**
@@ -109,18 +96,5 @@ class SqlValueVisitor extends ExpressionVisitor
     public function getParamsAndTypes()
     {
         return array($this->values, $this->types);
-    }
-
-    private function getType($field, $value)
-    {
-        $type = isset($this->class->fieldMappings[$field])
-            ? Type::getType($this->class->fieldMappings[$field]['type'])->getBindingType()
-            : \PDO::PARAM_STR;
-
-        if (is_array($value)) {
-            $type += Connection::ARRAY_PARAM_OFFSET;
-        }
-
-        return $type;
     }
 }
