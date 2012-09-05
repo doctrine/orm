@@ -808,10 +808,23 @@ class BasicEntityPersister
             return array(array(), array());
         }
 
-        $valueVisitor = new SqlValueVisitor($this->_class);
+        $valueVisitor = new SqlValueVisitor();
         $valueVisitor->dispatch($expression);
 
-        return $valueVisitor->getParamsAndTypes();
+        list($values, $types) = $valueVisitor->getParamsAndTypes();
+
+        $sqlValues = array();
+        foreach ($values as $value) {
+            $sqlValues[] = $this->getValue($value);
+        }
+
+        $sqlTypes = array();
+        foreach ($types as $type) {
+            list($field, $value) = $type;
+            $sqlTypes[] = $this->getType($field, $value);
+        }
+
+        return array($sqlValues, $sqlTypes);
     }
 
     /**
