@@ -104,7 +104,7 @@ there whenever you want to access the Doctrine console.
     // doctrine.php - Put in your application root
 
     use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
-    use Doctrine\DBAL\Tools\Console\Helper\EntityManagerHelper;
+    use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
     use Doctrine\ORM\Tools\Console\ConsoleRunner;
     use Symfony\Component\Console\Helper\HelperSet;
 
