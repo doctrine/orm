@@ -808,7 +808,6 @@ class BasicEntityPersister
             return array(array(), array());
         }
 
-        $persister = $this;
         $valueVisitor = new SqlValueVisitor();
         $valueVisitor->dispatch($expression);
 
