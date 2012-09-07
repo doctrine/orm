@@ -174,7 +174,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $this->assertEquals(2, count($results));
     }
 	
-	public function testMatchingBis()
+    public function testMatchingBis()
     {
         $this->_createFixture();
 
@@ -190,12 +190,12 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         ));
 
         $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $results);
-        $this->assertEquals(1, count($results));
+        $this->assertCount(1, $results);
 
         $results = $features->matching(new Criteria());
 
         $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $results);
-        $this->assertEquals(3, count($results));
+        $this->assertCount(3, $results);
     }
 
     private function _createFixture()
