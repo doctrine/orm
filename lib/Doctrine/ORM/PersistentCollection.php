@@ -42,6 +42,7 @@ use Closure;
  * @author    Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author    Roman Borschel <roman@code-factory.org>
  * @author    Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
+ * @author    Stefano Rodriguez <stefano.rodriguez@fubles.com>
  * @todo      Design for inheritance to allow custom implementations?
  */
 final class PersistentCollection implements Collection, Selectable
@@ -812,6 +813,13 @@ final class PersistentCollection implements Collection, Selectable
             throw new \RuntimeException("Matching Criteria on PersistentCollection only works on OneToMany assocations at the moment.");
         }
 
+        // If there are NEW objects we have to check if any of them matches the criteria
+        $newObjects = array();
+
+        if ($this->isDirty) {
+            $newObjects = $this->coll->matching($criteria)->toArray();
+        }
+
         $targetClass = $this->em->getClassMetadata(get_class($this->owner));
 
         $id              = $targetClass->getSingleIdReflectionProperty()->getValue($this->owner);
@@ -824,7 +832,7 @@ final class PersistentCollection implements Collection, Selectable
 
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->association['targetEntity']);
 
-        return new ArrayCollection($persister->loadCriteria($criteria));
+        return new ArrayCollection(array_merge($persister->loadCriteria($criteria), $newObjects));
     }
 }
 
