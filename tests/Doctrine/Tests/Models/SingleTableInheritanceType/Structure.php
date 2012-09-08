@@ -8,15 +8,15 @@ namespace Doctrine\Tests\Models\SingleTableInheritanceType;
  */
 class Structure
 {
-	/**
-	 * @Id
-	 * @Column(type="integer")
-	 * @GeneratedValue(strategy="AUTO")
-	 */
-	protected $id;
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
 
-	/**
-	 * @Column(type="string", length=32, nullable=true)
-	 */
-	protected $name;
+    /**
+     * @Column(type="string", length=32, nullable=true)
+     */
+    protected $name;
 }

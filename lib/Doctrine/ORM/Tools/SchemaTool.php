@@ -42,6 +42,7 @@ use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
+ * @author  Stefano Rodriguez <stefano.rodriguez@fubles.com>
  */
 class SchemaTool
 {
@@ -142,6 +143,9 @@ class SchemaTool
         $metadataSchemaConfig->setExplicitForeignKeyIndexes(false);
         $schema = new Schema(array(), array(), $metadataSchemaConfig);
 
+        $addedFks = array();
+        $blacklistedFks = array();
+
         foreach ($classes as $class) {
             if ($this->processingNotRequired($class, $processedClasses)) {
                 continue;
@@ -150,8 +154,8 @@ class SchemaTool
             $table = $schema->createTable($this->quoteStrategy->getTableName($class, $this->platform));
 
             if ($class->isInheritanceTypeSingleTable()) {
-                $this->gatherColumns($class, $table);
-                $this->gatherRelationsSql($class, $table, $schema);
+                $columns = $this->gatherColumns($class, $table);
+                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
 
                 // Add the discriminator column
                 $this->addDiscriminatorColumnDefinition($class, $table);
@@ -165,7 +169,7 @@ class SchemaTool
                 foreach ($class->subClasses as $subClassName) {
                     $subClass = $this->em->getClassMetadata($subClassName);
                     $this->gatherColumns($subClass, $table);
-                    $this->gatherRelationsSql($subClass, $table, $schema);
+                    $this->gatherRelationsSql($subClass, $table, $schema, $addedFks, $blacklistedFks);
                     $processedClasses[$subClassName] = true;
                 }
             } elseif ($class->isInheritanceTypeJoined()) {
@@ -182,7 +186,7 @@ class SchemaTool
                     }
                 }
 
-                $this->gatherRelationsSql($class, $table, $schema);
+                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
 
                 // Add the discriminator column only to the root table
                 if ($class->name == $class->rootEntityName) {
@@ -211,7 +215,7 @@ class SchemaTool
                 throw ORMException::notSupported();
             } else {
                 $this->gatherColumns($class, $table);
-                $this->gatherRelationsSql($class, $table, $schema);
+                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
             }
 
             $pkColumns = array();
@@ -432,9 +436,11 @@ class SchemaTool
      * @param ClassMetadata $class
      * @param \Doctrine\DBAL\Schema\Table $table
      * @param \Doctrine\DBAL\Schema\Schema $schema
+     * @param array $addedFks
+     * @param array $blacklistedFks
      * @return void
      */
-    private function gatherRelationsSql($class, Table $table, $schema)
+    private function gatherRelationsSql($class, $table, $schema, &$addedFks, &$blacklistedFks)
     {
         foreach ($class->associationMappings as $mapping) {
             if (isset($mapping['inherited'])) {
@@ -446,7 +452,7 @@ class SchemaTool
             if ($mapping['type'] & ClassMetadata::TO_ONE && $mapping['isOwningSide']) {
                 $primaryKeyColumns = $uniqueConstraints = array(); // PK is unnecessary for this relation-type
 
-                $this->_gatherRelationJoinColumns($mapping['joinColumns'], $table, $foreignClass, $mapping, $primaryKeyColumns, $uniqueConstraints);
+                $this->_gatherRelationJoinColumns($mapping['joinColumns'], $table, $foreignClass, $mapping, $primaryKeyColumns, $uniqueConstraints, $addedFks, $blacklistedFks);
 
                 foreach($uniqueConstraints as $indexName => $unique) {
                     $table->addUniqueIndex($unique['columns'], is_numeric($indexName) ? null : $indexName);
@@ -463,10 +469,10 @@ class SchemaTool
                 $primaryKeyColumns = $uniqueConstraints = array();
 
                 // Build first FK constraint (relation table => source table)
-                $this->_gatherRelationJoinColumns($joinTable['joinColumns'], $theJoinTable, $class, $mapping, $primaryKeyColumns, $uniqueConstraints);
+                $this->_gatherRelationJoinColumns($joinTable['joinColumns'], $theJoinTable, $class, $mapping, $primaryKeyColumns, $uniqueConstraints, $addedFks, $blacklistedFks);
 
                 // Build second FK constraint (relation table => target table)
-                $this->_gatherRelationJoinColumns($joinTable['inverseJoinColumns'], $theJoinTable, $foreignClass, $mapping, $primaryKeyColumns, $uniqueConstraints);
+                $this->_gatherRelationJoinColumns($joinTable['inverseJoinColumns'], $theJoinTable, $foreignClass, $mapping, $primaryKeyColumns, $uniqueConstraints, $addedFks, $blacklistedFks);
 
                 $theJoinTable->setPrimaryKey($primaryKeyColumns);
 
@@ -522,8 +528,10 @@ class SchemaTool
      * @param array $mapping
      * @param array $primaryKeyColumns
      * @param array $uniqueConstraints
+     * @param array $addedFks
+     * @param array $blacklistedFks
      */
-    private function _gatherRelationJoinColumns($joinColumns, $theJoinTable, $class, $mapping, &$primaryKeyColumns, &$uniqueConstraints)
+    private function _gatherRelationJoinColumns($joinColumns, $theJoinTable, $class, $mapping, &$primaryKeyColumns, &$uniqueConstraints, &$addedFks, &$blacklistedFks)
     {
         $localColumns       = array();
         $foreignColumns     = array();
@@ -587,9 +595,27 @@ class SchemaTool
             }
         }
 
-        $theJoinTable->addForeignKeyConstraint(
-            $foreignTableName, $localColumns, $foreignColumns, $fkOptions
-        );
+        $compositeName = $theJoinTable->getName().'.'.implode('', $localColumns);
+        if (isset($addedFks[$compositeName])
+            && ($foreignTableName != $addedFks[$compositeName]['foreignTableName']
+            || 0 < count(array_diff($foreignColumns, $addedFks[$compositeName]['foreignColumns'])))
+        ) {
+            foreach ($theJoinTable->getForeignKeys() as $fkName => $key) {
+                if (0 === count(array_diff($key->getLocalColumns(), $localColumns))
+                    && (($key->getForeignTableName() != $foreignTableName)
+                    || 0 < count(array_diff($key->getForeignColumns(), $foreignColumns)))
+                ) {
+                    $theJoinTable->removeForeignKey($fkName);
+                    break;
+                }
+            }
+            $blacklistedFks[$compositeName] = true; 
+        } elseif (!isset($blacklistedFks[$compositeName])) {
+            $addedFks[$compositeName] = array('foreignTableName' => $foreignTableName, 'foreignColumns' => $foreignColumns);
+            $theJoinTable->addUnnamedForeignKeyConstraint(
+                $foreignTableName, $localColumns, $foreignColumns, $fkOptions
+            );
+        }
     }
 
     /**

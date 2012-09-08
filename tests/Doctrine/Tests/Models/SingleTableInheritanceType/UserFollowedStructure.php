@@ -24,7 +24,7 @@ class UserFollowedStructure extends UserFollowedObject
     /**
      * Construct a UserFollowedStructure entity
      *
-     * @param User $user
+     * @param User      $user
      * @param Structure $followedStructure
      */
     public function __construct(User $user, Structure $followedStructure)

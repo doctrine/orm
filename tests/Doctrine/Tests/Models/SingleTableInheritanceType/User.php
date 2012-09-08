@@ -10,17 +10,17 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class User
 {
-	/**
-	 * @Id
-	 * @Column(type="integer")
-	 * @GeneratedValue(strategy="AUTO")
-	 */
-	protected $id;
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
 
-	/**
-	 * @Column(type="string", length=32, nullable=true)
-	 */
-	protected $name;
+    /**
+     * @Column(type="string", length=32, nullable=true)
+     */
+    protected $name;
 
     /**
      * @var ArrayCollection $followedUsers
@@ -34,7 +34,8 @@ class User
      */
     protected $followedStructures;
 
-	public function __construct() {
+    public function __construct()
+    {
         $this->followedUsers = new ArrayCollection();
         $this->followedStructures = new ArrayCollection();
     }
@@ -52,7 +53,7 @@ class User
     /**
      * Add followedUsers
      *
-     * @param UserFollowedUser $followedUsers
+     * @param  UserFollowedUser $followedUsers
      * @return User
      */
     public function addFollowedUser(UserFollowedUser $followedUsers)
@@ -65,7 +66,7 @@ class User
     /**
      * Remove followedUsers
      *
-     * @param UserFollowedUser $followedUsers
+     * @param  UserFollowedUser $followedUsers
      * @return User
      */
     public function removeFollowedUser(UserFollowedUser $followedUsers)
@@ -88,7 +89,7 @@ class User
     /**
      * Add followedStructures
      *
-     * @param UserFollowedStructure $followedStructures
+     * @param  UserFollowedStructure $followedStructures
      * @return User
      */
     public function addFollowedStructure(UserFollowedStructure $followedStructures)
@@ -101,7 +102,7 @@ class User
     /**
      * Remove followedStructures
      *
-     * @param UserFollowedStructure $followedStructures
+     * @param  UserFollowedStructure $followedStructures
      * @return User
      */
     public function removeFollowedStructure(UserFollowedStructure $followedStructures)
