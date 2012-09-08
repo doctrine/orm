@@ -32,6 +32,38 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($schema->getTable('cms_users')->columnsAreIndexed(array('username')), "username column should be indexed.");
     }
 
+    public function testForeignKeyOnSTIWithMultipleMapping()
+    {
+        $em = $this->_getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+
+        $classes = array(
+            $em->getClassMetadata('Doctrine\Tests\Models\SingleTableInheritanceType\User'),
+            $em->getClassMetadata('Doctrine\Tests\Models\SingleTableInheritanceType\Structure'),
+            $em->getClassMetadata('Doctrine\Tests\Models\SingleTableInheritanceType\UserFollowedObject'),
+            $em->getClassMetadata('Doctrine\Tests\Models\SingleTableInheritanceType\UserFollowedStructure'),
+            $em->getClassMetadata('Doctrine\Tests\Models\SingleTableInheritanceType\UserFollowedUser')
+        );
+
+        $schema = $schemaTool->getSchemaFromMetadata($classes);
+        $this->assertTrue($schema->hasTable('users_followed_objects'), "Table users_followed_objects should exist.");
+
+        /* @var $table \Doctrine\DBAL\Schema\Table */
+        $table = ($schema->getTable('users_followed_objects'));
+        $this->assertTrue($table->columnsAreIndexed(array('object_id')));
+        $this->assertTrue($table->columnsAreIndexed(array('user_id')));
+        $foreignKeys = $table->getForeignKeys();
+        $this->assertCount(1, $foreignKeys, 'user_id column has to have FK, but not object_id');
+
+        /* @var $fk \Doctrine\DBAL\Schema\ForeignKeyConstraint */
+        $fk = reset($foreignKeys);
+        $this->assertEquals('users', $fk->getForeignTableName());
+
+        $localColumns = $fk->getLocalColumns();
+        $this->assertContains('user_id', $localColumns);
+        $this->assertCount(1, $localColumns);
+    }
+
     public function testAnnotationOptionsAttribute()
     {
         $em = $this->_getTestEntityManager();
