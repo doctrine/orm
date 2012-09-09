@@ -40,7 +40,7 @@ final class EntityListeners implements Annotation
     public $value = array();
 
     /**
-     * Specifies the entity the entity lifecycle callbacks.
+     * Specifies the entity lifecycle callbacks.
      *
      * @var array<\Doctrine\ORM\Mapping\LifecycleCallback>
      */
