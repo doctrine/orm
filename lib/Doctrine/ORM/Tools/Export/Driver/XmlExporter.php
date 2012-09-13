@@ -180,6 +180,9 @@ class XmlExporter extends AbstractExporter
                 if (isset($field['columnDefinition'])) {
                     $fieldXml->addAttribute('column-definition', $field['columnDefinition']);
                 }
+                if (isset($field['nullable'])) {
+                    $fieldXml->addAttribute('nullable', $field['nullable'] ? 'true' : 'false');
+                }
             }
         }
         $orderMap = array(
