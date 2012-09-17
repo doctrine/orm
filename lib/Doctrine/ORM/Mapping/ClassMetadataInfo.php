@@ -494,6 +494,17 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public $isReadOnly = false;
 
+ 
+    /**
+     * Is this entity marked as a "view"?
+     *
+     * That means it is a database view and not an actual table.  No entity generation will be applied
+     * to this enity
+     *
+     * @var bool
+     */
+    public $isView = false;
+
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
@@ -1845,6 +1856,16 @@ class ClassMetadataInfo implements ClassMetadata
     public function markReadOnly()
     {
         $this->isReadOnly = true;
+    }
+
+    /**
+     * Mark this class as a view, no entity generation will be created.
+     *
+     * @return void
+     */
+    public function markView()
+    {
+        $this->isView = true;
     }
 
     /**

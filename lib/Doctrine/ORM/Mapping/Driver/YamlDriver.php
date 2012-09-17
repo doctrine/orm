@@ -52,6 +52,9 @@ class YamlDriver extends AbstractFileDriver
             if (isset($element['readOnly']) && $element['readOnly'] == true) {
                 $metadata->markReadOnly();
             }
+            if (isset($element['view']) && $element['view'] == true) {
+				$metadata->markView();
+			}
         } else if ($element['type'] == 'mappedSuperclass') {
             $metadata->isMappedSuperclass = true;
         } else {

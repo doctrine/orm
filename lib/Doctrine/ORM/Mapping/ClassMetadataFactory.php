@@ -343,12 +343,12 @@ class ClassMetadataFactory implements ClassMetadataFactoryInterface
     protected function validateRuntimeMetadata($class, $parent)
     {
         // Verify & complete identifier mapping
-        if ( ! $class->identifier && ! $class->isMappedSuperclass) {
+        if ( ! $class->identifier && ! $class->isMappedSuperclass && !$class->isView ) {
             throw MappingException::identifierRequired($class->name);
         }
 
         // verify inheritance
-        if (!$class->isMappedSuperclass && !$class->isInheritanceTypeNone()) {
+        if (!$class->isMappedSuperclass && !$class->isInheritanceTypeNone() && !$class->isView ) {
             if (!$parent) {
                 if (count($class->discriminatorMap) == 0) {
                     throw MappingException::missingDiscriminatorMap($class->name);

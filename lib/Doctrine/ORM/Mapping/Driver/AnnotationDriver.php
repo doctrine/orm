@@ -142,6 +142,9 @@ class AnnotationDriver implements Driver
             if ($entityAnnot->readOnly) {
                 $metadata->markReadOnly();
             }
+            if ($entityAnnot->view) {
+				$metadata->markView();
+			}
         } else if (isset($classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'])) {
             $metadata->isMappedSuperclass = true;
         } else {
