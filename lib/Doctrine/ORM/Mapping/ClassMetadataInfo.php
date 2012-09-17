@@ -2724,7 +2724,7 @@ class ClassMetadataInfo implements ClassMetadata
             // Association defined as Id field
             $joinColumns            = $this->associationMappings[$idProperty]['joinColumns'];
             $assocQuotedColumnNames = array_map(
-                function ($joinColumn) {
+                function ($joinColumn) use ($platform) {
                     return isset($joinColumn['quoted'])
                         ? $platform->quoteIdentifier($joinColumn['name'])
                         : $joinColumn['name'];
