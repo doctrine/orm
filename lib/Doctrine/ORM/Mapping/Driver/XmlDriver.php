@@ -58,6 +58,9 @@ class XmlDriver extends AbstractFileDriver
             if (isset($xmlRoot['read-only']) && $xmlRoot['read-only'] == "true") {
                 $metadata->markReadOnly();
             }
+            if (isset($element['view']) && $element['view'] == true) {
+    			$metadata->markView();
+			}
         } else if ($xmlRoot->getName() == 'mapped-superclass') {
             $metadata->isMappedSuperclass = true;
         } else {
