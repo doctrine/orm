@@ -13,8 +13,9 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\ORM\Query\SqlWalker,
-    Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 
 /**
  * Wrap the query in order to select root entity IDs for pagination
@@ -132,8 +133,44 @@ class LimitSubqueryOutputWalker extends SqlWalker
         }
 
         // Build the counter query
-        $sql = sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result',
-            implode(', ', $sqlIdentifier), $sql);
+        if ($this->platform instanceof PostgreSqlPlatform) {
+            //http://www.doctrine-project.org/jira/browse/DDC-1958
+
+            // For every order by, find out the SQL alias by inspecting the ResultSetMapping
+            $sqlOrderColumns = array();
+            $orderBy = array();
+            if (isset($AST->orderByClause)){
+                foreach ($AST->orderByClause->orderByItems as $item) {
+                    $possibleAliases = array_keys($this->rsm->fieldMappings, $item->expression->field);
+
+                    foreach ($possibleAliases as $alias) {
+                        if ($this->rsm->columnOwnerMap[$alias] == $item->expression->identificationVariable) {
+                            $sqlOrderColumns[] = $alias;
+                            $orderBy[] = $alias . ' ' . $item->type;
+                            break;
+                        }
+                    }
+                }
+                //remove identifier aliases
+                $sqlOrderColumns = array_diff($sqlOrderColumns, $sqlIdentifier);
+            }
+
+            //we don't need orderBy in inner query
+            //However at least on 5.4.6 I'm getting a segmentation fault and thus we don't clear it for now
+            /*$AST->orderByClause = null;
+            $sql = parent::walkSelectStatement($AST);*/
+
+            if (count($orderBy)) {
+                $sql = sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result ORDER BY %s',
+                    implode(', ', array_merge($sqlIdentifier, $sqlOrderColumns)), $sql, implode(', ', $orderBy));
+            } else {
+                $sql = sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result',
+                    implode(', ', $sqlIdentifier), $sql);
+            }
+        } else {
+            $sql = sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result',
+                implode(', ', $sqlIdentifier), $sql);
+        }
 
         // Apply the limit and offset
         $sql = $this->platform->modifyLimitQuery(
