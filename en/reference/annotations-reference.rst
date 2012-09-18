@@ -295,7 +295,7 @@ Example:
     /**
      * @Id
      * @Column(type="integer")
-     * @generatedValue(strategy="IDENTITY")
+     * @GeneratedValue(strategy="IDENTITY")
      */
     protected $id = null;
 
@@ -634,13 +634,17 @@ Example:
 .. code-block:: php
 
     <?php
-    /** @MappedSuperclass */
+    /**
+     * @MappedSuperclass
+     */
     class MappedSuperclassBase
     {
         // ... fields and methods
     }
 
-    /** @Entity */
+    /**
+     * @Entity
+     */
     class EntitySubClassFoo extends MappedSuperclassBase
     {
         // ... fields and methods
@@ -662,7 +666,7 @@ Required attributes:
 Optional attributes:
 
 -  **resultClass**: The class of the result.
--  **sqlResultSetMapping**: The name of a SqlResultSetMapping, as defined in metadata.
+-  **resultSetMapping**: The name of a SqlResultSetMapping, as defined in metadata.
 
 
 Example:
@@ -935,7 +939,7 @@ Required attributes:
 
 Optional attributes:
 
--  **resultClass**: Array of @EntityResult, Specifies the result set mapping to entities.
+-  **entities**: Array of @EntityResult, Specifies the result set mapping to entities.
 -  **columns**: Array of @ColumnResult, Specifies the result set mapping to scalar values.
 
 Example:
@@ -1102,8 +1106,8 @@ Example:
 
     <?php
     /**
-     * @column(type="integer")
-     * @version
+     * @Column(type="integer")
+     * @Version
      */
     protected $version;
 
