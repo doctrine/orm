@@ -1,6 +1,6 @@
 {
     "name": "doctrine/orm",
-    "type": "library",
+    "type": "library","version":"2.3.0",
     "description": "Object-Relational-Mapper for PHP",
     "keywords": ["orm", "database"],
     "homepage": "http://www.doctrine-project.org",
