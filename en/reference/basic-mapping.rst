@@ -164,7 +164,7 @@ built-in mapping types:
 -  ``text``: Type that maps an SQL CLOB to a PHP string.
 -  ``object``: Type that maps a SQL CLOB to a PHP object using
    ``serialize()`` and ``unserialize()``
--  ``array``: Type that maps a SQL CLOB to a PHP object using
+-  ``array``: Type that maps a SQL CLOB to a PHP array using
    ``serialize()`` and ``unserialize()``
 -  ``float``: Type that maps a SQL Float (Double Precision) to a
    PHP double. *IMPORTANT*: Works only with locale settings that use
