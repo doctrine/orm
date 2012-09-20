@@ -23,6 +23,7 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Use this logger to dump the identity map during the onFlush event. This is useful for debugging

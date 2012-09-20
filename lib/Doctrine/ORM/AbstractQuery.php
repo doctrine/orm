@@ -69,7 +69,7 @@ abstract class AbstractQuery
     protected $parameters;
 
     /**
-     * @var ResultSetMapping The user-specified ResultSetMapping to use.
+     * @var \Doctrine\ORM\Query\ResultSetMapping The user-specified ResultSetMapping to use.
      */
     protected $_resultSetMapping;
 
@@ -293,7 +293,7 @@ abstract class AbstractQuery
     /**
      * Sets the ResultSetMapping that should be used for hydration.
      *
-     * @param ResultSetMapping $rsm
+     * @param \Doctrine\ORM\Query\ResultSetMapping $rsm
      * @return \Doctrine\ORM\AbstractQuery
      */
     public function setResultSetMapping(Query\ResultSetMapping $rsm)
