@@ -44,7 +44,7 @@ class EntityManagerHelper extends Helper
     /**
      * Constructor
      *
-     * @param Connection $connection Doctrine Database Connection
+     * @param \Doctrine\DBAL\Connection $connection Doctrine Database Connection
      */
     public function __construct(EntityManager $em)
     {

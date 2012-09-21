@@ -31,7 +31,7 @@ namespace Doctrine\ORM\Event;
 class PreFlushEventArgs extends \Doctrine\Common\EventArgs
 {
     /**
-     * @var EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
     private $_em;
 
@@ -41,7 +41,7 @@ class PreFlushEventArgs extends \Doctrine\Common\EventArgs
     }
 
     /**
-     * @return EntityManager
+     * @return \Doctrine\ORM\EntityManager
      */
     public function getEntityManager()
     {

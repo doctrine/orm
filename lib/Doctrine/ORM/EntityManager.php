@@ -114,7 +114,7 @@ class EntityManager implements ObjectManager
     /**
      * Collection of query filters.
      *
-     * @var Doctrine\ORM\Query\FilterCollection
+     * @var \Doctrine\ORM\Query\FilterCollection
      */
     private $filterCollection;
 

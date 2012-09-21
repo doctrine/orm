@@ -30,12 +30,12 @@ use Doctrine\ORM\Query\SqlWalker,
 class LimitSubqueryOutputWalker extends SqlWalker
 {
     /**
-     * @var Doctrine\DBAL\Platforms\AbstractPlatform
+     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
      */
     private $platform;
 
     /**
-     * @var Doctrine\ORM\Query\ResultSetMapping
+     * @var \Doctrine\ORM\Query\ResultSetMapping
      */
     private $rsm;
 
@@ -59,8 +59,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
      * because Doctrine\ORM\Query\SqlWalker keeps everything private without
      * accessors.
      *
-     * @param Doctrine\ORM\Query $query
-     * @param Doctrine\ORM\Query\ParserResult $parserResult
+     * @param \Doctrine\ORM\Query $query
+     * @param \Doctrine\ORM\Query\ParserResult $parserResult
      * @param array $queryComponents
      */
     public function __construct($query, $parserResult, array $queryComponents)

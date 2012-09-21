@@ -33,7 +33,7 @@ use Doctrine\ORM\EntityManager;
 class OnFlushEventArgs extends \Doctrine\Common\EventArgs
 {
     /**
-     * @var Doctirne\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
     private $em;
 

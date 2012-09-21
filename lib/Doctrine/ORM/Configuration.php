@@ -659,7 +659,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Set quote strategy.
      *
      * @since 2.3
-     * @param Doctrine\ORM\Mapping\QuoteStrategy $quoteStrategy
+     * @param \Doctrine\ORM\Mapping\QuoteStrategy $quoteStrategy
      */
     public function setQuoteStrategy(QuoteStrategy $quoteStrategy)
     {
@@ -670,7 +670,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Get quote strategy.
      *
      * @since 2.3
-     * @return Doctrine\ORM\Mapping\QuoteStrategy
+     * @return \Doctrine\ORM\Mapping\QuoteStrategy
      */
     public function getQuoteStrategy()
     {
