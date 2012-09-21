@@ -60,7 +60,7 @@ class EntityRepository implements ObjectRepository, Selectable
      * Initializes a new <tt>EntityRepository</tt>.
      *
      * @param EntityManager $em The EntityManager to use.
-     * @param ClassMetadata $classMetadata The class descriptor.
+     * @param Mapping\ClassMetadata $classMetadata The class descriptor.
      */
     public function __construct($em, Mapping\ClassMetadata $class)
     {
