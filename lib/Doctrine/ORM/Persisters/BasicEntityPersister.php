@@ -586,6 +586,9 @@ class BasicEntityPersister
                 }
 
                 if ($newVal !== null) {
+                    // is here the problem?!
+                    // this method returns only an array with the primary key of the entity
+                    // regardless of the assoc. foreign key is defined to a the primary key or another column
                     $newValId = $uow->getEntityIdentifier($newVal);
                 }
 
@@ -601,7 +604,17 @@ class BasicEntityPersister
 
                     if ($newVal === null) {
                         $result[$owningTable][$sourceColumn] = null;
-                    } else if ($targetClass->containsForeignIdentifier) {
+                        $this->_columnTypes[$sourceColumn] = $targetClass->getTypeOfColumn($targetColumn);
+                        return $result;
+                    }
+                    // $newVal is not null
+                    // create reflection class of the 
+                    $reflectionClass = new \ReflectionClass (get_class($newVal));
+                    // add the real column name ($targetColumn) and value, which is used for the assoc. to the array
+                    // otherwise this only works if $targetColumn is 'id' and nothing else
+                    $newValId[$targetColumn] = $reflectionClass->getProperty($targetColumn)->getValue($newVal);
+                    
+                    if ($targetClass->containsForeignIdentifier) {
                         $result[$owningTable][$sourceColumn] = $newValId[$targetClass->getFieldForColumn($targetColumn)];
                     } else {
                         $result[$owningTable][$sourceColumn] = $newValId[$targetClass->fieldNames[$targetColumn]];
