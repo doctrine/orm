@@ -513,8 +513,7 @@ class Parser
 
         $this->lexer->resetPeek();
 
-        // We deny the COUNT(SELECT * FROM User u) here. COUNT won't be considered a function
-        return ($lookaheadType >= Lexer::T_IDENTIFIER && $peek['type'] === Lexer::T_OPEN_PARENTHESIS && $nextpeek['type'] !== Lexer::T_SELECT);
+        return ($lookaheadType >= Lexer::T_IDENTIFIER && $peek['type'] === Lexer::T_OPEN_PARENTHESIS);
     }
 
     /**
@@ -1790,18 +1789,6 @@ class Parser
         $peek      = $this->lexer->glimpse();
 
         switch (true) {
-            case ($lookahead === Lexer::T_IDENTIFIER && $peek['type'] === Lexer::T_DOT):
-                $this->lexer->peek(); // lookahead => '.'
-                $this->lexer->peek(); // lookahead => token after '.'
-                $peek = $this->lexer->peek(); // lookahead => token after the token after the '.'
-                $this->lexer->resetPeek();
-
-                if ($this->isMathOperator($peek)) {
-                    return $this->SimpleArithmeticExpression();
-                }
-
-                return $this->StateFieldPathExpression();
-
             case ($lookahead === Lexer::T_INTEGER):
             case ($lookahead === Lexer::T_FLOAT):
                 return $this->SimpleArithmeticExpression();
@@ -1822,9 +1809,13 @@ class Parser
             case ($lookahead === Lexer::T_COALESCE):
             case ($lookahead === Lexer::T_NULLIF):
                 // Since NULLIF and COALESCE can be identified as a function,
-                // we need to check if before check for FunctionDeclaration
+                // we need to check these before checking for FunctionDeclaration
                 return $this->CaseExpression();
 
+            case ($lookahead === Lexer::T_OPEN_PARENTHESIS):
+                return $this->SimpleArithmeticExpression();
+
+            //this check must be done before checking for a filed path expression
             case ($this->isFunction()):
                 $this->lexer->peek(); // "("
 
@@ -1832,22 +1823,28 @@ class Parser
                     case ($this->isMathOperator($this->peekBeyondClosingParenthesis())):
                         // SUM(u.id) + COUNT(u.id)
                         return $this->SimpleArithmeticExpression();
-                        break;
 
                     case ($this->isAggregateFunction($this->lexer->lookahead['type'])):
                         return $this->AggregateExpression();
-                        break;
 
                     default:
                         // IDENTITY(u)
                         return $this->FunctionDeclaration();
-                        break;
                 }
 
                 break;
+            //it is no function, so it must be a field path
+            case ($lookahead === Lexer::T_IDENTIFIER):
+                $this->lexer->peek(); // lookahead => '.'
+                $this->lexer->peek(); // lookahead => token after '.'
+                $peek = $this->lexer->peek(); // lookahead => token after the token after the '.'
+                $this->lexer->resetPeek();
 
-            case ($lookahead === Lexer::T_OPEN_PARENTHESIS):
-                return $this->SimpleArithmeticExpression();
+                if ($this->isMathOperator($peek)) {
+                    return $this->SimpleArithmeticExpression();
+                }
+
+                return $this->StateFieldPathExpression();
 
             default:
                 $this->syntaxError();
