@@ -509,7 +509,6 @@ class Parser
     {
         $lookaheadType = $this->lexer->lookahead['type'];
         $peek          = $this->lexer->peek();
-        $nextpeek      = $this->lexer->peek();
 
         $this->lexer->resetPeek();
 
