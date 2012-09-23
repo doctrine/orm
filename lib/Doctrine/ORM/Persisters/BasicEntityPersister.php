@@ -609,9 +609,10 @@ class BasicEntityPersister
                     }
                     // $newVal is not null
 
-                    // add the real column name ($targetColumn) and value, which is used for the assoc. to the array
-                    // otherwise this only works if $targetColumn is 'id' and nothing else
-                    $newValId[$targetColumn] = $targetClass->getFieldValue($newVal, $targetColumn);
+                    // add the real field name and value, which is used for the assoc.
+                    // otherwise this only works if $targetColumn is the primary key and nothing else
+                    $fieldName = $targetClass->getFieldName($targetColumn);
+                    $newValId[$fieldName] = $targetClass->getFieldValue($newVal, $fieldName);
                                         
                     if ($targetClass->containsForeignIdentifier) {
                         $result[$owningTable][$sourceColumn] = $newValId[$targetClass->getFieldForColumn($targetColumn)];
