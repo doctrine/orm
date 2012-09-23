@@ -608,12 +608,11 @@ class BasicEntityPersister
                         return $result;
                     }
                     // $newVal is not null
-                    // create reflection class of the 
-                    $reflectionClass = new \ReflectionClass (get_class($newVal));
+
                     // add the real column name ($targetColumn) and value, which is used for the assoc. to the array
                     // otherwise this only works if $targetColumn is 'id' and nothing else
-                    $newValId[$targetColumn] = $reflectionClass->getProperty($targetColumn)->getValue($newVal);
-                    
+                    $newValId[$targetColumn] = $targetClass->getFieldValue($newVal, $targetColumn);
+                                        
                     if ($targetClass->containsForeignIdentifier) {
                         $result[$owningTable][$sourceColumn] = $newValId[$targetClass->getFieldForColumn($targetColumn)];
                     } else {
