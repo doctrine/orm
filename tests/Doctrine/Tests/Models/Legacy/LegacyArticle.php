@@ -24,7 +24,7 @@ class LegacyArticle
     public $_text;
     /**
      * @ManyToOne(targetEntity="LegacyUser", inversedBy="_articles")
-     * @JoinColumn(name="iUserId", referencedColumnName="iUserId")
+     * @JoinColumn(name="username", referencedColumnName="sUsername")
      */
     public $_user;
     public function setAuthor(LegacyUser $author) {
