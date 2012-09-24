@@ -30,7 +30,7 @@ use Symfony\Component\Console\Input\InputArgument,
 /**
  * Command to convert your mapping information between the various formats.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>

@@ -28,7 +28,7 @@ use Symfony\Component\Console\Input\InputArgument,
 /**
  * Command to generate repository classes for mapping information.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>

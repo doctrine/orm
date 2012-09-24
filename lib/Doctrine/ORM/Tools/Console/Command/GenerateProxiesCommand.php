@@ -27,7 +27,7 @@ use Symfony\Component\Console\Input\InputArgument,
 /**
  * Command to (re)generate the proxy classes used by doctrine.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
