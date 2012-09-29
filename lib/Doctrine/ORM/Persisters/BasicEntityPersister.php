@@ -1507,20 +1507,26 @@ class BasicEntityPersister
      */
     public function getSelectConditionStatementSQL($field, $value, $assoc = null, $comparison = null)
     {
-        $conditionSql = $this->getSelectConditionStatementColumnSQL($field, $assoc);
         $placeholder  = '?';
+        $condition    = $this->getSelectConditionStatementColumnSQL($field, $assoc);
 
         if (isset($this->class->fieldMappings[$field]['requireSQLConversion'])) {
-            $type = Type::getType($this->class->getTypeOfField($field));
-            $placeholder = $type->convertToDatabaseValueSQL($placeholder, $this->platform);
+            $placeholder = Type::getType($this->class->getTypeOfField($field))->convertToDatabaseValueSQL($placeholder, $this->platform);
         }
 
-        $conditionSql .= ($comparison === null)
-            ? ((is_array($value)) ? ' IN (?)' : (($value === null) ? ' IS NULL' : ' = ' . $placeholder))
-            : ' ' . sprintf(self::$comparisonMap[$comparison], $placeholder);
+        if ($comparison !== null) {
+            return $condition . ' ' . sprintf(self::$comparisonMap[$comparison], $placeholder);
+        }
 
+        if (is_array($value)) {
+            return sprintf('%s IN (%s)' , $condition, $placeholder);
+        }
 
-        return $conditionSql;
+        if ($value === null) {
+            return sprintf('%s IS NULL' , $condition);
+        }
+
+        return sprintf('%s = %s' , $condition, $placeholder);
     }
 
     /**
@@ -1533,31 +1539,34 @@ class BasicEntityPersister
      */
     protected function getSelectConditionStatementColumnSQL($field, $assoc = null)
     {
-        switch (true) {
-            case (isset($this->class->columnNames[$field])):
-                $className = (isset($this->class->fieldMappings[$field]['inherited']))
-                    ? $this->class->fieldMappings[$field]['inherited']
-                    : $this->class->name;
+        if (isset($this->class->columnNames[$field])) {
+            $className = (isset($this->class->fieldMappings[$field]['inherited']))
+                ? $this->class->fieldMappings[$field]['inherited']
+                : $this->class->name;
 
-                return $this->getSQLTableAlias($className) . '.' . $this->quoteStrategy->getColumnName($field, $this->class, $this->platform);
+            return $this->getSQLTableAlias($className) . '.' . $this->quoteStrategy->getColumnName($field, $this->class, $this->platform);
+        }
 
-            case (isset($this->class->associationMappings[$field])):
-                if ( ! $this->class->associationMappings[$field]['isOwningSide']) {
-                    throw ORMException::invalidFindByInverseAssociation($this->class->name, $field);
-                }
+        if (isset($this->class->associationMappings[$field])) {
 
-                $className = (isset($this->class->associationMappings[$field]['inherited']))
-                    ? $this->class->associationMappings[$field]['inherited']
-                    : $this->class->name;
+            if ( ! $this->class->associationMappings[$field]['isOwningSide']) {
+                throw ORMException::invalidFindByInverseAssociation($this->class->name, $field);
+            }
 
-                return $this->getSQLTableAlias($className) . '.' . $this->class->associationMappings[$field]['joinColumns'][0]['name'];
+            $joinColumn = $this->class->associationMappings[$field]['joinColumns'][0];
+            $className  = (isset($this->class->associationMappings[$field]['inherited']))
+                ? $this->class->associationMappings[$field]['inherited']
+                : $this->class->name;
 
-            case ($assoc !== null && strpos($field, " ") === false && strpos($field, "(") === false):
-                // very careless developers could potentially open up this normally hidden api for userland attacks,
-                // therefore checking for spaces and function calls which are not allowed.
+            return $this->getSQLTableAlias($className) . '.' . $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
+        }
 
-                // found a join column condition, not really a "field"
-                return $field;
+        if ($assoc !== null && strpos($field, " ") === false && strpos($field, "(") === false) {
+            // very careless developers could potentially open up this normally hidden api for userland attacks,
+            // therefore checking for spaces and function calls which are not allowed.
+
+            // found a join column condition, not really a "field"
+            return $field;
         }
 
         throw ORMException::unrecognizedField($field);
