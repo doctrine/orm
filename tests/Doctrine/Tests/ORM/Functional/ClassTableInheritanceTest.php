@@ -494,4 +494,26 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         ));
         $this->assertEquals(1, count($users));
     }
+
+    public function testGetSubClassOneToMany()
+    {
+        $org = new CompanyOrganization;
+        $event1 = new CompanyAuction;
+        $event1->setData('auction');
+        $event1->setOrganization($org);
+        $org->setMainEvent($event1);
+
+        $this->_em->persist($org);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $q = $this->_em->createQuery('select c from Doctrine\Tests\Models\Company\CompanyOrganization c INNER JOIN c.auctions a WHERE a.data = ?1');
+        $q->setParameter(1, 'auction');
+
+        $result = $q->getResult();
+        $this->assertEquals(1, count($result));
+        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyOrganization', $result[0], sprintf("Is of class %s", get_class($result[0])));
+
+        $this->_em->clear();
+    }
 }

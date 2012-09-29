@@ -15,6 +15,11 @@ class CompanyOrganization {
      */
     public $events;
 
+    /**
+     * @OneToMany(targetEntity="CompanyAuction", mappedBy="organization")
+     */
+    public $auctions;
+
     public function getId() {
         return $this->id;
     }
