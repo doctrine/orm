@@ -99,6 +99,9 @@ class PhpExporter extends AbstractExporter
                     unset($cascade[$key]);
                 }
             }
+            if (count($cascade) === 5) {
+                $cascade = array('all');
+            }
             $associationMappingArray = array(
                 'fieldName'    => $associationMapping['fieldName'],
                 'targetEntity' => $associationMapping['targetEntity'],
