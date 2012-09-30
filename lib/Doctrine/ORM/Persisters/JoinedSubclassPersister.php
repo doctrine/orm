@@ -464,6 +464,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             } else if ($this->_class->name != $this->_class->rootEntityName ||
                     ! $this->_class->isIdGeneratorIdentity() || $this->_class->identifier[0] != $name) {
                 $columns[] = $this->_class->getQuotedColumnName($name, $this->_platform);
+                $this->_columnTypes[$name]  = $this->_class->fieldMappings[$name]['type'];
             }
         }
 
