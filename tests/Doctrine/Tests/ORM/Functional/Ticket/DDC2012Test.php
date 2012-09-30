@@ -110,7 +110,7 @@ class DDC2012TsVectorType extends Type
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        return $platform->getBlobTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 
     /**
@@ -153,7 +153,7 @@ class DDC2012TsVectorType extends Type
             'platform'  => $platform,
         );
 
-        // changed to upper expression to keep the teste compatible with other Databases
+        // changed to upper expression to keep the test compatible with other Databases
         //sprintf('to_tsvector(%s)', $sqlExpr);
         
         return $platform->getUpperExpression($sqlExpr);
