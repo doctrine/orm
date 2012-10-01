@@ -1048,7 +1048,7 @@ public function __construct()
                 if (count($cascades) === 5) {
                     $cascades = array('"all"');
                 }
-                
+
                 $typeOptions[] = 'cascade={' . implode(',', $cascades) . '}';
             }
 
