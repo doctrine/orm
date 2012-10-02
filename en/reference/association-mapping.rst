@@ -706,7 +706,7 @@ one is bidirectional.
 
         <doctrine-mapping>
             <entity name="User">
-                <many-to-many field="groups" inversed-by="users">
+                <many-to-many field="groups" inversed-by="users" target-entity="Group">
                     <join-table name="users_groups">
                         <join-columns>
                             <join-column name="user_id" referenced-column-name="id" />
@@ -719,7 +719,7 @@ one is bidirectional.
             </entity>
 
             <entity name="Group">
-                <many-to-many field="users" mapped-by="groups" />
+                <many-to-many field="users" mapped-by="groups" target-entity="User"/>
             </entity>
         </doctrine-mapping>
 
