@@ -398,7 +398,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * @param ClassMetadataInfo $class
      * @throws ORMException
      */
-    private function completeIdGeneratorMapping(ClassMetadataInfo $class)
+    protected function completeIdGeneratorMapping(ClassMetadataInfo $class)
     {
         $idGenType = $class->generatorType;
         if ($idGenType == ClassMetadata::GENERATOR_TYPE_AUTO) {

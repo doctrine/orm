@@ -270,7 +270,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 }
 
                 if ($generatedValueAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\GeneratedValue')) {
-                    $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $generatedValueAnnot->strategy));
+                    $metadataClassName = get_class($metadata);
+                    $metadata->setIdGeneratorType(constant($metadataClassName . '::GENERATOR_TYPE_' . $generatedValueAnnot->strategy));
                 }
 
                 if ($this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Version')) {

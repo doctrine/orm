@@ -264,7 +264,8 @@ class YamlDriver extends FileDriver
                 $metadata->mapField($mapping);
 
                 if (isset($idElement['generator'])) {
-                    $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
+                    $metadataClassName = get_class($metadata);
+                    $metadata->setIdGeneratorType(constant($metadataClassName . '::GENERATOR_TYPE_'
                             . strtoupper($idElement['generator']['strategy'])));
                 }
                 // Check for SequenceGenerator/TableGenerator definition

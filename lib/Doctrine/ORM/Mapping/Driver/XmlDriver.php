@@ -272,7 +272,8 @@ class XmlDriver extends FileDriver
             if (isset($idElement->generator)) {
                 $strategy = isset($idElement->generator['strategy']) ?
                         (string)$idElement->generator['strategy'] : 'AUTO';
-                $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
+                $metadataClassName = get_class($metadata);
+                $metadata->setIdGeneratorType(constant($metadataClassName . '::GENERATOR_TYPE_'
                         . $strategy));
             }
 
