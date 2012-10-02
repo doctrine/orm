@@ -215,6 +215,17 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
             "Entity 'Doctrine\Tests\ORM\Mapping\InvalidFetchOption' has a mapping with invalid fetch mode 'eager");
         $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\InvalidFetchOption');
     }
+
+    public function testExtendedClassMetadata()
+    {
+        $annotationDriver = $this->_loadDriver();
+        $em = $this->_getTestEntityManager();
+        $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
+        $factory = new ExtendedClassMetadataFactory();
+        $factory->setEntityManager($em);
+        $classMetadata = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\ExtendedIdGeneratorEntity');
+        $this->assertEquals(ExtendedClassMetadata::GENERATOR_TYPE_EXTENDED, $classMetadata->generatorType);
+    }
 }
 
 /**
@@ -337,4 +348,38 @@ class InvalidFetchOption
      * @OneToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", fetch="eager")
      */
     private $collection;
+}
+
+class ExtendedClassMetadata extends \Doctrine\ORM\Mapping\ClassMetadata
+{
+    const GENERATOR_TYPE_EXTENDED = 99;
+}
+
+class ExtendedClassMetadataFactory extends \Doctrine\ORM\Mapping\ClassMetadataFactory
+{
+    protected function newClassMetadataInstance($className)
+    {
+        return new ExtendedClassMetadata($className);
+    }
+
+    protected function completeIdGeneratorMapping(\Doctrine\ORM\Mapping\ClassMetadataInfo $class)
+    {
+        $idGenType = $class->generatorType;
+        if ($idGenType == ExtendedClassMetadata::GENERATOR_TYPE_EXTENDED) {
+            $class->setIdGeneratorType(ExtendedClassMetadata::GENERATOR_TYPE_EXTENDED);
+        } else {
+            parent::completeIdGeneratorMapping($class);
+        }
+    }
+}
+
+/**
+ * @Entity
+ */
+class ExtendedIdGeneratorEntity
+{
+    /**
+     * @Id @GeneratedValue(strategy="EXTENDED") @Column(type="string")
+     */
+    private $id;
 }
