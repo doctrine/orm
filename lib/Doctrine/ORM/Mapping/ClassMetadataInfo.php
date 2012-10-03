@@ -1042,7 +1042,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getFieldMapping($fieldName)
     {
-        if ( ! isset($this->fieldMappings[$fieldName])) {
+        if ( ! $this->hasField($fieldName)) {
             throw MappingException::mappingNotFound($this->name, $fieldName);
         }
         return $this->fieldMappings[$fieldName];
@@ -1774,7 +1774,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getTypeOfField($fieldName)
     {
-        return isset($this->fieldMappings[$fieldName]) ?
+        return $this->hasField($fieldName) ?
                 $this->fieldMappings[$fieldName]['type'] : null;
     }
 
@@ -1913,7 +1913,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function setAttributeOverride($fieldName, array $overrideMapping)
     {
-        if ( ! isset($this->fieldMappings[$fieldName])) {
+        if ( ! $this->hasField($fieldName)) {
             throw MappingException::invalidOverrideFieldName($this->name, $fieldName);
         }
 
