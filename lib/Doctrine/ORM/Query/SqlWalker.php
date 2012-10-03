@@ -34,6 +34,7 @@ use Doctrine\DBAL\LockMode,
  * @author Roman Borschel <roman@code-factory.org>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  * @author Alexander <iam.asm89@gmail.com>
+ * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since  2.0
  * @todo Rename: SQLWalker
  */
@@ -76,6 +77,13 @@ class SqlWalker implements TreeWalker
      * @var integer
      */
     private $sqlParamIndex = 0;
+
+    /**
+     * Counters for generating indexes.
+     *
+     * @var integer
+     */
+    private $newObjectCounter = 0;
 
     /**
      * @var ParserResult
@@ -1221,6 +1229,10 @@ class SqlWalker implements TreeWalker
                 }
                 break;
 
+            case ($expr instanceof AST\NewObjectExpression):
+                $sql .= $this->walkNewObject($expr);
+                break;
+
             default:
                 // IdentificationVariable or PartialObjectExpression
                 if ($expr instanceof AST\PartialObjectExpression) {
@@ -1385,6 +1397,68 @@ class SqlWalker implements TreeWalker
     {
         return 'SELECT' . ($simpleSelectClause->isDistinct ? ' DISTINCT' : '')
              . $this->walkSimpleSelectExpression($simpleSelectClause->simpleSelectExpression);
+    }
+
+    /**
+     * @param AST\NewObjectExpression
+     * @return string The SQL.
+     */
+    public function walkNewObject($newObjectExpression)
+    {
+        $sqlSelectExpressions = array();
+        $objIndex             = $this->newObjectCounter++;
+
+        foreach ($newObjectExpression->args as $argIndex => $e) {
+            $resultAlias = $this->scalarResultCounter++;
+            $columnAlias = $this->getSQLColumnAlias('sclr');
+
+            switch (true) {
+                case ($e instanceof AST\NewObjectExpression):
+                    $sqlSelectExpressions[] = $e->dispatch($this);
+                    break;
+
+                default:
+                    $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
+                    break;
+            }
+
+            switch (true) {
+                case ($e instanceof AST\PathExpression):
+                    $fieldName = $e->field;
+                    $dqlAlias  = $e->identificationVariable;
+                    $qComp     = $this->queryComponents[$dqlAlias];
+                    $class     = $qComp['metadata'];
+                    $fieldType = $class->getTypeOfField($fieldName);
+                    break;
+
+                case ($e instanceof AST\Literal):
+                    switch ($e->type) {
+                        case AST\Literal::BOOLEAN:
+                            $fieldType = 'boolean';
+                            break;
+
+                        case AST\Literal::NUMERIC:
+                            $fieldType = is_float($e->value) ? 'float' : 'integer';
+                            break;
+                    }
+                    break;
+
+                default:
+                    $fieldType = 'string';
+                    break;
+            }
+
+            $this->scalarResultAliasMap[$resultAlias] = $columnAlias;
+            $this->rsm->addScalarResult($columnAlias, $resultAlias, $fieldType);
+
+            $this->rsm->newObjectMappings[$columnAlias] = array(
+                'className' => $newObjectExpression->className,
+                'objIndex'  => $objIndex,
+                'argIndex'  => $argIndex
+            );
+        }
+
+        return implode(', ', $sqlSelectExpressions);
     }
 
     /**
