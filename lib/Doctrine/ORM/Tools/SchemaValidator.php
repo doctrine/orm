@@ -128,7 +128,7 @@ class SchemaValidator
                 } else  if ($targetMetadata->associationMappings[$assoc['mappedBy']]['inversedBy'] != $fieldName) {
                     $ce[] = "The mappings " . $class->name . "#" . $fieldName . " and " .
                             $assoc['targetEntity'] . "#" . $assoc['mappedBy'] . " are ".
-                            "incosistent with each other.";
+                            "inconsistent with each other.";
                 }
             }
 
@@ -148,7 +148,7 @@ class SchemaValidator
                 } else  if ($targetMetadata->associationMappings[$assoc['inversedBy']]['mappedBy'] != $fieldName) {
                     $ce[] = "The mappings " . $class->name . "#" . $fieldName . " and " .
                             $assoc['targetEntity'] . "#" . $assoc['inversedBy'] . " are ".
-                            "incosistent with each other.";
+                            "inconsistent with each other.";
                 }
 
                 // Verify inverse side/owning side match each other
