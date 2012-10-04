@@ -116,7 +116,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
     protected function addAllClassFields($class, $alias, $columnAliasMap = array())
     {
         $classMetadata = $this->em->getClassMetadata($class);
-        $platform = $this->em->getConnection()->getDatabasePlatform();
+        $platform      = $this->em->getConnection()->getDatabasePlatform();
 
         if ($classMetadata->isInheritanceTypeSingleTable() || $classMetadata->isInheritanceTypeJoined()) {
             throw new \InvalidArgumentException('ResultSetMapping builder does not currently support inheritance.');
