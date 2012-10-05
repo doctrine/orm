@@ -1045,6 +1045,10 @@ public function __construct()
                 if ($associationMapping['isCascadeMerge']) $cascades[] = '"merge"';
                 if ($associationMapping['isCascadeRefresh']) $cascades[] = '"refresh"';
 
+                if (count($cascades) === 5) {
+                    $cascades = array('"all"');
+                }
+
                 $typeOptions[] = 'cascade={' . implode(',', $cascades) . '}';
             }
 
