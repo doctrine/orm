@@ -297,6 +297,10 @@ class DatabaseDriver implements MappingDriver
             $associationMapping['fieldName'] = $this->getFieldNameForColumn($tableName, $localColumn, true);
             $associationMapping['targetEntity'] = $this->getClassNameForTable($foreignTable);
 
+            if (isset($metadata->fieldMappings[$associationMapping['fieldName']])) {
+                $associationMapping['fieldName'] = $associationMapping['fieldName'] . "2";
+            }
+
             if ($primaryKeyColumns && in_array($localColumn, $primaryKeyColumns)) {
                 $associationMapping['id'] = true;
             }
