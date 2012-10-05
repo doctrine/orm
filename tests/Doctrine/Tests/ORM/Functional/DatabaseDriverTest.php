@@ -22,6 +22,31 @@ class DatabaseDriverTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_sm = $this->_em->getConnection()->getSchemaManager();
     }
 
+    /**
+     * @group DDC-2059
+     */
+    public function testIssue2059()
+    {
+        if (!$this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            $this->markTestSkipped('Platform does not support foreign keys.');
+        }
+
+        $user = new \Doctrine\DBAL\Schema\Table("ddc2059_user");
+        $user->addColumn('id', 'integer');
+        $user->setPrimaryKey(array('id'));
+        $project = new \Doctrine\DBAL\Schema\Table("ddc2059_project");
+        $project->addColumn('id', 'integer');
+        $project->addColumn('user_id', 'integer');
+        $project->addColumn('user', 'string');
+        $project->setPrimaryKey(array('id'));
+        $project->addForeignKeyConstraint('ddc2059_user', array('user_id'), array('id'));
+
+        $metadata = $this->convertToClassMetadata(array($project, $user), array());
+
+        $this->assertTrue(isset($metadata['Ddc2059Project']->fieldMappings['user']));
+        $this->assertTrue(isset($metadata['Ddc2059Project']->associationMappings['user2']));
+    }
+
     public function testLoadMetadataFromDatabase()
     {
         if (!$this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
