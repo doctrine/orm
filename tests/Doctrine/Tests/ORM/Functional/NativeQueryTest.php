@@ -709,4 +709,69 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     }
 
+    /**
+     * @group DDC-2055
+     */
+    public function testGenerateSelectClauseNoRenameSingleEntity()
+    {
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+
+        $selectClause = $rsm->generateSelectClause();
+
+        $this->assertEquals('u.id AS id, u.status AS status, u.username AS username, u.name AS name, u.email_id AS email_id', $selectClause);
+    }
+
+    /**
+     * @group DDC-2055
+     */
+    public function testGenerateSelectClauseCustomRenames()
+    {
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u', array(
+            'id' => 'id1',
+            'username' => 'username2'
+        ));
+
+        $selectClause = $rsm->generateSelectClause();
+
+        $this->assertEquals('u.id AS id1, u.status AS status, u.username AS username2, u.name AS name, u.email_id AS email_id', $selectClause);
+    }
+
+    /**
+     * @group DDC-2055
+     */
+    public function testGenerateSelectClauseRenameTableAlias()
+    {
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+
+        $selectClause = $rsm->generateSelectClause(array('u' => 'u1'));
+
+        $this->assertEquals('u1.id AS id, u1.status AS status, u1.username AS username, u1.name AS name, u1.email_id AS email_id', $selectClause);
+    }
+
+    /**
+     * @group DDC-2055
+     */
+    public function testGenerateSelectClauseIncrement()
+    {
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u', ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
+
+        $selectClause = $rsm->generateSelectClause();
+
+        $this->assertEquals('u.id AS id0, u.status AS status1, u.username AS username2, u.name AS name3, u.email_id AS email_id4', $selectClause);
+    }
+
+    /**
+     * @group DDC-2055
+     */
+    public function testGenerateSelectClauseToString()
+    {
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u', ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
+
+        $this->assertEquals('u.id AS id0, u.status AS status1, u.username AS username2, u.name AS name3, u.email_id AS email_id4', (string)$rsm);
+    }
 }
