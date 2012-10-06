@@ -856,21 +856,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEmpty($contractListener->postPersistCalls);
     }
-
-    /**
-     * @group DDC-1955
-     */
-    public function testEventListenersLifecycleCallback()
-    {
-        $em         = $this->_getTestEntityManager();
-        $factory    = $this->createClassMetadataFactory($em);
-        $metadata   = $factory->getMetadataFor('Doctrine\Tests\Models\CMS\CmsAddress');
-
-        $this->assertArrayHasKey('prePersist', $metadata->lifecycleCallbacks);
-        $this->assertCount(1, $metadata->lifecycleCallbacks['prePersist']);
-        $this->assertEquals('prePersistHandler', $metadata->lifecycleCallbacks['prePersist'][0]);
-    }
-
 }
 
 /**

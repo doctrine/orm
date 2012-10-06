@@ -8,8 +8,7 @@ Doctrine\Tests\Models\Company\CompanyContract:
     flexultra: CompanyFlexUltraContract
 
   entityListeners:
-    listener[0]:
-      class : CompanyContractListener
+    CompanyContractListener:
 
       preFlush: [preFlushHandler]
       postLoad: [postLoadHandler]

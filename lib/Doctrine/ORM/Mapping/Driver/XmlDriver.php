@@ -19,10 +19,10 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use SimpleXMLElement,
-    Doctrine\Common\Persistence\Mapping\Driver\FileDriver,
-    Doctrine\Common\Persistence\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\MappingException;
+use SimpleXMLElement;
+use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\MappingException;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
@@ -560,28 +560,12 @@ class XmlDriver extends FileDriver
         // Evaluate entity listener
         if (isset($xmlRoot->{'entity-listeners'})) {
             foreach ($xmlRoot->{'entity-listeners'}->{'entity-listener'} as $listenerElement) {
-                $listeners = array();
-
                 foreach ($listenerElement as $callbackElement) {
                     $eventName   = (string) $callbackElement['type'];
                     $methodName  = (string) $callbackElement['method'];
+                    $className   = (string) $listenerElement['class'];
 
-                    $listeners[] = array($eventName, $methodName);
-                }
-
-                if (isset($listenerElement['class'])) {
-                    $className  = (string) $listenerElement['class'];
-
-                    foreach ($listeners as $item) {
-                        $metadata->addEntityListener($item[0], $className, $item[1]);
-                    }
-
-                    continue;
-                }
-
-                // Evaluate as lifecycle callback if the listener class is not given.
-                foreach ($listeners as $item) {
-                    $metadata->addLifecycleCallback($item[1], $item[0]);
+                    $metadata->addEntityListener($eventName, $className, $methodName);
                 }
             }
         }

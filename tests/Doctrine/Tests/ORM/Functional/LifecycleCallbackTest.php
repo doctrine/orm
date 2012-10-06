@@ -11,7 +11,6 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\EntityListenersLifecycleCallback'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\LifecycleCallbackEventArgEntity'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\LifecycleCallbackTestUser'),
@@ -255,29 +254,6 @@ class LifecycleCallbackTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $e->calls['postRemoveHandler']
         );
     }
-    /**
-    * @group DDC-1955
-    */
-    public function testEventListenersLifecycleCallback()
-    {
-        $e          = new EntityListenersLifecycleCallback;
-        $e->value   = 'foo';
-        
-        $this->_em->persist($e);
-        $this->_em->flush();
-
-        $this->assertCount(2, $e->calls);
-
-        $this->assertInstanceOf(
-            'Doctrine\ORM\Event\LifecycleEventArgs',
-            $e->calls['prePersistHandler']
-        );
-
-        $this->assertInstanceOf(
-            'Doctrine\ORM\Event\LifecycleEventArgs',
-            $e->calls['postPersistHandler']
-        );
-    }
 }
 
 /** @Entity @HasLifecycleCallbacks */
@@ -403,35 +379,6 @@ class LifecycleListenerPreUpdate
     public function preUpdate(PreUpdateEventArgs $eventArgs)
     {
         $eventArgs->setNewValue('name', 'Bob');
-    }
-}
-
-
-/**
- * @Entity
- * @EntityListeners(callbacks = {
- *  @LifecycleCallback(\Doctrine\ORM\Events::prePersist, method = "prePersistHandler"),
- *  @LifecycleCallback(\Doctrine\ORM\Events::postPersist, method = "postPersistHandler"),
- * })
- */
-class EntityListenersLifecycleCallback
-{
-    /** @Id @Column(type="integer") @GeneratedValue */
-    public $id;
-
-    /** @Column() */
-    public $value;
-
-    public $calls = array();
-
-    public function prePersistHandler($event)
-    {
-        $this->calls[__FUNCTION__] = $event;
-    }
-
-    public function postPersistHandler(\Doctrine\ORM\Event\LifecycleEventArgs $event)
-    {
-        $this->calls[__FUNCTION__] = $event;
     }
 }
 

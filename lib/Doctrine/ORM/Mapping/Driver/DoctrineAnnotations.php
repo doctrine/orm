@@ -65,4 +65,3 @@ require_once __DIR__.'/../AssociationOverrides.php';
 require_once __DIR__.'/../AttributeOverride.php';
 require_once __DIR__.'/../AttributeOverrides.php';
 require_once __DIR__.'/../EntityListeners.php';
-require_once __DIR__.'/../LifecycleCallback.php';

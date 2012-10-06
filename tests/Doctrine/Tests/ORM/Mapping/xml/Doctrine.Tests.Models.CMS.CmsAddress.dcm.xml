@@ -21,12 +21,6 @@
             </named-native-query>
         </named-native-queries>
 
-        <entity-listeners>
-            <entity-listener>
-                <lifecycle-callback type="prePersist" method="prePersistHandler"/>
-            </entity-listener>
-        </entity-listeners>
-
         <sql-result-set-mappings>
             <sql-result-set-mapping name="mapping-find-all">
                 <entity-result entity-class="CmsAddress">

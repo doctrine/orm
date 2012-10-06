@@ -14,10 +14,6 @@ Doctrine\Tests\Models\CMS\CmsAddress:
       resultSetMapping: mapping-count
       query: SELECT COUNT(*) AS count FROM cms_addresses
 
-  entityListeners:
-    listener[0]:
-      prePersist: [prePersistHandler]
-
   sqlResultSetMappings:
     mapping-find-all:
       entityResult:

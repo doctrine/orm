@@ -59,9 +59,6 @@ namespace Doctrine\Tests\Models\CMS;
  *      )
  * })
  *
- * @EntityListeners(callbacks = {
- *      @LifecycleCallback(\Doctrine\ORM\Events::prePersist, method = "prePersistHandler")
- * })
  */
 class CmsAddress
 {
@@ -129,11 +126,6 @@ class CmsAddress
         }
     }
 
-    public function prePersistHandler($event)
-    {
-        $this->prePersistHandlerCalls[] = $event;
-    }
-
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
     {
         $metadata->setPrimaryTable(array(
@@ -162,8 +154,6 @@ class CmsAddress
             'joinColumns'   => array(array('referencedColumnName' => 'id'))
         ));
 
-        $metadata->addLifecycleCallback('prePersistHandler', 'prePersist');
-
         $metadata->addNamedNativeQuery(array (
             'name'              => 'find-all',
             'query'             => 'SELECT id, country, city FROM cms_addresses',
@@ -181,7 +171,6 @@ class CmsAddress
             'query'             => 'SELECT COUNT(*) AS count FROM cms_addresses',
             'resultSetMapping'  => 'mapping-count',
         ));
-
 
         $metadata->addSqlResultSetMapping(array (
             'name'      => 'mapping-find-all',

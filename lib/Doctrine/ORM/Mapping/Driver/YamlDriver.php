@@ -575,33 +575,11 @@ class YamlDriver extends FileDriver
 
         // Evaluate entityListeners
         if (isset($element['entityListeners'])) {
-            foreach ($element['entityListeners']  as $entityListener) {
-                $listeners = array();
-                $className = null;
-                
-                if (isset($entityListener['class'])) {
-                    $className = $entityListener['class'];
-
-                    unset($entityListener['class']);
-                }
-
+            foreach ($element['entityListeners'] as $className => $entityListener) {
                 foreach ($entityListener as $eventName => $callbackElement){
                     foreach ($callbackElement as $methodName){
-                        $listeners[] = array($eventName, $methodName);
+                        $metadata->addEntityListener($eventName, $className, $methodName);
                     }
-                }
-
-                if (null !== $className) {
-                    foreach ($listeners as $item){
-                        $metadata->addEntityListener($item[0], $className, $item[1]);
-                    }
-
-                    continue;
-                }
-
-                // Evaluate as lifecycle callback if the listener class is not given.
-                foreach ($listeners as $item){
-                    $metadata->addLifecycleCallback($item[1], $item[0]);
                 }
             }
         }
