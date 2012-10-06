@@ -484,6 +484,8 @@ class SqlWalker implements TreeWalker
      */
     public function walkSelectStatement(AST\SelectStatement $AST)
     {
+        $this->prepareQueryComponents($AST->fromClause);
+
         $sql  = $this->walkSelectClause($AST->selectClause);
         $sql .= $this->walkFromClause($AST->fromClause);
         $sql .= $this->walkWhereClause($AST->whereClause);
@@ -1155,6 +1157,39 @@ class SqlWalker implements TreeWalker
         $sql .= ' ELSE ' . $this->walkSimpleArithmeticExpression($simpleCaseExpression->elseScalarExpression) . ' END';
 
         return $sql;
+    }
+
+    private function prepareQueryComponents($fromClause)
+    {
+        foreach ($fromClause->identificationVariableDeclarations as $variableDeclaration) {
+            $dqlAlias = $variableDeclaration->rangeVariableDeclaration->aliasIdentificationVariable;
+            if (!isset($this->queryComponents[$dqlAlias])) {
+                $this->queryComponents[$dqlAlias] = array(
+                    'metadata' => $this->em->getClassMetadata($variableDeclaration->rangeVariableDeclaration->abstractSchemaName),
+                    'parent' => null,
+                    'relation' => null,
+                    'map' => null,
+                    'nestingLevel' => 0,
+                    'token' => null
+                );
+            }
+            foreach ($variableDeclaration->joins as $join) {
+                $dqlAlias = $join->joinAssociationDeclaration->aliasIdentificationVariable;
+                if (!isset($this->queryComponents[$dqlAlias])) {
+                    $associationPathExpression = $join->joinAssociationDeclaration->joinAssociationPathExpression;
+                    $parentQueryComponent = $associationPathExpression->identificationVariable;
+                    $parentMetadata = $this->queryComponents[$parentQueryComponent]['metadata'];
+                    $this->queryComponents[$dqlAlias] = array(
+                        'metadata' => $this->em->getClassMetadata($parentMetadata->getAssociationTargetClass($associationPathExpression->associationField)),
+                        'parent' => $parentQueryComponent,
+                        'relation' => $parentMetadata->getAssociationMapping($associationPathExpression->associationField),
+                        'map' => null,
+                        'nestingLevel' => 0,
+                        'token' => null
+                    );
+                }
+            }
+        }
     }
 
     /**
