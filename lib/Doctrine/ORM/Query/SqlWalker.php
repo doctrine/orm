@@ -224,6 +224,23 @@ class SqlWalker implements TreeWalker
     }
 
     /**
+     * Set or override a query component for a given dql alias.
+     *
+     * @param string $dqlAlias The DQL alias.
+     * @param array $queryComponent
+     */
+    protected function setQueryComponent($dqlAlias, array $queryComponent)
+    {
+        $requiredKeys = array('metadata', 'parent', 'relation', 'map', 'nestingLevel', 'token');
+
+        if (array_diff($requiredKeys, array_keys($queryComponent))) {
+            throw QueryException::invalidQueryComponent($dqlAlias);
+        }
+
+        $this->queryComponents[$dqlAlias] = $queryComponent;
+    }
+
+    /**
      * Gets an executor that can be used to execute the result of this walker.
      *
      * @return AbstractExecutor
