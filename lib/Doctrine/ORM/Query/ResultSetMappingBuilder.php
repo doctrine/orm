@@ -318,7 +318,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
     /**
      * Adds the entity result mapping of the results of native SQL queries to the result set.
-     * 
+     *
      * @param ClassMetadataInfo $classMetadata
      * @param array $entityMapping
      * @param string $alias
@@ -395,9 +395,9 @@ class ResultSetMappingBuilder extends ResultSetMapping
             if (isset($this->fieldMappings[$columnName])) {
                 $class = $this->em->getClassMetadata($this->declaringClasses[$columnName]);
                 $sql  .= $class->fieldMappings[$this->fieldMappings[$columnName]]['columnName'];
-            } else if (isset($this->metaMappings[$columnName])) {
+            } elseif (isset($this->metaMappings[$columnName])) {
                 $sql .= $this->metaMappings[$columnName];
-            } else if (isset($this->discriminatorColumn[$columnName])) {
+            } elseif (isset($this->discriminatorColumn[$columnName])) {
                 $sql .= $this->discriminatorColumn[$columnName];
             }
 

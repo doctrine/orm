@@ -26,7 +26,7 @@ use Doctrine\ORM\Tools\Export\ExportException,
  * Class used for converting your mapping information between the
  * supported formats: yaml, xml, and php/annotation.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Jonathan Wage <jonwage@gmail.com>

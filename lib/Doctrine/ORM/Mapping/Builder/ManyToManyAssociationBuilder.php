@@ -50,8 +50,14 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
      * @param string $onDelete
      * @param string $columnDef
      */
-    public function addInverseJoinColumn($columnName, $referencedColumnName, $nullable = true, $unique = false, $onDelete = null, $columnDef = null)
-    {
+    public function addInverseJoinColumn(
+        $columnName,
+        $referencedColumnName,
+        $nullable = true,
+        $unique = false,
+        $onDelete = null,
+        $columnDef = null
+    ) {
         $this->inverseJoinColumns[] = array(
             'name' => $columnName,
             'referencedColumnName' => $referencedColumnName,

@@ -29,7 +29,7 @@ class ToolEvents
      *
      * @var string
      */
-    const postGenerateSchemaTable = 'postGenerateSchemaTable';
+    const POST_GENERATE_SCHEMA_TABLE = 'postGenerateSchemaTable';
 
     /**
      * The postGenerateSchema event is triggered in SchemaTool#getSchemaFromMetadata()
@@ -38,5 +38,5 @@ class ToolEvents
      *
      * @var string
      */
-    const postGenerateSchema = 'postGenerateSchema';
+    const POST_GENERATE_SCHEMA = 'postGenerateSchema';
 }

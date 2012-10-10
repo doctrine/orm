@@ -340,7 +340,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
             'fieldName'     => 'user',
             'targetEntity'  => 'CmsUser'
         ));
-        
+
         $this->assertEquals(array('USER_ID'=>'ID'), $oneToOneMetadata->associationMappings['user']['sourceToTargetKeyColumns']);
         $this->assertEquals(array('USER_ID'=>'USER_ID'), $oneToOneMetadata->associationMappings['user']['joinColumnFieldNames']);
         $this->assertEquals(array('ID'=>'USER_ID'), $oneToOneMetadata->associationMappings['user']['targetToSourceKeyColumns']);
@@ -348,7 +348,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('USER_ID', $oneToOneMetadata->associationMappings['user']['joinColumns'][0]['name']);
         $this->assertEquals('ID', $oneToOneMetadata->associationMappings['user']['joinColumns'][0]['referencedColumnName']);
 
-        
+
         $this->assertEquals('CMS_ADDRESS_CMS_USER', $manyToManyMetadata->associationMappings['user']['joinTable']['name']);
 
         $this->assertEquals(array('CMS_ADDRESS_ID','CMS_USER_ID'), $manyToManyMetadata->associationMappings['user']['joinTableColumns']);
@@ -770,7 +770,7 @@ class ClassMetadataTest extends \Doctrine\Tests\OrmTestCase
     {
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
-        
+
         $cm->addSqlResultSetMapping(array(
             'name'      => 'find-all',
             'entities'  => array(

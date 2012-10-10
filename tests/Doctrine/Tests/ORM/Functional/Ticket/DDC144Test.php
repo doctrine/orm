@@ -6,7 +6,8 @@ require_once __DIR__ . '/../../../TestInit.php';
 
 class DDC144Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
@@ -40,7 +41,8 @@ class DDC144Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @DiscriminatorColumn(type="string", name="discr")
  * @DiscriminatorMap({"flowelement" = "DDC144FlowElement", "operand" = "DDC144Operand"})
  */
-class DDC144FlowElement {
+class DDC144FlowElement
+{
     /**
      * @Id @Column(type="integer") @GeneratedValue
      * @var integer
@@ -50,15 +52,15 @@ class DDC144FlowElement {
     public $property;
 }
 
-abstract class DDC144Expression extends DDC144FlowElement {
-    abstract function method();
+abstract class DDC144Expression extends DDC144FlowElement
+{
+    abstract public function method();
 }
 
 /** @Entity @Table(name="ddc144_operands") */
-class DDC144Operand extends DDC144Expression {
+class DDC144Operand extends DDC144Expression
+{
     /** @Column */
     public $operandProperty;
-    function method() {}
+    public function method() {}
 }
-
-

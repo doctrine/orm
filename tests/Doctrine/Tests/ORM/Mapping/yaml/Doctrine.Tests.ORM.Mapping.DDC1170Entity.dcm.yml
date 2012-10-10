@@ -1,7 +1,7 @@
 Doctrine\Tests\ORM\Mapping\DDC1170Entity:
   type: entity
   id:
-    id: 
+    id:
       columnDefinition: INT unsigned NOT NULL
       generator:
         strategy: NONE

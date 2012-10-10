@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Tools;
 /**
  * Class to generate entity repository classes
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>

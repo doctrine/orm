@@ -20,7 +20,8 @@ use Doctrine\Common\Collections\Criteria;
  */
 class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('company');
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
@@ -91,8 +92,9 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(2, $numDeleted);
     }
 
-    public function testMultiLevelUpdateAndFind() {
-    	$manager = new CompanyManager;
+    public function testMultiLevelUpdateAndFind()
+    {
+        $manager = new CompanyManager;
         $manager->setName('Roman S. Borschel');
         $manager->setSalary(100000);
         $manager->setDepartment('IT');
@@ -117,7 +119,8 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue(is_numeric($manager->getId()));
     }
 
-    public function testFindOnBaseClass() {
+    public function testFindOnBaseClass()
+    {
         $manager = new CompanyManager;
         $manager->setName('Roman S. Borschel');
         $manager->setSalary(100000);
@@ -138,8 +141,9 @@ class ClassTableInheritanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         //$this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyCar', $person->getCar());
     }
 
-    public function testSelfReferencingOneToOne() {
-    	$manager = new CompanyManager;
+    public function testSelfReferencingOneToOne()
+    {
+        $manager = new CompanyManager;
         $manager->setName('John Smith');
         $manager->setSalary(100000);
         $manager->setDepartment('IT');

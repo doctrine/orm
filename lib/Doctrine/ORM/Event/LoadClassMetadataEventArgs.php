@@ -73,4 +73,3 @@ class LoadClassMetadataEventArgs extends EventArgs
         return $this->em;
     }
 }
-

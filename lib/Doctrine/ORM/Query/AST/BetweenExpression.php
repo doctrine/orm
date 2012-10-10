@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * Description of BetweenExpression
  *
-  
+
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -48,4 +48,3 @@ class BetweenExpression extends Node
         return $sqlWalker->walkBetweenExpression($this);
     }
 }
-

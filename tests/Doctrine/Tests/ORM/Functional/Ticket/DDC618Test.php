@@ -177,7 +177,7 @@ class DDC618Book
     /** @ManyToOne(targetEntity="DDC618Author", inversedBy="books") */
     public $author;
 
-    function __construct($title, $author)
+    public function __construct($title, $author)
     {
         $this->title = $title;
         $this->author = $author;

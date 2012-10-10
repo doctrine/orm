@@ -202,7 +202,7 @@ final class Query extends AbstractQuery
     private function _parse()
     {
         // Return previous parser result if the query and the filter collection are both clean
-        if ($this->_state === self::STATE_CLEAN && $this->_em->isFiltersStateClean()) {
+        if ($this->_state === self::STATE_CLEAN && $this->em->isFiltersStateClean()) {
             return $this->_parserResult;
         }
 
@@ -240,12 +240,12 @@ final class Query extends AbstractQuery
     /**
      * {@inheritdoc}
      */
-    protected function _doExecute()
+    protected function doExecute()
     {
         $executor = $this->_parse()->getSqlExecutor();
 
-        if ($this->_queryCacheProfile) {
-            $executor->setQueryCacheProfile($this->_queryCacheProfile);
+        if ($this->queryCacheProfile) {
+            $executor->setQueryCacheProfile($this->queryCacheProfile);
         }
 
         // Prepare parameters
@@ -257,11 +257,11 @@ final class Query extends AbstractQuery
 
         list($sqlParams, $types) = $this->processParameterMappings($paramMappings);
 
-        if ($this->_resultSetMapping === null) {
-            $this->_resultSetMapping = $this->_parserResult->getResultSetMapping();
+        if ($this->resultSetMapping === null) {
+            $this->resultSetMapping = $this->_parserResult->getResultSetMapping();
         }
 
-        return $executor->execute($this->_em->getConnection(), $sqlParams, $types);
+        return $executor->execute($this->em->getConnection(), $sqlParams, $types);
     }
 
     /**
@@ -356,7 +356,7 @@ final class Query extends AbstractQuery
             return $this->_queryCache;
         }
 
-        return $this->_em->getConfiguration()->getQueryCacheImpl();
+        return $this->em->getConfiguration()->getQueryCacheImpl();
     }
 
     /**
@@ -567,7 +567,7 @@ final class Query extends AbstractQuery
     public function setLockMode($lockMode)
     {
         if (in_array($lockMode, array(LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE))) {
-            if ( ! $this->_em->getConnection()->isTransactionActive()) {
+            if ( ! $this->em->getConnection()->isTransactionActive()) {
                 throw TransactionRequiredException::transactionRequired();
             }
         }
@@ -602,13 +602,13 @@ final class Query extends AbstractQuery
      */
     protected function _getQueryCacheId()
     {
-        ksort($this->_hints);
+        ksort($this->hints);
 
         return md5(
-            $this->getDql() . var_export($this->_hints, true) .
-            ($this->_em->hasFilters() ? $this->_em->getFilters()->getHash() : '') .
+            $this->getDql() . var_export($this->hints, true) .
+            ($this->em->hasFilters() ? $this->em->getFilters()->getHash() : '') .
             '&firstResult=' . $this->_firstResult . '&maxResult=' . $this->_maxResults .
-            '&hydrationMode='.$this->_hydrationMode.'DOCTRINE_QUERY_CACHE_SALT'
+            '&hydrationMode='.$this->hydrationMode.'DOCTRINE_QUERY_CACHE_SALT'
         );
     }
 

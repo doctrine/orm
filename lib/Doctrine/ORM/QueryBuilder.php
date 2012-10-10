@@ -358,8 +358,7 @@ class QueryBuilder
     public function setParameter($key, $value, $type = null)
     {
         $filteredParameters = $this->parameters->filter(
-            function ($parameter) use ($key)
-            {
+            function ($parameter) use ($key) {
                 // Must not be identical because of string to integer conversion
                 return ($key == $parameter->getName());
             }
@@ -436,8 +435,7 @@ class QueryBuilder
     public function getParameter($key)
     {
         $filteredParameters = $this->parameters->filter(
-            function ($parameter) use ($key)
-            {
+            function ($parameter) use ($key) {
                 // Must not be identical because of string to integer conversion
                 return ($key == $parameter->getName());
             }
@@ -1204,7 +1202,7 @@ class QueryBuilder
                         $this->_dqlParts[$part][$idx] = clone $element;
                     }
                 }
-            } else if (is_object($elements)) {
+            } elseif (is_object($elements)) {
                 $this->_dqlParts[$part] = clone $elements;
             }
         }

@@ -10,7 +10,8 @@ require_once __DIR__ . '/../../TestInit.php';
 class SingleScalarHydratorTest extends HydrationTestCase
 {
     /** Result set provider for the HYDRATE_SINGLE_SCALAR tests */
-    public static function singleScalarResultSetProvider() {
+    public static function singleScalarResultSetProvider()
+    {
         return array(
           // valid
           array('name' => 'result1',
@@ -65,10 +66,10 @@ class SingleScalarHydratorTest extends HydrationTestCase
         if ($name == 'result1') {
             $result = $hydrator->hydrateAll($stmt, $rsm);
             $this->assertEquals('romanb', $result);
-        } else if ($name == 'result2') {
+        } elseif ($name == 'result2') {
             $result = $hydrator->hydrateAll($stmt, $rsm);
             $this->assertEquals(1, $result);
-        } else if ($name == 'result3' || $name == 'result4') {
+        } elseif ($name == 'result3' || $name == 'result4') {
             try {
                 $result = $hydrator->hydrateAll($stmt, $rsm);
                 $this->fail();

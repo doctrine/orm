@@ -29,7 +29,7 @@ use Symfony\Component\Console\Input\InputArgument,
 /**
  * Command to generate entity classes and method stubs from your mapping information.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
@@ -122,7 +122,7 @@ EOT
             throw new \InvalidArgumentException(
                 sprintf("Entities destination directory '<info>%s</info>' does not exist.", $input->getArgument('dest-path'))
             );
-        } else if ( ! is_writable($destPath)) {
+        } elseif ( ! is_writable($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Entities destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );

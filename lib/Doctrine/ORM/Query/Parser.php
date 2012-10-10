@@ -165,7 +165,7 @@ class Parser
      * @param string $functionName
      * @return bool
      */
-    static public function isInternalFunction($functionName)
+    public static function isInternalFunction($functionName)
     {
         $functionName = strtolower($functionName);
 
@@ -1751,7 +1751,7 @@ class Parser
      * NewObjectArg ::= ScalarExpression
      *
      * @TODO - Maybe you should support other expressions and nested "new" operator
-     * 
+     *
      * @return \Doctrine\ORM\Query\AST\SimpleSelectExpression
      */
     public function NewObjectArg()
@@ -2087,7 +2087,7 @@ class Parser
             case ($lookaheadType === Lexer::T_NEW):
                 $expression = $this->NewObjectExpression();
                 break;
-            
+
             default:
                 $this->syntaxError(
                     'IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression',
@@ -3097,7 +3097,7 @@ class Parser
                 if ($this->lexer->isNextToken(Lexer::T_EQUALS)) {
                     $this->match(Lexer::T_EQUALS);
                     $operator .= '=';
-                } else if ($this->lexer->isNextToken(Lexer::T_GREATER_THAN)) {
+                } elseif ($this->lexer->isNextToken(Lexer::T_GREATER_THAN)) {
                     $this->match(Lexer::T_GREATER_THAN);
                     $operator .= '>';
                 }

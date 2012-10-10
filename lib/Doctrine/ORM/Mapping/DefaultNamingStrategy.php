@@ -23,7 +23,7 @@ namespace Doctrine\ORM\Mapping;
 /**
  * The default NamingStrategy
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.3
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
@@ -71,16 +71,16 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function joinTableName($sourceEntity, $targetEntity, $propertyName = null)
     {
-        return strtolower($this->classToTableName($sourceEntity) . '_' .
-                $this->classToTableName($targetEntity));
+        return strtolower($this->classToTableName($sourceEntity) . '_' . $this->classToTableName($targetEntity));
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function joinKeyColumnName($entityName, $referencedColumnName = null)
     {
-        return strtolower($this->classToTableName($entityName) . '_' .
-                ($referencedColumnName ?: $this->referenceColumnName()));
+        return strtolower(
+            $this->classToTableName($entityName) . '_' . ($referencedColumnName ?: $this->referenceColumnName())
+        );
     }
 }

@@ -60,7 +60,7 @@ class YamlDriver extends FileDriver
             if (isset($element['readOnly']) && $element['readOnly'] == true) {
                 $metadata->markReadOnly();
             }
-        } else if ($element['type'] == 'mappedSuperclass') {
+        } elseif ($element['type'] == 'mappedSuperclass') {
             $metadata->setCustomRepositoryClass(
                 isset($element['repositoryClass']) ? $element['repositoryClass'] : null
             );
@@ -270,12 +270,12 @@ class YamlDriver extends FileDriver
                 // Check for SequenceGenerator/TableGenerator definition
                 if (isset($idElement['sequenceGenerator'])) {
                     $metadata->setSequenceGeneratorDefinition($idElement['sequenceGenerator']);
-                } else if (isset($idElement['customIdGenerator'])) {
+                } elseif (isset($idElement['customIdGenerator'])) {
                     $customGenerator = $idElement['customIdGenerator'];
                     $metadata->setCustomGeneratorDefinition(array(
                         'class' => (string) $customGenerator['class']
                     ));
-                } else if (isset($idElement['tableGenerator'])) {
+                } elseif (isset($idElement['tableGenerator'])) {
                     throw MappingException::tableIdGeneratorNotImplemented($className);
                 }
             }
@@ -326,7 +326,7 @@ class YamlDriver extends FileDriver
 
                     if (isset($oneToOneElement['joinColumn'])) {
                         $joinColumns[] = $this->joinColumnToArray($oneToOneElement['joinColumn']);
-                    } else if (isset($oneToOneElement['joinColumns'])) {
+                    } elseif (isset($oneToOneElement['joinColumns'])) {
                         foreach ($oneToOneElement['joinColumns'] as $joinColumnName => $joinColumnElement) {
                             if ( ! isset($joinColumnElement['name'])) {
                                 $joinColumnElement['name'] = $joinColumnName;
@@ -408,7 +408,7 @@ class YamlDriver extends FileDriver
 
                 if (isset($manyToOneElement['joinColumn'])) {
                     $joinColumns[] = $this->joinColumnToArray($manyToOneElement['joinColumn']);
-                } else if (isset($manyToOneElement['joinColumns'])) {
+                } elseif (isset($manyToOneElement['joinColumns'])) {
                     foreach ($manyToOneElement['joinColumns'] as $joinColumnName => $joinColumnElement) {
                         if ( ! isset($joinColumnElement['name'])) {
                             $joinColumnElement['name'] = $joinColumnName;
@@ -442,7 +442,7 @@ class YamlDriver extends FileDriver
 
                 if (isset($manyToManyElement['mappedBy'])) {
                     $mapping['mappedBy'] = $manyToManyElement['mappedBy'];
-                } else if (isset($manyToManyElement['joinTable'])) {
+                } elseif (isset($manyToManyElement['joinTable'])) {
 
                     $joinTableElement = $manyToManyElement['joinTable'];
                     $joinTable = array(

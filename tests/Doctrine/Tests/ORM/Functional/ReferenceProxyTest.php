@@ -188,7 +188,7 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($id, $entity->getId());
         $this->assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy when extending.");
     }
-    
+
     public function testDoNotInitializeProxyOnGettingTheIdentifierAndReturnTheRightType()
     {
         $product = new ECommerceProduct();

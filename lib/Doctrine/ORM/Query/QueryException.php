@@ -24,7 +24,7 @@ use Doctrine\ORM\Query\AST\PathExpression;
 /**
  * Description of QueryException
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -91,7 +91,8 @@ class QueryException extends \Doctrine\ORM\ORMException
         );
     }
 
-    public static function invalidLiteral($literal) {
+    public static function invalidLiteral($literal)
+    {
         return new self("Invalid literal '$literal'");
     }
 
@@ -132,7 +133,8 @@ class QueryException extends \Doctrine\ORM\ORMException
         );
     }
 
-    public static function iterateWithFetchJoinNotAllowed($assoc) {
+    public static function iterateWithFetchJoinNotAllowed($assoc)
+    {
         return new self(
             "Iterate with fetch join in class " . $assoc['sourceEntity'] .
             " using association " . $assoc['fieldName'] . " not allowed."

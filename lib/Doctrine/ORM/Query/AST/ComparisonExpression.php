@@ -27,7 +27,7 @@ namespace Doctrine\ORM\Query\AST;
  *                          DatetimeExpression ComparisonOperator (DatetimeExpression | QuantifiedExpression) |
  *                          EntityExpression ("=" | "<>") (EntityExpression | QuantifiedExpression)
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>

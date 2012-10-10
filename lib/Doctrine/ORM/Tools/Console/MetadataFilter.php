@@ -39,7 +39,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
      * @param array|string $filter
      * @return array
      */
-    static public function filter(array $metadatas, $filter)
+    public static function filter(array $metadatas, $filter)
     {
         $metadatas = new MetadataFilter(new \ArrayIterator($metadatas), $filter);
         return iterator_to_array($metadatas);

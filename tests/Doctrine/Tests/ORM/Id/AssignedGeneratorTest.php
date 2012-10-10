@@ -53,13 +53,15 @@ class AssignedGeneratorTest extends \Doctrine\Tests\OrmTestCase
 }
 
 /** @Entity */
-class AssignedSingleIdEntity {
+class AssignedSingleIdEntity
+{
     /** @Id @Column(type="integer") */
     public $myId;
 }
 
 /** @Entity */
-class AssignedCompositeIdEntity {
+class AssignedCompositeIdEntity
+{
     /** @Id @Column(type="integer") */
     public $myId1;
     /** @Id @Column(type="integer") */

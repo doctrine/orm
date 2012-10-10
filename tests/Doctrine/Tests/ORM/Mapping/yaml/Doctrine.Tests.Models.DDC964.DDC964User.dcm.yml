@@ -1,7 +1,7 @@
 Doctrine\Tests\Models\DDC964\DDC964User:
   type: mappedSuperclass
   id:
-    id: 
+    id:
       type: integer
       column: user_id
       length: 150

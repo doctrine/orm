@@ -24,7 +24,7 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $cacheDriver->setMemcache($memcache);
 
             $this->_em->getMetadataFactory()->setCacheDriver($cacheDriver);
-        } else if (\extension_loaded('apc')) {
+        } elseif (\extension_loaded('apc')) {
             $this->_em->getMetadataFactory()->setCacheDriver(new \Doctrine\Common\Cache\ApcCache());
         }
 

@@ -26,7 +26,7 @@ use Doctrine\ORM\Tools\Export\ExportException;
  * Abstract base class which is to be used for the Exporter drivers
  * which can be found in \Doctrine\ORM\Tools\Export\Driver
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -151,8 +151,7 @@ abstract class AbstractExporter
 
     protected function _getInheritanceTypeString($type)
     {
-        switch ($type)
-        {
+        switch ($type) {
             case ClassMetadataInfo::INHERITANCE_TYPE_NONE:
                 return 'NONE';
             break;
@@ -173,8 +172,7 @@ abstract class AbstractExporter
 
     protected function _getChangeTrackingPolicyString($policy)
     {
-        switch ($policy)
-        {
+        switch ($policy) {
             case ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT:
                 return 'DEFERRED_IMPLICIT';
             break;
@@ -191,8 +189,7 @@ abstract class AbstractExporter
 
     protected function _getIdGeneratorTypeString($type)
     {
-        switch ($type)
-        {
+        switch ($type) {
             case ClassMetadataInfo::GENERATOR_TYPE_AUTO:
                 return 'AUTO';
             break;

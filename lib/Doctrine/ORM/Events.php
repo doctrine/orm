@@ -29,7 +29,11 @@ namespace Doctrine\ORM;
  */
 final class Events
 {
-    private function __construct() {}
+    private function __construct()
+    {
+        // none
+    }
+
     /**
      * The preRemove event occurs for a given entity before the respective
      * EntityManager remove operation for that entity is executed.
@@ -38,7 +42,7 @@ final class Events
      *
      * @var string
      */
-    const preRemove = 'preRemove';
+    const PRE_REMOVE = 'preRemove';
     /**
      * The postRemove event occurs for an entity after the entity has
      * been deleted. It will be invoked after the database delete operations.
@@ -47,7 +51,7 @@ final class Events
      *
      * @var string
      */
-    const postRemove = 'postRemove';
+    const POST_REMOVE = 'postRemove';
     /**
      * The prePersist event occurs for a given entity before the respective
      * EntityManager persist operation for that entity is executed.
@@ -56,7 +60,7 @@ final class Events
      *
      * @var string
      */
-    const prePersist = 'prePersist';
+    const PRE_PERSIST = 'prePersist';
     /**
      * The postPersist event occurs for an entity after the entity has
      * been made persistent. It will be invoked after the database insert operations.
@@ -66,7 +70,7 @@ final class Events
      *
      * @var string
      */
-    const postPersist = 'postPersist';
+    const POST_PERSIST = 'postPersist';
     /**
      * The preUpdate event occurs before the database update operations to
      * entity data.
@@ -75,7 +79,7 @@ final class Events
      *
      * @var string
      */
-    const preUpdate = 'preUpdate';
+    const PRE_UPDATE = 'preUpdate';
     /**
      * The postUpdate event occurs after the database update operations to
      * entity data.
@@ -84,7 +88,7 @@ final class Events
      *
      * @var string
      */
-    const postUpdate = 'postUpdate';
+    const POST_UPDATE = 'postUpdate';
     /**
      * The postLoad event occurs for an entity after the entity has been loaded
      * into the current EntityManager from the database or after the refresh operation
@@ -98,21 +102,21 @@ final class Events
      *
      * @var string
      */
-    const postLoad = 'postLoad';
+    const POST_LOAD = 'postLoad';
     /**
      * The loadClassMetadata event occurs after the mapping metadata for a class
      * has been loaded from a mapping source (annotations/xml/yaml).
      *
      * @var string
      */
-    const loadClassMetadata = 'loadClassMetadata';
+    const LOAD_CLASS_METADATA = 'loadClassMetadata';
 
     /**
      * The preFlush event occurs when the EntityManager#flush() operation is invoked,
      * but before any changes to managed entites have been calculated. This event is
      * always raised right after EntityManager#flush() call.
      */
-    const preFlush = 'preFlush';
+    const PRE_FLUSH = 'preFlush';
 
     /**
      * The onFlush event occurs when the EntityManager#flush() operation is invoked,
@@ -123,7 +127,7 @@ final class Events
      *
      * @var string
      */
-    const onFlush = 'onFlush';
+    const ON_FLUSH = 'onFlush';
 
     /**
      * The postFlush event occurs when the EntityManager#flush() operation is invoked and
@@ -134,7 +138,7 @@ final class Events
      *
      * @var string
      */
-    const postFlush = 'postFlush';
+    const POST_FLUSH = 'postFlush';
 
     /**
      * The onClear event occurs when the EntityManager#clear() operation is invoked,
@@ -142,5 +146,5 @@ final class Events
      *
      * @var string
      */
-    const onClear = 'onClear';
+    const ON_CLEAR = 'onClear';
 }

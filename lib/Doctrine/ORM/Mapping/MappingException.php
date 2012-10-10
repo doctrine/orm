@@ -164,7 +164,7 @@ class MappingException extends \Doctrine\ORM\ORMException
      *                      e.g. "Did you think of the plural s?"
      * @return MappingException
      */
-    static function missingRequiredOption($field, $expectedOption, $hint = '')
+    public static function missingRequiredOption($field, $expectedOption, $hint = '')
     {
         $message = "The mapping of field '{$field}' is invalid: The option '{$expectedOption}' is required.";
 

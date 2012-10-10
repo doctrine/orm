@@ -284,7 +284,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('parent-id', $user['joinColumns'][0]['name']);
         $this->assertEquals('group-id', $user['joinColumns'][0]['referencedColumnName']);
 
-        
+
         // Address Class Metadata
         $this->assertTrue($addressMetadata->fieldMappings['id']['quoted']);
         $this->assertTrue($addressMetadata->fieldMappings['zip']['quoted']);
@@ -302,11 +302,11 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
         // User Class Metadata
         $this->assertTrue($userMetadata->fieldMappings['id']['quoted']);
         $this->assertTrue($userMetadata->fieldMappings['name']['quoted']);
-        
+
         $this->assertEquals('user-id', $userMetadata->fieldMappings['id']['columnName']);
         $this->assertEquals('user-name', $userMetadata->fieldMappings['name']['columnName']);
 
-        
+
         $address = $userMetadata->associationMappings['address'];
         $this->assertTrue($address['joinColumns'][0]['quoted']);
         $this->assertEquals('address-id', $address['joinColumns'][0]['name']);

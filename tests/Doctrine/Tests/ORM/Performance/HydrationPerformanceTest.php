@@ -458,4 +458,3 @@ class HydrationPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
     }
 }
-

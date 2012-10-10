@@ -140,7 +140,7 @@ class SqlWalker implements TreeWalker
 
     /**
      * The DQL alias of the root class of the currently traversed query.
-     * 
+     *
      * @var array
      */
     private $rootAliases = array();
@@ -492,7 +492,7 @@ class SqlWalker implements TreeWalker
 
         if (($orderByClause = $AST->orderByClause) !== null) {
             $sql .= $AST->orderByClause ? $this->walkOrderByClause($AST->orderByClause) : '';
-        } else if (($orderBySql = $this->_generateOrderedCollectionOrderByItems()) !== '') {
+        } elseif (($orderBySql = $this->_generateOrderedCollectionOrderByItems()) !== '') {
             $sql .= ' ORDER BY ' . $orderBySql;
         }
 
@@ -716,7 +716,7 @@ class SqlWalker implements TreeWalker
             foreach ($class->associationMappings as $assoc) {
                 if ( ! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
                     continue;
-                } else if ( !$addMetaColumns && !isset($assoc['id'])) {
+                } elseif ( !$addMetaColumns && !isset($assoc['id'])) {
                     continue;
                 }
 
@@ -955,7 +955,7 @@ class SqlWalker implements TreeWalker
                 $indexBy->simpleStateFieldPathExpression->identificationVariable,
                 $indexBy->simpleStateFieldPathExpression->field
             );
-        } else if (isset($relation['indexBy'])) {
+        } elseif (isset($relation['indexBy'])) {
             $this->rsm->addIndexBy($joinedDqlAlias, $relation['indexBy']);
         }
 
@@ -1983,7 +1983,7 @@ class SqlWalker implements TreeWalker
 
         $dqlAlias = $instanceOfExpr->identificationVariable;
         $discrClass = $class = $this->queryComponents[$dqlAlias]['metadata'];
-        
+
         if ($class->discriminatorColumn) {
             $discrClass = $this->em->getClassMetadata($class->rootEntityName);
         }

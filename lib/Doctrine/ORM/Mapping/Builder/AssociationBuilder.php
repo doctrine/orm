@@ -17,7 +17,6 @@
  * <http://www.doctrine-project.org>.
  */
 
-
 namespace Doctrine\ORM\Mapping\Builder;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -132,8 +131,14 @@ class AssociationBuilder
      * @param string $onDelete
      * @param string $columnDef
      */
-    public function addJoinColumn($columnName, $referencedColumnName, $nullable = true, $unique = false, $onDelete = null, $columnDef = null)
-    {
+    public function addJoinColumn(
+        $columnName,
+        $referencedColumnName,
+        $nullable = true,
+        $unique = false,
+        $onDelete = null,
+        $columnDef = null
+    ) {
         $this->joinColumns[] = array(
             'name' => $columnName,
             'referencedColumnName' => $referencedColumnName,
@@ -157,7 +162,7 @@ class AssociationBuilder
         $cm = $this->builder->getClassMetadata();
         if ($this->type == ClassMetadata::MANY_TO_ONE) {
             $cm->mapManyToOne($mapping);
-        } else if ($this->type == ClassMetadata::ONE_TO_ONE) {
+        } elseif ($this->type == ClassMetadata::ONE_TO_ONE) {
             $cm->mapOneToOne($mapping);
         } else {
             throw new \InvalidArgumentException("Type should be a ToOne Assocation here");

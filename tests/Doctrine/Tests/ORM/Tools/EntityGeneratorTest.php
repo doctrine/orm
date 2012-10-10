@@ -264,7 +264,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $filename = $this->_tmpDir . DIRECTORY_SEPARATOR
                   . $this->_namespace . DIRECTORY_SEPARATOR . 'DDC1784Entity.php';
-        
+
         $this->assertFileExists($filename);
         require_once $filename;
 
@@ -293,7 +293,7 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $entity     = new $metadata->name;
         $reflClass  = new \ReflectionClass($metadata->name);
-        
+
         $type   = $field['phpType'];
         $name   = $field['fieldName'];
         $value  = $field['value'];
@@ -327,43 +327,43 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
                 'value' => new \DateTime
             )),
             array(array(
-                'fieldName' => 'date', 
+                'fieldName' => 'date',
                 'phpType' => '\\DateTime',
                 'dbType' => 'date',
                 'value' => new \DateTime
             )),
             array(array(
-                'fieldName' => 'time', 
+                'fieldName' => 'time',
                 'phpType' => '\DateTime',
                 'dbType' => 'time',
                 'value' => new \DateTime
             )),
             array(array(
-                'fieldName' => 'object', 
+                'fieldName' => 'object',
                 'phpType' => '\stdClass',
                 'dbType' => 'object',
                 'value' => new \stdClass()
             )),
             array(array(
-                'fieldName' => 'bigint', 
+                'fieldName' => 'bigint',
                 'phpType' => 'integer',
                 'dbType' => 'bigint',
                 'value' => 11
             )),
             array(array(
-                'fieldName' => 'smallint', 
+                'fieldName' => 'smallint',
                 'phpType' => 'integer',
                 'dbType' => 'smallint',
                 'value' => 22
             )),
             array(array(
-                'fieldName' => 'text', 
+                'fieldName' => 'text',
                 'phpType' => 'string',
                 'dbType' => 'text',
                 'value' => 'text'
             )),
             array(array(
-                'fieldName' => 'blob', 
+                'fieldName' => 'blob',
                 'phpType' => 'string',
                 'dbType' => 'blob',
                 'value' => 'blob'

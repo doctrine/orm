@@ -26,23 +26,28 @@ class CmsEmail
      */
     public $user;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getEmail() {
+    public function getEmail()
+    {
         return $this->email;
     }
 
-    public function setEmail($email) {
+    public function setEmail($email)
+    {
         $this->email = $email;
     }
 
-    public function getUser() {
+    public function getUser()
+    {
         return $this->user;
     }
 
-    public function setUser(CmsUser $user) {
+    public function setUser(CmsUser $user)
+    {
         $this->user = $user;
     }
 }

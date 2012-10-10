@@ -45,26 +45,31 @@ class ECommerceCart
         $this->products = new ArrayCollection;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getPayment() {
+    public function getPayment()
+    {
         return $this->payment;
     }
 
-    public function setPayment($payment) {
+    public function setPayment($payment)
+    {
         $this->payment = $payment;
     }
 
-    public function setCustomer(ECommerceCustomer $customer) {
+    public function setCustomer(ECommerceCustomer $customer)
+    {
         if ($this->customer !== $customer) {
             $this->customer = $customer;
             $customer->setCart($this);
         }
     }
 
-    public function removeCustomer() {
+    public function removeCustomer()
+    {
         if ($this->customer !== null) {
             $customer = $this->customer;
             $this->customer = null;
@@ -72,7 +77,8 @@ class ECommerceCart
         }
     }
 
-    public function getCustomer() {
+    public function getCustomer()
+    {
         return $this->customer;
     }
 
@@ -81,11 +87,13 @@ class ECommerceCart
         return $this->products;
     }
 
-    public function addProduct(ECommerceProduct $product) {
+    public function addProduct(ECommerceProduct $product)
+    {
         $this->products[] = $product;
     }
 
-    public function removeProduct(ECommerceProduct $product) {
+    public function removeProduct(ECommerceProduct $product)
+    {
         return $this->products->removeElement($product);
     }
 }

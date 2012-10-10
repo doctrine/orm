@@ -36,7 +36,8 @@ require_once __DIR__ . '/../../TestInit.php';
  */
 class DqlGenerationTest extends \Doctrine\Tests\OrmTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->markTestSkipped('Not yet implemented.');
     }
 

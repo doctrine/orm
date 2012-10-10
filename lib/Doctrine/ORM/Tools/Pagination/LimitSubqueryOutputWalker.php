@@ -13,8 +13,8 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\ORM\Query\SqlWalker,
-    Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\AST\SelectStatement;
 
 /**
  * Wrap the query in order to select root entity IDs for pagination
@@ -95,7 +95,9 @@ class LimitSubqueryOutputWalker extends SqlWalker
         // Get the root entity and alias from the AST fromClause
         $from = $AST->fromClause->identificationVariableDeclarations;
         if (count($from) !== 1) {
-            throw new \RuntimeException("Cannot count query which selects two FROM components, cannot make distinction");
+            throw new \RuntimeException(
+                'Cannot count query which selects two FROM components, cannot make distinction'
+            );
         }
 
         $rootAlias      = $from[0]->rangeVariableDeclaration->aliasIdentificationVariable;

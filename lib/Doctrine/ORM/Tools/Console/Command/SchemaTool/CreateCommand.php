@@ -28,7 +28,7 @@ use Symfony\Component\Console\Input\InputArgument,
 /**
  * Command to create the database schema for a set of classes based on their mappings.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>

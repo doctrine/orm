@@ -18,12 +18,12 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\DBAL\Types\Type,
-    Doctrine\ORM\Query\TreeWalkerAdapter,
-    Doctrine\ORM\Query\AST\SelectStatement,
-    Doctrine\ORM\Query\AST\SelectExpression,
-    Doctrine\ORM\Query\AST\PathExpression,
-    Doctrine\ORM\Query\AST\AggregateExpression;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Query\TreeWalkerAdapter;
+use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\AST\SelectExpression;
+use Doctrine\ORM\Query\AST\PathExpression;
+// use Doctrine\ORM\Query\AST\AggregateExpression; /* unused use */
 
 /**
  * Replaces the selectClause of the AST with a SELECT DISTINCT root.id equivalent
@@ -44,7 +44,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
     /**
      * @var int Counter for generating unique order column aliases
      */
-    private $_aliasCounter = 0;
+    private $aliasCounter = 0;
 
     /**
      * Walks down a SelectStatement AST node, modifying it to retrieve DISTINCT ids
@@ -75,7 +75,10 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
 
         $identifier = $parent['metadata']->getSingleIdentifierFieldName();
         if (isset($parent['metadata']->associationMappings[$identifier])) {
-            throw new \RuntimeException("Paginating an entity with foreign key as identifier only works when using the Output Walkers. Call Paginator#setUseOutputWalkers(true) before iterating the paginator.");
+            throw new \RuntimeException(
+                "Paginating an entity with foreign key as identifier only works when using the Output Walkers. " .
+                "Call Paginator#setUseOutputWalkers(true) before iterating the paginator."
+            );
         }
 
         $this->_getQuery()->setHint(
@@ -104,7 +107,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
                     $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
                     $AST->selectClause->selectExpressions[] = new SelectExpression(
                         $pathExpression,
-                        '_dctrn_ord' . $this->_aliasCounter++
+                        '_dctrn_ord' . $this->aliasCounter++
                     );
                 }
             }
@@ -112,8 +115,4 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
 
         $AST->selectClause->isDistinct = true;
     }
-
 }
-
-
-

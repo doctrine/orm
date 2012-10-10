@@ -51,21 +51,24 @@ class GenerateSchemaTableEventArgs extends \Doctrine\Common\EventArgs
     /**
      * @return ClassMetadata
      */
-    public function getClassMetadata() {
+    public function getClassMetadata()
+    {
         return $this->_classMetadata;
     }
 
     /**
      * @return Schema
      */
-    public function getSchema() {
+    public function getSchema()
+    {
         return $this->_schema;
     }
 
     /**
      * @return Table
      */
-    public function getClassTable() {
+    public function getClassTable()
+    {
         return $this->_classTable;
     }
 }

@@ -31,38 +31,38 @@ class IterableResult implements \Iterator
     /**
      * @var \Doctrine\ORM\Internal\Hydration\AbstractHydrator
      */
-    private $_hydrator;
+    private $hydrator;
 
     /**
      * @var boolean
      */
-    private $_rewinded = false;
+    private $rewinded = false;
 
     /**
      * @var integer
      */
-    private $_key = -1;
+    private $key = -1;
 
     /**
      * @var object
      */
-    private $_current = null;
+    private $current = null;
 
     /**
      * @param \Doctrine\ORM\Internal\Hydration\AbstractHydrator $hydrator
      */
     public function __construct($hydrator)
     {
-        $this->_hydrator = $hydrator;
+        $this->hydrator = $hydrator;
     }
 
     public function rewind()
     {
-        if ($this->_rewinded == true) {
+        if ($this->rewinded == true) {
             throw new HydrationException("Can only iterate a Result once.");
         } else {
-            $this->_current = $this->next();
-            $this->_rewinded = true;
+            $this->current = $this->next();
+            $this->rewinded = true;
         }
     }
 
@@ -73,9 +73,9 @@ class IterableResult implements \Iterator
      */
     public function next()
     {
-        $this->_current = $this->_hydrator->hydrateRow();
-        $this->_key++;
-        return $this->_current;
+        $this->current = $this->hydrator->hydrateRow();
+        $this->key++;
+        return $this->current;
     }
 
     /**
@@ -83,7 +83,7 @@ class IterableResult implements \Iterator
      */
     public function current()
     {
-        return $this->_current;
+        return $this->current;
     }
 
     /**
@@ -91,7 +91,7 @@ class IterableResult implements \Iterator
      */
     public function key()
     {
-        return $this->_key;
+        return $this->key;
     }
 
     /**
@@ -99,6 +99,6 @@ class IterableResult implements \Iterator
      */
     public function valid()
     {
-        return ($this->_current!=false);
+        return ($this->current!=false);
     }
 }

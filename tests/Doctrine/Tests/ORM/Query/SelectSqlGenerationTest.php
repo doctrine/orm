@@ -1823,4 +1823,3 @@ class DDC1474Entity
     }
 
 }
-

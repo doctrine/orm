@@ -250,7 +250,7 @@ class OptimisticStandard
      */
     private $version;
 
-    function getVersion() {return $this->version;}
+    public function getVersion() {return $this->version;}
 }
 
 /**

@@ -99,7 +99,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         if (isset($this->_class->associationMappings[$fieldName]['inherited'])) {
             $cm = $this->_em->getClassMetadata($this->_class->associationMappings[$fieldName]['inherited']);
-        } else if (isset($this->_class->fieldMappings[$fieldName]['inherited'])) {
+        } elseif (isset($this->_class->fieldMappings[$fieldName]['inherited'])) {
             $cm = $this->_em->getClassMetadata($this->_class->fieldMappings[$fieldName]['inherited']);
         } else {
             $cm = $this->_class;
@@ -400,7 +400,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         if ($lockMode == LockMode::PESSIMISTIC_READ) {
             $lockSql = ' ' . $this->_platform->getReadLockSql();
-        } else if ($lockMode == LockMode::PESSIMISTIC_WRITE) {
+        } elseif ($lockMode == LockMode::PESSIMISTIC_WRITE) {
             $lockSql = ' ' . $this->_platform->getWriteLockSql();
         }
 
@@ -466,7 +466,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                         $columns[] = $sourceCol;
                     }
                 }
-            } else if ($this->_class->name != $this->_class->rootEntityName ||
+            } elseif ($this->_class->name != $this->_class->rootEntityName ||
                     ! $this->_class->isIdGeneratorIdentity() || $this->_class->identifier[0] != $name) {
                 $columns[]                  = $this->quoteStrategy->getColumnName($name, $this->_class, $this->_platform);
                 $this->_columnTypes[$name]  = $this->_class->fieldMappings[$name]['type'];

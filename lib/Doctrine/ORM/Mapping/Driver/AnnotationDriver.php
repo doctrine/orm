@@ -19,12 +19,12 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\ORM\Mapping\MappingException,
-    Doctrine\ORM\Mapping\JoinColumn,
-    Doctrine\ORM\Mapping\Column,
-    Doctrine\Common\Persistence\Mapping\ClassMetadata,
-    Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -79,7 +79,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             if ($entityAnnot->readOnly) {
                 $metadata->markReadOnly();
             }
-        } else if (isset($classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'])) {
+        } elseif (isset($classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'])) {
             $mappedSuperclassAnnot = $classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'];
             $metadata->setCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
             $metadata->isMappedSuperclass = true;
@@ -183,12 +183,16 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $namedQueriesAnnot = $classAnnotations['Doctrine\ORM\Mapping\NamedQueries'];
 
             if ( ! is_array($namedQueriesAnnot->value)) {
-                throw new \UnexpectedValueException("@NamedQueries should contain an array of @NamedQuery annotations.");
+                throw new \UnexpectedValueException(
+                    "@NamedQueries should contain an array of @NamedQuery annotations."
+                );
             }
 
             foreach ($namedQueriesAnnot->value as $namedQuery) {
                 if ( ! ($namedQuery instanceof \Doctrine\ORM\Mapping\NamedQuery)) {
-                    throw new \UnexpectedValueException("@NamedQueries should contain an array of @NamedQuery annotations.");
+                    throw new \UnexpectedValueException(
+                        "@NamedQueries should contain an array of @NamedQuery annotations."
+                    );
                 }
                 $metadata->addNamedQuery(array(
                     'name'  => $namedQuery->name,
@@ -200,7 +204,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
         // Evaluate InheritanceType annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\InheritanceType'])) {
             $inheritanceTypeAnnot = $classAnnotations['Doctrine\ORM\Mapping\InheritanceType'];
-            $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value));
+            $metadata->setInheritanceType(
+                constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAnnot->value)
+            );
 
             if ($metadata->inheritanceType != \Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_NONE) {
                 // Evaluate DiscriminatorColumn annotation
@@ -228,7 +234,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
         // Evaluate DoctrineChangeTrackingPolicy annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\ChangeTrackingPolicy'])) {
             $changeTrackingAnnot = $classAnnotations['Doctrine\ORM\Mapping\ChangeTrackingPolicy'];
-            $metadata->setChangeTrackingPolicy(constant('Doctrine\ORM\Mapping\ClassMetadata::CHANGETRACKING_' . $changeTrackingAnnot->value));
+            $metadata->setChangeTrackingPolicy(
+                constant('Doctrine\ORM\Mapping\ClassMetadata::CHANGETRACKING_' . $changeTrackingAnnot->value)
+            );
         }
 
         // Evaluate annotations on properties/fields
@@ -250,7 +258,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
             if ($joinColumnAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinColumn')) {
                 $joinColumns[] = $this->joinColumnToArray($joinColumnAnnot);
-            } else if ($joinColumnsAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinColumns')) {
+            } elseif ($joinColumnsAnnot = $this->reader->getPropertyAnnotation(
+                $property,
+                'Doctrine\ORM\Mapping\JoinColumns')
+                ) {
                 foreach ($joinColumnsAnnot->value as $joinColumn) {
                     $joinColumns[] = $this->joinColumnToArray($joinColumn);
                 }
@@ -270,7 +281,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 }
 
                 if ($generatedValueAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\GeneratedValue')) {
-                    $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $generatedValueAnnot->strategy));
+                    $metadata->setIdGeneratorType(
+                        constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $generatedValueAnnot->strategy)
+                    );
                 }
 
                 if ($this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Version')) {
@@ -280,20 +293,24 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $metadata->mapField($mapping);
 
                 // Check for SequenceGenerator/TableGenerator definition
-                if ($seqGeneratorAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\SequenceGenerator')) {
+                if ($seqGeneratorAnnot = $this->reader->getPropertyAnnotation(
+                    $property,
+                    'Doctrine\ORM\Mapping\SequenceGenerator')) {
                     $metadata->setSequenceGeneratorDefinition(array(
                         'sequenceName' => $seqGeneratorAnnot->sequenceName,
                         'allocationSize' => $seqGeneratorAnnot->allocationSize,
                         'initialValue' => $seqGeneratorAnnot->initialValue
                     ));
-                } else if ($this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\TableGenerator')) {
+                } elseif ($this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\TableGenerator')) {
                     throw MappingException::tableIdGeneratorNotImplemented($className);
-                } else if ($customGeneratorAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\CustomIdGenerator')) {
+                } elseif ($customGeneratorAnnot = $this->reader->getPropertyAnnotation(
+                    $property,
+                    'Doctrine\ORM\Mapping\CustomIdGenerator')) {
                     $metadata->setCustomGeneratorDefinition(array(
                         'class' => $customGeneratorAnnot->class
                     ));
                 }
-            } else if ($oneToOneAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OneToOne')) {
+            } elseif ($oneToOneAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OneToOne')) {
                 if ($idAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Id')) {
                     $mapping['id'] = true;
                 }
@@ -306,7 +323,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['orphanRemoval'] = $oneToOneAnnot->orphanRemoval;
                 $mapping['fetch'] = $this->getFetchMode($className, $oneToOneAnnot->fetch);
                 $metadata->mapOneToOne($mapping);
-            } else if ($oneToManyAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\OneToMany')) {
+            } elseif ($oneToManyAnnot = $this->reader->getPropertyAnnotation(
+                $property,
+                'Doctrine\ORM\Mapping\OneToMany')) {
                 $mapping['mappedBy'] = $oneToManyAnnot->mappedBy;
                 $mapping['targetEntity'] = $oneToManyAnnot->targetEntity;
                 $mapping['cascade'] = $oneToManyAnnot->cascade;
@@ -319,7 +338,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 }
 
                 $metadata->mapOneToMany($mapping);
-            } else if ($manyToOneAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\ManyToOne')) {
+            } elseif ($manyToOneAnnot = $this->reader->getPropertyAnnotation(
+                $property,
+                'Doctrine\ORM\Mapping\ManyToOne')) {
                 if ($idAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Id')) {
                     $mapping['id'] = true;
                 }
@@ -330,10 +351,12 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['targetEntity'] = $manyToOneAnnot->targetEntity;
                 $mapping['fetch'] = $this->getFetchMode($className, $manyToOneAnnot->fetch);
                 $metadata->mapManyToOne($mapping);
-            } else if ($manyToManyAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\ManyToMany')) {
+            } elseif ($manyToManyAnnot = $this->reader->getPropertyAnnotation(
+                $property, 'Doctrine\ORM\Mapping\ManyToMany')) {
                 $joinTable = array();
 
-                if ($joinTableAnnot = $this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\JoinTable')) {
+                if ($joinTableAnnot = $this->reader->getPropertyAnnotation(
+                    $property, 'Doctrine\ORM\Mapping\JoinTable')) {
                     $joinTable = array(
                         'name' => $joinTableAnnot->name,
                         'schema' => $joinTableAnnot->schema
@@ -410,7 +433,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($classAnnotations['Doctrine\ORM\Mapping\AttributeOverrides'])) {
             $attributeOverridesAnnot = $classAnnotations['Doctrine\ORM\Mapping\AttributeOverrides'];
             foreach ($attributeOverridesAnnot->value as $attributeOverrideAnnot) {
-                $attributeOverride = $this->columnToArray($attributeOverrideAnnot->name, $attributeOverrideAnnot->column);
+                $attributeOverride = $this->columnToArray(
+                    $attributeOverrideAnnot->name,
+                    $attributeOverrideAnnot->column
+                );
                 $metadata->setAttributeOverride($attributeOverrideAnnot->name, $attributeOverride);
             }
         }
@@ -433,35 +459,35 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     }
 
                     if (isset($annotations['Doctrine\ORM\Mapping\PrePersist'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::prePersist);
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::PRE_PERSIST);
                     }
 
                     if (isset($annotations['Doctrine\ORM\Mapping\PostPersist'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postPersist);
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::POST_PERSIST);
                     }
 
                     if (isset($annotations['Doctrine\ORM\Mapping\PreUpdate'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preUpdate);
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::PRE_UPDATE);
                     }
 
                     if (isset($annotations['Doctrine\ORM\Mapping\PostUpdate'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postUpdate);
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::POST_UPDATE);
                     }
 
                     if (isset($annotations['Doctrine\ORM\Mapping\PreRemove'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preRemove);
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::PRE_REMOVE);
                     }
 
                     if (isset($annotations['Doctrine\ORM\Mapping\PostRemove'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postRemove);
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::POST_REMOVE);
                     }
 
                     if (isset($annotations['Doctrine\ORM\Mapping\PostLoad'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::postLoad);
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::POST_LOAD);
                     }
 
                     if (isset($annotations['Doctrine\ORM\Mapping\PreFlush'])) {
-                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::preFlush);
+                        $metadata->addLifecycleCallback($method->getName(), \Doctrine\ORM\Events::PRE_FLUSH);
                     }
                 }
             }
@@ -544,7 +570,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * @param AnnotationReader $reader
      * @return AnnotationDriver
      */
-    static public function create($paths = array(), AnnotationReader $reader = null)
+    public static function create($paths = array(), AnnotationReader $reader = null)
     {
         if ($reader == null) {
             $reader = new AnnotationReader();

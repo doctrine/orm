@@ -29,7 +29,7 @@ use Doctrine\ORM\EntityManager;
 class IdentityGenerator extends AbstractIdGenerator
 {
     /** @var string The name of the sequence to pass to lastInsertId(), if any. */
-    private $_seqName;
+    private $seqName;
 
     /**
      * @param string $seqName The name of the sequence to pass to lastInsertId()
@@ -38,7 +38,7 @@ class IdentityGenerator extends AbstractIdGenerator
      */
     public function __construct($seqName = null)
     {
-        $this->_seqName = $seqName;
+        $this->seqName = $seqName;
     }
 
     /**
@@ -46,7 +46,7 @@ class IdentityGenerator extends AbstractIdGenerator
      */
     public function generate(EntityManager $em, $entity)
     {
-        return (int)$em->getConnection()->lastInsertId($this->_seqName);
+        return (int)$em->getConnection()->lastInsertId($this->seqName);
     }
 
     /**

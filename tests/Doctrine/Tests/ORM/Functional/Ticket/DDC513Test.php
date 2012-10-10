@@ -57,7 +57,8 @@ class DDC513Item
 /**
  * @Entity
  */
-class DDC513Price {
+class DDC513Price
+{
     /**
      * @Id
      * @Column(type="integer")
@@ -68,7 +69,3 @@ class DDC513Price {
     /** @Column(type="string") */
     public $data;
 }
-
-
-
-

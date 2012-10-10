@@ -57,7 +57,7 @@ class SqlValueVisitor extends ExpressionVisitor
     {
         $value          = $comparison->getValue()->getValue();
         $field          = $comparison->getField();
-        
+
         $this->values[] = $value;
         $this->types[]  = array($field, $value);
     }

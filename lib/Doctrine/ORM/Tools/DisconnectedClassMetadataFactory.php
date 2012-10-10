@@ -28,7 +28,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  * load some mapping information and use it to do things like generate code
  * from the mapping information.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>

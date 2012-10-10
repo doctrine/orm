@@ -16,7 +16,8 @@ require_once __DIR__ . '/../../TestInit.php';
  */
 class FlushEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         parent::setUp();
     }
@@ -24,7 +25,7 @@ class FlushEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testPersistNewEntitiesOnPreFlush()
     {
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_em->getEventManager()->addEventListener(Events::onFlush, new OnFlushListener);
+        $this->_em->getEventManager()->addEventListener(Events::ON_FLUSH, new OnFlushListener);
 
         $user = new CmsUser;
         $user->username = 'romanb';
@@ -90,5 +91,3 @@ class OnFlushListener
         }
     }
 }
-
-

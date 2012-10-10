@@ -33,11 +33,11 @@ class PreFlushEventArgs extends \Doctrine\Common\EventArgs
     /**
      * @var \Doctrine\ORM\EntityManager
      */
-    private $_em;
+    private $em;
 
     public function __construct($em)
     {
-        $this->_em = $em;
+        $this->em = $em;
     }
 
     /**
@@ -45,6 +45,6 @@ class PreFlushEventArgs extends \Doctrine\Common\EventArgs
      */
     public function getEntityManager()
     {
-        return $this->_em;
+        return $this->em;
     }
 }

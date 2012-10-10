@@ -25,7 +25,8 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     // The EntityManager mock that provides the mock persisters
     private $_emMock;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         $this->_connectionMock = new ConnectionMock(array(), new \Doctrine\Tests\Mocks\DriverMock());
         $this->_emMock = EntityManagerMock::create($this->_connectionMock);
@@ -34,7 +35,8 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
     }
 
-    protected function tearDown() {
+    protected function tearDown()
+    {
     }
 
     public function testRegisterRemovedOnNewEntityIsIgnored()
@@ -228,30 +230,36 @@ class NotifyChangedEntity implements \Doctrine\Common\NotifyPropertyChanged
     /** @OneToMany(targetEntity="NotifyChangedRelatedItem", mappedBy="owner") */
     private $items;
 
-    public function  __construct() {
+    public function  __construct()
+    {
         $this->items = new \Doctrine\Common\Collections\ArrayCollection;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getItems() {
+    public function getItems()
+    {
         return $this->items;
     }
 
-    public function setTransient($value) {
+    public function setTransient($value)
+    {
         if ($value != $this->transient) {
             $this->_onPropertyChanged('transient', $this->transient, $value);
             $this->transient = $value;
         }
     }
 
-    public function getData() {
+    public function getData()
+    {
         return $this->data;
     }
 
-    public function setData($data) {
+    public function setData($data)
+    {
         if ($data != $this->data) {
             $this->_onPropertyChanged('data', $this->data, $data);
             $this->data = $data;
@@ -263,7 +271,8 @@ class NotifyChangedEntity implements \Doctrine\Common\NotifyPropertyChanged
         $this->_listeners[] = $listener;
     }
 
-    protected function _onPropertyChanged($propName, $oldValue, $newValue) {
+    protected function _onPropertyChanged($propName, $oldValue, $newValue)
+    {
         if ($this->_listeners) {
             foreach ($this->_listeners as $listener) {
                 $listener->propertyChanged($this, $propName, $oldValue, $newValue);
@@ -285,15 +294,18 @@ class NotifyChangedRelatedItem
     /** @ManyToOne(targetEntity="NotifyChangedEntity", inversedBy="items") */
     private $owner;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getOwner() {
+    public function getOwner()
+    {
         return $this->owner;
     }
 
-    public function setOwner($owner) {
+    public function setOwner($owner)
+    {
         $this->owner = $owner;
     }
 }

@@ -48,7 +48,8 @@ class DDC512Test extends \Doctrine\Tests\OrmFunctionalTestCase
 /**
  * @Entity
  */
-class DDC512Customer {
+class DDC512Customer
+{
     /**
      * @Id
      * @Column(type="integer")
@@ -88,7 +89,3 @@ class DDC512Item
      */
     public $id;
 }
-
-
-
-

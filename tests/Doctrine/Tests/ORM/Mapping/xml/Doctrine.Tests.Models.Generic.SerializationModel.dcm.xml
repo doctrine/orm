@@ -10,7 +10,7 @@
         </id>
 
         <field name="array" column="array" type="array"/>
-        
+
         <field name="object" column="object" type="object"/>
     </entity>
 

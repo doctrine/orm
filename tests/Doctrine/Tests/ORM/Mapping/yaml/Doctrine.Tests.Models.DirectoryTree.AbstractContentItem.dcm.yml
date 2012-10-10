@@ -1,7 +1,7 @@
 Doctrine\Tests\Models\DirectoryTree\AbstractContentItem:
   type: mappedSuperclass
   id:
-    id: 
+    id:
       type: integer
       unsigned: true
       generator:

@@ -73,7 +73,8 @@ class DDC211User
     */
     protected $groups;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -105,7 +106,8 @@ class DDC211Group
     */
     protected $users;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -113,4 +115,3 @@ class DDC211Group
 
     public function getUsers() { return $this->users; }
 }
-

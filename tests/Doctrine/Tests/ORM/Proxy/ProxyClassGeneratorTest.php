@@ -99,7 +99,8 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
     /**
      * Test that the proxy behaves in regard to methods like &foo() correctly
      */
-    public function testProxyRespectsMethodsWhichReturnValuesByReference() {
+    public function testProxyRespectsMethodsWhichReturnValuesByReference()
+    {
         $proxy = $this->_proxyFactory->getProxy('Doctrine\Tests\Models\Forum\ForumEntry', null);
         $method = new \ReflectionMethod(get_class($proxy), 'getTopicByReference');
 

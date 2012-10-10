@@ -167,25 +167,30 @@ class CmsUser
 
     public $nonPersistedPropertyObject;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->phonenumbers = new ArrayCollection;
         $this->articles = new ArrayCollection;
         $this->groups = new ArrayCollection;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getStatus() {
+    public function getStatus()
+    {
         return $this->status;
     }
 
-    public function getUsername() {
+    public function getUsername()
+    {
         return $this->username;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
@@ -194,30 +199,36 @@ class CmsUser
      *
      * @param CmsPhonenumber $phone
      */
-    public function addPhonenumber(CmsPhonenumber $phone) {
+    public function addPhonenumber(CmsPhonenumber $phone)
+    {
         $this->phonenumbers[] = $phone;
         $phone->setUser($this);
     }
 
-    public function getPhonenumbers() {
+    public function getPhonenumbers()
+    {
         return $this->phonenumbers;
     }
 
-    public function addArticle(CmsArticle $article) {
+    public function addArticle(CmsArticle $article)
+    {
         $this->articles[] = $article;
         $article->setAuthor($this);
     }
 
-    public function addGroup(CmsGroup $group) {
+    public function addGroup(CmsGroup $group)
+    {
         $this->groups[] = $group;
         $group->addUser($this);
     }
 
-    public function getGroups() {
+    public function getGroups()
+    {
         return $this->groups;
     }
 
-    public function removePhonenumber($index) {
+    public function removePhonenumber($index)
+    {
         if (isset($this->phonenumbers[$index])) {
             $ph = $this->phonenumbers[$index];
             unset($this->phonenumbers[$index]);
@@ -229,7 +240,8 @@ class CmsUser
 
     public function getAddress() { return $this->address; }
 
-    public function setAddress(CmsAddress $address) {
+    public function setAddress(CmsAddress $address)
+    {
         if ($this->address !== $address) {
             $this->address = $address;
             $address->setUser($this);
@@ -238,7 +250,8 @@ class CmsUser
 
     public function getEmail() { return $this->email; }
 
-    public function setEmail(CmsEmail $email = null) {
+    public function setEmail(CmsEmail $email = null)
+    {
         if ($this->email !== $email) {
             $this->email = $email;
 
@@ -387,7 +400,7 @@ class CmsUser
                   )
             )
         ));
-        
+
         $metadata->addSqlResultSetMapping(array(
             'name'      => 'mappingMultipleJoinsEntityResults',
             'entities'  => array(array(

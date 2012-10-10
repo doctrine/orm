@@ -44,7 +44,7 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
         $expected = array('foo' => 'bar', 'baz' => array('key' => 'val'));
- 
+
         $this->assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getOptions(), "options annotation are passed to the tables optionss");
         $this->assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getColumn('test')->getCustomSchemaOptions(), "options annotation are passed to the columns customSchemaOptions");
     }
@@ -82,7 +82,7 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
 
         $em = $this->_getTestEntityManager();
         $em->getEventManager()->addEventListener(
-            array(ToolEvents::postGenerateSchemaTable, ToolEvents::postGenerateSchema), $listener
+            array(ToolEvents::POST_GENERATE_SCHEMA_TABLE, ToolEvents::POST_GENERATE_SCHEMA), $listener
         );
         $schemaTool = new SchemaTool($em);
 

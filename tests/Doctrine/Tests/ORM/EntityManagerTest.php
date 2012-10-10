@@ -8,7 +8,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
 {
     private $_em;
 
-    function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->_em = $this->_getTestEntityManager();
@@ -101,7 +101,7 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('SELECT 1', $q->getDql());
     }
 
-    static public function dataMethodsAffectedByNoObjectArguments()
+    public static function dataMethodsAffectedByNoObjectArguments()
     {
         return array(
             array('persist'),
@@ -115,13 +115,14 @@ class EntityManagerTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @dataProvider dataMethodsAffectedByNoObjectArguments
      */
-    public function testThrowsExceptionOnNonObjectValues($methodName) {
+    public function testThrowsExceptionOnNonObjectValues($methodName)
+    {
         $this->setExpectedException('Doctrine\ORM\ORMInvalidArgumentException',
             'EntityManager#'.$methodName.'() expects parameter 1 to be an entity object, NULL given.');
         $this->_em->$methodName(null);
     }
 
-    static public function dataAffectedByErrorIfClosedException()
+    public static function dataAffectedByErrorIfClosedException()
     {
         return array(
             array('flush'),

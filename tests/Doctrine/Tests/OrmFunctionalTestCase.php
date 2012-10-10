@@ -280,7 +280,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         if (isset($GLOBALS['DOCTRINE_MARK_SQL_LOGS'])) {
             if (in_array(static::$_sharedConn->getDatabasePlatform()->getName(), array("mysql", "postgresql"))) {
                 static::$_sharedConn->executeQuery('SELECT 1 /*' . get_class($this) . '*/');
-            } else if (static::$_sharedConn->getDatabasePlatform()->getName() == "oracle") {
+            } elseif (static::$_sharedConn->getDatabasePlatform()->getName() == "oracle") {
                 static::$_sharedConn->executeQuery('SELECT 1 /*' . get_class($this) . '*/ FROM dual');
             }
         }
@@ -316,7 +316,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      * @param EventManager $eventManager The EventManager to pass to the EntityManager.
      * @return EntityManager
      */
-    protected function _getEntityManager($config = null, $eventManager = null) {
+    protected function _getEntityManager($config = null, $eventManager = null)
+    {
         // NOTE: Functional tests use their own shared metadata cache, because
         // the actual database platform used during execution has effect on some
         // metadata mapping behaviors (like the choice of the ID generation).

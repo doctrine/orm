@@ -8,7 +8,7 @@ class LockAgentWorker
 {
     private $em;
 
-    static public function run()
+    public static function run()
     {
         $lockAgent = new LockAgentWorker();
 

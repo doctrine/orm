@@ -86,7 +86,7 @@ class BasicEntityPersister
     /**
      * @var array
      */
-    static private $comparisonMap = array(
+    private static $comparisonMap = array(
         Comparison::EQ  => '= %s',
         Comparison::IS  => '= %s',
         Comparison::NEQ => '!= %s',
@@ -372,7 +372,7 @@ class BasicEntityPersister
      * @param array $updateData The map of columns to update (column => value).
      * @param boolean $versioned Whether the UPDATE should be versioned.
      */
-    protected final function _updateTable($entity, $quotedTableName, array $updateData, $versioned = false)
+    final protected function _updateTable($entity, $quotedTableName, array $updateData, $versioned = false)
     {
         $set = $params = $types = array();
 
@@ -387,7 +387,7 @@ class BasicEntityPersister
                     $type = Type::getType($this->_columnTypes[$columnName]);
                     $placeholder = $type->convertToDatabaseValueSQL('?', $this->_platform);
                 }
-            } else if (isset($this->quotedColumns[$columnName])) {
+            } elseif (isset($this->quotedColumns[$columnName])) {
                 $column = $this->quotedColumns[$columnName];
             }
 
@@ -431,7 +431,7 @@ class BasicEntityPersister
 
             if ($versionFieldType == Type::INTEGER) {
                 $set[] = $versionColumn . ' = ' . $versionColumn . ' + 1';
-            } else if ($versionFieldType == Type::DATETIME) {
+            } elseif ($versionFieldType == Type::DATETIME) {
                 $set[] = $versionColumn . ' = CURRENT_TIMESTAMP';
             }
 
@@ -601,7 +601,7 @@ class BasicEntityPersister
 
                     if ($newVal === null) {
                         $result[$owningTable][$sourceColumn] = null;
-                    } else if ($targetClass->containsForeignIdentifier) {
+                    } elseif ($targetClass->containsForeignIdentifier) {
                         $result[$owningTable][$sourceColumn] = $newValId[$targetClass->getFieldForColumn($targetColumn)];
                     } else {
                         $result[$owningTable][$sourceColumn] = $newValId[$targetClass->fieldNames[$targetColumn]];
@@ -952,7 +952,7 @@ class BasicEntityPersister
                     }
 
                     $criteria[$quotedJoinTable . "." . $quotedKeyColumn] = $value;
-                } else if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
+                } elseif (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                     $criteria[$quotedJoinTable . "." . $quotedKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
                     throw MappingException::joinColumnMustPointToMappedField(
@@ -980,7 +980,7 @@ class BasicEntityPersister
                     }
 
                     $criteria[$quotedJoinTable . "." . $quotedKeyColumn] = $value;
-                } else if (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
+                } elseif (isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                     $criteria[$quotedJoinTable . "." . $quotedKeyColumn] = $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
                 } else {
                     throw MappingException::joinColumnMustPointToMappedField(
@@ -1023,7 +1023,7 @@ class BasicEntityPersister
 
         if ($lockMode == LockMode::PESSIMISTIC_READ) {
             $lockSql = ' ' . $this->_platform->getReadLockSql();
-        } else if ($lockMode == LockMode::PESSIMISTIC_WRITE) {
+        } elseif ($lockMode == LockMode::PESSIMISTIC_WRITE) {
             $lockSql = ' ' . $this->_platform->getWriteLockSql();
         }
 
@@ -1053,7 +1053,7 @@ class BasicEntityPersister
      * @param string $baseTableAlias
      * @return string
      */
-    protected final function _getOrderBySQL(array $orderBy, $baseTableAlias)
+    final protected function _getOrderBySQL(array $orderBy, $baseTableAlias)
     {
         $orderBySql = '';
 
@@ -1323,7 +1323,7 @@ class BasicEntityPersister
                         $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->_class, $this->_platform);
                     }
                 }
-            } else if ($this->_class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $this->_class->identifier[0] != $name) {
+            } elseif ($this->_class->generatorType != ClassMetadata::GENERATOR_TYPE_IDENTITY || $this->_class->identifier[0] != $name) {
                 $columns[] = $this->quoteStrategy->getColumnName($name, $this->_class, $this->_platform);
                 $this->_columnTypes[$name] = $this->_class->fieldMappings[$name]['type'];
             }
@@ -1393,7 +1393,7 @@ class BasicEntityPersister
 
         if ($lockMode == LockMode::PESSIMISTIC_READ) {
             $lockSql = $this->_platform->getReadLockSql();
-        } else if ($lockMode == LockMode::PESSIMISTIC_WRITE) {
+        } elseif ($lockMode == LockMode::PESSIMISTIC_WRITE) {
             $lockSql = $this->_platform->getWriteLockSql();
         }
 

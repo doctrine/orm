@@ -33,10 +33,10 @@ class CommitOrderCalculator
     const IN_PROGRESS = 2;
     const VISITED = 3;
 
-    private $_nodeStates = array();
-    private $_classes = array(); // The nodes to sort
-    private $_relatedClasses = array();
-    private $_sorted = array();
+    private $nodeStates = array();
+    private $classes = array(); // The nodes to sort
+    private $relatedClasses = array();
+    private $sorted = array();
 
     /**
      * Clears the current graph.
@@ -45,8 +45,8 @@ class CommitOrderCalculator
      */
     public function clear()
     {
-        $this->_classes =
-        $this->_relatedClasses = array();
+        $this->classes =
+        $this->relatedClasses = array();
     }
 
     /**
@@ -60,59 +60,59 @@ class CommitOrderCalculator
     public function getCommitOrder()
     {
         // Check whether we need to do anything. 0 or 1 node is easy.
-        $nodeCount = count($this->_classes);
+        $nodeCount = count($this->classes);
 
         if ($nodeCount <= 1) {
-            return ($nodeCount == 1) ? array_values($this->_classes) : array();
+            return ($nodeCount == 1) ? array_values($this->classes) : array();
         }
 
         // Init
-        foreach ($this->_classes as $node) {
-            $this->_nodeStates[$node->name] = self::NOT_VISITED;
+        foreach ($this->classes as $node) {
+            $this->nodeStates[$node->name] = self::NOT_VISITED;
         }
 
         // Go
-        foreach ($this->_classes as $node) {
-            if ($this->_nodeStates[$node->name] == self::NOT_VISITED) {
-                $this->_visitNode($node);
+        foreach ($this->classes as $node) {
+            if ($this->nodeStates[$node->name] == self::NOT_VISITED) {
+                $this->visitNode($node);
             }
         }
 
-        $sorted = array_reverse($this->_sorted);
+        $sorted = array_reverse($this->sorted);
 
-        $this->_sorted = $this->_nodeStates = array();
+        $this->sorted = $this->nodeStates = array();
 
         return $sorted;
     }
 
-    private function _visitNode($node)
+    private function visitNode($node)
     {
-        $this->_nodeStates[$node->name] = self::IN_PROGRESS;
+        $this->nodeStates[$node->name] = self::IN_PROGRESS;
 
-        if (isset($this->_relatedClasses[$node->name])) {
-            foreach ($this->_relatedClasses[$node->name] as $relatedNode) {
-                if ($this->_nodeStates[$relatedNode->name] == self::NOT_VISITED) {
-                    $this->_visitNode($relatedNode);
+        if (isset($this->relatedClasses[$node->name])) {
+            foreach ($this->relatedClasses[$node->name] as $relatedNode) {
+                if ($this->nodeStates[$relatedNode->name] == self::NOT_VISITED) {
+                    $this->visitNode($relatedNode);
                 }
             }
         }
 
-        $this->_nodeStates[$node->name] = self::VISITED;
-        $this->_sorted[] = $node;
+        $this->nodeStates[$node->name] = self::VISITED;
+        $this->sorted[] = $node;
     }
 
     public function addDependency($fromClass, $toClass)
     {
-        $this->_relatedClasses[$fromClass->name][] = $toClass;
+        $this->relatedClasses[$fromClass->name][] = $toClass;
     }
 
     public function hasClass($className)
     {
-        return isset($this->_classes[$className]);
+        return isset($this->classes[$className]);
     }
 
     public function addClass($class)
     {
-        $this->_classes[$class->name] = $class;
+        $this->classes[$class->name] = $class;
     }
 }

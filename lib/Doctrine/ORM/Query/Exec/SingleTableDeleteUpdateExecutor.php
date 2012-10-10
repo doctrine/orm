@@ -38,7 +38,7 @@ class SingleTableDeleteUpdateExecutor extends AbstractSqlExecutor
     {
         if ($AST instanceof AST\UpdateStatement) {
             $this->_sqlStatements = $sqlWalker->walkUpdateStatement($AST);
-        } else if ($AST instanceof AST\DeleteStatement) {
+        } elseif ($AST instanceof AST\DeleteStatement) {
             $this->_sqlStatements = $sqlWalker->walkDeleteStatement($AST);
         }
     }

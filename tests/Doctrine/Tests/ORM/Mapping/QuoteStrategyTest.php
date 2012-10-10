@@ -63,7 +63,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
         $cm = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
         $cm->mapField(array('fieldName' => 'name', 'columnName' => '`name`'));
         $cm->mapField(array('fieldName' => 'id', 'columnName' => 'id'));
-        
+
         $this->assertEquals('id' ,$this->strategy->getColumnName('id', $cm, $this->platform));
         $this->assertEquals('"name"' ,$this->strategy->getColumnName('name', $cm, $this->platform));
     }
@@ -79,12 +79,12 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
         $cm->setPrimaryTable(array('name'=>'cms_user'));
         $this->assertEquals('cms_user' ,$this->strategy->getTableName($cm, $this->platform));
     }
-    
+
     public function testJoinTableName()
     {
         $cm1 = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
         $cm2 = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
-        
+
         $cm1->mapManyToMany(array(
             'fieldName'     => 'user',
             'targetEntity'  => 'CmsUser',
@@ -93,7 +93,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
                 'name'  => '`cmsaddress_cmsuser`'
             )
         ));
-        
+
         $cm2->mapManyToMany(array(
             'fieldName'     => 'user',
             'targetEntity'  => 'CmsUser',
@@ -106,7 +106,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals('"cmsaddress_cmsuser"', $this->strategy->getJoinTableName($cm1->associationMappings['user'], $cm1, $this->platform));
         $this->assertEquals('cmsaddress_cmsuser', $this->strategy->getJoinTableName($cm2->associationMappings['user'], $cm2, $this->platform));
-       
+
     }
 
     public function testIdentifierColumnNames()

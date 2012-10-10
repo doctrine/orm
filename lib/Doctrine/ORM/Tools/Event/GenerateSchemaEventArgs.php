@@ -49,14 +49,16 @@ class GenerateSchemaEventArgs extends \Doctrine\Common\EventArgs
     /**
      * @return EntityManager
      */
-    public function getEntityManager() {
+    public function getEntityManager()
+    {
         return $this->_em;
     }
 
     /**
      * @return Schema
      */
-    public function getSchema() {
+    public function getSchema()
+    {
         return $this->_schema;
     }
 }

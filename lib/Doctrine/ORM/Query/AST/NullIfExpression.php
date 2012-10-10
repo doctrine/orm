@@ -23,7 +23,7 @@ namespace Doctrine\ORM\Query\AST;
  * NullIfExpression ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
  *
  * @since   2.1
- * 
+ *
  * @link    www.doctrine-project.org
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>

@@ -111,7 +111,7 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->remove($e3);
         $this->_em->remove($e2);
         $this->_em->remove($e1);
-        
+
         $this->_em->flush();
         $this->_em->clear();
 

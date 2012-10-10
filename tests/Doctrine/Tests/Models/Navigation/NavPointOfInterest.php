@@ -51,19 +51,23 @@ class NavPointOfInterest
         $this->visitors = new \Doctrine\Common\Collections\ArrayCollection;
     }
 
-    public function getLong() {
+    public function getLong()
+    {
         return $this->long;
     }
 
-    public function getLat() {
+    public function getLat()
+    {
         return $this->lat;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function getCountry() {
+    public function getCountry()
+    {
         return $this->country;
     }
 

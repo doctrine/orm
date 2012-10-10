@@ -27,7 +27,7 @@ class DDC1707Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $class = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1707Child');
         $entity = new DDC1707Child();
-        $class->invokeLifecycleCallbacks(\Doctrine\ORM\Events::postLoad, $entity);
+        $class->invokeLifecycleCallbacks(\Doctrine\ORM\Events::POST_LOAD, $entity);
 
         $this->assertTrue($entity->postLoad);
     }

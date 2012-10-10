@@ -14,7 +14,8 @@ use Doctrine\Tests\Models\CMS\CmsUser;
  */
 class InsertPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         parent::setUp();
     }
@@ -53,4 +54,3 @@ class InsertPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
         echo ' Inserted 10000 objects in ' . ($e - $s) . ' seconds' . PHP_EOL;
     }
 }
-

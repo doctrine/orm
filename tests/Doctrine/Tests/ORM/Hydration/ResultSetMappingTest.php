@@ -24,7 +24,8 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     private $_em;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         $this->_rsm = new ResultSetMapping;
         $this->_em = $this->_getTestEntityManager();
@@ -157,7 +158,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
             )
         ));
 
-        
+
         $queryMapping = $cm->getNamedNativeQuery('find-all');
 
         $rsm = new \Doctrine\ORM\Query\ResultSetMappingBuilder($this->_em);
@@ -256,4 +257,3 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getDeclaringClass('username'));
     }
 }
-

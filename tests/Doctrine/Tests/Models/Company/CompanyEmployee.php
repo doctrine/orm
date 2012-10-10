@@ -33,27 +33,33 @@ class CompanyEmployee extends CompanyPerson
      */
     public $soldContracts;
 
-    public function getSalary() {
+    public function getSalary()
+    {
         return $this->salary;
     }
 
-    public function setSalary($salary) {
+    public function setSalary($salary)
+    {
         $this->salary = $salary;
     }
 
-    public function getDepartment() {
+    public function getDepartment()
+    {
         return $this->department;
     }
 
-    public function setDepartment($dep) {
+    public function setDepartment($dep)
+    {
         $this->department = $dep;
     }
 
-    public function getStartDate() {
+    public function getStartDate()
+    {
         return $this->startDate;
     }
 
-    public function setStartDate($date) {
+    public function setStartDate($date)
+    {
         $this->startDate = $date;
     }
 }

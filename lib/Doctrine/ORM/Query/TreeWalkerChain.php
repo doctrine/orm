@@ -476,7 +476,7 @@ class TreeWalkerChain implements TreeWalker
      * @param InstanceOfExpression
      * @return string The SQL.
      */
-    function walkInstanceOfExpression($instanceOfExpr)
+    public function walkInstanceOfExpression($instanceOfExpr)
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkInstanceOfExpression($instanceOfExpr);

@@ -19,16 +19,16 @@
 
 namespace Doctrine\ORM;
 
-use Exception,
-    Doctrine\Common\EventManager,
-    Doctrine\Common\Persistence\ObjectManager,
-    Doctrine\DBAL\Connection,
-    Doctrine\DBAL\LockMode,
-    Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\ClassMetadataFactory,
-    Doctrine\ORM\Query\ResultSetMapping,
-    Doctrine\ORM\Proxy\ProxyFactory,
-    Doctrine\ORM\Query\FilterCollection;
+use Exception;
+use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\LockMode;
+//use Doctrine\ORM\Mapping\ClassMetadata; /* unused use */
+//use Doctrine\ORM\Mapping\ClassMetadataFactory; /* unused use */
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Query\FilterCollection;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -354,7 +354,7 @@ class EntityManager implements ObjectManager
 
         $this->unitOfWork->commit($entity);
     }
-    
+
     /**
      * Finds an Entity by its identifier.
      *
@@ -395,7 +395,6 @@ class EntityManager implements ObjectManager
                 case LockMode::OPTIMISTIC:
                     $this->lock($entity, $lockMode, $lockVersion);
                     break;
-
                 case LockMode::PESSIMISTIC_READ:
                 case LockMode::PESSIMISTIC_WRITE:
                     $persister = $unitOfWork->getEntityPersister($class->name);
@@ -411,7 +410,6 @@ class EntityManager implements ObjectManager
         switch ($lockMode) {
             case LockMode::NONE:
                 return $persister->load($sortedId);
-
             case LockMode::OPTIMISTIC:
                 if ( ! $class->isVersioned) {
                     throw OptimisticLockException::notVersioned($class->name);
@@ -422,7 +420,6 @@ class EntityManager implements ObjectManager
                 $unitOfWork->lock($entity, $lockMode, $lockVersion);
 
                 return $entity;
-
             default:
                 if ( ! $this->getConnection()->isTransactionActive()) {
                     throw TransactionRequiredException::transactionRequired();
@@ -557,7 +554,7 @@ class EntityManager implements ObjectManager
     public function persist($entity)
     {
         if ( ! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#persist()' , $entity);
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#persist()', $entity);
         }
 
         $this->errorIfClosed();
@@ -576,7 +573,7 @@ class EntityManager implements ObjectManager
     public function remove($entity)
     {
         if ( ! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#remove()' , $entity);
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#remove()', $entity);
         }
 
         $this->errorIfClosed();
@@ -593,7 +590,7 @@ class EntityManager implements ObjectManager
     public function refresh($entity)
     {
         if ( ! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#refresh()' , $entity);
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#refresh()', $entity);
         }
 
         $this->errorIfClosed();
@@ -613,7 +610,7 @@ class EntityManager implements ObjectManager
     public function detach($entity)
     {
         if ( ! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()' , $entity);
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()', $entity);
         }
 
         $this->unitOfWork->detach($entity);
@@ -630,7 +627,7 @@ class EntityManager implements ObjectManager
     public function merge($entity)
     {
         if ( ! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#merge()' , $entity);
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#merge()', $entity);
         }
 
         $this->errorIfClosed();
@@ -787,19 +784,14 @@ class EntityManager implements ObjectManager
         switch ($hydrationMode) {
             case Query::HYDRATE_OBJECT:
                 return new Internal\Hydration\ObjectHydrator($this);
-
             case Query::HYDRATE_ARRAY:
                 return new Internal\Hydration\ArrayHydrator($this);
-
             case Query::HYDRATE_SCALAR:
                 return new Internal\Hydration\ScalarHydrator($this);
-
             case Query::HYDRATE_SINGLE_SCALAR:
                 return new Internal\Hydration\SingleScalarHydrator($this);
-
             case Query::HYDRATE_SIMPLEOBJECT:
                 return new Internal\Hydration\SimpleObjectHydrator($this);
-
             default:
                 if (($class = $this->config->getCustomHydrationMode($hydrationMode)) !== null) {
                     return new $class($this);
@@ -849,16 +841,16 @@ class EntityManager implements ObjectManager
         switch (true) {
             case (is_array($conn)):
                 $conn = \Doctrine\DBAL\DriverManager::getConnection(
-                    $conn, $config, ($eventManager ?: new EventManager())
+                    $conn,
+                    $config,
+                    ($eventManager ?: new EventManager())
                 );
                 break;
-
             case ($conn instanceof Connection):
                 if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
                      throw ORMException::mismatchedEventManager();
                 }
                 break;
-
             default:
                 throw new \InvalidArgumentException("Invalid argument: " . $conn);
         }

@@ -41,7 +41,7 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
         $this->_em->clear();
-        
+
     }
 
     public function testCreateRetreaveUpdateDelete()
@@ -60,7 +60,7 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
         $this->assertEquals('FabioBatSilva', $user->name);
         $this->assertEquals($u1Id, $user->id);
-        
+
         $this->assertCount(2, $user->groups);
 
         $g1 = $user->getGroups()->get(0);
@@ -85,7 +85,7 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // Delete
         $this->_em->remove($user);
-        
+
         $this->_em->flush();
         $this->_em->clear();
 

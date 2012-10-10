@@ -96,7 +96,7 @@ class DebugUnitOfWorkListener
                         $initialized = !($value instanceof PersistentCollection) || $value->isInitialized();
                         if ($value === null) {
                             fwrite($fh, " NULL\n");
-                        } else if ($initialized) {
+                        } elseif ($initialized) {
                             fwrite($fh, "[INITIALIZED] " . $this->getType($value). " " . count($value) . " elements\n");
                             foreach ($value as $obj) {
                                 fwrite($fh, "    " . $this->getIdString($obj, $uow) . " " . spl_object_hash($obj)."\n");
@@ -139,11 +139,11 @@ class DebugUnitOfWorkListener
         $state = $uow->getEntityState($entity);
         if ($state == UnitOfWork::STATE_NEW) {
             $idstring .= " [NEW]";
-        } else if ($state == UnitOfWork::STATE_REMOVED) {
+        } elseif ($state == UnitOfWork::STATE_REMOVED) {
             $idstring .= " [REMOVED]";
-        } else if ($state == UnitOfWork::STATE_MANAGED) {
+        } elseif ($state == UnitOfWork::STATE_MANAGED) {
             $idstring .= " [MANAGED]";
-        } else if ($state == UnitOfwork::STATE_DETACHED) {
+        } elseif ($state == UnitOfwork::STATE_DETACHED) {
             $idstring .= " [DETACHED]";
         }
 

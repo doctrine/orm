@@ -11,7 +11,8 @@ require_once __DIR__ . '/../../TestInit.php';
  */
 class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(array(
@@ -23,7 +24,8 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
-    public function testSimpleDetachMerge() {
+    public function testSimpleDetachMerge()
+    {
         $user = new DefaultValueUser;
         $user->name = 'romanb';
         $this->_em->persist($user);

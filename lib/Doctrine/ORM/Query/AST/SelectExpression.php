@@ -23,7 +23,7 @@ namespace Doctrine\ORM\Query\AST;
  * SelectExpression ::= IdentificationVariable ["." "*"] | StateFieldPathExpression |
  *	                    (AggregateExpression | "(" Subselect ")") [["AS"] ["HIDDEN"] FieldAliasIdentificationVariable]
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>

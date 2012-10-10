@@ -28,7 +28,7 @@ use Symfony\Component\Console\Input\InputArgument,
 /**
  * Command to drop the database schema for a set of classes based on their mappings.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
@@ -80,7 +80,7 @@ EOT
                 $sqls = $schemaTool->getDropSchemaSQL($metadatas);
             }
             $output->write(implode(';' . PHP_EOL, $sqls) . PHP_EOL);
-        } else if ($input->getOption('force') === true) {
+        } elseif ($input->getOption('force') === true) {
             $output->write('Dropping database schema...' . PHP_EOL);
             if ($isFullDatabaseDrop) {
                 $schemaTool->dropDatabase();

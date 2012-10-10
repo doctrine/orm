@@ -96,4 +96,3 @@ class DDC1113Engine
     public $id;
 
 }
-

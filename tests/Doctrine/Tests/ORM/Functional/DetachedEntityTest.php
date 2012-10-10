@@ -17,12 +17,14 @@ require_once __DIR__ . '/../../TestInit.php';
  */
 class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testSimpleDetachMerge() {
+    public function testSimpleDetachMerge()
+    {
         $user = new CmsUser;
         $user->name = 'Roman';
         $user->username = 'romanb';
@@ -215,4 +217,3 @@ class DetachedEntityTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->merge($article);
     }
 }
-

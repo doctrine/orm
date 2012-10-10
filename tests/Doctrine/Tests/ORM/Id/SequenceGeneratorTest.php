@@ -37,4 +37,3 @@ class SequenceGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
     }
 }
-

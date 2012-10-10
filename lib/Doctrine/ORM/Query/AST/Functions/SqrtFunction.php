@@ -24,7 +24,7 @@ use Doctrine\ORM\Query\Lexer;
 /**
  * "SQRT" "(" SimpleArithmeticExpression ")"
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -59,4 +59,3 @@ class SqrtFunction extends FunctionNode
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }
-

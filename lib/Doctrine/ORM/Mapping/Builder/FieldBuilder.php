@@ -209,7 +209,9 @@ class FieldBuilder
     {
         $cm = $this->builder->getClassMetadata();
         if ($this->generatedValue) {
-            $cm->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $this->generatedValue));
+            $cm->setIdGeneratorType(
+                constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $this->generatedValue)
+            );
         }
         if ($this->version) {
             $cm->setVersionMapping($this->mapping);

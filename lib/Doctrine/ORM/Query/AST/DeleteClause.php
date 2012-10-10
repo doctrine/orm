@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * DeleteClause ::= "DELETE" ["FROM"] AbstractSchemaName [["AS"] AliasIdentificationVariable]
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -44,4 +44,3 @@ class DeleteClause extends Node
         return $sqlWalker->walkDeleteClause($this);
     }
 }
-

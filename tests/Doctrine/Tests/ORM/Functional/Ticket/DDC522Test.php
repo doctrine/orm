@@ -85,7 +85,8 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /** @Entity */
-class DDC522Customer {
+class DDC522Customer
+{
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
     /** @Column */
@@ -95,7 +96,8 @@ class DDC522Customer {
 }
 
 /** @Entity */
-class DDC522Cart {
+class DDC522Cart
+{
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
     /** @Column(type="integer") */
@@ -108,7 +110,8 @@ class DDC522Cart {
 }
 
 /** @Entity */
-class DDC522ForeignKeyTest {
+class DDC522ForeignKeyTest
+{
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
     /** @Column(type="integer", name="cart_id", nullable=true) */

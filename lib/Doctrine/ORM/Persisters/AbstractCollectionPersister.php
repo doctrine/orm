@@ -51,7 +51,7 @@ abstract class AbstractCollectionPersister
      * @var \Doctrine\DBAL\Platforms\AbstractPlatform
      */
     protected $platform;
-    
+
     /**
      * The quote strategy.
      *

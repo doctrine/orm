@@ -140,7 +140,8 @@ class DDC992Role
      */
     public $extends;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->extends = new ArrayCollection;
         $this->extendedBy = new ArrayCollection;
     }

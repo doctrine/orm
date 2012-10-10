@@ -19,10 +19,10 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\ORM\QueryBuilder,
-    Doctrine\ORM\Query,
-    Doctrine\ORM\Query\ResultSetMapping,
-    Doctrine\ORM\NoResultException;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\NoResultException;
 
 /**
  * Paginator
@@ -127,15 +127,22 @@ class Paginator implements \Countable, \IteratorAggregate
             }
 
             if ($this->useOutputWalker($countQuery)) {
-                $platform = $countQuery->getEntityManager()->getConnection()->getDatabasePlatform(); // law of demeter win
+                 // law of demeter win
+                $platform = $countQuery->getEntityManager()->getConnection()->getDatabasePlatform();
 
                 $rsm = new ResultSetMapping();
                 $rsm->addScalarResult($platform->getSQLResultCasing('dctrn_count'), 'count');
 
-                $countQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\CountOutputWalker');
+                $countQuery->setHint(
+                    Query::HINT_CUSTOM_OUTPUT_WALKER,
+                    'Doctrine\ORM\Tools\Pagination\CountOutputWalker'
+                );
                 $countQuery->setResultSetMapping($rsm);
             } else {
-                $countQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\CountWalker'));
+                $countQuery->setHint(
+                    Query::HINT_CUSTOM_TREE_WALKERS,
+                    array('Doctrine\ORM\Tools\Pagination\CountWalker')
+                );
             }
 
             $countQuery->setFirstResult(null)->setMaxResults(null);
@@ -163,9 +170,15 @@ class Paginator implements \Countable, \IteratorAggregate
             $subQuery = $this->cloneQuery($this->query);
 
             if ($this->useOutputWalker($subQuery)) {
-                $subQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+                $subQuery->setHint(
+                    Query::HINT_CUSTOM_OUTPUT_WALKER,
+                    'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker'
+                );
             } else {
-                $subQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker'));
+                $subQuery->setHint(
+                    Query::HINT_CUSTOM_TREE_WALKERS,
+                    array('Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker')
+                );
             }
 
             $subQuery->setFirstResult($offset)->setMaxResults($length);
@@ -180,7 +193,10 @@ class Paginator implements \Countable, \IteratorAggregate
 
             $namespace = WhereInWalker::PAGINATOR_ID_ALIAS;
 
-            $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
+            $whereInQuery->setHint(
+                Query::HINT_CUSTOM_TREE_WALKERS,
+                array('Doctrine\ORM\Tools\Pagination\WhereInWalker')
+            );
             $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, count($ids));
             $whereInQuery->setFirstResult(null)->setMaxResults(null);
             foreach ($ids as $i => $id) {
@@ -230,10 +246,9 @@ class Paginator implements \Countable, \IteratorAggregate
     private function useOutputWalker(Query $query)
     {
         if ($this->useOutputWalkers === null) {
-            return (Boolean) $query->getHint(Query::HINT_CUSTOM_OUTPUT_WALKER) == false;
+            return (boolean) $query->getHint(Query::HINT_CUSTOM_OUTPUT_WALKER) == false;
         }
 
         return $this->useOutputWalkers;
     }
 }
-

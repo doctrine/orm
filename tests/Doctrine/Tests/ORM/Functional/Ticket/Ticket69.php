@@ -11,7 +11,8 @@ require_once __DIR__ . '/../../../TestInit.php';
  *
  * @author robo
  */
-class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase {
+class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+{
     protected function setUp()
     {
         parent::setUp();
@@ -102,8 +103,8 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase {
  * @Entity
  * @Table(name="lemma")
  */
-class Lemma {
-
+class Lemma
+{
     const CLASS_NAME = __CLASS__;
 
     /**
@@ -128,7 +129,8 @@ class Lemma {
      */
     private $relations;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->types = new \Doctrine\Common\Collections\ArrayCollection();
         $this->relations = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -138,7 +140,8 @@ class Lemma {
      *
      * @return int
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -147,7 +150,8 @@ class Lemma {
      * @param string $lemma
      * @return void
      */
-    public function setLemma($lemma) {
+    public function setLemma($lemma)
+    {
         $this->lemma = $lemma;
     }
 
@@ -155,7 +159,8 @@ class Lemma {
      *
      * @return string
      */
-    public function getLemma() {
+    public function getLemma()
+    {
         return $this->lemma;
     }
 
@@ -165,7 +170,8 @@ class Lemma {
      * @param Relation $relation
      * @return void
      */
-    public function addRelation(Relation $relation) {
+    public function addRelation(Relation $relation)
+    {
         $this->relations[] = $relation;
         $relation->setParent($this);
     }
@@ -175,7 +181,8 @@ class Lemma {
      * @param Relation $relation
      * @return void
      */
-    public function removeRelation(Relation $relation) {
+    public function removeRelation(Relation $relation)
+    {
         /*@var $removed Relation */
         $removed = $this->relations->removeElement($relation);
         if ($removed !== null) {
@@ -187,7 +194,8 @@ class Lemma {
      *
      * @return kateglo\application\utilities\collections\ArrayCollection
      */
-    public function getRelations() {
+    public function getRelations()
+    {
         return $this->relations;
     }
 
@@ -198,8 +206,8 @@ class Lemma {
  * @Entity
  * @Table(name="relation")
  */
-class Relation {
-
+class Relation
+{
     const CLASS_NAME = __CLASS__;
 
     /**
@@ -236,7 +244,8 @@ class Relation {
      * @param Lemma $parent
      * @return void
      */
-    public function setParent(Lemma $parent) {
+    public function setParent(Lemma $parent)
+    {
         $this->parent = $parent;
     }
 
@@ -244,7 +253,8 @@ class Relation {
      *
      * @return Phrase
      */
-    public function getParent() {
+    public function getParent()
+    {
         return $this->parent;
     }
 
@@ -252,7 +262,8 @@ class Relation {
      *
      * @return void
      */
-    public function removeParent() {
+    public function removeParent()
+    {
         if ($this->lemma !== null) {
             /*@var $phrase Lemma */
             $lemma = $this->parent;
@@ -266,7 +277,8 @@ class Relation {
      * @param Lemma $child
      * @return void
      */
-    public function setChild(Lemma $child) {
+    public function setChild(Lemma $child)
+    {
         $this->child = $child;
     }
 
@@ -274,7 +286,8 @@ class Relation {
      *
      * @return Lemma
      */
-    public function getChild() {
+    public function getChild()
+    {
         return $this->child;
     }
 
@@ -283,7 +296,8 @@ class Relation {
      * @param RelationType $type
      * @return void
      */
-    public function setType(RelationType $type) {
+    public function setType(RelationType $type)
+    {
         $this->type = $type;
     }
 
@@ -291,7 +305,8 @@ class Relation {
      *
      * @return RelationType
      */
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
@@ -299,7 +314,8 @@ class Relation {
      *
      * @return void
      */
-    public function removeType() {
+    public function removeType()
+    {
         if ($this->type !== null) {
             /*@var $phrase RelationType */
             $type = $this->type;
@@ -314,8 +330,8 @@ class Relation {
  * @Entity
  * @Table(name="relation_type")
  */
-class RelationType {
-
+class RelationType
+{
     const CLASS_NAME = __CLASS__;
 
     /**
@@ -347,7 +363,8 @@ class RelationType {
      */
     private $relations;
 
-    public function __construct() {
+    public function __construct()
+    {
         $relations = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -355,7 +372,8 @@ class RelationType {
      *
      * @return int
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -364,7 +382,8 @@ class RelationType {
      * @param string $type
      * @return void
      */
-    public function setType($type) {
+    public function setType($type)
+    {
         $this->type = $type;
     }
 
@@ -372,7 +391,8 @@ class RelationType {
      *
      * @return string
      */
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
@@ -381,7 +401,8 @@ class RelationType {
      * @param string $abbreviation
      * @return void
      */
-    public function setAbbreviation($abbreviation) {
+    public function setAbbreviation($abbreviation)
+    {
         $this->abbreviation = $abbreviation;
     }
 
@@ -389,7 +410,8 @@ class RelationType {
      *
      * @return string
      */
-    public function getAbbreviation() {
+    public function getAbbreviation()
+    {
         return $this->abbreviation;
     }
 
@@ -398,7 +420,8 @@ class RelationType {
      * @param Relation $relation
      * @return void
      */
-    public function addRelation(Relation $relation) {
+    public function addRelation(Relation $relation)
+    {
         $this->relations[] = $relation;
         $relation->setType($this);
     }
@@ -408,7 +431,8 @@ class RelationType {
      * @param Relation $relation
      * @return void
      */
-    public function removeRelation(Relation $relation) {
+    public function removeRelation(Relation $relation)
+    {
         /*@var $removed Relation */
         $removed = $this->relations->removeElement($relation);
         if ($removed !== null) {
@@ -420,8 +444,8 @@ class RelationType {
      *
      * @return kateglo\application\utilities\collections\ArrayCollection
      */
-    public function getRelations() {
+    public function getRelations()
+    {
         return $this->relations;
     }
 }
-

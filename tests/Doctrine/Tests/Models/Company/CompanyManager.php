@@ -24,19 +24,23 @@ class CompanyManager extends CompanyEmployee
      */
     public $managedContracts;
 
-    public function getTitle() {
+    public function getTitle()
+    {
         return $this->title;
     }
 
-    public function setTitle($title) {
+    public function setTitle($title)
+    {
         $this->title = $title;
     }
 
-    public function getCar() {
+    public function getCar()
+    {
         return $this->car;
     }
 
-    public function setCar(CompanyCar $car) {
+    public function setCar(CompanyCar $car)
+    {
         $this->car = $car;
     }
 }

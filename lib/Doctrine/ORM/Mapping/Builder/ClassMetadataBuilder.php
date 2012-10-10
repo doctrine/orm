@@ -19,8 +19,8 @@
 
 namespace Doctrine\ORM\Mapping\Builder;
 
-use Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * Builder Object for ClassMetadata
@@ -149,10 +149,7 @@ class ClassMetadataBuilder
      */
     public function addNamedQuery($name, $dqlQuery)
     {
-        $this->cm->addNamedQuery(array(
-            'name' => $name,
-            'query' => $dqlQuery,
-        ));
+        $this->cm->addNamedQuery(array('name' => $name,'query' => $dqlQuery));
 
         return $this;
     }
@@ -189,11 +186,7 @@ class ClassMetadataBuilder
      */
     public function setDiscriminatorColumn($name, $type = 'string', $length = 255)
     {
-        $this->cm->setDiscriminatorColumn(array(
-            'name' => $name,
-            'type' => $type,
-            'length' => $length,
-        ));
+        $this->cm->setDiscriminatorColumn(array('name' => $name, 'type' => $type, 'length' => $length));
 
         return $this;
     }

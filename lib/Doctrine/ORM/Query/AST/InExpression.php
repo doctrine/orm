@@ -21,7 +21,7 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * InExpression ::= StateFieldPathExpression ["NOT"] "IN" "(" (Literal {"," Literal}* | Subselect) ")"
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -45,4 +45,3 @@ class InExpression extends Node
         return $sqlWalker->walkInExpression($this);
     }
 }
-

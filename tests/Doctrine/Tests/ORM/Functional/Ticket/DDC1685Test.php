@@ -61,4 +61,3 @@ class DDC1685Test extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 }
-

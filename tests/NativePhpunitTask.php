@@ -31,19 +31,23 @@ class NativePhpunitTask extends Task
     private $haltonfailure = true;
     private $haltonerror = true;
 
-    public function setTestdirectory($directory) {
+    public function setTestdirectory($directory)
+    {
         $this->testdirectory = $directory;
     }
 
-    public function setTest($test) {
+    public function setTest($test)
+    {
         $this->test = $test;
     }
 
-    public function setTestfile($testfile) {
+    public function setTestfile($testfile)
+    {
         $this->testfile = $testfile;
     }
 
-    public function setJunitlogfile($junitlogfile) {
+    public function setJunitlogfile($junitlogfile)
+    {
         if (strlen($junitlogfile) == 0) {
             $junitlogfile = NULL;
         }
@@ -51,7 +55,8 @@ class NativePhpunitTask extends Task
         $this->junitlogfile = $junitlogfile;
     }
 
-    public function setConfiguration($configuration) {
+    public function setConfiguration($configuration)
+    {
         if (strlen($configuration) == 0) {
             $configuration = NULL;
         }
@@ -59,7 +64,8 @@ class NativePhpunitTask extends Task
         $this->configuration = $configuration;
     }
 
-    public function setCoverageClover($coverageClover) {
+    public function setCoverageClover($coverageClover)
+    {
         if (strlen($coverageClover) == 0) {
             $coverageClover = NULL;
         }
@@ -67,11 +73,13 @@ class NativePhpunitTask extends Task
         $this->coverageClover = $coverageClover;
     }
 
-    public function setHaltonfailure($haltonfailures) {
+    public function setHaltonfailure($haltonfailures)
+    {
         $this->haltonfailure = $haltonfailures;
     }
 
-    public function setHaltonerror($haltonerrors) {
+    public function setHaltonerror($haltonerrors)
+    {
         $this->haltonerror = $haltonerrors;
     }
 
@@ -80,16 +88,14 @@ class NativePhpunitTask extends Task
         require_once "PHPUnit/Runner/Version.php";
         $version = PHPUnit_Runner_Version::id();
 
-        if (version_compare($version, '3.4.0') < 0)
-        {
+        if (version_compare($version, '3.4.0') < 0) {
             throw new BuildException("NativePHPUnitTask requires PHPUnit version >= 3.2.0", $this->getLocation());
         }
 
         require_once 'PHPUnit/Util/Filter.php';
 
         // point PHPUnit_MAIN_METHOD define to non-existing method
-        if (!defined('PHPUnit_MAIN_METHOD'))
-        {
+        if (!defined('PHPUnit_MAIN_METHOD')) {
             define('PHPUnit_MAIN_METHOD', 'PHPUnitTask::undefined');
         }
     }

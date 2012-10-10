@@ -10,7 +10,8 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
 {
     //private $_lexer;
 
-    protected function setUp() {
+    protected function setUp()
+    {
     }
 
     public function testScannerRecognizesIdentifierWithLengthOfOneCharacter()

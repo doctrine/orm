@@ -26,7 +26,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo,
 /**
  * Class to help with converting Doctrine 1 schema files to Doctrine 2 mapping files
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -184,7 +184,7 @@ class ConvertDoctrine1Schema
 
         if (isset($column['autoincrement'])) {
             $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
-        } else if (isset($column['sequence'])) {
+        } elseif (isset($column['sequence'])) {
             $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
             $definition = array(
                 'sequenceName' => is_array($column['sequence']) ? $column['sequence']['name']:$column['sequence']
@@ -252,7 +252,7 @@ class ConvertDoctrine1Schema
 
                 if ($type == 'one' && $foreignType == 'one') {
                     $method = 'mapOneToOne';
-                } else if ($type == 'many' && $foreignType == 'many') {
+                } elseif ($type == 'many' && $foreignType == 'many') {
                     $method = 'mapManyToMany';
                 } else {
                     $method = 'mapOneToMany';

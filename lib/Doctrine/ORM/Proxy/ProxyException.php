@@ -27,17 +27,20 @@ namespace Doctrine\ORM\Proxy;
  * @since       1.0
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
  */
-class ProxyException extends \Doctrine\ORM\ORMException {
-
-    public static function proxyDirectoryRequired() {
+class ProxyException extends \Doctrine\ORM\ORMException
+{
+    public static function proxyDirectoryRequired()
+    {
         return new self("You must configure a proxy directory. See docs for details");
     }
 
-    public static function proxyDirectoryNotWritable() {
+    public static function proxyDirectoryNotWritable()
+    {
         return new self("Your proxy directory must be writable.");
     }
 
-    public static function proxyNamespaceRequired() {
+    public static function proxyNamespaceRequired()
+    {
         return new self("You must configure a proxy namespace. See docs for details");
     }
 

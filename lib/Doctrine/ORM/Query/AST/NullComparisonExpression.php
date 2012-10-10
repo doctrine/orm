@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * NullComparisonExpression ::= (SingleValuedPathExpression | InputParameter) "IS" ["NOT"] "NULL"
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -44,4 +44,3 @@ class NullComparisonExpression extends Node
         return $sqlWalker->walkNullComparisonExpression($this);
     }
 }
-

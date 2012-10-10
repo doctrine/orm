@@ -25,7 +25,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 /**
  * "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")"
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -49,9 +49,9 @@ class TrimFunction extends FunctionNode
         $pos = AbstractPlatform::TRIM_UNSPECIFIED;
         if ($this->leading) {
             $pos = AbstractPlatform::TRIM_LEADING;
-        } else if ($this->trailing) {
+        } elseif ($this->trailing) {
             $pos = AbstractPlatform::TRIM_TRAILING;
-        } else if ($this->both) {
+        } elseif ($this->both) {
             $pos = AbstractPlatform::TRIM_BOTH;
         }
 
@@ -75,10 +75,10 @@ class TrimFunction extends FunctionNode
         if (strcasecmp('leading', $lexer->lookahead['value']) === 0) {
             $parser->match(Lexer::T_LEADING);
             $this->leading = true;
-        } else if (strcasecmp('trailing', $lexer->lookahead['value']) === 0) {
+        } elseif (strcasecmp('trailing', $lexer->lookahead['value']) === 0) {
             $parser->match(Lexer::T_TRAILING);
             $this->trailing = true;
-        } else if (strcasecmp('both', $lexer->lookahead['value']) === 0) {
+        } elseif (strcasecmp('both', $lexer->lookahead['value']) === 0) {
             $parser->match(Lexer::T_BOTH);
             $this->both = true;
         }
