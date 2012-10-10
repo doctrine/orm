@@ -37,5 +37,4 @@ final class AttributeOverrides implements Annotation
      * @var array<\Doctrine\ORM\Mapping\AttributeOverride>
      */
     public $value;
-
 }

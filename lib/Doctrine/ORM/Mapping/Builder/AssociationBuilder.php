@@ -131,9 +131,13 @@ class AssociationBuilder
      * @param string $onDelete
      * @param string $columnDef
      */
-    public function addJoinColumn($columnName, $referencedColumnName, $nullable = true, $unique = false,
-        $onDelete = null, $columnDef = null)
-    {
+    public function addJoinColumn(
+        $columnName,
+        $referencedColumnName,
+        $nullable = true,
+        $unique = false,
+        $onDelete = null,
+        $columnDef = null) {
         $this->joinColumns[] = array(
             'name' => $columnName,
             'referencedColumnName' => $referencedColumnName,

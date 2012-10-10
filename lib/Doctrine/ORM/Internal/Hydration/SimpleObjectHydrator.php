@@ -22,9 +22,9 @@ namespace Doctrine\ORM\Internal\Hydration;
 use \PDO;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Events;
-use Doctrine\ORM\Query;
+//use Doctrine\ORM\Event\LifecycleEventArgs; /* unused use */
+//use Doctrine\ORM\Events; /* unused use */
+//use Doctrine\ORM\Query; /* unused use */
 
 class SimpleObjectHydrator extends AbstractHydrator
 {
@@ -61,11 +61,15 @@ class SimpleObjectHydrator extends AbstractHydrator
     protected function prepare()
     {
         if (count($this->rsm->aliasMap) !== 1) {
-            throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains more than one object result.");
+            throw new \RuntimeException(
+                "Cannot use SimpleObjectHydrator with a ResultSetMapping that contains more than one object result."
+            );
         }
 
         if ($this->rsm->scalarMappings) {
-            throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains scalar mappings.");
+            throw new \RuntimeException(
+                "Cannot use SimpleObjectHydrator with a ResultSetMapping that contains scalar mappings."
+            );
         }
 
         $this->class = $this->em->getClassMetadata(reset($this->rsm->aliasMap));
@@ -93,7 +97,11 @@ class SimpleObjectHydrator extends AbstractHydrator
             $discrColumnName = $this->platform->getSQLResultCasing($this->class->discriminatorColumn['name']);
 
             if ( ! isset($sqlResult[$discrColumnName])) {
-                throw HydrationException::missingDiscriminatorColumn($entityName, $discrColumnName, key($this->rsm->aliasMap));
+                throw HydrationException::missingDiscriminatorColumn(
+                    $entityName,
+                    $discrColumnName,
+                    key($this->rsm->aliasMap)
+                );
             }
 
             if ($sqlResult[$discrColumnName] === '') {

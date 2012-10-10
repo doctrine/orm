@@ -21,10 +21,8 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Collections\ArrayCollection;
-
-use Doctrine\DBAL\Types\Type;
+//use Doctrine\DBAL\Types\Type; /* unused use */
 use Doctrine\DBAL\Cache\QueryCacheProfile;
-
 use Doctrine\ORM\Query\QueryException;
 
 /**
@@ -707,7 +705,9 @@ abstract class AbstractQuery
             $this->setParameters($parameters);
         }
 
-        $setCacheEntry = function () {};
+        $setCacheEntry = function () {
+            // nothing
+        };
 
         if ($this->hydrationCacheProfile !== null) {
             list($cacheKey, $realCacheKey) = $this->getHydrationCacheId();

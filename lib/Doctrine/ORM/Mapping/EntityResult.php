@@ -42,17 +42,18 @@ final class EntityResult implements Annotation
     public $entityClass;
 
     /**
-     * Maps the columns specified in the SELECT list of the query to the properties or fields of the entity class.
+     * Maps the columns specified in the SELECT list
+     * of the query to the properties or fields of the entity class.
      *
      * @var array<\Doctrine\ORM\Mapping\FieldResult>
      */
     public $fields = array();
 
     /**
-     * Specifies the column name of the column in the SELECT list that is used to determine the type of the entity instance.
+     * Specifies the column name of the column in the SELECT list
+     * that is used to determine the type of the entity instance.
      *
      * @var string
      */
     public $discriminatorColumn;
-
 }

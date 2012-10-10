@@ -29,7 +29,11 @@ namespace Doctrine\ORM;
  */
 final class Events
 {
-    private function __construct() {}
+    private function __construct()
+    {
+        // none
+    }
+
     /**
      * The preRemove event occurs for a given entity before the respective
      * EntityManager remove operation for that entity is executed.

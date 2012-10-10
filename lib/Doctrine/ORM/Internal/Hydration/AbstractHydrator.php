@@ -327,7 +327,6 @@ abstract class AbstractHydrator
                         $cache[$key]['fieldName'] = $this->rsm->scalarMappings[$key];
                         $cache[$key]['isScalar']  = true;
                         break;
-
                     case (isset($this->rsm->fieldMappings[$key])):
                         $fieldName     = $this->rsm->fieldMappings[$key];
                         $classMetadata = $this->em->getClassMetadata($this->rsm->declaringClasses[$key]);
@@ -336,14 +335,13 @@ abstract class AbstractHydrator
                         $cache[$key]['type']      = Type::getType($classMetadata->fieldMappings[$fieldName]['type']);
                         $cache[$key]['dqlAlias']  = $this->rsm->columnOwnerMap[$key];
                         break;
-
                     case (isset($this->rsm->metaMappings[$key])):
-                        // Meta column (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
+                        // Meta column
+                        // (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
                         $cache[$key]['isMetaColumn'] = true;
                         $cache[$key]['fieldName']    = $this->rsm->metaMappings[$key];
                         $cache[$key]['dqlAlias']     = $this->rsm->columnOwnerMap[$key];
                         break;
-
                     default:
                         // this column is a left over, maybe from a LIMIT query hack for example in Oracle or DB2
                         // maybe from an additional column that has not been defined in a NativeQuery ResultSetMapping.
@@ -393,10 +391,11 @@ abstract class AbstractHydrator
                 }
             }
         } else {
-            if (isset($class->associationMappings[$class->identifier[0]])) {
-                $id = array($class->identifier[0] => $data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']]);
+            $identifier = $class->identifier[0];
+            if (isset($class->associationMappings[$identifier])) {
+                $id = array($identifier => $data[$class->associationMappings[$identifier]['joinColumns'][0]['name']]);
             } else {
-                $id = array($class->identifier[0] => $data[$class->identifier[0]]);
+                $id = array($identifier => $data[$identifier]);
             }
         }
 
@@ -409,5 +408,6 @@ abstract class AbstractHydrator
      */
     public function onClear($eventArgs)
     {
+        // nothing
     }
 }

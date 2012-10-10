@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Internal\Hydration;
 
 use PDO;
-use Doctrine\DBAL\Connection;
+// use Doctrine\DBAL\Connection; /* unused use */
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
@@ -136,7 +136,7 @@ class ArrayHydrator extends AbstractHydrator
                         }
 
                         $indexExists  = isset($this->identifierMap[$path][$id[$parent]][$id[$dqlAlias]]);
-                        if($indexExists) {
+                        if ($indexExists) {
                             $index = $this->identifierMap[$path][$id[$parent]][$id[$dqlAlias]];
                         } else {
                             $index = false;

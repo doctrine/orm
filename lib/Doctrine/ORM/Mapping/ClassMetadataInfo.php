@@ -591,7 +591,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @var object
      */
-    private $_prototype;
+    private $prototype;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
@@ -826,11 +826,11 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function newInstance()
     {
-        if ($this->_prototype === null) {
-            $this->_prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
+        if ($this->prototype === null) {
+            $this->prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
         }
 
-        return clone $this->_prototype;
+        return clone $this->prototype;
     }
     /**
      * Restores some state that can not be serialized/unserialized.
@@ -904,7 +904,8 @@ class ClassMetadataInfo implements ClassMetadata
             if ( ! ClassLoader::classExists($mapping['targetEntity']) ) {
                 throw MappingException::invalidTargetEntityClass(
                     $mapping['targetEntity'],
-                    $this->name, $mapping['fieldName']
+                    $this->name,
+                    $mapping['fieldName']
                 );
             }
         }
@@ -1178,7 +1179,7 @@ class ClassMetadataInfo implements ClassMetadata
      * @throws MappingException
      * @return array The validated and completed field mapping.
      */
-    protected function _validateAndCompleteFieldMapping(array &$mapping)
+    protected function validateAndCompleteFieldMapping(array &$mapping)
     {
         // Check mandatory fields
         if ( ! isset($mapping['fieldName']) || strlen($mapping['fieldName']) == 0) {
@@ -1243,7 +1244,7 @@ class ClassMetadataInfo implements ClassMetadata
      * @return array The updated mapping.
      * @throws MappingException If something is wrong with the mapping.
      */
-    protected function _validateAndCompleteAssociationMapping(array $mapping)
+    protected function validateAndCompleteAssociationMapping(array $mapping)
     {
         if ( ! isset($mapping['mappedBy'])) {
             $mapping['mappedBy'] = null;
@@ -1286,7 +1287,9 @@ class ClassMetadataInfo implements ClassMetadata
             if ( ! in_array($mapping['fieldName'], $this->identifier)) {
                 if (count($mapping['joinColumns']) >= 2) {
                     throw MappingException::cannotMapCompositePrimaryKeyEntitiesAsForeignId(
-                        $mapping['targetEntity'], $this->name, $mapping['fieldName']
+                        $mapping['targetEntity'],
+                        $this->name,
+                        $mapping['fieldName']
                     );
                 }
 
@@ -1347,11 +1350,11 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         $mapping['cascade'] = $cascades;
-        $mapping['isCascadeRemove'] = in_array('remove',  $cascades);
-        $mapping['isCascadePersist'] = in_array('persist',  $cascades);
-        $mapping['isCascadeRefresh'] = in_array('refresh',  $cascades);
-        $mapping['isCascadeMerge'] = in_array('merge',  $cascades);
-        $mapping['isCascadeDetach'] = in_array('detach',  $cascades);
+        $mapping['isCascadeRemove'] = in_array('remove', $cascades);
+        $mapping['isCascadePersist'] = in_array('persist', $cascades);
+        $mapping['isCascadeRefresh'] = in_array('refresh', $cascades);
+        $mapping['isCascadeMerge'] = in_array('merge', $cascades);
+        $mapping['isCascadeDetach'] = in_array('detach', $cascades);
 
         return $mapping;
     }
@@ -1364,9 +1367,9 @@ class ClassMetadataInfo implements ClassMetadata
      * @throws MappingException
      * @return array The validated & completed mapping.@override
      */
-    protected function _validateAndCompleteOneToOneMapping(array $mapping)
+    protected function validateAndCompleteOneToOneMapping(array $mapping)
     {
-        $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
+        $mapping = $this->validateAndCompleteAssociationMapping($mapping);
 
         if (isset($mapping['joinColumns']) && $mapping['joinColumns']) {
             $mapping['isOwningSide'] = true;
@@ -1448,9 +1451,9 @@ class ClassMetadataInfo implements ClassMetadata
      * @throws InvalidArgumentException
      * @return array The validated and completed mapping.@override
      */
-    protected function _validateAndCompleteOneToManyMapping(array $mapping)
+    protected function validateAndCompleteOneToManyMapping(array $mapping)
     {
-        $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
+        $mapping = $this->validateAndCompleteAssociationMapping($mapping);
 
         // OneToMany-side MUST be inverse (must have mappedBy)
         if ( ! isset($mapping['mappedBy'])) {
@@ -1471,9 +1474,9 @@ class ClassMetadataInfo implements ClassMetadata
         return $mapping;
     }
 
-    protected function _validateAndCompleteManyToManyMapping(array $mapping)
+    protected function validateAndCompleteManyToManyMapping(array $mapping)
     {
-        $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
+        $mapping = $this->validateAndCompleteAssociationMapping($mapping);
         if ($mapping['isOwningSide']) {
             // owning side MUST have a join table
             if (!isset($mapping['joinTable']['name'])) {
@@ -1911,16 +1914,16 @@ class ClassMetadataInfo implements ClassMetadata
 
         switch ($mapping['type']) {
             case self::ONE_TO_ONE:
-                $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+                $mapping = $this->validateAndCompleteOneToOneMapping($mapping);
                 break;
             case self::ONE_TO_MANY:
-                $mapping = $this->_validateAndCompleteOneToManyMapping($mapping);
+                $mapping = $this->validateAndCompleteOneToManyMapping($mapping);
                 break;
             case self::MANY_TO_ONE:
-                $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+                $mapping = $this->validateAndCompleteOneToOneMapping($mapping);
                 break;
             case self::MANY_TO_MANY:
-                $mapping = $this->_validateAndCompleteManyToManyMapping($mapping);
+                $mapping = $this->validateAndCompleteManyToManyMapping($mapping);
                 break;
         }
 
@@ -1963,7 +1966,7 @@ class ClassMetadataInfo implements ClassMetadata
         unset($this->fieldMappings[$fieldName]);
         unset($this->fieldNames[$mapping['columnName']]);
         unset($this->columnNames[$mapping['fieldName']]);
-        $this->_validateAndCompleteFieldMapping($overrideMapping);
+        $this->validateAndCompleteFieldMapping($overrideMapping);
 
         $this->fieldMappings[$fieldName] = $overrideMapping;
     }
@@ -2070,7 +2073,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function mapField(array $mapping)
     {
-        $this->_validateAndCompleteFieldMapping($mapping);
+        $this->validateAndCompleteFieldMapping($mapping);
         if (isset($this->fieldMappings[$mapping['fieldName']]) ||
             isset($this->associationMappings[$mapping['fieldName']])) {
             throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
@@ -2169,7 +2172,7 @@ class ClassMetadataInfo implements ClassMetadata
         $queryMapping['isSelfClass'] = false;
         if (isset($queryMapping['resultClass'])) {
 
-            if($queryMapping['resultClass'] === '__CLASS__') {
+            if ($queryMapping['resultClass'] === '__CLASS__') {
 
                 $queryMapping['isSelfClass'] = true;
                 $queryMapping['resultClass'] = $this->name;
@@ -2208,7 +2211,7 @@ class ClassMetadataInfo implements ClassMetadata
                 }
 
                 $entityResult['isSelfClass'] = false;
-                if($entityResult['entityClass'] === '__CLASS__') {
+                if ($entityResult['entityClass'] === '__CLASS__') {
 
                     $entityResult['isSelfClass'] = true;
                     $entityResult['entityClass'] = $this->name;
@@ -2231,7 +2234,7 @@ class ClassMetadataInfo implements ClassMetadata
 
                         if (!isset($field['column'])) {
                             $fieldName = $field['name'];
-                            if(strpos($fieldName, '.')){
+                            if(strpos($fieldName, '.')) {
                                 list(, $fieldName) = explode('.', $fieldName);
                             }
 
@@ -2253,8 +2256,8 @@ class ClassMetadataInfo implements ClassMetadata
     public function mapOneToOne(array $mapping)
     {
         $mapping['type'] = self::ONE_TO_ONE;
-        $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
-        $this->_storeAssociationMapping($mapping);
+        $mapping = $this->validateAndCompleteOneToOneMapping($mapping);
+        $this->storeAssociationMapping($mapping);
     }
 
     /**
@@ -2265,8 +2268,8 @@ class ClassMetadataInfo implements ClassMetadata
     public function mapOneToMany(array $mapping)
     {
         $mapping['type'] = self::ONE_TO_MANY;
-        $mapping = $this->_validateAndCompleteOneToManyMapping($mapping);
-        $this->_storeAssociationMapping($mapping);
+        $mapping = $this->validateAndCompleteOneToManyMapping($mapping);
+        $this->storeAssociationMapping($mapping);
     }
 
     /**
@@ -2278,8 +2281,8 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $mapping['type'] = self::MANY_TO_ONE;
         // A many-to-one mapping is essentially a one-one backreference
-        $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
-        $this->_storeAssociationMapping($mapping);
+        $mapping = $this->validateAndCompleteOneToOneMapping($mapping);
+        $this->storeAssociationMapping($mapping);
     }
 
     /**
@@ -2290,8 +2293,8 @@ class ClassMetadataInfo implements ClassMetadata
     public function mapManyToMany(array $mapping)
     {
         $mapping['type'] = self::MANY_TO_MANY;
-        $mapping = $this->_validateAndCompleteManyToManyMapping($mapping);
-        $this->_storeAssociationMapping($mapping);
+        $mapping = $this->validateAndCompleteManyToManyMapping($mapping);
+        $this->storeAssociationMapping($mapping);
     }
 
     /**
@@ -2301,7 +2304,7 @@ class ClassMetadataInfo implements ClassMetadata
      * @throws MappingException
      * @return void
      */
-    protected function _storeAssociationMapping(array $assocMapping)
+    protected function storeAssociationMapping(array $assocMapping)
     {
         $sourceFieldName = $assocMapping['fieldName'];
 
@@ -2812,10 +2815,10 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getQuotedJoinTableName(array $assoc, $platform)
     {
-        if(isset($assoc['joinTable']['quoted']) === true) {
+        if (isset($assoc['joinTable']['quoted']) === true) {
             return $platform->quoteIdentifier($assoc['joinTable']['name']);
         } else {
-          return $assoc['joinTable']['name'];
+            return $assoc['joinTable']['name'];
         }
     }
 

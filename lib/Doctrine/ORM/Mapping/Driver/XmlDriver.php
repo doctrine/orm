@@ -83,10 +83,12 @@ class XmlDriver extends FileDriver
         // Evaluate named queries
         if (isset($xmlRoot->{'named-queries'})) {
             foreach ($xmlRoot->{'named-queries'}->{'named-query'} as $namedQueryElement) {
-                $metadata->addNamedQuery(array(
-                    'name'  => (string)$namedQueryElement['name'],
-                    'query' => (string)$namedQueryElement['query']
-                ));
+                $metadata->addNamedQuery(
+                    array(
+                        'name'  => (string)$namedQueryElement['name'],
+                        'query' => (string)$namedQueryElement['query']
+                    )
+                 );
             }
         }
 
@@ -94,10 +96,14 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'named-native-queries'})) {
             foreach ($xmlRoot->{'named-native-queries'}->{'named-native-query'} as $nativeQueryElement) {
                 $metadata->addNamedNativeQuery(array(
-                    'name'              => isset($nativeQueryElement['name']) ? (string)$nativeQueryElement['name'] : null,
-                    'query'             => isset($nativeQueryElement->query) ? (string)$nativeQueryElement->query : null,
-                    'resultClass'       => isset($nativeQueryElement['result-class']) ? (string)$nativeQueryElement['result-class'] : null,
-                    'resultSetMapping'  => isset($nativeQueryElement['result-set-mapping']) ? (string)$nativeQueryElement['result-set-mapping'] : null,
+                    'name'              => isset($nativeQueryElement['name']) ?
+                                                            (string)$nativeQueryElement['name'] : null,
+                    'query'             => isset($nativeQueryElement->query) ?
+                                                            (string)$nativeQueryElement->query : null,
+                    'resultClass'       => isset($nativeQueryElement['result-class']) ?
+                                                            (string)$nativeQueryElement['result-class'] : null,
+                    'resultSetMapping'  => isset($nativeQueryElement['result-set-mapping']) ?
+                                                            (string)$nativeQueryElement['result-set-mapping'] : null,
                 ));
             }
         }
@@ -113,7 +119,8 @@ class XmlDriver extends FileDriver
                         $entityResult = array(
                             'fields'                => array(),
                             'entityClass'           => (string)$entityElement['entity-class'],
-                            'discriminatorColumn'   => isset($entityElement['discriminator-column']) ? (string)$entityElement['discriminator-column'] : null,
+                            'discriminatorColumn'   => isset($entityElement['discriminator-column']) ?
+                            (string)$entityElement['discriminator-column'] : null,
                         );
 
                         foreach ($entityElement as $fieldElement) {
@@ -161,7 +168,8 @@ class XmlDriver extends FileDriver
                         'name' => isset($discrColumn['name']) ? (string)$discrColumn['name'] : null,
                         'type' => isset($discrColumn['type']) ? (string)$discrColumn['type'] : null,
                         'length' => isset($discrColumn['length']) ? (string)$discrColumn['length'] : null,
-                        'columnDefinition' => isset($discrColumn['column-definition']) ? (string)$discrColumn['column-definition'] : null
+                        'columnDefinition' => isset($discrColumn['column-definition']) ?
+                                                                (string)$discrColumn['column-definition'] : null
                     ));
                 } else {
                     $metadata->setDiscriminatorColumn(array('name' => 'dtype', 'type' => 'string', 'length' => 255));

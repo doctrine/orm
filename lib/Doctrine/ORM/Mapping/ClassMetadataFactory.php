@@ -27,7 +27,7 @@ use Doctrine\ORM\Events;
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
-use Doctrine\ORM\Id\IdentityGenerator; /* unused use */
+//use Doctrine\ORM\Id\IdentityGenerator; /* unused use */
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 
 /**
@@ -197,11 +197,14 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 if ( ! $class->discriminatorColumn) {
                     throw MappingException::missingDiscriminatorColumn($class->name);
                 }
-            } elseif ($parent && !$class->reflClass->isAbstract() && !in_array($class->name, array_values($class->discriminatorMap))) {
-                // enforce discriminator map for all entities of an inheritance hierarchy, otherwise problems will occur.
+            } elseif ($parent && !$class->reflClass->isAbstract() &&
+                !in_array($class->name, array_values($class->discriminatorMap))) {
+                // enforce discriminator map for all entities of an inheritance hierarchy,
+                // otherwise problems will occur.
                 throw MappingException::mappedClassNotPartOfDiscriminatorMap($class->name, $class->rootEntityName);
             }
-        } elseif ($class->isMappedSuperclass && $class->name == $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
+        } elseif ($class->isMappedSuperclass && $class->name == $class->rootEntityName &&
+            (count($class->discriminatorMap) || $class->discriminatorColumn)) {
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierarchy
             throw MappingException::noInheritanceOnMappedSuperClass($class->name);
         }
@@ -331,10 +334,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         foreach ($parentClass->namedQueries as $name => $query) {
             if ( ! isset ($subClass->namedQueries[$name])) {
-                $subClass->addNamedQuery(array(
-                    'name'  => $query['name'],
-                    'query' => $query['query']
-                ));
+                $subClass->addNamedQuery(array('name' => $query['name'], 'query' => $query['query']));
             }
         }
     }
@@ -382,11 +382,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     );
                 }
 
-                $subClass->addSqlResultSetMapping(array(
-                    'name'          => $mapping['name'],
-                    'columns'       => $mapping['columns'],
-                    'entities'      => $entities,
-                ));
+                $subClass->addSqlResultSetMapping(
+                    array(
+                        'name'          => $mapping['name'],
+                        'columns'       => $mapping['columns'],
+                        'entities'      => $entities,
+                     )
+                );
             }
         }
     }
@@ -418,18 +420,15 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 // <table>_<column>_seq in PostgreSQL for SERIAL columns.
                 // Not pretty but necessary and the simplest solution that currently works.
                 $sequenceName = null;
-
                 if ($this->targetPlatform instanceof Platforms\PostgreSQLPlatform) {
                     $fieldName = $class->getSingleIdentifierFieldName();
                     $columnName = $class->getSingleIdentifierColumnName();
                     $quoted = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
                     $sequenceName = $class->getTableName() . '_' . $columnName . '_seq';
                     $definition = array('sequenceName' => $this->targetPlatform->fixSchemaElementName($sequenceName));
-
                     if ($quoted) {
                         $definition['quoted'] = true;
                     }
-
                     $sequenceName = $this->em->getConfiguration()->getQuoteStrategy()->getSequenceName(
                         $definition,
                         $class,
@@ -439,11 +438,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 $class->setIdGenerator(new \Doctrine\ORM\Id\IdentityGenerator($sequenceName));
                 break;
-
             case ClassMetadata::GENERATOR_TYPE_SEQUENCE:
                 // If there is no sequence definition yet, create a default definition
                 $definition = $class->sequenceGeneratorDefinition;
-
                 if ( ! $definition) {
                     $fieldName = $class->getSingleIdentifierFieldName();
                     $columnName = $class->getSingleIdentifierColumnName();
@@ -454,14 +451,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                         'allocationSize'    => 1,
                         'initialValue'      => 1,
                     );
-
                     if ($quoted) {
                         $definition['quoted'] = true;
                     }
-
                     $class->setSequenceGeneratorDefinition($definition);
                 }
-
                 $sequenceGenerator = new \Doctrine\ORM\Id\SequenceGenerator(
                     $this->em->getConfiguration()->getQuoteStrategy()->getSequenceName(
                         $definition, $class,
@@ -471,19 +465,15 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 );
                 $class->setIdGenerator($sequenceGenerator);
                 break;
-
             case ClassMetadata::GENERATOR_TYPE_NONE:
                 $class->setIdGenerator(new \Doctrine\ORM\Id\AssignedGenerator());
                 break;
-
             case ClassMetadata::GENERATOR_TYPE_UUID:
                 $class->setIdGenerator(new \Doctrine\ORM\Id\UuidGenerator());
                 break;
-
             case ClassMetadata::GENERATOR_TYPE_TABLE:
                 throw new ORMException("TableGenerator not yet implemented.");
                 break;
-
             case ClassMetadata::GENERATOR_TYPE_CUSTOM:
                 $definition = $class->customGeneratorDefinition;
                 if ( ! class_exists($definition['class'])) {
@@ -492,7 +482,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 }
                 $class->setIdGenerator(new $definition['class']);
                 break;
-
             default:
                 throw new ORMException("Unknown generator type: " . $class->generatorType);
         }

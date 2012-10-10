@@ -168,10 +168,11 @@ class DatabaseDriver implements MappingDriver
         $metadata->table['name'] = $tableName;
 
         $columns = $this->tables[$tableName]->getColumns();
+        /* @todo unused var indexes */
         $indexes = $this->tables[$tableName]->getIndexes();
         try {
             $primaryKeyColumns = $this->tables[$tableName]->getPrimaryKey()->getColumns();
-        } catch(SchemaException $e) {
+        } catch (SchemaException $e) {
             $primaryKeyColumns = array();
         }
 
@@ -325,7 +326,7 @@ class DatabaseDriver implements MappingDriver
             }
 
             //Here we need to check if $cols are the same as $primaryKeyColums
-            if (!array_diff($cols,$primaryKeyColumns)) {
+            if (!array_diff($cols, $primaryKeyColumns)) {
                 $metadata->mapOneToOne($associationMapping);
             } else {
                 $metadata->mapManyToOne($associationMapping);
