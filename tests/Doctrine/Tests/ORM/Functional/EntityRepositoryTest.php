@@ -14,7 +14,8 @@ require_once __DIR__ . '/../../TestInit.php';
  */
 class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         parent::setUp();
     }
@@ -225,7 +226,8 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @expectedException \Doctrine\ORM\ORMException
      */
-    public function testExceptionIsThrownWhenCallingFindByWithoutParameter() {
+    public function testExceptionIsThrownWhenCallingFindByWithoutParameter()
+    {
         $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
                   ->findByStatus();
     }
@@ -233,7 +235,8 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @expectedException \Doctrine\ORM\ORMException
      */
-    public function testExceptionIsThrownWhenUsingInvalidFieldName() {
+    public function testExceptionIsThrownWhenUsingInvalidFieldName()
+    {
         $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')
                   ->findByThisFieldDoesNotExist('testvalue');
     }
@@ -693,4 +696,3 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(4, count($users));
     }
 }
-

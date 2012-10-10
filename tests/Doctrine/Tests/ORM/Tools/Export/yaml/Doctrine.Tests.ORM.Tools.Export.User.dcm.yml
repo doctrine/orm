@@ -41,7 +41,7 @@ Doctrine\Tests\ORM\Tools\Export\User:
       targetEntity: Doctrine\Tests\ORM\Tools\Export\Interests
       mappedBy: user
       cascade: [ persist, merge, remove, refresh, detach ]
-      orphanRemoval: true            
+      orphanRemoval: true
   manyToMany:
     groups:
       targetEntity: Doctrine\Tests\ORM\Tools\Export\Group
@@ -59,5 +59,5 @@ Doctrine\Tests\ORM\Tools\Export\User:
       cascade:
         - all
   lifecycleCallbacks:
-    prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersistToo ] 
-    postPersist: [ doStuffOnPostPersist ] 
+    prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersistToo ]
+    postPersist: [ doStuffOnPostPersist ]

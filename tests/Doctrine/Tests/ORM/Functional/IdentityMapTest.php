@@ -19,7 +19,8 @@ require_once __DIR__ . '/../../TestInit.php';
  */
 class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         parent::setUp();
     }
@@ -272,7 +273,8 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    private function subRoutine($em) {
+    private function subRoutine($em)
+    {
         $user = new CmsUser;
         $user->status = 'dev';
         $user->username = 'romanb';
@@ -285,4 +287,3 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
         return spl_object_hash($user);
     }
 }
-

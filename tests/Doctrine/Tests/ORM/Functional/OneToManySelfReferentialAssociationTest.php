@@ -29,7 +29,8 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $this->secondChild->setName('Php books');
     }
 
-    public function testSavesAOneToManyAssociationWithCascadeSaveSet() {
+    public function testSavesAOneToManyAssociationWithCascadeSaveSet()
+    {
         $this->parent->addChild($this->firstChild);
         $this->parent->addChild($this->secondChild);
         $this->_em->persist($this->parent);
@@ -48,7 +49,8 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $this->assertEquals(0, count($this->parent->getChildren()));
     }
 
-    public function testDoesNotSaveAnInverseSideSet() {
+    public function testDoesNotSaveAnInverseSideSet()
+    {
         $this->parent->brokenAddChild($this->firstChild);
         $this->_em->persist($this->parent);
         $this->_em->flush();
@@ -116,7 +118,8 @@ class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctio
         $this->_em->clear();
     }
 
-    public function assertForeignKeyIs($value, ECommerceCategory $child) {
+    public function assertForeignKeyIs($value, ECommerceCategory $child)
+    {
         $foreignKey = $this->_em->getConnection()->executeQuery('SELECT parent_id FROM ecommerce_categories WHERE id=?', array($child->getId()))->fetchColumn();
         $this->assertEquals($value, $foreignKey);
     }

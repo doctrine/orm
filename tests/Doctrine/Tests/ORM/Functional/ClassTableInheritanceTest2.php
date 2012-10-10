@@ -11,7 +11,8 @@ require_once __DIR__ . '/../../TestInit.php';
  */
 class ClassTableInheritanceTest2 extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(array(
@@ -79,7 +80,8 @@ class ClassTableInheritanceTest2 extends \Doctrine\Tests\OrmFunctionalTestCase
  * @DiscriminatorColumn(name="type", type="string")
  * @DiscriminatorMap({"parent" = "CTIParent", "child" = "CTIChild"})
  */
-class CTIParent {
+class CTIParent
+{
    /**
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -89,15 +91,18 @@ class CTIParent {
     /** @OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent") */
     private $related;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getRelated() {
+    public function getRelated()
+    {
         return $this->related;
     }
 
-    public function setRelated($related) {
+    public function setRelated($related)
+    {
         $this->related = $related;
         $related->setCTIParent($this);
     }
@@ -106,24 +111,28 @@ class CTIParent {
 /**
  * @Entity @Table(name="cti_children")
  */
-class CTIChild extends CTIParent {
+class CTIChild extends CTIParent
+{
    /**
      * @Column(type="string")
      */
     private $data;
 
-    public function getData() {
+    public function getData()
+    {
         return $this->data;
     }
 
-    public function setData($data) {
+    public function setData($data)
+    {
         $this->data = $data;
     }
 
 }
 
 /** @Entity */
-class CTIRelated {
+class CTIRelated
+{
     /**
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -136,15 +145,18 @@ class CTIRelated {
      */
     private $ctiParent;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getCTIParent() {
+    public function getCTIParent()
+    {
         return $this->ctiParent;
     }
 
-    public function setCTIParent($ctiParent) {
+    public function setCTIParent($ctiParent)
+    {
         $this->ctiParent = $ctiParent;
     }
 }
@@ -158,19 +170,23 @@ class CTIRelated2
     private $ctiChildren;
 
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->ctiChildren = new \Doctrine\Common\Collections\ArrayCollection;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function addCTIChild(CTIChild $child) {
+    public function addCTIChild(CTIChild $child)
+    {
         $this->ctiChildren->add($child);
     }
 
-    public function getCTIChildren() {
+    public function getCTIChildren()
+    {
         return $this->ctiChildren;
     }
 }

@@ -37,11 +37,13 @@ class CmsArticle
      */
     public $version;
 
-    public function setAuthor(CmsUser $author) {
+    public function setAuthor(CmsUser $author)
+    {
         $this->user = $author;
     }
 
-    public function addComment(CmsComment $comment) {
+    public function addComment(CmsComment $comment)
+    {
         $this->comments[] = $comment;
         $comment->setArticle($this);
     }

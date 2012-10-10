@@ -1,7 +1,7 @@
 <?php
 /**
  * Welcome to Doctrine 2.
- * 
+ *
  * This is the index file of the sandbox. The first section of this file
  * demonstrates the bootstrapping and configuration procedure of Doctrine 2.
  * Below that section you can place your test code and experiment.

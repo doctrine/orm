@@ -64,7 +64,7 @@ Doctrine\Tests\ORM\Mapping\User:
       cascade:
         - all
   lifecycleCallbacks:
-    prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersistToo ] 
+    prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersistToo ]
     postPersist: [ doStuffOnPostPersist ]
   uniqueConstraints:
     search_idx:

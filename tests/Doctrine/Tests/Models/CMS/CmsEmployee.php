@@ -29,16 +29,18 @@ class CmsEmployee
      */
     private $spouse;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function getSpouse() {
+    public function getSpouse()
+    {
         return $this->spouse;
     }
 }
-

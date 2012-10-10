@@ -31,7 +31,8 @@ class DDC425Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /** @Entity */
-class DDC425Entity {
+class DDC425Entity
+{
     /**
      * @Id @Column(type="integer")
      * @GeneratedValue

@@ -13,7 +13,8 @@ require_once __DIR__ . '/../../TestInit.php';
  */
 class OrderedJoinedTableInheritanceCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(array(

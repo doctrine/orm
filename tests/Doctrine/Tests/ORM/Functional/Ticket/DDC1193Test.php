@@ -54,7 +54,8 @@ class DDC1193Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /** @Entity */
-class DDC1193Company {
+class DDC1193Company
+{
     /**
      * @Id @Column(type="integer")
      * @GeneratedValue
@@ -67,7 +68,8 @@ class DDC1193Company {
 }
 
 /** @Entity */
-class DDC1193Person {
+class DDC1193Person
+{
     /**
      * @Id @Column(type="integer")
      * @GeneratedValue
@@ -81,7 +83,8 @@ class DDC1193Person {
 }
 
 /** @Entity */
-class DDC1193Account {
+class DDC1193Account
+{
     /**
      * @Id @Column(type="integer")
      * @GeneratedValue
@@ -89,5 +92,3 @@ class DDC1193Account {
     public $id;
 
 }
-
-

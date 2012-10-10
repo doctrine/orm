@@ -27,7 +27,7 @@ use Doctrine\ORM\Proxy\Autoloader;
  */
 class AutoloaderTest extends OrmTestCase
 {
-    static public function dataResolveFile()
+    public static function dataResolveFile()
     {
         return array(
             array('/tmp', 'MyProxy', 'MyProxy\__CG__\RealClass', '/tmp' . DIRECTORY_SEPARATOR . '__CG__RealClass.php'),
@@ -59,4 +59,3 @@ class AutoloaderTest extends OrmTestCase
         unlink(sys_get_temp_dir() ."/AutoloaderTestClass.php");
     }
 }
-

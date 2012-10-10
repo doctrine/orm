@@ -28,7 +28,8 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     private $platform = null;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         $this->useModelSet('company');
         parent::setUp();

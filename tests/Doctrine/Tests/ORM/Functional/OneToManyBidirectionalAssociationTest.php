@@ -29,7 +29,8 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $this->secondFeature->setDescription('Annotations examples');
     }
 
-    public function testSavesAOneToManyAssociationWithCascadeSaveSet() {
+    public function testSavesAOneToManyAssociationWithCascadeSaveSet()
+    {
         $this->product->addFeature($this->firstFeature);
         $this->product->addFeature($this->secondFeature);
         $this->_em->persist($this->product);
@@ -47,7 +48,8 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $this->assertEquals(0, count($this->product->getFeatures()));
     }
 
-    public function testDoesNotSaveAnInverseSideSet() {
+    public function testDoesNotSaveAnInverseSideSet()
+    {
         $this->product->brokenAddFeature($this->firstFeature);
         $this->_em->persist($this->product);
         $this->_em->flush();
@@ -173,14 +175,14 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $results);
         $this->assertEquals(2, count($results));
     }
-	
+
     public function testMatchingBis()
     {
         $this->_createFixture();
 
         $product  = $this->_em->find('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $this->product->getId());
         $features = $product->getFeatures();
-        
+
         $thirdFeature = new ECommerceFeature();
         $thirdFeature->setDescription('Third feature');
         $product->addFeature($thirdFeature);
@@ -208,7 +210,8 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $this->_em->clear();
     }
 
-    public function assertFeatureForeignKeyIs($value, ECommerceFeature $feature) {
+    public function assertFeatureForeignKeyIs($value, ECommerceFeature $feature)
+    {
         $foreignKey = $this->_em->getConnection()->executeQuery(
             'SELECT product_id FROM ecommerce_features WHERE id=?',
             array($feature->getId())

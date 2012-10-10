@@ -19,7 +19,8 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     private $translation;
     private $articleDetails;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('ddc117');
         parent::setUp();
 

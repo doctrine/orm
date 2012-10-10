@@ -55,14 +55,16 @@ class DDC1454File
      */
     public $fileId;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->fileId = rand();
     }
 
     /**
      * Get fileId
      */
-    public function getFileId() {
+    public function getFileId()
+    {
         return $this->fileId;
     }
 

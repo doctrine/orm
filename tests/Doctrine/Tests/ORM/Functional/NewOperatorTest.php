@@ -19,7 +19,7 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
      * @var array
      */
     private $fixtures;
-    
+
     protected function setUp()
     {
         $this->useModelSet('cms');
@@ -134,7 +134,7 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = "
             SELECT
                 new CmsUserDTO(u.name, e.email, a.city)
-            FROM 
+            FROM
                 Doctrine\Tests\Models\CMS\CmsUser u
             JOIN
                 u.email e
@@ -170,7 +170,7 @@ class NewOperatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->getConfiguration()
             ->addEntityNamespace('cms', 'Doctrine\Tests\Models\CMS');
-        
+
         $query  = $this->_em->createQuery($dql);
         $result = $query->getResult();
 

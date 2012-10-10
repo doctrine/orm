@@ -177,7 +177,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Gui', $result[1]['str1']);
         $this->assertEquals('Jon', $result[2]['str1']);
         $this->assertEquals('Rom', $result[3]['str1']);
-        
+
         $this->assertEquals('amin E.', $result[0]['str2']);
         $this->assertEquals('herme B.', $result[1]['str2']);
         $this->assertEquals('than W.', $result[2]['str2']);

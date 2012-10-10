@@ -11,7 +11,7 @@ use Doctrine\ORM\Tools\SchemaValidator;
  */
 class SchemaValidatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    static public function dataValidateModelSets()
+    public static function dataValidateModelSets()
     {
         $modelSets = array();
         foreach (self::$_modelSets as $modelSet => $classes) {

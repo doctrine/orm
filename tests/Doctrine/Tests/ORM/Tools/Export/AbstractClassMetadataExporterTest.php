@@ -331,7 +331,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     {
         $this->assertEquals('user', $class->associationMappings['address']['inversedBy']);
     }
-	/**
+    /**
      * @depends testExportDirectoryAndFilesAreCreated
      */
     public function testCascadeAllCollapsed()
@@ -367,7 +367,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     {
         if (is_file($path)) {
             return unlink($path);
-        } else if (is_dir($path)) {
+        } elseif (is_dir($path)) {
             $files = glob(rtrim($path,'/').'/*');
             foreach ($files as $file){
                 $this->_deleteDirectory($file);

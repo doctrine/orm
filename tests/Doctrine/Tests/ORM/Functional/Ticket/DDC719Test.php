@@ -44,69 +44,73 @@ class Entity
  * @Entity
  * @Table(name="groups")
  */
-class DDC719Group extends Entity {
+class DDC719Group extends Entity
+{
     /** @Column(type="string", nullable=false) */
     protected $name;
 
-	/** @Column(type="string", nullable=true) */
-	protected $description;
+    /** @Column(type="string", nullable=true) */
+    protected $description;
 
-	/**
-	 * @ManyToMany(targetEntity="DDC719Group", inversedBy="parents")
-	 * @JoinTable(name="groups_groups",
-	 * 		joinColumns={@JoinColumn(name="parent_id", referencedColumnName="id")},
-	 * 		inverseJoinColumns={@JoinColumn(name="child_id", referencedColumnName="id")}
-	 * )
-	 */
-	protected $children = NULL;
+    /**
+     * @ManyToMany(targetEntity="DDC719Group", inversedBy="parents")
+     * @JoinTable(name="groups_groups",
+     * 		joinColumns={@JoinColumn(name="parent_id", referencedColumnName="id")},
+     * 		inverseJoinColumns={@JoinColumn(name="child_id", referencedColumnName="id")}
+     * )
+     */
+    protected $children = NULL;
 
-	/**
-	 * @ManyToMany(targetEntity="DDC719Group", mappedBy="children")
-	 */
-	protected $parents = NULL;
+    /**
+     * @ManyToMany(targetEntity="DDC719Group", mappedBy="children")
+     */
+    protected $parents = NULL;
 
-	/**
-	 * construct
-	 */
-	public function __construct() {
-		parent::__construct();
+    /**
+     * construct
+     */
+    public function __construct()
+    {
+        parent::__construct();
 
-		$this->channels = new ArrayCollection();
-		$this->children = new ArrayCollection();
-		$this->parents = new ArrayCollection();
-	}
+        $this->channels = new ArrayCollection();
+        $this->children = new ArrayCollection();
+        $this->parents = new ArrayCollection();
+    }
 
-	/**
-	 * adds group as new child
-	 *
-	 * @param Group $child
-	 */
-	public function addGroup(Group $child) {
+    /**
+     * adds group as new child
+     *
+     * @param Group $child
+     */
+    public function addGroup(Group $child)
+    {
         if ( ! $this->children->contains($child)) {
             $this->children->add($child);
             $child->addGroup($this);
         }
-	}
+    }
 
-	/**
-	 * adds channel as new child
-	 *
-	 * @param Channel $child
-	 */
-	public function addChannel(Channel $child) {
+    /**
+     * adds channel as new child
+     *
+     * @param Channel $child
+     */
+    public function addChannel(Channel $child)
+    {
         if ( ! $this->channels->contains($child)) {
             $this->channels->add($child);
         }
-	}
+    }
 
-	/**
-	 * getter & setter
-	 */
-	public function getName() { return $this->name; }
-	public function setName($name) { $this->name = $name; }
-	public function getDescription() { return $this->description; }
-	public function setDescription($description) { $this->description = $description; }
-	public function getChildren() { return $this->children; }
-	public function getParents() { return $this->parents; }
-	public function getChannels() { return $this->channels; }
+    /**
+     * getter & setter
+     */
+    public function getName() { return $this->name; }
+    public function setName($name) { $this->name = $name; }
+    public function getDescription() { return $this->description; }
+    public function setDescription($description) { $this->description = $description; }
+    public function getChildren() { return $this->children; }
+    public function getParents() { return $this->parents; }
+    public function getChannels() { return $this->channels; }
 }

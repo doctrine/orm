@@ -264,4 +264,3 @@ class DDC1649Three
      * referencedColumnName="id") */
     private $two;
 }
-

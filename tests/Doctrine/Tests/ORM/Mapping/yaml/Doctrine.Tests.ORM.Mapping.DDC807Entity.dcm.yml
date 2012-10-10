@@ -8,6 +8,6 @@ Doctrine\Tests\ORM\Mapping\DDC807Entity:
     name: dtype
     columnDefinition: ENUM('ONE','TWO')
   id:
-    id: 
+    id:
       generator:
         strategy: NONE

@@ -76,7 +76,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $this->assertTrue($dom->schemaValidate($xsdSchemaFile));
     }
 
-    static public function dataValidSchema()
+    public static function dataValidSchema()
     {
         return array(
             array(__DIR__ . "/xml/Doctrine.Tests.ORM.Mapping.CTI.dcm.xml"),

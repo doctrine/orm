@@ -1,5 +1,5 @@
 Doctrine\Tests\Models\DirectoryTree\Directory:
-  type: entity 
+  type: entity
   fields:
     path:
       type: string

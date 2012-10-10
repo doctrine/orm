@@ -11,7 +11,8 @@ require_once __DIR__ . '/../../TestInit.php';
  */
 class MappedSuperclassTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('directorytree');
         parent::setUp();
     }

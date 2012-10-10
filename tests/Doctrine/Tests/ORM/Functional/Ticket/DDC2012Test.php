@@ -155,7 +155,7 @@ class DDC2012TsVectorType extends Type
 
         // changed to upper expression to keep the test compatible with other Databases
         //sprintf('to_tsvector(%s)', $sqlExpr);
-        
+
         return $platform->getUpperExpression($sqlExpr);
     }
 

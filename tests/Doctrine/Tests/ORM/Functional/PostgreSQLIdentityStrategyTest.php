@@ -8,7 +8,8 @@ require_once __DIR__ . '/../../TestInit.php';
 
 class PostgreSQLIdentityStrategyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         if ($this->_em->getConnection()->getDatabasePlatform()->getName() != 'postgresql') {
             $this->markTestSkipped('This test is special to the PostgreSQL IDENTITY key generation strategy.');
@@ -23,7 +24,8 @@ class PostgreSQLIdentityStrategyTest extends \Doctrine\Tests\OrmFunctionalTestCa
         }
     }
 
-    protected function tearDown() {
+    protected function tearDown()
+    {
         parent::tearDown();
         // drop sequence manually due to dependency
         $this->_em->getConnection()->exec('DROP SEQUENCE postgresqlidentityentity_id_seq CASCADE');
@@ -42,7 +44,8 @@ class PostgreSQLIdentityStrategyTest extends \Doctrine\Tests\OrmFunctionalTestCa
 }
 
 /** @Entity */
-class PostgreSQLIdentityEntity {
+class PostgreSQLIdentityEntity
+{
     /** @Id @Column(type="integer") @GeneratedValue(strategy="IDENTITY") */
     private $id;
     /** @Column(type="string") */

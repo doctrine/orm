@@ -15,7 +15,8 @@ class DDC214Test extends \Doctrine\Tests\OrmFunctionalTestCase
     private $classes = array();
     private $schemaTool = null;
 
-    public function setUp() {
+    public function setUp()
+    {
         parent::setUp();
 
         $conn = $this->_em->getConnection();

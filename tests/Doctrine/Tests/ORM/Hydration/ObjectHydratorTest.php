@@ -1303,7 +1303,7 @@ class ObjectHydratorTest extends HydrationTestCase
             if ($rowNum == 0) {
                 $this->assertEquals(1, $row[0]->id);
                 $this->assertEquals('romanb', $row[0]->name);
-            } else if ($rowNum == 1) {
+            } elseif ($rowNum == 1) {
                 $this->assertEquals(2, $row[0]->id);
                 $this->assertEquals('jwage', $row[0]->name);
             }
@@ -1349,7 +1349,7 @@ class ObjectHydratorTest extends HydrationTestCase
             if ($rowNum == 0) {
                 $this->assertEquals(1, $row[0]['user']->id);
                 $this->assertEquals('romanb', $row[0]['user']->name);
-            } else if ($rowNum == 1) {
+            } elseif ($rowNum == 1) {
                 $this->assertEquals(2, $row[0]['user']->id);
                 $this->assertEquals('jwage', $row[0]['user']->name);
             }

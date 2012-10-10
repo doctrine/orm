@@ -31,7 +31,8 @@ class DDC493Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({"distributor" = "DDC493Distributor", "customer" = "DDC493Customer"})
  */
-class DDC493Customer {
+class DDC493Customer
+{
     /**
      * @Id
      * @Column(type="integer")
@@ -49,7 +50,8 @@ class DDC493Customer {
 /**
  * @Entity
  */
-class DDC493Distributor extends DDC493Customer {
+class DDC493Distributor extends DDC493Customer
+{
 }
 
 /**
@@ -66,7 +68,3 @@ class DDC493Contact
     /** @Column(type="string") */
     public $data;
 }
-
-
-
-

@@ -30,7 +30,8 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         $this->mentor->setName('Obi-wan Kenobi');
     }
 
-    public function testSavesAOneToOneAssociationWithCascadeSaveSet() {
+    public function testSavesAOneToOneAssociationWithCascadeSaveSet()
+    {
         $this->customer->setMentor($this->mentor);
         $this->_em->persist($this->customer);
         $this->_em->flush();
@@ -118,7 +119,8 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
         $this->assertEquals('Obi-wan Kenobi', $customer->getMentor()->getName());
     }
 
-    public function assertForeignKeyIs($value) {
+    public function assertForeignKeyIs($value)
+    {
         $foreignKey = $this->_em->getConnection()->executeQuery('SELECT mentor_id FROM ecommerce_customers WHERE id=?', array($this->customer->getId()))->fetchColumn();
         $this->assertEquals($value, $foreignKey);
     }
@@ -143,7 +145,8 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
 /**
  * @Entity
  */
-class MultiSelfReference {
+class MultiSelfReference
+{
     /** @Id @GeneratedValue(strategy="AUTO") @Column(type="integer") */
     private $id;
     /**

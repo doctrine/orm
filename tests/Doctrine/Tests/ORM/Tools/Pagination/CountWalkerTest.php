@@ -91,4 +91,3 @@ class CountWalkerTest extends PaginationTestCase
         $query->getSql();
     }
 }
-

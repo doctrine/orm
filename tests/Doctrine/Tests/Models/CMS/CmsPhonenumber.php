@@ -18,11 +18,13 @@ class CmsPhonenumber
      */
     public $user;
 
-    public function setUser(CmsUser $user) {
+    public function setUser(CmsUser $user)
+    {
         $this->user = $user;
     }
 
-    public function getUser() {
+    public function getUser()
+    {
         return $this->user;
     }
 }

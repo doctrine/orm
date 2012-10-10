@@ -116,6 +116,3 @@ class PersisterPerformanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         echo "100 CmsUser: " . number_format(microtime(true) - $start, 6) . "\n";
     }
 }
-
-
-

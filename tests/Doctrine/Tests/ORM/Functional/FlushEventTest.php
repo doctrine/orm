@@ -16,7 +16,8 @@ require_once __DIR__ . '/../../TestInit.php';
  */
 class FlushEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         parent::setUp();
     }
@@ -90,5 +91,3 @@ class OnFlushListener
         }
     }
 }
-
-

@@ -14,7 +14,8 @@ require_once __DIR__ . '/../../TestInit.php';
  */
 class ClearEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
     }
 

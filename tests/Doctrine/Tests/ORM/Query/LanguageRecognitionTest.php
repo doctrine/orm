@@ -49,7 +49,7 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $query->setDql($dql);
 
         foreach ($hints as $key => $value) {
-        	$query->setHint($key, $value);
+            $query->setHint($key, $value);
         }
 
         $parser = new \Doctrine\ORM\Query\Parser($query);
