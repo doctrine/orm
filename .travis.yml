@@ -15,6 +15,8 @@ before_script:
   - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'create database doctrine_tests_tmp;' -U postgres; fi"
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS doctrine_tests_tmp;create database IF NOT EXISTS doctrine_tests;'; fi"
   - git submodule update --init
+  - pear install pear/PHP_CodeSniffer-1.4.0
+  - phpenv rehash
 
 script:
   - phpunit --configuration tests/travis/$DB.travis.xml
