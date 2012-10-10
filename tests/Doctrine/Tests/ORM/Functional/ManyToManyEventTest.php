@@ -23,7 +23,7 @@ class ManyToManyEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         $this->listener = new PostUpdateListener();
         $evm = $this->_em->getEventManager();
-        $evm->addEventListener(Events::postUpdate, $this->listener);
+        $evm->addEventListener(Events::POST_UPDATE, $this->listener);
     }
 
     public function testListenerShouldBeNotifiedOnlyWhenUpdating()

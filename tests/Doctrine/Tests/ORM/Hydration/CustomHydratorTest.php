@@ -24,6 +24,6 @@ class CustomHydrator extends AbstractHydrator
 {
     protected function hydrateAllData()
     {
-        return $this->_stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

@@ -23,7 +23,7 @@ class PostFlushEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         $this->listener = new PostFlushListener();
         $evm = $this->_em->getEventManager();
-        $evm->addEventListener(Events::postFlush, $this->listener);
+        $evm->addEventListener(Events::POST_FLUSH, $this->listener);
     }
 
     public function testListenerShouldBeNotified()

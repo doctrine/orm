@@ -22,7 +22,7 @@ class ClearEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testEventIsCalledOnClear()
     {
         $listener = new OnClearListener;
-        $this->_em->getEventManager()->addEventListener(Events::onClear, $listener);
+        $this->_em->getEventManager()->addEventListener(Events::ON_CLEAR, $listener);
 
         $this->_em->clear();
 

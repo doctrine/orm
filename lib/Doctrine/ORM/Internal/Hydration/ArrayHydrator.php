@@ -44,13 +44,13 @@ class ArrayHydrator extends AbstractHydrator
      */
     protected function prepare()
     {
-        $this->_isSimpleQuery  = count($this->_rsm->aliasMap) <= 1;
+        $this->_isSimpleQuery  = count($this->rsm->aliasMap) <= 1;
         $this->_identifierMap  = array();
         $this->_resultPointers = array();
         $this->_idTemplate     = array();
         $this->_resultCounter  = 0;
 
-        foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
+        foreach ($this->rsm->aliasMap as $dqlAlias => $className) {
             $this->_identifierMap[$dqlAlias]  = array();
             $this->_resultPointers[$dqlAlias] = array();
             $this->_idTemplate[$dqlAlias]     = '';
@@ -65,7 +65,7 @@ class ArrayHydrator extends AbstractHydrator
         $result = array();
         $cache  = array();
 
-        while ($data = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($data = $this->stmt->fetch(PDO::FETCH_ASSOC)) {
             $this->hydrateRowData($data, $cache, $result);
         }
 
@@ -97,10 +97,10 @@ class ArrayHydrator extends AbstractHydrator
         foreach ($rowData as $dqlAlias => $data) {
             $index = false;
 
-            if (isset($this->_rsm->parentAliasMap[$dqlAlias])) {
+            if (isset($this->rsm->parentAliasMap[$dqlAlias])) {
                 // It's a joined result
 
-                $parent = $this->_rsm->parentAliasMap[$dqlAlias];
+                $parent = $this->rsm->parentAliasMap[$dqlAlias];
                 $path   = $parent . '.' . $dqlAlias;
 
                 // missing parent data, skipping as RIGHT JOIN hydration is not supported.
@@ -110,7 +110,7 @@ class ArrayHydrator extends AbstractHydrator
 
                 // Get a reference to the right element in the result tree.
                 // This element will get the associated element attached.
-                if ($this->_rsm->isMixed && isset($this->_rootAliases[$parent])) {
+                if ($this->rsm->isMixed && isset($this->_rootAliases[$parent])) {
                     $first = reset($this->_resultPointers);
                     // TODO: Exception if $key === null ?
                     $baseElement =& $this->_resultPointers[$parent][key($first)];
@@ -121,8 +121,8 @@ class ArrayHydrator extends AbstractHydrator
                     continue;
                 }
 
-                $relationAlias = $this->_rsm->relationMap[$dqlAlias];
-                $relation = $this->getClassMetadata($this->_rsm->aliasMap[$parent])->associationMappings[$relationAlias];
+                $relationAlias = $this->rsm->relationMap[$dqlAlias];
+                $relation = $this->getClassMetadata($this->rsm->aliasMap[$parent])->associationMappings[$relationAlias];
 
                 // Check the type of the relation (many or single-valued)
                 if ( ! ($relation['type'] & ClassMetadata::TO_ONE)) {
@@ -139,8 +139,8 @@ class ArrayHydrator extends AbstractHydrator
 
                         if ( ! $indexExists || ! $indexIsValid) {
                             $element = $data;
-                            if (isset($this->_rsm->indexByMap[$dqlAlias])) {
-                                $baseElement[$relationAlias][$row[$this->_rsm->indexByMap[$dqlAlias]]] = $element;
+                            if (isset($this->rsm->indexByMap[$dqlAlias])) {
+                                $baseElement[$relationAlias][$row[$this->rsm->indexByMap[$dqlAlias]]] = $element;
                             } else {
                                 $baseElement[$relationAlias][] = $element;
                             }
@@ -172,11 +172,11 @@ class ArrayHydrator extends AbstractHydrator
                 // It's a root result element
 
                 $this->_rootAliases[$dqlAlias] = true; // Mark as root
-                $entityKey = $this->_rsm->entityMappings[$dqlAlias] ?: 0;
+                $entityKey = $this->rsm->entityMappings[$dqlAlias] ?: 0;
 
                 // if this row has a NULL value for the root result id then make it a null result.
                 if ( ! isset($nonemptyComponents[$dqlAlias]) ) {
-                    if ($this->_rsm->isMixed) {
+                    if ($this->rsm->isMixed) {
                         $result[] = array($entityKey => null);
                     } else {
                         $result[] = null;
@@ -189,12 +189,12 @@ class ArrayHydrator extends AbstractHydrator
                 // Check for an existing element
                 if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $rowData[$dqlAlias];
-                    if ($this->_rsm->isMixed) {
+                    if ($this->rsm->isMixed) {
                         $element = array($entityKey => $element);
                     }
 
-                    if (isset($this->_rsm->indexByMap[$dqlAlias])) {
-                        $resultKey = $row[$this->_rsm->indexByMap[$dqlAlias]];
+                    if (isset($this->rsm->indexByMap[$dqlAlias])) {
+                        $resultKey = $row[$this->rsm->indexByMap[$dqlAlias]];
                         $result[$resultKey] = $element;
                     } else {
                         $resultKey = $this->_resultCounter;
@@ -219,8 +219,8 @@ class ArrayHydrator extends AbstractHydrator
         if (isset($scalars)) {
             if ( ! isset($resultKey) ) {
                 // this only ever happens when no object is fetched (scalar result only)
-                if (isset($this->_rsm->indexByMap['scalars'])) {
-                    $resultKey = $row[$this->_rsm->indexByMap['scalars']];
+                if (isset($this->rsm->indexByMap['scalars'])) {
+                    $resultKey = $row[$this->rsm->indexByMap['scalars']];
                 } else {
                     $resultKey = $this->_resultCounter - 1;
                 }
@@ -281,7 +281,7 @@ class ArrayHydrator extends AbstractHydrator
     private function getClassMetadata($className)
     {
         if ( ! isset($this->_ce[$className])) {
-            $this->_ce[$className] = $this->_em->getClassMetadata($className);
+            $this->_ce[$className] = $this->em->getClassMetadata($className);
         }
 
         return $this->_ce[$className];

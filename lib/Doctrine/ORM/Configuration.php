@@ -19,18 +19,18 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Cache\Cache,
-    Doctrine\Common\Cache\ArrayCache,
-    Doctrine\Common\Annotations\AnnotationRegistry,
-    Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\Common\Persistence\Mapping\Driver\MappingDriver,
-    Doctrine\ORM\Mapping\Driver\AnnotationDriver,
-    Doctrine\ORM\Mapping\QuoteStrategy,
-    Doctrine\ORM\Mapping\DefaultQuoteStrategy,
-    Doctrine\ORM\Mapping\NamingStrategy,
-    Doctrine\ORM\Mapping\DefaultNamingStrategy,
-    Doctrine\Common\Annotations\SimpleAnnotationReader,
-    Doctrine\Common\Annotations\CachedReader;
+use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Mapping\QuoteStrategy;
+use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
+use Doctrine\ORM\Mapping\NamingStrategy;
+use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
+use Doctrine\Common\Annotations\CachedReader;
 
 /**
  * Configuration container for all configuration options of Doctrine.

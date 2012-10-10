@@ -161,9 +161,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $this->addDefaultDiscriminatorMap($class);
         }
 
-        if ($this->evm->hasListeners(Events::loadClassMetadata)) {
+        if ($this->evm->hasListeners(Events::LOAD_CLASS_METADATA)) {
             $eventArgs = new LoadClassMetadataEventArgs($class, $this->em);
-            $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
+            $this->evm->dispatchEvent(Events::LOAD_CLASS_METADATA, $eventArgs);
         }
 
         $this->wakeupReflection($class, $this->getReflectionService());

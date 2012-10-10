@@ -19,8 +19,8 @@
 
 namespace Doctrine\ORM\Event;
 
-use Doctrine\Common\EventArgs,
-    Doctrine\ORM\EntityManager;
+use Doctrine\Common\EventArgs;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Class that holds event arguments for a preInsert/preUpdate event.
@@ -118,11 +118,13 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     private function assertValidField($field)
     {
         if ( ! isset($this->entityChangeSet[$field])) {
-            throw new \InvalidArgumentException(sprintf(
-                'Field "%s" is not a valid field of the entity "%s" in PreUpdateEventArgs.',
-                $field,
-                get_class($this->getEntity())
-            ));
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Field "%s" is not a valid field of the entity "%s" in PreUpdateEventArgs.',
+                    $field,
+                    get_class($this->getEntity())
+                )
+            );
         }
     }
 }

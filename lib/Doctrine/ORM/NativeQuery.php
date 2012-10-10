@@ -56,7 +56,7 @@ final class NativeQuery extends AbstractQuery
     /**
      * {@inheritdoc}
      */
-    protected function _doExecute()
+    protected function doExecute()
     {
         $parameters = array();
         $types      = array();
@@ -80,8 +80,8 @@ final class NativeQuery extends AbstractQuery
             $types      = array_values($types);
         }
 
-        return $this->_em->getConnection()->executeQuery(
-            $this->_sql, $parameters, $types, $this->_queryCacheProfile
+        return $this->em->getConnection()->executeQuery(
+            $this->_sql, $parameters, $types, $this->queryCacheProfile
         );
     }
 }

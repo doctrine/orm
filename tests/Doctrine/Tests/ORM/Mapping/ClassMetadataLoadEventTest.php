@@ -17,7 +17,7 @@ class ClassMetadataLoadEventTest extends \Doctrine\Tests\OrmTestCase
         $em = $this->_getTestEntityManager();
         $metadataFactory = $em->getMetadataFactory();
         $evm = $em->getEventManager();
-        $evm->addEventListener(Events::loadClassMetadata, $this);
+        $evm->addEventListener(Events::LOAD_CLASS_METADATA, $this);
         $classMetadata = $metadataFactory->getMetadataFor('Doctrine\Tests\ORM\Mapping\LoadEventTestEntity');
         $this->assertTrue($classMetadata->hasField('about'));
         $this->assertArrayHasKey('about', $classMetadata->reflFields);
