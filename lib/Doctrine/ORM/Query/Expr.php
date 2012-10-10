@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Query;
 /**
  * This class is used to generate DQL expressions via a set of PHP static functions
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -562,7 +562,7 @@ class Expr
     {
         if (is_numeric($literal) && !is_string($literal)) {
             return (string) $literal;
-        } else if (is_bool($literal)) {
+        } elseif (is_bool($literal)) {
             return $literal ? "true" : "false";
         } else {
             return "'" . str_replace("'", "''", $literal) . "'";

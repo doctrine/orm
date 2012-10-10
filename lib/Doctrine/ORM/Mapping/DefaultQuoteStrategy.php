@@ -45,7 +45,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
      */
     public function getTableName(ClassMetadata $class, AbstractPlatform $platform)
     {
-        return isset($class->table['quoted']) 
+        return isset($class->table['quoted'])
             ? $platform->quoteIdentifier($class->table['name'])
             : $class->table['name'];
     }
@@ -107,8 +107,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
             // Association defined as Id field
             $joinColumns            = $class->associationMappings[$fieldName]['joinColumns'];
             $assocQuotedColumnNames = array_map(
-                function ($joinColumn) use ($platform)
-                {
+                function ($joinColumn) use ($platform) {
                     return isset($joinColumn['quoted'])
                         ? $platform->quoteIdentifier($joinColumn['name'])
                         : $joinColumn['name'];

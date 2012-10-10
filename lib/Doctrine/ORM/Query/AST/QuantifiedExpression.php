@@ -21,7 +21,7 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * QuantifiedExpression ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -61,4 +61,3 @@ class QuantifiedExpression extends Node
         return $sqlWalker->walkQuantifiedExpression($this);
     }
 }
-

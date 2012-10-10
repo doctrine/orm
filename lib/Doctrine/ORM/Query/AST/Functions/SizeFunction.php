@@ -24,7 +24,7 @@ use Doctrine\ORM\Query\Lexer;
 /**
  * "SIZE" "(" CollectionValuedPathExpression ")"
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -118,4 +118,3 @@ class SizeFunction extends FunctionNode
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }
-

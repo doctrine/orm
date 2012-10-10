@@ -167,8 +167,7 @@ abstract class AbstractQuery
     public function getParameter($key)
     {
         $filteredParameters = $this->parameters->filter(
-            function ($parameter) use ($key)
-            {
+            function ($parameter) use ($key) {
                 // Must not be identical because of string to integer conversion
                 return ($key == $parameter->getName());
             }
@@ -218,8 +217,7 @@ abstract class AbstractQuery
     public function setParameter($key, $value, $type = null)
     {
         $filteredParameters = $this->parameters->filter(
-            function ($parameter) use ($key)
-            {
+            function ($parameter) use ($key) {
                 // Must not be identical because of string to integer conversion
                 return ($key == $parameter->getName());
             }

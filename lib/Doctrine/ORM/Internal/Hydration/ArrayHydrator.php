@@ -114,7 +114,7 @@ class ArrayHydrator extends AbstractHydrator
                     $first = reset($this->_resultPointers);
                     // TODO: Exception if $key === null ?
                     $baseElement =& $this->_resultPointers[$parent][key($first)];
-                } else if (isset($this->_resultPointers[$parent])) {
+                } elseif (isset($this->_resultPointers[$parent])) {
                     $baseElement =& $this->_resultPointers[$parent];
                 } else {
                     unset($this->_resultPointers[$dqlAlias]); // Ticket #1228
@@ -149,7 +149,7 @@ class ArrayHydrator extends AbstractHydrator
 
                             $this->_identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = key($baseElement[$relationAlias]);
                         }
-                    } else if ( ! isset($baseElement[$relationAlias])) {
+                    } elseif ( ! isset($baseElement[$relationAlias])) {
                         $baseElement[$relationAlias] = array();
                     }
                 } else {
@@ -157,7 +157,7 @@ class ArrayHydrator extends AbstractHydrator
 
                     if ( ! isset($nonemptyComponents[$dqlAlias]) && ! isset($baseElement[$relationAlias])) {
                         $baseElement[$relationAlias] = null;
-                    } else if ( ! isset($baseElement[$relationAlias])) {
+                    } elseif ( ! isset($baseElement[$relationAlias])) {
                         $baseElement[$relationAlias] = $data;
                     }
                 }

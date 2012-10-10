@@ -2148,7 +2148,7 @@ class ClassMetadataInfo implements ClassMetadata
                 $queryMapping['isSelfClass'] = true;
                 $queryMapping['resultClass'] = $this->name;
 
-            } else if (strlen($this->namespace) > 0 && strpos($queryMapping['resultClass'], '\\') === false) {
+            } elseif (strlen($this->namespace) > 0 && strpos($queryMapping['resultClass'], '\\') === false) {
                 $queryMapping['resultClass'] = $this->namespace . '\\' . $queryMapping['resultClass'];
             }
 
@@ -2187,7 +2187,7 @@ class ClassMetadataInfo implements ClassMetadata
                     $entityResult['isSelfClass'] = true;
                     $entityResult['entityClass'] = $this->name;
 
-                } else if (strlen($this->namespace) > 0 && strpos($entityResult['entityClass'], '\\') === false) {
+                } elseif (strlen($this->namespace) > 0 && strpos($entityResult['entityClass'], '\\') === false) {
                     $entityResult['entityClass'] = $this->namespace . '\\' . $entityResult['entityClass'];
                 }
 
@@ -2625,7 +2625,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ( ! isset($mapping['default'])) {
             if (in_array($mapping['type'], array('integer', 'bigint', 'smallint'))) {
                 $mapping['default'] = 1;
-            } else if ($mapping['type'] == 'datetime') {
+            } elseif ($mapping['type'] == 'datetime') {
                 $mapping['default'] = 'CURRENT_TIMESTAMP';
             } else {
                 throw MappingException::unsupportedOptimisticLockingType($this->name, $mapping['fieldName'], $mapping['type']);

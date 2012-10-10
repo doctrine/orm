@@ -272,4 +272,3 @@ class EntityRepository implements ObjectRepository, Selectable
         return new ArrayCollection($persister->loadCriteria($criteria));
     }
 }
-

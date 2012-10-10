@@ -145,4 +145,3 @@ class WhereInWalker extends TreeWalkerAdapter
         }
     }
 }
-

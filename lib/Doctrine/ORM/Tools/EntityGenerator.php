@@ -317,7 +317,7 @@ public function __construct()
         if ($this->isNew) {
             file_put_contents($path, $this->generateEntityClass($metadata));
         // If entity exists and we're allowed to update the entity class
-        } else if ( ! $this->isNew && $this->updateEntityIfExists) {
+        } elseif ( ! $this->isNew && $this->updateEntityIfExists) {
             file_put_contents($path, $this->generateUpdatedEntityClass($metadata, $path));
         }
     }
@@ -574,7 +574,7 @@ public function __construct()
             if ($inNamespace) {
                 if ($token[0] == T_NS_SEPARATOR || $token[0] == T_STRING) {
                     $lastSeenNamespace .= $token[1];
-                } else if (is_string($token) && in_array($token, array(';', '{'))) {
+                } elseif (is_string($token) && in_array($token, array(';', '{'))) {
                     $inNamespace = false;
                 }
             }
@@ -589,15 +589,15 @@ public function __construct()
             if ($token[0] == T_NAMESPACE) {
                 $lastSeenNamespace = "";
                 $inNamespace = true;
-            } else if ($token[0] == T_CLASS) {
+            } elseif ($token[0] == T_CLASS) {
                 $inClass = true;
-            } else if ($token[0] == T_FUNCTION) {
+            } elseif ($token[0] == T_FUNCTION) {
                 if ($tokens[$i+2][0] == T_STRING) {
                     $this->staticReflection[$lastSeenClass]['methods'][] = $tokens[$i+2][1];
-                } else if ($tokens[$i+2] == "&" && $tokens[$i+3][0] == T_STRING) {
+                } elseif ($tokens[$i+2] == "&" && $tokens[$i+3][0] == T_STRING) {
                     $this->staticReflection[$lastSeenClass]['methods'][] = $tokens[$i+3][1];
                 }
-            } else if (in_array($token[0], array(T_VAR, T_PUBLIC, T_PRIVATE, T_PROTECTED)) && $tokens[$i+2][0] != T_FUNCTION) {
+            } elseif (in_array($token[0], array(T_VAR, T_PUBLIC, T_PRIVATE, T_PROTECTED)) && $tokens[$i+2][0] != T_FUNCTION) {
                 $this->staticReflection[$lastSeenClass]['properties'][] = substr($tokens[$i+2][1], 1);
             }
         }
@@ -805,7 +805,7 @@ public function __construct()
                 if ($code = $this->generateEntityStubMethod($metadata, 'get', $associationMapping['fieldName'], $associationMapping['targetEntity'])) {
                     $methods[] = $code;
                 }
-            } else if ($associationMapping['type'] & ClassMetadataInfo::TO_MANY) {
+            } elseif ($associationMapping['type'] & ClassMetadataInfo::TO_MANY) {
                 if ($code = $this->generateEntityStubMethod($metadata, 'add', $associationMapping['fieldName'], $associationMapping['targetEntity'])) {
                     $methods[] = $code;
                 }

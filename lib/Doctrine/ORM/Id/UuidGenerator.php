@@ -29,7 +29,7 @@ use Serializable, Doctrine\ORM\EntityManager;
  */
 class UuidGenerator extends AbstractIdGenerator
 {
-    
+
     /**
      * Generates an ID for the given entity.
      *
@@ -44,5 +44,5 @@ class UuidGenerator extends AbstractIdGenerator
         $sql = 'SELECT ' . $conn->getDatabasePlatform()->getGuidExpression();
         return $conn->query($sql)->fetchColumn(0);
     }
-    
+
 }

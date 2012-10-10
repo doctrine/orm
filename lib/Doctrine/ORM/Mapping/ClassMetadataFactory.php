@@ -120,7 +120,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         if ($parent && $rootEntityFound) {
             if ($parent->isIdGeneratorSequence()) {
                 $class->setSequenceGeneratorDefinition($parent->sequenceGeneratorDefinition);
-            } else if ($parent->isIdGeneratorTable()) {
+            } elseif ($parent->isIdGeneratorTable()) {
                 $class->tableGeneratorDefinition = $parent->tableGeneratorDefinition;
             }
 
@@ -197,11 +197,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 if ( ! $class->discriminatorColumn) {
                     throw MappingException::missingDiscriminatorColumn($class->name);
                 }
-            } else if ($parent && !$class->reflClass->isAbstract() && !in_array($class->name, array_values($class->discriminatorMap))) {
+            } elseif ($parent && !$class->reflClass->isAbstract() && !in_array($class->name, array_values($class->discriminatorMap))) {
                 // enforce discriminator map for all entities of an inheritance hierarchy, otherwise problems will occur.
                 throw MappingException::mappedClassNotPartOfDiscriminatorMap($class->name, $class->rootEntityName);
             }
-        } else if ($class->isMappedSuperclass && $class->name == $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
+        } elseif ($class->isMappedSuperclass && $class->name == $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierarchy
             throw MappingException::noInheritanceOnMappedSuperClass($class->name);
         }
@@ -404,7 +404,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         if ($idGenType == ClassMetadata::GENERATOR_TYPE_AUTO) {
             if ($this->targetPlatform->prefersSequences()) {
                 $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_SEQUENCE);
-            } else if ($this->targetPlatform->prefersIdentityColumns()) {
+            } elseif ($this->targetPlatform->prefersIdentityColumns()) {
                 $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
             } else {
                 $class->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_TABLE);

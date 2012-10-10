@@ -193,7 +193,7 @@ class DatabaseDriver implements MappingDriver
 
             if (in_array($column->getName(), $allForeignKeyColumns)) {
                 continue;
-            } else if ($primaryKeyColumns && in_array($column->getName(), $primaryKeyColumns)) {
+            } elseif ($primaryKeyColumns && in_array($column->getName(), $primaryKeyColumns)) {
                 $fieldMapping['id'] = true;
             }
 
@@ -204,7 +204,7 @@ class DatabaseDriver implements MappingDriver
             if ($column->getType() instanceof \Doctrine\DBAL\Types\StringType) {
                 $fieldMapping['length'] = $column->getLength();
                 $fieldMapping['fixed'] = $column->getFixed();
-            } else if ($column->getType() instanceof \Doctrine\DBAL\Types\IntegerType) {
+            } elseif ($column->getType() instanceof \Doctrine\DBAL\Types\IntegerType) {
                 $fieldMapping['unsigned'] = $column->getUnsigned();
             }
             $fieldMapping['nullable'] = $column->getNotNull() ? false : true;

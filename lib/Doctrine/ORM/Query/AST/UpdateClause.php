@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * UpdateClause ::= "UPDATE" AbstractSchemaName [["AS"] AliasIdentificationVariable] "SET" UpdateItem {"," UpdateItem}*
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -46,4 +46,3 @@ class UpdateClause extends Node
         return $sqlWalker->walkUpdateClause($this);
     }
 }
-

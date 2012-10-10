@@ -26,7 +26,7 @@ use Symfony\Component\Console\Input\InputArgument,
 /**
  * Command to ensure that Doctrine is properly configured for a production environment.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @version $Revision$

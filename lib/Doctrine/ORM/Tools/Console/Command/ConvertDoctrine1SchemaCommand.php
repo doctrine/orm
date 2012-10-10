@@ -29,7 +29,7 @@ use Symfony\Component\Console\Input\InputArgument,
 /**
  * Command to convert a Doctrine 1 schema to a Doctrine 2 mapping file.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
@@ -166,7 +166,7 @@ EOT
                 throw new \InvalidArgumentException(
                     sprintf("Doctrine 1.X schema directory '<info>%s</info>' does not exist.", $dirName)
                 );
-            } else if ( ! is_readable($dirName)) {
+            } elseif ( ! is_readable($dirName)) {
                 throw new \InvalidArgumentException(
                     sprintf("Doctrine 1.X schema directory '<info>%s</info>' does not have read permissions.", $dirName)
                 );
@@ -177,7 +177,7 @@ EOT
             throw new \InvalidArgumentException(
                 sprintf("Doctrine 2.X mapping destination directory '<info>%s</info>' does not exist.", $destPath)
             );
-        } else if ( ! is_writable($destPath)) {
+        } elseif ( ! is_writable($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Doctrine 2.X mapping destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );

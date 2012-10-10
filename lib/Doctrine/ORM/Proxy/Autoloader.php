@@ -38,7 +38,7 @@ class Autoloader
      * @param string $className
      * @return string
      */
-    static public function resolveFile($proxyDir, $proxyNamespace, $className)
+    public static function resolveFile($proxyDir, $proxyNamespace, $className)
     {
         if (0 !== strpos($className, $proxyNamespace)) {
             throw ProxyException::notProxyClass($className, $proxyNamespace);
@@ -57,7 +57,7 @@ class Autoloader
      * @param Closure $notFoundCallback Invoked when the proxy file is not found.
      * @return Closure
      */
-    static public function register($proxyDir, $proxyNamespace, \Closure $notFoundCallback = null)
+    public static function register($proxyDir, $proxyNamespace, \Closure $notFoundCallback = null)
     {
         $proxyNamespace = ltrim($proxyNamespace, "\\");
         $autoloader = function($className) use ($proxyDir, $proxyNamespace, $notFoundCallback) {
@@ -75,4 +75,3 @@ class Autoloader
         return $autoloader;
     }
 }
-

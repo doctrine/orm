@@ -63,7 +63,7 @@ class XmlDriver extends FileDriver
             if (isset($xmlRoot['read-only']) && $xmlRoot['read-only'] == "true") {
                 $metadata->markReadOnly();
             }
-        } else if ($xmlRoot->getName() == 'mapped-superclass') {
+        } elseif ($xmlRoot->getName() == 'mapped-superclass') {
             $metadata->setCustomRepositoryClass(
                 isset($xmlRoot['repository-class']) ? (string)$xmlRoot['repository-class'] : null
             );
@@ -284,12 +284,12 @@ class XmlDriver extends FileDriver
                     'allocationSize' => (string)$seqGenerator['allocation-size'],
                     'initialValue' => (string)$seqGenerator['initial-value']
                 ));
-            } else if (isset($idElement->{'custom-id-generator'})) {
+            } elseif (isset($idElement->{'custom-id-generator'})) {
                 $customGenerator = $idElement->{'custom-id-generator'};
                 $metadata->setCustomGeneratorDefinition(array(
                     'class' => (string) $customGenerator['class']
                 ));
-            } else if (isset($idElement->{'table-generator'})) {
+            } elseif (isset($idElement->{'table-generator'})) {
                 throw MappingException::tableIdGeneratorNotImplemented($className);
             }
         }
@@ -320,7 +320,7 @@ class XmlDriver extends FileDriver
 
                     if (isset($oneToOneElement->{'join-column'})) {
                         $joinColumns[] = $this->joinColumnToArray($oneToOneElement->{'join-column'});
-                    } else if (isset($oneToOneElement->{'join-columns'})) {
+                    } elseif (isset($oneToOneElement->{'join-columns'})) {
                         foreach ($oneToOneElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
                             $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
                         }
@@ -372,7 +372,7 @@ class XmlDriver extends FileDriver
 
                 if (isset($oneToManyElement['index-by'])) {
                     $mapping['indexBy'] = (string)$oneToManyElement['index-by'];
-                } else if (isset($oneToManyElement->{'index-by'})) {
+                } elseif (isset($oneToManyElement->{'index-by'})) {
                     throw new \InvalidArgumentException("<index-by /> is not a valid tag");
                 }
 
@@ -404,7 +404,7 @@ class XmlDriver extends FileDriver
 
                 if (isset($manyToOneElement->{'join-column'})) {
                     $joinColumns[] = $this->joinColumnToArray($manyToOneElement->{'join-column'});
-                } else if (isset($manyToOneElement->{'join-columns'})) {
+                } elseif (isset($manyToOneElement->{'join-columns'})) {
                     foreach ($manyToOneElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
                         $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
                     }
@@ -438,7 +438,7 @@ class XmlDriver extends FileDriver
 
                 if (isset($manyToManyElement['mapped-by'])) {
                     $mapping['mappedBy'] = (string)$manyToManyElement['mapped-by'];
-                } else if (isset($manyToManyElement->{'join-table'})) {
+                } elseif (isset($manyToManyElement->{'join-table'})) {
                     if (isset($manyToManyElement['inversed-by'])) {
                         $mapping['inversedBy'] = (string)$manyToManyElement['inversed-by'];
                     }
@@ -477,7 +477,7 @@ class XmlDriver extends FileDriver
 
                 if (isset($manyToManyElement['index-by'])) {
                     $mapping['indexBy'] = (string)$manyToManyElement['index-by'];
-                } else if (isset($manyToManyElement->{'index-by'})) {
+                } elseif (isset($manyToManyElement->{'index-by'})) {
                     throw new \InvalidArgumentException("<index-by /> is not a valid tag");
                 }
 
@@ -701,7 +701,7 @@ class XmlDriver extends FileDriver
                 $entityName = (string)$entityElement['name'];
                 $result[$entityName] = $entityElement;
             }
-        } else if (isset($xmlElement->{'mapped-superclass'})) {
+        } elseif (isset($xmlElement->{'mapped-superclass'})) {
             foreach ($xmlElement->{'mapped-superclass'} as $mappedSuperClass) {
                 $className = (string)$mappedSuperClass['name'];
                 $result[$className] = $mappedSuperClass;

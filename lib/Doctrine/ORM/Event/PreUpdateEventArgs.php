@@ -126,4 +126,3 @@ class PreUpdateEventArgs extends LifecycleEventArgs
         }
     }
 }
-

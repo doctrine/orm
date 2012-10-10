@@ -30,7 +30,7 @@ use Symfony\Component\Console\Input\InputArgument,
 /**
  * Command to convert your mapping information between the various formats.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
@@ -136,7 +136,7 @@ EOT
             throw new \InvalidArgumentException(
                 sprintf("Mapping destination directory '<info>%s</info>' does not exist.", $input->getArgument('dest-path'))
             );
-        } else if ( ! is_writable($destPath)) {
+        } elseif ( ! is_writable($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Mapping destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );

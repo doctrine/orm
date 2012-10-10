@@ -26,7 +26,7 @@ use Symfony\Component\Console\Input\InputArgument,
 /**
  * Command to execute DQL queries in a given EntityManager.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>

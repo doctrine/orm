@@ -23,7 +23,7 @@ namespace Doctrine\ORM\Mapping;
 /**
  * A set of rules for determining the physical column and table names
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.3
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
@@ -36,7 +36,7 @@ interface NamingStrategy
      * @param string $className The fully-qualified class name
      * @return string A table name
      */
-    function classToTableName($className);
+    public function classToTableName($className);
 
     /**
      * Return a column name for a property
@@ -45,14 +45,14 @@ interface NamingStrategy
      * @param string $className The fully-qualified class name
      * @return string A column name
      */
-    function propertyToColumnName($propertyName, $className = null);
+    public function propertyToColumnName($propertyName, $className = null);
 
     /**
      * Return the default reference column name
      *
      * @return string A column name
      */
-    function referenceColumnName();
+    public function referenceColumnName();
 
     /**
      * Return a join column name for a property
@@ -60,7 +60,7 @@ interface NamingStrategy
      * @param string $propertyName A property
      * @return string A join column name
      */
-    function joinColumnName($propertyName);
+    public function joinColumnName($propertyName);
 
     /**
      * Return a join table name
@@ -70,7 +70,7 @@ interface NamingStrategy
      * @param string $propertyName A property
      * @return string A join table name
      */
-    function joinTableName($sourceEntity, $targetEntity, $propertyName = null);
+    public function joinTableName($sourceEntity, $targetEntity, $propertyName = null);
 
     /**
      * Return the foreign key column name for the given parameters
@@ -79,5 +79,5 @@ interface NamingStrategy
      * @param string $referencedColumnName A property
      * @return string A join column name
      */
-    function joinKeyColumnName($entityName, $referencedColumnName = null);
+    public function joinKeyColumnName($entityName, $referencedColumnName = null);
 }

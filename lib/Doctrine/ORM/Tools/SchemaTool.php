@@ -33,7 +33,7 @@ use Doctrine\ORM\ORMException,
  * The SchemaTool is a tool to create/drop/update database schemas based on
  * <tt>ClassMetadata</tt> class descriptors.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -167,7 +167,7 @@ class SchemaTool
                     $this->_gatherRelationsSql($subClass, $table, $schema);
                     $processedClasses[$subClassName] = true;
                 }
-            } else if ($class->isInheritanceTypeJoined()) {
+            } elseif ($class->isInheritanceTypeJoined()) {
                 // Add all non-inherited fields as columns
                 $pkColumns = array();
                 foreach ($class->fieldMappings as $fieldName => $mapping) {
@@ -206,7 +206,7 @@ class SchemaTool
 
                 $table->setPrimaryKey($pkColumns);
 
-            } else if ($class->isInheritanceTypeTablePerClass()) {
+            } elseif ($class->isInheritanceTypeTablePerClass()) {
                 throw ORMException::notSupported();
             } else {
                 $this->_gatherColumns($class, $table);
@@ -217,7 +217,7 @@ class SchemaTool
             foreach ($class->identifier as $identifierField) {
                 if (isset($class->fieldMappings[$identifierField])) {
                     $pkColumns[] = $this->quoteStrategy->getColumnName($identifierField, $class, $this->platform);
-                } else if (isset($class->associationMappings[$identifierField])) {
+                } elseif (isset($class->associationMappings[$identifierField])) {
                     /* @var $assoc \Doctrine\ORM\Mapping\OneToOne */
                     $assoc = $class->associationMappings[$identifierField];
                     foreach ($assoc['joinColumns'] as $joinColumn) {
@@ -434,10 +434,10 @@ class SchemaTool
                 foreach($uniqueConstraints as $indexName => $unique) {
                     $table->addUniqueIndex($unique['columns'], is_numeric($indexName) ? null : $indexName);
                 }
-            } else if ($mapping['type'] == ClassMetadata::ONE_TO_MANY && $mapping['isOwningSide']) {
+            } elseif ($mapping['type'] == ClassMetadata::ONE_TO_MANY && $mapping['isOwningSide']) {
                 //... create join table, one-many through join table supported later
                 throw ORMException::notSupported();
-            } else if ($mapping['type'] == ClassMetadata::MANY_TO_MANY && $mapping['isOwningSide']) {
+            } elseif ($mapping['type'] == ClassMetadata::MANY_TO_MANY && $mapping['isOwningSide']) {
                 // create join table
                 $joinTable = $mapping['joinTable'];
 
@@ -479,7 +479,7 @@ class SchemaTool
 
         if ($class->hasField($referencedFieldName)) {
             return array($class, $referencedFieldName);
-        } else if (in_array($referencedColumnName, $class->getIdentifierColumnNames())) {
+        } elseif (in_array($referencedColumnName, $class->getIdentifierColumnNames())) {
             // it seems to be an entity as foreign key
             foreach ($class->getIdentifierFieldNames() as $fieldName) {
                 if ($class->hasAssociation($fieldName) && $class->getSingleAssociationJoinColumnName($fieldName) == $referencedColumnName) {
@@ -539,7 +539,7 @@ class SchemaTool
                 $columnDef = null;
                 if (isset($joinColumn['columnDefinition'])) {
                     $columnDef = $joinColumn['columnDefinition'];
-                } else if (isset($fieldMapping['columnDefinition'])) {
+                } elseif (isset($fieldMapping['columnDefinition'])) {
                     $columnDef = $fieldMapping['columnDefinition'];
                 }
                 $columnOptions = array('notnull' => false, 'columnDefinition' => $columnDef);
@@ -548,7 +548,7 @@ class SchemaTool
                 }
                 if ($fieldMapping['type'] == "string" && isset($fieldMapping['length'])) {
                     $columnOptions['length'] = $fieldMapping['length'];
-                } else if ($fieldMapping['type'] == "decimal") {
+                } elseif ($fieldMapping['type'] == "decimal") {
                     $columnOptions['scale'] = $fieldMapping['scale'];
                     $columnOptions['precision'] = $fieldMapping['precision'];
                 }

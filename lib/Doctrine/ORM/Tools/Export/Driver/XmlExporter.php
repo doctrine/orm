@@ -24,7 +24,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 /**
  * ClassMetadata exporter for Doctrine XML mapping files
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -201,11 +201,11 @@ class XmlExporter extends AbstractExporter
         foreach ($metadata->associationMappings as $name => $associationMapping) {
             if ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_ONE) {
                 $associationMappingXml = $root->addChild('one-to-one');
-            } else if ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_ONE) {
+            } elseif ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_ONE) {
                 $associationMappingXml = $root->addChild('many-to-one');
-            } else if ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_MANY) {
+            } elseif ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_MANY) {
                 $associationMappingXml = $root->addChild('one-to-many');
-            } else if ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
+            } elseif ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
                 $associationMappingXml = $root->addChild('many-to-many');
             }
 

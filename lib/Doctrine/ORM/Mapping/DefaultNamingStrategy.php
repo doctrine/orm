@@ -23,7 +23,7 @@ namespace Doctrine\ORM\Mapping;
 /**
  * The default NamingStrategy
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.3
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
@@ -74,7 +74,7 @@ class DefaultNamingStrategy implements NamingStrategy
         return strtolower($this->classToTableName($sourceEntity) . '_' .
                 $this->classToTableName($targetEntity));
     }
-    
+
     /**
      * {@inheritdoc}
      */

@@ -185,7 +185,7 @@ class ProxyFactory
             if (false === @mkdir($parentDirectory, 0775, true)) {
                 throw ProxyException::proxyDirectoryNotWritable();
             }
-        } else if ( ! is_writable($parentDirectory)) {
+        } elseif ( ! is_writable($parentDirectory)) {
             throw ProxyException::proxyDirectoryNotWritable();
         }
 
@@ -232,7 +232,7 @@ class ProxyFactory
                     // We need to pick the type hint class too
                     if (($paramClass = $param->getClass()) !== null) {
                         $parameterString .= '\\' . $paramClass->getName() . ' ';
-                    } else if ($param->isArray()) {
+                    } elseif ($param->isArray()) {
                         $parameterString .= 'array ';
                     }
 

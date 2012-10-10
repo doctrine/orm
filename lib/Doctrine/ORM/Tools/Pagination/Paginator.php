@@ -236,4 +236,3 @@ class Paginator implements \Countable, \IteratorAggregate
         return $this->useOutputWalkers;
     }
 }
-

@@ -603,7 +603,7 @@ class UnitOfWork implements PropertyChangedListener
                     $owner = $actualValue->getOwner();
                     if ($owner === null) { // cloned
                         $actualValue->setOwner($entity, $assoc);
-                    } else if ($owner !== $entity) { // no clone, we have to fix
+                    } elseif ($owner !== $entity) { // no clone, we have to fix
                         if (!$actualValue->isInitialized()) {
                             $actualValue->initialize(); // we have to do this otherwise the cols share state
                         }
@@ -875,7 +875,7 @@ class UnitOfWork implements PropertyChangedListener
 
             if (is_object($orgValue) && $orgValue !== $actualValue) {
                 $changeSet[$propName] = array($orgValue, $actualValue);
-            } else if ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
+            } elseif ($orgValue != $actualValue || ($orgValue === null ^ $actualValue === null)) {
                 $changeSet[$propName] = array($orgValue, $actualValue);
             }
         }
@@ -1803,10 +1803,10 @@ class UnitOfWork implements PropertyChangedListener
                         $other = $prop->getValue($entity);
                         if ($other === null) {
                             $prop->setValue($managedCopy, null);
-                        } else if ($other instanceof Proxy && !$other->__isInitialized__) {
+                        } elseif ($other instanceof Proxy && !$other->__isInitialized__) {
                             // do not merge fields marked lazy that have not been fetched.
                             continue;
-                        } else if ( ! $assoc2['isCascadeMerge']) {
+                        } elseif ( ! $assoc2['isCascadeMerge']) {
                             if ($this->getEntityState($other, self::STATE_DETACHED) !== self::STATE_MANAGED) {
                                 $targetClass = $this->em->getClassMetadata($assoc2['targetEntity']);
                                 $relatedId = $targetClass->getIdentifierValues($other);
@@ -2104,7 +2104,7 @@ class UnitOfWork implements PropertyChangedListener
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->doMerge($relatedEntity, $visited, $managedCopy, $assoc);
                 }
-            } else if ($relatedEntities !== null) {
+            } elseif ($relatedEntities !== null) {
                 $this->doMerge($relatedEntities, $visited, $managedCopy, $assoc);
             }
         }

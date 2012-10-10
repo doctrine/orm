@@ -111,7 +111,7 @@ EOT
 
         if ($dumpSql) {
             $output->writeln(implode(';' . PHP_EOL, $sqls));
-        } else if ($force) {
+        } elseif ($force) {
             $output->writeln('Updating database schema...');
             $schemaTool->updateSchema($metadatas, $saveMode);
             $output->writeln(sprintf('Database schema updated successfully! "<info>%s</info>" queries were executed', count($sqls)));

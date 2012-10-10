@@ -24,7 +24,7 @@ namespace Doctrine\ORM\Query\AST;
  * NewValue ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | BooleanPrimary |
  *              EnumPrimary | SimpleEntityExpression | "NULL"
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -47,4 +47,3 @@ class UpdateItem extends Node
         return $sqlWalker->walkUpdateItem($this);
     }
 }
-

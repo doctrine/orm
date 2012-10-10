@@ -354,7 +354,7 @@ class EntityManager implements ObjectManager
 
         $this->unitOfWork->commit($entity);
     }
-    
+
     /**
      * Finds an Entity by its identifier.
      *

@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * SelectStatement = SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -38,7 +38,8 @@ class SelectStatement extends Node
     public $havingClause;
     public $orderByClause;
 
-    public function __construct($selectClause, $fromClause) {
+    public function __construct($selectClause, $fromClause)
+    {
         $this->selectClause = $selectClause;
         $this->fromClause = $fromClause;
     }
