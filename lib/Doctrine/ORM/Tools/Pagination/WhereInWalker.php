@@ -17,19 +17,19 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\ORM\Query\AST\ArithmeticExpression,
-    Doctrine\ORM\Query\AST\SimpleArithmeticExpression,
-    Doctrine\ORM\Query\TreeWalkerAdapter,
-    Doctrine\ORM\Query\AST\SelectStatement,
-    Doctrine\ORM\Query\AST\PathExpression,
-    Doctrine\ORM\Query\AST\InExpression,
-    Doctrine\ORM\Query\AST\NullComparisonExpression,
-    Doctrine\ORM\Query\AST\InputParameter,
-    Doctrine\ORM\Query\AST\ConditionalPrimary,
-    Doctrine\ORM\Query\AST\ConditionalTerm,
-    Doctrine\ORM\Query\AST\ConditionalExpression,
-    Doctrine\ORM\Query\AST\ConditionalFactor,
-    Doctrine\ORM\Query\AST\WhereClause;
+use Doctrine\ORM\Query\AST\ArithmeticExpression;
+use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
+use Doctrine\ORM\Query\TreeWalkerAdapter;
+use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\AST\PathExpression;
+use Doctrine\ORM\Query\AST\InExpression;
+use Doctrine\ORM\Query\AST\NullComparisonExpression;
+use Doctrine\ORM\Query\AST\InputParameter;
+use Doctrine\ORM\Query\AST\ConditionalPrimary;
+use Doctrine\ORM\Query\AST\ConditionalTerm;
+use Doctrine\ORM\Query\AST\ConditionalExpression;
+use Doctrine\ORM\Query\AST\ConditionalFactor;
+use Doctrine\ORM\Query\AST\WhereClause;
 
 /**
  * Replaces the whereClause of the AST with a WHERE id IN (:foo_1, :foo_2) equivalent
@@ -79,7 +79,9 @@ class WhereInWalker extends TreeWalkerAdapter
             }
         }
         if (count($rootComponents) > 1) {
-            throw new \RuntimeException("Cannot count query which selects two FROM components, cannot make distinction");
+            throw new \RuntimeException(
+                'Cannot count query which selects two FROM components, cannot make distinction'
+            );
         }
         $root                = reset($rootComponents);
         $parentName          = key($root);
@@ -91,7 +93,9 @@ class WhereInWalker extends TreeWalkerAdapter
             $pathType = PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
         }
 
-        $pathExpression       = new PathExpression(PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $parentName, $identifierFieldName);
+        $expectedType         = (PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION);
+
+        $pathExpression       = new PathExpression($expectedType, $parentName, $identifierFieldName);
         $pathExpression->type = $pathType;
 
         $count = $this->_getQuery()->getHint(self::HINT_PAGINATOR_ID_COUNT);

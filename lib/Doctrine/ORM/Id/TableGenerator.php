@@ -61,7 +61,9 @@ class TableGenerator extends AbstractIdGenerator
                     $this->maxValue = $this->nextValue + $this->allocationSize;
 
                     $updateSql = $conn->getDatabasePlatform()->getTableHiLoUpdateNextValSql(
-                        $this->tableName, $this->sequenceName, $this->allocationSize
+                        $this->tableName,
+                        $this->sequenceName,
+                        $this->allocationSize
                     );
 
                     if ($conn->executeUpdate($updateSql, array(1 => $currentLevel, 2 => $currentLevel+1)) !== 1) {

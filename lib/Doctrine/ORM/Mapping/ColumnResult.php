@@ -38,5 +38,4 @@ final class ColumnResult implements Annotation
      * @var string
      */
     public $name;
-
 }

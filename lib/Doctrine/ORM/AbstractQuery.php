@@ -684,7 +684,9 @@ abstract class AbstractQuery
         $stmt = $this->doExecute();
 
         return $this->em->newHydrator($this->hydrationMode)->iterate(
-            $stmt, $this->resultSetMapping, $this->hints
+            $stmt,
+            $this->resultSetMapping,
+            $this->hints
         );
     }
 
@@ -705,7 +707,7 @@ abstract class AbstractQuery
             $this->setParameters($parameters);
         }
 
-        $setCacheEntry = function() {};
+        $setCacheEntry = function () {};
 
         if ($this->hydrationCacheProfile !== null) {
             list($cacheKey, $realCacheKey) = $this->getHydrationCacheId();
@@ -722,7 +724,7 @@ abstract class AbstractQuery
                 $result = array();
             }
 
-            $setCacheEntry = function($data) use ($cache, $result, $cacheKey, $realCacheKey, $queryCacheProfile) {
+            $setCacheEntry = function ($data) use ($cache, $result, $cacheKey, $realCacheKey, $queryCacheProfile) {
                 $result[$realCacheKey] = $data;
 
                 $cache->save($cacheKey, $result, $queryCacheProfile->getLifetime());

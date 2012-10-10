@@ -19,10 +19,10 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use SimpleXMLElement,
-    Doctrine\Common\Persistence\Mapping\Driver\FileDriver,
-    Doctrine\Common\Persistence\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\MappingException;
+use SimpleXMLElement;
+use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\MappingException;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
@@ -149,7 +149,9 @@ class XmlDriver extends FileDriver
 
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string)$xmlRoot['inheritance-type'];
-            $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceType));
+            $metadata->setInheritanceType(
+                constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceType)
+            );
 
             if ($metadata->inheritanceType != \Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_NONE) {
                 // Evaluate <discriminator-column...>
@@ -220,7 +222,7 @@ class XmlDriver extends FileDriver
         }
 
         if (isset($xmlRoot->options)) {
-            $metadata->table['options'] = $this->_parseOptions($xmlRoot->options->children());
+            $metadata->table['options'] = $this->parseOptions($xmlRoot->options->children());
         }
 
         // The mapping assignement is done in 2 times as a bug might occurs on some php/xml lib versions
@@ -307,7 +309,8 @@ class XmlDriver extends FileDriver
                 }
 
                 if (isset($oneToOneElement['fetch'])) {
-                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string)$oneToOneElement['fetch']);
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' .
+                    (string)$oneToOneElement['fetch']);
                 }
 
                 if (isset($oneToOneElement['mapped-by'])) {
@@ -330,7 +333,7 @@ class XmlDriver extends FileDriver
                 }
 
                 if (isset($oneToOneElement->cascade)) {
-                    $mapping['cascade'] = $this->_getCascadeMappings($oneToOneElement->cascade);
+                    $mapping['cascade'] = $this->getCascadeMappings($oneToOneElement->cascade);
                 }
 
                 if (isset($oneToOneElement['orphan-removal'])) {
@@ -351,11 +354,12 @@ class XmlDriver extends FileDriver
                 );
 
                 if (isset($oneToManyElement['fetch'])) {
-                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string)$oneToManyElement['fetch']);
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' .
+                    (string)$oneToManyElement['fetch']);
                 }
 
                 if (isset($oneToManyElement->cascade)) {
-                    $mapping['cascade'] = $this->_getCascadeMappings($oneToManyElement->cascade);
+                    $mapping['cascade'] = $this->getCascadeMappings($oneToManyElement->cascade);
                 }
 
                 if (isset($oneToManyElement['orphan-removal'])) {
@@ -393,7 +397,8 @@ class XmlDriver extends FileDriver
                 }
 
                 if (isset($manyToOneElement['fetch'])) {
-                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string)$manyToOneElement['fetch']);
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' .
+                    (string)$manyToOneElement['fetch']);
                 }
 
                 if (isset($manyToOneElement['inversed-by'])) {
@@ -413,7 +418,7 @@ class XmlDriver extends FileDriver
                 $mapping['joinColumns'] = $joinColumns;
 
                 if (isset($manyToOneElement->cascade)) {
-                    $mapping['cascade'] = $this->_getCascadeMappings($manyToOneElement->cascade);
+                    $mapping['cascade'] = $this->getCascadeMappings($manyToOneElement->cascade);
                 }
 
                 $metadata->mapManyToOne($mapping);
@@ -429,7 +434,8 @@ class XmlDriver extends FileDriver
                 );
 
                 if (isset($manyToManyElement['fetch'])) {
-                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string)$manyToManyElement['fetch']);
+                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' .
+                    (string)$manyToManyElement['fetch']);
                 }
 
                 if (isset($manyToManyElement['orphan-removal'])) {
@@ -464,7 +470,7 @@ class XmlDriver extends FileDriver
                 }
 
                 if (isset($manyToManyElement->cascade)) {
-                    $mapping['cascade'] = $this->_getCascadeMappings($manyToManyElement->cascade);
+                    $mapping['cascade'] = $this->getCascadeMappings($manyToManyElement->cascade);
                 }
 
                 if (isset($manyToManyElement->{'order-by'})) {
@@ -544,7 +550,8 @@ class XmlDriver extends FileDriver
         // Evaluate <lifecycle-callbacks...>
         if (isset($xmlRoot->{'lifecycle-callbacks'})) {
             foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} as $lifecycleCallback) {
-                $metadata->addLifecycleCallback((string)$lifecycleCallback['method'], constant('Doctrine\ORM\Events::' . (string)$lifecycleCallback['type']));
+                $metadata->addLifecycleCallback((string)$lifecycleCallback['method'], constant('Doctrine\ORM\Events::' .
+                (string)$lifecycleCallback['type']));
             }
         }
     }
@@ -555,14 +562,14 @@ class XmlDriver extends FileDriver
      * @param SimpleXMLElement $options the XML element.
      * @return array The options array.
      */
-    private function _parseOptions(SimpleXMLElement $options)
+    private function parseOptions(SimpleXMLElement $options)
     {
         $array = array();
 
         /* @var $option SimpleXMLElement */
         foreach ($options as $option) {
             if ($option->count()) {
-                $value = $this->_parseOptions($option->children());
+                $value = $this->parseOptions($option->children());
             } else {
                 $value = (string) $option;
             }
@@ -661,7 +668,7 @@ class XmlDriver extends FileDriver
         }
 
         if (isset($fieldMapping->options)) {
-            $mapping['options'] = $this->_parseOptions($fieldMapping->options->children());
+            $mapping['options'] = $this->parseOptions($fieldMapping->options->children());
         }
 
         return $mapping;
@@ -673,7 +680,7 @@ class XmlDriver extends FileDriver
      * @param SimpleXMLElement $cascadeElement the cascade element.
      * @return array The list of cascade options.
      */
-    private function _getCascadeMappings($cascadeElement)
+    private function getCascadeMappings($cascadeElement)
     {
         $cascades = array();
         /* @var $action SimpleXmlElement */

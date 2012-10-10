@@ -37,5 +37,4 @@ final class AssociationOverrides implements Annotation
      * @var array<\Doctrine\ORM\Mapping\AssociationOverride>
      */
     public $value;
-
 }

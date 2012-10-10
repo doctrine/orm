@@ -52,5 +52,4 @@ final class AssociationOverride implements Annotation
      * @var \Doctrine\ORM\Mapping\JoinTable
      */
     public $joinTable;
-
 }

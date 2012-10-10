@@ -784,19 +784,14 @@ class EntityManager implements ObjectManager
         switch ($hydrationMode) {
             case Query::HYDRATE_OBJECT:
                 return new Internal\Hydration\ObjectHydrator($this);
-
             case Query::HYDRATE_ARRAY:
                 return new Internal\Hydration\ArrayHydrator($this);
-
             case Query::HYDRATE_SCALAR:
                 return new Internal\Hydration\ScalarHydrator($this);
-
             case Query::HYDRATE_SINGLE_SCALAR:
                 return new Internal\Hydration\SingleScalarHydrator($this);
-
             case Query::HYDRATE_SIMPLEOBJECT:
                 return new Internal\Hydration\SimpleObjectHydrator($this);
-
             default:
                 if (($class = $this->config->getCustomHydrationMode($hydrationMode)) !== null) {
                     return new $class($this);
@@ -846,7 +841,9 @@ class EntityManager implements ObjectManager
         switch (true) {
             case (is_array($conn)):
                 $conn = \Doctrine\DBAL\DriverManager::getConnection(
-                    $conn, $config, ($eventManager ?: new EventManager())
+                    $conn,
+                    $config,
+                    ($eventManager ?: new EventManager())
                 );
                 break;
             case ($conn instanceof Connection):

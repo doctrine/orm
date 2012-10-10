@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Internal\Hydration;
 use PDO;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Query;
+use Doctrine\ORM\Query; /* unused use */
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Proxy\Proxy;
 
@@ -111,7 +111,10 @@ class ObjectHydrator extends AbstractHydrator
             }
 
             if ( ! isset($this->rsm->aliasMap[$this->rsm->parentAliasMap[$dqlAlias]])) {
-                throw HydrationException::parentObjectOfRelationNotFound($dqlAlias, $this->rsm->parentAliasMap[$dqlAlias]);
+                throw HydrationException::parentObjectOfRelationNotFound(
+                    $dqlAlias,
+                    $this->rsm->parentAliasMap[$dqlAlias]
+                );
             }
 
             $sourceClassName = $this->rsm->aliasMap[$this->rsm->parentAliasMap[$dqlAlias]];
@@ -245,7 +248,11 @@ class ObjectHydrator extends AbstractHydrator
         if (isset($this->rsm->discriminatorColumns[$dqlAlias])) {
 
             if ( ! isset($this->rsm->metaMappings[$this->rsm->discriminatorColumns[$dqlAlias]])) {
-                throw HydrationException::missingDiscriminatorMetaMappingColumn($className, $this->rsm->discriminatorColumns[$dqlAlias], $dqlAlias);
+                throw HydrationException::missingDiscriminatorMetaMappingColumn(
+                    $className,
+                    $this->rsm->discriminatorColumns[$dqlAlias],
+                    $dqlAlias
+                );
             }
 
             $discrColumn = $this->rsm->metaMappings[$this->rsm->discriminatorColumns[$dqlAlias]];
@@ -294,7 +301,10 @@ class ObjectHydrator extends AbstractHydrator
             }
             return $this->uow->tryGetByIdHash(rtrim($idHash), $class->rootEntityName);
         } elseif (isset($class->associationMappings[$class->identifier[0]])) {
-            return $this->uow->tryGetByIdHash($data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']], $class->rootEntityName);
+            return $this->uow->tryGetByIdHash(
+                $data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']],
+                $class->rootEntityName
+            );
         } else {
             return $this->uow->tryGetByIdHash($data[$class->identifier[0]], $class->rootEntityName);
         }
@@ -412,11 +422,20 @@ class ObjectHydrator extends AbstractHydrator
                         if (isset($this->initializedCollections[$collKey])) {
                             $reflFieldValue = $this->initializedCollections[$collKey];
                         } elseif ( ! isset($this->existingCollections[$collKey])) {
-                            $reflFieldValue = $this->initRelatedCollection($parentObject, $parentClass, $relationField, $parentAlias);
+                            $reflFieldValue = $this->initRelatedCollection(
+                                $parentObject,
+                                $parentClass,
+                                $relationField,
+                                $parentAlias
+                            );
                         }
 
                         $indexExists    = isset($this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]]);
-                        $index          = $indexExists ? $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] : false;
+                        if ($index) {
+                            $index = $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]];
+                        } else {
+                            $index = false;
+                        }
                         $indexIsValid   = $index !== false ? isset($reflFieldValue[$index]) : false;
 
                         if ( ! $indexExists || ! $indexIsValid) {

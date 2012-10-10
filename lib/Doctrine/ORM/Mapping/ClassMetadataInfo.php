@@ -902,7 +902,10 @@ class ClassMetadataInfo implements ClassMetadata
     {
         foreach ($this->associationMappings as $mapping) {
             if ( ! ClassLoader::classExists($mapping['targetEntity']) ) {
-                throw MappingException::invalidTargetEntityClass($mapping['targetEntity'], $this->name, $mapping['fieldName']);
+                throw MappingException::invalidTargetEntityClass(
+                    $mapping['targetEntity'],
+                    $this->name, $mapping['fieldName']
+                );
             }
         }
     }
@@ -1197,7 +1200,8 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         $this->columnNames[$mapping['fieldName']] = $mapping['columnName'];
-        if (isset($this->fieldNames[$mapping['columnName']]) || ($this->discriminatorColumn != null && $this->discriminatorColumn['name'] == $mapping['columnName'])) {
+        if (isset($this->fieldNames[$mapping['columnName']]) ||
+           ($this->discriminatorColumn != null && $this->discriminatorColumn['name'] == $mapping['columnName'])) {
             throw MappingException::duplicateColumnName($this->name, $mapping['columnName']);
         }
 
@@ -1220,7 +1224,11 @@ class ClassMetadataInfo implements ClassMetadata
 
         if (Type::hasType($mapping['type']) && Type::getType($mapping['type'])->canRequireSQLConversion()) {
             if (isset($mapping['id']) && $mapping['id'] === true) {
-                 throw MappingException::sqlConversionNotAllowedForIdentifiers($this->name, $mapping['fieldName'], $mapping['type']);
+                 throw MappingException::sqlConversionNotAllowedForIdentifiers(
+                     $this->name,
+                     $mapping['fieldName'],
+                     $mapping['type']
+                 );
             }
 
             $mapping['requireSQLConversion'] = true;
@@ -1328,9 +1336,11 @@ class ClassMetadataInfo implements ClassMetadata
             $cascades = array('remove', 'persist', 'refresh', 'merge', 'detach');
         }
 
-        if (count($cascades) !== count(array_intersect($cascades, array('remove', 'persist', 'refresh', 'merge', 'detach')))) {
+        $array_intersect = array_intersect($cascades, array('remove', 'persist', 'refresh', 'merge', 'detach'));
+
+        if (count($cascades) !== count($array_intersect)) {
             throw MappingException::invalidCascadeOption(
-                array_diff($cascades, array_intersect($cascades, array('remove', 'persist', 'refresh', 'merge', 'detach'))),
+                array_diff($cascades, $array_intersect),
                 $this->name,
                 $mapping['fieldName']
             );
@@ -1408,7 +1418,9 @@ class ClassMetadataInfo implements ClassMetadata
 
             if ($uniqueContraintColumns) {
                 if ( ! $this->table) {
-                    throw new RuntimeException("ClassMetadataInfo::setTable() has to be called before defining a one to one relationship.");
+                    throw new RuntimeException(
+                        "ClassMetadataInfo::setTable() has to be called before defining a one to one relationship."
+                    );
                 }
                 $this->table['uniqueConstraints'][$mapping['fieldName']."_uniq"] = array(
                     'columns' => $uniqueContraintColumns
@@ -1450,7 +1462,9 @@ class ClassMetadataInfo implements ClassMetadata
 
         if (isset($mapping['orderBy'])) {
             if ( ! is_array($mapping['orderBy'])) {
-                throw new InvalidArgumentException("'orderBy' is expected to be an array, not ".gettype($mapping['orderBy']));
+                throw new InvalidArgumentException(
+                    "'orderBy' is expected to be an array, not ".gettype($mapping['orderBy'])
+                );
             }
         }
 
@@ -1462,8 +1476,12 @@ class ClassMetadataInfo implements ClassMetadata
         $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
         if ($mapping['isOwningSide']) {
             // owning side MUST have a join table
-            if ( ! isset($mapping['joinTable']['name'])) {
-                $mapping['joinTable']['name'] = $this->namingStrategy->joinTableName($mapping['sourceEntity'], $mapping['targetEntity'], $mapping['fieldName']);
+            if (!isset($mapping['joinTable']['name'])) {
+                $mapping['joinTable']['name'] = $this->namingStrategy->joinTableName(
+                    $mapping['sourceEntity'],
+                    $mapping['targetEntity'],
+                    $mapping['fieldName']
+                );
             }
 
             if ( ! isset($mapping['joinTable']['joinColumns'])) {
@@ -1481,7 +1499,10 @@ class ClassMetadataInfo implements ClassMetadata
 
             foreach ($mapping['joinTable']['joinColumns'] as &$joinColumn) {
                 if (empty($joinColumn['name'])) {
-                    $joinColumn['name'] = $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $joinColumn['referencedColumnName']);
+                    $joinColumn['name'] = $this->namingStrategy->joinKeyColumnName(
+                        $mapping['sourceEntity'],
+                        $joinColumn['referencedColumnName']
+                    );
                 }
 
                 if (empty($joinColumn['referencedColumnName'])) {
@@ -1506,31 +1527,34 @@ class ClassMetadataInfo implements ClassMetadata
                 $mapping['joinTableColumns'][] = $joinColumn['name'];
             }
 
-            foreach ($mapping['joinTable']['inverseJoinColumns'] as &$inverseJoinColumn) {
-                if (empty($inverseJoinColumn['name'])) {
-                    $inverseJoinColumn['name'] = $this->namingStrategy->joinKeyColumnName($mapping['targetEntity'], $inverseJoinColumn['referencedColumnName']);
+            foreach ($mapping['joinTable']['inverseJoinColumns'] as &$invJoinColumn) {
+                if (empty($invJoinColumn['name'])) {
+                    $invJoinColumn['name'] = $this->namingStrategy->joinKeyColumnName(
+                        $mapping['targetEntity'],
+                        $invJoinColumn['referencedColumnName']
+                    );
                 }
 
-                if (empty($inverseJoinColumn['referencedColumnName'])) {
-                    $inverseJoinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
+                if (empty($invJoinColumn['referencedColumnName'])) {
+                    $invJoinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
                 }
 
-                if ($inverseJoinColumn['name'][0] === '`') {
-                    $inverseJoinColumn['name']   = trim($inverseJoinColumn['name'], '`');
-                    $inverseJoinColumn['quoted'] = true;
+                if ($invJoinColumn['name'][0] === '`') {
+                    $invJoinColumn['name']   = trim($invJoinColumn['name'], '`');
+                    $invJoinColumn['quoted'] = true;
                 }
 
-                if ($inverseJoinColumn['referencedColumnName'][0] === '`') {
-                    $inverseJoinColumn['referencedColumnName']  = trim($inverseJoinColumn['referencedColumnName'], '`');
-                    $inverseJoinColumn['quoted']                = true;
+                if ($invJoinColumn['referencedColumnName'][0] === '`') {
+                    $invJoinColumn['referencedColumnName']  = trim($invJoinColumn['referencedColumnName'], '`');
+                    $invJoinColumn['quoted']                = true;
                 }
 
-                if (isset($inverseJoinColumn['onDelete']) && strtolower($inverseJoinColumn['onDelete']) == 'cascade') {
+                if (isset($invJoinColumn['onDelete']) && strtolower($invJoinColumn['onDelete']) == 'cascade') {
                     $mapping['isOnDeleteCascade'] = true;
                 }
 
-                $mapping['relationToTargetKeyColumns'][$inverseJoinColumn['name']] = $inverseJoinColumn['referencedColumnName'];
-                $mapping['joinTableColumns'][] = $inverseJoinColumn['name'];
+                $mapping['relationToTargetKeyColumns'][$invJoinColumn['name']] = $invJoinColumn['referencedColumnName'];
+                $mapping['joinTableColumns'][] = $invJoinColumn['name'];
             }
         }
 
@@ -1538,7 +1562,8 @@ class ClassMetadataInfo implements ClassMetadata
 
         if (isset($mapping['orderBy'])) {
             if ( ! is_array($mapping['orderBy'])) {
-                throw new InvalidArgumentException("'orderBy' is expected to be an array, not ".gettype($mapping['orderBy']));
+                throw new InvalidArgumentException(
+                    "'orderBy' is expected to be an array, not ".gettype($mapping['orderBy']));
             }
         }
 
@@ -2046,7 +2071,8 @@ class ClassMetadataInfo implements ClassMetadata
     public function mapField(array $mapping)
     {
         $this->_validateAndCompleteFieldMapping($mapping);
-        if (isset($this->fieldMappings[$mapping['fieldName']]) || isset($this->associationMappings[$mapping['fieldName']])) {
+        if (isset($this->fieldMappings[$mapping['fieldName']]) ||
+            isset($this->associationMappings[$mapping['fieldName']])) {
             throw MappingException::duplicateFieldMapping($this->name, $mapping['fieldName']);
         }
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
@@ -2197,7 +2223,10 @@ class ClassMetadataInfo implements ClassMetadata
                 if (isset($entityResult['fields'])) {
                     foreach ($entityResult['fields'] as $k => $field) {
                         if (!isset($field['name'])) {
-                            throw MappingException::missingResultSetMappingFieldName($this->name, $resultMapping['name']);
+                            throw MappingException::missingResultSetMappingFieldName(
+                                $this->name,
+                                $resultMapping['name']
+                            );
                         }
 
                         if (!isset($field['column'])) {
@@ -2628,7 +2657,11 @@ class ClassMetadataInfo implements ClassMetadata
             } elseif ($mapping['type'] == 'datetime') {
                 $mapping['default'] = 'CURRENT_TIMESTAMP';
             } else {
-                throw MappingException::unsupportedOptimisticLockingType($this->name, $mapping['fieldName'], $mapping['type']);
+                throw MappingException::unsupportedOptimisticLockingType(
+                    $this->name,
+                    $mapping['fieldName'],
+                    $mapping['type']
+                );
             }
         }
     }
@@ -2779,7 +2812,11 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getQuotedJoinTableName(array $assoc, $platform)
     {
-        return isset($assoc['joinTable']['quoted']) ? $platform->quoteIdentifier($assoc['joinTable']['name']) : $assoc['joinTable']['name'];
+        if(isset($assoc['joinTable']['quoted']) === true) {
+            return $platform->quoteIdentifier($assoc['joinTable']['name']);
+        } else {
+          return $assoc['joinTable']['name'];
+        }
     }
 
     /**
@@ -2787,7 +2824,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function isAssociationInverseSide($fieldName)
     {
-        return isset($this->associationMappings[$fieldName]) && ! $this->associationMappings[$fieldName]['isOwningSide'];
+        return isset($this->associationMappings[$fieldName]) && !$this->associationMappings[$fieldName]['isOwningSide'];
     }
 
     /**

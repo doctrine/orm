@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Internal\Hydration;
 
 use PDO;
-use Doctrine\DBAL\Connection;
+//use Doctrine\DBAL\Connection; /* unused use */
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
@@ -143,7 +143,9 @@ abstract class AbstractHydrator
      * through {@link hydrateAll} or {@link iterate()}.
      */
     protected function prepare()
-    {}
+    {
+        // nothing
+    }
 
     /**
      * Excutes one-time cleanup tasks at the end of a hydration that was initiated
@@ -211,24 +213,25 @@ abstract class AbstractHydrator
                         $cache[$key]['isIdentifier'] = $classMetadata->isIdentifier($fieldName);
                         $cache[$key]['dqlAlias']     = $this->rsm->columnOwnerMap[$key];
                         break;
-
                     case (isset($this->rsm->scalarMappings[$key])):
                         $cache[$key]['fieldName'] = $this->rsm->scalarMappings[$key];
                         $cache[$key]['type']      = Type::getType($this->rsm->typeMappings[$key]);
                         $cache[$key]['isScalar']  = true;
                         break;
-
                     case (isset($this->rsm->metaMappings[$key])):
-                        // Meta column (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
+                        // Meta column
+                        // (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
                         $fieldName     = $this->rsm->metaMappings[$key];
-                        $classMetadata = $this->em->getClassMetadata($this->rsm->aliasMap[$this->rsm->columnOwnerMap[$key]]);
+                        $classMetadata = $this->em->getClassMetadata(
+                            $this->rsm->aliasMap[$this->rsm->columnOwnerMap[$key]]
+                        );
+                        $isIdentifier = isset($this->rsm->isIdentifierColumn[$cache[$key]['dqlAlias']][$key]);
 
                         $cache[$key]['isMetaColumn'] = true;
                         $cache[$key]['fieldName']    = $fieldName;
                         $cache[$key]['dqlAlias']     = $this->rsm->columnOwnerMap[$key];
-                        $cache[$key]['isIdentifier'] = isset($this->rsm->isIdentifierColumn[$cache[$key]['dqlAlias']][$key]);
+                        $cache[$key]['isIdentifier'] = $isIdentifier;
                         break;
-
                     default:
                         // this column is a left over, maybe from a LIMIT query hack for example in Oracle or DB2
                         // maybe from an additional column that has not been defined in a NativeQuery ResultSetMapping.
@@ -287,7 +290,8 @@ abstract class AbstractHydrator
                 continue;
             }
 
-            $rowData[$dqlAlias][$cache[$key]['fieldName']] = $cache[$key]['type']->convertToPHPValue($value, $this->platform);
+            $fieldName = $cache[$key]['type']->convertToPHPValue($value, $this->platform);
+            $rowData[$dqlAlias][$cache[$key]['fieldName']] = $fieldName;
 
             if ( ! isset($nonemptyComponents[$dqlAlias]) && $value !== null) {
                 $nonemptyComponents[$dqlAlias] = true;

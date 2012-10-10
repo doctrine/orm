@@ -44,7 +44,9 @@ class CountWalker extends TreeWalkerAdapter
     public function walkSelectStatement(SelectStatement $AST)
     {
         if ($AST->havingClause) {
-            throw new \RuntimeException('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
+            throw new \RuntimeException(
+                'Cannot count query that uses a HAVING clause. Use the output walkers for pagination'
+            );
         }
 
         $rootComponents = array();
@@ -58,7 +60,9 @@ class CountWalker extends TreeWalkerAdapter
             }
         }
         if (count($rootComponents) > 1) {
-            throw new \RuntimeException("Cannot count query which selects two FROM components, cannot make distinction");
+            throw new \RuntimeException(
+                'Cannot count query which selects two FROM components, cannot make distinction'
+            );
         }
         $root                = reset($rootComponents);
         $parentName          = key($root);
