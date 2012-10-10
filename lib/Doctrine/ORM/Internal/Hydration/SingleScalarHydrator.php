@@ -19,9 +19,9 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\DBAL\Connection,
-    Doctrine\ORM\NoResultException,
-    Doctrine\ORM\NonUniqueResultException;
+use Doctrine\DBAL\Connection;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\NonUniqueResultException;
 
 /**
  * Hydrator that hydrates a single scalar value from the result set.

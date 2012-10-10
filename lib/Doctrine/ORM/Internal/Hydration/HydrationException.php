@@ -33,10 +33,12 @@ class HydrationException extends \Doctrine\ORM\ORMException
      */
     public static function missingDiscriminatorColumn($entityName, $discrColumnName, $dqlAlias)
     {
-        return new self(sprintf(
-            'The discriminator column "%s" is missing for "%s" using the DQL alias "%s".',
-            $discrColumnName, $entityName, $dqlAlias
-        ));
+        return new self(
+            sprintf(
+                'The discriminator column "%s" is missing for "%s" using the DQL alias "%s".',
+                $discrColumnName, $entityName, $dqlAlias
+            )
+        );
     }
 
     /**
@@ -48,9 +50,11 @@ class HydrationException extends \Doctrine\ORM\ORMException
      */
     public static function missingDiscriminatorMetaMappingColumn($entityName, $discrColumnName, $dqlAlias)
     {
-        return new self(sprintf(
-            'The meta mapping for the discriminator column "%s" is missing for "%s" using the DQL alias "%s".',
-            $discrColumnName, $entityName, $dqlAlias
-        ));
+        return new self(
+            sprintf(
+                'The meta mapping for the discriminator column "%s" is missing for "%s" using the DQL alias "%s".',
+                $discrColumnName, $entityName, $dqlAlias
+            )
+        );
     }
 }

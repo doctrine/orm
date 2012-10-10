@@ -203,8 +203,8 @@ class SchemaTool
                             $this->em->getClassMetadata($class->rootEntityName),
                             $this->platform
                         ),
-                        array($columnName), 
-                        array($columnName), 
+                        array($columnName),
+                        array($columnName),
                         array('onDelete' => 'CASCADE')
                     );
                 }

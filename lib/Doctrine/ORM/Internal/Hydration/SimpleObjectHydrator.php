@@ -19,12 +19,12 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use \PDO,
-    Doctrine\DBAL\Types\Type,
-    Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Event\LifecycleEventArgs,
-    Doctrine\ORM\Events,
-    Doctrine\ORM\Query;
+use \PDO;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Events;
+use Doctrine\ORM\Query;
 
 class SimpleObjectHydrator extends AbstractHydrator
 {
@@ -152,32 +152,26 @@ class SimpleObjectHydrator extends AbstractHydrator
                 $class = isset($this->declaringClasses[$column])
                     ? $this->declaringClasses[$column]
                     : $this->class;
-
                 // If class is not part of the inheritance, ignore
                 if ( ! ($class->name === $entityName || is_subclass_of($entityName, $class->name))) {
                     return null;
                 }
-
                 return array(
                     'class' => $class,
                     'name'  => $this->rsm->fieldMappings[$column],
                     'field' => true,
                 );
-
             case (isset($this->rsm->relationMap[$column])):
                 $class = isset($this->rsm->relationMap[$column])
                     ? $this->rsm->relationMap[$column]
                     : $this->class;
-
                 // If class is not self referencing, ignore
-                if ( ! ($class === $entityName || is_subclass_of($entityName, $class))) {
+                if (!($class === $entityName || is_subclass_of($entityName, $class))) {
                     return null;
                 }
-
                 // TODO: Decide what to do with associations. It seems original code is incomplete.
                 // One solution is to load the association, but it might require extra efforts.
                 return array('name' => $column);
-
             default:
                 return array(
                     'name' => $this->rsm->metaMappings[$column]
