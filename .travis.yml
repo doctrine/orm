@@ -16,4 +16,6 @@ before_script:
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS doctrine_tests_tmp;create database IF NOT EXISTS doctrine_tests;'; fi"
   - git submodule update --init
 
-script: phpunit --configuration tests/travis/$DB.travis.xml
+script:
+  - phpunit --configuration tests/travis/$DB.travis.xml
+  - phpcs --encoding=utf-8 --tab-width=4 --extensions=php --standard=PSR2 ./lib/Doctrine
