@@ -528,7 +528,9 @@ class UnitOfWork implements PropertyChangedListener
 
                 // Inject PersistentCollection
                 $value = new PersistentCollection(
-                    $this->em, $this->em->getClassMetadata($assoc['targetEntity']), $value
+                    $this->em,
+                    $this->em->getClassMetadata($assoc['targetEntity']),
+                    $value
                 );
                 $value->setOwner($entity, $assoc);
                 $value->setDirty( ! $value->isEmpty());

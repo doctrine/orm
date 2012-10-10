@@ -451,14 +451,15 @@ class ObjectHydrator extends AbstractHydrator
                             } else {
                                 $element = $this->getEntity($data, $dqlAlias);
 
+                                $parentAlias = $id[$parentAlias];
                                 if (isset($this->rsm->indexByMap[$dqlAlias])) {
                                     $indexValue = $row[$this->rsm->indexByMap[$dqlAlias]];
                                     $reflFieldValue->hydrateSet($indexValue, $element);
-                                    $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $indexValue;
+                                    $this->identifierMap[$path][$parentAlias][$id[$dqlAlias]] = $indexValue;
                                 } else {
                                     $reflFieldValue->hydrateAdd($element);
                                     $reflFieldValue->last();
-                                    $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $reflFieldValue->key();
+                                    $this->identifierMap[$path][$parentAlias][$id[$dqlAlias]] = $reflFieldValue->key();
                                 }
                                 // Update result pointer
                                 $this->resultPointers[$dqlAlias] = $element;

@@ -137,7 +137,8 @@ class AssociationBuilder
         $nullable = true,
         $unique = false,
         $onDelete = null,
-        $columnDef = null) {
+        $columnDef = null
+    ) {
         $this->joinColumns[] = array(
             'name' => $columnName,
             'referencedColumnName' => $referencedColumnName,

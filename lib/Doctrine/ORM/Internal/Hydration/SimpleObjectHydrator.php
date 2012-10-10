@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Internal\Hydration;
 use \PDO;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
+
 //use Doctrine\ORM\Event\LifecycleEventArgs; /* unused use */
 //use Doctrine\ORM\Events; /* unused use */
 //use Doctrine\ORM\Query; /* unused use */

@@ -355,11 +355,9 @@ abstract class AbstractHydrator
                 case (isset($cache[$key]['isScalar'])):
                     $rowData[$fieldName] = $value;
                     break;
-
                 case (isset($cache[$key]['isMetaColumn'])):
                     $rowData[$cache[$key]['dqlAlias'] . '_' . $fieldName] = $value;
                     break;
-
                 default:
                     $value = $cache[$key]['type']->convertToPHPValue($value, $this->platform);
 

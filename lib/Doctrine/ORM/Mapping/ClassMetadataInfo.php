@@ -1566,7 +1566,8 @@ class ClassMetadataInfo implements ClassMetadata
         if (isset($mapping['orderBy'])) {
             if ( ! is_array($mapping['orderBy'])) {
                 throw new InvalidArgumentException(
-                    "'orderBy' is expected to be an array, not ".gettype($mapping['orderBy']));
+                    "'orderBy' is expected to be an array, not ".gettype($mapping['orderBy'])
+                );
             }
         }
 
@@ -1676,7 +1677,10 @@ class ClassMetadataInfo implements ClassMetadata
 
             // Association defined as Id field
             $joinColumns      = $this->associationMappings[$idProperty]['joinColumns'];
-            $assocColumnNames = array_map(function ($joinColumn) { return $joinColumn['name']; }, $joinColumns);
+            $assocColumnNames = array_map(
+                function ($joinColumn) { return $joinColumn['name']; },
+                $joinColumns
+            );
 
             $columnNames = array_merge($columnNames, $assocColumnNames);
         }
@@ -1876,7 +1880,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function setInheritanceType($type)
     {
-        if ( ! $this->_isInheritanceType($type)) {
+        if ( ! $this->isInheritanceType($type)) {
             throw MappingException::invalidInheritanceType($this->name, $type);
         }
         $this->inheritanceType = $type;
@@ -2056,7 +2060,7 @@ class ClassMetadataInfo implements ClassMetadata
      * @param integer $type
      * @return boolean TRUE if the given type identifies an inheritance type, FALSe otherwise.
      */
-    private function _isInheritanceType($type)
+    private function isInheritanceType($type)
     {
         return $type == self::INHERITANCE_TYPE_NONE ||
                 $type == self::INHERITANCE_TYPE_SINGLE_TABLE ||
@@ -2234,7 +2238,7 @@ class ClassMetadataInfo implements ClassMetadata
 
                         if (!isset($field['column'])) {
                             $fieldName = $field['name'];
-                            if(strpos($fieldName, '.')) {
+                            if (strpos($fieldName, '.')) {
                                 list(, $fieldName) = explode('.', $fieldName);
                             }
 

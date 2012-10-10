@@ -350,13 +350,15 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         foreach ($parentClass->namedNativeQueries as $name => $query) {
             if ( ! isset ($subClass->namedNativeQueries[$name])) {
-                $subClass->addNamedNativeQuery(array(
-                    'name'              => $query['name'],
-                    'query'             => $query['query'],
-                    'isSelfClass'       => $query['isSelfClass'],
-                    'resultSetMapping'  => $query['resultSetMapping'],
-                    'resultClass'       => $query['isSelfClass'] ? $subClass->name : $query['resultClass'],
-                ));
+                $subClass->addNamedNativeQuery(
+                    array(
+                        'name'              => $query['name'],
+                        'query'             => $query['query'],
+                        'isSelfClass'       => $query['isSelfClass'],
+                        'resultSetMapping'  => $query['resultSetMapping'],
+                        'resultClass'       => $query['isSelfClass'] ? $subClass->name : $query['resultClass'],
+                    )
+                );
             }
         }
     }
@@ -458,7 +460,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 }
                 $sequenceGenerator = new \Doctrine\ORM\Id\SequenceGenerator(
                     $this->em->getConfiguration()->getQuoteStrategy()->getSequenceName(
-                        $definition, $class,
+                        $definition,
+                        $class,
                         $this->targetPlatform
                     ),
                     $definition['allocationSize']
@@ -477,8 +480,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             case ClassMetadata::GENERATOR_TYPE_CUSTOM:
                 $definition = $class->customGeneratorDefinition;
                 if ( ! class_exists($definition['class'])) {
-                    throw new ORMException("Can't instantiate custom generator : " .
-                        $definition['class']);
+                    throw new ORMException(
+                        "Can't instantiate custom generator : " . $definition['class']
+                    );
                 }
                 $class->setIdGenerator(new $definition['class']);
                 break;

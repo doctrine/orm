@@ -56,7 +56,8 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
         $nullable = true,
         $unique = false,
         $onDelete = null,
-        $columnDef = null) {
+        $columnDef = null
+    ) {
         $this->inverseJoinColumns[] = array(
             'name' => $columnName,
             'referencedColumnName' => $referencedColumnName,

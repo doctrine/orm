@@ -23,7 +23,7 @@ use Doctrine\ORM\Query\TreeWalkerAdapter;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\PathExpression;
-use Doctrine\ORM\Query\AST\AggregateExpression;
+// use Doctrine\ORM\Query\AST\AggregateExpression; /* unused use */
 
 /**
  * Replaces the selectClause of the AST with a SELECT DISTINCT root.id equivalent
@@ -115,5 +115,4 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
 
         $AST->selectClause->isDistinct = true;
     }
-
 }
