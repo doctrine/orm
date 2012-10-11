@@ -60,7 +60,7 @@ class <className> extends EntityRepository
         );
         return str_replace(array_keys($variables), array_values($variables), self::$_template);
     }
-    
+
     /**
      * Generate the namespace statement, if class do not have namespace, return empty string instead
      * 
