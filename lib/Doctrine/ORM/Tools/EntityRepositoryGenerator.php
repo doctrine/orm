@@ -35,7 +35,7 @@ class EntityRepositoryGenerator
     protected static $_template =
 '<?php
 
-namespace <namespace>;
+<namespace>
 
 use Doctrine\ORM\EntityRepository;
 
@@ -52,16 +52,28 @@ class <className> extends EntityRepository
 
     public function generateEntityRepositoryClass($fullClassName)
     {
-        $namespace = substr($fullClassName, 0, strrpos($fullClassName, '\\'));
         $className = substr($fullClassName, strrpos($fullClassName, '\\') + 1, strlen($fullClassName));
 
         $variables = array(
-            '<namespace>' => $namespace,
+            '<namespace>' => $this->generateEntityRepositoryNamespace($fullClassName),
             '<className>' => $className
         );
         return str_replace(array_keys($variables), array_values($variables), self::$_template);
     }
-
+    
+    /**
+     * Generate the namespace statement, if class do not have namespace, return empty string instead
+     * 
+     * @param string $fullClassName The full repository class name
+     * @return string $namespace
+     */
+    private function generateEntityRepositoryNamespace($fullClassName)
+    {
+        $namespace = substr($fullClassName, 0, strrpos($fullClassName, '\\'));
+        
+        return $namespace ? 'namespace ' . $namespace . ';' : '';
+    }
+    
     public function writeEntityRepositoryClass($fullClassName, $outputDirectory)
     {
         $code = $this->generateEntityRepositoryClass($fullClassName);
