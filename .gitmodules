@@ -4,3 +4,6 @@
 [submodule "lib/vendor/doctrine-build-common"]
     path = lib/vendor/doctrine-build-common
     url = git://github.com/doctrine/doctrine-build-common.git
+[submodule "lib/vendor/Symfony/Component/Config"]
+        path = lib/vendor/Symfony/Component/Config
+        url = git://github.com/symfony/Config.git

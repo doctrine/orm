@@ -1,0 +1,2 @@
+Doctrine\Tests\ORM\Mapping\Article:
+  type: entity
