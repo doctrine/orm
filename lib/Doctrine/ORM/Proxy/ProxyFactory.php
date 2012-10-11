@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Proxy;
 
 use Doctrine\ORM\EntityManager,
     Doctrine\ORM\Mapping\ClassMetadata,
+    Doctrine\ORM\ORMException,
     Doctrine\Common\Util\ClassUtils;
 
 /**
@@ -229,11 +230,15 @@ class ProxyFactory
                         $argumentString  .= ', ';
                     }
 
-                    // We need to pick the type hint class too
-                    if (($paramClass = $param->getClass()) !== null) {
-                        $parameterString .= '\\' . $paramClass->getName() . ' ';
-                    } else if ($param->isArray()) {
-                        $parameterString .= 'array ';
+                    try {
+                        // We need to pick the type hint class too
+                        if (($paramClass = $param->getClass()) !== null) {
+                            $parameterString .= '\\' . $paramClass->getName() . ' ';
+                        } else if ($param->isArray()) {
+                            $parameterString .= 'array ';
+                        }
+                    } catch (\ReflectionException $e) {
+                        throw ORMException::invalidEntityParameterTypeHint($class->getName(), $method->getName(), $param->getName());
                     }
 
                     if ($param->isPassedByReference()) {
