@@ -39,6 +39,33 @@ class TreeWalkerChain implements TreeWalker
     private $_queryComponents;
 
     /**
+     * Return internal queryComponents array
+     *
+     * @return array
+     */
+    public function getQueryComponents()
+    {
+        return $this->_queryComponents;
+    }
+
+    /**
+     * Set or override a query component for a given dql alias.
+     *
+     * @param string $dqlAlias The DQL alias.
+     * @param array $queryComponent
+     */
+    public function setQueryComponent($dqlAlias, array $queryComponent)
+    {
+        $requiredKeys = array('metadata', 'parent', 'relation', 'map', 'nestingLevel', 'token');
+
+        if (array_diff($requiredKeys, array_keys($queryComponent))) {
+            throw QueryException::invalidQueryComponent($dqlAlias);
+        }
+
+        $this->_queryComponents[$dqlAlias] = $queryComponent;
+    }
+
+    /**
      * @inheritdoc
      */
     public function __construct($query, $parserResult, array $queryComponents)
@@ -67,6 +94,7 @@ class TreeWalkerChain implements TreeWalker
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkSelectStatement($AST);
+            $this->_queryComponents = $walker->getQueryComponents();
         }
     }
 

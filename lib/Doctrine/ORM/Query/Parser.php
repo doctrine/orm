@@ -358,6 +358,7 @@ class Parser
                 default:
                     $treeWalkerChain->walkSelectStatement($AST);
             }
+            $this->queryComponents = $treeWalkerChain->getQueryComponents();
         }
 
         $outputWalkerClass = $this->customOutputWalker ?: __NAMESPACE__ . '\SqlWalker';

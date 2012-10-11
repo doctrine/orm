@@ -140,7 +140,7 @@ class SqlWalker implements TreeWalker
 
     /**
      * The DQL alias of the root class of the currently traversed query.
-     * 
+     *
      * @var array
      */
     private $rootAliases = array();
@@ -224,12 +224,22 @@ class SqlWalker implements TreeWalker
     }
 
     /**
+     * Return internal queryComponents array
+     *
+     * @return array
+     */
+    public function getQueryComponents()
+    {
+        return $this->queryComponents;
+    }
+
+    /**
      * Set or override a query component for a given dql alias.
      *
      * @param string $dqlAlias The DQL alias.
      * @param array $queryComponent
      */
-    protected function setQueryComponent($dqlAlias, array $queryComponent)
+    public function setQueryComponent($dqlAlias, array $queryComponent)
     {
         $requiredKeys = array('metadata', 'parent', 'relation', 'map', 'nestingLevel', 'token');
 
@@ -1986,7 +1996,7 @@ class SqlWalker implements TreeWalker
 
         $dqlAlias = $instanceOfExpr->identificationVariable;
         $discrClass = $class = $this->queryComponents[$dqlAlias]['metadata'];
-        
+
         if ($class->discriminatorColumn) {
             $discrClass = $this->em->getClassMetadata($class->rootEntityName);
         }
