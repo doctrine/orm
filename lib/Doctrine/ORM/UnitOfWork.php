@@ -19,15 +19,17 @@
 
 namespace Doctrine\ORM;
 
-use Exception, InvalidArgumentException, UnexpectedValueException,
-    Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\Common\Collections\Collection,
-    Doctrine\Common\NotifyPropertyChanged,
-    Doctrine\Common\PropertyChangedListener,
-    Doctrine\Common\Persistence\ObjectManagerAware,
-    Doctrine\ORM\Event\LifecycleEventArgs,
-    Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Proxy\Proxy;
+use Exception;
+use InvalidArgumentException;
+use UnexpectedValueException;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\NotifyPropertyChanged;
+use Doctrine\Common\PropertyChangedListener;
+use Doctrine\Common\Persistence\ObjectManagerAware;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Proxy\Proxy;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an

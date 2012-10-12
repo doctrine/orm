@@ -19,9 +19,8 @@
 
 namespace Doctrine\ORM\Tools;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Tools\Export\Driver\AbstractExporter,
-    Doctrine\Common\Util\Inflector;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\Common\Util\Inflector;
 
 /**
  * Class to help with converting Doctrine 1 schema files to Doctrine 2 mapping files

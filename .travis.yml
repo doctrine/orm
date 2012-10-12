@@ -15,5 +15,12 @@ before_script:
   - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'create database doctrine_tests_tmp;' -U postgres; fi"
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'create database IF NOT EXISTS doctrine_tests_tmp;create database IF NOT EXISTS doctrine_tests;'; fi"
   - git submodule update --init
+  - pear install pear/PHP_CodeSniffer-1.4.0
+  - phpenv rehash
+  - wget http://cs.sensiolabs.org/get/php-cs-fixer.phar
 
-script: phpunit --configuration tests/travis/$DB.travis.xml
+script:
+  - phpunit --configuration tests/travis/$DB.travis.xml
+  - output=$(php php-cs-fixer.phar fix -v --level=all --dry-run ./lib/Doctrine); if [[ $output ]]; then while read -r line; do echo -e "\e[00;31m$line\e[00m"; done <<< "$output"; false; fi;
+  - output=$(php php-cs-fixer.phar fix -v --level=all --dry-run ./tests); if [[ $output ]]; then while read -r line; do echo -e "\e[00;31m$line\e[00m"; done <<< "$output"; false; fi;
+  - phpcs --encoding=utf-8 --tab-width=4 --extensions=php --standard=PSR2 ./lib/Doctrine

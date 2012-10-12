@@ -19,11 +19,10 @@
 
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
-use Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console\Input\InputInterface,
-    Symfony\Component\Console\Output\OutputInterface,
-    Doctrine\ORM\Tools\SchemaTool;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Doctrine\ORM\Tools\SchemaTool;
 
 /**
  * Command to generate the SQL needed to update the database schema to match

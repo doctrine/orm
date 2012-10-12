@@ -19,12 +19,12 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\DBAL\LockMode,
-    Doctrine\DBAL\Types\Type,
-    Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Query,
-    Doctrine\ORM\Query\QueryException,
-    Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * The SqlWalker is a TreeWalker that walks over a DQL AST and constructs

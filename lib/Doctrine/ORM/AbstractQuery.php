@@ -22,7 +22,6 @@ namespace Doctrine\ORM;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Collections\ArrayCollection;
 
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 
 use Doctrine\ORM\Query\QueryException;

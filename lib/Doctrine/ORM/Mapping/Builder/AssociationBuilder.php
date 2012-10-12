@@ -17,7 +17,6 @@
  * <http://www.doctrine-project.org>.
  */
 
-
 namespace Doctrine\ORM\Mapping\Builder;
 
 use Doctrine\ORM\Mapping\ClassMetadata;

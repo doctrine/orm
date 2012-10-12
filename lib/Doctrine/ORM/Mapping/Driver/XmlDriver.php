@@ -19,10 +19,10 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use SimpleXMLElement,
-    Doctrine\Common\Persistence\Mapping\Driver\FileDriver,
-    Doctrine\Common\Persistence\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\MappingException;
+use SimpleXMLElement;
+use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\MappingException;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.

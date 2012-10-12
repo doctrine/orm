@@ -19,8 +19,6 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\ORM\Query\AST\PathExpression;
-
 /**
  * Description of QueryException
  *

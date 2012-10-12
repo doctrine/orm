@@ -19,12 +19,12 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
-use Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console,
-    Doctrine\ORM\Tools\Console\MetadataFilter,
-    Doctrine\ORM\Tools\EntityGenerator,
-    Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console;
+use Doctrine\ORM\Tools\Console\MetadataFilter;
+use Doctrine\ORM\Tools\EntityGenerator;
+use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 
 /**
  * Command to generate entity classes and method stubs from your mapping information.

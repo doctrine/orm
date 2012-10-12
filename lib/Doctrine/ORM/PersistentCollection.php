@@ -25,7 +25,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\ExpressionBuilder;
 
 use Closure;
 

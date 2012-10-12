@@ -19,10 +19,9 @@
 
 namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
-use Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console,
-    Doctrine\Common\Cache;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console;
+use Doctrine\Common\Cache;
 
 /**
  * Command to clear the result cache of the various cache drivers.
