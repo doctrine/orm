@@ -178,15 +178,10 @@ class Paginator implements \Countable, \IteratorAggregate
                 return new \ArrayIterator(array());
             }
 
-            $namespace = WhereInWalker::PAGINATOR_ID_ALIAS;
-
             $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
             $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, count($ids));
             $whereInQuery->setFirstResult(null)->setMaxResults(null);
-            foreach ($ids as $i => $id) {
-                $i++;
-                $whereInQuery->setParameter("{$namespace}_{$i}", $id);
-            }
+            $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $ids);
 
             $result = $whereInQuery->getResult($this->query->getHydrationMode());
         } else {
