@@ -60,7 +60,7 @@ class XmlDriver extends FileDriver
             if (isset($xmlRoot['repository-class'])) {
                 $metadata->setCustomRepositoryClass((string)$xmlRoot['repository-class']);
             }
-            if (isset($xmlRoot['read-only']) && $xmlRoot['read-only'] == "true") {
+            if (isset($xmlRoot['read-only']) && $this->evaluateBoolean($xmlRoot['read-only'])) {
                 $metadata->markReadOnly();
             }
         } else if ($xmlRoot->getName() == 'mapped-superclass') {
@@ -241,7 +241,7 @@ class XmlDriver extends FileDriver
         // Evaluate <id ...> mappings
         $associationIds = array();
         foreach ($xmlRoot->id as $idElement) {
-            if ((bool)$idElement['association-key'] == true) {
+            if (isset($idElement['association-key']) && $this->evaluateBoolean($idElement['association-key'])) {
                 $associationIds[(string)$idElement['name']] = true;
                 continue;
             }
@@ -334,7 +334,7 @@ class XmlDriver extends FileDriver
                 }
 
                 if (isset($oneToOneElement['orphan-removal'])) {
-                    $mapping['orphanRemoval'] = (bool)$oneToOneElement['orphan-removal'];
+                    $mapping['orphanRemoval'] = $this->evaluateBoolean($oneToOneElement['orphan-removal']);
                 }
 
                 $metadata->mapOneToOne($mapping);
@@ -359,7 +359,7 @@ class XmlDriver extends FileDriver
                 }
 
                 if (isset($oneToManyElement['orphan-removal'])) {
-                    $mapping['orphanRemoval'] = (bool)$oneToManyElement['orphan-removal'];
+                    $mapping['orphanRemoval'] = $this->evaluateBoolean($oneToManyElement['orphan-removal']);
                 }
 
                 if (isset($oneToManyElement->{'order-by'})) {
@@ -433,7 +433,7 @@ class XmlDriver extends FileDriver
                 }
 
                 if (isset($manyToManyElement['orphan-removal'])) {
-                    $mapping['orphanRemoval'] = (bool)$manyToManyElement['orphan-removal'];
+                    $mapping['orphanRemoval'] = $this->evaluateBoolean($manyToManyElement['orphan-removal']);
                 }
 
                 if (isset($manyToManyElement['mapped-by'])) {
@@ -594,11 +594,11 @@ class XmlDriver extends FileDriver
         );
 
         if (isset($joinColumnElement['unique'])) {
-            $joinColumn['unique'] = ((string)$joinColumnElement['unique'] == "false") ? false : true;
+            $joinColumn['unique'] = $this->evaluateBoolean($joinColumnElement['unique']);
         }
 
         if (isset($joinColumnElement['nullable'])) {
-            $joinColumn['nullable'] = ((string)$joinColumnElement['nullable'] == "false") ? false : true;
+            $joinColumn['nullable'] = $this->evaluateBoolean($joinColumnElement['nullable']);
         }
 
         if (isset($joinColumnElement['on-delete'])) {
@@ -645,11 +645,11 @@ class XmlDriver extends FileDriver
         }
 
         if (isset($fieldMapping['unique'])) {
-            $mapping['unique'] = ((string) $fieldMapping['unique'] == "false") ? false : true;
+            $mapping['unique'] = $this->evaluateBoolean($fieldMapping['unique']);
         }
 
         if (isset($fieldMapping['nullable'])) {
-            $mapping['nullable'] = ((string) $fieldMapping['nullable'] == "false") ? false : true;
+            $mapping['nullable'] = $this->evaluateBoolean($fieldMapping['nullable']);
         }
 
         if (isset($fieldMapping['version']) && $fieldMapping['version']) {
@@ -710,4 +710,12 @@ class XmlDriver extends FileDriver
 
         return $result;
     }
+
+    protected function evaluateBoolean($element)
+    {
+        $flag = (string)$element;
+
+        return ($flag === true || $flag == "true" || $flag == "1");
+    }
 }
+
