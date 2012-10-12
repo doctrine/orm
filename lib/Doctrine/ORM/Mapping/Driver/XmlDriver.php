@@ -334,7 +334,7 @@ class XmlDriver extends FileDriver
                 }
 
                 if (isset($oneToOneElement['orphan-removal'])) {
-                    $mapping['orphanRemoval'] = (bool)$oneToOneElement['orphan-removal'];
+                    $mapping['orphanRemoval'] = (bool)(string)$oneToOneElement['orphan-removal'];
                 }
 
                 $metadata->mapOneToOne($mapping);
@@ -359,7 +359,7 @@ class XmlDriver extends FileDriver
                 }
 
                 if (isset($oneToManyElement['orphan-removal'])) {
-                    $mapping['orphanRemoval'] = (bool)$oneToManyElement['orphan-removal'];
+                    $mapping['orphanRemoval'] = (bool)(string)$oneToManyElement['orphan-removal'];
                 }
 
                 if (isset($oneToManyElement->{'order-by'})) {
@@ -433,7 +433,7 @@ class XmlDriver extends FileDriver
                 }
 
                 if (isset($manyToManyElement['orphan-removal'])) {
-                    $mapping['orphanRemoval'] = (bool)$manyToManyElement['orphan-removal'];
+                    $mapping['orphanRemoval'] = (bool)(string)$manyToManyElement['orphan-removal'];
                 }
 
                 if (isset($manyToManyElement['mapped-by'])) {
