@@ -13,37 +13,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
+ * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\Tests\ORM\Functional;
+namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\Query;
-
-require_once __DIR__ . '/../../TestInit.php';
 
 /**
  * Test case for custom AST walking and adding new joins.
  *
  * @author      Lukasz Cybula <lukasz.cybula@fsi.pl>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @license     MIT
  * @link        http://www.doctrine-project.org
  */
 class CustomTreeWalkersJoinTest extends \Doctrine\Tests\OrmTestCase
 {
-    private $_em;
+    private $em;
 
     protected function setUp()
     {
-        $this->_em = $this->_getTestEntityManager();
+        $this->em = $this->_getTestEntityManager();
     }
 
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed)
     {
         try {
-            $query = $this->_em->createQuery($dqlToBeTested);
-            $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\Tests\ORM\Functional\CustomTreeWalker2'))
+            $query = $this->em->createQuery($dqlToBeTested);
+            $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\Tests\ORM\Query\CustomTreeWalkerJoin'))
                   ->useQueryCache(false);
 
             $this->assertEquals($sqlToBeConfirmed, $query->getSql());
@@ -71,7 +69,7 @@ class CustomTreeWalkersJoinTest extends \Doctrine\Tests\OrmTestCase
     }
 }
 
-class CustomTreeWalker2 extends Query\TreeWalkerAdapter
+class CustomTreeWalkerJoin extends Query\TreeWalkerAdapter
 {
     public function walkSelectStatement(Query\AST\SelectStatement $selectStatement)
     {
