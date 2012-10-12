@@ -19,9 +19,9 @@
 
 namespace Doctrine\ORM\Query\Exec;
 
-use Doctrine\DBAL\Connection,
-    Doctrine\ORM\Query\AST\SelectStatement,
-    Doctrine\ORM\Query\SqlWalker;
+use Doctrine\DBAL\Connection;
+use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\SqlWalker;
 
 /**
  * Executor that executes the SQL statement for simple DQL SELECT statements.
