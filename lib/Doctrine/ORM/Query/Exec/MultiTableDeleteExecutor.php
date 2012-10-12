@@ -19,8 +19,8 @@
 
 namespace Doctrine\ORM\Query\Exec;
 
-use Doctrine\DBAL\Connection,
-    Doctrine\ORM\Query\AST;
+use Doctrine\DBAL\Connection;
+use Doctrine\ORM\Query\AST;
 
 /**
  * Executes the SQL statements for bulk DQL DELETE statements on classes in

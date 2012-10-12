@@ -19,8 +19,8 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\ORM\PersistentCollection,
-    Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\UnitOfWork;
 
 /**
  * Persister for one-to-many collections.

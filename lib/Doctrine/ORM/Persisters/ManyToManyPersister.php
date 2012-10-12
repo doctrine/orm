@@ -19,9 +19,9 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\PersistentCollection,
-    Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\UnitOfWork;
 
 /**
  * Persister for many-to-many collections.

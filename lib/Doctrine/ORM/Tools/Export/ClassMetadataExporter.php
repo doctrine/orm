@@ -19,8 +19,8 @@
 
 namespace Doctrine\ORM\Tools\Export;
 
-use Doctrine\ORM\Tools\Export\ExportException,
-    Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\Export\ExportException;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Class used for converting your mapping information between the
