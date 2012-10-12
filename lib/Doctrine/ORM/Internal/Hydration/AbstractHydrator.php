@@ -19,12 +19,11 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use PDO,
-    Doctrine\DBAL\Connection,
-    Doctrine\DBAL\Types\Type,
-    Doctrine\ORM\EntityManager,
-    Doctrine\ORM\Events,
-    Doctrine\ORM\Mapping\ClassMetadata;
+use PDO;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form

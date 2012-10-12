@@ -26,7 +26,6 @@ use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
 use Doctrine\Common\Collections\Expr\Value;
 
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query\Parameter;
 
 /**

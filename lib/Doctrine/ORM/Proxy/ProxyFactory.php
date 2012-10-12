@@ -19,9 +19,9 @@
 
 namespace Doctrine\ORM\Proxy;
 
-use Doctrine\ORM\EntityManager,
-    Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Common\Util\ClassUtils;
 
 /**
  * This factory is used to create proxy objects for entities at runtime.

@@ -19,12 +19,12 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\ORM\Mapping\MappingException,
-    Doctrine\ORM\Mapping\JoinColumn,
-    Doctrine\ORM\Mapping\Column,
-    Doctrine\Common\Persistence\Mapping\ClassMetadata,
-    Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.

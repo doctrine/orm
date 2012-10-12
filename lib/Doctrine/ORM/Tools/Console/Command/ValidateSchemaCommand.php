@@ -19,9 +19,7 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
-use Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console;
+use Symfony\Component\Console;
 
 /**
  * Validate that the current mapping is valid

@@ -19,13 +19,13 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\DBAL\Schema\AbstractSchemaManager,
-    Doctrine\DBAL\Schema\SchemaException,
-    Doctrine\Common\Persistence\Mapping\Driver\MappingDriver,
-    Doctrine\Common\Persistence\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\Common\Util\Inflector,
-    Doctrine\ORM\Mapping\MappingException;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\SchemaException;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\Common\Util\Inflector;
+use Doctrine\ORM\Mapping\MappingException;
 
 /**
  * The DatabaseDriver reverse engineers the mapping metadata from a database.

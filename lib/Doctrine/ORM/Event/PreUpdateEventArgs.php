@@ -19,8 +19,7 @@
 
 namespace Doctrine\ORM\Event;
 
-use Doctrine\Common\EventArgs,
-    Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Class that holds event arguments for a preInsert/preUpdate event.
@@ -126,4 +125,3 @@ class PreUpdateEventArgs extends LifecycleEventArgs
         }
     }
 }
-

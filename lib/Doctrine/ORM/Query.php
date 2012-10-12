@@ -19,8 +19,6 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Collections\ArrayCollection;
-
 use Doctrine\DBAL\LockMode;
 
 use Doctrine\ORM\Query\Parser;

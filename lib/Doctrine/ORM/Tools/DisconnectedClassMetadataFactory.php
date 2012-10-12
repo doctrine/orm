@@ -20,7 +20,6 @@
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * The DisconnectedClassMetadataFactory is used to create ClassMetadataInfo objects

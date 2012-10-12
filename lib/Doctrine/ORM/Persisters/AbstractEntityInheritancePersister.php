@@ -19,8 +19,8 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * Base class for entity persisters that implement a certain inheritance mapping strategy.

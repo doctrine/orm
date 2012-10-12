@@ -19,10 +19,10 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
-use Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console,
-    Doctrine\ORM\Tools\Console\MetadataFilter;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console;
+use Doctrine\ORM\Tools\Console\MetadataFilter;
 
 /**
  * Command to (re)generate the proxy classes used by doctrine.

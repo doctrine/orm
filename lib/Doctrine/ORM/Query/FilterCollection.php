@@ -19,8 +19,7 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\ORM\Configuration,
-    Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Collection class for all the query filters.

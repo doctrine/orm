@@ -19,11 +19,11 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
-use Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console,
-    Doctrine\ORM\Tools\Console\MetadataFilter,
-    Doctrine\ORM\Tools\EntityRepositoryGenerator;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console;
+use Doctrine\ORM\Tools\Console\MetadataFilter;
+use Doctrine\ORM\Tools\EntityRepositoryGenerator;
 
 /**
  * Command to generate repository classes for mapping information.

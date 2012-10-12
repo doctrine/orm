@@ -19,10 +19,10 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata,
-    Doctrine\Common\Persistence\Mapping\Driver\FileDriver,
-    Doctrine\ORM\Mapping\MappingException,
-    Symfony\Component\Yaml\Yaml;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\ORM\Mapping\MappingException;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * The YamlDriver reads the mapping metadata from yaml schema files.

@@ -22,7 +22,6 @@ namespace Doctrine\ORM\Internal\Hydration;
 use PDO;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Query;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Proxy\Proxy;
 
