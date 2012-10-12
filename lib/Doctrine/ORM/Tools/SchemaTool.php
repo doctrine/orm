@@ -385,6 +385,12 @@ class SchemaTool
         }
 
         if (isset($mapping['options'])) {
+            if (isset($mapping['options']['comment'])) {
+                $options['comment'] = $mapping['options']['comment'];
+
+                unset($mapping['options']['comment']);
+            }
+
             $options['customSchemaOptions'] = $mapping['options'];
         }
 
