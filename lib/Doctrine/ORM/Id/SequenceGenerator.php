@@ -19,7 +19,8 @@
 
 namespace Doctrine\ORM\Id;
 
-use Serializable, Doctrine\ORM\EntityManager;
+use Serializable;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Represents an ID generator that uses a database sequence.

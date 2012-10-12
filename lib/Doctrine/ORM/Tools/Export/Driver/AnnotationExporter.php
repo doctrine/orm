@@ -19,8 +19,8 @@
 
 namespace Doctrine\ORM\Tools\Export\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Tools\EntityGenerator;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Tools\EntityGenerator;
 
 /**
  * ClassMetadata exporter for PHP classes with annotations

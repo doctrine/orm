@@ -19,15 +19,15 @@
 
 namespace Doctrine\ORM\Tools;
 
-use Doctrine\ORM\ORMException,
-    Doctrine\DBAL\Types\Type,
-    Doctrine\DBAL\Schema\Schema,
-    Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets,
-    Doctrine\ORM\EntityManager,
-    Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Internal\CommitOrderCalculator,
-    Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs,
-    Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
+use Doctrine\ORM\ORMException;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Internal\CommitOrderCalculator;
+use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
+use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 
 /**
  * The SchemaTool is a tool to create/drop/update database schemas based on
