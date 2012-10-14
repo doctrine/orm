@@ -36,6 +36,7 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
+use Doctrine\ORM\Event\ListenersInvoker;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -219,11 +220,11 @@ class UnitOfWork implements PropertyChangedListener
     private $evm;
 
     /**
-     * The EntityListenerResolver used for dispatching events.
+     * The ListenersInvoker used for dispatching events.
      *
-     * @var \Doctrine\ORM\Mapping\EntityListenerResolver
+     * @var \Doctrine\ORM\Event\ListenersInvoker
      */
-    private $entityListenerResolver;
+    private $listenersInvoker;
 
     /**
      * Orphaned entities that are scheduled for removal.
@@ -253,9 +254,9 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function __construct(EntityManager $em)
     {
-        $this->em                       = $em;
-        $this->evm                      = $em->getEventManager();
-        $this->entityListenerResolver   = $em->getConfiguration()->getEntityListenerResolver();
+        $this->em               = $em;
+        $this->evm              = $em->getEventManager();
+        $this->listenersInvoker = new ListenersInvoker($em->getConfiguration()->getEntityListenerResolver());
     }
 
     /**
@@ -528,12 +529,12 @@ class UnitOfWork implements PropertyChangedListener
 
         // Fire PreFlush lifecycle callbacks
         if ($hasLifecycleCallbacks) {
-            $class->invokeLifecycleCallbacks(Events::preFlush, $entity, $event);
+            $this->listenersInvoker->invokeLifecycleCallbacks($class, Events::preFlush, $entity, $event);
         }
 
         // Fire PreFlush entity listeners
         if ($hasEntityListeners) {
-            $class->dispatchEntityListeners($this->entityListenerResolver, Events::preFlush, $entity, $event);
+            $this->listenersInvoker->invokeEntityListeners($class, Events::preFlush, $entity, $event);
         }
 
         $actualData = array();
@@ -840,11 +841,11 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($hasLifecycleCallbacks) {
-            $class->invokeLifecycleCallbacks(Events::prePersist, $entity, $event);
+            $this->listenersInvoker->invokeLifecycleCallbacks($class, Events::prePersist, $entity, $event);
         }
 
         if ($hasEntityListeners) {
-            $class->dispatchEntityListeners($this->entityListenerResolver, Events::prePersist, $entity, $event);
+            $this->listenersInvoker->invokeEntityListeners($class, Events::prePersist, $entity, $event);
         }
 
         if ($hasListeners) {
@@ -990,11 +991,11 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($hasLifecycleCallbacks) {
-                $class->invokeLifecycleCallbacks(Events::postPersist, $entity, $event);
+                $this->listenersInvoker->invokeLifecycleCallbacks($class, Events::postPersist, $entity, $event);
             }
 
             if ($hasEntityListeners) {
-                $class->dispatchEntityListeners($this->entityListenerResolver, Events::postPersist, $entity, $event);
+                $this->listenersInvoker->invokeEntityListeners($class, Events::postPersist, $entity, $event);
             }
 
             if ($hasListeners) {
@@ -1037,13 +1038,13 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($hasPreUpdateLifecycleCallbacks) {
-                $class->invokeLifecycleCallbacks(Events::preUpdate, $entity, $preEvent);
+                $this->listenersInvoker->invokeLifecycleCallbacks($class, Events::preUpdate, $entity, $preEvent);
 
                 $this->recomputeSingleEntityChangeSet($class, $entity);
             }
 
             if ($hasPreUpdateEntityListeners) {
-                $class->dispatchEntityListeners($this->entityListenerResolver, Events::preUpdate, $entity, $preEvent);
+                $this->listenersInvoker->invokeEntityListeners($class, Events::preUpdate, $entity, $preEvent);
             }
 
             if ($hasPreUpdateListeners) {
@@ -1057,11 +1058,11 @@ class UnitOfWork implements PropertyChangedListener
             unset($this->entityUpdates[$oid]);
 
             if ($hasPostUpdateLifecycleCallbacks) {
-                $class->invokeLifecycleCallbacks(Events::postUpdate, $entity, $postEvent);
+                $this->listenersInvoker->invokeLifecycleCallbacks($class, Events::postUpdate, $entity, $postEvent);
             }
 
             if ($hasPostUpdateEntityListeners) {
-                $class->dispatchEntityListeners($this->entityListenerResolver, Events::postUpdate, $entity, $postEvent);
+                $this->listenersInvoker->invokeEntityListeners($class, Events::postUpdate, $entity, $postEvent);
             }
 
             if ($hasPostUpdateListeners) {
@@ -1112,11 +1113,11 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($hasLifecycleCallbacks) {
-                $class->invokeLifecycleCallbacks(Events::postRemove, $entity, $event);
+                $this->listenersInvoker->invokeLifecycleCallbacks($class, Events::postRemove, $entity, $event);
             }
 
             if ($hasEntityListeners) {
-                $class->dispatchEntityListeners($this->entityListenerResolver, Events::postRemove, $entity, $event);
+                $this->listenersInvoker->invokeEntityListeners($class, Events::postRemove, $entity, $event);
             }
 
             if ($hasListeners) {
@@ -1769,11 +1770,11 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 if ($hasLifecycleCallbacks) {
-                    $class->invokeLifecycleCallbacks(Events::preRemove, $entity, $event);
+                    $this->listenersInvoker->invokeLifecycleCallbacks($class, Events::preRemove, $entity, $event);
                 }
 
                 if ($hasEntityListeners) {
-                    $class->dispatchEntityListeners($this->entityListenerResolver, Events::preRemove, $entity, $event);
+                    $this->listenersInvoker->invokeEntityListeners($class, Events::preRemove, $entity, $event);
                 }
 
                 if ($hasListeners) {
@@ -2785,11 +2786,11 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($hasLifecycleCallbacks) {
-                $class->invokeLifecycleCallbacks(Events::postLoad, $entity, $event);
+                $this->listenersInvoker->invokeLifecycleCallbacks($class, Events::postLoad, $entity, $event);
             }
 
             if ($hasEntityListeners) {
-                $class->dispatchEntityListeners($this->entityListenerResolver, Events::postLoad, $entity, $event);
+                $this->listenersInvoker->invokeEntityListeners($class, Events::postLoad, $entity, $event);
             }
 
             if ($hasListeners) {

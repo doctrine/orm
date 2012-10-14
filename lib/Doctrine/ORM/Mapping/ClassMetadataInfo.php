@@ -27,7 +27,6 @@ use ReflectionClass;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\ClassLoader;
 use Doctrine\Common\EventArgs;
-use Doctrine\ORM\Mapping\EntityListenerResolver;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -2426,6 +2425,8 @@ class ClassMetadataInfo implements ClassMetadata
      * Dispatches the lifecycle event of the given entity to the registered
      * lifecycle callbacks and lifecycle listeners.
      *
+     * @deprecated Deprecated since version 2.4 in favor of \Doctrine\ORM\Event\ListenersInvoker
+     * 
      * @param string $lifecycleEvent The lifecycle event.
      * @param object $entity         The Entity on which the event occured.
      *
@@ -2511,25 +2512,6 @@ class ClassMetadataInfo implements ClassMetadata
             'class'  => $class,
             'method' => $method
         );
-    }
-
-    /**
-     * Call the entity listeners.
-     *
-     * @param \Doctrine\ORM\Mapping\EntityListenerResolver $resolver The Entity listener resolver.
-     * @param string $eventName                 The event name.
-     * @param object $entity                    An instance of the mapped entity
-     * @param \Doctrine\Common\EventArgs $arg   The Event args
-     */
-    public function dispatchEntityListeners(EntityListenerResolver $resolver, $eventName, $entity, EventArgs $arg)
-    {
-        foreach ($this->entityListeners[$eventName] as $listener) {
-            $class      = $listener['class'];
-            $method     = $listener['method'];
-            $instance   = $resolver->resolve($class);
-
-            $instance->{$method}($entity, $arg);
-        }
     }
 
     /**

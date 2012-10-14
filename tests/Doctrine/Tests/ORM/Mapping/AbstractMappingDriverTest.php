@@ -804,58 +804,6 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener', $prePersist['class']);
         $this->assertEquals('prePersistHandler2', $prePersist['method']);
     }
-
-    /**
-     * @group DDC-1955
-     */
-    public function testCallEntityListeners()
-    {
-        $em                     = $this->_getTestEntityManager();
-        $factory                = $this->createClassMetadataFactory($em);
-        $resolver               = $em->getConfiguration()->getEntityListenerResolver();
-        $flexClass              = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFixContract');
-        $fixClass               = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFlexContract');
-        $ultraClass             = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFlexUltraContract');
-        $contractListener       = $resolver->resolve('Doctrine\Tests\Models\Company\CompanyContractListener');
-        $ultraContractListener  = $resolver->resolve('Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener');
-
-        $contractListener->prePersistCalls      = array();
-        $contractListener->postPersistCalls     = array();
-        $ultraContractListener->prePersistCalls = array();
-
-        $fix        = new CompanyFixContract();
-        $fixArg     = new LifecycleEventArgs($fix, $em);
-
-        $flex       = new CompanyFlexContract();
-        $flexArg    = new LifecycleEventArgs($fix, $em);
-
-        $ultra      = new CompanyFlexContract();
-        $ultraArg   = new LifecycleEventArgs($ultra, $em);
-
-        $fixClass->dispatchEntityListeners($resolver, Events::prePersist, $fix, $fixArg);
-        $flexClass->dispatchEntityListeners($resolver, Events::prePersist, $flex, $flexArg);
-        $ultraClass->dispatchEntityListeners($resolver, Events::prePersist, $ultra, $ultraArg);
-
-        $this->assertCount(3, $contractListener->prePersistCalls);
-        $this->assertCount(2, $ultraContractListener->prePersistCalls);
-
-        $this->assertSame($fix, $contractListener->prePersistCalls[0][0]);
-        $this->assertSame($fixArg, $contractListener->prePersistCalls[0][1]);
-
-        $this->assertSame($flex, $contractListener->prePersistCalls[1][0]);
-        $this->assertSame($flexArg, $contractListener->prePersistCalls[1][1]);
-
-        $this->assertSame($ultra, $contractListener->prePersistCalls[2][0]);
-        $this->assertSame($ultraArg, $contractListener->prePersistCalls[2][1]);
-
-        $this->assertSame($ultra, $ultraContractListener->prePersistCalls[0][0]);
-        $this->assertSame($ultraArg, $ultraContractListener->prePersistCalls[0][1]);
-
-        $this->assertSame($ultra, $ultraContractListener->prePersistCalls[1][0]);
-        $this->assertSame($ultraArg, $ultraContractListener->prePersistCalls[1][1]);
-
-        $this->assertEmpty($contractListener->postPersistCalls);
-    }
 }
 
 /**
