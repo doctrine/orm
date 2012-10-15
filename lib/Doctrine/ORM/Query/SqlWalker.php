@@ -140,7 +140,7 @@ class SqlWalker implements TreeWalker
 
     /**
      * The DQL alias of the root class of the currently traversed query.
-     * 
+     *
      * @var array
      */
     protected $rootAliases = array();
@@ -1983,7 +1983,7 @@ class SqlWalker implements TreeWalker
 
         $dqlAlias = $instanceOfExpr->identificationVariable;
         $discrClass = $class = $this->queryComponents[$dqlAlias]['metadata'];
-        
+
         if ($class->discriminatorColumn) {
             $discrClass = $this->em->getClassMetadata($class->rootEntityName);
         }
