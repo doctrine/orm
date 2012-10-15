@@ -30,21 +30,6 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 class LimitSubqueryOutputWalker extends SqlWalker
 {
     /**
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
-     */
-    private $platform;
-
-    /**
-     * @var \Doctrine\ORM\Query\ResultSetMapping
-     */
-    private $rsm;
-
-    /**
-     * @var array
-     */
-    private $queryComponents;
-
-    /**
      * @var int
      */
     private $firstResult;

@@ -30,21 +30,6 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 class CountOutputWalker extends SqlWalker
 {
     /**
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
-     */
-    private $platform;
-
-    /**
-     * @var \Doctrine\ORM\Query\ResultSetMapping
-     */
-    private $rsm;
-
-    /**
-     * @var array
-     */
-    private $queryComponents;
-
-    /**
      * Constructor. Stores various parameters that are otherwise unavailable
      * because Doctrine\ORM\Query\SqlWalker keeps everything private without
      * accessors.
