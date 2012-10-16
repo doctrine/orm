@@ -155,11 +155,11 @@ class ORMException extends Exception
         return new self("Invalid repository class '".$className."'. It must be a Doctrine\Common\Persistence\ObjectRepository.");
     }
 
-    public static function invalidEntityParameterTypeHint($entityClassname, $methodName, $paramName)
+    public static function invalidEntityParameterTypeHint($entityClassname, $methodName, $paramName, Exception $previous = null)
     {
         return new self(
-                "The method '$methodName' of the entity '$entityClassname' has a ".
-                "parameter '\$$paramName' whose type hint is invalid.");
+            "The method '$methodName' of the entity '$entityClassname' has a ".
+            "parameter '\$$paramName' whose type hint is invalid.", 0, $previous);
     }
 
     public static function missingIdentifierField($className, $fieldName)

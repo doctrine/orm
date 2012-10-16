@@ -238,7 +238,7 @@ class ProxyFactory
                             $parameterString .= 'array ';
                         }
                     } catch (\ReflectionException $e) {
-                        throw ORMException::invalidEntityParameterTypeHint($class->getName(), $method->getName(), $param->getName());
+                        throw ORMException::invalidEntityParameterTypeHint($class->getName(), $method->getName(), $param->getName(), $e);
                     }
 
                     if ($param->isPassedByReference()) {
