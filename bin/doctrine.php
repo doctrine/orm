@@ -21,6 +21,7 @@
 $configFile = getcwd() . DIRECTORY_SEPARATOR . 'cli-config.php';
 
 $helperSet = null;
+$commands = array();
 if (file_exists($configFile)) {
     if ( ! is_readable($configFile)) {
         trigger_error(
@@ -40,4 +41,4 @@ if (file_exists($configFile)) {
 
 $helperSet = ($helperSet) ?: new \Symfony\Component\Console\Helper\HelperSet();
 
-\Doctrine\ORM\Tools\Console\ConsoleRunner::run($helperSet);
+\Doctrine\ORM\Tools\Console\ConsoleRunner::run($helperSet, $commands);
