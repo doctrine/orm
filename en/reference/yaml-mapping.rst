@@ -75,6 +75,9 @@ of several common elements:
     Doctrine\Tests\ORM\Mapping\User:
       type: entity
       table: cms_users
+      indexes:
+        name_index:
+          columns: [ name ]
       id:
         id:
           type: integer
