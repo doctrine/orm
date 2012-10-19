@@ -96,7 +96,7 @@ class DebugUnitOfWorkListener
 
                 foreach ($cm->associationMappings as $field => $assoc) {
                     fwrite($fh, "   " . $field . " ");
-                    $value = $cm->reflFields[$field]->getValue($entity);
+                    $value = $cm->getFieldValue($entity, $field);
 
                     if ($assoc['type'] & ClassMetadata::TO_ONE) {
                         if ($value === null) {

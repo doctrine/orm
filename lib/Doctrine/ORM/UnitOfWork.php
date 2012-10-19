@@ -666,7 +666,9 @@ class UnitOfWork implements PropertyChangedListener
 
         // Look for changes in associations of the entity
         foreach ($class->associationMappings as $field => $assoc) {
-            if (($val = $class->reflFields[$field]->getValue($entity)) !== null) {
+            $val = $class->reflFields[$field]->getValue($entity);
+
+            if (null !== $val) {
                 $this->computeAssociationChanges($assoc, $val);
                 if (!isset($this->entityChangeSets[$oid]) &&
                     $assoc['isOwningSide'] &&
@@ -1815,8 +1817,9 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($class->isVersioned) {
-                $managedCopyVersion = $class->reflFields[$class->versionField]->getValue($managedCopy);
-                $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
+                $reflField = $class->reflFields[$class->versionField];
+                $managedCopyVersion = $reflField->getValue($managedCopy);
+                $entityVersion = $reflField->getValue($entity);
 
                 // Throw exception if versions dont match.
                 if ($managedCopyVersion != $entityVersion) {
@@ -1828,14 +1831,17 @@ class UnitOfWork implements PropertyChangedListener
             foreach ($class->reflClass->getProperties() as $prop) {
                 $name = $prop->name;
                 $prop->setAccessible(true);
+
                 if ( ! isset($class->associationMappings[$name])) {
                     if ( ! $class->isIdentifier($name)) {
                         $prop->setValue($managedCopy, $prop->getValue($entity));
                     }
                 } else {
                     $assoc2 = $class->associationMappings[$name];
+
                     if ($assoc2['type'] & ClassMetadata::TO_ONE) {
                         $other = $prop->getValue($entity);
+
                         if ($other === null) {
                             $prop->setValue($managedCopy, null);
                         } else if ($other instanceof Proxy && !$other->__isInitialized__) {
@@ -1857,6 +1863,7 @@ class UnitOfWork implements PropertyChangedListener
                         }
                     } else {
                         $mergeCol = $prop->getValue($entity);
+
                         if ($mergeCol instanceof PersistentCollection && !$mergeCol->isInitialized()) {
                             // do not merge fields marked lazy that have not been fetched.
                             // keep the lazy persistent collection of the managed copy.
@@ -1864,6 +1871,7 @@ class UnitOfWork implements PropertyChangedListener
                         }
 
                         $managedCol = $prop->getValue($managedCopy);
+
                         if (!$managedCol) {
                             $managedCol = new PersistentCollection($this->em,
                                     $this->em->getClassMetadata($assoc2['targetEntity']),
@@ -2468,8 +2476,26 @@ class UnitOfWork implements PropertyChangedListener
             $entity = $this->identityMap[$class->rootEntityName][$idHash];
             $oid = spl_object_hash($entity);
 
-            if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
-                $entity->__isInitialized__ = true;
+            if (
+                isset($hints[Query::HINT_REFRESH])
+                && isset($hints[Query::HINT_REFRESH_ENTITY])
+                && ($unmanagedProxy = $hints[Query::HINT_REFRESH_ENTITY]) !== $entity
+                && $unmanagedProxy instanceof Proxy
+            ) {
+                // DDC-1238 - we have a managed instance, but it isn't the provided one.
+                // Therefore we clear its identifier. Also, we must re-fetch metadata since the
+                // refreshed object may be anything
+                $class = $this->em->getClassMetadata(get_class($unmanagedProxy));
+
+                foreach ($class->identifier as $fieldName) {
+                    $class->reflFields[$fieldName]->setValue($unmanagedProxy, null);
+                }
+
+                return $unmanagedProxy;
+            }
+
+            if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
+                $entity->__setInitialized(true);
                 $overrideLocalValues = true;
 
                 if ($entity instanceof NotifyPropertyChanged) {
