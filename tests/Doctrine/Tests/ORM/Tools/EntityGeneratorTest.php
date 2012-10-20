@@ -328,8 +328,8 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFileExists($filename);
         require_once $filename;
 
-        $propertu   = new \ReflectionProperty($metadata->name, 'centroCustos');
-        $docComment = $propertu->getDocComment();
+        $property   = new \ReflectionProperty($metadata->name, 'centroCustos');
+        $docComment = $property->getDocComment();
         
         //joinColumns
         $this->assertContains('@JoinColumn(name="idorcamento", referencedColumnName="idorcamento"),', $docComment);
