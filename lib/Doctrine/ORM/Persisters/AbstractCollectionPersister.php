@@ -157,9 +157,9 @@ abstract class AbstractCollectionPersister
     /**
      * Count the size of this persistent collection
      *
-     * @param   \Doctrine\ORM\PersistentCollection $coll
+     * @param \Doctrine\ORM\PersistentCollection $coll
      * 
-     * @return  integer
+     * @return integer
      */
     public function count(PersistentCollection $coll)
     {
@@ -169,9 +169,9 @@ abstract class AbstractCollectionPersister
     /**
      * Slice elements
      *
-     * @param   \Doctrine\ORM\PersistentCollection $coll
-     * @param   integer $offset
-     * @param   integer $length
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * @param integer $offset
+     * @param integer $length
      *
      * @return  array
      */
@@ -183,10 +183,10 @@ abstract class AbstractCollectionPersister
     /**
      * Check for existance of an element
      *
-     * @param   \Doctrine\ORM\PersistentCollection $coll
-     * @param   mixed \Doctrine\ORM\PersistentCollection
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * @param \Doctrine\ORM\PersistentCollection
      *
-     * @return  boolean
+     * @return boolean
      */
     public function contains(PersistentCollection $coll, $element)
     {
@@ -196,10 +196,10 @@ abstract class AbstractCollectionPersister
     /**
      * Check for existance of a key
      *
-     * @param   \Doctrine\ORM\PersistentCollection $coll
-     * @param   mixed $key
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * @param mixed $key
      *
-     * @return  boolean
+     * @return boolean
      */
     public function containsKey(PersistentCollection $coll, $key)
     {
@@ -209,10 +209,10 @@ abstract class AbstractCollectionPersister
     /**
      * Remove an element
      *
-     * @param   \Doctrine\ORM\PersistentCollection $coll
-     * @param   object $element
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * @param object $element
      *
-     * @return  mixed
+     * @return mixed
      */
     public function removeElement(PersistentCollection $coll, $element)
     {
@@ -222,9 +222,9 @@ abstract class AbstractCollectionPersister
     /**
      * Remove an element by key
      *
-     * @param   \Doctrine\ORM\PersistentCollection $coll
+     * @param \Doctrine\ORM\PersistentCollection $coll
      * 
-     * @param   mixed $key
+     * @param mixed $key
      */
     public function removeKey(PersistentCollection $coll, $key)
     {
@@ -234,10 +234,10 @@ abstract class AbstractCollectionPersister
     /**
      * Get an element by key
      * 
-     * @param   \Doctrine\ORM\PersistentCollection $coll
-     * @param   mixed $index
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * @param mixed $index
      * 
-     * @return  object
+     * @return object
      */
     public function get(PersistentCollection $coll, $index)
     {
