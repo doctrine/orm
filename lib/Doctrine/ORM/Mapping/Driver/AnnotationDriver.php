@@ -476,6 +476,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * Parses the given method.
      *
      * @param \ReflectionMethod $method
+     *
      * @return array
      */
     private function getMethodCallbacks(\ReflectionMethod $method)
