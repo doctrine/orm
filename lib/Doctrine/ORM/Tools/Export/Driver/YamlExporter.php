@@ -19,12 +19,13 @@
 
 namespace Doctrine\ORM\Tools\Export\Driver;
 
+use Symfony\Component\Yaml\Yaml;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * ClassMetadata exporter for Doctrine YAML mapping files
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -59,6 +60,7 @@ class YamlExporter extends AbstractExporter
         }
 
         $inheritanceType = $metadata->inheritanceType;
+
         if ($inheritanceType !== ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
             $array['inheritanceType'] = $this->_getInheritanceTypeString($inheritanceType);
         }
@@ -92,10 +94,8 @@ class YamlExporter extends AbstractExporter
         $ids = array();
         foreach ($fieldMappings as $name => $fieldMapping) {
             $fieldMapping['column'] = $fieldMapping['columnName'];
-            unset(
-                $fieldMapping['columnName'],
-                $fieldMapping['fieldName']
-            );
+
+            unset($fieldMapping['columnName'], $fieldMapping['fieldName']);
 
             if ($fieldMapping['column'] == $name) {
                 unset($fieldMapping['column']);
@@ -127,24 +127,30 @@ class YamlExporter extends AbstractExporter
 
         foreach ($metadata->associationMappings as $name => $associationMapping) {
             $cascade = array();
+
             if ($associationMapping['isCascadeRemove']) {
                 $cascade[] = 'remove';
             }
+
             if ($associationMapping['isCascadePersist']) {
                 $cascade[] = 'persist';
             }
+
             if ($associationMapping['isCascadeRefresh']) {
                 $cascade[] = 'refresh';
             }
+
             if ($associationMapping['isCascadeMerge']) {
                 $cascade[] = 'merge';
             }
+
             if ($associationMapping['isCascadeDetach']) {
                 $cascade[] = 'detach';
             }
             if (count($cascade) === 5) {
                 $cascade = array('all');
             }
+
             $associationMappingArray = array(
                 'targetEntity' => $associationMapping['targetEntity'],
                 'cascade'     => $cascade,
@@ -153,12 +159,15 @@ class YamlExporter extends AbstractExporter
             if ($associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
                 $joinColumns = $associationMapping['joinColumns'];
                 $newJoinColumns = array();
+
                 foreach ($joinColumns as $joinColumn) {
                     $newJoinColumns[$joinColumn['name']]['referencedColumnName'] = $joinColumn['referencedColumnName'];
+
                     if (isset($joinColumn['onDelete'])) {
                         $newJoinColumns[$joinColumn['name']]['onDelete'] = $joinColumn['onDelete'];
                     }
                 }
+
                 $oneToOneMappingArray = array(
                     'mappedBy'      => $associationMapping['mappedBy'],
                     'inversedBy'    => $associationMapping['inversedBy'],
@@ -173,8 +182,7 @@ class YamlExporter extends AbstractExporter
                 } else {
                     $array['manyToOne'][$name] = $associationMappingArray;
                 }
-
-            } else if ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_MANY) {
+            } elseif ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_MANY) {
                 $oneToManyMappingArray = array(
                     'mappedBy'      => $associationMapping['mappedBy'],
                     'inversedBy'    => $associationMapping['inversedBy'],
@@ -184,7 +192,7 @@ class YamlExporter extends AbstractExporter
 
                 $associationMappingArray = array_merge($associationMappingArray, $oneToManyMappingArray);
                 $array['oneToMany'][$name] = $associationMappingArray;
-            } else if ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
+            } elseif ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
                 $manyToManyMappingArray = array(
                     'mappedBy'   => $associationMapping['mappedBy'],
                     'inversedBy' => $associationMapping['inversedBy'],
@@ -200,6 +208,6 @@ class YamlExporter extends AbstractExporter
             $array['lifecycleCallbacks'] = $metadata->lifecycleCallbacks;
         }
 
-        return \Symfony\Component\Yaml\Yaml::dump(array($metadata->name => $array), 10);
+        return Yaml::dump(array($metadata->name => $array), 10);
     }
 }
