@@ -279,6 +279,50 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group DDC-2079
+     */
+    public function testGenerateEntityWithMultipleInverseJoinColumns()
+    {
+        $metadata               = new ClassMetadataInfo($this->_namespace . '\DDC2079Entity');
+        $metadata->namespace    = $this->_namespace;
+        $metadata->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
+        $metadata->mapManyToMany(array(
+            'fieldName'     => 'centroCustos',
+            'targetEntity'  => 'DDC2079CentroCusto',
+            'joinTable'     => array(
+                'name'                  => 'unidade_centro_custo',
+                'joinColumns'           => array(
+                    array('name' => 'idorcamento',      'referencedColumnName' => 'idorcamento'),
+                    array('name' => 'idunidade',        'referencedColumnName' => 'idunidade')
+                ),
+                'inverseJoinColumns'    => array(
+                    array('name' => 'idcentrocusto',    'referencedColumnName' => 'idcentrocusto'),
+                    array('name' => 'idpais',           'referencedColumnName' => 'idpais'),
+                ),
+            ),
+        ));
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+
+        $filename = $this->_tmpDir . DIRECTORY_SEPARATOR
+            . $this->_namespace . DIRECTORY_SEPARATOR . 'DDC2079Entity.php';
+
+        $this->assertFileExists($filename);
+        require_once $filename;
+
+        $property   = new \ReflectionProperty($metadata->name, 'centroCustos');
+        $docComment = $property->getDocComment();
+        
+        //joinColumns
+        $this->assertContains('@JoinColumn(name="idorcamento", referencedColumnName="idorcamento"),', $docComment);
+        $this->assertContains('@JoinColumn(name="idunidade", referencedColumnName="idunidade")', $docComment);
+        //inverseJoinColumns
+        $this->assertContains('@JoinColumn(name="idcentrocusto", referencedColumnName="idcentrocusto"),', $docComment);
+        $this->assertContains('@JoinColumn(name="idpais", referencedColumnName="idpais")', $docComment);
+
+    }
+
+    /**
      * @dataProvider getEntityTypeAliasDataProvider
      *
      * @group DDC-1694
