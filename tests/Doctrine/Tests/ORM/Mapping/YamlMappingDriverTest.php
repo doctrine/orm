@@ -54,4 +54,35 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
         $this->createClassMetadata('Doctrine\Tests\Models\Generic\SerializationModel');
     }
 
+    /**
+     * @group DDC-2069
+     */
+    public function testSpacesShouldBeIgnoredWhenUseExplode()
+    {
+        $metadata = $this->createClassMetadata(__NAMESPACE__.'\DDC2069Entity');
+        $unique   = $metadata->table['uniqueConstraints'][0]['columns'];
+        $indexes  = $metadata->table['indexes'][0]['columns'];
+
+        $nameField  = $metadata->fieldMappings['name'];
+        $valueField = $metadata->fieldMappings['value'];
+
+        $this->assertEquals('name', $unique[0]);
+        $this->assertEquals('value', $unique[1]);
+
+        $this->assertEquals('value', $indexes[0]);
+        $this->assertEquals('name', $indexes[1]);
+
+        $this->assertEquals(255, $nameField['length']);
+        $this->assertEquals(255, $valueField['length']);
+    }
+
+}
+
+class DDC2069Entity
+{
+    public $id;
+
+    public $name;
+
+    public $value;
 }
