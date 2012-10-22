@@ -184,7 +184,7 @@ abstract class AbstractCollectionPersister
      * Check for existance of an element
      *
      * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param \Doctrine\ORM\PersistentCollection
+     * @param object $element
      *
      * @return boolean
      */
@@ -237,7 +237,7 @@ abstract class AbstractCollectionPersister
      * @param \Doctrine\ORM\PersistentCollection $coll
      * @param mixed $index
      * 
-     * @return object
+     * @return mixed
      */
     public function get(PersistentCollection $coll, $index)
     {
