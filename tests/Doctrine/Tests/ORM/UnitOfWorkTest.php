@@ -204,6 +204,29 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(UnitOfWork::STATE_DETACHED, $this->_unitOfWork->getEntityState($ph2));
         $this->assertFalse($persister->isExistsCalled());
     }
+
+    /**
+     * DDC-2086 [GH-484] Prevented "Undefined index" notice when updating.
+     */
+    public function testNoUndefinedIndexNoticeOnScheduleForUpdateWithoutChanges()
+    {
+        // Setup fake persister and id generator
+        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Forum\ForumUser"));
+        $userPersister->setMockIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY);
+        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
+
+        // Create a test user
+        $user = new ForumUser();
+        $user->name = 'Jasper';
+        $this->_unitOfWork->persist($user);
+        $this->_unitOfWork->commit();
+
+        // Schedule user for update without changes
+        $this->_unitOfWork->scheduleForUpdate($user);
+
+        // This commit should not raise an E_NOTICE
+        $this->_unitOfWork->commit();
+    }
 }
 
 /**
