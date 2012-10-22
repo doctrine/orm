@@ -982,7 +982,7 @@ class UnitOfWork implements PropertyChangedListener
                 );
             }
 
-            if ($this->entityChangeSets[$oid]) {
+            if (!empty($this->entityChangeSets[$oid])) {
                 $persister->update($entity);
             }
 
