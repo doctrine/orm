@@ -19,7 +19,6 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 
