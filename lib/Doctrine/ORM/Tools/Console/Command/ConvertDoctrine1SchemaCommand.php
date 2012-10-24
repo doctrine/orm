@@ -29,7 +29,7 @@ use Symfony\Component\Console\Input\InputArgument,
 /**
  * Command to convert a Doctrine 1 schema to a Doctrine 2 mapping file.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>

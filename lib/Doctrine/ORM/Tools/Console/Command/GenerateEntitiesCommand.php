@@ -29,7 +29,7 @@ use Symfony\Component\Console\Input\InputArgument,
 /**
  * Command to generate entity classes and method stubs from your mapping information.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>

@@ -26,7 +26,7 @@ use Symfony\Component\Console\Input\InputArgument,
 /**
  * Command to ensure that Doctrine is properly configured for a production environment.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @version $Revision$
@@ -64,7 +64,6 @@ EOT
     {
         $em = $this->getHelper('em')->getEntityManager();
 
-        $error = false;
         try {
             $em->getConfiguration()->ensureProductionSettings();
 
@@ -72,12 +71,11 @@ EOT
                 $em->getConnection()->connect();
             }
         } catch (\Exception $e) {
-            $error = true;
             $output->writeln('<error>' . $e->getMessage() . '</error>');
+
+            return 1;
         }
 
-        if ($error === false) {
-            $output->write('<info>Environment is correctly configured for production.</info>' . PHP_EOL);
-        }
+        $output->write('<info>Environment is correctly configured for production.</info>' . PHP_EOL);
     }
 }
