@@ -173,6 +173,11 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('a.description LIKE :description', (string) $this->_expr->like('a.description', ':description'));
     }
 
+    public function testNotLikeExpr()
+    {
+        $this->assertEquals('a.description NOT LIKE :description', (string) $this->_expr->notLike('a.description', ':description'));
+    }
+
     public function testConcatExpr()
     {
         $this->assertEquals('CONCAT(u.first_name, u.last_name)', (string) $this->_expr->concat('u.first_name', 'u.last_name'));
