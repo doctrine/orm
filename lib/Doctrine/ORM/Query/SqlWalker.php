@@ -48,102 +48,102 @@ class SqlWalker implements TreeWalker
     /**
      * @var ResultSetMapping
      */
-    private $rsm;
+    protected $rsm;
 
     /**
      * Counters for generating unique column aliases.
      *
      * @var integer
      */
-    private $aliasCounter = 0;
+    protected $aliasCounter = 0;
 
     /**
      * Counters for generating unique table aliases.
      *
      * @var integer
      */
-    private $tableAliasCounter = 0;
+    protected $tableAliasCounter = 0;
 
     /**
      * Counters for generating unique scalar result.
      *
      * @var integer
      */
-    private $scalarResultCounter = 1;
+    protected $scalarResultCounter = 1;
 
     /**
      * Counters for generating unique parameter indexes.
      *
      * @var integer
      */
-    private $sqlParamIndex = 0;
+    protected $sqlParamIndex = 0;
 
     /**
      * Counters for generating indexes.
      *
      * @var integer
      */
-    private $newObjectCounter = 0;
+    protected $newObjectCounter = 0;
 
     /**
      * @var ParserResult
      */
-    private $parserResult;
+    protected $parserResult;
 
     /**
      * @var EntityManager
      */
-    private $em;
+    protected $em;
 
     /**
      * @var \Doctrine\DBAL\Connection
      */
-    private $conn;
+    protected $conn;
 
     /**
      * @var AbstractQuery
      */
-    private $query;
+    protected $query;
 
     /**
      * @var array
      */
-    private $tableAliasMap = array();
+    protected $tableAliasMap = array();
 
     /**
      * Map from result variable names to their SQL column alias names.
      *
      * @var array
      */
-    private $scalarResultAliasMap = array();
+    protected $scalarResultAliasMap = array();
 
     /**
      * Map from DQL-Alias + Field-Name to SQL Column Alias
      *
      * @var array
      */
-    private $scalarFields = array();
+    protected $scalarFields = array();
 
     /**
      * Map of all components/classes that appear in the DQL query.
      *
      * @var array
      */
-    private $queryComponents;
+    protected $queryComponents;
 
     /**
      * A list of classes that appear in non-scalar SelectExpressions.
      *
      * @var array
      */
-    private $selectedClasses = array();
+    protected $selectedClasses = array();
 
     /**
      * The DQL alias of the root class of the currently traversed query.
-     * 
+     *
      * @var array
      */
-    private $rootAliases = array();
+    protected $rootAliases = array();
 
     /**
      * Flag that indicates whether to generate SQL table aliases in the SQL.
@@ -151,21 +151,21 @@ class SqlWalker implements TreeWalker
      *
      * @var boolean
      */
-    private $useSqlTableAliases = true;
+    protected $useSqlTableAliases = true;
 
     /**
      * The database platform abstraction.
      *
      * @var AbstractPlatform
      */
-    private $platform;
+    protected $platform;
 
     /**
      * The quote strategy.
      *
      * @var \Doctrine\ORM\Mapping\QuoteStrategy
      */
-    private $quoteStrategy;
+    protected $quoteStrategy;
 
     /**
      * {@inheritDoc}
@@ -1983,7 +1983,7 @@ class SqlWalker implements TreeWalker
 
         $dqlAlias = $instanceOfExpr->identificationVariable;
         $discrClass = $class = $this->queryComponents[$dqlAlias]['metadata'];
-        
+
         if ($class->discriminatorColumn) {
             $discrClass = $this->em->getClassMetadata($class->rootEntityName);
         }
