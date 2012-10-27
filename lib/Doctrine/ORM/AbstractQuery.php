@@ -263,8 +263,6 @@ abstract class AbstractQuery
             if ($value === null) {
                 throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
             }
-
-            return $value;
         }
 
         return $value;
