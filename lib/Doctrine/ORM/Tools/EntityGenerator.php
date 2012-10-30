@@ -1207,7 +1207,9 @@ public function __construct()
         $lines = explode("\n", $code);
 
         foreach ($lines as $key => $value) {
-            $lines[$key] = str_repeat($this->spaces, $num) . $lines[$key];
+            if (!empty($value)) {
+                $lines[$key] = str_repeat($this->spaces, $num) . $lines[$key];
+            }
         }
 
         return implode("\n", $lines);
