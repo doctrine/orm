@@ -1563,7 +1563,7 @@ class SqlWalker implements TreeWalker
 
             if (count($filterClauses)) {
                 if ($condSql) {
-                    $condSql .= ' AND ';
+                    $condSql = '(' . $condSql . ') AND ';
                 }
 
                 $condSql .= implode(' AND ', $filterClauses);
