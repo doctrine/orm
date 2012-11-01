@@ -1365,13 +1365,10 @@ class BasicEntityPersister
             $className .= '#' . $assocName;
         }
 
-        if (isset($this->_sqlTableAliases[$className])) {
-            return $this->_sqlTableAliases[$className];
+        $tableAlias = & $this->_sqlTableAliases[$className];
+        if (!isset($tableAlias)) {
+            $tableAlias = 't' . $this->_sqlAliasCounter++;
         }
-
-        $tableAlias = 't' . $this->_sqlAliasCounter++;
-
-        $this->_sqlTableAliases[$className] = $tableAlias;
 
         return $tableAlias;
     }
