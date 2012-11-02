@@ -672,7 +672,7 @@ public function __construct()
     {
         $lines = array();
         $lines[] = '/**';
-        $lines[] = ' * '.$metadata->name;
+        $lines[] = ' * ' . $this->getClassName($metadata);
 
         if ($this->generateAnnotations) {
             $lines[] = ' *';
@@ -1121,7 +1121,7 @@ public function __construct()
     {
         $lines = array();
         $lines[] = $this->spaces . '/**';
-        $lines[] = $this->spaces . ' * @var ' . $this->getType($fieldMapping['type']) . ' $' . $fieldMapping['fieldName'];
+        $lines[] = $this->spaces . ' * @var ' . $this->getType($fieldMapping['type']);
 
         if ($this->generateAnnotations) {
             $lines[] = $this->spaces . ' *';
