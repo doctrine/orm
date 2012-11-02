@@ -1680,7 +1680,7 @@ class BasicEntityPersister
     }
 
     /**
-     * Retrieve an invidiual parameter value
+     * Retrieve an individual parameter value
      *
      * @param mixed $value
      * @return mixed
