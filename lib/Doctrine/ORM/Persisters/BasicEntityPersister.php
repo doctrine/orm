@@ -1696,6 +1696,7 @@ class BasicEntityPersister
             }
 
             $key = key($idValues);
+
             if (null !== $key){
                 $value = $idValues[$key];
            } 
