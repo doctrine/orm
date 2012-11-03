@@ -28,7 +28,7 @@ use Symfony\Component\Console\Input\InputArgument,
 /**
  * Command to drop the database schema for a set of classes based on their mappings.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
@@ -71,38 +71,48 @@ EOT
 
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
     {
-        $isFullDatabaseDrop = ($input->getOption('full-database'));
+        $isFullDatabaseDrop = $input->getOption('full-database');
 
-        if ($input->getOption('dump-sql') === true) {
+        if ($input->getOption('dump-sql')) {
             if ($isFullDatabaseDrop) {
                 $sqls = $schemaTool->getDropDatabaseSQL();
             } else {
                 $sqls = $schemaTool->getDropSchemaSQL($metadatas);
             }
-            $output->write(implode(';' . PHP_EOL, $sqls) . PHP_EOL);
-        } else if ($input->getOption('force') === true) {
-            $output->write('Dropping database schema...' . PHP_EOL);
+            $output->writeln(implode(';' . PHP_EOL, $sqls));
+
+            return 0;
+        }
+
+        if ($input->getOption('force')) {
+            $output->writeln('Dropping database schema...');
+
             if ($isFullDatabaseDrop) {
                 $schemaTool->dropDatabase();
             } else {
                 $schemaTool->dropSchema($metadatas);
             }
-            $output->write('Database schema dropped successfully!' . PHP_EOL);
-        } else {
-            $output->write('ATTENTION: This operation should not be executed in a production environment.' . PHP_EOL . PHP_EOL);
 
-            if ($isFullDatabaseDrop) {
-                $sqls = $schemaTool->getDropDatabaseSQL();
-            } else {
-                $sqls = $schemaTool->getDropSchemaSQL($metadatas);
-            }
+            $output->writeln('Database schema dropped successfully!');
 
-            if (count($sqls)) {
-                $output->write('Schema-Tool would execute ' . count($sqls) . ' queries to drop the database.' . PHP_EOL);
-                $output->write('Please run the operation with --force to execute these queries or use --dump-sql to see them.' . PHP_EOL);
-            } else {
-                $output->write('Nothing to drop. The database is empty!' . PHP_EOL);
-            }
+            return 0;
         }
+
+        $output->writeln('ATTENTION: This operation should not be executed in a production environment.' . PHP_EOL);
+
+        if ($isFullDatabaseDrop) {
+            $sqls = $schemaTool->getDropDatabaseSQL();
+        } else {
+            $sqls = $schemaTool->getDropSchemaSQL($metadatas);
+        }
+
+        if (count($sqls)) {
+            $output->writeln('Schema-Tool would execute ' . count($sqls) . ' queries to drop the database.');
+            $output->writeln('Please run the operation with --force to execute these queries or use --dump-sql to see them.');
+
+            return 1;
+        }
+
+        $output->writeln('Nothing to drop. The database is empty!');
     }
 }

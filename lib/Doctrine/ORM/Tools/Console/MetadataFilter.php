@@ -32,41 +32,45 @@ namespace Doctrine\ORM\Tools\Console;
  */
 class MetadataFilter extends \FilterIterator implements \Countable
 {
+    private $filter = array();
+
     /**
      * Filter Metadatas by one or more filter options.
      *
-     * @param array $metadatas
+     * @param array        $metadatas
      * @param array|string $filter
+     *
      * @return array
      */
     static public function filter(array $metadatas, $filter)
     {
         $metadatas = new MetadataFilter(new \ArrayIterator($metadatas), $filter);
+
         return iterator_to_array($metadatas);
     }
 
-    private $_filter = array();
-
     public function __construct(\ArrayIterator $metadata, $filter)
     {
-        $this->_filter = (array)$filter;
+        $this->filter = (array) $filter;
+
         parent::__construct($metadata);
     }
 
     public function accept()
     {
-        if (count($this->_filter) == 0) {
+        if (count($this->filter) == 0) {
             return true;
         }
 
         $it = $this->getInnerIterator();
         $metadata = $it->current();
 
-        foreach ($this->_filter as $filter) {
+        foreach ($this->filter as $filter) {
             if (strpos($metadata->name, $filter) !== false) {
                 return true;
             }
         }
+
         return false;
     }
 

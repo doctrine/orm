@@ -27,10 +27,10 @@ use Symfony\Component\Console\Input\InputInterface,
 abstract class AbstractCommand extends Command
 {
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
-     * @param SchemaTool $schemaTool
-     * @param array $metadatas
+     * @param SchemaTool      $schemaTool
+     * @param array           $metadatas
      */
     abstract protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas);
 
@@ -48,11 +48,11 @@ abstract class AbstractCommand extends Command
 
         if ( ! empty($metadatas)) {
             // Create SchemaTool
-            $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
+            $tool = new SchemaTool($em);
 
-            $this->executeSchemaCommand($input, $output, $tool, $metadatas);
+            return $this->executeSchemaCommand($input, $output, $tool, $metadatas);
         } else {
-            $output->write('No Metadata Classes to process.' . PHP_EOL);
+            $output->writeln('No Metadata Classes to process.');
         }
     }
 }
