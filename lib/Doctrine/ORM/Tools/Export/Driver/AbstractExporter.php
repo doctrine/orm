@@ -26,7 +26,7 @@ use Doctrine\ORM\Tools\Export\ExportException;
  * Abstract base class which is to be used for the Exporter drivers
  * which can be found in \Doctrine\ORM\Tools\Export\Driver
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -151,63 +151,49 @@ abstract class AbstractExporter
 
     protected function _getInheritanceTypeString($type)
     {
-        switch ($type)
-        {
+        switch ($type) {
             case ClassMetadataInfo::INHERITANCE_TYPE_NONE:
                 return 'NONE';
-            break;
 
             case ClassMetadataInfo::INHERITANCE_TYPE_JOINED:
                 return 'JOINED';
-            break;
 
             case ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_TABLE:
                 return 'SINGLE_TABLE';
-            break;
 
             case ClassMetadataInfo::INHERITANCE_TYPE_TABLE_PER_CLASS:
                 return 'PER_CLASS';
-            break;
         }
     }
 
     protected function _getChangeTrackingPolicyString($policy)
     {
-        switch ($policy)
-        {
+        switch ($policy) {
             case ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT:
                 return 'DEFERRED_IMPLICIT';
-            break;
 
             case ClassMetadataInfo::CHANGETRACKING_DEFERRED_EXPLICIT:
                 return 'DEFERRED_EXPLICIT';
-            break;
 
             case ClassMetadataInfo::CHANGETRACKING_NOTIFY:
                 return 'NOTIFY';
-            break;
         }
     }
 
     protected function _getIdGeneratorTypeString($type)
     {
-        switch ($type)
-        {
+        switch ($type) {
             case ClassMetadataInfo::GENERATOR_TYPE_AUTO:
                 return 'AUTO';
-            break;
 
             case ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE:
                 return 'SEQUENCE';
-            break;
 
             case ClassMetadataInfo::GENERATOR_TYPE_TABLE:
                 return 'TABLE';
-            break;
 
             case ClassMetadataInfo::GENERATOR_TYPE_IDENTITY:
                 return 'IDENTITY';
-            break;
         }
     }
 }

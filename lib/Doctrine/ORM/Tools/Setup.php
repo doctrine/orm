@@ -40,7 +40,7 @@ class Setup
      * @param string $gitCheckoutRootPath
      * @return void
      */
-    static public function registerAutoloadGit($gitCheckoutRootPath)
+    public static function registerAutoloadGit($gitCheckoutRootPath)
     {
         if (!class_exists('Doctrine\Common\ClassLoader', false)) {
             require_once $gitCheckoutRootPath . "/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php";
@@ -65,7 +65,7 @@ class Setup
      *
      * @return void
      */
-    static public function registerAutoloadPEAR()
+    public static function registerAutoloadPEAR()
     {
         if (!class_exists('Doctrine\Common\ClassLoader', false)) {
             require_once "Doctrine/Common/ClassLoader.php";
@@ -91,7 +91,7 @@ class Setup
      *
      * @param string $directory
      */
-    static public function registerAutoloadDirectory($directory)
+    public static function registerAutoloadDirectory($directory)
     {
         if (!class_exists('Doctrine\Common\ClassLoader', false)) {
             require_once $directory . "/Doctrine/Common/ClassLoader.php";
@@ -114,10 +114,11 @@ class Setup
      * @param bool $useSimpleAnnotationReader
      * @return Configuration
      */
-    static public function createAnnotationMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null, $useSimpleAnnotationReader = true)
+    public static function createAnnotationMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null, $useSimpleAnnotationReader = true)
     {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver($paths, $useSimpleAnnotationReader));
+
         return $config;
     }
 
@@ -130,10 +131,11 @@ class Setup
      * @param Cache $cache
      * @return Configuration
      */
-    static public function createXMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
+    public static function createXMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
     {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(new XmlDriver($paths));
+
         return $config;
     }
 
@@ -146,10 +148,11 @@ class Setup
      * @param Cache $cache
      * @return Configuration
      */
-    static public function createYAMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
+    public static function createYAMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
     {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(new YamlDriver($paths));
+
         return $config;
     }
 
@@ -161,20 +164,21 @@ class Setup
      * @param Cache $cache
      * @return Configuration
      */
-    static public function createConfiguration($isDevMode = false, $proxyDir = null, Cache $cache = null)
+    public static function createConfiguration($isDevMode = false, $proxyDir = null, Cache $cache = null)
     {
         $proxyDir = $proxyDir ?: sys_get_temp_dir();
+
         if ($isDevMode === false && $cache === null) {
             if (extension_loaded('apc')) {
                 $cache = new \Doctrine\Common\Cache\ApcCache();
-            } else if (extension_loaded('xcache')) {
+            } elseif (extension_loaded('xcache')) {
                 $cache = new \Doctrine\Common\Cache\XcacheCache();
-            } else if (extension_loaded('memcache')) {
+            } elseif (extension_loaded('memcache')) {
                 $memcache = new \Memcache();
                 $memcache->connect('127.0.0.1');
                 $cache = new \Doctrine\Common\Cache\MemcacheCache();
                 $cache->setMemcache($memcache);
-            } else if (extension_loaded('redis')) {
+            } elseif (extension_loaded('redis')) {
                 $redis = new \Redis();
                 $redis->connect('127.0.0.1');
                 $cache = new \Doctrine\Common\Cache\RedisCache();
@@ -182,9 +186,10 @@ class Setup
             } else {
                 $cache = new ArrayCache();
             }
-        } else if ($cache === null) {
+        } elseif ($cache === null) {
             $cache = new ArrayCache();
         }
+
         $cache->setNamespace("dc2_" . md5($proxyDir) . "_"); // to avoid collisions
 
         $config = new Configuration();

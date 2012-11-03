@@ -148,6 +148,7 @@ class Paginator implements \Countable, \IteratorAggregate
                 $this->count = 0;
             }
         }
+
         return $this->count;
     }
 
@@ -196,6 +197,7 @@ class Paginator implements \Countable, \IteratorAggregate
                 ->getResult($this->query->getHydrationMode())
             ;
         }
+
         return new \ArrayIterator($result);
     }
 

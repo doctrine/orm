@@ -317,7 +317,7 @@ public function __construct()
         if ($this->isNew) {
             file_put_contents($path, $this->generateEntityClass($metadata));
         // If entity exists and we're allowed to update the entity class
-        } else if ( ! $this->isNew && $this->updateEntityIfExists) {
+        } elseif ( ! $this->isNew && $this->updateEntityIfExists) {
             file_put_contents($path, $this->generateUpdatedEntityClass($metadata, $path));
         }
     }
@@ -345,6 +345,7 @@ public function __construct()
         );
 
         $code = str_replace($placeHolders, $replacements, self::$classTemplate);
+
         return str_replace('<spaces>', $this->spaces, $code);
     }
 
@@ -565,6 +566,7 @@ public function __construct()
 
         $inNamespace = false;
         $inClass = false;
+
         for ($i = 0; $i < count($tokens); $i++) {
             $token = $tokens[$i];
             if (in_array($token[0], array(T_WHITESPACE, T_COMMENT, T_DOC_COMMENT))) {
@@ -574,7 +576,7 @@ public function __construct()
             if ($inNamespace) {
                 if ($token[0] == T_NS_SEPARATOR || $token[0] == T_STRING) {
                     $lastSeenNamespace .= $token[1];
-                } else if (is_string($token) && in_array($token, array(';', '{'))) {
+                } elseif (is_string($token) && in_array($token, array(';', '{'))) {
                     $inNamespace = false;
                 }
             }
@@ -589,15 +591,15 @@ public function __construct()
             if ($token[0] == T_NAMESPACE) {
                 $lastSeenNamespace = "";
                 $inNamespace = true;
-            } else if ($token[0] == T_CLASS) {
+            } elseif ($token[0] == T_CLASS) {
                 $inClass = true;
-            } else if ($token[0] == T_FUNCTION) {
+            } elseif ($token[0] == T_FUNCTION) {
                 if ($tokens[$i+2][0] == T_STRING) {
                     $this->staticReflection[$lastSeenClass]['methods'][] = $tokens[$i+2][1];
-                } else if ($tokens[$i+2] == "&" && $tokens[$i+3][0] == T_STRING) {
+                } elseif ($tokens[$i+2] == "&" && $tokens[$i+3][0] == T_STRING) {
                     $this->staticReflection[$lastSeenClass]['methods'][] = $tokens[$i+3][1];
                 }
-            } else if (in_array($token[0], array(T_VAR, T_PUBLIC, T_PRIVATE, T_PROTECTED)) && $tokens[$i+2][0] != T_FUNCTION) {
+            } elseif (in_array($token[0], array(T_VAR, T_PUBLIC, T_PRIVATE, T_PROTECTED)) && $tokens[$i+2][0] != T_FUNCTION) {
                 $this->staticReflection[$lastSeenClass]['properties'][] = substr($tokens[$i+2][1], 1);
             }
         }
@@ -624,6 +626,7 @@ public function __construct()
         if ($this->extendsClass()) {
             // don't generate method if its already on the base class.
             $reflClass = new \ReflectionClass($this->getClassToExtend());
+
             if ($reflClass->hasMethod($method)) {
                 return true;
             }
@@ -805,7 +808,7 @@ public function __construct()
                 if ($code = $this->generateEntityStubMethod($metadata, 'get', $associationMapping['fieldName'], $associationMapping['targetEntity'])) {
                     $methods[] = $code;
                 }
-            } else if ($associationMapping['type'] & ClassMetadataInfo::TO_MANY) {
+            } elseif ($associationMapping['type'] & ClassMetadataInfo::TO_MANY) {
                 if ($code = $this->generateEntityStubMethod($metadata, 'add', $associationMapping['fieldName'], $associationMapping['targetEntity'])) {
                     $methods[] = $code;
                 }
@@ -826,17 +829,20 @@ public function __construct()
         if (isset($associationMapping['id']) && $associationMapping['id']) {
             return false;
         }
+
         if (isset($associationMapping['joinColumns'])) {
             $joinColumns = $associationMapping['joinColumns'];
         } else {
-            //@todo thereis no way to retreive targetEntity metadata
+            //@todo there is no way to retrieve targetEntity metadata
             $joinColumns = array();
         }
+
         foreach ($joinColumns as $joinColumn) {
             if(isset($joinColumn['nullable']) && !$joinColumn['nullable']) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -902,7 +908,7 @@ public function __construct()
         }
 
         if ($this->hasMethod($methodName, $metadata)) {
-            return;
+            return '';
         }
         $this->staticReflection[$metadata->name]['methods'][] = $methodName;
 
@@ -936,7 +942,7 @@ public function __construct()
     private function generateLifecycleCallbackMethod($name, $methodName, $metadata)
     {
         if ($this->hasMethod($methodName, $metadata)) {
-            return;
+            return '';
         }
         $this->staticReflection[$metadata->name]['methods'][] = $methodName;
 
