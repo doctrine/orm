@@ -25,7 +25,7 @@ use Symfony\Component\Console\Helper\Helper,
 /**
  * Doctrine CLI Connection Helper.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
@@ -44,7 +44,7 @@ class EntityManagerHelper extends Helper
     /**
      * Constructor
      *
-     * @param Connection $connection Doctrine Database Connection
+     * @param \Doctrine\ORM\EntityManager $em
      */
     public function __construct(EntityManager $em)
     {

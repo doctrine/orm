@@ -119,6 +119,11 @@ class ResultSetMapping
     public $isIdentifierColumn = array();
 
     /**
+     * @var array Maps column names in the result set to field names for each new object expression.
+     */
+    public $newObjectMappings = array();
+
+    /**
      * Adds an entity result to this ResultSetMapping.
      *
      * @param string $class The class name of the entity.

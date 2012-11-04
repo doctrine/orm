@@ -19,9 +19,10 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
-use Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Doctrine\ORM\Tools\SchemaValidator;
 
 /**
  * Validate that the current mapping is valid
@@ -34,11 +35,8 @@ use Symfony\Component\Console\Input\InputArgument,
  * @author      Jonathan Wage <jonwage@gmail.com>
  * @author      Roman Borschel <roman@code-factory.org>
  */
-class ValidateSchemaCommand extends Console\Command\Command
+class ValidateSchemaCommand extends Command
 {
-    /**
-     * @see Console\Command\Command
-     */
     protected function configure()
     {
         $this
@@ -50,35 +48,35 @@ EOT
         );
     }
 
-    /**
-     * @see Console\Command\Command
-     */
-    protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         $em = $this->getHelper('em')->getEntityManager();
 
-        $validator = new \Doctrine\ORM\Tools\SchemaValidator($em);
+        $validator = new SchemaValidator($em);
         $errors = $validator->validateMapping();
 
         $exit = 0;
         if ($errors) {
             foreach ($errors as $className => $errorMessages) {
-                $output->write("<error>[Mapping]  FAIL - The entity-class '" . $className . "' mapping is invalid:</error>\n");
+                $output->writeln("<error>[Mapping]  FAIL - The entity-class '" . $className . "' mapping is invalid:</error>");
+
                 foreach ($errorMessages as $errorMessage) {
-                    $output->write('* ' . $errorMessage . "\n");
+                    $output->writeln('* ' . $errorMessage);
                 }
-                $output->write("\n");
+
+                $output->writeln('');
             }
+
             $exit += 1;
         } else {
-            $output->write('<info>[Mapping]  OK - The mapping files are correct.</info>' . "\n");
+            $output->writeln('<info>[Mapping]  OK - The mapping files are correct.</info>');
         }
 
         if (!$validator->schemaInSyncWithMetadata()) {
-            $output->write('<error>[Database] FAIL - The database schema is not in sync with the current mapping file.</error>' . "\n");
+            $output->writeln('<error>[Database] FAIL - The database schema is not in sync with the current mapping file.</error>');
             $exit += 2;
         } else {
-            $output->write('<info>[Database] OK - The database schema is in sync with the mapping files.</info>' . "\n");
+            $output->writeln('<info>[Database] OK - The database schema is in sync with the mapping files.</info>');
         }
 
         return $exit;

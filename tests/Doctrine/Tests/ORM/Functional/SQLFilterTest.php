@@ -58,11 +58,27 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testConfigureFilter()
     {
         $config = new \Doctrine\ORM\Configuration();
+        $validFilter = $this->getMockBuilder('\Doctrine\ORM\Query\Filter\SQLFilter')
+            ->disableOriginalConstructor()
+            ->getMock();
 
+        $config->addFilter("geolocation", $validFilter);
         $config->addFilter("locale", "\Doctrine\Tests\ORM\Functional\MyLocaleFilter");
 
-        $this->assertEquals("\Doctrine\Tests\ORM\Functional\MyLocaleFilter", $config->getFilterClassName("locale"));
-        $this->assertNull($config->getFilterClassName("foo"));
+        $this->assertEquals("\Doctrine\Tests\ORM\Functional\MyLocaleFilter", $config->getFilter("locale"));
+        $this->assertNull($config->getFilter("foo"));
+        $this->assertInstanceOf("\Doctrine\ORM\Query\Filter\SQLFilter", $config->getFilter("geolocation"));
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testConfigureFilterFails()
+    {
+        $config = new \Doctrine\ORM\Configuration();
+        $invalidFilter = $this->getMock('\StdClass');
+
+        $config->addFilter("geolocation", $invalidFilter);
     }
 
     public function testEntityManagerEnableFilter()
@@ -441,6 +457,22 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->loadFixtureData();
         $query = $this->_em->createQuery('select ug from Doctrine\Tests\Models\CMS\CmsGroup ug WHERE 1=1');
+
+        // We get two users before enabling the filter
+        $this->assertEquals(2, count($query->getResult()));
+
+        $conf = $this->_em->getConfiguration();
+        $conf->addFilter("group_prefix", "\Doctrine\Tests\ORM\Functional\CMSGroupPrefixFilter");
+        $this->_em->getFilters()->enable("group_prefix")->setParameter("prefix", "bar_%", DBALType::STRING);
+
+        // We get one user after enabling the filter
+        $this->assertEquals(1, count($query->getResult()));
+    }
+
+    public function testWhereOrFilter()
+    {
+        $this->loadFixtureData();
+        $query = $this->_em->createQuery('select ug from Doctrine\Tests\Models\CMS\CmsGroup ug WHERE 1=1 OR 1=1');
 
         // We get two users before enabling the filter
         $this->assertEquals(2, count($query->getResult()));

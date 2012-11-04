@@ -24,7 +24,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 /**
  * ClassMetadata exporter for PHP code
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -99,6 +99,11 @@ class PhpExporter extends AbstractExporter
                     unset($cascade[$key]);
                 }
             }
+
+            if (count($cascade) === 5) {
+                $cascade = array('all');
+            }
+
             $associationMappingArray = array(
                 'fieldName'    => $associationMapping['fieldName'],
                 'targetEntity' => $associationMapping['targetEntity'],
@@ -115,7 +120,7 @@ class PhpExporter extends AbstractExporter
                 );
 
                 $associationMappingArray = array_merge($associationMappingArray, $oneToOneMappingArray);
-            } else if ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_MANY) {
+            } elseif ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_MANY) {
                 $method = 'mapOneToMany';
                 $potentialAssociationMappingIndexes = array(
                     'mappedBy',
@@ -128,7 +133,7 @@ class PhpExporter extends AbstractExporter
                     }
                 }
                 $associationMappingArray = array_merge($associationMappingArray, $oneToManyMappingArray);
-            } else if ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
+            } elseif ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
                 $method = 'mapManyToMany';
                 $potentialAssociationMappingIndexes = array(
                     'mappedBy',

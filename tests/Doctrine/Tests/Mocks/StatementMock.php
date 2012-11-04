@@ -10,7 +10,7 @@ namespace Doctrine\Tests\Mocks;
 class StatementMock implements \IteratorAggregate, \Doctrine\DBAL\Driver\Statement
 {
     public function bindValue($param, $value, $type = null){}
-    public function bindParam($column, &$variable, $type = null){}
+    public function bindParam($column, &$variable, $type = null, $length = null){}
     public function errorCode(){}
     public function errorInfo(){}
     public function execute($params = null){}

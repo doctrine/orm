@@ -197,43 +197,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
         }
 
-        $associationOverrides = array();
-        // Evaluate AssociationOverrides annotation
-        if (isset($classAnnotations['Doctrine\ORM\Mapping\AssociationOverrides'])) {
-            $associationOverridesAnnot = $classAnnotations['Doctrine\ORM\Mapping\AssociationOverrides'];
-
-            foreach ($associationOverridesAnnot->value as $associationOverride) {
-                // Check for JoinColummn/JoinColumns annotations
-                if ($associationOverride->joinColumns) {
-                    $joinColumns = array();
-                    foreach ($associationOverride->joinColumns as $joinColumn) {
-                        $joinColumns[] = $this->joinColumnToArray($joinColumn);
-                    }
-                    $associationOverrides[$associationOverride->name]['joinColumns'] = $joinColumns;
-                }
-
-                // Check for JoinTable annotations
-                if ($associationOverride->joinTable) {
-                    $joinTable      = null;
-                    $joinTableAnnot = $associationOverride->joinTable;
-                    $joinTable = array(
-                        'name'      => $joinTableAnnot->name,
-                        'schema'    => $joinTableAnnot->schema
-                    );
-
-                    foreach ($joinTableAnnot->joinColumns as $joinColumn) {
-                        $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
-                    }
-
-                    foreach ($joinTableAnnot->inverseJoinColumns as $joinColumn) {
-                        $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumn);
-                    }
-
-                    $associationOverrides[$associationOverride->name]['joinTable'] = $joinTable;
-                }
-            }
-        }
-
         // Evaluate InheritanceType annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\InheritanceType'])) {
             $inheritanceTypeAnnot = $classAnnotations['Doctrine\ORM\Mapping\InheritanceType'];

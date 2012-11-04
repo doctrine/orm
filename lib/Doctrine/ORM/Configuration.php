@@ -19,18 +19,18 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Cache\Cache,
-    Doctrine\Common\Cache\ArrayCache,
-    Doctrine\Common\Annotations\AnnotationRegistry,
-    Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\Common\Persistence\Mapping\Driver\MappingDriver,
-    Doctrine\ORM\Mapping\Driver\AnnotationDriver,
-    Doctrine\ORM\Mapping\QuoteStrategy,
-    Doctrine\ORM\Mapping\DefaultQuoteStrategy,
-    Doctrine\ORM\Mapping\NamingStrategy,
-    Doctrine\ORM\Mapping\DefaultNamingStrategy,
-    Doctrine\Common\Annotations\SimpleAnnotationReader,
-    Doctrine\Common\Annotations\CachedReader;
+use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Mapping\QuoteStrategy;
+use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
+use Doctrine\ORM\Mapping\NamingStrategy;
+use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
+use Doctrine\Common\Annotations\CachedReader;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -576,11 +576,22 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Add a filter to the list of possible filters.
      *
      * @param string $name The name of the filter.
-     * @param string $className The class name of the filter.
+     * @param string|Query\Filter\SQLFilter $filter The filter class name or an
+     *                                              SQLFilter instance.
+     *
+     * @throws \InvalidArgumentException If the filter is an object and it doesn't
+     *                                   extend the Query\Filter\SQLFilter class.
      */
-    public function addFilter($name, $className)
+    public function addFilter($name, $filter)
     {
-        $this->_attributes['filters'][$name] = $className;
+        if (is_object($filter) && ! $filter instanceof Query\Filter\SQLFilter) {
+            throw new \InvalidArgumentException(
+                "A filter can be either a class name or an object extending \Doctrine\ORM\Query\Filter\SQLFilter," .
+                " instance of '" . get_class($filter) . "' given."
+            );
+        }
+
+        $this->_attributes['filters'][$name] = $filter;
     }
 
     /**
@@ -588,10 +599,10 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name The name of the filter.
      *
-     * @return string The class name of the filter, or null of it is not
-     *  defined.
+     * @return string|Query\Filter\SQLFilter The class name of the filter, an
+     *                                       SQLFilter instance or null of it is not defined.
      */
-    public function getFilterClassName($name)
+    public function getFilter($name)
     {
         return isset($this->_attributes['filters'][$name])
             ? $this->_attributes['filters'][$name]
@@ -659,7 +670,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Set quote strategy.
      *
      * @since 2.3
-     * @param Doctrine\ORM\Mapping\QuoteStrategy $quoteStrategy
+     * @param \Doctrine\ORM\Mapping\QuoteStrategy $quoteStrategy
      */
     public function setQuoteStrategy(QuoteStrategy $quoteStrategy)
     {
@@ -670,7 +681,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Get quote strategy.
      *
      * @since 2.3
-     * @return Doctrine\ORM\Mapping\QuoteStrategy
+     * @return \Doctrine\ORM\Mapping\QuoteStrategy
      */
     public function getQuoteStrategy()
     {

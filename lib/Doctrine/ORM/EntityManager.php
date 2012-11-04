@@ -19,16 +19,16 @@
 
 namespace Doctrine\ORM;
 
-use Exception,
-    Doctrine\Common\EventManager,
-    Doctrine\Common\Persistence\ObjectManager,
-    Doctrine\DBAL\Connection,
-    Doctrine\DBAL\LockMode,
-    Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\ClassMetadataFactory,
-    Doctrine\ORM\Query\ResultSetMapping,
-    Doctrine\ORM\Proxy\ProxyFactory,
-    Doctrine\ORM\Query\FilterCollection;
+use Exception;
+use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Query\FilterCollection;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -114,7 +114,7 @@ class EntityManager implements ObjectManager
     /**
      * Collection of query filters.
      *
-     * @var Doctrine\ORM\Query\FilterCollection
+     * @var \Doctrine\ORM\Query\FilterCollection
      */
     private $filterCollection;
 

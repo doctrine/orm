@@ -21,8 +21,6 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Test case for custom AST walking and modification.
  *
@@ -40,18 +38,25 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
         $this->_em = $this->_getTestEntityManager();
     }
 
-    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed)
+    public function generateSql($dqlToBeTested, $treeWalkers, $outputWalker)
+    {
+        $query = $this->_em->createQuery($dqlToBeTested);
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, $treeWalkers)
+              ->useQueryCache(false);
+
+        if ($outputWalker) {
+            $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, $outputWalker);
+        }
+
+        return $query->getSql();
+    }
+
+    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed, $treeWalkers = array(), $outputWalker = null)
     {
         try {
-            $query = $this->_em->createQuery($dqlToBeTested);
-            $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\Tests\ORM\Functional\CustomTreeWalker'))
-                  ->useQueryCache(false);
-
-            $this->assertEquals($sqlToBeConfirmed, $query->getSql());
-            $query->free();
+            $this->assertEquals($sqlToBeConfirmed, $this->generateSql($dqlToBeTested, $treeWalkers, $outputWalker));
         } catch (\Exception $e) {
             $this->fail($e->getMessage() . ' at "' . $e->getFile() . '" on line ' . $e->getLine());
-
         }
     }
 
@@ -59,7 +64,8 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
-            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.email_id AS email_id4 FROM cms_users c0_ WHERE c0_.id = 1"
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.email_id AS email_id4 FROM cms_users c0_ WHERE c0_.id = 1",
+            array('Doctrine\Tests\ORM\Functional\CustomTreeWalker')
         );
     }
 
@@ -67,7 +73,8 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name or u.name = :otherName',
-            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.email_id AS email_id4 FROM cms_users c0_ WHERE (c0_.name = ? OR c0_.name = ?) AND c0_.id = 1"
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.email_id AS email_id4 FROM cms_users c0_ WHERE (c0_.name = ? OR c0_.name = ?) AND c0_.id = 1",
+            array('Doctrine\Tests\ORM\Functional\CustomTreeWalker')
         );
     }
 
@@ -75,8 +82,29 @@ class CustomTreeWalkersTest extends \Doctrine\Tests\OrmTestCase
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name',
-            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.email_id AS email_id4 FROM cms_users c0_ WHERE c0_.name = ? AND c0_.id = 1"
+            "SELECT c0_.id AS id0, c0_.status AS status1, c0_.username AS username2, c0_.name AS name3, c0_.email_id AS email_id4 FROM cms_users c0_ WHERE c0_.name = ? AND c0_.id = 1",
+            array('Doctrine\Tests\ORM\Functional\CustomTreeWalker')
         );
+    }
+
+    public function testSetUnknownQueryComponentThrowsException()
+    {
+        $this->setExpectedException("Doctrine\ORM\Query\QueryException", "Invalid query component given for DQL alias 'x', requires 'metadata', 'parent', 'relation', 'map', 'nestingLevel' and 'token' keys.");
+        $this->generateSql(
+            'select u from Doctrine\Tests\Models\CMS\CmsUser u',
+            array(),
+            __NAMESPACE__ . '\\AddUnknownQueryComponentWalker'
+        );
+    }
+}
+
+class AddUnknownQueryComponentWalker extends Query\SqlWalker
+{
+    public function walkSelectStatement(Query\AST\SelectStatement $selectStatement)
+    {
+        parent::walkSelectStatement($selectStatement);
+
+        $this->setQueryComponent('x', array());
     }
 }
 

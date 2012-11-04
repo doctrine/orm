@@ -198,6 +198,7 @@ class YamlDriver extends FileDriver
 
                 if (is_string($index['columns'])) {
                     $columns = explode(',', $index['columns']);
+                    $columns = array_map('trim', $columns);
                 } else {
                     $columns = $index['columns'];
                 }
@@ -217,6 +218,7 @@ class YamlDriver extends FileDriver
 
                 if (is_string($unique['columns'])) {
                     $columns = explode(',', $unique['columns']);
+                    $columns = array_map('trim', $columns);
                 } else {
                     $columns = $unique['columns'];
                 }
@@ -628,7 +630,7 @@ class YamlDriver extends FileDriver
             $mapping['type'] = $column['type'];
 
             if (isset($params[1])) {
-                $column['length'] = substr($params[1], 0, strlen($params[1]) - 1);
+                $column['length'] = (integer) substr($params[1], 0, strlen($params[1]) - 1);
             }
         }
 
