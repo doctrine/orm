@@ -18,6 +18,7 @@
  */
 namespace Doctrine\ORM\Tools\Event;
 
+use Doctrine\Common\EventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
@@ -30,42 +31,45 @@ use Doctrine\DBAL\Schema\Table;
  * @since       1.0
  * @author      Benjamin Eberlei <kontakt@beberlei.de>
  */
-class GenerateSchemaTableEventArgs extends \Doctrine\Common\EventArgs
+class GenerateSchemaTableEventArgs extends EventArgs
 {
-    private $_classMetadata = null;
-    private $_schema = null;
-    private $_classTable = null;
+    private $classMetadata;
+    private $schema;
+    private $classTable;
 
     /**
      * @param ClassMetadata $classMetadata
-     * @param Schema $schema
-     * @param Table $classTable
+     * @param Schema        $schema
+     * @param Table         $classTable
      */
     public function __construct(ClassMetadata $classMetadata, Schema $schema, Table $classTable)
     {
-        $this->_classMetadata = $classMetadata;
-        $this->_schema = $schema;
-        $this->_classTable = $classTable;
+        $this->classMetadata = $classMetadata;
+        $this->schema = $schema;
+        $this->classTable = $classTable;
     }
 
     /**
      * @return ClassMetadata
      */
-    public function getClassMetadata() {
-        return $this->_classMetadata;
+    public function getClassMetadata()
+    {
+        return $this->classMetadata;
     }
 
     /**
      * @return Schema
      */
-    public function getSchema() {
-        return $this->_schema;
+    public function getSchema()
+    {
+        return $this->schema;
     }
 
     /**
      * @return Table
      */
-    public function getClassTable() {
-        return $this->_classTable;
+    public function getClassTable()
+    {
+        return $this->classTable;
     }
 }

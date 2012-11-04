@@ -28,7 +28,7 @@ use Symfony\Component\Console\Input\InputArgument,
 /**
  * Command to create the database schema for a set of classes based on their mappings.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
@@ -62,15 +62,15 @@ EOT
 
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
     {
-        if ($input->getOption('dump-sql') === true) {
+        if ($input->getOption('dump-sql')) {
             $sqls = $schemaTool->getCreateSchemaSql($metadatas);
-            $output->write(implode(';' . PHP_EOL, $sqls) . ';' . PHP_EOL);
+            $output->writeln(implode(';' . PHP_EOL, $sqls) . ';');
         } else {
-            $output->write('ATTENTION: This operation should not be executed in a production environment.' . PHP_EOL . PHP_EOL);
+            $output->writeln('ATTENTION: This operation should not be executed in a production environment.' . PHP_EOL);
 
-            $output->write('Creating database schema...' . PHP_EOL);
+            $output->writeln('Creating database schema...');
             $schemaTool->createSchema($metadatas);
-            $output->write('Database schema created successfully!' . PHP_EOL);
+            $output->writeln('Database schema created successfully!');
         }
     }
 }
