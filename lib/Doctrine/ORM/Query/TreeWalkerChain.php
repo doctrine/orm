@@ -94,6 +94,7 @@ class TreeWalkerChain implements TreeWalker
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkSelectStatement($AST);
+
             $this->_queryComponents = $walker->getQueryComponents();
         }
     }
