@@ -915,9 +915,14 @@ public function __construct()
         $var = sprintf('%sMethodTemplate', $type);
         $template = self::$$var;
 
+        $methodTypeHint = null;
         $types          = Type::getTypesMap();
         $variableType   = $typeHint ? $this->getType($typeHint) . ' ' : null;
-        $methodTypeHint = $typeHint && ! isset($types[$typeHint]) ? '\\' . $typeHint . ' ' : null;
+
+        if ($typeHint && ! isset($types[$typeHint])) {
+            $variableType   =  '\\' . ltrim($variableType, '\\');
+            $methodTypeHint =  '\\' . $typeHint . ' ';
+        }
 
         $replacements = array(
           '<description>'       => ucfirst($type) . ' ' . $fieldName,
@@ -997,9 +1002,9 @@ public function __construct()
         $lines[] = $this->spaces . '/**';
 
         if ($associationMapping['type'] & ClassMetadataInfo::TO_MANY) {
-            $lines[] = $this->spaces . ' * @var \Doctrine\Common\Collections\ArrayCollection';
+            $lines[] = $this->spaces . ' * @var \Doctrine\Common\Collections\Collection';
         } else {
-            $lines[] = $this->spaces . ' * @var ' . $associationMapping['targetEntity'];
+            $lines[] = $this->spaces . ' * @var \\' . ltrim($associationMapping['targetEntity'], '\\');
         }
 
         if ($this->generateAnnotations) {
