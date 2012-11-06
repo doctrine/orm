@@ -390,6 +390,12 @@ class SchemaTool
                 unset($mapping['options']['comment']);
             }
 
+            if (isset($mapping['options']['unsigned'])) {
+                $options['unsigned'] = $mapping['options']['unsigned'];
+
+                unset($mapping['options']['unsigned']);
+            }
+
             $options['customSchemaOptions'] = $mapping['options'];
         }
 
