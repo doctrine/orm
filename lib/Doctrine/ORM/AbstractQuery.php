@@ -26,6 +26,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\ORMInvalidArgumentException;
 
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
@@ -247,44 +248,21 @@ abstract class AbstractQuery
      */
     public function processParameterValue($value)
     {
-        switch (true) {
-            case is_array($value):
-                foreach ($value as $key => $paramValue) {
-                    $paramValue  = $this->processParameterValue($paramValue);
-                    $value[$key] = is_array($paramValue) ? $paramValue[key($paramValue)] : $paramValue;
-                }
+        if (is_array($value)) {
+            foreach ($value as $key => $paramValue) {
+                $paramValue  = $this->processParameterValue($paramValue);
+                $value[$key] = is_array($paramValue) ? reset($paramValue) : $paramValue;
+            }
 
-                return $value;
-
-            case is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value)):
-                return $this->convertObjectParameterToScalarValue($value);
-
-            default:
-                return $value;
-        }
-    }
-
-    private function convertObjectParameterToScalarValue($value)
-    {
-        $class = $this->_em->getClassMetadata(get_class($value));
-
-        if ($class->isIdentifierComposite) {
-            throw new \InvalidArgumentException(
-                "Binding an entity with a composite primary key to a query is not supported. " .
-                "You should split the parameter into the explicit fields and bind them seperately."
-            );
+            return $value;
         }
 
-        $values = ($this->_em->getUnitOfWork()->getEntityState($value) === UnitOfWork::STATE_MANAGED)
-            ? $this->_em->getUnitOfWork()->getEntityIdentifier($value)
-            : $class->getIdentifierValues($value);
+        if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
+            $value = $this->_em->getUnitOfWork()->getSingleIdentifierValue($value);
 
-        $value = $values[$class->getSingleIdentifierFieldName()];
-
-        if (null === $value) {
-            throw new \InvalidArgumentException(
-                "Binding entities to query parameters only allowed for entities that have an identifier."
-            );
+            if ($value === null) {
+                throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+            }
         }
 
         return $value;
