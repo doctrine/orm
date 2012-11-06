@@ -40,6 +40,6 @@ class JoinClassPathExpression extends Node
 
     public function dispatch($walker)
     {
-        return $sqlWalker->walkJoinPathExpression($this);
+        return $walker->walkJoinPathExpression($this);
     }
 }
