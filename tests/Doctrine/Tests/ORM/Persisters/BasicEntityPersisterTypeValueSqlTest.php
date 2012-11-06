@@ -88,4 +88,13 @@ class BasicEntityPersisterTypeValueSqlTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals('t0."simple-entity-id" AS simpleentityid1, t0."simple-entity-value" AS simpleentityvalue2', $method->invoke($persister));
     }
+
+    /**
+     * @group DDC-2073
+     */
+    public function testSelectConditionStatementIsNull()
+    {
+        $statement = $this->_persister->getSelectConditionStatementSQL('test', null, array(), Comparison::IS);
+        $this->assertEquals('test IS ?', $statement);
+    }
 }
