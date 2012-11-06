@@ -2738,6 +2738,30 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Process an entity instance to extract their identifier values.
+     *
+     * @param object $entity The entity instance.
+     *
+     * @return scalar
+     *
+     * @throws \Doctrine\ORM\ORMInvalidArgumentException
+     */
+    public function getSingleIdentifierValue($entity)
+    {
+        $class = $this->em->getClassMetadata(get_class($entity));
+
+        if ($class->isIdentifierComposite) {
+            throw ORMInvalidArgumentException::invalidCompositeIdentifier();
+        }
+
+        $values = ($this->getEntityState($entity) === UnitOfWork::STATE_MANAGED)
+            ? $this->getEntityIdentifier($entity)
+            : $class->getIdentifierValues($entity);
+
+        return isset($values[$class->identifier[0]]) ? $values[$class->identifier[0]] : null;
+    }
+ 
+    /**
      * Tries to find an entity with the given identifier in the identity map of
      * this UnitOfWork.
      *
