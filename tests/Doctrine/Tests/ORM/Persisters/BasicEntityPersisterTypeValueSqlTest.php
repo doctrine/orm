@@ -7,6 +7,7 @@ use Doctrine\ORM\Persisters\BasicEntityPersister;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\CustomType\CustomTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomTypeFriend;
+use Doctrine\Common\Collections\Expr\Comparison;
 
 require_once __DIR__ . '/../../TestInit.php';
 
