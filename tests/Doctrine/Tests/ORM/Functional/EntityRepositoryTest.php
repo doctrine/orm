@@ -345,6 +345,20 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
+     * @group DDC-1241
+     */
+    public function testFindOneByOrderBy()
+    {
+    	$this->loadFixture();
+    	
+    	$repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+    	$userAsc = $repos->findOneBy(array(), array("username" => "ASC"));
+    	$userDesc = $repos->findOneBy(array(), array("username" => "DESC"));
+    	
+    	$this->assertNotSame($userAsc, $userDesc);
+    }
+    
+    /**
      * @group DDC-817
      */
     public function testFindByAssociationKey()
