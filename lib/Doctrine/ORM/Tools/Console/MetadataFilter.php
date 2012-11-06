@@ -76,7 +76,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
         $metadata = $it->current();
 
         foreach ($this->filter as $filter) {
-            if (preg_match("/$filter/", $metadata->name, $m)) {
+            if (preg_match("/".preg_quote($filter)."/", $metadata->name)) {
                 return true;
             }
         }
