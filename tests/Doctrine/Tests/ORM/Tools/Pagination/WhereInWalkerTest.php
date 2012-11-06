@@ -20,7 +20,7 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
-            "SELECT u0_.id AS id0, g1_.id AS id1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE u0_.id IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", $whereInQuery->getSql()
+            "SELECT u0_.id AS id0, g1_.id AS id1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE u0_.id IN (?)", $whereInQuery->getSql()
         );
     }
 
@@ -34,7 +34,7 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
-            "SELECT a0_.id AS id0, a0_.name AS name1, sum(a0_.name) AS sclr2 FROM Author a0_ WHERE a0_.id IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", $whereInQuery->getSql()
+            "SELECT a0_.id AS id0, a0_.name AS name1, sum(a0_.name) AS sclr2 FROM Author a0_ WHERE a0_.id IN (?)", $whereInQuery->getSql()
         );
     }
 
@@ -48,7 +48,7 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
-            "SELECT u0_.id AS id0, g1_.id AS id1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE 1 = 1 AND u0_.id IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", $whereInQuery->getSql()
+            "SELECT u0_.id AS id0, g1_.id AS id1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE 1 = 1 AND u0_.id IN (?)", $whereInQuery->getSql()
         );
     }
 
@@ -62,7 +62,7 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
-            "SELECT u0_.id AS id0, g1_.id AS id1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE 1 = 1 AND 2 = 2 AND u0_.id IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", $whereInQuery->getSql()
+            "SELECT u0_.id AS id0, g1_.id AS id1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE 1 = 1 AND 2 = 2 AND u0_.id IN (?)", $whereInQuery->getSql()
         );
     }
 
@@ -76,7 +76,7 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
-            "SELECT u0_.id AS id0, g1_.id AS id1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE (1 = 1 OR 2 = 2) AND u0_.id IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", $whereInQuery->getSql()
+            "SELECT u0_.id AS id0, g1_.id AS id1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE (1 = 1 OR 2 = 2) AND u0_.id IN (?)", $whereInQuery->getSql()
         );
     }
 
@@ -90,7 +90,7 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
-            "SELECT u0_.id AS id0, g1_.id AS id1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE (1 = 1 OR 2 = 2) AND 3 = 3 AND u0_.id IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", $whereInQuery->getSql()
+            "SELECT u0_.id AS id0, g1_.id AS id1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE (1 = 1 OR 2 = 2) AND 3 = 3 AND u0_.id IN (?)", $whereInQuery->getSql()
         );
     }
 
@@ -104,7 +104,7 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
-            "SELECT u0_.id AS id0, g1_.id AS id1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE (1 = 1 AND 2 = 2 OR 3 = 3) AND u0_.id IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", $whereInQuery->getSql()
+            "SELECT u0_.id AS id0, g1_.id AS id1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE (1 = 1 AND 2 = 2 OR 3 = 3) AND u0_.id IN (?)", $whereInQuery->getSql()
         );
     }
 
@@ -118,7 +118,7 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
         $this->assertEquals(
-            "SELECT u0_.id AS id0, g1_.id AS id1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE (NOT 1 = 2) AND u0_.id IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", $whereInQuery->getSql()
+            "SELECT u0_.id AS id0, g1_.id AS id1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE (NOT 1 = 2) AND u0_.id IN (?)", $whereInQuery->getSql()
         );
     }
 }
