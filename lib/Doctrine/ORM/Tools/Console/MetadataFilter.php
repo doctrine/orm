@@ -51,7 +51,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
 
     public function __construct(\ArrayIterator $metadata, $filter)
     {
-        $this->filter = (array) $filter;
+        $this->filter = (array)$filter;
 
         parent::__construct($metadata);
     }
@@ -66,7 +66,9 @@ class MetadataFilter extends \FilterIterator implements \Countable
         $metadata = $it->current();
 
         foreach ($this->filter as $filter) {
-            if(preg_match("#$filter#",$metadata->name,$m)) return true;
+            if (preg_match("/$filter/", $metadata->name, $m)) {
+                return true;
+            }
         }
 
         return false;
