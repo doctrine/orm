@@ -395,7 +395,13 @@ class SchemaTool
 
                 unset($mapping['options']['unsigned']);
             }
-
+            
+            if (isset($mapping['options']['fixed'])) {
+                $options['fixed'] = $mapping['options']['fixed'];
+                
+                unset($mapping['options']['fixed']);
+            }
+            
             $options['customSchemaOptions'] = $mapping['options'];
         }
 
