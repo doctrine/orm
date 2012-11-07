@@ -8,7 +8,7 @@ Getting Started: Code First
     you :doc:`Model First <getting-started-models>`, you are modelling your application using tools (for
     example UML) and generate database schema and PHP code from this model.
     When you have a :doc:`Database First <getting-started-database>`, then you already have a database schema
-    and generate the correspdongin PHP code from it.
+    and generate the corresponding PHP code from it.
 
 Doctrine 2 is an object-relational mapper (ORM) for PHP 5.3.0+ that provides
 transparent persistence for PHP objects.  It uses the Data Mapper pattern at
