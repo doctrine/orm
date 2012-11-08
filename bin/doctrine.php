@@ -21,7 +21,8 @@
 $configFile = getcwd() . DIRECTORY_SEPARATOR . 'cli-config.php';
 
 $helperSet = null;
-$commands = array();
+$commands  = array();
+
 if (file_exists($configFile)) {
     if ( ! is_readable($configFile)) {
         trigger_error(
@@ -32,13 +33,14 @@ if (file_exists($configFile)) {
     require $configFile;
 
     foreach ($GLOBALS as $global) {
-        if ($global instanceof \Symfony\Component\Console\Helper\HelperSet) {
-            $helperSet = $global;
-            continue;
-        }
-        if ($global instanceof \Symfony\Component\Console\Command\Command) {
-            $commands[] = $global;
-            continue;
+        switch (true) {
+            case ($global instanceof \Symfony\Component\Console\Helper\HelperSet):
+                $helperSet = $global;
+                break;
+
+            case ($global instanceof \Symfony\Component\Console\Command\Command):
+                $commands[] = $global;
+                break;
         }
     }
 }
