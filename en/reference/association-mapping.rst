@@ -1127,7 +1127,7 @@ empty ``ArrayCollection`` in your entities constructor:
         }
     }
 
-Now the following code will be working even if the Entity hasn't
+Now the following code will work even if the Entity hasn't
 been associated with an EntityManager yet:
 
 .. code-block:: php
