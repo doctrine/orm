@@ -4,8 +4,6 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
 * @group DDC-1955
 */

@@ -780,6 +780,16 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         //Inherited listeners
         $this->assertEquals($fixClass->entityListeners, $superClass->entityListeners);
         $this->assertEquals($flexClass->entityListeners, $superClass->entityListeners);
+    }
+
+    /**
+     * @group DDC-1955
+     */
+    public function testEntityListenersOverride()
+    {
+        $em         = $this->_getTestEntityManager();
+        $factory    = $this->createClassMetadataFactory($em);
+        $ultraClass = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFlexUltraContract');
 
         //overrited listeners
         $this->assertArrayHasKey(Events::postPersist, $ultraClass->entityListeners);
@@ -799,7 +809,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $prePersist = $ultraClass->entityListeners[Events::prePersist][1];
         $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener', $prePersist['class']);
         $this->assertEquals('prePersistHandler1', $prePersist['method']);
-        
+
         $prePersist = $ultraClass->entityListeners[Events::prePersist][2];
         $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener', $prePersist['class']);
         $this->assertEquals('prePersistHandler2', $prePersist['method']);

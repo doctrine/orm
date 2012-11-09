@@ -4,8 +4,6 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * @group DDC-1955
  */

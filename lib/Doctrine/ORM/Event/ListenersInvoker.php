@@ -72,7 +72,7 @@ class ListenersInvoker
             $method     = $listener['method'];
             $instance   = $this->resolver->resolve($class);
 
-            $instance->{$method}($entity, $event);
+            $instance->$method($entity, $event);
         }
     }
 }
