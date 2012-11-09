@@ -1007,8 +1007,13 @@ class SqlWalker implements TreeWalker
 
         switch (true) {
             case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\RangeVariableDeclaration):
+                $class = $this->em->getClassMetadata($joinDeclaration->abstractSchemaName);
+                $condExprConjunction = $class->isInheritanceTypeJoined()
+                    ? ' AND '
+                    : ' ON ';
+
                 $sql .= $this->walkRangeVariableDeclaration($joinDeclaration)
-                      . ' ON (' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
+                      . $condExprConjunction . '(' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
                 break;
 
             case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\JoinAssociationDeclaration):
