@@ -2492,8 +2492,10 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Adds a entity listener for entities of this class.
      *
-     * @param string $callback
-     * @param string $eventName
+     * @param string $eventName The entity lifecycle event.
+     * @param string $class     The listener class.
+     * @param string $method    The listener callback method.
+     *
      * @throws \Doctrine\ORM\Mapping\MappingException
      */
     public function addEntityListener($eventName, $class, $method)
