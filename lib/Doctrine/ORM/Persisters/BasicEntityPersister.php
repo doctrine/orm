@@ -1700,7 +1700,11 @@ class BasicEntityPersister
                 $idValues = $class->getIdentifierValues($value);
             }
 
-            $value = $idValues[key($idValues)];
+            $key = key($idValues);
+
+            if (null !== $key){
+                $value = $idValues[$key];
+           } 
         }
 
         return $value;
