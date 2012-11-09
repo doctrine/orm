@@ -1147,7 +1147,7 @@ class SqlWalker implements TreeWalker
         switch (true) {
             case ($expr instanceof AST\PathExpression):
                 if ($expr->type !== AST\PathExpression::TYPE_STATE_FIELD) {
-                    throw QueryException::invalidPathExpression($expr->type);
+                    throw QueryException::invalidPathExpression($expr);
                 }
 
                 $fieldName = $expr->field;
@@ -1188,7 +1188,6 @@ class SqlWalker implements TreeWalker
             case ($expr instanceof AST\SimpleArithmeticExpression):
             case ($expr instanceof AST\ArithmeticTerm):
             case ($expr instanceof AST\ArithmeticFactor):
-            case ($expr instanceof AST\ArithmeticPrimary):
             case ($expr instanceof AST\Literal):
             case ($expr instanceof AST\NullIfExpression):
             case ($expr instanceof AST\CoalesceExpression):
@@ -1422,7 +1421,6 @@ class SqlWalker implements TreeWalker
             case ($expr instanceof AST\SimpleArithmeticExpression):
             case ($expr instanceof AST\ArithmeticTerm):
             case ($expr instanceof AST\ArithmeticFactor):
-            case ($expr instanceof AST\ArithmeticPrimary):
             case ($expr instanceof AST\Literal):
             case ($expr instanceof AST\NullIfExpression):
             case ($expr instanceof AST\CoalesceExpression):
