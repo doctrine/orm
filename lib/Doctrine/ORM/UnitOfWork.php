@@ -523,7 +523,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::preFlush);
 
-        if ($invoke != ListenersInvoker::INVOKE_NONE) {
+        if ($invoke !== ListenersInvoker::INVOKE_NONE) {
             $this->listenersInvoker->invoke($class, Events::preFlush, $entity, new PreFlushEventArgs($entity, $this->em), $invoke);
         }
 
@@ -824,7 +824,7 @@ class UnitOfWork implements PropertyChangedListener
         $oid    = spl_object_hash($entity);
         $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::prePersist);
 
-        if ($invoke != ListenersInvoker::INVOKE_NONE) {
+        if ($invoke !== ListenersInvoker::INVOKE_NONE) {
             $this->listenersInvoker->invoke($class, Events::prePersist, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
         }
 
@@ -935,7 +935,7 @@ class UnitOfWork implements PropertyChangedListener
 
             unset($this->entityInsertions[$oid]);
 
-            if ($invoke != ListenersInvoker::INVOKE_NONE) {
+            if ($invoke !== ListenersInvoker::INVOKE_NONE) {
                 $entities[] = $entity;
             }
         }
@@ -1033,7 +1033,7 @@ class UnitOfWork implements PropertyChangedListener
                 $class->reflFields[$class->identifier[0]]->setValue($entity, null);
             }
 
-            if ($invoke != ListenersInvoker::INVOKE_NONE) {
+            if ($invoke !== ListenersInvoker::INVOKE_NONE) {
                 $this->listenersInvoker->invoke($class, Events::postRemove, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
             }
         }
@@ -1676,7 +1676,7 @@ class UnitOfWork implements PropertyChangedListener
             case self::STATE_MANAGED:
                 $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::preRemove);
 
-                if ($invoke != ListenersInvoker::INVOKE_NONE) {
+                if ($invoke !== ListenersInvoker::INVOKE_NONE) {
                     $this->listenersInvoker->invoke($class, Events::preRemove, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
                 }
 
@@ -2678,7 +2678,7 @@ class UnitOfWork implements PropertyChangedListener
         if ($overrideLocalValues) {
             $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postLoad);
 
-            if ($invoke != ListenersInvoker::INVOKE_NONE) {
+            if ($invoke !== ListenersInvoker::INVOKE_NONE) {
                 $this->listenersInvoker->invoke($class, Events::postLoad, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
             }
         }
