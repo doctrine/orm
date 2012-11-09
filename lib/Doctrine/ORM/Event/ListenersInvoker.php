@@ -19,8 +19,8 @@
 
 namespace Doctrine\ORM\Event;
 
-use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\EntityManager;
 use Doctrine\Common\EventArgs;
 
 /**
@@ -31,48 +31,90 @@ use Doctrine\Common\EventArgs;
  */
 class ListenersInvoker
 {
+    const INVOKE_NONE       = 0;
+    const INVOKE_LISTENERS  = 1;
+    const INVOKE_CALLBACKS  = 2;
+    const INVOKE_MANAGER    = 4;
+
     /**
      * @var \Doctrine\ORM\Mapping\EntityListenerResolver The Entity listener resolver.
      */
     private $resolver;
 
     /**
-     * @param \Doctrine\ORM\Mapping\EntityListenerResolver $resolver
+     * The EventManager used for dispatching events.
+     *
+     * @var \Doctrine\Common\EventManager
      */
-    public function __construct(EntityListenerResolver $resolver)
+    private $eventManager;
+
+    /**
+     * Initializes a new ListenersInvoker instance.
+     *
+     * @param \Doctrine\ORM\EntityManager $em
+     */
+    public function __construct(EntityManager $em)
     {
-        $this->resolver = $resolver;
+        $this->eventManager = $em->getEventManager();
+        $this->resolver     = $em->getConfiguration()->getEntityListenerResolver();
     }
 
     /**
-     * Dispatches the lifecycle event of the given entity to the registered lifecycle callbacks.
+     * Get the subscribed event systems
      *
-     * @param string $eventName                 The entity lifecycle event.
-     * @param \Object $entity                   The Entity on which the event occured.
-     * @param \Doctrine\Common\EventArgs $event The Event args.
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata The entity metadata.
+     * @param string $eventName                             The entity lifecycle event.
+     *
+     * @return integer Bitmask of subscribed event systems.
      */
-    public function invokeLifecycleCallbacks(ClassMetadata $metadata, $eventName, $entity, EventArgs $event)
+    public function getSubscribedSystems(ClassMetadata $metadata, $eventName)
     {
-        foreach ($metadata->lifecycleCallbacks[$eventName] as $callback) {
-            $entity->$callback($event);
+        $invoke = self::INVOKE_NONE;
+
+        if (isset($metadata->lifecycleCallbacks[$eventName])) {
+            $invoke |= self::INVOKE_CALLBACKS;
         }
+
+        if (isset($metadata->entityListeners[$eventName])) {
+            $invoke |= self::INVOKE_LISTENERS;
+        }
+
+        if ($this->eventManager->hasListeners($eventName)) {
+            $invoke |= self::INVOKE_MANAGER;
+        }
+
+        return $invoke;
     }
 
     /**
-     * Dispatches the lifecycle event of the given entity to the registered entity listeners.
+     * Dispatches the lifecycle event of the given entity.
      *
-     * @param string $eventName                     The entity lifecycle event.
-     * @param object $entity                        The Entity on which the event occured.
-     * @param \Doctrine\Common\EventArgs $event     The Event args.
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata The entity metadata.
+     * @param string $eventName                             The entity lifecycle event.
+     * @param object $entity                                The Entity on which the event occured.
+     * @param \Doctrine\Common\EventArgs $event             The Event args.
+     * @param integer $invoke                               Bitmask to invoke listeners.
      */
-    public function invokeEntityListeners(ClassMetadata $metadata, $eventName, $entity, EventArgs $event)
+    public function invoke(ClassMetadata $metadata, $eventName, $entity, EventArgs $event, $invoke)
     {
-        foreach ($metadata->entityListeners[$eventName] as $listener) {
-            $class      = $listener['class'];
-            $method     = $listener['method'];
-            $instance   = $this->resolver->resolve($class);
+        if($invoke & self::INVOKE_CALLBACKS) {
+            foreach ($metadata->lifecycleCallbacks[$eventName] as $callback) {
+                $entity->$callback($event);
+            }
+        }
 
-            $instance->$method($entity, $event);
+        if($invoke & self::INVOKE_LISTENERS) {
+            foreach ($metadata->entityListeners[$eventName] as $listener) {
+                $class      = $listener['class'];
+                $method     = $listener['method'];
+                $instance   = $this->resolver->resolve($class);
+
+                $instance->$method($entity, $event);
+            }
+        }
+
+        if($invoke & self::INVOKE_MANAGER) {
+            $this->eventManager->dispatchEvent($eventName, $event);
         }
     }
 }
