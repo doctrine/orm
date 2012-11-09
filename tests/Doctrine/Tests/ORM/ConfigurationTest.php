@@ -268,9 +268,9 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf('Doctrine\ORM\Mapping\EntityListenerResolver', $this->configuration->getEntityListenerResolver());
         $this->assertInstanceOf('Doctrine\ORM\Mapping\DefaultEntityListenerResolver', $this->configuration->getEntityListenerResolver());
-        $quoteStrategy = $this->getMock('Doctrine\ORM\Mapping\EntityListenerResolver');
-        $this->configuration->setEntityListenerResolver($quoteStrategy);
-        $this->assertSame($quoteStrategy, $this->configuration->getEntityListenerResolver());
+        $resolver = $this->getMock('Doctrine\ORM\Mapping\EntityListenerResolver');
+        $this->configuration->setEntityListenerResolver($resolver);
+        $this->assertSame($resolver, $this->configuration->getEntityListenerResolver());
     }
 }
 
