@@ -281,7 +281,7 @@ abstract class AbstractQuery
 
         $value = $values[$class->getSingleIdentifierFieldName()];
 
-        if ( ! $value) {
+        if (null === $value) {
             throw new \InvalidArgumentException(
                 "Binding entities to query parameters only allowed for entities that have an identifier."
             );
