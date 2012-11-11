@@ -57,8 +57,8 @@ Configuration of this client works a little bit different:
 
     <?php
     $namespaces = array(
-        'MyProject\Entities' => '/path/to/files1',
-        'OtherProject\Entities' => '/path/to/files2'
+        '/path/to/files1' => 'MyProject\Entities',
+        '/path/to/files2' => 'OtherProject\Entities'
     );
     $driver = new \Doctrine\ORM\Mapping\Driver\SimplifiedYamlDriver($namespaces);
     $driver->setGlobalBasename('global'); // global.orm.yml
