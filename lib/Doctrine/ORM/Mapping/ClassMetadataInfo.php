@@ -1309,6 +1309,8 @@ class ClassMetadataInfo implements ClassMetadata
                         'onDelete' => 'CASCADE'));
             }
 
+            $mapping['joinTableColumns'] = array();
+
             foreach ($mapping['joinTable']['joinColumns'] as &$joinColumn) {
                 if (empty($joinColumn['name'])) {
                     $joinColumn['name'] = $sourceShortName . '_id';
