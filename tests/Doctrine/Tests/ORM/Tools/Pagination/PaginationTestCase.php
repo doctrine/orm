@@ -31,6 +31,8 @@ class MyBlogPost
      * @ManyToOne(targetEntity="Category")
      */
     public $category;
+    /** @column(type="string") */
+    public $title;
 }
 
 /**
