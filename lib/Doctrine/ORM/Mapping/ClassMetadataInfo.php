@@ -1478,6 +1478,8 @@ class ClassMetadataInfo implements ClassMetadata
                         'onDelete' => 'CASCADE'));
             }
 
+            $mapping['joinTableColumns'] = array();
+
             foreach ($mapping['joinTable']['joinColumns'] as &$joinColumn) {
                 if (empty($joinColumn['name'])) {
                     $joinColumn['name'] = $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $joinColumn['referencedColumnName']);
