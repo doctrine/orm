@@ -390,7 +390,7 @@ class QueryBuilder
      *         ->setParameters(new ArrayCollection(array(
      *             new Parameter('user_id1', 1),
      *             new Parameter('user_id2', 2)
-              )));
+     *        )));
      * </code>
      *
      * @param \Doctrine\Common\Collections\ArrayCollection|array $params The query parameters to set.
