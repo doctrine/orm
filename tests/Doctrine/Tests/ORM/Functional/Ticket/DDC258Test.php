@@ -1,8 +1,6 @@
 <?php
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 class DDC258Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
