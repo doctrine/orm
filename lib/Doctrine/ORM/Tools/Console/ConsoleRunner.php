@@ -21,7 +21,7 @@ namespace Doctrine\ORM\Tools\Console;
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\HelperSet;
-use Doctrine\ORM\Mapping\Version;
+use Doctrine\ORM\Version;
 
 class ConsoleRunner
 {
