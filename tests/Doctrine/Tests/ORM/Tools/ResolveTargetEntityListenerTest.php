@@ -60,6 +60,31 @@ class ResolveTargetEntityListenerTest extends \Doctrine\Tests\OrmTestCase
         $this->assertSame('Doctrine\Tests\ORM\Tools\ResolveTargetEntity', $meta['oneToMany']['targetEntity']);
         $this->assertSame('Doctrine\Tests\ORM\Tools\TargetEntity', $meta['oneToOne']['targetEntity']);
     }
+
+    /**
+     * @group DDC-2109
+     */
+    public function testAssertTableColumnsAreNotAddedInManyToMany()
+    {
+        $evm = $this->em->getEventManager();
+        $this->listener->addResolveTargetEntity(
+            'Doctrine\Tests\ORM\Tools\ResolveTargetInterface',
+            'Doctrine\Tests\ORM\Tools\ResolveTargetEntity',
+            array()
+        );
+        $this->listener->addResolveTargetEntity(
+            'Doctrine\Tests\ORM\Tools\TargetInterface',
+            'Doctrine\Tests\ORM\Tools\TargetEntity',
+            array()
+        );
+
+        $evm->addEventListener(Events::loadClassMetadata, $this->listener);
+        $cm = $this->factory->getMetadataFor('Doctrine\Tests\ORM\Tools\ResolveTargetEntity');
+        $meta = $cm->associationMappings['manyToMany'];
+
+        $this->assertSame('Doctrine\Tests\ORM\Tools\TargetEntity', $meta['targetEntity']);
+        $this->assertEquals(array('resolvetargetentity_id', 'targetinterface_id'), $meta['joinTableColumns']);
+    }
 }
 
 interface ResolveTargetInterface
