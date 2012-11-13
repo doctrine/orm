@@ -463,6 +463,52 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($parameters, $qb->getQuery()->getParameters());
     }
 
+    public function testAddParameters()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')
+           ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+           ->where($qb->expr()->orx('u.username = :username', 'u.username = :username2'));
+
+        // Add 2 initial parameters as ArrayCollection containing Parameter objects.
+        $parameters = new ArrayCollection();
+        $parameters->add(new Parameter('username', 'foo'));
+        $parameters->add(new Parameter('username2', 'bar'));
+
+        $qb->addParameters($parameters);
+
+        $this->assertEquals($parameters, $qb->getParameters());
+
+        // Add 2 other parameters as array containing key/value pairs.
+        // The first parameter should override an existing one, the second parameter is new.
+        $qb->addParameters(array(
+            'username' => 'foobar',
+            'username3' => 'barfoo'
+        ));
+
+        $parameters = $qb->getParameters();
+
+        $this->assertEquals(3, count($parameters));
+        $this->assertEquals('foobar', $parameters[0]->getValue());
+        $this->assertEquals('bar', $parameters[1]->getValue());
+        $this->assertEquals('barfoo', $parameters[2]->getValue());
+
+        // Add 2 more parameters as ArrayCollection containing Parameter objects.
+        // The first parameter should override an existing one, the second parameter is new.
+        $qb->addParameters(new ArrayCollection(array(
+            new Parameter('username2', 'foobarfoo'),
+            new Parameter('username4', 'barfoobar')
+        )));
+
+        $parameters = $qb->getParameters();
+
+        $this->assertEquals(4, count($parameters));
+        $this->assertEquals('foobar', $parameters[0]->getValue());
+        $this->assertEquals('foobarfoo', $parameters[1]->getValue());
+        $this->assertEquals('barfoo', $parameters[2]->getValue());
+        $this->assertEquals('barfoobar', $parameters[3]->getValue());
+    }
+
 
     public function testGetParameters()
     {

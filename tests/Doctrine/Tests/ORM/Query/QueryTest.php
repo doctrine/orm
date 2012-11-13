@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 use Doctrine\ORM\Query\Parameter;
 
+require_once __DIR__ . '/../../TestInit.php';
+
 class QueryTest extends \Doctrine\Tests\OrmTestCase
 {
     protected $_em = null;
@@ -47,6 +49,49 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
         $query->setParameters($parameters);
 
         $this->assertEquals($parameters, $query->getParameters());
+    }
+
+    public function testAddParameters()
+    {
+        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1");
+
+        // Add 2 initial parameters as ArrayCollection containing Parameter objects.
+        $parameters = new ArrayCollection();
+        $parameters->add(new Parameter(1, 'foo'));
+        $parameters->add(new Parameter(2, 'bar'));
+
+        $query->addParameters($parameters);
+
+        $this->assertEquals($parameters, $query->getParameters());
+
+        // Add 2 other parameters as array containing key/value pairs.
+        // The first parameter should override an existing one, the second parameter is new.
+        $query->addParameters(array(
+            1 => 'foobar',
+            3 => 'barfoo'
+        ));
+
+        $parameters = $query->getParameters();
+
+        $this->assertEquals(3, count($parameters));
+        $this->assertEquals('foobar', $parameters[0]->getValue());
+        $this->assertEquals('bar', $parameters[1]->getValue());
+        $this->assertEquals('barfoo', $parameters[2]->getValue());
+
+        // Add 2 more parameters as ArrayCollection containing Parameter objects.
+        // The first parameter should override an existing one, the second parameter is new.
+        $query->addParameters(new ArrayCollection(array(
+            new Parameter(2, 'foobarfoo'),
+            new Parameter(4, 'barfoobar')
+        )));
+
+        $parameters = $query->getParameters();
+
+        $this->assertEquals(4, count($parameters));
+        $this->assertEquals('foobar', $parameters[0]->getValue());
+        $this->assertEquals('foobarfoo', $parameters[1]->getValue());
+        $this->assertEquals('barfoo', $parameters[2]->getValue());
+        $this->assertEquals('barfoobar', $parameters[3]->getValue());
     }
 
     public function testFree()
