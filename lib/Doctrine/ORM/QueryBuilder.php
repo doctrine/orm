@@ -446,7 +446,8 @@ class QueryBuilder
             {
                 return $parameter->getName();
             }
-        )->toArray();
+        );
+        $currentNames = $currentNames->toArray();
 
         foreach ($parameters as $key => $value) {
             if ($value instanceof Query\Parameter) {
