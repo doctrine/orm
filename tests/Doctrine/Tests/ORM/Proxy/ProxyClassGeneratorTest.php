@@ -181,6 +181,20 @@ class ProxyClassGeneratorTest extends \Doctrine\Tests\OrmTestCase
         new ProxyFactory($this->_getTestEntityManager(), __DIR__ . '/generated', null);
     }
 
+    public function testWrongTypeHintClass_ThrowsException()
+    {
+        $this->setExpectedException(
+            'Doctrine\ORM\Proxy\ProxyException',
+            "Can not get type hint class for parameter param of Doctrine\Tests\ORM\Proxy\WrontTypeHintClass::test()"
+        );
+
+        $cm = new \Doctrine\ORM\Mapping\ClassMetadata(__NAMESPACE__ . '\\WrontTypeHintClass');
+        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $this->assertNotNull($cm->reflClass);
+
+        $this->_proxyFactory->generateProxyClasses(array($cm));
+    }
+
     protected function _getMockPersister()
     {
         $persister = $this->getMock('Doctrine\ORM\Persisters\BasicEntityPersister', array('load'), array(), '', false);
@@ -202,3 +216,11 @@ abstract class AbstractClass
 {
 
 }
+
+class WrontTypeHintClass
+{
+    public function test(\WrontTypeHint $param)
+    {
+    }
+}
+

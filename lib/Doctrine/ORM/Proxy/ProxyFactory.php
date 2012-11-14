@@ -230,7 +230,19 @@ class ProxyFactory
                     }
 
                     // We need to pick the type hint class too
-                    if (($paramClass = $param->getClass()) !== null) {
+
+                    try {
+                        $paramClass = $param->getClass();
+                    } catch (\ReflectionException $e) {
+                        throw ProxyException::typeHintClassReflectionFailure(
+                            $param->getName(),
+                            $param->getDeclaringClass()->getName(),
+                            $param->getDeclaringFunction()->getName(),
+                            $e
+                        );
+                    }
+
+                    if ($paramClass !== null) {
                         $parameterString .= '\\' . $paramClass->getName() . ' ';
                     } else if ($param->isArray()) {
                         $parameterString .= 'array ';
