@@ -25,12 +25,25 @@ namespace Doctrine\ORM\Mapping;
  */
 final class ManyToOne implements Annotation
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     public $targetEntity;
-    /** @var array<string> */
+
+    /**
+     * @var array<string>
+     */
     public $cascade;
-    /** @var string */
+
+    /**
+     * @var string The fetching strategy to use for the association.
+     *
+     * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
+     */
     public $fetch = 'LAZY';
-    /** @var string */
+
+    /**
+     * @var string
+     */
     public $inversedBy;
 }

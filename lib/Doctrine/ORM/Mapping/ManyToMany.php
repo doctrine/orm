@@ -25,18 +25,40 @@ namespace Doctrine\ORM\Mapping;
  */
 final class ManyToMany implements Annotation
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     public $targetEntity;
-    /** @var string */
+
+    /**
+     * @var string
+     */
     public $mappedBy;
-    /** @var string */
+
+    /**
+     * @var string
+     */
     public $inversedBy;
-    /** @var array<string> */
+
+    /**
+     * @var array<string>
+     */
     public $cascade;
-    /** @var string */
+
+    /**
+     * @var string The fetching strategy to use for the association.
+     *
+     * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
+     */
     public $fetch = 'LAZY';
-    /** @var boolean */
+
+    /**
+     * @var boolean
+     */
     public $orphanRemoval = false;
-    /** @var string */
+
+    /**
+     * @var string
+     */
     public $indexBy;
 }
