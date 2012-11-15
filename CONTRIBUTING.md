@@ -1,7 +1,10 @@
 # Contribute to Doctrine
 
-Thank you for contributing to Doctrine. Before we can merge your Pull-Request
-here are some guidelines that you need to follow:
+Thank you for contributing to Doctrine!
+
+Before we can merge your Pull-Request here are some guidelines that you need to follow.
+These guidelines exist not to annoy you, but to keep the code base clean,
+unified and future proof.
 
 ## Coding Standard
 
