@@ -20,6 +20,14 @@ with some exceptions/differences:
 
 ## Unit-Tests
 
+Always add a test for your pull-request.
+
+* If you want to fix a bug or provide a reproduce case, create a test file in
+  ``tests/Doctrine/Tests/ORM/Functional/Ticket`` with the name of the ticket,
+  ``DDC1234Test.php`` for example.
+* If you want to contribute new functionality add unit- or functional tests
+  depending on the scope of the feature.
+
 You can run the unit-tests by calling ``phpunit`` from the root of the project.
 It will run all the tests with an in memory SQLite database.
 
@@ -32,7 +40,8 @@ take a look at the ``tests/travis`` folder for some examples. Then run:
 ## Travis
 
 We automatically run your pull request through [Travis CI](http://www.travis-ci.org)
-against SQLite, MySQL and PostgreSQL. If you break the tests, we cannot merge your code.
+against SQLite, MySQL and PostgreSQL. If you break the tests, we cannot merge your code,
+so please make sure that your code is working before opening up a Pull-Request.
 
 ## DoctrineBot, Tickets and Jira
 
