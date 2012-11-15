@@ -455,15 +455,15 @@ class QueryBuilder
                 $parameter = $value;
 
                 if (false !== ($index = array_search($parameter->getName(), $currentNames))) {
-                    $this->parameters[$index]->setValue( $parameter->getValue(), $parameter->getType() );
+                    $this->parameters[$index]->setValue($parameter->getValue(), $parameter->getType());
                 } else {
-                    $this->parameters->add( $parameter );
+                    $this->parameters->add($parameter);
                 }
 
             } else {
                 // $value is an actual value, $key is its position/name
                 if (false !== ($index = array_search($key, $currentNames))) {
-                    $this->parameters[$index]->setValue( $value );
+                    $this->parameters[$index]->setValue($value);
                 } else {
                     $this->parameters->add(new Query\Parameter($key, $value));
                 }

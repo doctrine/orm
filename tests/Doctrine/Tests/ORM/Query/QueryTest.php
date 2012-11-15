@@ -7,8 +7,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 use Doctrine\ORM\Query\Parameter;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class QueryTest extends \Doctrine\Tests\OrmTestCase
 {
     protected $_em = null;
