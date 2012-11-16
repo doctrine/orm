@@ -351,7 +351,7 @@ Example:
     <?php
     /**
      * @Entity
-     * @Table(name="ecommerce_products",indexes={@index(name="search_idx", columns={"name", "email"})})
+     * @Table(name="ecommerce_products",indexes={@Index(name="search_idx", columns={"name", "email"})})
      */
     class ECommerceProduct
     {
