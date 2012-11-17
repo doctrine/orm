@@ -82,6 +82,10 @@ Alternatively, you can execute the generated queries:
 
 <info>%command.name% --force</info>
 
+If both options are specified, the queries are output and then executed:
+
+<info>%command.name% --dump-sql --force</info>
+
 Finally, be aware that if the <info>--complete</info> option is passed, this
 task will drop all database assets (e.g. tables, etc) that are *not* described
 by the current metadata. In other words, without this option, this task leaves
@@ -107,31 +111,30 @@ EOT
         $dumpSql = true === $input->getOption('dump-sql');
         $force   = true === $input->getOption('force');
 
-        if ($dumpSql && $force) {
-            throw new \InvalidArgumentException('You can pass either the --dump-sql or the --force option (but not both simultaneously).');
-        }
-
         if ($dumpSql) {
             $output->writeln(implode(';' . PHP_EOL, $sqls));
-
-            return 0;
         }
 
         if ($force) {
+        	if ($dumpSql) {
+                $output->writeln('');
+        	}
             $output->writeln('Updating database schema...');
             $schemaTool->updateSchema($metadatas, $saveMode);
             $output->writeln(sprintf('Database schema updated successfully! "<info>%s</info>" queries were executed', count($sqls)));
-
-            return 0;
         }
 
+        if ($dumpSql || $force) {
+            return 0;
+        }
+        	
         $output->writeln('<comment>ATTENTION</comment>: This operation should not be executed in a production environment.');
         $output->writeln('           Use the incremental update to detect changes during development and use');
         $output->writeln('           the SQL DDL provided to manually update your database in production.');
         $output->writeln('');
 
         $output->writeln(sprintf('The Schema-Tool would execute <info>"%s"</info> queries to update the database.', count($sqls)));
-        $output->writeln('Please run the operation by passing one of the following options:');
+        $output->writeln('Please run the operation by passing one - or both - of the following options:');
 
         $output->writeln(sprintf('    <info>%s --force</info> to execute the command', $this->getName()));
         $output->writeln(sprintf('    <info>%s --dump-sql</info> to dump the SQL statements to the screen', $this->getName()));
