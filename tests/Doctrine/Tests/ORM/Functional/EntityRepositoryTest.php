@@ -706,5 +706,17 @@ class EntityRepositoryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals(4, count($users));
     }
+
+    /**
+     * @group DDC-2055
+     */
+    public function testCreateResultSetMappingBuilder()
+    {
+        $repository = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $rsm = $repository->createResultSetMappingBuilder('u');
+
+        $this->assertInstanceOf('Doctrine\ORM\Query\ResultSetMappingBuilder', $rsm);
+        $this->assertEquals(array('u' => 'Doctrine\Tests\Models\CMS\CmsUser'), $rsm->aliasMap);
+    }
 }
 
