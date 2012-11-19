@@ -756,8 +756,8 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testGenerateSelectClauseIncrement()
     {
-        $rsm = new ResultSetMappingBuilder($this->_em);
-        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u', ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
+        $rsm = new ResultSetMappingBuilder($this->_em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
 
         $selectClause = $rsm->generateSelectClause();
 
@@ -769,8 +769,8 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testGenerateSelectClauseToString()
     {
-        $rsm = new ResultSetMappingBuilder($this->_em);
-        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u', ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
+        $rsm = new ResultSetMappingBuilder($this->_em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
 
         $this->assertEquals('u.id AS id0, u.status AS status1, u.username AS username2, u.name AS name3, u.email_id AS email_id4', (string)$rsm);
     }

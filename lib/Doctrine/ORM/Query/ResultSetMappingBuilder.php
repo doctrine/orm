@@ -69,11 +69,20 @@ class ResultSetMappingBuilder extends ResultSetMapping
     private $em;
 
     /**
-     * @param EntityManager
+     * Default column renaming mode.
+     *
+     * @var int
      */
-    public function __construct(EntityManager $em)
+    private $defaultRenameMode;
+
+    /**
+     * @param EntityManager $em
+     * @param integer $defaultRenameMode
+     */
+    public function __construct(EntityManager $em, $defaultRenameMode = self::COLUMN_RENAMING_NONE)
     {
-        $this->em = $em;
+        $this->em                = $em;
+        $this->defaultRenameMode = $defaultRenameMode;
     }
 
     /**
@@ -81,11 +90,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @param string $class The class name of the root entity.
      * @param string $alias The unique alias to use for the root entity.
-     * @param int|array $renameMode One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
      * @param array $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName)
+     * @param int $renameMode One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
      */
-    public function addRootEntityFromClassMetadata($class, $alias, $renameMode = self::COLUMN_RENAMING_NONE, $renamedColumns = array())
+    public function addRootEntityFromClassMetadata($class, $alias, $renamedColumns = array(), $renameMode = null)
     {
+        $renameMode     = $renameMode ?: $this->defaultRenameMode;
         $columnAliasMap = $this->getColumnAliasMap($class, $renameMode, $renamedColumns);
 
         $this->addEntityResult($class, $alias);
@@ -99,11 +109,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * @param string $alias The unique alias to use for the joined entity.
      * @param string $parentAlias The alias of the entity result that is the parent of this joined result.
      * @param object $relation The association field that connects the parent entity result with the joined entity result.
-     * @param int|array $renameMode
      * @param array $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName)
+     * @param int $renameMode One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
      */
-    public function addJoinedEntityFromClassMetadata($class, $alias, $parentAlias, $relation, $renameMode = self::COLUMN_RENAMING_NONE, $renamedColumns = array())
+    public function addJoinedEntityFromClassMetadata($class, $alias, $parentAlias, $relation, $renamedColumns = array(), $renameMode = null)
     {
+        $renameMode     = $renameMode ?: $this->defaultRenameMode;
         $columnAliasMap = $this->getColumnAliasMap($class, $renameMode, $renamedColumns);
 
         $this->addJoinedEntityResult($class, $alias, $parentAlias, $relation);
@@ -182,16 +193,15 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * This depends on the renaming mode selected by the user.
      *
      * @param string $className
-     * @param int|array $mode
+     * @param int $mode
      * @param array $customRenameColumns
      *
      * @return array
      */
     private function getColumnAliasMap($className, $mode, array $customRenameColumns)
     {
-        if (is_array($mode)) {
-            $customRenameColumns = $mode;
-            $mode                = self::COLUMN_RENAMING_CUSTOM;
+        if ($customRenameColumns) { // for BC with 2.2-2.3 API
+            $mode = self::COLUMN_RENAMING_CUSTOM;
         }
 
         $columnAlias = array();
@@ -241,7 +251,6 @@ class ResultSetMappingBuilder extends ResultSetMapping
      */
     public function addNamedNativeQueryResultClassMapping(ClassMetadataInfo $class, $resultClassName)
     {
-
         $classMetadata  = $this->em->getClassMetadata($resultClassName);
         $shortName      = $classMetadata->reflClass->getShortName();
         $alias          = strtolower($shortName[0]).'0';
