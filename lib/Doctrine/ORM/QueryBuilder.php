@@ -417,6 +417,63 @@ class QueryBuilder
     }
 
     /**
+     * Adds a collection of query parameters, overriding any existing positions/names.
+     * Behaves like setParameters() before 2.3.
+     *
+     * <code>
+     *     $qb = $em->createQueryBuilder()
+     *         ->select('u')
+     *         ->from('User', 'u')
+     *         ->where('u.id = :user_id1 OR u.id = :user_id2 OR u.id = :user_id3' OR u.id = :user_id4)
+     *         ->addParameters(new ArrayCollection(array(
+     *             new Parameter('user_id1', 1),
+     *             new Parameter('user_id2', 2)
+     *         )))
+     *         ->addParameters(new ArrayCollection(array(
+     *             new Parameter('user_id3', 3),
+     *             new Parameter('user_id4', 4)
+     *         )));
+     * </code>
+     *
+     * @param \Doctrine\Common\Collections\ArrayCollection|array $parameters
+     *
+     * @return \Doctrine\ORM\QueryBuilder This QueryBuilder instance.
+     */
+    public function addParameters($parameters)
+    {
+        $currentNames = $this->parameters->map(
+            function ($parameter)
+            {
+                return $parameter->getName();
+            }
+        );
+        $currentNames = $currentNames->toArray();
+
+        foreach ($parameters as $key => $value) {
+            if ($value instanceof Query\Parameter) {
+                // $value is a Query\Parameter
+                $parameter = $value;
+
+                if (false !== ($index = array_search($parameter->getName(), $currentNames))) {
+                    $this->parameters[$index]->setValue($parameter->getValue(), $parameter->getType());
+                } else {
+                    $this->parameters->add($parameter);
+                }
+
+            } else {
+                // $value is an actual value, $key is its position/name
+                if (false !== ($index = array_search($key, $currentNames))) {
+                    $this->parameters[$index]->setValue($value);
+                } else {
+                    $this->parameters->add(new Query\Parameter($key, $value));
+                }
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Gets all defined query parameters for the query being constructed.
      *
      * @return \Doctrine\Common\Collections\ArrayCollection The currently defined query parameters.

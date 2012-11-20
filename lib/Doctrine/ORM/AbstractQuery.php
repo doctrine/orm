@@ -241,6 +241,48 @@ abstract class AbstractQuery
     }
 
     /**
+     * Adds a collection of query parameters, overriding any existing positions/names.
+     * Behaves like setParameters() before 2.3.
+     *
+     * @param \Doctrine\Common\Collections\ArrayCollection|array $parameters
+     *
+     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     */
+    public function addParameters($parameters)
+    {
+        $currentNames = $this->parameters->map(
+            function ($parameter)
+            {
+                return $parameter->getName();
+            }
+        );
+        $currentNames = $currentNames->toArray();
+
+        foreach ($parameters as $key => $value) {
+            if ($value instanceof Query\Parameter) {
+                // $value is a Query\Parameter
+                $parameter = $value;
+
+                if (false !== ($index = array_search($parameter->getName(), $currentNames))) {
+                    $this->parameters[$index]->setValue($parameter->getValue(), $parameter->getType());
+                } else {
+                    $this->parameters->add($parameter);
+                }
+
+            } else {
+                // $value is an actual value, $key is its position/name
+                if (false !== ($index = array_search($key, $currentNames))) {
+                    $this->parameters[$index]->setValue($value);
+                } else {
+                    $this->parameters->add(new Query\Parameter($key, $value));
+                }
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Process an individual parameter value
      *
      * @param mixed $value
