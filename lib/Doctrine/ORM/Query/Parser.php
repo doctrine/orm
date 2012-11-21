@@ -436,9 +436,10 @@ class Parser
     /**
      * Peek beyond the matched closing parenthesis and return the first token after that one.
      *
+     * @param boolean $resetPeek Reset peek after finding the closing parenthesis
      * @return array
      */
-    private function _peekBeyondClosingParenthesis()
+    private function _peekBeyondClosingParenthesis($resetPeek = true)
     {
         $token = $this->_lexer->peek();
         $numUnmatched = 1;
@@ -460,7 +461,9 @@ class Parser
             $token = $this->_lexer->peek();
         }
 
-        $this->_lexer->resetPeek();
+        if ($resetPeek) {
+            $this->_lexer->resetPeek();
+        }
 
         return $token;
     }
@@ -2190,7 +2193,13 @@ class Parser
             if ($peek['value'] == '(') {
                 // Peek beyond the matching closing paranthesis ')'
                 $this->_lexer->peek();
-                $token = $this->_peekBeyondClosingParenthesis();
+                $token = $this->_peekBeyondClosingParenthesis(false);
+
+                if ($token['type'] === Lexer::T_NOT) {
+                    $token = $this->_lexer->peek();
+                }
+
+                $this->_lexer->resetPeek();
             } else {
                 // Peek beyond the PathExpression (or InputParameter)
                 $peek = $this->_lexer->peek();
