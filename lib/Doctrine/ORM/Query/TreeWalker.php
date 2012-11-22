@@ -37,6 +37,21 @@ interface TreeWalker
     public function __construct($query, $parserResult, array $queryComponents);
 
     /**
+     * Return internal queryComponents array
+     *
+     * @return array
+     */
+    public function getQueryComponents();
+
+    /**
+     * Set or override a query component for a given dql alias.
+     *
+     * @param string $dqlAlias The DQL alias.
+     * @param array $queryComponent
+     */
+    public function setQueryComponent($dqlAlias, array $queryComponent);
+
+    /**
      * Walks down a SelectStatement AST node, thereby generating the appropriate SQL.
      *
      * @return string The SQL.

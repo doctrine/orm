@@ -43,6 +43,33 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
+     * Return internal queryComponents array
+     *
+     * @return array:
+     */
+    public function getQueryComponents()
+    {
+        return $this->_queryComponents;
+    }
+
+    /**
+     * Set or override a query component for a given dql alias.
+     *
+     * @param string $dqlAlias The DQL alias.
+     * @param array $queryComponent
+     */
+    public function setQueryComponent($dqlAlias, array $queryComponent)
+    {
+        $requiredKeys = array('metadata', 'parent', 'relation', 'map', 'nestingLevel', 'token');
+
+        if (array_diff($requiredKeys, array_keys($queryComponent))) {
+            throw QueryException::invalidQueryComponent($dqlAlias);
+        }
+
+        $this->_queryComponents[$dqlAlias] = $queryComponent;
+    }
+
+    /**
      * @return array
      */
     protected function _getQueryComponents()

@@ -358,6 +358,8 @@ class Parser
                 default:
                     $treeWalkerChain->walkSelectStatement($AST);
             }
+
+            $this->queryComponents = $treeWalkerChain->getQueryComponents();
         }
 
         $outputWalkerClass = $this->customOutputWalker ?: __NAMESPACE__ . '\SqlWalker';
@@ -1750,7 +1752,7 @@ class Parser
      * NewObjectArg ::= ScalarExpression
      *
      * @TODO - Maybe you should support other expressions and nested "new" operator
-     * 
+     *
      * @return \Doctrine\ORM\Query\AST\SimpleSelectExpression
      */
     public function NewObjectArg()
@@ -2093,7 +2095,7 @@ class Parser
             case ($lookaheadType === Lexer::T_NEW):
                 $expression = $this->NewObjectExpression();
                 break;
-            
+
             default:
                 $this->syntaxError(
                     'IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression',
