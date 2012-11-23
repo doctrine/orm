@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
+use Doctrine\ORM\Events;
 
 class ResolveTargetEntityListenerTest extends \Doctrine\Tests\OrmTestCase
 {
