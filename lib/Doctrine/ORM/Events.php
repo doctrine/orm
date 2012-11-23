@@ -112,7 +112,7 @@ final class Events
      *
      * @var string
      */
-    const preLoadClassMetadata = 'preLoadClassMetadata';
+    const onClassMetadataNotFound = 'onClassMetadataNotFound';
 
     /**
      * The preFlush event occurs when the EntityManager#flush() operation is invoked,

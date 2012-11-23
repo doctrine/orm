@@ -28,7 +28,7 @@ use Doctrine\ORM\EntityManager;
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @since  2.3
  */
-class PreLoadClassMetadataEventArgs extends EventArgs
+class OnClassMetadataNotFoundEventArgs extends EventArgs
 {
     /**
      * @var \Doctrine\ORM\Mapping\ClassMetadata
