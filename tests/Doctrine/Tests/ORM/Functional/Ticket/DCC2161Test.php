@@ -54,26 +54,6 @@ class DDC2161_1
      * @ManyToOne(targetEntity="DDC2161_1", inversedBy="children")
      */
     private $parent;
-
-    public function __construct()
-    {
-        $this->children = new ArrayCollection();
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function getParent()
-    {
-        return $this->parent;
-    }
-
-    public function getChildren()
-    {
-        return $this->children;
-    }
 }
 
 /**
@@ -91,16 +71,6 @@ class DDC2161_2
      * @ManyToOne(targetEntity="DDC2161_3", inversedBy="children")
      */
     private $parent;
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function getParent()
-    {
-        return $this->parent;
-    }
 }
 
 /**
@@ -117,19 +87,4 @@ class DDC2161_3
      * @OneToMany(targetEntity="DDC2161_2", mappedBy="parent")
      */
     private $children;
-
-    public function __construct()
-    {
-        $this->children = new ArrayCollection();
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function getChildren()
-    {
-        return $this->children;
-    }
 }
