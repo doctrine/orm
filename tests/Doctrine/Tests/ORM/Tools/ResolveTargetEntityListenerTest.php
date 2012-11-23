@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
+use Doctrine\ORM\Events;
 
 require_once __DIR__ . '/../../TestInit.php';
 
