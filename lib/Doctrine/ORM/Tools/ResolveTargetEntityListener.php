@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
-use Doctrine\ORM\Event\PreLoadClassMetadataEventArgs;
+use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
@@ -45,7 +45,7 @@ class ResolveTargetEntityListener implements EventSubscriber
     {
         return array(
             Events::loadClassMetadata,
-            Events::preLoadClassMetadata
+            Events::onClassMetadataNotFound
         );
     }
     /**
@@ -63,7 +63,7 @@ class ResolveTargetEntityListener implements EventSubscriber
         $this->resolveTargetEntities[ltrim($originalEntity, "\\")] = $mapping;
     }
 
-    public function preLoadClassMetadata(PreLoadClassMetadataEventArgs $args)
+    public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args)
     {
         if (array_key_exists($args->getClassName(), $this->resolveTargetEntities)) {
             $args->getEntityManager()->getClassMetadata($this->resolveTargetEntities[$args->getClassname()]['targetEntity']);
