@@ -32,7 +32,6 @@ class DDC2161Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $fk = array_shift($fk);
 
         $this->assertEquals("DDC2161_3", $fk->getForeignTableName(), "Foreign key table should be DDC2161_3.");
-        ;
     }
 }
 
