@@ -276,23 +276,6 @@ driver instance you can use the ``count()`` method.
     <?php
     echo $cacheDriver->count();
 
-.. note::
-
-    In order to use ``deleteByRegex()``, ``deleteByPrefix()``,
-    ``deleteBySuffix()``, ``deleteAll()``, ``count()`` or ``getIds()``
-    you must enable an option for the cache driver to manage your cache
-    IDs internally. This is necessary because APC, Memcache, etc. don't
-    have any advanced functionality for fetching and deleting. We add
-    some functionality on top of the cache drivers to maintain an index
-    of all the IDs stored in the cache driver so that we can allow more
-    granular deleting operations.
-
-    ::
-
-        <?php
-        $cacheDriver->setManageCacheIds(true);
-
-
 Namespaces
 ~~~~~~~~~~
 
