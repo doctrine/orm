@@ -24,8 +24,8 @@ method. The method receives the ``ClassMetadata`` of the filtered entity and the
 table alias of the SQL table of the entity.
 
 Parameters for the query should be set on the filter object by
-``SQLFilter#setParameter()``. Only parameters set via this function used in
-the filters.  The ``SQLFilter#getParameter()`` function takes care of the
+``SQLFilter#setParameter()``. Only parameters set via this function can be used
+in filters.  The ``SQLFilter#getParameter()`` function takes care of the
 proper quoting of parameters.
 
 .. code-block:: php
