@@ -955,7 +955,7 @@ to the database.
 
 You might wonder why does this distinction between persist
 notification and flush exist: Doctrine 2 uses the UnitOfWork
-pattern to aggregate all writes (INSERT, UDPATE, DELETE) into one
+pattern to aggregate all writes (INSERT, UPDATE, DELETE) into one
 single transaction, which is executed when flush is called.
 Using this approach the write-performance is significantly better
 than in a scenario where updates are done for each entity in
