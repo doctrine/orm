@@ -261,3 +261,299 @@ have a foreign key pointing from the id column to the root table id
 column and cascading on delete.
 
 
+Overrides
+---------
+Used to override a mapping for an entity field or relationship.
+May be applied to an entity that extends a mapped superclass
+to override a relationship or field mapping defined by the mapped superclass.
+
+
+Association Override
+~~~~~~~~~~~~~~~~~~~~
+Override a mapping for an entity relationship.
+
+Could be used by an entity that extends a mapped superclass
+to override a relationship mapping defined by the mapped superclass.
+
+Example:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+        // user mapping
+        namespace MyProject\Model;
+        /**
+         * @MappedSuperclass
+         */
+        class User
+        {
+            //other fields mapping
+
+            /**
+             * @ManyToMany(targetEntity="Group", inversedBy="users")
+             * @JoinTable(name="users_groups",
+             *  joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+             *  inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
+             * )
+             */
+            protected $groups;
+
+            /**
+             * @ManyToOne(targetEntity="Address")
+             * @JoinColumn(name="address_id", referencedColumnName="id")
+             */
+            protected $address;
+        }
+
+        // admin mapping
+        namespace MyProject\Model;
+        /**
+         * @Entity
+         * @AssociationOverrides({
+         *      @AssociationOverride(name="groups",
+         *          joinTable=@JoinTable(
+         *              name="users_admingroups",
+         *              joinColumns=@JoinColumn(name="adminuser_id"),
+         *              inverseJoinColumns=@JoinColumn(name="admingroup_id")
+         *          )
+         *      ),
+         *      @AssociationOverride(name="address",
+         *          joinColumns=@JoinColumn(
+         *              name="adminaddress_id", referencedColumnName="id"
+         *          )
+         *      )
+         * })
+         */
+        class Admin extends User
+        {
+        }
+
+    .. code-block:: xml
+
+        <!-- user mapping -->
+        <doctrine-mapping>
+          <mapped-superclass name="MyProject\Model\User">
+                <!-- other fields mapping -->
+                <many-to-many field="groups" target-entity="Group" inversed-by="users">
+                    <cascade>
+                        <cascade-persist/>
+                        <cascade-merge/>
+                        <cascade-detach/>
+                    </cascade>
+                    <join-table name="users_groups">
+                        <join-columns>
+                            <join-column name="user_id" referenced-column-name="id" />
+                        </join-columns>
+                        <inverse-join-columns>
+                            <join-column name="group_id" referenced-column-name="id" />
+                        </inverse-join-columns>
+                    </join-table>
+                </many-to-many>
+            </mapped-superclass>
+        </doctrine-mapping>
+
+        <!-- admin mapping -->
+        <doctrine-mapping>
+            <entity name="MyProject\Model\Admin">
+                <association-overrides>
+                    <association-override name="groups">
+                        <join-table name="users_admingroups">
+                            <join-columns>
+                                <join-column name="adminuser_id"/>
+                            </join-columns>
+                            <inverse-join-columns>
+                                <join-column name="admingroup_id"/>
+                            </inverse-join-columns>
+                        </join-table>
+                    </association-override>
+                    <association-override name="address">
+                        <join-columns>
+                            <join-column name="adminaddress_id" referenced-column-name="id"/>
+                        </join-columns>
+                    </association-override>
+                </association-overrides>
+            </entity>
+        </doctrine-mapping>
+    .. code-block:: yaml
+
+        # user mapping
+        MyProject\Model\User:
+          type: mappedSuperclass
+          # other fields mapping
+          manyToOne:
+            address:
+              targetEntity: Address
+              joinColumn:
+                name: address_id
+                referencedColumnName: id
+              cascade: [ persist, merge ]
+          manyToMany:
+            groups:
+              targetEntity: Group
+              joinTable:
+                name: users_groups
+                joinColumns:
+                  user_id:
+                    referencedColumnName: id
+                inverseJoinColumns:
+                  group_id:
+                    referencedColumnName: id
+              cascade: [ persist, merge, detach ]
+
+        # admin mapping
+        MyProject\Model\Admin:
+          type: entity
+          associationOverride:
+            address:
+              joinColumn:
+                adminaddress_id:
+                  name: adminaddress_id
+                  referencedColumnName: id
+            groups:
+              joinTable:
+                name: users_admingroups
+                joinColumns:
+                  adminuser_id:
+                    referencedColumnName: id
+                inverseJoinColumns:
+                  admingroup_id:
+                    referencedColumnName: id
+
+
+Things to note:
+
+-  The "association override" specifies the overrides base on the property name.
+-  This feature is available for all kind of associations. (OneToOne, OneToMany, ManyToOne, ManyToMany)
+-  The association type *CANNOT* be changed.
+-  The override could redefine the joinTables or joinColumns depending on the association type.
+
+Attribute Override
+~~~~~~~~~~~~~~~~~~~~
+Override the mapping of a field.
+
+Could be used by an entity that extends a mapped superclass to override a field mapping defined by the mapped superclass.
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+        // user mapping
+        namespace MyProject\Model;
+        /**
+         * @MappedSuperclass
+         */
+        class User
+        {
+            /** @Id @GeneratedValue @Column(type="integer", name="user_id", length=150) */
+            protected $id;
+
+            /** @Column(name="user_name", nullable=true, unique=false, length=250) */
+            protected $name;
+
+            // other fields mapping
+        }
+
+        // guest mapping
+        namespace MyProject\Model;
+        /**
+         * @Entity
+         * @AttributeOverrides({
+         *      @AttributeOverride(name="id",
+         *          column=@Column(
+         *              name     = "guest_id",
+         *              type     = "integer",
+                        length   = 140
+         *          )
+         *      ),
+         *      @AttributeOverride(name="name",
+         *          column=@Column(
+         *              name     = "guest_name",
+         *              nullable = false,
+         *              unique   = true,
+                        length   = 240
+         *          )
+         *      )
+         * })
+         */
+        class Guest extends User
+        {
+        }
+
+    .. code-block:: xml
+
+        <!-- user mapping -->
+        <doctrine-mapping>
+          <mapped-superclass name="MyProject\Model\User">
+                <id name="id" type="integer" column="user_id" length="150">
+                    <generator strategy="AUTO"/>
+                </id>
+                <field name="name" column="user_name" type="string" length="250" nullable="true" unique="false" />
+                <many-to-one field="address" target-entity="Address">
+                    <cascade>
+                        <cascade-persist/>
+                        <cascade-merge/>
+                    </cascade>
+                    <join-column name="address_id" referenced-column-name="id"/>
+                </many-to-one>
+                <!-- other fields mapping -->
+            </mapped-superclass>
+        </doctrine-mapping>
+
+        <!-- admin mapping -->
+        <doctrine-mapping>
+            <entity name="MyProject\Model\Guest">
+                <attribute-overrides>
+                    <attribute-override name="id">
+                        <field column="guest_id" length="140"/>
+                    </attribute-override>
+                    <attribute-override name="name">
+                        <field column="guest_name" type="string" length="240" nullable="false" unique="true" />
+                    </attribute-override>
+                </attribute-overrides>
+            </entity>
+        </doctrine-mapping>
+    .. code-block:: yaml
+
+        # user mapping
+        MyProject\Model\User:
+          type: mappedSuperclass
+          id:
+            id:
+              type: integer
+              column: user_id
+              length: 150
+              generator:
+                strategy: AUTO
+          fields:
+            name:
+              type: string
+              column: user_name
+              length: 250
+              nullable: true
+              unique: false
+          #other fields mapping
+
+
+        # guest mapping
+        MyProject\Model\Guest:
+          type: entity
+          attributeOverride:
+            id:
+              column: guest_id
+              type: integer
+              length: 140
+            name:
+              column: guest_name
+              type: string
+              length: 240
+              nullable: false
+              unique: true
+
+Things to note:
+
+-  The "attribute override" specifies the overrides base on the property name.
+-  The column type *CANNOT* be changed. if the column type is not equals you got a ``MappingException``
+-  The override can redefine all the column except the type.
