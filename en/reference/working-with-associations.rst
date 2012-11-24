@@ -541,7 +541,7 @@ from collections. If an Entity of type ``A`` contains references to privately
 owned Entities ``B`` then if the reference from ``A`` to ``B`` is removed the
 entity ``B`` should also be removed, because it is not used anymore.
 
-OrphanRemoval works with both one-to-one and one-to-many associations.
+OrphanRemoval works with one-to-one, one-to-many and many-to-many associations.
 
 .. note::
 
