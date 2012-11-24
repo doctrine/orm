@@ -93,6 +93,7 @@ Tutorials
   * :doc:`Composite Primary Keys <tutorials/composite-primary-keys>`
   * :doc:`Ordered associations <tutorials/ordered-associations>`
   * :doc:`Pagination <tutorials/pagination>`
+  * :doc:`Override Field/Association Mappings In Subclasses <tutorials/override-field-association-mappings-in-subclasses>`
 
 Cookbook
 --------
