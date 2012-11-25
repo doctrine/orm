@@ -15,15 +15,14 @@ $classLoader->register();
 $classLoader = new \Doctrine\Common\ClassLoader('Proxies', __DIR__);
 $classLoader->register();
 
-// Variable $helperSet is defined inside cli-config.php
 require __DIR__ . '/cli-config.php';
 
 $cli = new \Symfony\Component\Console\Application('Doctrine Command Line Interface', Doctrine\Common\Version::VERSION);
 $cli->setCatchExceptions(true);
-$helperSet = $cli->getHelperSet();
-foreach ($helpers as $name => $helper) {
-    $helperSet->set($helper, $name);
-}
+
+// Variable $helpers is defined inside cli-config.php
+$cli->setHelperSet($helpers);
+
 $cli->addCommands(array(
     // DBAL Commands
     new \Doctrine\DBAL\Tools\Console\Command\RunSqlCommand(),
