@@ -29,7 +29,6 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\FilterCollection;
-use Doctrine\Common\Util\ClassUtils;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -368,31 +367,9 @@ class EntityManager implements ObjectManager
      */
     public function find($entityName, $id, $lockMode = LockMode::NONE, $lockVersion = null)
     {
-        $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
-
-        if (is_object($id) && $this->metadataFactory->hasMetadataFor(ClassUtils::getClass($id))) {
-            $id = $this->unitOfWork->getSingleIdentifierValue($id);
-
-            if ($id === null) {
-                throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
-            }
-        }
-
-        if ( ! is_array($id)) {
-            $id = array($class->identifier[0] => $id);
-        }
-
-        $sortedId = array();
-
-        foreach ($class->identifier as $identifier) {
-            if ( ! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($class->name, $identifier);
-            }
-
-            $sortedId[$identifier] = $id[$identifier];
-        }
-
         $unitOfWork = $this->getUnitOfWork();
+        $class      = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $sortedId   = $unitOfWork->normalizeIdentifier($class, $id);
 
         // Check identity map first
         if (($entity = $unitOfWork->tryGetById($sortedId, $class->rootEntityName)) !== false) {
@@ -451,21 +428,8 @@ class EntityManager implements ObjectManager
      */
     public function getReference($entityName, $id)
     {
-        $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
-
-        if ( ! is_array($id)) {
-            $id = array($class->identifier[0] => $id);
-        }
-
-        $sortedId = array();
-
-        foreach ($class->identifier as $identifier) {
-            if ( ! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($class->name, $identifier);
-            }
-
-            $sortedId[$identifier] = $id[$identifier];
-        }
+        $class    = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $sortedId = $this->unitOfWork->normalizeIdentifier($class, $id);
 
         // Check identity map first, if its already in there just return it.
         if (($entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName)) !== false) {
@@ -474,10 +438,6 @@ class EntityManager implements ObjectManager
 
         if ($class->subClasses) {
             return $this->find($entityName, $sortedId);
-        }
-
-        if ( ! is_array($sortedId)) {
-            $sortedId = array($class->identifier[0] => $sortedId);
         }
 
         $entity = $this->proxyFactory->getProxy($class->name, $sortedId);
@@ -509,21 +469,18 @@ class EntityManager implements ObjectManager
     public function getPartialReference($entityName, $identifier)
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $sortedId = $this->unitOfWork->normalizeIdentifier($class, $identifier);
 
         // Check identity map first, if its already in there just return it.
-        if (($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) !== false) {
+        if (($entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName)) !== false) {
             return ($entity instanceof $class->name) ? $entity : null;
-        }
-
-        if ( ! is_array($identifier)) {
-            $identifier = array($class->identifier[0] => $identifier);
         }
 
         $entity = $class->newInstance();
 
-        $class->setIdentifierValues($entity, $identifier);
+        $class->setIdentifierValues($entity, $sortedId);
 
-        $this->unitOfWork->registerManaged($entity, $identifier, array());
+        $this->unitOfWork->registerManaged($entity, $sortedId, array());
         $this->unitOfWork->markReadOnly($entity);
 
         return $entity;

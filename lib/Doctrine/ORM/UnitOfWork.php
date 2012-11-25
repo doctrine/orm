@@ -27,9 +27,11 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\Common\Persistence\ObjectManagerAware;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\ORM\Internal\IdentityMap;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -232,6 +234,11 @@ class UnitOfWork implements PropertyChangedListener
      * @var array
      */
     private $eagerLoadingEntities = array();
+
+    /**
+     * @var array<string,IdentifierHashStrategy>
+     */
+    private $entityHashStrategy = array();
 
     /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
@@ -1327,7 +1334,7 @@ class UnitOfWork implements PropertyChangedListener
     public function addToIdentityMap($entity)
     {
         $classMetadata = $this->em->getClassMetadata(get_class($entity));
-        $idHash        = implode(' ', $this->entityIdentifiers[spl_object_hash($entity)]);
+        $idHash        = $this->getHashForEntityIdentifier($classMetadata, $this->entityIdentifiers[spl_object_hash($entity)]);
 
         if ($idHash === '') {
             throw ORMInvalidArgumentException::entityWithoutIdentity($classMetadata->name, $entity);
@@ -1437,7 +1444,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid           = spl_object_hash($entity);
         $classMetadata = $this->em->getClassMetadata(get_class($entity));
-        $idHash        = implode(' ', $this->entityIdentifiers[$oid]);
+        $idHash        = $this->getHashForEntityIdentifier($classMetadata, $this->entityIdentifiers[$oid]);
 
         if ($idHash === '') {
             throw ORMInvalidArgumentException::entityHasNoIdentity($entity, "remove from identity map");
@@ -1455,21 +1462,6 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         return false;
-    }
-
-    /**
-     * INTERNAL:
-     * Gets an entity in the identity map by its identifier hash.
-     *
-     * @ignore
-     * @param string $idHash
-     * @param string $rootClassName
-     *
-     * @return object
-     */
-    public function getByIdHash($idHash, $rootClassName)
-    {
-        return $this->identityMap[$rootClassName][$idHash];
     }
 
     /**
@@ -1508,28 +1500,13 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $classMetadata = $this->em->getClassMetadata(get_class($entity));
-        $idHash        = implode(' ', $this->entityIdentifiers[$oid]);
+        $idHash        = $this->getHashForEntityIdentifier($classMetadata, $this->entityIdentifiers[$oid]);
 
         if ($idHash === '') {
             return false;
         }
 
         return isset($this->identityMap[$classMetadata->rootEntityName][$idHash]);
-    }
-
-    /**
-     * INTERNAL:
-     * Checks whether an identifier hash exists in the identity map.
-     *
-     * @ignore
-     * @param string $idHash
-     * @param string $rootClassName
-     *
-     * @return boolean
-     */
-    public function containsIdHash($idHash, $rootClassName)
-    {
-        return isset($this->identityMap[$rootClassName][$idHash]);
     }
 
     /**
@@ -2517,11 +2494,7 @@ class UnitOfWork implements PropertyChangedListener
                         $hints['fetchMode'][$class->name][$field] = $assoc['fetch'];
                     }
 
-                    // Foreign key is set
-                    // Check identity map first
-                    // FIXME: Can break easily with composite keys if join column values are in
-                    //        wrong order. The correct order is the one in ClassMetadata#identifier.
-                    $relatedIdHash = implode(' ', $associatedId);
+                    $relatedIdHash = $this->getHashForEntityIdentifier($targetClass, $associatedId);
 
                     switch (true) {
                         case (isset($this->identityMap[$targetClass->rootEntityName][$relatedIdHash])):
@@ -2760,7 +2733,7 @@ class UnitOfWork implements PropertyChangedListener
 
         return isset($values[$class->identifier[0]]) ? $values[$class->identifier[0]] : null;
     }
- 
+
     /**
      * Tries to find an entity with the given identifier in the identity map of
      * this UnitOfWork.
@@ -2773,7 +2746,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function tryGetById($id, $rootClassName)
     {
-        $idHash = implode(' ', (array) $id);
+        $classMetadata = $this->em->getClassMetadata($rootClassName);
+        $idHash = $this->getHashForEntityIdentifier($classMetadata, (array) $id);
 
         if (isset($this->identityMap[$rootClassName][$idHash])) {
             return $this->identityMap[$rootClassName][$idHash];
@@ -3069,4 +3043,65 @@ class UnitOfWork implements PropertyChangedListener
 
         return isset($this->readOnlyObjects[spl_object_hash($object)]);
     }
+
+    /**
+     * Normalize identifier into a sorted array of identifier values.
+     *
+     * @param ClassMetadata $class
+     * @param mixed $id
+     * @return array
+     */
+    public function normalizeIdentifier($class, $id)
+    {
+        if (is_object($id) && $this->em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($id))) {
+            $id = $this->getSingleIdentifierValue($id);
+
+            if ($id === null) {
+                throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+            }
+        }
+
+        if ( ! is_array($id)) {
+            $id = array($class->identifier[0] => $id);
+        }
+
+        $sortedId = array();
+
+        foreach ($class->identifier as $identifier) {
+            if ( ! isset($id[$identifier])) {
+                throw ORMException::missingIdentifierField($class->name, $identifier);
+            }
+
+            $sortedId[$identifier] = $id[$identifier];
+        }
+
+        return $sortedId;
+    }
+
+    public function getHashForEntityIdentifier($class, $id)
+    {
+        if ( ! $id) {
+            return '';
+        }
+
+        if ( ! isset($this->entityHashStrategy[$class->rootEntityName])) {
+            $this->entityHashStrategy[$class->rootEntityName] = $this->createHashStrategy($class);
+        }
+
+        return $this->entityHashStrategy[$class->rootEntityName]->getHash($id);
+    }
+
+    private function createHashStrategy($class)
+    {
+        if ($class->containsForeignIdentifier) {
+            return new IdentityMap\DerivedKeyHashStrategy($class, $this->em);
+        }
+
+        if ($class->isIdentifierComposite) {
+            return new IdentityMap\CompositeKeyHashStrategy($class);
+        }
+
+        return new IdentityMap\SurrogateKeyHashStrategy($class->identifier[0]);
+    }
 }
+
