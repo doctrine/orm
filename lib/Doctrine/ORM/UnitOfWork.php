@@ -278,6 +278,9 @@ class UnitOfWork implements PropertyChangedListener
                 $this->collectionUpdates ||
                 $this->collectionDeletions ||
                 $this->orphanRemovals)) {
+            $this->dispatchOnFlushEvent();
+            $this->dispatchPostFlushEvent();
+
             return; // Nothing to do.
         }
 
@@ -287,10 +290,7 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
-        // Raise onFlush
-        if ($this->evm->hasListeners(Events::onFlush)) {
-            $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->em));
-        }
+        $this->dispatchOnFlushEvent();
 
         // Now we need a commit order to maintain referential integrity
         $commitOrder = $this->getCommitOrder();
@@ -345,10 +345,7 @@ class UnitOfWork implements PropertyChangedListener
             $coll->takeSnapshot();
         }
 
-        // Raise postFlush
-        if ($this->evm->hasListeners(Events::postFlush)) {
-            $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->em));
-        }
+        $this->dispatchPostFlushEvent();
 
         // Clear up
         $this->entityInsertions =
@@ -2950,5 +2947,19 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         return isset($this->readOnlyObjects[spl_object_hash($object)]);
+    }
+
+    private function dispatchOnFlushEvent()
+    {
+        if ($this->evm->hasListeners(Events::onFlush)) {
+            $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->em));
+        }
+    }
+
+    private function dispatchPostFlushEvent()
+    {
+        if ($this->evm->hasListeners(Events::postFlush)) {
+            $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->em));
+        }
     }
 }
