@@ -149,6 +149,11 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e JOIN Doctrine\Tests\Models\Company\CompanyManager m WITH e.id = m.id',
             'SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c0_.discr AS discr5 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id INNER JOIN company_managers c2_ INNER JOIN company_employees c3_ ON c2_.id = c3_.id INNER JOIN company_persons c4_ ON c2_.id = c4_.id AND (c0_.id = c4_.id)'
         );
+
+        $this->assertSqlGeneration(
+            'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e LEFT JOIN Doctrine\Tests\Models\Company\CompanyManager m WITH e.id = m.id',
+            'SELECT c0_.id AS id0, c0_.name AS name1, c1_.salary AS salary2, c1_.department AS department3, c1_.startDate AS startDate4, c0_.discr AS discr5 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id LEFT JOIN company_managers c2_ INNER JOIN company_employees c3_ ON c2_.id = c3_.id INNER JOIN company_persons c4_ ON c2_.id = c4_.id ON (c0_.id = c4_.id)'
+        );
     }
 
     public function testSupportsSelectWithCollectionAssociationJoin()
