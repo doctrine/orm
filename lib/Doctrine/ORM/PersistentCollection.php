@@ -655,7 +655,7 @@ final class PersistentCollection implements Collection, Selectable
 
         $this->initialized = true; // direct call, {@link initialize()} is too expensive
 
-        if ($this->association['isOwningSide']) {
+        if ($this->association['isOwningSide'] && $this->owner) {
             $this->changed();
 
             $uow->scheduleCollectionDeletion($this);
