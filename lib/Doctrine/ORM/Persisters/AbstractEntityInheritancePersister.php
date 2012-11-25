@@ -36,14 +36,14 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     /**
      * {@inheritdoc}
      */
-    protected function _prepareInsertData($entity)
+    protected function prepareInsertData($entity)
     {
-        $data = parent::_prepareInsertData($entity);
+        $data = parent::prepareInsertData($entity);
 
         // Populate the discriminator column
-        $discColumn = $this->_class->discriminatorColumn;
-        $this->_columnTypes[$discColumn['name']] = $discColumn['type'];
-        $data[$this->_getDiscriminatorColumnTableName()][$discColumn['name']] = $this->_class->discriminatorValue;
+        $discColumn = $this->class->discriminatorColumn;
+        $this->columnTypes[$discColumn['name']] = $discColumn['type'];
+        $data[$this->getDiscriminatorColumnTableName()][$discColumn['name']] = $this->class->discriminatorValue;
 
         return $data;
     }
@@ -53,21 +53,24 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
      *
      * @return string The table name.
      */
-    abstract protected function _getDiscriminatorColumnTableName();
+    abstract protected function getDiscriminatorColumnTableName();
 
     /**
      * {@inheritdoc}
      */
-    protected function _getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
+    protected function getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
-        $columnName = $class->columnNames[$field];
-        $sql = $this->_getSQLTableAlias($class->name, $alias == 'r' ? '' : $alias) . '.' . $this->quoteStrategy->getColumnName($field, $class, $this->_platform);
+        $tableAlias  = $alias == 'r' ? '' : $alias;
+        $columnName  = $class->columnNames[$field];
         $columnAlias = $this->getSQLColumnAlias($columnName);
-        $this->_rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
+        $sql         = $this->getSQLTableAlias($class->name, $tableAlias) . '.'
+                            . $this->quoteStrategy->getColumnName($field, $class, $this->platform);
+
+        $this->rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
 
         if (isset($class->fieldMappings[$field]['requireSQLConversion'])) {
-            $type = Type::getType($class->getTypeOfField($field));
-            $sql = $type->convertToPHPValueSQL($sql, $this->_platform);
+            $type   = Type::getType($class->getTypeOfField($field));
+            $sql    = $type->convertToPHPValueSQL($sql, $this->platform);
         }
 
         return $sql . ' AS ' . $columnAlias;
@@ -76,7 +79,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     protected function getSelectJoinColumnSQL($tableAlias, $joinColumnName, $className)
     {
         $columnAlias = $this->getSQLColumnAlias($joinColumnName);
-        $this->_rsm->addMetaResult('r', $columnAlias, $joinColumnName);
+        $this->rsm->addMetaResult('r', $columnAlias, $joinColumnName);
 
         return $tableAlias . '.' . $joinColumnName . ' AS ' . $columnAlias;
     }

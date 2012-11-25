@@ -33,17 +33,17 @@ abstract class AbstractCollectionPersister
     /**
      * @var EntityManager
      */
-    protected $_em;
+    protected $em;
 
     /**
      * @var \Doctrine\DBAL\Connection
      */
-    protected $_conn;
+    protected $conn;
 
     /**
      * @var \Doctrine\ORM\UnitOfWork
      */
-    protected $_uow;
+    protected $uow;
 
     /**
      * The database platform.
@@ -66,17 +66,17 @@ abstract class AbstractCollectionPersister
      */
     public function __construct(EntityManager $em)
     {
-        $this->_em              = $em;
-        $this->_uow             = $em->getUnitOfWork();
-        $this->_conn            = $em->getConnection();
-        $this->platform         = $this->_conn->getDatabasePlatform();
+        $this->em               = $em;
+        $this->uow              = $em->getUnitOfWork();
+        $this->conn             = $em->getConnection();
+        $this->platform         = $this->conn->getDatabasePlatform();
         $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
     }
 
     /**
      * Deletes the persistent state represented by the given collection.
      *
-     * @param PersistentCollection $coll
+     * @param \Doctrine\ORM\PersistentCollection $coll
      */
     public function delete(PersistentCollection $coll)
     {
@@ -86,30 +86,31 @@ abstract class AbstractCollectionPersister
             return; // ignore inverse side
         }
 
-        $sql = $this->_getDeleteSQL($coll);
-        $this->_conn->executeUpdate($sql, $this->_getDeleteSQLParameters($coll));
+        $sql = $this->getDeleteSQL($coll);
+
+        $this->conn->executeUpdate($sql, $this->getDeleteSQLParameters($coll));
     }
 
     /**
      * Gets the SQL statement for deleting the given collection.
      *
-     * @param PersistentCollection $coll
+     * @param \Doctrine\ORM\PersistentCollection $coll
      */
-    abstract protected function _getDeleteSQL(PersistentCollection $coll);
+    abstract protected function getDeleteSQL(PersistentCollection $coll);
 
     /**
      * Gets the SQL parameters for the corresponding SQL statement to delete
      * the given collection.
      *
-     * @param PersistentCollection $coll
+     * @param \Doctrine\ORM\PersistentCollection $coll
      */
-    abstract protected function _getDeleteSQLParameters(PersistentCollection $coll);
+    abstract protected function getDeleteSQLParameters(PersistentCollection $coll);
 
     /**
      * Updates the given collection, synchronizing it's state with the database
      * by inserting, updating and deleting individual elements.
      *
-     * @param PersistentCollection $coll
+     * @param \Doctrine\ORM\PersistentCollection $coll
      */
     public function update(PersistentCollection $coll)
     {
@@ -120,63 +121,124 @@ abstract class AbstractCollectionPersister
         }
 
         $this->deleteRows($coll);
-        //$this->updateRows($coll);
         $this->insertRows($coll);
     }
 
+    /**
+     * Delete rows
+     *
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     */
     public function deleteRows(PersistentCollection $coll)
     {
-        $deleteDiff = $coll->getDeleteDiff();
-        $sql = $this->_getDeleteRowSQL($coll);
+        $diff   = $coll->getDeleteDiff();
+        $sql    = $this->getDeleteRowSQL($coll);
 
-        foreach ($deleteDiff as $element) {
-            $this->_conn->executeUpdate($sql, $this->_getDeleteRowSQLParameters($coll, $element));
+        foreach ($diff as $element) {
+            $this->conn->executeUpdate($sql, $this->getDeleteRowSQLParameters($coll, $element));
         }
     }
 
-    //public function updateRows(PersistentCollection $coll)
-    //{}
-
+    /**
+     * Insert rows
+     *
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     */
     public function insertRows(PersistentCollection $coll)
     {
-        $insertDiff = $coll->getInsertDiff();
-        $sql = $this->_getInsertRowSQL($coll);
+        $diff   = $coll->getInsertDiff();
+        $sql    = $this->getInsertRowSQL($coll);
 
-        foreach ($insertDiff as $element) {
-            $this->_conn->executeUpdate($sql, $this->_getInsertRowSQLParameters($coll, $element));
+        foreach ($diff as $element) {
+            $this->conn->executeUpdate($sql, $this->getInsertRowSQLParameters($coll, $element));
         }
     }
 
+    /**
+     * Count the size of this persistent collection
+     *
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * 
+     * @return integer
+     */
     public function count(PersistentCollection $coll)
     {
         throw new \BadMethodCallException("Counting the size of this persistent collection is not supported by this CollectionPersister.");
     }
 
+    /**
+     * Slice elements
+     *
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * @param integer $offset
+     * @param integer $length
+     *
+     * @return  array
+     */
     public function slice(PersistentCollection $coll, $offset, $length = null)
     {
         throw new \BadMethodCallException("Slicing elements is not supported by this CollectionPersister.");
     }
 
+    /**
+     * Check for existance of an element
+     *
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * @param object $element
+     *
+     * @return boolean
+     */
     public function contains(PersistentCollection $coll, $element)
     {
         throw new \BadMethodCallException("Checking for existance of an element is not supported by this CollectionPersister.");
     }
 
+    /**
+     * Check for existance of a key
+     *
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * @param mixed $key
+     *
+     * @return boolean
+     */
     public function containsKey(PersistentCollection $coll, $key)
     {
         throw new \BadMethodCallException("Checking for existance of a key is not supported by this CollectionPersister.");
     }
 
+    /**
+     * Remove an element
+     *
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * @param object $element
+     *
+     * @return mixed
+     */
     public function removeElement(PersistentCollection $coll, $element)
     {
         throw new \BadMethodCallException("Removing an element is not supported by this CollectionPersister.");
     }
 
+    /**
+     * Remove an element by key
+     *
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * 
+     * @param mixed $key
+     */
     public function removeKey(PersistentCollection $coll, $key)
     {
         throw new \BadMethodCallException("Removing a key is not supported by this CollectionPersister.");
     }
 
+    /**
+     * Get an element by key
+     * 
+     * @param \Doctrine\ORM\PersistentCollection $coll
+     * @param mixed $index
+     * 
+     * @return mixed
+     */
     public function get(PersistentCollection $coll, $index)
     {
         throw new \BadMethodCallException("Selecting a collection by index is not supported by this CollectionPersister.");
@@ -185,39 +247,39 @@ abstract class AbstractCollectionPersister
     /**
      * Gets the SQL statement used for deleting a row from the collection.
      *
-     * @param PersistentCollection $coll
+     * @param \Doctrine\ORM\PersistentCollection $coll
      */
-    abstract protected function _getDeleteRowSQL(PersistentCollection $coll);
+    abstract protected function getDeleteRowSQL(PersistentCollection $coll);
 
     /**
      * Gets the SQL parameters for the corresponding SQL statement to delete the given
      * element from the given collection.
      *
-     * @param PersistentCollection $coll
+     * @param \Doctrine\ORM\PersistentCollection $coll
      * @param mixed $element
      */
-    abstract protected function _getDeleteRowSQLParameters(PersistentCollection $coll, $element);
+    abstract protected function getDeleteRowSQLParameters(PersistentCollection $coll, $element);
 
     /**
      * Gets the SQL statement used for updating a row in the collection.
      *
-     * @param PersistentCollection $coll
+     * @param \Doctrine\ORM\PersistentCollection $coll
      */
-    abstract protected function _getUpdateRowSQL(PersistentCollection $coll);
+    abstract protected function getUpdateRowSQL(PersistentCollection $coll);
 
     /**
      * Gets the SQL statement used for inserting a row in the collection.
      *
-     * @param PersistentCollection $coll
+     * @param \Doctrine\ORM\PersistentCollection $coll
      */
-    abstract protected function _getInsertRowSQL(PersistentCollection $coll);
+    abstract protected function getInsertRowSQL(PersistentCollection $coll);
 
     /**
      * Gets the SQL parameters for the corresponding SQL statement to insert the given
      * element of the given collection into the database.
      *
-     * @param PersistentCollection $coll
+     * @param \Doctrine\ORM\PersistentCollection $coll
      * @param mixed $element
      */
-    abstract protected function _getInsertRowSQLParameters(PersistentCollection $coll, $element);
+    abstract protected function getInsertRowSQLParameters(PersistentCollection $coll, $element);
 }
