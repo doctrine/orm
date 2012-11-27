@@ -1265,7 +1265,7 @@ public function __construct()
      */
     protected function getInheritanceTypeString($type)
     {
-        if( ! isset(self::$inheritanceTypeMap[$type])) {
+        if ( ! isset(self::$inheritanceTypeMap[$type])) {
             throw new \InvalidArgumentException(sprintf('Invalid provided InheritanceType: %s', $type));
         }
 
@@ -1279,7 +1279,7 @@ public function __construct()
      */
     protected function getChangeTrackingPolicyString($type)
     {
-        if( ! isset(self::$changeTrackingPolicyMap[$type])) {
+        if ( ! isset(self::$changeTrackingPolicyMap[$type])) {
             throw new \InvalidArgumentException(sprintf('Invalid provided ChangeTrackingPolicy: %s', $type));
         }
 
@@ -1293,7 +1293,7 @@ public function __construct()
      */
     protected function getIdGeneratorTypeString($type)
     {
-        if( ! isset(self::$generatorStrategyMap[$type])) {
+        if ( ! isset(self::$generatorStrategyMap[$type])) {
             throw new \InvalidArgumentException(sprintf('Invalid provided IdGeneratorType: %s', $type));
         }
 
