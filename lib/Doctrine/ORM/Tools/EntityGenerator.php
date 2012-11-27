@@ -139,7 +139,7 @@ class EntityGenerator
 
     /**
      * Hash-map for handle types
-     * 
+     *
      * @var array
      */
     protected $typeAlias = array(
@@ -158,7 +158,7 @@ class EntityGenerator
     );
 
     /**
-     * @var array Hash-map to handle generator types string
+     * @var array Hash-map to handle generator types string.
      */
     protected static $generatorStrategyMap = array(
         ClassMetadataInfo::GENERATOR_TYPE_AUTO      => 'AUTO',
