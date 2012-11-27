@@ -158,6 +158,38 @@ class EntityGenerator
     );
 
     /**
+     * @var array Hash-map to handle generator types string.
+     */
+    protected static $generatorStrategyMap = array(
+        ClassMetadataInfo::GENERATOR_TYPE_AUTO      => 'AUTO',
+        ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE  => 'SEQUENCE',
+        ClassMetadataInfo::GENERATOR_TYPE_TABLE     => 'TABLE',
+        ClassMetadataInfo::GENERATOR_TYPE_IDENTITY  => 'IDENTITY',
+        ClassMetadataInfo::GENERATOR_TYPE_NONE      => 'NONE',
+        ClassMetadataInfo::GENERATOR_TYPE_UUID      => 'UUID',
+        ClassMetadataInfo::GENERATOR_TYPE_CUSTOM    => 'CUSTOM'
+    );
+
+    /**
+     * @var array Hash-map to handle the change tracking policy string.
+     */
+    protected static $changeTrackingPolicyMap = array(
+        ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT  => 'DEFERRED_IMPLICIT',
+        ClassMetadataInfo::CHANGETRACKING_DEFERRED_EXPLICIT  => 'DEFERRED_EXPLICIT',
+        ClassMetadataInfo::CHANGETRACKING_NOTIFY             => 'NOTIFY',
+    );
+
+    /**
+     * @var array Hash-map to handle the inheritance type string.
+     */
+    protected static $inheritanceTypeMap = array(
+        ClassMetadataInfo::INHERITANCE_TYPE_NONE            => 'NONE',
+        ClassMetadataInfo::INHERITANCE_TYPE_JOINED          => 'JOINED',
+        ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_TABLE    => 'SINGLE_TABLE',
+        ClassMetadataInfo::INHERITANCE_TYPE_TABLE_PER_CLASS => 'TABLE_PER_CLASS',
+    );
+
+    /**
      * @var string
      */
     private static $classTemplate =
@@ -1214,63 +1246,45 @@ public function __construct()
         return implode("\n", $lines);
     }
 
-    private function getInheritanceTypeString($type)
+    /**
+     * @param integer $type                 The inheritance type used by the class and it's subclasses.
+     * @return string                       The literal string for the inheritance type.
+     * @throws \InvalidArgumentException    When the inheritance type does not exists.
+     */
+    protected function getInheritanceTypeString($type)
     {
-        switch ($type) {
-            case ClassMetadataInfo::INHERITANCE_TYPE_NONE:
-                return 'NONE';
-
-            case ClassMetadataInfo::INHERITANCE_TYPE_JOINED:
-                return 'JOINED';
-
-            case ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_TABLE:
-                return 'SINGLE_TABLE';
-
-            case ClassMetadataInfo::INHERITANCE_TYPE_TABLE_PER_CLASS:
-                return 'PER_CLASS';
-
-            default:
-                throw new \InvalidArgumentException('Invalid provided InheritanceType: ' . $type);
+        if ( ! isset(self::$inheritanceTypeMap[$type])) {
+            throw new \InvalidArgumentException(sprintf('Invalid provided InheritanceType: %s', $type));
         }
+
+        return self::$inheritanceTypeMap[$type];
     }
 
-    private function getChangeTrackingPolicyString($policy)
+    /**
+     * @param integer $type                 The policy used for change-tracking for the mapped class.
+     * @return string                       The literal string for the change-tracking type.
+     * @throws \InvalidArgumentException    When the change-tracking type does not exists.
+     */
+    protected function getChangeTrackingPolicyString($type)
     {
-        switch ($policy) {
-            case ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT:
-                return 'DEFERRED_IMPLICIT';
-
-            case ClassMetadataInfo::CHANGETRACKING_DEFERRED_EXPLICIT:
-                return 'DEFERRED_EXPLICIT';
-
-            case ClassMetadataInfo::CHANGETRACKING_NOTIFY:
-                return 'NOTIFY';
-
-            default:
-                throw new \InvalidArgumentException('Invalid provided ChangeTrackingPolicy: ' . $policy);
+        if ( ! isset(self::$changeTrackingPolicyMap[$type])) {
+            throw new \InvalidArgumentException(sprintf('Invalid provided ChangeTrackingPolicy: %s', $type));
         }
+
+        return self::$changeTrackingPolicyMap[$type];
     }
 
-    private function getIdGeneratorTypeString($type)
+    /**
+     * @param integer $type                 The generator to use for the mapped class.
+     * @return string                       The literal string for the generetor type.
+     * @throws \InvalidArgumentException    When the generator type does not exists.
+     */
+    protected function getIdGeneratorTypeString($type)
     {
-        switch ($type) {
-            case ClassMetadataInfo::GENERATOR_TYPE_AUTO:
-                return 'AUTO';
-
-            case ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE:
-                return 'SEQUENCE';
-
-            case ClassMetadataInfo::GENERATOR_TYPE_TABLE:
-                return 'TABLE';
-
-            case ClassMetadataInfo::GENERATOR_TYPE_IDENTITY:
-                return 'IDENTITY';
-
-            case ClassMetadataInfo::GENERATOR_TYPE_NONE:
-                return 'NONE';
-
-            default:
-                throw new \InvalidArgumentException('Invalid provided IdGeneratorType: ' . $type);
+        if ( ! isset(self::$generatorStrategyMap[$type])) {
+            throw new \InvalidArgumentException(sprintf('Invalid provided IdGeneratorType: %s', $type));
         }
+
+        return self::$generatorStrategyMap[$type];
     }
 }
