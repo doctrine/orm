@@ -202,4 +202,12 @@ class UpdateSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'UPDATE customtype_parents SET customInteger = 1 WHERE id = 1'
         );
     }
+
+    public function testUpdateWithSubselectAsNewValue()
+    {
+        $this->assertSqlGeneration(
+            "UPDATE Doctrine\Tests\Models\Company\CompanyFixContract fc SET fc.fixPrice = (SELECT ce2.salary FROM Doctrine\Tests\Models\Company\CompanyEmployee ce2 WHERE ce2.id = 2) WHERE fc.id = 1",
+            "UPDATE company_contracts SET fixPrice = (SELECT c0_.salary FROM company_employees c0_ INNER JOIN company_persons c1_ ON c0_.id = c1_.id LEFT JOIN company_managers c2_ ON c0_.id = c2_.id WHERE c1_.id = 2) WHERE (id = 1) AND discr IN ('fix')"
+        );
+    }
 }

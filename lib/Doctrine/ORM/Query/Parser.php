@@ -1488,7 +1488,7 @@ class Parser
             return new AST\InputParameter($this->lexer->token['value']);
         }
 
-        return $this->SimpleArithmeticExpression();
+        return $this->ArithmeticExpression();
     }
 
     /**
