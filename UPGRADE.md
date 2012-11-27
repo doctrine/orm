@@ -1,5 +1,13 @@
 # Upgrade to 2.3
 
+## EntityManager#find() not calls EntityRepository#find() anymore
+
+Previous to 2.3, calling ``EntityManager#find()`` would be delegated to
+``EntityRepository#find()``.  This has lead to some unexpected behavior in the
+core of Doctrine when people have overwritten the find method in their
+repositories. That is why this behavior has been reversed in 2.3, and
+``EntityRepository#find()`` calls ``EntityManager#find()`` instead.
+
 ## EntityGenerator add*() method generation
 
 When generating an add*() method for a collection the EntityGenerator will now not
