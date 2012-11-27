@@ -340,6 +340,87 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
     }
 
+     /**
+     * @group DDC-2172
+     */
+    public function testGetInheritanceTypeString()
+    {
+        $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadata');
+        $method     = new \ReflectionMethod($this->_generator, 'getInheritanceTypeString');
+        $constants  = $reflection->getConstants();
+        $pattern    = '/^INHERITANCE_TYPE_/';
+
+        $method->setAccessible(true);
+
+        foreach ($constants as $name => $value) {
+            if( ! preg_match($pattern, $name)) {
+                continue;
+            }
+
+            $expected = preg_replace($pattern, '', $name);
+            $actual   = $method->invoke($this->_generator, $value);
+
+            $this->assertEquals($expected, $actual);
+        }
+
+        $this->setExpectedException('\InvalidArgumentException', 'Invalid provided InheritanceType: INVALID');
+        $method->invoke($this->_generator, 'INVALID');
+    }
+
+    /**
+    * @group DDC-2172
+    */
+    public function testGetChangeTrackingPolicyString()
+    {
+        $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadata');
+        $method     = new \ReflectionMethod($this->_generator, 'getChangeTrackingPolicyString');
+        $constants  = $reflection->getConstants();
+        $pattern    = '/^CHANGETRACKING_/';
+
+        $method->setAccessible(true);
+
+        foreach ($constants as $name => $value) {
+            if( ! preg_match($pattern, $name)) {
+                continue;
+            }
+
+            $expected = preg_replace($pattern, '', $name);
+            $actual   = $method->invoke($this->_generator, $value);
+
+            $this->assertEquals($expected, $actual);
+        }
+
+        $this->setExpectedException('\InvalidArgumentException', 'Invalid provided ChangeTrackingPolicy: INVALID');
+        $method->invoke($this->_generator, 'INVALID');
+    }
+
+    /**
+     * @group DDC-2172
+     */
+    public function testGetIdGeneratorTypeString()
+    {
+        $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadata');
+        $method     = new \ReflectionMethod($this->_generator, 'getIdGeneratorTypeString');
+        $constants  = $reflection->getConstants();
+        $pattern    = '/^GENERATOR_TYPE_/';
+
+        $method->setAccessible(true);
+
+        foreach ($constants as $name => $value) {
+            if( ! preg_match($pattern, $name)) {
+                continue;
+            }
+
+            $expected = preg_replace($pattern, '', $name);
+            $actual   = $method->invoke($this->_generator, $value);
+
+            $this->assertEquals($expected, $actual);
+        }
+
+        $this->setExpectedException('\InvalidArgumentException', 'Invalid provided IdGeneratorType: INVALID');
+        $method->invoke($this->_generator, 'INVALID');
+    }
+
     /**
      * @dataProvider getEntityTypeAliasDataProvider
      *
