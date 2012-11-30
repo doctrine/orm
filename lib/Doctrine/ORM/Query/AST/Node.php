@@ -37,6 +37,10 @@ abstract class Node
      * Implementation is not mandatory for all nodes.
      *
      * @param $walker
+     *
+     * @return string
+     *
+     * @throws ASTException
      */
     public function dispatch($walker)
     {
