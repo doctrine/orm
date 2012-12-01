@@ -576,6 +576,10 @@ class SchemaTool
                     $columnOptions['notnull'] = !$joinColumn['nullable'];
                 }
 
+                if (isset($fieldMapping['options'])) {
+                    $columnOptions['options'] = $fieldMapping['options'];
+                }
+
                 if ($fieldMapping['type'] == "string" && isset($fieldMapping['length'])) {
                     $columnOptions['length'] = $fieldMapping['length'];
                 } elseif ($fieldMapping['type'] == "decimal") {
