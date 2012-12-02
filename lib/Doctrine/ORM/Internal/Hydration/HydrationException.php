@@ -21,17 +21,31 @@ namespace Doctrine\ORM\Internal\Hydration;
 
 class HydrationException extends \Doctrine\ORM\ORMException
 {
+    /**
+     * @return HydrationException
+     */
     public static function nonUniqueResult()
     {
         return new self("The result returned by the query was not unique.");
     }
 
+    /**
+     * @param string $alias
+     * @param string $parentAlias
+     *
+     * @return HydrationException
+     */
     public static function parentObjectOfRelationNotFound($alias, $parentAlias)
     {
         return new self("The parent object of entity result with alias '$alias' was not found."
                 . " The parent alias is '$parentAlias'.");
     }
 
+    /**
+     * @param string $dqlAlias
+     *
+     * @return HydrationException
+     */
     public static function emptyDiscriminatorValue($dqlAlias)
     {
         return new self("The DQL alias '" . $dqlAlias . "' contains an entity ".
@@ -43,10 +57,12 @@ class HydrationException extends \Doctrine\ORM\ORMException
 
     /**
      * @since 2.3
-     * @param   string $entityName
-     * @param   string $discrColumnName
-     * @param   string $dqlAlias
-     * @return  HydrationException
+     *
+     * @param string $entityName
+     * @param string $discrColumnName
+     * @param string $dqlAlias
+     *
+     * @return HydrationException
      */
     public static function missingDiscriminatorColumn($entityName, $discrColumnName, $dqlAlias)
     {
@@ -58,10 +74,12 @@ class HydrationException extends \Doctrine\ORM\ORMException
 
     /**
      * @since 2.3
-     * @param   string $entityName
-     * @param   string $discrColumnName
-     * @param   string $dqlAlias
-     * @return  HydrationException
+     *
+     * @param string $entityName
+     * @param string $discrColumnName
+     * @param string $dqlAlias
+     *
+     * @return HydrationException
      */
     public static function missingDiscriminatorMetaMappingColumn($entityName, $discrColumnName, $dqlAlias)
     {
