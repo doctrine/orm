@@ -8,7 +8,7 @@ following general rules apply:
 -  Relationships may be bidirectional or unidirectional.
 -  A bidirectional relationship has both an owning side and an inverse side
 -  A unidirectional relationship only has an owning side.
--  Doctrine will **only** check the owning side of an assocation for changes.
+-  Doctrine will **only** check the owning side of an association for changes.
 
 Bidirectional Associations
 --------------------------
@@ -22,16 +22,16 @@ The following rules apply to **bidirectional** associations:
   OneToOne, ManyToOne, or ManyToMany mapping declaration. 
   The inversedBy attribute contains the name of the association-field
   on the inverse-side.
-- ManyToOne is always the owning side of a bidirectional assocation.
-- OneToMany is always the inverse side of a bidirectional assocation.
-- The owning side of a OneToOne assocation is the entity with the table
+- ManyToOne is always the owning side of a bidirectional association.
+- OneToMany is always the inverse side of a bidirectional association.
+- The owning side of a OneToOne association is the entity with the table
   containing the foreign key.
-- You can pick the owning side of a many-to-many assocation yourself.
+- You can pick the owning side of a many-to-many association yourself.
 
 Important concepts
 ------------------
 
-**Doctrine will only check the owning side of an assocation for changes.**
+**Doctrine will only check the owning side of an association for changes.**
 
 To fully understand this, remember how bidirectional associations
 are maintained in the object world. There are 2 references on each

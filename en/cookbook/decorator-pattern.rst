@@ -4,7 +4,7 @@ Persisting the Decorator Pattern
 .. sectionauthor:: Chris Woodford <chris.woodford@gmail.com>
 
 This recipe will show you a simple example of how you can use 
-Doctrine 2 to persist an implementaton of the 
+Doctrine 2 to persist an implementation of the
 `Decorator Pattern <http://en.wikipedia.org/wiki/Decorator_pattern>`_
 
 Component
@@ -114,7 +114,7 @@ use a ``MappedSuperclass`` for this.
         protected $decorates;
  
         /**
-         * intialize the decorator
+         * initialize the decorator
          * @param Component $c
          */
         public function __construct(Component $c)

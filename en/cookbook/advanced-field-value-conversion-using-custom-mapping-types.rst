@@ -21,7 +21,7 @@ longitude/latitude pair to represent a geographic location.
 The entity
 ----------
 
-We create a simple entity whith a field ``$point`` which holds a value object 
+We create a simple entity with a field ``$point`` which holds a value object
 ``Point`` representing the latitude and longitude of the position.
 
 The entity class:

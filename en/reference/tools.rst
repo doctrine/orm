@@ -28,7 +28,7 @@ Configuration (PEAR)
 ~~~~~~~~~~~~~~~~~~~~
 
 Whenever the ``doctrine`` command line tool is invoked, it can
-access alls Commands that were registered by developer. There is no
+access all Commands that were registered by developer. There is no
 auto-detection mechanism at work. The Doctrine binary
 already registers all the commands that currently ship with
 Doctrine DBAL and ORM. If you want to use additional commands you
@@ -300,7 +300,7 @@ to error and we suggest you use code repositories such as GIT or SVN to make
 backups of your code.
 
 It makes sense to generate the entity code if you are using entities as Data
-Access Objects only and dont put much additional logic on them. If you are
+Access Objects only and don't put much additional logic on them. If you are
 however putting much more logic on the entities you should refrain from using
 the entity-generator and code your entities manually.
 
@@ -319,7 +319,7 @@ Convert Mapping Information
 Convert mapping information between supported formats.
 
 This is an **execute one-time** command. It should not be necessary for
-you to call this method multiple times, escpecially when using the ``--from-database``
+you to call this method multiple times, especially when using the ``--from-database``
 flag.
 
 Converting an existing database schema into mapping files only solves about 70-80%

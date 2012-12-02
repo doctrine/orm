@@ -18,7 +18,7 @@ object-relational mapping metadata:
 
 This manual usually mentions docblock annotations in all the examples
 that are spread throughout all chapters, however for many examples
-alternative YAML and XML examples are given aswell. There are dedicated
+alternative YAML and XML examples are given as well. There are dedicated
 reference chapters for XML and YAML mapping, respectively that explain them
 in more detail. There is also an Annotation reference chapter.
 

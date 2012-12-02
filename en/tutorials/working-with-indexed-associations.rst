@@ -1,5 +1,5 @@
-Working with Indexed Assocations
-================================
+Working with Indexed Associations
+=================================
 
 .. note::
 
@@ -22,10 +22,10 @@ As an example we will design a simple stock exchange list view. The domain consi
 and ``Market`` where each Stock has a symbol and is traded on a single market. Instead of having a numerical
 list of stocks traded on a market they will be indexed by their symbol, which is unique across all markets.
 
-Mapping Indexed Assocations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Mapping Indexed Associations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can map indexed assocations by adding:
+You can map indexed associations by adding:
 
     * ``indexBy`` attribute to any ``@OneToMany`` or ``@ManyToMany`` annotation.
     * ``index-by`` attribute to any ``<one-to-many />`` or ``<many-to-many />`` xml element.
@@ -139,7 +139,7 @@ The code and mappings for the Market entity looks like this:
               indexBy: symbol
 
 Inside the ``addStock()`` method you can see how we directly set the key of the association to the symbol,
-so that we can work with the indexed assocation directly after invoking ``addStock()``. Inside ``getStock($symbol)``
+so that we can work with the indexed association directly after invoking ``addStock()``. Inside ``getStock($symbol)``
 we pick a stock traded on the particular market by symbol. If this stock doesn't exist an exception is thrown.
 
 The ``Stock`` entity doesn't contain any special instructions that are new, but for completeness
@@ -294,5 +294,5 @@ Outlook into the Future
 
 For the inverse side of a many-to-many associations there will be a way to persist the keys and the order
 as a third and fourth parameter into the join table. This feature is discussed in `DDC-213 <http://www.doctrine-project.org/jira/browse/DDC-213>`_
-This feature cannot be implemeted for One-To-Many associations, because they are never the owning side.
+This feature cannot be implemented for One-To-Many associations, because they are never the owning side.
 

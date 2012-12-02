@@ -4,7 +4,7 @@ Frequently Asked Questions
 .. note::
 
     This FAQ is a work in progress. We will add lots of questions and not answer them right away just to remember
-    what is often asked. If you stumble accross an unanswerd question please write a mail to the mailing-list or
+    what is often asked. If you stumble across an unanswered question please write a mail to the mailing-list or
     join the #doctrine channel on Freenode IRC.
 
 Database Schema
@@ -74,7 +74,7 @@ What is wrong when I get an InvalidArgumentException "A new entity was found thr
 
 This exception is thrown during ``EntityManager#flush()`` when there exists an object in the identity map
 that contains a reference to an object that Doctrine does not know about. Say for example you grab
-a "User"-entity from the database with a specific id and set a completly new object into one of the associations
+a "User"-entity from the database with a specific id and set a completely new object into one of the associations
 of the User object. If you then call ``EntityManager#flush()`` without letting Doctrine know about
 this new object using ``EntityManager#persist($newObject)`` you will see this exception.
 
@@ -96,7 +96,7 @@ By definition a One-To-Many association is on the inverse side, that means chang
 will not be recognized by Doctrine.
 
 If you want to perform the equivalent of the clear operation you have to iterate the
-collection and set the owning side many-to-one reference to NULL aswell to detach all entities
+collection and set the owning side many-to-one reference to NULL as well to detach all entities
 from the collection. This will trigger the appropriate UPDATE statements on the database.
 
 How can I add columns to a many-to-many table?
@@ -126,7 +126,7 @@ Why does pagination not work correctly with fetch joins?
 
 Pagination in Doctrine uses a LIMIT clause (or vendor equivalent) to restrict the results.
 However when fetch-joining this is not returning the correct number of results since joining
-with a one-to-many or many-to-many association muliplies the number of rows by the number
+with a one-to-many or many-to-many association multiplies the number of rows by the number
 of associated entities.
 
 See the previous question for a solution to this task.
@@ -142,11 +142,11 @@ Yes, you can use Single- or Joined-Table Inheritance in Doctrine 2.
 See the documentation chapter on :doc:`inheritance mapping <inheritance-mapping>` for
 the details.
 
-Why does Doctrine not create proxy objects for my inheritance hierachy?
+Why does Doctrine not create proxy objects for my inheritance hierarchy?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you set a many-to-one or one-to-one association target-entity to any parent class of
-an inheritance hierachy Doctrine does not know what PHP class the foreign is actually of.
+an inheritance hierarchy Doctrine does not know what PHP class the foreign is actually of.
 To find this out it has to execute an SQL query to look this information up in the database.
 
 EntityGenerator

@@ -146,7 +146,7 @@ extensions out there that offer support for Nested Set with
 Doctrine 2:
 
 
--  `Doctrine2 Hierachical-Structural Behavior <http://github.com/guilhermeblanco/Doctrine2-Hierarchical-Structural-Behavior>`_
+-  `Doctrine2 Hierarchical-Structural Behavior <http://github.com/guilhermeblanco/Doctrine2-Hierarchical-Structural-Behavior>`_
 -  `Doctrine2 NestedSet <http://github.com/blt04/doctrine2-nestedset>`_
 
 Known Issues

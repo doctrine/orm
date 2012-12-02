@@ -112,7 +112,7 @@ and to ``year`` to the related entities.
 
 .. note::
 
-    This example shows how you can nicely solve the requirement for exisiting
+    This example shows how you can nicely solve the requirement for existing
     values before ``EntityManager#persist()``: By adding them as mandatory values for the constructor.
 
 Identity through foreign Entities
@@ -135,7 +135,7 @@ of one or many parent entities.
 The semantics of mapping identity through foreign entities are easy:
 
 -   Only allowed on Many-To-One or One-To-One associations.
--   Plug an ``@Id`` annotation onto every assocation.
+-   Plug an ``@Id`` annotation onto every association.
 -   Set an attribute ``association-key`` with the field name of the association in XML.
 -   Set a key ``associationKey:`` with the field name of the association in YAML.
 

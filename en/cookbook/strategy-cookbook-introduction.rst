@@ -37,7 +37,7 @@ highly uncomfortable because of the following:
    block / entity. This would tear down any effort of modular
    programming.
 
-Therefore, we need something thats far more flexible.
+Therefore, we need something that's far more flexible.
 
 Solution
 --------

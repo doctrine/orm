@@ -161,10 +161,10 @@ The API of the ClassMetadataBuilder has the following methods with a fluent inte
 It also has several methods that create builders (which are necessary for advanced mappings):
 
 -   ``createField($name, $type)`` returns a ``FieldBuilder`` instance
--   ``createManyToOne($name, $targetEntity)`` returns an ``AssocationBuilder`` instance
--   ``createOneToOne($name, $targetEntity)`` returns an ``AssocationBuilder`` instance
--   ``createManyToMany($name, $targetEntity)`` returns an ``ManyToManyAssocationBuilder`` instance
--   ``createOneToMany($name, $targetEntity)`` returns an ``OneToManyAssocationBuilder`` instance
+-   ``createManyToOne($name, $targetEntity)`` returns an ``AssociationBuilder`` instance
+-   ``createOneToOne($name, $targetEntity)`` returns an ``AssociationBuilder`` instance
+-   ``createManyToMany($name, $targetEntity)`` returns an ``ManyToManyAssociationBuilder`` instance
+-   ``createOneToMany($name, $targetEntity)`` returns an ``OneToManyAssociationBuilder`` instance
 
 ClassMetadataInfo API
 ---------------------
