@@ -474,9 +474,9 @@ operations.
 Effects of Database and UnitOfWork being Out-Of-Sync
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As soon as you begin to change the state ofentities, call persist or remove the
+As soon as you begin to change the state of entities, call persist or remove the
 contents of the UnitOfWork and the database will drive out of sync. They can
-only be sychronized by calling ``EntityManager#flush()``. This section
+only be synchronized by calling ``EntityManager#flush()``. This section
 describes the effects of database and UnitOfWork being out of sync.
 
 -  Entities that are scheduled for removal can still be queried from the database.

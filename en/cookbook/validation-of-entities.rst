@@ -81,7 +81,7 @@ In XML Mappings:
                 <lifecycle-callback type="preUpdate" method="assertCustomerallowedBuying" />
             </lifecycle-callbacks>
         </entity>
-    </doctirne-mapping>
+    </doctrine-mapping>
 
 YAML needs some little change yet, to allow multiple lifecycle
 events for one method, this will happen before Beta 1 though.

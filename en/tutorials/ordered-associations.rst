@@ -1,5 +1,5 @@
-Ordering To-Many Assocations
-----------------------------
+Ordering To-Many Associations
+-----------------------------
 
 There are use-cases when you'll want to sort collections when they are
 retrieved from the database. In userland you do this as long as you

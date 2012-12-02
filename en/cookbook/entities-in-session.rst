@@ -47,7 +47,7 @@ Entities that are serialized into the session normally contain references to
 other entities as well. Think of the user entity has a reference to his
 articles, groups, photos or many other different entities. If you serialize
 this object into the session then you don't want to serialize the related
-entities aswell. This is why you should call ``EntityManager#detach()`` on this
+entities as well. This is why you should call ``EntityManager#detach()`` on this
 object or implement the __sleep() magic method on your entity.
 
 .. code-block:: php

@@ -24,7 +24,7 @@ because they can be used in other systems without each other, but for
 our application we want to use them together.
 
 In this case, we have an ``Invoice`` entity with a relationship to a
-non-existant object, an ``InvoiceSubjectInterface``. The goal is to get
+non-existent object, an ``InvoiceSubjectInterface``. The goal is to get
 the ``ResolveTargetEntityListener`` to replace any mention of the interface
 with a real object that implements that interface.
 

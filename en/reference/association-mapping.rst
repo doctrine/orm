@@ -15,9 +15,9 @@ This chapter is split into three different sections.
 
 - A list of all the possible association mapping use-cases is given.
 - :ref:`association_mapping_defaults` are explained that simplify the use-case examples.
-- :ref:`collections` are introduced that contain entities in assoactions.
+- :ref:`collections` are introduced that contain entities in associations.
 
-To master assocations you should also learn about :doc:`owning and inverse sides of associations <unitofwork-associations>`
+To master associations you should also learn about :doc:`owning and inverse sides of associations <unitofwork-associations>`
 
 One-To-One, Unidirectional
 --------------------------

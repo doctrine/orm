@@ -1348,7 +1348,7 @@ Entity Repositories
 
 For now we have not discussed how to separate the Doctrine query logic from your model.
 In Doctrine 1 there was the concept of ``Doctrine_Table`` instances for this
-seperation. The similar concept in Doctrine2 is called Entity Repositories, integrating
+separation. The similar concept in Doctrine2 is called Entity Repositories, integrating
 the `repository pattern <http://martinfowler.com/eaaCatalog/repository.html>`_ at the heart of Doctrine.
 
 Every Entity uses a default repository by default and offers a bunch of convenience
@@ -1380,7 +1380,7 @@ Compared to DQL these query methods are falling short of functionality very fast
 Doctrine offers you a convenient way to extend the functionalities of the default ``EntityRepository``
 and put all the specialized DQL query logic on it. For this you have to create a subclass
 of ``Doctrine\ORM\EntityRepository``, in our case a ``BugRepository`` and group all
-the previoiusly discussed query functionality in it:
+the previously discussed query functionality in it:
 
 .. code-block:: php
 
@@ -1428,7 +1428,7 @@ the previoiusly discussed query functionality in it:
         }
     }
 
-Dont forget to add a `require_once` call for this class to the bootstrap.php
+Don't forget to add a `require_once` call for this class to the bootstrap.php
 
 To be able to use this query logic through ``$this->getEntityManager()->getRepository('Bug')``
 we have to adjust the metadata slightly.

@@ -170,7 +170,7 @@ Getting ClassMetadata Instances
 -------------------------------
 
 If you want to get the ``ClassMetadata`` instance for an entity in
-your project to programatically use some mapping information to
+your project to programmatically use some mapping information to
 generate some HTML or something similar you can retrieve it through
 the ``ClassMetadataFactory``:
 

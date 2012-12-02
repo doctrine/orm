@@ -19,7 +19,7 @@ appear in the middle of an otherwise mapped inheritance hierarchy
     A mapped superclass cannot be an entity, it is not query-able and
     persistent relationships defined by a mapped superclass must be
     unidirectional (with an owning side only). This means that One-To-Many
-    assocations are not possible on a mapped superclass at all.
+    associations are not possible on a mapped superclass at all.
     Furthermore Many-To-Many associations are only possible if the
     mapped superclass is only used in exactly one entity at the moment.
     For further support of inheritance, the single or

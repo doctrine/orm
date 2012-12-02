@@ -12,7 +12,7 @@ its UnitOfWork. The array holding all the entity references is two-levels deep
 and has the keys "root entity name" and "id". Since Doctrine allows composite
 keys the id is a sorted, serialized version of all the key columns.
 
-This allows Doctrine room for optimizations. If you call the EntiyManager and
+This allows Doctrine room for optimizations. If you call the EntityManager and
 ask for an entity with a specific ID twice, it will return the same instance:
 
 .. code-block:: php
@@ -117,7 +117,7 @@ that consume new memory.
 Now whenever you call ``EntityManager#flush`` Doctrine will iterate over the
 Identity Map and for each object compares the original property and association
 values with the values that are currently set on the object. If changes are
-detected then the object is qeued for an SQL UPDATE operation. Only the fields
+detected then the object is queued for an SQL UPDATE operation. Only the fields
 that actually changed are updated.
 
 This process has an obvious performance impact. The larger the size of the

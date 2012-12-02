@@ -66,7 +66,7 @@ The problem is simple. Not a single database vendor saves the timezone, only the
 However with frequent daylight saving and political timezone changes you can have a UTC offset that moves
 in different offset directions depending on the real location.
 
-The solution for this dialemma is simple. Don't use timezones with DateTime and Doctrine 2. However there is a workaround
+The solution for this dilemma is simple. Don't use timezones with DateTime and Doctrine 2. However there is a workaround
 that even allows correct date-time handling with timezones:
 
 1. Always convert any DateTime instance to UTC.
@@ -75,7 +75,7 @@ that even allows correct date-time handling with timezones:
 
 Say we have an application for an international postal company and employees insert events regarding postal-package
 around the world, in their current timezones. To determine the exact time an event occurred means to save both
-the UTC time at the time of the booking and the timezone the event happend in.
+the UTC time at the time of the booking and the timezone the event happened in.
 
 .. code-block:: php
 
@@ -122,7 +122,7 @@ the UTC time at the time of the booking and the timezone the event happend in.
 
 This database type makes sure that every DateTime instance is always saved in UTC, relative
 to the current timezone that the passed DateTime instance has. To be able to transform these values
-back into their real timezone you have to save the timezone in a seperate field of the entity
+back into their real timezone you have to save the timezone in a separate field of the entity
 requiring timezoned datetimes:
 
 .. code-block:: php

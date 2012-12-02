@@ -390,7 +390,7 @@ in your sQL statement:
     $rsm->addRootEntityFromClassMetadata('MyProject\User', 'u');
     $rsm->addJoinedEntityFromClassMetadata('MyProject\Address', 'a', 'u', 'address', array('id' => 'address_id'));
 
-For entites with more columns the builder is very convenient to use. It extends the ``ResultSetMapping`` class
+For entities with more columns the builder is very convenient to use. It extends the ``ResultSetMapping`` class
 and as such has all the functionality of it as well. Currently the ``ResultSetMappingBuilder`` does not support
 entities with inheritance.
 
