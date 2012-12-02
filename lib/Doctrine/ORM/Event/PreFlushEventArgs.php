@@ -35,6 +35,11 @@ class PreFlushEventArgs extends \Doctrine\Common\EventArgs
      */
     private $_em;
 
+    /**
+     * Constructor.
+     *
+     * @param \Doctrine\ORM\EntityManager $em
+     */
     public function __construct($em)
     {
         $this->_em = $em;

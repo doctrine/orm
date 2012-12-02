@@ -44,8 +44,8 @@ class LoadClassMetadataEventArgs extends EventArgs
     /**
      * Constructor.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $classMetadata
-     * @param \Doctrine\ORM\EntityManager $em
+     * @param ClassMetadataInfo $classMetadata
+     * @param EntityManager     $em
      */
     public function __construct(ClassMetadataInfo $classMetadata, EntityManager $em)
     {
@@ -54,7 +54,7 @@ class LoadClassMetadataEventArgs extends EventArgs
     }
 
     /**
-     * Retrieve associated ClassMetadata.
+     * Retrieves associated ClassMetadata.
      *
      * @return \Doctrine\ORM\Mapping\ClassMetadataInfo
      */
@@ -64,7 +64,7 @@ class LoadClassMetadataEventArgs extends EventArgs
     }
 
     /**
-     * Retrieve associated EntityManager.
+     * Retrieves associated EntityManager.
      *
      * @return \Doctrine\ORM\EntityManager
      */
@@ -73,4 +73,3 @@ class LoadClassMetadataEventArgs extends EventArgs
         return $this->em;
     }
 }
-

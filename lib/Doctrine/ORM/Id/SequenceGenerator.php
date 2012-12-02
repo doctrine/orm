@@ -38,8 +38,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
     /**
      * Initializes a new sequence generator.
      *
-     * @param \Doctrine\ORM\EntityManager $em The EntityManager to use.
-     * @param string $sequenceName The name of the sequence.
+     * @param string  $sequenceName   The name of the sequence.
      * @param integer $allocationSize The allocation size of the sequence.
      */
     public function __construct($sequenceName, $allocationSize)
@@ -51,8 +50,11 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
     /**
      * Generates an ID for the given entity.
      *
-     * @param object $entity
+     * @param EntityManager $em
+     * @param object        $entity
+     *
      * @return integer|float The generated value.
+     *
      * @override
      */
     public function generate(EntityManager $em, $entity)
@@ -89,6 +91,9 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
         return $this->_nextValue;
     }
 
+    /**
+     * @return string
+     */
     public function serialize()
     {
         return serialize(array(
@@ -97,6 +102,11 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
         ));
     }
 
+    /**
+     * @param string $serialized
+     *
+     * @return void
+     */
     public function unserialize($serialized)
     {
         $array = unserialize($serialized);

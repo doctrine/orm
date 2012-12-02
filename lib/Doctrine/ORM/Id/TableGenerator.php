@@ -32,12 +32,29 @@ use Doctrine\ORM\EntityManager;
  */
 class TableGenerator extends AbstractIdGenerator
 {
+    /**
+     * @var string
+     */
     private $_tableName;
+
+    /**
+     * @var string
+     */
     private $_sequenceName;
+
+    /**
+     * @var int
+     */
     private $_allocationSize;
+
     private $_nextValue;
     private $_maxValue;
 
+    /**
+     * @param string $tableName
+     * @param string $sequenceName
+     * @param int    $allocationSize
+     */
     public function __construct($tableName, $sequenceName = 'default', $allocationSize = 10)
     {
         $this->_tableName = $tableName;
@@ -45,6 +62,9 @@ class TableGenerator extends AbstractIdGenerator
         $this->_allocationSize = $allocationSize;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function generate(EntityManager $em, $entity)
     {
         if ($this->_maxValue === null || $this->_nextValue == $this->_maxValue) {
