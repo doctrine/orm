@@ -25,8 +25,13 @@ namespace Doctrine\ORM\Mapping;
  */
 final class Entity implements Annotation
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     public $repositoryClass;
-    /** @var boolean */
+
+    /**
+     * @var boolean
+     */
     public $readOnly = false;
 }
