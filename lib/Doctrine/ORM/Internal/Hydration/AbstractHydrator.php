@@ -127,7 +127,7 @@ abstract class AbstractHydrator
      * @param object $resultSetMapping
      * @param array  $hints
      *
-     * @return mixed
+     * @return array
      */
     public function hydrateAll($stmt, $resultSetMapping, array $hints = array())
     {

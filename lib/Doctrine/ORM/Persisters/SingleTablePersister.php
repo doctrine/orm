@@ -147,6 +147,9 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         return $conditionSql . $this->getSelectConditionDiscriminatorValueSQL();
     }
 
+    /**
+     * @return string
+     */
     protected function getSelectConditionDiscriminatorValueSQL()
     {
         $values = array();

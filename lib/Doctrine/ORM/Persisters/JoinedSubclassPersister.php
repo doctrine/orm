@@ -87,7 +87,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      * Gets the name of the table that owns the column the given field is mapped to.
      *
      * @param string $fieldName
+     *
      * @return string
+     *
      * @override
      */
     public function getOwningTable($fieldName)
@@ -408,8 +410,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         return 'FROM ' . $quotedTableName . ' ' . $baseTableAlias . $joinSql;
     }
 
-    /*
+    /**
      * Ensure this method is never called. This persister overrides getSelectEntitiesSQL directly.
+     *
+     * @return string
      */
     protected function getSelectColumnsSQL()
     {
@@ -548,5 +552,4 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $value = $this->fetchVersionValue($this->getVersionedClassMetadata(), $id);
         $this->class->setFieldValue($entity, $this->class->versionField, $value);
     }
-
 }
