@@ -1259,7 +1259,7 @@ public function __construct()
     }
 
     /**
-     * @param integer $type                 The inheritance type used by the class and it's subclasses.
+     * @param integer $type                 The inheritance type used by the class and its subclasses.
      * @return string                       The literal string for the inheritance type.
      * @throws \InvalidArgumentException    When the inheritance type does not exists.
      */

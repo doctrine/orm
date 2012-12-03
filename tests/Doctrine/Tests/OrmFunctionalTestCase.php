@@ -14,7 +14,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /* The query cache shared between all functional tests. */
     private static $_queryCacheImpl = null;
 
-    /* Shared connection when a TestCase is run alone (outside of it's functional suite) */
+    /* Shared connection when a TestCase is run alone (outside of its functional suite) */
     protected static $_sharedConn;
 
     /**

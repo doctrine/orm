@@ -46,7 +46,7 @@ class EnsureProductionSettingsCommand extends Command
         ->setDefinition(array(
             new InputOption(
                 'complete', null, InputOption::VALUE_NONE,
-                'Flag to also inspect database connection existance.'
+                'Flag to also inspect database connection existence.'
             )
         ))
         ->setHelp(<<<EOT

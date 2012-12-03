@@ -113,7 +113,7 @@ abstract class AbstractCollectionPersister
     abstract protected function getDeleteSQLParameters(PersistentCollection $coll);
 
     /**
-     * Updates the given collection, synchronizing it's state with the database
+     * Updates the given collection, synchronizing its state with the database
      * by inserting, updating and deleting individual elements.
      *
      * @param \Doctrine\ORM\PersistentCollection $coll
@@ -208,7 +208,7 @@ abstract class AbstractCollectionPersister
      */
     public function contains(PersistentCollection $coll, $element)
     {
-        throw new \BadMethodCallException("Checking for existance of an element is not supported by this CollectionPersister.");
+        throw new \BadMethodCallException("Checking for existence of an element is not supported by this CollectionPersister.");
     }
 
     /**
@@ -223,7 +223,7 @@ abstract class AbstractCollectionPersister
      */
     public function containsKey(PersistentCollection $coll, $key)
     {
-        throw new \BadMethodCallException("Checking for existance of a key is not supported by this CollectionPersister.");
+        throw new \BadMethodCallException("Checking for existence of a key is not supported by this CollectionPersister.");
     }
 
     /**

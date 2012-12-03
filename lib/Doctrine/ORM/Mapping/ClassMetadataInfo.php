@@ -29,7 +29,7 @@ use Doctrine\Common\ClassLoader;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
- * of an entity and it's associations.
+ * of an entity and its associations.
  *
  * Once populated, ClassMetadata instances are usually cached in a serialized form.
  *

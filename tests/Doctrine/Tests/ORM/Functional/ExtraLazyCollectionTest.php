@@ -223,7 +223,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
         $this->assertFalse($user->articles->isInitialized(), "Pre-Condition: Collection is not initialized.");
 
-        // Test One to Many existance retrieved from DB
+        // Test One to Many existence retrieved from DB
         $article    = $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId);
         $queryCount = $this->getCurrentQueryCount();
 
@@ -231,7 +231,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
-        // Test One to Many existance with state new
+        // Test One to Many existence with state new
         $article = new \Doctrine\Tests\Models\CMS\CmsArticle();
         $article->topic = "Testnew";
         $article->text = "blub";
@@ -240,7 +240,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($user->articles->contains($article));
         $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of new entity should cause no query to be executed.");
 
-        // Test One to Many existance with state clear
+        // Test One to Many existence with state clear
         $this->_em->persist($article);
         $this->_em->flush();
 
@@ -249,7 +249,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($queryCount+1, $this->getCurrentQueryCount(), "Checking for contains of persisted entity should cause one query to be executed.");
         $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
 
-        // Test One to Many existance with state managed
+        // Test One to Many existence with state managed
         $article = new \Doctrine\Tests\Models\CMS\CmsArticle();
         $article->topic = "How to not fail anymore on tests";
         $article->text = "That is simple! Just write more tests!";
@@ -271,7 +271,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
         $this->assertFalse($user->groups->isInitialized(), "Pre-Condition: Collection is not initialized.");
 
-        // Test Many to Many existance retrieved from DB
+        // Test Many to Many existence retrieved from DB
         $group      = $this->_em->find('Doctrine\Tests\Models\CMS\CmsGroup', $this->groupId);
         $queryCount = $this->getCurrentQueryCount();
 
@@ -279,7 +279,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Checking for contains of managed entity should cause one query to be executed.");
         $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
-        // Test Many to Many existance with state new
+        // Test Many to Many existence with state new
         $group = new \Doctrine\Tests\Models\CMS\CmsGroup();
         $group->name = "A New group!";
 
@@ -289,7 +289,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Checking for contains of new entity should cause no query to be executed.");
         $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
-        // Test Many to Many existance with state clear
+        // Test Many to Many existence with state clear
         $this->_em->persist($group);
         $this->_em->flush();
 
@@ -299,7 +299,7 @@ class ExtraLazyCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Checking for contains of persisted entity should cause one query to be executed.");
         $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
-        // Test Many to Many existance with state managed
+        // Test Many to Many existence with state managed
         $group = new \Doctrine\Tests\Models\CMS\CmsGroup();
         $group->name = "My managed group";
 
