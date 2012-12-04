@@ -525,10 +525,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                         $columns[] = $sourceCol;
                     }
                 }
-            } else if ($this->class->name != $this->class->rootEntityName ||
-                    ! $this->class->isIdGeneratorIdentity() || $this->class->identifier[0] != $name) {
-                $columns[]                  = $this->quoteStrategy->getColumnName($name, $this->class, $this->platform);
-                $this->columnTypes[$name]   = $this->class->fieldMappings[$name]['type'];
+            } else if ($this->_class->name != $this->_class->rootEntityName ||
+                    ! $this->_class->isIdGeneratorIdentity() || $this->_class->identifier[0] != $name) {
+                $columns[]                  = $this->quoteStrategy->getColumnName($name, $this->_class, $this->_platform);
+                $this->_columnTypes[$name]  = $this->_class->fieldMappings[$name]['type'];
             }
         }
 

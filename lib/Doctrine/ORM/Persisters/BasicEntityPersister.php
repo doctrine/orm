@@ -697,7 +697,7 @@ class BasicEntityPersister
      */
     public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0, $limit = null, array $orderBy = null)
     {
-        $sql = $this->getSelectSQL($criteria, $assoc, $lockMode, $limit, null, $orderBy);
+        $sql = $this->_getSelectEntitiesSQL($criteria, $assoc, $lockMode, $limit, null, $orderBy);        
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->conn->executeQuery($sql, $params, $types);
 
@@ -842,7 +842,6 @@ class BasicEntityPersister
         }
 
         $valueVisitor = new SqlValueVisitor();
-
         $valueVisitor->dispatch($expression);
 
         list($values, $types) = $valueVisitor->getParamsAndTypes();
@@ -1768,7 +1767,11 @@ class BasicEntityPersister
         if ($this->em->getUnitOfWork()->getEntityState($value) === UnitOfWork::STATE_MANAGED) {
             $idValues = $this->em->getUnitOfWork()->getEntityIdentifier($value);
 
-            return reset($idValues);
+            $key = key($idValues);
+
+            if (null !== $key){
+                $value = $idValues[$key];
+           } 
         }
 
         $class      = $this->em->getClassMetadata(get_class($value));
