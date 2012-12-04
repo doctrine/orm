@@ -399,13 +399,13 @@ class SchemaTool
 
                 unset($mapping['options']['unsigned']);
             }
-            
+
             if (isset($mapping['options']['fixed'])) {
                 $options['fixed'] = $mapping['options']['fixed'];
-                
+
                 unset($mapping['options']['fixed']);
             }
-            
+
             $options['customSchemaOptions'] = $mapping['options'];
         }
 
@@ -576,6 +576,10 @@ class SchemaTool
                     $columnOptions['notnull'] = !$joinColumn['nullable'];
                 }
 
+                if (isset($fieldMapping['options'])) {
+                    $columnOptions['options'] = $fieldMapping['options'];
+                }
+
                 if ($fieldMapping['type'] == "string" && isset($fieldMapping['length'])) {
                     $columnOptions['length'] = $fieldMapping['length'];
                 } elseif ($fieldMapping['type'] == "decimal") {
@@ -609,7 +613,7 @@ class SchemaTool
                     break;
                 }
             }
-            $blacklistedFks[$compositeName] = true; 
+            $blacklistedFks[$compositeName] = true;
         } elseif (!isset($blacklistedFks[$compositeName])) {
             $addedFks[$compositeName] = array('foreignTableName' => $foreignTableName, 'foreignColumns' => $foreignColumns);
             $theJoinTable->addUnnamedForeignKeyConstraint(

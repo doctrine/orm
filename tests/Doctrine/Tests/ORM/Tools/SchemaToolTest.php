@@ -44,8 +44,8 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
         $expected = array('foo' => 'bar', 'baz' => array('key' => 'val'));
- 
-        $this->assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getOptions(), "options annotation are passed to the tables optionss");
+
+        $this->assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getOptions(), "options annotation are passed to the tables options");
         $this->assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getColumn('test')->getCustomSchemaOptions(), "options annotation are passed to the columns customSchemaOptions");
     }
 
