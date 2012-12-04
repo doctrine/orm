@@ -78,7 +78,6 @@ class XmlExporter extends AbstractExporter
             $discriminatorColumnXml = $root->addChild('discriminator-column');
             $discriminatorColumnXml->addAttribute('name', $metadata->discriminatorColumn['name']);
             $discriminatorColumnXml->addAttribute('type', $metadata->discriminatorColumn['type']);
-
             if (isset($metadata->discriminatorColumn['length'])) {
                 $discriminatorColumnXml->addAttribute('length', $metadata->discriminatorColumn['length']);
             }
@@ -195,7 +194,6 @@ class XmlExporter extends AbstractExporter
                 if (isset($field['columnDefinition'])) {
                     $fieldXml->addAttribute('column-definition', $field['columnDefinition']);
                 }
-
                 if (isset($field['nullable'])) {
                     $fieldXml->addAttribute('nullable', $field['nullable'] ? 'true' : 'false');
                 }

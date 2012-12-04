@@ -260,9 +260,12 @@ abstract class AbstractQuery
         if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
             $value = $this->_em->getUnitOfWork()->getSingleIdentifierValue($value);
 
-            if ($value === null) {
-                throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
-            }
+        $value = $values[$class->getSingleIdentifierFieldName()];
+
+        if (null === $value) {
+            throw new \InvalidArgumentException(
+                "Binding entities to query parameters only allowed for entities that have an identifier."
+            );
         }
 
         return $value;
