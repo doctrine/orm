@@ -7,6 +7,7 @@ use Doctrine\ORM\Persisters\BasicEntityPersister;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\CustomType\CustomTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomTypeFriend;
+use Doctrine\Common\Collections\Expr\Comparison;
 
 require_once __DIR__ . '/../../TestInit.php';
 
@@ -38,7 +39,7 @@ class BasicEntityPersisterTypeValueSqlTest extends \Doctrine\Tests\OrmTestCase
 
     public function testGetInsertSQLUsesTypeValuesSQL()
     {
-        $method = new \ReflectionMethod($this->_persister, '_getInsertSQL');
+        $method = new \ReflectionMethod($this->_persister, 'getInsertSQL');
         $method->setAccessible(true);
 
         $sql = $method->invoke($this->_persister);
@@ -69,7 +70,7 @@ class BasicEntityPersisterTypeValueSqlTest extends \Doctrine\Tests\OrmTestCase
 
     public function testGetSelectConditionSQLUsesTypeValuesSQL()
     {
-        $method = new \ReflectionMethod($this->_persister, '_getSelectConditionSQL');
+        $method = new \ReflectionMethod($this->_persister, 'getSelectConditionSQL');
         $method->setAccessible(true);
 
         $sql = $method->invoke($this->_persister,  array('customInteger' => 1, 'child' => 1));
@@ -83,9 +84,18 @@ class BasicEntityPersisterTypeValueSqlTest extends \Doctrine\Tests\OrmTestCase
     public function testStripNonAlphanumericCharactersFromSelectColumnListSQL()
     {
         $persister  = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\SimpleEntity'));
-        $method     = new \ReflectionMethod($persister, '_getSelectColumnListSQL');
+        $method     = new \ReflectionMethod($persister, 'getSelectColumnsSQL');
         $method->setAccessible(true);
 
         $this->assertEquals('t0."simple-entity-id" AS simpleentityid1, t0."simple-entity-value" AS simpleentityvalue2', $method->invoke($persister));
+    }
+
+    /**
+     * @group DDC-2073
+     */
+    public function testSelectConditionStatementIsNull()
+    {
+        $statement = $this->_persister->getSelectConditionStatementSQL('test', null, array(), Comparison::IS);
+        $this->assertEquals('test IS ?', $statement);
     }
 }

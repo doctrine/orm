@@ -102,6 +102,17 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
                     ' to be an entity object, '. gettype($given) . ' given.');
     }
 
+    public static function invalidCompositeIdentifier()
+    {
+        return new self("Binding an entity with a composite primary key to a query is not supported. " .
+            "You should split the parameter into the explicit fields and bind them seperately.");
+    }
+
+    public static function invalidIdentifierBindingEntity()
+    {
+        return new self("Binding entities to query parameters only allowed for entities that have an identifier.");
+    }
+
     /**
      * Helper method to show an object as string.
      *

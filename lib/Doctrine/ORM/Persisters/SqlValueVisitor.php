@@ -24,11 +24,6 @@ use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
-
-use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Connection;
-
 /**
  * Extract the values from a criteria/expression
  *

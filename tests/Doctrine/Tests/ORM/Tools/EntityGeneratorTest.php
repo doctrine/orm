@@ -167,6 +167,24 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($reflClass->getMethod('getTest')->isPublic(), "Check for public visibility of method 'getTest' failed.");
     }
 
+    /**
+     * @group DDC-2121
+     */
+    public function testMethodDocBlockShouldStartWithBackSlash()
+    {
+        $metadata   = $this->generateBookEntityFixture();
+        $book       = $this->newInstance($metadata);
+
+        $this->assertPhpDocVarType('\Doctrine\Common\Collections\Collection', new \ReflectionProperty($book, 'comments'));
+        $this->assertPhpDocReturnType('\Doctrine\Common\Collections\Collection', new \ReflectionMethod($book, 'getComments'));
+        $this->assertPhpDocParamType('\Doctrine\Tests\ORM\Tools\EntityGeneratorComment', new \ReflectionMethod($book, 'addComment'));
+        $this->assertPhpDocParamType('\Doctrine\Tests\ORM\Tools\EntityGeneratorComment', new \ReflectionMethod($book, 'removeComment'));
+
+        $this->assertPhpDocVarType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', new \ReflectionProperty($book, 'author'));
+        $this->assertPhpDocReturnType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', new \ReflectionMethod($book, 'getAuthor'));
+        $this->assertPhpDocParamType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', new \ReflectionMethod($book, 'setAuthor'));
+    }
+
     public function testEntityExtendsStdClass()
     {
         $this->_generator->setClassToExtend('stdClass');
@@ -276,6 +294,131 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertContains('@Column(name="id", type="integer")', $docComment);
         $this->assertContains('@GeneratedValue(strategy="SEQUENCE")', $docComment);
         $this->assertContains('@SequenceGenerator(sequenceName="DDC1784_ID_SEQ", allocationSize=1, initialValue=2)', $docComment);
+    }
+
+    /**
+     * @group DDC-2079
+     */
+    public function testGenerateEntityWithMultipleInverseJoinColumns()
+    {
+        $metadata               = new ClassMetadataInfo($this->_namespace . '\DDC2079Entity');
+        $metadata->namespace    = $this->_namespace;
+        $metadata->mapField(array('fieldName' => 'id', 'type' => 'integer', 'id' => true));
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
+        $metadata->mapManyToMany(array(
+            'fieldName'     => 'centroCustos',
+            'targetEntity'  => 'DDC2079CentroCusto',
+            'joinTable'     => array(
+                'name'                  => 'unidade_centro_custo',
+                'joinColumns'           => array(
+                    array('name' => 'idorcamento',      'referencedColumnName' => 'idorcamento'),
+                    array('name' => 'idunidade',        'referencedColumnName' => 'idunidade')
+                ),
+                'inverseJoinColumns'    => array(
+                    array('name' => 'idcentrocusto',    'referencedColumnName' => 'idcentrocusto'),
+                    array('name' => 'idpais',           'referencedColumnName' => 'idpais'),
+                ),
+            ),
+        ));
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+
+        $filename = $this->_tmpDir . DIRECTORY_SEPARATOR
+            . $this->_namespace . DIRECTORY_SEPARATOR . 'DDC2079Entity.php';
+
+        $this->assertFileExists($filename);
+        require_once $filename;
+
+        $property   = new \ReflectionProperty($metadata->name, 'centroCustos');
+        $docComment = $property->getDocComment();
+        
+        //joinColumns
+        $this->assertContains('@JoinColumn(name="idorcamento", referencedColumnName="idorcamento"),', $docComment);
+        $this->assertContains('@JoinColumn(name="idunidade", referencedColumnName="idunidade")', $docComment);
+        //inverseJoinColumns
+        $this->assertContains('@JoinColumn(name="idcentrocusto", referencedColumnName="idcentrocusto"),', $docComment);
+        $this->assertContains('@JoinColumn(name="idpais", referencedColumnName="idpais")', $docComment);
+
+    }
+
+     /**
+     * @group DDC-2172
+     */
+    public function testGetInheritanceTypeString()
+    {
+        $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadata');
+        $method     = new \ReflectionMethod($this->_generator, 'getInheritanceTypeString');
+        $constants  = $reflection->getConstants();
+        $pattern    = '/^INHERITANCE_TYPE_/';
+
+        $method->setAccessible(true);
+
+        foreach ($constants as $name => $value) {
+            if( ! preg_match($pattern, $name)) {
+                continue;
+            }
+
+            $expected = preg_replace($pattern, '', $name);
+            $actual   = $method->invoke($this->_generator, $value);
+
+            $this->assertEquals($expected, $actual);
+        }
+
+        $this->setExpectedException('\InvalidArgumentException', 'Invalid provided InheritanceType: INVALID');
+        $method->invoke($this->_generator, 'INVALID');
+    }
+
+    /**
+    * @group DDC-2172
+    */
+    public function testGetChangeTrackingPolicyString()
+    {
+        $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadata');
+        $method     = new \ReflectionMethod($this->_generator, 'getChangeTrackingPolicyString');
+        $constants  = $reflection->getConstants();
+        $pattern    = '/^CHANGETRACKING_/';
+
+        $method->setAccessible(true);
+
+        foreach ($constants as $name => $value) {
+            if( ! preg_match($pattern, $name)) {
+                continue;
+            }
+
+            $expected = preg_replace($pattern, '', $name);
+            $actual   = $method->invoke($this->_generator, $value);
+
+            $this->assertEquals($expected, $actual);
+        }
+
+        $this->setExpectedException('\InvalidArgumentException', 'Invalid provided ChangeTrackingPolicy: INVALID');
+        $method->invoke($this->_generator, 'INVALID');
+    }
+
+    /**
+     * @group DDC-2172
+     */
+    public function testGetIdGeneratorTypeString()
+    {
+        $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadata');
+        $method     = new \ReflectionMethod($this->_generator, 'getIdGeneratorTypeString');
+        $constants  = $reflection->getConstants();
+        $pattern    = '/^GENERATOR_TYPE_/';
+
+        $method->setAccessible(true);
+
+        foreach ($constants as $name => $value) {
+            if( ! preg_match($pattern, $name)) {
+                continue;
+            }
+
+            $expected = preg_replace($pattern, '', $name);
+            $actual   = $method->invoke($this->_generator, $value);
+
+            $this->assertEquals($expected, $actual);
+        }
+
+        $this->setExpectedException('\InvalidArgumentException', 'Invalid provided IdGeneratorType: INVALID');
+        $method->invoke($this->_generator, 'INVALID');
     }
 
     /**

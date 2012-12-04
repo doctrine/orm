@@ -82,6 +82,10 @@ Alternatively, you can execute the generated queries:
 
 <info>%command.name% --force</info>
 
+If both options are specified, the queries are output and then executed:
+
+<info>%command.name% --dump-sql --force</info>
+
 Finally, be aware that if the <info>--complete</info> option is passed, this
 task will drop all database assets (e.g. tables, etc) that are *not* described
 by the current metadata. In other words, without this option, this task leaves
@@ -94,38 +98,47 @@ EOT
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
     {
         // Defining if update is complete or not (--complete not defined means $saveMode = true)
-        $saveMode = ($input->getOption('complete') !== true);
+        $saveMode = ! $input->getOption('complete');
 
         $sqls = $schemaTool->getUpdateSchemaSql($metadatas, $saveMode);
-        if (0 == count($sqls)) {
+
+        if (0 === count($sqls)) {
             $output->writeln('Nothing to update - your database is already in sync with the current entity metadata.');
 
             return;
         }
 
-        $dumpSql = (true === $input->getOption('dump-sql'));
-        $force = (true === $input->getOption('force'));
-        if ($dumpSql && $force) {
-            throw new \InvalidArgumentException('You can pass either the --dump-sql or the --force option (but not both simultaneously).');
-        }
+        $dumpSql = true === $input->getOption('dump-sql');
+        $force   = true === $input->getOption('force');
 
         if ($dumpSql) {
             $output->writeln(implode(';' . PHP_EOL, $sqls));
-        } else if ($force) {
+        }
+
+        if ($force) {
+        	if ($dumpSql) {
+                $output->writeln('');
+        	}
             $output->writeln('Updating database schema...');
             $schemaTool->updateSchema($metadatas, $saveMode);
             $output->writeln(sprintf('Database schema updated successfully! "<info>%s</info>" queries were executed', count($sqls)));
-        } else {
-            $output->writeln('<comment>ATTENTION</comment>: This operation should not be executed in a production environment.');
-            $output->writeln('           Use the incremental update to detect changes during development and use');
-            $output->writeln('           the SQL DDL provided to manually update your database in production.');
-            $output->writeln('');
-
-            $output->writeln(sprintf('The Schema-Tool would execute <info>"%s"</info> queries to update the database.', count($sqls)));
-            $output->writeln('Please run the operation by passing one of the following options:');
-
-            $output->writeln(sprintf('    <info>%s --force</info> to execute the command', $this->getName()));
-            $output->writeln(sprintf('    <info>%s --dump-sql</info> to dump the SQL statements to the screen', $this->getName()));
         }
+
+        if ($dumpSql || $force) {
+            return 0;
+        }
+        	
+        $output->writeln('<comment>ATTENTION</comment>: This operation should not be executed in a production environment.');
+        $output->writeln('           Use the incremental update to detect changes during development and use');
+        $output->writeln('           the SQL DDL provided to manually update your database in production.');
+        $output->writeln('');
+
+        $output->writeln(sprintf('The Schema-Tool would execute <info>"%s"</info> queries to update the database.', count($sqls)));
+        $output->writeln('Please run the operation by passing one - or both - of the following options:');
+
+        $output->writeln(sprintf('    <info>%s --force</info> to execute the command', $this->getName()));
+        $output->writeln(sprintf('    <info>%s --dump-sql</info> to dump the SQL statements to the screen', $this->getName()));
+
+        return 1;
     }
 }

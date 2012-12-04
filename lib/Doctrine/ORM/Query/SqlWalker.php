@@ -19,12 +19,12 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\DBAL\LockMode,
-    Doctrine\DBAL\Types\Type,
-    Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Query,
-    Doctrine\ORM\Query\QueryException,
-    Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * The SqlWalker is a TreeWalker that walks over a DQL AST and constructs
@@ -140,7 +140,7 @@ class SqlWalker implements TreeWalker
 
     /**
      * The DQL alias of the root class of the currently traversed query.
-     * 
+     *
      * @var array
      */
     private $rootAliases = array();
@@ -224,12 +224,22 @@ class SqlWalker implements TreeWalker
     }
 
     /**
+     * Return internal queryComponents array
+     *
+     * @return array
+     */
+    public function getQueryComponents()
+    {
+        return $this->queryComponents;
+    }
+
+    /**
      * Set or override a query component for a given dql alias.
      *
      * @param string $dqlAlias The DQL alias.
      * @param array $queryComponent
      */
-    protected function setQueryComponent($dqlAlias, array $queryComponent)
+    public function setQueryComponent($dqlAlias, array $queryComponent)
     {
         $requiredKeys = array('metadata', 'parent', 'relation', 'map', 'nestingLevel', 'token');
 
@@ -1032,8 +1042,13 @@ class SqlWalker implements TreeWalker
 
         switch (true) {
             case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\RangeVariableDeclaration):
+                $class = $this->em->getClassMetadata($joinDeclaration->abstractSchemaName);
+                $condExprConjunction = $class->isInheritanceTypeJoined() && $joinType != AST\Join::JOIN_TYPE_LEFT && $joinType != AST\Join::JOIN_TYPE_LEFTOUTER
+                    ? ' AND '
+                    : ' ON ';
+
                 $sql .= $this->walkRangeVariableDeclaration($joinDeclaration)
-                      . ' ON (' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
+                      . $condExprConjunction . '(' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
                 break;
 
             case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\JoinAssociationDeclaration):
@@ -1172,7 +1187,7 @@ class SqlWalker implements TreeWalker
         switch (true) {
             case ($expr instanceof AST\PathExpression):
                 if ($expr->type !== AST\PathExpression::TYPE_STATE_FIELD) {
-                    throw QueryException::invalidPathExpression($expr->type);
+                    throw QueryException::invalidPathExpression($expr);
                 }
 
                 $fieldName = $expr->field;
@@ -1213,7 +1228,6 @@ class SqlWalker implements TreeWalker
             case ($expr instanceof AST\SimpleArithmeticExpression):
             case ($expr instanceof AST\ArithmeticTerm):
             case ($expr instanceof AST\ArithmeticFactor):
-            case ($expr instanceof AST\ArithmeticPrimary):
             case ($expr instanceof AST\Literal):
             case ($expr instanceof AST\NullIfExpression):
             case ($expr instanceof AST\CoalesceExpression):
@@ -1513,7 +1527,6 @@ class SqlWalker implements TreeWalker
             case ($expr instanceof AST\SimpleArithmeticExpression):
             case ($expr instanceof AST\ArithmeticTerm):
             case ($expr instanceof AST\ArithmeticFactor):
-            case ($expr instanceof AST\ArithmeticPrimary):
             case ($expr instanceof AST\Literal):
             case ($expr instanceof AST\NullIfExpression):
             case ($expr instanceof AST\CoalesceExpression):
@@ -1700,7 +1713,7 @@ class SqlWalker implements TreeWalker
 
             if (count($filterClauses)) {
                 if ($condSql) {
-                    $condSql .= ' AND ';
+                    $condSql = '(' . $condSql . ') AND ';
                 }
 
                 $condSql .= implode(' AND ', $filterClauses);
@@ -1983,7 +1996,7 @@ class SqlWalker implements TreeWalker
 
         $dqlAlias = $instanceOfExpr->identificationVariable;
         $discrClass = $class = $this->queryComponents[$dqlAlias]['metadata'];
-        
+
         if ($class->discriminatorColumn) {
             $discrClass = $this->em->getClassMetadata($class->rootEntityName);
         }

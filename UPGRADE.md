@@ -1,5 +1,13 @@
 # Upgrade to 2.3
 
+## EntityManager#find() not calls EntityRepository#find() anymore
+
+Previous to 2.3, calling ``EntityManager#find()`` would be delegated to
+``EntityRepository#find()``.  This has lead to some unexpected behavior in the
+core of Doctrine when people have overwritten the find method in their
+repositories. That is why this behavior has been reversed in 2.3, and
+``EntityRepository#find()`` calls ``EntityManager#find()`` instead.
+
 ## EntityGenerator add*() method generation
 
 When generating an add*() method for a collection the EntityGenerator will now not
@@ -32,6 +40,12 @@ Also, related functions were affected:
 
 Internal changes were made to DQL and SQL generation. If you have implemented your own TreeWalker,
 you probably need to update it. The method walkJoinVariableDeclaration is now named walkJoin.
+
+## New methods in TreeWalker interface *BC break*
+
+Two methods getQueryComponents() and setQueryComponent() were added to the TreeWalker interface and all its implementations
+including TreeWalkerAdapter, TreeWalkerChain and SqlWalker. If you have your own implementation not inheriting from one of the
+above you must implement these new methods.
 
 ## Metadata Drivers
 

@@ -19,13 +19,13 @@
 
 namespace Doctrine\ORM\Tools\Export\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\ORM\Tools\EntityGenerator;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Tools\EntityGenerator;
 
 /**
  * ClassMetadata exporter for PHP classes with annotations
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -47,6 +47,7 @@ class AnnotationExporter extends AbstractExporter
         if ( ! $this->_entityGenerator) {
             throw new \RuntimeException('For the AnnotationExporter you must set an EntityGenerator instance with the setEntityGenerator() method.');
         }
+
         $this->_entityGenerator->setGenerateAnnotations(true);
         $this->_entityGenerator->setGenerateStubMethods(false);
         $this->_entityGenerator->setRegenerateEntityIfExists(false);

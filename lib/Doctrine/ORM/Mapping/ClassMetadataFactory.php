@@ -19,16 +19,16 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use ReflectionException,
-    Doctrine\ORM\ORMException,
-    Doctrine\ORM\EntityManager,
-    Doctrine\DBAL\Platforms,
-    Doctrine\ORM\Events,
-    Doctrine\Common\Persistence\Mapping\ReflectionService,
-    Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface,
-    Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory,
-    Doctrine\ORM\Id\IdentityGenerator,
-    Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+use ReflectionException;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\EntityManager;
+use Doctrine\DBAL\Platforms;
+use Doctrine\ORM\Events;
+use Doctrine\Common\Persistence\Mapping\ReflectionService;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
+use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
+use Doctrine\ORM\Id\IdentityGenerator;
+use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the

@@ -19,15 +19,17 @@
 
 namespace Doctrine\ORM;
 
-use Exception, InvalidArgumentException, UnexpectedValueException,
-    Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\Common\Collections\Collection,
-    Doctrine\Common\NotifyPropertyChanged,
-    Doctrine\Common\PropertyChangedListener,
-    Doctrine\Common\Persistence\ObjectManagerAware,
-    Doctrine\ORM\Event\LifecycleEventArgs,
-    Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Proxy\Proxy;
+use Exception;
+use InvalidArgumentException;
+use UnexpectedValueException;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\NotifyPropertyChanged;
+use Doctrine\Common\PropertyChangedListener;
+use Doctrine\Common\Persistence\ObjectManagerAware;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Proxy\Proxy;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -980,7 +982,7 @@ class UnitOfWork implements PropertyChangedListener
                 );
             }
 
-            if ($this->entityChangeSets[$oid]) {
+            if (!empty($this->entityChangeSets[$oid])) {
                 $persister->update($entity);
             }
 
@@ -2735,6 +2737,30 @@ class UnitOfWork implements PropertyChangedListener
         return $this->entityIdentifiers[spl_object_hash($entity)];
     }
 
+    /**
+     * Process an entity instance to extract their identifier values.
+     *
+     * @param object $entity The entity instance.
+     *
+     * @return scalar
+     *
+     * @throws \Doctrine\ORM\ORMInvalidArgumentException
+     */
+    public function getSingleIdentifierValue($entity)
+    {
+        $class = $this->em->getClassMetadata(get_class($entity));
+
+        if ($class->isIdentifierComposite) {
+            throw ORMInvalidArgumentException::invalidCompositeIdentifier();
+        }
+
+        $values = ($this->getEntityState($entity) === UnitOfWork::STATE_MANAGED)
+            ? $this->getEntityIdentifier($entity)
+            : $class->getIdentifierValues($entity);
+
+        return isset($values[$class->identifier[0]]) ? $values[$class->identifier[0]] : null;
+    }
+ 
     /**
      * Tries to find an entity with the given identifier in the identity map of
      * this UnitOfWork.

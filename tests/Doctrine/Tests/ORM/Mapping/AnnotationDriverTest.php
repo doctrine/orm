@@ -211,8 +211,8 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
         $factory->setEntityManager($em);
 
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException',
-            "Entity 'Doctrine\Tests\ORM\Mapping\InvalidFetchOption' has a mapping with invalid fetch mode 'eager");
+        $this->setExpectedException('Doctrine\Common\Annotations\AnnotationException',
+            '[Enum Error] Attribute "fetch" of @Doctrine\ORM\Mapping\OneToMany declared on property Doctrine\Tests\ORM\Mapping\InvalidFetchOption::$collection accept only [LAZY, EAGER, EXTRA_LAZY], but got eager.');
         $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\InvalidFetchOption');
     }
 

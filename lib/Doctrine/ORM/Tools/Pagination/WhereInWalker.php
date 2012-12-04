@@ -17,19 +17,19 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\ORM\Query\AST\ArithmeticExpression,
-    Doctrine\ORM\Query\AST\SimpleArithmeticExpression,
-    Doctrine\ORM\Query\TreeWalkerAdapter,
-    Doctrine\ORM\Query\AST\SelectStatement,
-    Doctrine\ORM\Query\AST\PathExpression,
-    Doctrine\ORM\Query\AST\InExpression,
-    Doctrine\ORM\Query\AST\NullComparisonExpression,
-    Doctrine\ORM\Query\AST\InputParameter,
-    Doctrine\ORM\Query\AST\ConditionalPrimary,
-    Doctrine\ORM\Query\AST\ConditionalTerm,
-    Doctrine\ORM\Query\AST\ConditionalExpression,
-    Doctrine\ORM\Query\AST\ConditionalFactor,
-    Doctrine\ORM\Query\AST\WhereClause;
+use Doctrine\ORM\Query\AST\ArithmeticExpression;
+use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
+use Doctrine\ORM\Query\TreeWalkerAdapter;
+use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\AST\PathExpression;
+use Doctrine\ORM\Query\AST\InExpression;
+use Doctrine\ORM\Query\AST\NullComparisonExpression;
+use Doctrine\ORM\Query\AST\InputParameter;
+use Doctrine\ORM\Query\AST\ConditionalPrimary;
+use Doctrine\ORM\Query\AST\ConditionalTerm;
+use Doctrine\ORM\Query\AST\ConditionalExpression;
+use Doctrine\ORM\Query\AST\ConditionalFactor;
+use Doctrine\ORM\Query\AST\WhereClause;
 
 /**
  * Replaces the whereClause of the AST with a WHERE id IN (:foo_1, :foo_2) equivalent
@@ -102,11 +102,8 @@ class WhereInWalker extends TreeWalkerAdapter
                 array($pathExpression)
             );
             $expression = new InExpression($arithmeticExpression);
-            $ns = self::PAGINATOR_ID_ALIAS;
+            $expression->literals[] = new InputParameter(":" . self::PAGINATOR_ID_ALIAS);
 
-            for ($i = 1; $i <= $count; $i++) {
-                $expression->literals[] = new InputParameter(":{$ns}_$i");
-            }
         } else {
             $expression = new NullComparisonExpression($pathExpression);
             $expression->not = false;

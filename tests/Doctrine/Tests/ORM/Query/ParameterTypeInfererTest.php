@@ -39,6 +39,7 @@ class ParameterTypeInfererTest extends \Doctrine\Tests\OrmTestCase
             array(array("foo"),      Connection::PARAM_STR_ARRAY),
             array(array("1","2"),    Connection::PARAM_STR_ARRAY),
             array(array(),           Connection::PARAM_STR_ARRAY),
+            array(true,              Type::BOOLEAN),
         );
     }
 

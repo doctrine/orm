@@ -65,6 +65,8 @@ EOT
 
         $output->writeln(sprintf("Found <info>%d</info> mapped entities:", count($entityClassNames)));
 
+        $failure = false;
+
         foreach ($entityClassNames as $entityClassName) {
             try {
                 $entityManager->getClassMetadata($entityClassName);
@@ -73,7 +75,11 @@ EOT
                 $output->writeln("<error>[FAIL]</error> ".$entityClassName);
                 $output->writeln(sprintf("<comment>%s</comment>", $e->getMessage()));
                 $output->writeln('');
+
+                $failure = true;
             }
         }
+
+        return $failure ? 1 : 0;
     }
 }

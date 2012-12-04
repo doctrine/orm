@@ -7,12 +7,12 @@ namespace Doctrine\Tests\Mocks;
  */
 class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
 {
-    private $_inserts = array();
-    private $_updates = array();
-    private $_deletes = array();
-    private $_identityColumnValueCounter = 0;
-    private $_mockIdGeneratorType;
-    private $_postInsertIds = array();
+    private $inserts = array();
+    private $updates = array();
+    private $deletes = array();
+    private $identityColumnValueCounter = 0;
+    private $mockIdGeneratorType;
+    private $postInsertIds = array();
     private $existsCalled = false;
 
     /**
@@ -22,11 +22,11 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
      */
     public function insert($entity)
     {
-        $this->_inserts[] = $entity;
-        if ( ! is_null($this->_mockIdGeneratorType) && $this->_mockIdGeneratorType == \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY
-                || $this->_class->isIdGeneratorIdentity()) {
-            $id = $this->_identityColumnValueCounter++;
-            $this->_postInsertIds[$id] = $entity;
+        $this->inserts[] = $entity;
+        if ( ! is_null($this->mockIdGeneratorType) && $this->mockIdGeneratorType == \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY
+                || $this->class->isIdGeneratorIdentity()) {
+            $id = $this->identityColumnValueCounter++;
+            $this->postInsertIds[$id] = $entity;
             return $id;
         }
         return null;
@@ -34,11 +34,11 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
 
     public function addInsert($entity)
     {
-        $this->_inserts[] = $entity;
-        if ( ! is_null($this->_mockIdGeneratorType) && $this->_mockIdGeneratorType == \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY
-                || $this->_class->isIdGeneratorIdentity()) {
-            $id = $this->_identityColumnValueCounter++;
-            $this->_postInsertIds[$id] = $entity;
+        $this->inserts[] = $entity;
+        if ( ! is_null($this->mockIdGeneratorType) && $this->mockIdGeneratorType == \Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY
+                || $this->class->isIdGeneratorIdentity()) {
+            $id = $this->identityColumnValueCounter++;
+            $this->postInsertIds[$id] = $entity;
             return $id;
         }
         return null;
@@ -46,17 +46,17 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
 
     public function executeInserts()
     {
-        return $this->_postInsertIds;
+        return $this->postInsertIds;
     }
 
     public function setMockIdGeneratorType($genType)
     {
-        $this->_mockIdGeneratorType = $genType;
+        $this->mockIdGeneratorType = $genType;
     }
 
     public function update($entity)
     {
-        $this->_updates[] = $entity;
+        $this->updates[] = $entity;
     }
 
     public function exists($entity, array $extraConditions = array())
@@ -66,31 +66,31 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
 
     public function delete($entity)
     {
-        $this->_deletes[] = $entity;
+        $this->deletes[] = $entity;
     }
 
     public function getInserts()
     {
-        return $this->_inserts;
+        return $this->inserts;
     }
 
     public function getUpdates()
     {
-        return $this->_updates;
+        return $this->updates;
     }
 
     public function getDeletes()
     {
-        return $this->_deletes;
+        return $this->deletes;
     }
 
     public function reset()
     {
         $this->existsCalled = false;
-        $this->_identityColumnValueCounter = 0;
-        $this->_inserts = array();
-        $this->_updates = array();
-        $this->_deletes = array();
+        $this->identityColumnValueCounter = 0;
+        $this->inserts = array();
+        $this->updates = array();
+        $this->deletes = array();
     }
 
     public function isExistsCalled()

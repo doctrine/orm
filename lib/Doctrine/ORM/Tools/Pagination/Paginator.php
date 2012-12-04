@@ -19,10 +19,10 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\ORM\QueryBuilder,
-    Doctrine\ORM\Query,
-    Doctrine\ORM\Query\ResultSetMapping,
-    Doctrine\ORM\NoResultException;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\NoResultException;
 
 /**
  * Paginator
@@ -148,6 +148,7 @@ class Paginator implements \Countable, \IteratorAggregate
                 $this->count = 0;
             }
         }
+
         return $this->count;
     }
 
@@ -178,15 +179,10 @@ class Paginator implements \Countable, \IteratorAggregate
                 return new \ArrayIterator(array());
             }
 
-            $namespace = WhereInWalker::PAGINATOR_ID_ALIAS;
-
             $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\WhereInWalker'));
             $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, count($ids));
             $whereInQuery->setFirstResult(null)->setMaxResults(null);
-            foreach ($ids as $i => $id) {
-                $i++;
-                $whereInQuery->setParameter("{$namespace}_{$i}", $id);
-            }
+            $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $ids);
 
             $result = $whereInQuery->getResult($this->query->getHydrationMode());
         } else {
@@ -196,6 +192,7 @@ class Paginator implements \Countable, \IteratorAggregate
                 ->getResult($this->query->getHydrationMode())
             ;
         }
+
         return new \ArrayIterator($result);
     }
 

@@ -1,0 +1,15 @@
+Doctrine\Tests\ORM\Mapping\DDC2069Entity:
+  type: entity
+  id:
+    id:
+  fields:
+    name:
+      type: string ( 255 )
+    value:
+      type: string ( 255 )
+  uniqueConstraints:
+    0:
+      columns: name, value
+  indexes:
+    0:
+      columns: value, name

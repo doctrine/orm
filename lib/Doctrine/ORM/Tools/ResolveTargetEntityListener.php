@@ -61,6 +61,7 @@ class ResolveTargetEntityListener
     public function loadClassMetadata(LoadClassMetadataEventArgs $args)
     {
         $cm = $args->getClassMetadata();
+
         foreach ($cm->associationMappings as $mapping) {
             if (isset($this->resolveTargetEntities[$mapping['targetEntity']])) {
                 $this->remapAssociation($cm, $mapping);
@@ -73,6 +74,7 @@ class ResolveTargetEntityListener
         $newMapping = $this->resolveTargetEntities[$mapping['targetEntity']];
         $newMapping = array_replace_recursive($mapping, $newMapping);
         $newMapping['fieldName'] = $mapping['fieldName'];
+
         unset($classMetadata->associationMappings[$mapping['fieldName']]);
 
         switch ($mapping['type']) {

@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Query;
 /**
  * This class is used to generate DQL expressions via a set of PHP static functions
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -477,6 +477,18 @@ class Expr
     public function like($x, $y)
     {
         return new Expr\Comparison($x, 'LIKE', $y);
+    }
+
+    /**
+     * Creates a NOT LIKE() comparison expression with the given arguments.
+     *
+     * @param string $x Field in string format to be inspected by LIKE() comparison.
+     * @param mixed $y Argument to be used in LIKE() comparison.
+     * @return Expr\Comparison
+     */
+    public function notLike($x, $y)
+    {
+        return new Expr\Comparison($x, 'NOT LIKE', $y);
     }
 
     /**

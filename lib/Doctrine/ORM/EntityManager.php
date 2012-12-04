@@ -19,16 +19,17 @@
 
 namespace Doctrine\ORM;
 
-use Exception,
-    Doctrine\Common\EventManager,
-    Doctrine\Common\Persistence\ObjectManager,
-    Doctrine\DBAL\Connection,
-    Doctrine\DBAL\LockMode,
-    Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\ClassMetadataFactory,
-    Doctrine\ORM\Query\ResultSetMapping,
-    Doctrine\ORM\Proxy\ProxyFactory,
-    Doctrine\ORM\Query\FilterCollection;
+use Exception;
+use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Query\FilterCollection;
+use Doctrine\Common\Util\ClassUtils;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -354,7 +355,7 @@ class EntityManager implements ObjectManager
 
         $this->unitOfWork->commit($entity);
     }
-    
+
     /**
      * Finds an Entity by its identifier.
      *
@@ -368,6 +369,14 @@ class EntityManager implements ObjectManager
     public function find($entityName, $id, $lockMode = LockMode::NONE, $lockVersion = null)
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+
+        if (is_object($id) && $this->metadataFactory->hasMetadataFor(ClassUtils::getClass($id))) {
+            $id = $this->unitOfWork->getSingleIdentifierValue($id);
+
+            if ($id === null) {
+                throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+            }
+        }
 
         if ( ! is_array($id)) {
             $id = array($class->identifier[0] => $id);

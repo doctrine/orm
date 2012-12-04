@@ -13,8 +13,9 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\ORM\Query\SqlWalker,
-    Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 
 /**
  * Wrap the query in order to select root entity IDs for pagination
@@ -85,7 +86,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
-        $sql = parent::walkSelectStatement($AST);
+        $innerSql = parent::walkSelectStatement($AST);
 
         // Find out the SQL alias of the identifier column of the root entity
         // It may be possible to make this work with multiple root entities but that
@@ -133,7 +134,12 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
         // Build the counter query
         $sql = sprintf('SELECT DISTINCT %s FROM (%s) dctrn_result',
-            implode(', ', $sqlIdentifier), $sql);
+            implode(', ', $sqlIdentifier), $innerSql);
+
+        if ($this->platform instanceof PostgreSqlPlatform) {
+            //http://www.doctrine-project.org/jira/browse/DDC-1958
+            $this->getPostgresqlSql($AST, $sqlIdentifier, $innerSql, $sql);
+        }
 
         // Apply the limit and offset
         $sql = $this->platform->modifyLimitQuery(
@@ -149,5 +155,48 @@ class LimitSubqueryOutputWalker extends SqlWalker
         }
 
         return $sql;
+    }
+
+    /**
+     * Generate new SQL for postgresql if necessary
+     *
+     * @param SelectStatement $AST
+     * @param array           sqlIdentifier
+     * @param string          $sql
+     */
+    public function getPostgresqlSql(SelectStatement $AST, array $sqlIdentifier, $innerSql, &$sql)
+    {
+        // For every order by, find out the SQL alias by inspecting the ResultSetMapping
+        $sqlOrderColumns = array();
+        $orderBy         = array();
+        if (isset($AST->orderByClause)) {
+            foreach ($AST->orderByClause->orderByItems as $item) {
+                $possibleAliases = array_keys($this->rsm->fieldMappings, $item->expression->field);
+
+                foreach ($possibleAliases as $alias) {
+                    if ($this->rsm->columnOwnerMap[$alias] == $item->expression->identificationVariable) {
+                        $sqlOrderColumns[] = $alias;
+                        $orderBy[]         = $alias . ' ' . $item->type;
+                        break;
+                    }
+                }
+            }
+            //remove identifier aliases
+            $sqlOrderColumns = array_diff($sqlOrderColumns, $sqlIdentifier);
+        }
+
+        //we don't need orderBy in inner query
+        //However at least on 5.4.6 I'm getting a segmentation fault and thus we don't clear it for now
+        /*$AST->orderByClause = null;
+        $innerSql = parent::walkSelectStatement($AST);*/
+
+        if (count($orderBy)) {
+            $sql = sprintf(
+                'SELECT DISTINCT %s FROM (%s) dctrn_result ORDER BY %s',
+                implode(', ', array_merge($sqlIdentifier, $sqlOrderColumns)),
+                $innerSql,
+                implode(', ', $orderBy)
+            );
+        }
     }
 }
