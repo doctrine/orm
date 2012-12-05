@@ -33,45 +33,13 @@ use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs as BaseLoadClas
 class LoadClassMetadataEventArgs extends BaseLoadClassMetadataEventArgs
 {
     /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
-     */
-    private $classMetadata;
-
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
-    private $em;
-
-    /**
-     * Constructor.
-     *
-     * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $classMetadata
-     * @param \Doctrine\ORM\EntityManager $em
-     */
-    public function __construct(ClassMetadataInfo $classMetadata, EntityManager $em)
-    {
-        $this->classMetadata = $classMetadata;
-        $this->em            = $em;
-    }
-
-    /**
-     * Retrieve associated ClassMetadata.
-     *
-     * @return \Doctrine\ORM\Mapping\ClassMetadataInfo
-     */
-    public function getClassMetadata()
-    {
-        return $this->classMetadata;
-    }
-
-    /**
      * Retrieve associated EntityManager.
      *
      * @return \Doctrine\ORM\EntityManager
      */
     public function getEntityManager()
     {
-        return $this->em;
+        return $this->getObjectManager();
     }
 }
 
