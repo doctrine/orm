@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Mapping\Driver;
 
 use SimpleXMLElement;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 
@@ -560,10 +561,17 @@ class XmlDriver extends FileDriver
         // Evaluate entity listener
         if (isset($xmlRoot->{'entity-listeners'})) {
             foreach ($xmlRoot->{'entity-listeners'}->{'entity-listener'} as $listenerElement) {
+                $className = (string) $listenerElement['class'];
+                // Evaluate the listener using naming convention.
+                if($listenerElement->count() === 0) {
+                    EntityListenerBuilder::bindEntityListener($metadata, $className);
+
+                    continue;
+                }
+
                 foreach ($listenerElement as $callbackElement) {
                     $eventName   = (string) $callbackElement['type'];
                     $methodName  = (string) $callbackElement['method'];
-                    $className   = (string) $listenerElement['class'];
 
                     $metadata->addEntityListener($eventName, $className, $methodName);
                 }

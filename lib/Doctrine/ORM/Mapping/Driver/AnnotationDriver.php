@@ -23,6 +23,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use Doctrine\ORM\Events;
@@ -426,13 +427,21 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     throw MappingException::entityListenerClassNotFound($listenerClassName, $className);
                 }
 
-                $listenerClass = new \ReflectionClass($listenerClassName);
+                $hasMapping     = false;
+                $listenerClass  = new \ReflectionClass($listenerClassName);
                 /* @var $method \ReflectionMethod */
                 foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                     // find method callbacks.
-                    foreach ($this->getMethodCallbacks($method) as $value) {
+                    $callbacks  = $this->getMethodCallbacks($method);
+                    $hasMapping = $hasMapping ?: ( ! empty($callbacks));
+
+                    foreach ($callbacks as $value) {
                         $metadata->addEntityListener($value[1], $listenerClassName, $value[0]);
                     }
+                }
+                // Evaluate the listener using naming convention.
+                if ( ! $hasMapping ) {
+                    EntityListenerBuilder::bindEntityListener($metadata, $listenerClassName);
                 }
             }
         }
