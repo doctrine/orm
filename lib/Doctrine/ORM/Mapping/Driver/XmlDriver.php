@@ -177,8 +177,8 @@ class XmlDriver extends FileDriver
         }
         
         // Evaluate <discriminator-map-entry...>
-        if (isset($xmlRoot->{'discriminatorMapEntry'})) {
-            $entry = $xmlRoot->{'discriminatorMapEntry'};
+        if (isset($xmlRoot->{'discriminator-map-entry'})) {
+            $entry = $xmlRoot->{'discriminator-map-entry'};
             $metadata->addDiscriminatorMapClass($entry['name'], $className);
         }
 
