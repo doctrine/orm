@@ -181,7 +181,11 @@ class YamlDriver extends FileDriver
                 }
             }
         }
-
+        
+        // Evaluate discriminatorMapEntry
+        if (isset($element['discriminatorMapEntry'])) {
+            $metadata->addDiscriminatorMapClass($element['discriminatorMapEntry'], $className);
+        }
 
         // Evaluate changeTrackingPolicy
         if (isset($element['changeTrackingPolicy'])) {

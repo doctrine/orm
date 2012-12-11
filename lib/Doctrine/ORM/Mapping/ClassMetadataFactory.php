@@ -134,6 +134,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         } else {
             $this->completeIdGeneratorMapping($class);
         }
+        
+        // if a new discriminatorMapEntry modified the discriminatorMap update the parent as well
+        if ($parent && ! $class->isInheritanceTypeNone()) {
+            $parent->setDiscriminatorMap($class->discriminatorMap);
+        }
 
         if ($parent && $parent->isInheritanceTypeSingleTable()) {
             $class->setPrimaryTable($parent->table);
