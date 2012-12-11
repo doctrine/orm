@@ -136,7 +136,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
         
         // if a new discriminatorMapEntry modified the discriminatorMap update the parent as well
-        if ($parent && ! $class->isInheritanceTypeNone()) {
+        if ($parent && ! $class->isInheritanceTypeNone() && $class->discriminatorMap != $parent->discriminatorMap) {
             $parent->setDiscriminatorMap($class->discriminatorMap);
             
             if (!in_array($parent->getName(), $class->parentClasses)) {
