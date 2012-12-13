@@ -23,7 +23,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
- * A ResultSetMappingBuilder uses the EntityManager to automatically populate entity fields
+ * A ResultSetMappingBuilder uses the EntityManager to automatically populate entity fields.
  *
  * @author Michael Ridgway <mcridgway@gmail.com>
  * @since 2.1
@@ -37,7 +37,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @var int
      */
-    const COLUMN_RENAMING_NONE      = 1;
+    const COLUMN_RENAMING_NONE = 1;
 
     /**
      * Picking custom renaming allows the user to define the renaming
@@ -46,7 +46,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @var int
      */
-    const COLUMN_RENAMING_CUSTOM    = 2;
+    const COLUMN_RENAMING_CUSTOM = 2;
 
     /**
      * Incremental renaming uses a result set mapping internal counter to add a
@@ -77,7 +77,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
     /**
      * @param EntityManager $em
-     * @param integer $defaultRenameMode
+     * @param integer       $defaultRenameMode
      */
     public function __construct(EntityManager $em, $defaultRenameMode = self::COLUMN_RENAMING_NONE)
     {
@@ -88,10 +88,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
     /**
      * Adds a root entity and all of its fields to the result set.
      *
-     * @param string $class The class name of the root entity.
-     * @param string $alias The unique alias to use for the root entity.
-     * @param array $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName)
-     * @param int $renameMode One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
+     * @param string   $class          The class name of the root entity.
+     * @param string   $alias          The unique alias to use for the root entity.
+     * @param array    $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName).
+     * @param int|null $renameMode     One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
+     *
+     * @return void
      */
     public function addRootEntityFromClassMetadata($class, $alias, $renamedColumns = array(), $renameMode = null)
     {
@@ -105,12 +107,15 @@ class ResultSetMappingBuilder extends ResultSetMapping
     /**
      * Adds a joined entity and all of its fields to the result set.
      *
-     * @param string $class The class name of the joined entity.
-     * @param string $alias The unique alias to use for the joined entity.
-     * @param string $parentAlias The alias of the entity result that is the parent of this joined result.
-     * @param object $relation The association field that connects the parent entity result with the joined entity result.
-     * @param array $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName)
-     * @param int $renameMode One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
+     * @param string   $class          The class name of the joined entity.
+     * @param string   $alias          The unique alias to use for the joined entity.
+     * @param string   $parentAlias    The alias of the entity result that is the parent of this joined result.
+     * @param object   $relation       The association field that connects the parent entity result
+     *                                 with the joined entity result.
+     * @param array    $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName).
+     * @param int|null $renameMode     One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
+     *
+     * @return void
      */
     public function addJoinedEntityFromClassMetadata($class, $alias, $parentAlias, $relation, $renamedColumns = array(), $renameMode = null)
     {
@@ -122,7 +127,15 @@ class ResultSetMappingBuilder extends ResultSetMapping
     }
 
     /**
-     * Adds all fields of the given class to the result set mapping (columns and meta fields)
+     * Adds all fields of the given class to the result set mapping (columns and meta fields).
+     *
+     * @param string $class
+     * @param string $alias
+     * @param array  $columnAliasMap
+     *
+     * @return void
+     *
+     * @throws \InvalidArgumentException
      */
     protected function addAllClassFields($class, $alias, $columnAliasMap = array())
     {
@@ -162,11 +175,11 @@ class ResultSetMappingBuilder extends ResultSetMapping
     }
 
     /**
-     * Get column alias for a given column.
+     * Gets column alias for a given column.
      *
      * @param string $columnName
-     * @param int $mode
-     * @param array $customRenameColumns
+     * @param int    $mode
+     * @param array  $customRenameColumns
      *
      * @return string
      */
@@ -187,14 +200,13 @@ class ResultSetMappingBuilder extends ResultSetMapping
     }
 
     /**
-     * Retrieve a class columns and join columns aliases that are used
-     * in the SELECT clause.
+     * Retrieves a class columns and join columns aliases that are used in the SELECT clause.
      *
      * This depends on the renaming mode selected by the user.
      *
      * @param string $className
-     * @param int $mode
-     * @param array $customRenameColumns
+     * @param int    $mode
+     * @param array  $customRenameColumns
      *
      * @return array
      */
@@ -220,18 +232,16 @@ class ResultSetMappingBuilder extends ResultSetMapping
             }
         }
 
-
         return $columnAlias;
     }
-
-
 
     /**
      * Adds the mappings of the results of native SQL queries to the result set.
      *
-     * @param   ClassMetadataInfo $class
-     * @param   array $queryMapping
-     * @return  ResultSetMappingBuilder
+     * @param ClassMetadataInfo $class
+     * @param array             $queryMapping
+     *
+     * @return ResultSetMappingBuilder
      */
     public function addNamedNativeQueryMapping(ClassMetadataInfo $class, array $queryMapping)
     {
@@ -245,8 +255,9 @@ class ResultSetMappingBuilder extends ResultSetMapping
     /**
      * Adds the class mapping of the results of native SQL queries to the result set.
      *
-     * @param   ClassMetadataInfo $class
-     * @param   string $resultClassName
+     * @param ClassMetadataInfo $class
+     * @param string            $resultClassName
+     *
      * @return  ResultSetMappingBuilder
      */
     public function addNamedNativeQueryResultClassMapping(ClassMetadataInfo $class, $resultClassName)
@@ -283,9 +294,10 @@ class ResultSetMappingBuilder extends ResultSetMapping
     /**
      * Adds the result set mapping of the results of native SQL queries to the result set.
      *
-     * @param   ClassMetadataInfo $class
-     * @param   string $resultSetMappingName
-     * @return  ResultSetMappingBuilder
+     * @param ClassMetadataInfo $class
+     * @param string            $resultSetMappingName
+     *
+     * @return ResultSetMappingBuilder
      */
     public function addNamedNativeQueryResultSetMapping(ClassMetadataInfo $class, $resultSetMappingName)
     {
@@ -329,9 +341,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * Adds the entity result mapping of the results of native SQL queries to the result set.
      * 
      * @param ClassMetadataInfo $classMetadata
-     * @param array $entityMapping
-     * @param string $alias
+     * @param array             $entityMapping
+     * @param string            $alias
+     *
      * @return ResultSetMappingBuilder
+     *
+     * @throws \InvalidArgumentException
      */
     public function addNamedNativeQueryEntityResultMapping(ClassMetadataInfo $classMetadata, array $entityMapping, $alias)
     {
@@ -380,10 +395,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
     }
 
     /**
-     * Generate the Select clause from this ResultSetMappingBuilder
+     * Generates the Select clause from this ResultSetMappingBuilder.
      *
      * Works only for all the entity results. The select parts for scalar
      * expressions have to be written manually.
+     *
+     * @param array $tableAliases
      *
      * @return string
      */
@@ -416,6 +433,9 @@ class ResultSetMappingBuilder extends ResultSetMapping
         return $sql;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->generateSelectClause(array());

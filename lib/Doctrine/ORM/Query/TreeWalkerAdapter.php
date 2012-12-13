@@ -28,8 +28,25 @@ namespace Doctrine\ORM\Query;
  */
 abstract class TreeWalkerAdapter implements TreeWalker
 {
+    /**
+     * The original Query.
+     *
+     * @var \Doctrine\ORM\AbstractQuery
+     */
     private $_query;
+
+    /**
+     * The ParserResult of the original query that was produced by the Parser.
+     *
+     * @var \Doctrine\ORM\Query\ParserResult
+     */
     private $_parserResult;
+
+    /**
+     * The query components of the original query (the "symbol table") that was produced by the Parser.
+     *
+     * @var array
+     */
     private $_queryComponents;
 
     /**
@@ -43,9 +60,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * Return internal queryComponents array
-     *
-     * @return array:
+     * {@inheritdoc}
      */
     public function getQueryComponents()
     {
@@ -53,10 +68,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * Set or override a query component for a given dql alias.
-     *
-     * @param string $dqlAlias The DQL alias.
-     * @param array $queryComponent
+     * {@inheritdoc}
      */
     public function setQueryComponent($dqlAlias, array $queryComponent)
     {
@@ -78,9 +90,9 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * Retrieve Query Instance reponsible for the current walkers execution.
+     * Retrieves the Query Instance reponsible for the current walkers execution.
      *
-     * @return \Doctrine\ORM\Query
+     * @return \Doctrine\ORM\AbstractQuery
      */
     protected function _getQuery()
     {
@@ -88,7 +100,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * Retrieve ParserResult
+     * Retrieves the ParserResult.
      *
      * @return \Doctrine\ORM\Query\ParserResult
      */
@@ -98,373 +110,331 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * Walks down a SelectStatement AST node, thereby generating the appropriate SQL.
-     *
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkSelectStatement(AST\SelectStatement $AST) {}
+    public function walkSelectStatement(AST\SelectStatement $AST)
+    {
+    }
 
     /**
-     * Walks down a SelectClause AST node, thereby generating the appropriate SQL.
-     *
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkSelectClause($selectClause) {}
+    public function walkSelectClause($selectClause)
+    {
+    }
 
     /**
-     * Walks down a FromClause AST node, thereby generating the appropriate SQL.
-     *
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkFromClause($fromClause) {}
+    public function walkFromClause($fromClause)
+    {
+    }
 
     /**
-     * Walks down a FunctionNode AST node, thereby generating the appropriate SQL.
-     *
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkFunction($function) {}
+    public function walkFunction($function)
+    {
+    }
 
     /**
-     * Walks down an OrderByClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param OrderByClause
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkOrderByClause($orderByClause) {}
+    public function walkOrderByClause($orderByClause)
+    {
+    }
 
     /**
-     * Walks down an OrderByItem AST node, thereby generating the appropriate SQL.
-     *
-     * @param OrderByItem
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkOrderByItem($orderByItem) {}
+    public function walkOrderByItem($orderByItem)
+    {
+    }
 
     /**
-     * Walks down a HavingClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param HavingClause
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkHavingClause($havingClause) {}
+    public function walkHavingClause($havingClause)
+    {
+    }
 
     /**
-     * Walks down a Join AST node and creates the corresponding SQL.
-     *
-     * @param Join $join
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkJoin($join) {}
+    public function walkJoin($join)
+    {
+    }
 
     /**
-     * Walks down a SelectExpression AST node and generates the corresponding SQL.
-     *
-     * @param SelectExpression $selectExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkSelectExpression($selectExpression) {}
+    public function walkSelectExpression($selectExpression)
+    {
+    }
 
     /**
-     * Walks down a QuantifiedExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param QuantifiedExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkQuantifiedExpression($qExpr) {}
+    public function walkQuantifiedExpression($qExpr)
+    {
+    }
 
     /**
-     * Walks down a Subselect AST node, thereby generating the appropriate SQL.
-     *
-     * @param Subselect
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkSubselect($subselect) {}
+    public function walkSubselect($subselect)
+    {
+    }
 
     /**
-     * Walks down a SubselectFromClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param SubselectFromClause
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkSubselectFromClause($subselectFromClause) {}
+    public function walkSubselectFromClause($subselectFromClause)
+    {
+    }
 
     /**
-     * Walks down a SimpleSelectClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param SimpleSelectClause
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkSimpleSelectClause($simpleSelectClause) {}
+    public function walkSimpleSelectClause($simpleSelectClause)
+    {
+    }
 
     /**
-     * Walks down a SimpleSelectExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param SimpleSelectExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkSimpleSelectExpression($simpleSelectExpression) {}
+    public function walkSimpleSelectExpression($simpleSelectExpression)
+    {
+    }
 
     /**
-     * Walks down an AggregateExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param AggregateExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkAggregateExpression($aggExpression) {}
+    public function walkAggregateExpression($aggExpression)
+    {
+    }
 
     /**
-     * Walks down a GroupByClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param GroupByClause
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkGroupByClause($groupByClause) {}
+    public function walkGroupByClause($groupByClause)
+    {
+    }
 
     /**
-     * Walks down a GroupByItem AST node, thereby generating the appropriate SQL.
-     *
-     * @param GroupByItem
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkGroupByItem($groupByItem) {}
+    public function walkGroupByItem($groupByItem)
+    {
+    }
 
     /**
-     * Walks down an UpdateStatement AST node, thereby generating the appropriate SQL.
-     *
-     * @param UpdateStatement
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkUpdateStatement(AST\UpdateStatement $AST) {}
+    public function walkUpdateStatement(AST\UpdateStatement $AST)
+    {
+    }
 
     /**
-     * Walks down a DeleteStatement AST node, thereby generating the appropriate SQL.
-     *
-     * @param DeleteStatement
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkDeleteStatement(AST\DeleteStatement $AST) {}
+    public function walkDeleteStatement(AST\DeleteStatement $AST)
+    {
+    }
 
     /**
-     * Walks down a DeleteClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param DeleteClause
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkDeleteClause(AST\DeleteClause $deleteClause) {}
+    public function walkDeleteClause(AST\DeleteClause $deleteClause)
+    {
+    }
 
     /**
-     * Walks down an UpdateClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param UpdateClause
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkUpdateClause($updateClause) {}
+    public function walkUpdateClause($updateClause)
+    {
+    }
 
     /**
-     * Walks down an UpdateItem AST node, thereby generating the appropriate SQL.
-     *
-     * @param UpdateItem
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkUpdateItem($updateItem) {}
+    public function walkUpdateItem($updateItem)
+    {
+    }
 
     /**
-     * Walks down a WhereClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param WhereClause
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkWhereClause($whereClause) {}
+    public function walkWhereClause($whereClause)
+    {
+    }
 
     /**
-     * Walks down a ConditionalExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param ConditionalExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkConditionalExpression($condExpr) {}
+    public function walkConditionalExpression($condExpr)
+    {
+    }
 
     /**
-     * Walks down a ConditionalTerm AST node, thereby generating the appropriate SQL.
-     *
-     * @param ConditionalTerm
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkConditionalTerm($condTerm) {}
+    public function walkConditionalTerm($condTerm)
+    {
+    }
 
     /**
-     * Walks down a ConditionalFactor AST node, thereby generating the appropriate SQL.
-     *
-     * @param ConditionalFactor
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkConditionalFactor($factor) {}
+    public function walkConditionalFactor($factor)
+    {
+    }
 
     /**
-     * Walks down a ConditionalPrimary AST node, thereby generating the appropriate SQL.
-     *
-     * @param ConditionalPrimary
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkConditionalPrimary($primary) {}
+    public function walkConditionalPrimary($primary)
+    {
+    }
 
     /**
-     * Walks down an ExistsExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param ExistsExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkExistsExpression($existsExpr) {}
+    public function walkExistsExpression($existsExpr)
+    {
+    }
 
     /**
-     * Walks down a CollectionMemberExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param CollectionMemberExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkCollectionMemberExpression($collMemberExpr) {}
+    public function walkCollectionMemberExpression($collMemberExpr)
+    {
+    }
 
     /**
-     * Walks down an EmptyCollectionComparisonExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param EmptyCollectionComparisonExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkEmptyCollectionComparisonExpression($emptyCollCompExpr) {}
+    public function walkEmptyCollectionComparisonExpression($emptyCollCompExpr)
+    {
+    }
 
     /**
-     * Walks down a NullComparisonExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param NullComparisonExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkNullComparisonExpression($nullCompExpr) {}
+    public function walkNullComparisonExpression($nullCompExpr)
+    {
+    }
 
     /**
-     * Walks down an InExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param InExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkInExpression($inExpr) {}
+    public function walkInExpression($inExpr)
+    {
+    }
 
     /**
-     * Walks down an InstanceOfExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param InstanceOfExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    function walkInstanceOfExpression($instanceOfExpr) {}
+    function walkInstanceOfExpression($instanceOfExpr)
+    {
+    }
 
     /**
-     * Walks down a literal that represents an AST node, thereby generating the appropriate SQL.
-     *
-     * @param mixed
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkLiteral($literal) {}
+    public function walkLiteral($literal)
+    {
+    }
 
     /**
-     * Walks down a BetweenExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param BetweenExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkBetweenExpression($betweenExpr) {}
+    public function walkBetweenExpression($betweenExpr)
+    {
+    }
 
     /**
-     * Walks down a LikeExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param LikeExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkLikeExpression($likeExpr) {}
+    public function walkLikeExpression($likeExpr)
+    {
+    }
 
     /**
-     * Walks down a StateFieldPathExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param StateFieldPathExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkStateFieldPathExpression($stateFieldPathExpression) {}
+    public function walkStateFieldPathExpression($stateFieldPathExpression)
+    {
+    }
 
     /**
-     * Walks down a ComparisonExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param ComparisonExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkComparisonExpression($compExpr) {}
+    public function walkComparisonExpression($compExpr)
+    {
+    }
 
     /**
-     * Walks down an InputParameter AST node, thereby generating the appropriate SQL.
-     *
-     * @param InputParameter
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkInputParameter($inputParam) {}
+    public function walkInputParameter($inputParam)
+    {
+    }
 
     /**
-     * Walks down an ArithmeticExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param ArithmeticExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkArithmeticExpression($arithmeticExpr) {}
+    public function walkArithmeticExpression($arithmeticExpr)
+    {
+    }
 
     /**
-     * Walks down an ArithmeticTerm AST node, thereby generating the appropriate SQL.
-     *
-     * @param mixed
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkArithmeticTerm($term) {}
+    public function walkArithmeticTerm($term)
+    {
+    }
 
     /**
-     * Walks down a StringPrimary that represents an AST node, thereby generating the appropriate SQL.
-     *
-     * @param mixed
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkStringPrimary($stringPrimary) {}
+    public function walkStringPrimary($stringPrimary)
+    {
+    }
 
     /**
-     * Walks down an ArithmeticFactor that represents an AST node, thereby generating the appropriate SQL.
-     *
-     * @param mixed
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkArithmeticFactor($factor) {}
+    public function walkArithmeticFactor($factor)
+    {
+    }
 
     /**
-     * Walks down an SimpleArithmeticExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param SimpleArithmeticExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkSimpleArithmeticExpression($simpleArithmeticExpr) {}
+    public function walkSimpleArithmeticExpression($simpleArithmeticExpr)
+    {
+    }
 
     /**
-     * Walks down an PathExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param mixed
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkPathExpression($pathExpr) {}
+    public function walkPathExpression($pathExpr)
+    {
+    }
 
     /**
-     * Walks down an ResultVariable AST node, thereby generating the appropriate SQL.
-     *
-     * @param string $resultVariable
-     * @return string The SQL.
+     * {@inheritdoc}
      */
-    public function walkResultVariable($resultVariable) {}
+    public function walkResultVariable($resultVariable)
+    {
+    }
 
     /**
-     * Gets an executor that can be used to execute the result of this walker.
-     *
-     * @return AbstractExecutor
+     * {@inheritdoc}
      */
-    public function getExecutor($AST) {}
+    public function getExecutor($AST)
+    {
+    }
 }

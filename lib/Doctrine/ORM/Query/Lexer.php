@@ -113,7 +113,7 @@ class Lexer extends \Doctrine\Common\Lexer
     /**
      * Creates a new query scanner object.
      *
-     * @param string $input a query string
+     * @param string $input A query string.
      */
     public function __construct($input)
     {
