@@ -36,7 +36,14 @@ use Symfony\Component\Yaml\Yaml;
  */
 class ConvertDoctrine1Schema
 {
+    /**
+     * @var array
+     */
     private $from;
+
+    /**
+     * @var array
+     */
     private $legacyTypeMap = array(
         // TODO: This list may need to be updated
         'clob' => 'text',
@@ -46,9 +53,10 @@ class ConvertDoctrine1Schema
 
     /**
      * Constructor passes the directory or array of directories
-     * to convert the Doctrine 1 schema files from
+     * to convert the Doctrine 1 schema files from.
      *
      * @param array $from
+     *
      * @author Jonathan Wage
      */
     public function __construct($from)
@@ -57,10 +65,10 @@ class ConvertDoctrine1Schema
     }
 
     /**
-     * Get an array of ClassMetadataInfo instances from the passed
-     * Doctrine 1 schema
+     * Gets an array of ClassMetadataInfo instances from the passed
+     * Doctrine 1 schema.
      *
-     * @return array $metadatas  An array of ClassMetadataInfo instances
+     * @return array An array of ClassMetadataInfo instances
      */
     public function getMetadata()
     {
@@ -84,6 +92,12 @@ class ConvertDoctrine1Schema
         return $metadatas;
     }
 
+    /**
+     * @param string $className
+     * @param array  $mappingInformation
+     *
+     * @return \Doctrine\ORM\Mapping\ClassMetadataInfo
+     */
     private function convertToClassMetadataInfo($className, $mappingInformation)
     {
         $metadata = new ClassMetadataInfo($className);
@@ -96,6 +110,13 @@ class ConvertDoctrine1Schema
         return $metadata;
     }
 
+    /**
+     * @param string            $className
+     * @param array             $model
+     * @param ClassMetadataInfo $metadata
+     *
+     * @return void
+     */
     private function convertTableName($className, array $model, ClassMetadataInfo $metadata)
     {
         if (isset($model['tableName']) && $model['tableName']) {
@@ -110,6 +131,13 @@ class ConvertDoctrine1Schema
         }
     }
 
+    /**
+     * @param string            $className
+     * @param array             $model
+     * @param ClassMetadataInfo $metadata
+     *
+     * @return void
+     */
     private function convertColumns($className, array $model, ClassMetadataInfo $metadata)
     {
         $id = false;
@@ -136,6 +164,16 @@ class ConvertDoctrine1Schema
         }
     }
 
+    /**
+     * @param string            $className
+     * @param string            $name
+     * @param string|array      $column
+     * @param ClassMetadataInfo $metadata
+     *
+     * @return array
+     *
+     * @throws ToolsException
+     */
     private function convertColumn($className, $name, $column, ClassMetadataInfo $metadata)
     {
         if (is_string($column)) {
@@ -217,6 +255,13 @@ class ConvertDoctrine1Schema
         return $fieldMapping;
     }
 
+    /**
+     * @param string            $className
+     * @param array             $model
+     * @param ClassMetadataInfo $metadata
+     *
+     * @return void
+     */
     private function convertIndexes($className, array $model, ClassMetadataInfo $metadata)
     {
         if (empty($model['indexes'])) {
@@ -233,6 +278,13 @@ class ConvertDoctrine1Schema
         }
     }
 
+    /**
+     * @param string            $className
+     * @param array             $model
+     * @param ClassMetadataInfo $metadata
+     *
+     * @return void
+     */
     private function convertRelations($className, array $model, ClassMetadataInfo $metadata)
     {
         if (empty($model['relations'])) {

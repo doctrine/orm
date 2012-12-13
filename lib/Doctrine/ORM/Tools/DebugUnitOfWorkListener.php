@@ -32,11 +32,18 @@ use Doctrine\ORM\EntityManager;
  */
 class DebugUnitOfWorkListener
 {
+    /**
+     * @var string
+     */
     private $file;
+
+    /**
+     * @var string
+     */
     private $context;
 
     /**
-     * Pass a stream and contet information for the debugging session.
+     * Pass a stream and context information for the debugging session.
      *
      * The stream can be php://output to print to the screen.
      *
@@ -49,15 +56,21 @@ class DebugUnitOfWorkListener
         $this->context = $context;
     }
 
+    /**
+     * @param \Doctrine\ORM\Event\OnFlushEventArgs $args
+     *
+     * @return void
+     */
     public function onFlush(OnFlushEventArgs $args)
     {
         $this->dumpIdentityMap($args->getEntityManager());
     }
 
     /**
-     * Dump the contents of the identity map into a stream.
+     * Dumps the contents of the identity map into a stream.
      *
      * @param EntityManager $em
+     *
      * @return void
      */
     public function dumpIdentityMap(EntityManager $em)
@@ -119,6 +132,11 @@ class DebugUnitOfWorkListener
         fclose($fh);
     }
 
+    /**
+     * @param mixed $var
+     *
+     * @return string
+     */
     private function getType($var)
     {
         if (is_object($var)) {
@@ -130,6 +148,12 @@ class DebugUnitOfWorkListener
         return gettype($var);
     }
 
+    /**
+     * @param object     $entity
+     * @param UnitOfWork $uow
+     *
+     * @return string
+     */
     private function getIdString($entity, UnitOfWork $uow)
     {
         if ($uow->isInIdentityMap($entity)) {
