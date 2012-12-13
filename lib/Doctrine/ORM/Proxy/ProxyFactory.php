@@ -32,13 +32,32 @@ use Doctrine\Common\Util\ClassUtils;
  */
 class ProxyFactory
 {
-    /** The EntityManager this factory is bound to. */
+    /**
+     * The EntityManager this factory is bound to.
+     *
+     * @var \Doctrine\ORM\EntityManager
+     */
     private $_em;
-    /** Whether to automatically (re)generate proxy classes. */
+
+    /**
+     * Whether to automatically (re)generate proxy classes.
+     *
+     * @var bool
+     */
     private $_autoGenerate;
-    /** The namespace that contains all proxy classes. */
+
+    /**
+     * The namespace that contains all proxy classes.
+     *
+     * @var string
+     */
     private $_proxyNamespace;
-    /** The directory that contains all proxy classes. */
+
+    /**
+     * The directory that contains all proxy classes.
+     *
+     * @var string
+     */
     private $_proxyDir;
 
     /**
@@ -53,10 +72,12 @@ class ProxyFactory
      * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
      * connected to the given <tt>EntityManager</tt>.
      *
-     * @param EntityManager $em The EntityManager the new factory works for.
-     * @param string $proxyDir The directory to use for the proxy classes. It must exist.
-     * @param string $proxyNs The namespace to use for the proxy classes.
-     * @param boolean $autoGenerate Whether to automatically generate proxy classes.
+     * @param EntityManager $em           The EntityManager the new factory works for.
+     * @param string        $proxyDir     The directory to use for the proxy classes. It must exist.
+     * @param string        $proxyNs      The namespace to use for the proxy classes.
+     * @param boolean       $autoGenerate Whether to automatically generate proxy classes.
+     *
+     * @throws ProxyException
      */
     public function __construct(EntityManager $em, $proxyDir, $proxyNs, $autoGenerate = false)
     {
@@ -77,7 +98,8 @@ class ProxyFactory
      * the given identifier.
      *
      * @param string $className
-     * @param mixed $identifier
+     * @param mixed  $identifier
+     *
      * @return object
      */
     public function getProxy($className, $identifier)
@@ -98,12 +120,12 @@ class ProxyFactory
     }
 
     /**
-     * Generate the Proxy file name
+     * Generates the Proxy file name.
      *
-     * @param string $className
-     * @param string $baseDir Optional base directory for proxy file name generation.
-     *                        If not specified, the directory configured on the Configuration of the
-     *                        EntityManager will be used by this factory.
+     * @param string      $className
+     * @param string|null $baseDir   Optional base directory for proxy file name generation.
+     *                               If not specified, the directory configured on the Configuration of the
+     *                               EntityManager will be used by this factory.
      * @return string
      */
     private function getProxyFileName($className, $baseDir = null)
@@ -116,10 +138,11 @@ class ProxyFactory
     /**
      * Generates proxy classes for all given classes.
      *
-     * @param array $classes The classes (ClassMetadata instances) for which to generate proxies.
-     * @param string $toDir The target directory of the proxy classes. If not specified, the
-     *                      directory configured on the Configuration of the EntityManager used
-     *                      by this factory is used.
+     * @param array       $classes The classes (ClassMetadata instances) for which to generate proxies.
+     * @param string|null $toDir   The target directory of the proxy classes. If not specified, the
+     *                             directory configured on the Configuration of the EntityManager used
+     *                             by this factory is used.
+     *
      * @return int Number of generated proxies.
      */
     public function generateProxyClasses(array $classes, $toDir = null)
@@ -146,9 +169,13 @@ class ProxyFactory
     /**
      * Generates a proxy class file.
      *
-     * @param ClassMetadata $class Metadata for the original class
-     * @param string $fileName Filename (full path) for the generated class
-     * @param string $file The proxy class template data
+     * @param ClassMetadata $class    Metadata for the original class.
+     * @param string        $fileName Filename (full path) for the generated class.
+     * @param string        $file     The proxy class template data.
+     *
+     * @return void
+     *
+     * @throws ProxyException
      */
     private function _generateProxyClass(ClassMetadata $class, $fileName, $file)
     {
@@ -198,6 +225,7 @@ class ProxyFactory
      * Generates the methods of a proxy class.
      *
      * @param ClassMetadata $class
+     *
      * @return string The code of the generated methods.
      */
     private function _generateMethods(ClassMetadata $class)
@@ -206,7 +234,7 @@ class ProxyFactory
 
         $methodNames = array();
         foreach ($class->reflClass->getMethods() as $method) {
-            /* @var $method ReflectionMethod */
+            /* @var $method \ReflectionMethod */
             if ($method->isConstructor() || in_array(strtolower($method->getName()), array("__sleep", "__clone")) || isset($methodNames[$method->getName()])) {
                 continue;
             }
@@ -269,7 +297,7 @@ class ProxyFactory
     }
 
     /**
-     * Check if the method is a short identifier getter.
+     * Checks if the method is a short identifier getter.
      *
      * What does this mean? For proxy objects the identifier is already known,
      * however accessing the getter for this identifier usually triggers the
@@ -277,8 +305,9 @@ class ProxyFactory
      * ID is interesting for the userland code (for example in views that
      * generate links to the entity, but do not display anything else).
      *
-     * @param ReflectionMethod $method
-     * @param ClassMetadata $class
+     * @param \ReflectionMethod $method
+     * @param ClassMetadata     $class
+     *
      * @return bool
      */
     private function isShortIdentifierGetter($method, ClassMetadata $class)
@@ -309,7 +338,8 @@ class ProxyFactory
     /**
      * Generates the code for the __sleep method for a proxy class.
      *
-     * @param $class
+     * @param ClassMetadata $class
+     *
      * @return string
      */
     private function _generateSleep(ClassMetadata $class)
