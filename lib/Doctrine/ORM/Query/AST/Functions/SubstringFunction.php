@@ -35,7 +35,15 @@ use Doctrine\ORM\Query\Lexer;
 class SubstringFunction extends FunctionNode
 {
     public $stringPrimary;
+
+    /**
+     * @var \Doctrine\ORM\Query\AST\SimpleArithmeticExpression
+     */
     public $firstSimpleArithmeticExpression;
+
+    /**
+     * @var \Doctrine\ORM\Query\AST\SimpleArithmeticExpression|null
+     */
     public $secondSimpleArithmeticExpression = null;
 
     /**
@@ -79,4 +87,3 @@ class SubstringFunction extends FunctionNode
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }
-

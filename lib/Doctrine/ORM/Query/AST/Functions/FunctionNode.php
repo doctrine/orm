@@ -34,19 +34,40 @@ use Doctrine\ORM\Query\AST\Node;
  */
 abstract class FunctionNode extends Node
 {
+    /**
+     * @var string
+     */
     public $name;
 
+    /**
+     * @param string $name
+     */
     public function __construct($name)
     {
         $this->name = $name;
     }
 
+    /**
+     * @param \Doctrine\ORM\Query\SqlWalker $sqlWalker
+     *
+     * @return string
+     */
     abstract public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker);
 
+    /**
+     * @param \Doctrine\ORM\Query\SqlWalker $sqlWalker
+     *
+     * @return string
+     */
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkFunction($this);
     }
 
+    /**
+     * @param \Doctrine\ORM\Query\Parser $parser
+     *
+     * @return void
+     */
     abstract public function parse(\Doctrine\ORM\Query\Parser $parser);
 }
