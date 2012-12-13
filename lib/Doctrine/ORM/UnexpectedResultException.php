@@ -27,5 +27,4 @@ namespace Doctrine\ORM;
  */
 class UnexpectedResultException extends ORMException
 {
-
 }

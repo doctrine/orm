@@ -42,18 +42,22 @@ use Doctrine\ORM\ORMInvalidArgumentException;
 abstract class AbstractQuery
 {
     /* Hydration mode constants */
+
     /**
      * Hydrates an object graph. This is the default behavior.
      */
     const HYDRATE_OBJECT = 1;
+
     /**
      * Hydrates an array graph.
      */
     const HYDRATE_ARRAY = 2;
+
     /**
      * Hydrates a flat, rectangular result set with scalar values.
      */
     const HYDRATE_SCALAR = 3;
+
     /**
      * Hydrates a single scalar value.
      */
@@ -65,27 +69,37 @@ abstract class AbstractQuery
     const HYDRATE_SIMPLEOBJECT = 5;
 
     /**
-     * @var \Doctrine\Common\Collections\ArrayCollection The parameter map of this query.
+     * The parameter map of this query.
+     *
+     * @var \Doctrine\Common\Collections\ArrayCollection
      */
     protected $parameters;
 
     /**
-     * @var \Doctrine\ORM\Query\ResultSetMapping The user-specified ResultSetMapping to use.
+     * The user-specified ResultSetMapping to use.
+     *
+     * @var \Doctrine\ORM\Query\ResultSetMapping
      */
     protected $_resultSetMapping;
 
     /**
-     * @var \Doctrine\ORM\EntityManager The entity manager used by this query object.
+     * The entity manager used by this query object.
+     *
+     * @var \Doctrine\ORM\EntityManager
      */
     protected $_em;
 
     /**
-     * @var array The map of query hints.
+     * The map of query hints.
+     *
+     * @var array
      */
     protected $_hints = array();
 
     /**
-     * @var integer The hydration mode.
+     * The hydration mode.
+     *
+     * @var integer
      */
     protected $_hydrationMode = self::HYDRATE_OBJECT;
 
@@ -95,7 +109,9 @@ abstract class AbstractQuery
     protected $_queryCacheProfile;
 
     /**
-     * @var boolean Boolean value that indicates whether or not expire the result cache.
+     * Whether or not expire the result cache.
+     *
+     * @var boolean
      */
     protected $_expireResultCache = false;
 

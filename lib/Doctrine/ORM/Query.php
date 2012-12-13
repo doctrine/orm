@@ -50,6 +50,7 @@ final class Query extends AbstractQuery
     const STATE_DIRTY = 2;
 
     /* Query HINTS */
+
     /**
      * The refresh hint turns any query into a refresh query with the result that
      * any local changes in entities are overridden with the fetched values.
@@ -113,47 +114,65 @@ final class Query extends AbstractQuery
     const HINT_LOCK_MODE = 'doctrine.lockMode';
 
     /**
-     * @var integer $_state   The current state of this query.
+     * The current state of this query.
+     *
+     * @var integer
      */
     private $_state = self::STATE_CLEAN;
 
     /**
-     * @var string $_dql Cached DQL query.
+     * Cached DQL query.
+     *
+     * @var string
      */
     private $_dql = null;
 
     /**
-     * @var \Doctrine\ORM\Query\ParserResult  The parser result that holds DQL => SQL information.
+     * The parser result that holds DQL => SQL information.
+     *
+     * @var \Doctrine\ORM\Query\ParserResult
      */
     private $_parserResult;
 
     /**
-     * @var integer The first result to return (the "offset").
+     * The first result to return (the "offset").
+     *
+     * @var integer
      */
     private $_firstResult = null;
 
     /**
-     * @var integer The maximum number of results to return (the "limit").
+     * The maximum number of results to return (the "limit").
+     *
+     * @var integer
      */
     private $_maxResults = null;
 
     /**
-     * @var CacheDriver The cache driver used for caching queries.
+     * The cache driver used for caching queries.
+     *
+     * @var \Doctrine\Common\Cache\Cache|null
      */
     private $_queryCache;
 
     /**
-     * @var boolean Boolean value that indicates whether or not expire the query cache.
+     * Whether or not expire the query cache.
+     *
+     * @var boolean
      */
     private $_expireQueryCache = false;
 
     /**
-     * @var int Query Cache lifetime.
+     * The query cache lifetime.
+     *
+     * @var int
      */
     private $_queryCacheTTL;
 
     /**
-     * @var boolean Whether to use a query cache, if available. Defaults to TRUE.
+     * Whether to use a query cache, if available. Defaults to TRUE.
+     *
+     * @var boolean
      */
     private $_useQueryCache = true;
 
@@ -325,7 +344,7 @@ final class Query extends AbstractQuery
     /**
      * Defines a cache driver to be used for caching queries.
      *
-     * @param Doctrine_Cache_Interface|null $queryCache Cache driver.
+     * @param \Doctrine\Common\Cache\Cache|null $queryCache Cache driver.
      *
      * @return Query This query instance.
      */
@@ -353,8 +372,8 @@ final class Query extends AbstractQuery
     /**
      * Returns the cache driver used for query caching.
      *
-     * @return CacheDriver The cache driver used for query caching or NULL, if
-     *                     this Query does not use query caching.
+     * @return \Doctrine\Common\Cache\Cache|null The cache driver used for query caching or NULL, if
+     *                                           this Query does not use query caching.
      */
     public function getQueryCacheDriver()
     {

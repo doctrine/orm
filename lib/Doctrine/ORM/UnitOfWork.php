@@ -373,7 +373,7 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Compute the changesets of all entities scheduled for insertion
+     * Computes the changesets of all entities scheduled for insertion.
      *
      * @return void
      */
@@ -387,14 +387,14 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Only flush the given entity according to a ruleset that keeps the UoW consistent.
+     * Only flushes the given entity according to a ruleset that keeps the UoW consistent.
      *
      * 1. All entities scheduled for insertion, (orphan) removals and changes in collections are processed as well!
      * 2. Read Only entities are skipped.
      * 3. Proxies are skipped.
      * 4. Only if entity is properly managed.
      *
-     * @param  object $entity
+     * @param object $entity
      *
      * @return void
      *
@@ -850,6 +850,8 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param ClassMetadata $class  The class descriptor of the entity.
      * @param object        $entity The entity for which to (re)calculate the change set.
+     *
+     * @return void
      *
      * @throws ORMInvalidArgumentException If the passed entity is not MANAGED.
      */
@@ -2808,11 +2810,11 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Process an entity instance to extract their identifier values.
+     * Processes an entity instance to extract their identifier values.
      *
      * @param object $entity The entity instance.
      *
-     * @return scalar
+     * @return mixed A scalar value.
      *
      * @throws \Doctrine\ORM\ORMInvalidArgumentException
      */
@@ -2838,8 +2840,8 @@ class UnitOfWork implements PropertyChangedListener
      * @param mixed  $id            The entity identifier to look for.
      * @param string $rootClassName The name of the root class of the mapped entity hierarchy.
      *
-     * @return mixed Returns the entity with the specified identifier if it exists in
-     *               this UnitOfWork, FALSE otherwise.
+     * @return object|bool Returns the entity with the specified identifier if it exists in
+     *                     this UnitOfWork, FALSE otherwise.
      */
     public function tryGetById($id, $rootClassName)
     {
@@ -3058,7 +3060,7 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Get the currently scheduled complete collection deletions
+     * Gets the currently scheduled complete collection deletions
      *
      * @return array
      */

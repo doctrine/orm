@@ -135,7 +135,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Add a new default annotation driver with a correctly configured annotation reader. If $useSimpleAnnotationReader
+     * Adds a new default annotation driver with a correctly configured annotation reader. If $useSimpleAnnotationReader
      * is true, the notation `@Entity` will work, otherwise, the notation `@ORM\Entity` will be supported.
      *
      * @param array $paths
@@ -564,7 +564,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Set the custom hydrator modes in one pass.
+     * Sets the custom hydrator modes in one pass.
      *
      * @param array $modes An array of ($modeName => $hydrator).
      *
@@ -580,7 +580,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Get the hydrator class for the given hydration mode name.
+     * Gets the hydrator class for the given hydration mode name.
      *
      * @param string $modeName The hydration mode name.
      *
@@ -594,7 +594,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Add a custom hydration mode.
+     * Adds a custom hydration mode.
      *
      * @param string $modeName The hydration mode name.
      * @param string $hydrator The hydrator class name.
@@ -607,7 +607,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Set a class metadata factory.
+     * Sets a class metadata factory.
      *
      * @param string $cmfName
      *
@@ -631,7 +631,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Add a filter to the list of possible filters.
+     * Adds a filter to the list of possible filters.
      *
      * @param string                        $name   The name of the filter.
      * @param string|Query\Filter\SQLFilter $filter The filter class name or an SQLFilter instance.
@@ -669,7 +669,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Set default repository class.
+     * Sets default repository class.
      *
      * @since 2.2
      *
@@ -705,7 +705,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Set naming strategy.
+     * Sets naming strategy.
      *
      * @since 2.3
      *
@@ -719,7 +719,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Get naming strategy..
+     * Gets naming strategy..
      *
      * @since 2.3
      *
@@ -735,7 +735,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Set quote strategy.
+     * Sets quote strategy.
      *
      * @since 2.3
      *
@@ -749,7 +749,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Get quote strategy.
+     * Gets quote strategy.
      *
      * @since 2.3
      *

@@ -41,17 +41,21 @@ class QueryBuilder
     const DELETE = 1;
     const UPDATE = 2;
 
-    /** The builder states. */
+    /* The builder states. */
     const STATE_DIRTY = 0;
     const STATE_CLEAN = 1;
 
     /**
-     * @var EntityManager The EntityManager used by this QueryBuilder.
+     * The EntityManager used by this QueryBuilder.
+     *
+     * @var EntityManager
      */
     private $_em;
 
     /**
-     * @var array The array of DQL parts collected.
+     * The array of DQL parts collected.
+     *
+     * @var array
      */
     private $_dqlParts = array(
         'distinct' => false,
@@ -66,37 +70,51 @@ class QueryBuilder
     );
 
     /**
-     * @var integer The type of query this is. Can be select, update or delete.
+     * The type of query this is. Can be select, update or delete.
+     *
+     * @var integer
      */
     private $_type = self::SELECT;
 
     /**
-     * @var integer The state of the query object. Can be dirty or clean.
+     * The state of the query object. Can be dirty or clean.
+     *
+     * @var integer
      */
     private $_state = self::STATE_CLEAN;
 
     /**
-     * @var string The complete DQL string for this query.
+     * The complete DQL string for this query.
+     *
+     * @var string
      */
     private $_dql;
 
     /**
-     * @var \Doctrine\Common\Collections\ArrayCollection The query parameters.
+     * The query parameters.
+     *
+     * @var \Doctrine\Common\Collections\ArrayCollection
      */
     private $parameters = array();
 
     /**
-     * @var integer The index of the first result to retrieve.
+     * The index of the first result to retrieve.
+     *
+     * @var integer
      */
     private $_firstResult = null;
 
     /**
-     * @var integer The maximum number of results to retrieve.
+     * The maximum number of results to retrieve.
+     *
+     * @var integer
      */
     private $_maxResults = null;
 
     /**
-     * @var array Keeps root entity alias names for join entities.
+     * Keeps root entity alias names for join entities.
+     *
+     * @var array
      */
     private $joinRootAliases = array();
 
@@ -133,7 +151,7 @@ class QueryBuilder
     }
 
     /**
-     * Get the type of the currently built query.
+     * Gets the type of the currently built query.
      *
      * @return integer
      */
@@ -143,7 +161,7 @@ class QueryBuilder
     }
 
     /**
-     * Get the associated EntityManager for this query builder.
+     * Gets the associated EntityManager for this query builder.
      *
      * @return EntityManager
      */
@@ -153,7 +171,7 @@ class QueryBuilder
     }
 
     /**
-     * Get the state of this query builder instance.
+     * Gets the state of this query builder instance.
      *
      * @return integer Either QueryBuilder::STATE_DIRTY or QueryBuilder::STATE_CLEAN.
      */
@@ -163,7 +181,7 @@ class QueryBuilder
     }
 
     /**
-     * Get the complete DQL string formed by the current specifications of this QueryBuilder.
+     * Gets the complete DQL string formed by the current specifications of this QueryBuilder.
      *
      * <code>
      *     $qb = $em->createQueryBuilder()
@@ -576,7 +594,7 @@ class QueryBuilder
     }
 
     /**
-     * Add a DISTINCT flag to this query.
+     * Adds a DISTINCT flag to this query.
      *
      * <code>
      *     $qb = $em->createQueryBuilder()
@@ -679,7 +697,7 @@ class QueryBuilder
     }
 
     /**
-     * Create and add a query root corresponding to the entity identified by the given alias,
+     * Creates and adds a query root corresponding to the entity identified by the given alias,
      * forming a cartesian product with any existing query roots.
      *
      * <code>
@@ -1049,10 +1067,11 @@ class QueryBuilder
     }
 
     /**
-     * Add criteria to query.
-     * Add where expressions with AND operator.
-     * Add orderings.
-     * Override firstResult and maxResults if they set.
+     * Adds criteria to the query.
+     *
+     * Adds where expressions with AND operator.
+     * Adds orderings.
+     * Overrides firstResult and maxResults if they're set.
      *
      * @param Criteria $criteria
      *
@@ -1087,7 +1106,7 @@ class QueryBuilder
     }
 
     /**
-     * Get a query part by its name.
+     * Gets a query part by its name.
      *
      * @param string $queryPartName
      *
@@ -1101,7 +1120,7 @@ class QueryBuilder
     }
 
     /**
-     * Get all query parts.
+     * Gets all query parts.
      *
      * @return array $dqlParts
      *
@@ -1194,7 +1213,7 @@ class QueryBuilder
     }
 
     /**
-     * Reset DQL parts
+     * Resets DQL parts.
      *
      * @param array|null $parts
      *
@@ -1214,7 +1233,7 @@ class QueryBuilder
     }
 
     /**
-     * Reset single DQL part
+     * Resets single DQL part.
      *
      * @param string $part
      *
@@ -1240,7 +1259,7 @@ class QueryBuilder
     }
 
     /**
-     * Deep clone of all expression objects in the DQL parts.
+     * Deep clones all expression objects in the DQL parts.
      *
      * @return void
      */

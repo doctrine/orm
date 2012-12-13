@@ -25,7 +25,6 @@ use Symfony\Component\Console\Input\InputArgument,
     Doctrine\ORM\Tools\Export\ClassMetadataExporter,
     Doctrine\ORM\Tools\ConvertDoctrine1Schema,
     Doctrine\ORM\Tools\EntityGenerator;
-use Doctrine\ORM\EntityManager;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Command\Command;

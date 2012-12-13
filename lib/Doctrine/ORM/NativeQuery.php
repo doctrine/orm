@@ -27,6 +27,9 @@ namespace Doctrine\ORM;
  */
 final class NativeQuery extends AbstractQuery
 {
+    /**
+     * @var string
+     */
     private $_sql;
 
     /**

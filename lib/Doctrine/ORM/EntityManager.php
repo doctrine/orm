@@ -268,6 +268,8 @@ class EntityManager implements ObjectManager
      * MyProject\Domain\User
      * sales:PriceRequest
      *
+     * @param string $className
+     *
      * @return \Doctrine\ORM\Mapping\ClassMetadata
      *
      * @internal Performance-sensitive method.
@@ -358,6 +360,8 @@ class EntityManager implements ObjectManager
      * the cascade-persist semantics + scheduled inserts/removals are synchronized.
      *
      * @param object $entity
+     *
+     * @return void
      *
      * @throws \Doctrine\ORM\OptimisticLockException If a version check on an entity that
      *         makes use of optimistic locking fails.
