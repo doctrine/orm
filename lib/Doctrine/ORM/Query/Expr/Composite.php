@@ -20,9 +20,8 @@
 namespace Doctrine\ORM\Query\Expr;
 
 /**
- * Expression class for building DQL and parts
+ * Expression class for building DQL and parts.
  *
- * 
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -49,10 +48,10 @@ class Composite extends Base
         return implode($this->separator, $components);
     }
 
-
     /**
-     * @param   string $part
-     * @return  string
+     * @param string $part
+     *
+     * @return string
      */
     private function processQueryPart($part)
     {

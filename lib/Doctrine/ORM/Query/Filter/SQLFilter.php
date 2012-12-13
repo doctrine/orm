@@ -36,12 +36,14 @@ abstract class SQLFilter
 {
     /**
      * The entity manager.
+     *
      * @var EntityManager
      */
     private $em;
 
     /**
      * Parameters for the filter.
+     *
      * @var array
      */
     private $parameters;
@@ -49,7 +51,7 @@ abstract class SQLFilter
     /**
      * Constructs the SQLFilter object.
      *
-     * @param EntityManager $em The EM
+     * @param EntityManager $em The entity manager.
      */
     final public function __construct(EntityManager $em)
     {
@@ -59,11 +61,11 @@ abstract class SQLFilter
     /**
      * Sets a parameter that can be used by the filter.
      *
-     * @param string $name Name of the parameter.
-     * @param string $value Value of the parameter.
-     * @param string $type The parameter type. If specified, the given value will be run through
-     *                     the type conversion of this type. This is usually not needed for
-     *                     strings and numeric types.
+     * @param string      $name  Name of the parameter.
+     * @param string      $value Value of the parameter.
+     * @param string|null $type  The parameter type. If specified, the given value will be run through
+     *                           the type conversion of this type. This is usually not needed for
+     *                           strings and numeric types.
      *
      * @return SQLFilter The current SQL filter.
      */
@@ -93,6 +95,8 @@ abstract class SQLFilter
      * @param string $name Name of the parameter.
      *
      * @return string The SQL escaped parameter to use in a query.
+     *
+     * @throws \InvalidArgumentException
      */
     final public function getParameter($name)
     {
@@ -116,7 +120,10 @@ abstract class SQLFilter
     /**
      * Gets the SQL query part to add to a query.
      *
-     * @return string The constraint SQL if there is available, empty string otherwise
+     * @param ClassMetaData $targetEntity
+     * @param string        $targetTableAlias
+     *
+     * @return string The constraint SQL if there is available, empty string otherwise.
      */
     abstract public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias);
 }
