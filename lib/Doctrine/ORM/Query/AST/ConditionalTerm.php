@@ -21,7 +21,6 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * ConditionalTerm ::= ConditionalFactor {"AND" ConditionalFactor}*
  *
- * 
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -30,13 +29,22 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ConditionalTerm extends Node
 {
+    /**
+     * @var array
+     */
     public $conditionalFactors = array();
 
+    /**
+     * @param array $conditionalFactors
+     */
     public function __construct(array $conditionalFactors)
     {
         $this->conditionalFactors = $conditionalFactors;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkConditionalTerm($this);

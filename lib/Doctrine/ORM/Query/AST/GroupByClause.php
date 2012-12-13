@@ -20,9 +20,8 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * Description of GroupByClause
+ * Description of GroupByClause.
  *
- * 
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -31,13 +30,22 @@ namespace Doctrine\ORM\Query\AST;
  */
 class GroupByClause extends Node
 {
+    /**
+     * @var array
+     */
     public $groupByItems = array();
 
+    /**
+     * @param array $groupByItems
+     */
     public function __construct(array $groupByItems)
     {
         $this->groupByItems = $groupByItems;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkGroupByClause($this);

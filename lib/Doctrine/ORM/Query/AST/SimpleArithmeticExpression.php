@@ -22,7 +22,6 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * SimpleArithmeticExpression ::= ArithmeticTerm {("+" | "-") ArithmeticTerm}*
  *
- * 
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -31,13 +30,22 @@ namespace Doctrine\ORM\Query\AST;
  */
 class SimpleArithmeticExpression extends Node
 {
+    /**
+     * @var array
+     */
     public $arithmeticTerms = array();
 
+    /**
+     * @param array $arithmeticTerms
+     */
     public function __construct(array $arithmeticTerms)
     {
         $this->arithmeticTerms = $arithmeticTerms;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkSimpleArithmeticExpression($this);
