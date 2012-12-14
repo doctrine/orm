@@ -31,6 +31,9 @@ use Doctrine\ORM\Tools\Export\ExportException;
  */
 class ClassMetadataExporter
 {
+    /**
+     * @var array
+     */
     private static $_exporterDrivers = array(
         'xml' => 'Doctrine\ORM\Tools\Export\Driver\XmlExporter',
         'yaml' => 'Doctrine\ORM\Tools\Export\Driver\YamlExporter',
@@ -40,10 +43,12 @@ class ClassMetadataExporter
     );
 
     /**
-     * Register a new exporter driver class under a specified name
+     * Registers a new exporter driver class under a specified name.
      *
      * @param string $name
      * @param string $class
+     *
+     * @return void
      */
     public static function registerExportDriver($name, $class)
     {
@@ -51,12 +56,14 @@ class ClassMetadataExporter
     }
 
     /**
-     * Get a exporter driver instance
+     * Gets an exporter driver instance.
      *
-     * @param string $type   The type to get (yml, xml, etc.)
-     * @param string $source    The directory where the exporter will export to
+     * @param string      $type The type to get (yml, xml, etc.).
+     * @param string|null $dest The directory where the exporter will export to.
      *
-     * @return Driver\AbstractExporter $exporter
+     * @return Driver\AbstractExporter
+     *
+     * @throws ExportException
      */
     public function getExporter($type, $dest = null)
     {

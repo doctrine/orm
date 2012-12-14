@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Tools\Export\Driver;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
- * ClassMetadata exporter for Doctrine XML mapping files
+ * ClassMetadata exporter for Doctrine XML mapping files.
  *
  * @link    www.doctrine-project.org
  * @since   2.0
@@ -30,14 +30,13 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  */
 class XmlExporter extends AbstractExporter
 {
+    /**
+     * @var string
+     */
     protected $_extension = '.dcm.xml';
 
     /**
-     * Converts a single ClassMetadata instance to the exported format
-     * and returns it
-     *
-     * @param ClassMetadataInfo $metadata
-     * @return mixed $exported
+     * {@inheritdoc}
      */
     public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
