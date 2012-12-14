@@ -28,7 +28,6 @@ use Doctrine\Common\Cache\ApcCache;
 /**
  * Command to clear the query cache of the various cache drivers.
  *
- *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
@@ -38,6 +37,9 @@ use Doctrine\Common\Cache\ApcCache;
  */
 class QueryCommand extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this
@@ -70,6 +72,9 @@ EOT
         );
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $em = $this->getHelper('em')->getEntityManager();

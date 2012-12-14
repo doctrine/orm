@@ -27,7 +27,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Command to ensure that Doctrine is properly configured for a production environment.
  *
- *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @version $Revision$
@@ -38,6 +37,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class EnsureProductionSettingsCommand extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this
@@ -55,6 +57,9 @@ EOT
         );
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $em = $this->getHelper('em')->getEntityManager();

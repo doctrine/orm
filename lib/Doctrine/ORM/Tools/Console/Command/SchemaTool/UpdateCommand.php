@@ -19,16 +19,15 @@
 
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
-use Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console\Input\InputInterface,
-    Symfony\Component\Console\Output\OutputInterface,
-    Doctrine\ORM\Tools\SchemaTool;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Doctrine\ORM\Tools\SchemaTool;
 
 /**
  * Command to generate the SQL needed to update the database schema to match
  * the current mapping information.
- *
  *
  * @link    www.doctrine-project.org
  * @since   2.0
@@ -40,10 +39,13 @@ use Symfony\Component\Console\Input\InputArgument,
  */
 class UpdateCommand extends AbstractCommand
 {
+    /**
+     * @var string
+     */
     protected $name = 'orm:schema-tool:update';
 
     /**
-     * @see Console\Command\Command
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -95,6 +97,9 @@ EOT
         );
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
     {
         // Defining if update is complete or not (--complete not defined means $saveMode = true)
