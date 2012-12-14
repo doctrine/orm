@@ -1,6 +1,7 @@
 # Doctrine 2 ORM
 
 Master: [![Build Status](https://secure.travis-ci.org/doctrine/doctrine2.png?branch=master)](http://travis-ci.org/doctrine/doctrine2)
+2.3: [![Build Status](https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.3)](http://travis-ci.org/doctrine/doctrine2)
 2.2: [![Build Status](https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.2)](http://travis-ci.org/doctrine/doctrine2)
 2.1: [![Build Status](https://secure.travis-ci.org/doctrine/doctrine2.png?branch=2.1.x)](http://travis-ci.org/doctrine/doctrine2)
 
