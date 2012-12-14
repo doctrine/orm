@@ -2,16 +2,79 @@
 
 namespace Doctrine\Tests\Mocks;
 
+/**
+ * Mock class for DriverConnection.
+ */
 class DriverConnectionMock implements \Doctrine\DBAL\Driver\Connection
 {
-    public function prepare($prepareString) {}
-    public function query() { return new StatementMock; }
-    public function quote($input, $type=\PDO::PARAM_STR) {}
-    public function exec($statement) {}
-    public function lastInsertId($name = null) {}
-    public function beginTransaction() {}
-    public function commit() {}
-    public function rollBack() {}
-    public function errorCode() {}
-    public function errorInfo() {}
+    /**
+     * {@inheritdoc}
+     */
+    public function prepare($prepareString)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function query()
+    {
+        return new StatementMock;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function quote($input, $type=\PDO::PARAM_STR)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function exec($statement)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function lastInsertId($name = null)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function beginTransaction()
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function commit()
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rollBack()
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function errorCode()
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function errorInfo()
+    {
+    }
 }

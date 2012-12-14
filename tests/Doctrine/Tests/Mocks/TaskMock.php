@@ -25,6 +25,7 @@ use Doctrine\Common\Cli\AbstractNamespace;
 
 /**
  * TaskMock used for testing the CLI interface.
+ *
  * @author Nils Adermann <naderman@naderman.de>
  */
 class TaskMock extends \Doctrine\Common\Cli\Tasks\AbstractTask
@@ -33,17 +34,20 @@ class TaskMock extends \Doctrine\Common\Cli\Tasks\AbstractTask
      * Since instances of this class can be created elsewhere all instances
      * register themselves in this array for later inspection.
      *
-     * @var array(TaskMock)
+     * @var array (TaskMock)
      */
     static public $instances = array();
 
+    /**
+     * @var int
+     */
     private $runCounter = 0;
 
     /**
      * Constructor of Task Mock Object.
      * Makes sure the object can be inspected later.
      *
-     * @param AbstractNamespace CLI Namespace, passed to parent constructor
+     * @param AbstractNamespace $namespace CLI Namespace, passed to parent constructor.
      */
     function __construct(AbstractNamespace $namespace)
     {
@@ -66,6 +70,8 @@ class TaskMock extends \Doctrine\Common\Cli\Tasks\AbstractTask
 
     /**
      * Method invoked by CLI to run task.
+     *
+     * @return void
      */
     public function run()
     {
@@ -73,7 +79,9 @@ class TaskMock extends \Doctrine\Common\Cli\Tasks\AbstractTask
     }
 
     /**
-     * Method supposed to generate the CLI Task Documentation
+     * Method supposed to generate the CLI Task Documentation.
+     *
+     * @return void
      */
     public function buildDocumentation()
     {
