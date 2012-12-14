@@ -47,7 +47,14 @@ class TableGenerator extends AbstractIdGenerator
      */
     private $_allocationSize;
 
+    /**
+     * @var int|null
+     */
     private $_nextValue;
+
+    /**
+     * @var int|null
+     */
     private $_maxValue;
 
     /**

@@ -610,6 +610,8 @@ class ObjectHydrator extends AbstractHydrator
      * When executed in a hydrate() loop we may have to clear internal state to
      * decrease memory consumption.
      *
+     * @param mixed $eventArgs
+     *
      * @return void
      */
     public function onClear($eventArgs)

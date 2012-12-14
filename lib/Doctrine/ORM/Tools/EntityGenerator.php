@@ -299,6 +299,9 @@ public function __construct()
 }
 ';
 
+    /**
+     * Constructor.
+     */
     public function __construct()
     {
         if (version_compare(\Doctrine\Common\Version::VERSION, '2.2.0-DEV', '>=')) {
@@ -438,6 +441,8 @@ public function __construct()
 
     /**
      * Sets the name of the class the generated classes should extend from.
+     *
+     * @param string $classToExtend
      *
      * @return void
      */

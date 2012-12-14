@@ -705,7 +705,7 @@ final class PersistentCollection implements Collection, Selectable
     /* ArrayAccess implementation */
 
     /**
-     * @see containsKey()
+     * {@inheritdoc}
      */
     public function offsetExists($offset)
     {
@@ -713,7 +713,7 @@ final class PersistentCollection implements Collection, Selectable
     }
 
     /**
-     * @see get()
+     * {@inheritdoc}
      */
     public function offsetGet($offset)
     {
@@ -721,8 +721,7 @@ final class PersistentCollection implements Collection, Selectable
     }
 
     /**
-     * @see add()
-     * @see set()
+     * {@inheritdoc}
      */
     public function offsetSet($offset, $value)
     {
@@ -734,20 +733,23 @@ final class PersistentCollection implements Collection, Selectable
     }
 
     /**
-     * @see remove()
+     * {@inheritdoc}
      */
     public function offsetUnset($offset)
     {
         return $this->remove($offset);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function key()
     {
         return $this->coll->key();
     }
 
     /**
-     * Gets the element of the collection at the current iterator position.
+     * {@inheritdoc}
      */
     public function current()
     {
@@ -755,7 +757,7 @@ final class PersistentCollection implements Collection, Selectable
     }
 
     /**
-     * Moves the internal iterator position to the next element.
+     * {@inheritdoc}
      */
     public function next()
     {
@@ -773,7 +775,7 @@ final class PersistentCollection implements Collection, Selectable
     }
 
     /**
-     * Extract a slice of $length elements starting at position $offset from the Collection.
+     * Extracts a slice of $length elements starting at position $offset from the Collection.
      *
      * If $length is null it returns all elements from $offset to the end of the Collection.
      * Keys have to be preserved by this method. Calling this method will only return the
@@ -798,7 +800,7 @@ final class PersistentCollection implements Collection, Selectable
     }
 
     /**
-     * Cleanup internal state of cloned persistent collection.
+     * Cleans up internal state of cloned persistent collection.
      *
      * The following problems have to be prevented:
      * 1. Added entities are added to old PC
@@ -825,7 +827,7 @@ final class PersistentCollection implements Collection, Selectable
     }
 
     /**
-     * Select all elements from a selectable that match the expression and
+     * Selects all elements from a selectable that match the expression and
      * return a new collection containing these elements.
      *
      * @param \Doctrine\Common\Collections\Criteria $criteria
@@ -866,4 +868,3 @@ final class PersistentCollection implements Collection, Selectable
         return new ArrayCollection(array_merge($persister->loadCriteria($criteria), $newObjects));
     }
 }
-
