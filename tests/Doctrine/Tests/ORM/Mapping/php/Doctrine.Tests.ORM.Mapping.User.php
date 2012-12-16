@@ -35,6 +35,9 @@ $metadata->mapField(array(
    'columnName' => 'user_email',
    'columnDefinition' => 'CHAR(32) NOT NULL',
   ));
+$mapping = array('fieldName' => 'version', 'type' => 'integer');
+$metadata->setVersionMapping($mapping);
+$metadata->mapField($mapping);
 $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
 $metadata->mapOneToOne(array(
    'fieldName' => 'address',
