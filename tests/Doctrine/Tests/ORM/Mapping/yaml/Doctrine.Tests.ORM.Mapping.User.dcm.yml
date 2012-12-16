@@ -30,6 +30,9 @@ Doctrine\Tests\ORM\Mapping\User:
       type: string
       column: user_email
       columnDefinition: CHAR(32) NOT NULL
+    version:
+      type: integer
+      version: true
   oneToOne:
     address:
       targetEntity: Address
