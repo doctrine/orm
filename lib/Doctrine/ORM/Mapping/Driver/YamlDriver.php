@@ -297,6 +297,10 @@ class YamlDriver extends FileDriver
                     }
                 }
 
+                if (isset($mapping['version'])) {
+                    $metadata->setVersionMapping($mapping);
+                }
+
                 $metadata->mapField($mapping);
             }
         }

@@ -230,12 +230,21 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $fieldMapping) {
                 $mapping = $this->columnToArray($fieldMapping);
+
+                if (isset($mapping['version'])) {
+                    $metadata->setVersionMapping($mapping);
+                }
+
                 $metadata->mapField($mapping);
             }
         }
 
         foreach ($mappings as $mapping) {
-             $metadata->mapField($mapping);
+            if (isset($mapping['version'])) {
+                $metadata->setVersionMapping($mapping);
+            }
+
+            $metadata->mapField($mapping);
         }
 
         // Evaluate <id ...> mappings

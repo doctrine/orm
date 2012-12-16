@@ -139,12 +139,23 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testFieldMappings($class)
     {
-        $this->assertEquals(3, count($class->fieldMappings));
+        $this->assertEquals(4, count($class->fieldMappings));
         $this->assertTrue(isset($class->fieldMappings['id']));
         $this->assertTrue(isset($class->fieldMappings['name']));
         $this->assertTrue(isset($class->fieldMappings['email']));
+        $this->assertTrue(isset($class->fieldMappings['version']));
 
         return $class;
+    }
+
+    /**
+     * @depends testFieldMappings
+     * @param ClassMetadata $class
+     */
+    public function testVersionedField($class)
+    {
+        $this->assertTrue($class->isVersioned);
+        $this->assertEquals("version", $class->versionField);
     }
 
     /**
@@ -793,6 +804,12 @@ class User
      */
     public $groups;
 
+    /**
+     * @Column(type="integer")
+     * @Version
+     */
+    public $version;
+
 
     /**
      * @PrePersist
@@ -847,6 +864,9 @@ class User
            'columnName' => 'user_email',
            'columnDefinition' => 'CHAR(32) NOT NULL',
           ));
+        $mapping = array('fieldName' => 'version', 'type' => 'integer');
+        $metadata->setVersionMapping($mapping);
+        $metadata->mapField($mapping);
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
         $metadata->mapOneToOne(array(
            'fieldName' => 'address',
