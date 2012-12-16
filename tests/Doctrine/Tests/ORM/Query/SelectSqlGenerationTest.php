@@ -1261,6 +1261,29 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
         );
     }
 
+    public function testIdentityFunctionWithCompositePrimaryKey()
+    {
+        $this->assertSqlGeneration(
+            "SELECT IDENTITY(p.poi, 'long') AS long FROM Doctrine\Tests\Models\Navigation\NavPhotos p",
+            "SELECT n0_.poi_long AS sclr0 FROM navigation_photos n0_"
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT IDENTITY(p.poi, 'lat') AS lat FROM Doctrine\Tests\Models\Navigation\NavPhotos p",
+            "SELECT n0_.poi_lat AS sclr0 FROM navigation_photos n0_"
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT IDENTITY(p.poi, 'long') AS long, IDENTITY(p.poi, 'lat') AS lat FROM Doctrine\Tests\Models\Navigation\NavPhotos p",
+            "SELECT n0_.poi_long AS sclr0, n0_.poi_lat AS sclr1 FROM navigation_photos n0_"
+        );
+
+        $this->assertInvalidSqlGeneration(
+            "SELECT IDENTITY(p.poi, 'invalid') AS invalid FROM Doctrine\Tests\Models\Navigation\NavPhotos p",
+            "Doctrine\ORM\Query\QueryException"
+        );
+    }
+
     /**
      * @group DDC-1339
      */
