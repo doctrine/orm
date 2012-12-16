@@ -2394,7 +2394,7 @@ class UnitOfWork implements PropertyChangedListener
             foreach ($class->identifier as $fieldName) {
                 $id[$fieldName] = isset($class->associationMappings[$fieldName])
                     ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
-                    : $data[$fieldName];
+                    : $data[$fieldName] instanceof \DateTime ? $data[$fieldName]->format("d-m-Y-H-i-s") : $data[$fieldName];
             }
 
             $idHash = implode(' ', $id);
