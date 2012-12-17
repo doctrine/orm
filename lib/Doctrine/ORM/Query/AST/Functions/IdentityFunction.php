@@ -41,7 +41,7 @@ class IdentityFunction extends FunctionNode
     public $pathExpression;
 
     /**
-     * @var integer
+     * @var string
      */
     public $fieldMapping;
 
