@@ -69,6 +69,7 @@ class IdentityFunction extends FunctionNode
             $joinColumn = null;
 
             foreach ($assoc['joinColumns'] as $mapping) {
+
                 if($mapping['referencedColumnName'] === $field['columnName']) {
                     $joinColumn = $mapping;
 
@@ -97,14 +98,13 @@ class IdentityFunction extends FunctionNode
 
         $this->pathExpression = $parser->SingleValuedAssociationPathExpression();
 
-        if ($parser->getLexer()->lookahead['type'] == Lexer::T_COMMA) {
+        if ($parser->getLexer()->isNextToken(Lexer::T_COMMA)) {
             $parser->match(Lexer::T_COMMA);
             $parser->match(Lexer::T_STRING);
 
             $this->fieldMapping = $parser->getLexer()->token['value'];
         }
-        
+
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }
-
