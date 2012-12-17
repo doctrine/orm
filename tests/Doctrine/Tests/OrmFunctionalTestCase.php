@@ -127,6 +127,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         'compositekeyinheritance' => array(
             'Doctrine\Tests\Models\CompositeKeyInheritance\JoinedRootClass',
             'Doctrine\Tests\Models\CompositeKeyInheritance\JoinedChildClass',
+            'Doctrine\Tests\Models\CompositeKeyInheritance\SingleRootClass',
+            'Doctrine\Tests\Models\CompositeKeyInheritance\SingleChildClass',
         )
     );
 
@@ -246,6 +248,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         if (isset($this->_usedModelSets['compositekeyinheritance'])) {
             $conn->executeUpdate('DELETE FROM JoinedChildClass');
             $conn->executeUpdate('DELETE FROM JoinedRootClass');
+            $conn->executeUpdate('DELETE FROM SingleRootClass');
         }
 
 
