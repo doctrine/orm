@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Event;
 use Doctrine\Common\EventArgs;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs as BaseLoadClassMetadataEventArgs;
 
 /**
  * Class that holds event arguments for a loadMetadata event.
@@ -29,40 +30,8 @@ use Doctrine\ORM\EntityManager;
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @since  2.0
  */
-class LoadClassMetadataEventArgs extends EventArgs
+class LoadClassMetadataEventArgs extends BaseLoadClassMetadataEventArgs
 {
-    /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
-     */
-    private $classMetadata;
-
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
-    private $em;
-
-    /**
-     * Constructor.
-     *
-     * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $classMetadata
-     * @param \Doctrine\ORM\EntityManager $em
-     */
-    public function __construct(ClassMetadataInfo $classMetadata, EntityManager $em)
-    {
-        $this->classMetadata = $classMetadata;
-        $this->em            = $em;
-    }
-
-    /**
-     * Retrieve associated ClassMetadata.
-     *
-     * @return \Doctrine\ORM\Mapping\ClassMetadataInfo
-     */
-    public function getClassMetadata()
-    {
-        return $this->classMetadata;
-    }
-
     /**
      * Retrieve associated EntityManager.
      *
@@ -70,7 +39,7 @@ class LoadClassMetadataEventArgs extends EventArgs
      */
     public function getEntityManager()
     {
-        return $this->em;
+        return $this->getObjectManager();
     }
 }
 

@@ -19,8 +19,8 @@
 
 namespace Doctrine\ORM\Event;
 
-use Doctrine\Common\EventArgs;
 use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\Event\LifecycleEventArgs as BaseLifecycleEventArgs;
 
 /**
  * Lifecycle Events are triggered by the UnitOfWork during lifecycle transitions
@@ -31,30 +31,8 @@ use Doctrine\ORM\EntityManager;
  * @author Roman Borschel <roman@code-factory.de>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class LifecycleEventArgs extends EventArgs
+class LifecycleEventArgs extends BaseLifecycleEventArgs
 {
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
-    private $em;
-
-    /**
-     * @var object
-     */
-    private $entity;
-
-    /**
-     * Constructor
-     *
-     * @param object $entity
-     * @param \Doctrine\ORM\EntityManager $em
-     */
-    public function __construct($entity, EntityManager $em)
-    {
-        $this->entity = $entity;
-        $this->em     = $em;
-    }
-
     /**
      * Retrieve associated Entity.
      *
@@ -62,7 +40,7 @@ class LifecycleEventArgs extends EventArgs
      */
     public function getEntity()
     {
-        return $this->entity;
+        return $this->getObject();
     }
 
     /**
@@ -72,6 +50,6 @@ class LifecycleEventArgs extends EventArgs
      */
     public function getEntityManager()
     {
-        return $this->em;
+        return $this->getObjectManager();
     }
 }
