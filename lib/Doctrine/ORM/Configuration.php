@@ -49,10 +49,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Sets the directory where Doctrine generates any necessary proxy class files.
      *
      * @param string $dir
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function setProxyDir($dir)
     {
         $this->_attributes['proxyDir'] = $dir;
+
+        return $this;
     }
 
     /**
@@ -85,10 +89,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * during each script execution.
      *
      * @param boolean $bool
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function setAutoGenerateProxyClasses($bool)
     {
         $this->_attributes['autoGenerateProxyClasses'] = $bool;
+
+        return $this;
     }
 
     /**
@@ -107,10 +115,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Sets the namespace where proxy classes reside.
      *
      * @param string $ns
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function setProxyNamespace($ns)
     {
         $this->_attributes['proxyNamespace'] = $ns;
+
+        return $this;
     }
 
     /**
@@ -119,10 +131,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param MappingDriver $driverImpl
      * @todo Force parameter to be a Closure to ensure lazy evaluation
      *       (as soon as a metadata cache is in effect, the driver never needs to initialize).
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function setMetadataDriverImpl(MappingDriver $driverImpl)
     {
         $this->_attributes['metadataDriverImpl'] = $driverImpl;
+
+        return $this;
     }
 
     /**
@@ -157,10 +173,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $alias
      * @param string $namespace
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function addEntityNamespace($alias, $namespace)
     {
         $this->_attributes['entityNamespaces'][$alias] = $namespace;
+
+        return $this;
     }
 
     /**
@@ -183,10 +203,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Set the entity alias map
      *
      * @param array $entityNamespaces
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function setEntityNamespaces(array $entityNamespaces)
     {
         $this->_attributes['entityNamespaces'] = $entityNamespaces;
+
+        return $this;
     }
 
     /**
@@ -228,10 +252,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Sets the cache driver implementation that is used for the query cache (SQL cache).
      *
      * @param \Doctrine\Common\Cache\Cache $cacheImpl
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function setQueryCacheImpl(Cache $cacheImpl)
     {
         $this->_attributes['queryCacheImpl'] = $cacheImpl;
+
+        return $this;
     }
 
     /**
@@ -250,10 +278,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Sets the cache driver implementation that is used for the hydration cache (SQL cache).
      *
      * @param \Doctrine\Common\Cache\Cache $cacheImpl
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function setHydrationCacheImpl(Cache $cacheImpl)
     {
         $this->_attributes['hydrationCacheImpl'] = $cacheImpl;
+
+        return $this;
     }
 
     /**
@@ -272,10 +304,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Sets the cache driver implementation that is used for metadata caching.
      *
      * @param \Doctrine\Common\Cache\Cache $cacheImpl
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function setMetadataCacheImpl(Cache $cacheImpl)
     {
         $this->_attributes['metadataCacheImpl'] = $cacheImpl;
+
+        return $this;
     }
 
     /**
@@ -283,10 +319,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name The name of the query.
      * @param string $dql The DQL query string.
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function addNamedQuery($name, $dql)
     {
         $this->_attributes['namedQueries'][$name] = $dql;
+
+        return $this;
     }
 
     /**
@@ -311,10 +351,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string                 $name The name of the query.
      * @param string                 $sql  The native SQL query string.
      * @param Query\ResultSetMapping $rsm  The ResultSetMapping used for the results of the SQL query.
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function addNamedNativeQuery($name, $sql, Query\ResultSetMapping $rsm)
     {
         $this->_attributes['namedNativeQueries'][$name] = array($sql, $rsm);
+
+        return $this;
     }
 
     /**
@@ -366,6 +410,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string $name
      * @param string $className
      * @throws ORMException
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function addCustomStringFunction($name, $className)
     {
@@ -374,6 +420,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
 
         $this->_attributes['customStringFunctions'][strtolower($name)] = $className;
+
+        return $this;
     }
 
     /**
@@ -400,12 +448,16 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Any previously added string functions are discarded.
      *
      * @param array $functions The map of custom DQL string functions.
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function setCustomStringFunctions(array $functions)
     {
         foreach ($functions as $name => $className) {
             $this->addCustomStringFunction($name, $className);
         }
+
+        return $this;
     }
 
     /**
@@ -418,6 +470,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string $name
      * @param string $className
      * @throws ORMException
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function addCustomNumericFunction($name, $className)
     {
@@ -426,6 +480,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
 
         $this->_attributes['customNumericFunctions'][strtolower($name)] = $className;
+
+        return $this;
     }
 
     /**
@@ -452,12 +508,16 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Any previously added numeric functions are discarded.
      *
      * @param array $functions The map of custom DQL numeric functions.
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function setCustomNumericFunctions(array $functions)
     {
         foreach ($functions as $name => $className) {
             $this->addCustomNumericFunction($name, $className);
         }
+
+        return $this;
     }
 
     /**
@@ -470,6 +530,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string $name
      * @param string $className
      * @throws ORMException
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function addCustomDatetimeFunction($name, $className)
     {
@@ -478,6 +540,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
 
         $this->_attributes['customDatetimeFunctions'][strtolower($name)] = $className;
+
+        return $this;
     }
 
     /**
@@ -504,18 +568,24 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Any previously added date/time functions are discarded.
      *
      * @param array $functions The map of custom DQL date/time functions.
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function setCustomDatetimeFunctions(array $functions)
     {
         foreach ($functions as $name => $className) {
             $this->addCustomDatetimeFunction($name, $className);
         }
+
+        return $this;
     }
 
     /**
      * Set the custom hydrator modes in one pass.
      *
      * @param array An array of ($modeName => $hydrator)
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function setCustomHydrationModes($modes)
     {
@@ -524,6 +594,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
         foreach ($modes as $modeName => $hydrator) {
             $this->addCustomHydrationMode($modeName, $hydrator);
         }
+
+        return $this;
     }
 
     /**
@@ -544,20 +616,28 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $modeName The hydration mode name.
      * @param string $hydrator The hydrator class name.
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function addCustomHydrationMode($modeName, $hydrator)
     {
         $this->_attributes['customHydrationModes'][$modeName] = $hydrator;
+
+        return $this;
     }
 
     /**
      * Set a class metadata factory.
      *
      * @param string $cmfName
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function setClassMetadataFactoryName($cmfName)
     {
         $this->_attributes['classMetadataFactoryName'] = $cmfName;
+
+        return $this;
     }
 
     /**
@@ -581,6 +661,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @throws \InvalidArgumentException If the filter is an object and it doesn't
      *                                   extend the Query\Filter\SQLFilter class.
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function addFilter($name, $filter)
     {
@@ -592,6 +674,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
 
         $this->_attributes['filters'][$name] = $filter;
+
+        return $this;
     }
 
     /**
@@ -615,6 +699,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @since 2.2
      * @param string $className
      * @throws ORMException If not is a \Doctrine\Common\Persistence\ObjectRepository
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function setDefaultRepositoryClassName($className)
     {
@@ -625,6 +711,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
 
         $this->_attributes['defaultRepositoryClassName'] = $className;
+
+        return $this;
     }
 
     /**
@@ -645,10 +733,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @since 2.3
      * @param NamingStrategy $namingStrategy
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function setNamingStrategy(NamingStrategy $namingStrategy)
     {
         $this->_attributes['namingStrategy'] = $namingStrategy;
+
+        return $this;
     }
 
     /**
@@ -671,10 +763,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @since 2.3
      * @param \Doctrine\ORM\Mapping\QuoteStrategy $quoteStrategy
+     *
+     * @return \Doctrine\ORM\Configuration
      */
     public function setQuoteStrategy(QuoteStrategy $quoteStrategy)
     {
         $this->_attributes['quoteStrategy'] = $quoteStrategy;
+
+        return $this;
     }
 
     /**
