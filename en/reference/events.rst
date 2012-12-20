@@ -354,7 +354,7 @@ EventManager that is passed to the EntityManager factory:
 
     <?php
     $eventManager = new EventManager();
-    $eventManager->addEventListener(array(Events::preUpdate), MyEventListener());
+    $eventManager->addEventListener(array(Events::preUpdate), new MyEventListener());
     $eventManager->addEventSubscriber(new MyEventSubscriber());
     
     $entityManager = EntityManager::create($dbOpts, $config, $eventManager);
@@ -365,7 +365,7 @@ EntityManager was created:
 .. code-block:: php
 
     <?php
-    $entityManager->getEventManager()->addEventListener(array(Events::preUpdate), MyEventListener());
+    $entityManager->getEventManager()->addEventListener(array(Events::preUpdate), new MyEventListener());
     $entityManager->getEventManager()->addEventSubscriber(new MyEventSubscriber());
 
 .. _reference-events-implementing-listeners:
