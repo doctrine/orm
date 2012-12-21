@@ -2573,6 +2573,7 @@ class UnitOfWork implements PropertyChangedListener
                             $newValueOid = spl_object_hash($newValue);
                             $this->entityIdentifiers[$newValueOid] = $associatedId;
                             $this->identityMap[$targetClass->rootEntityName][$relatedIdHash] = $newValue;
+
                             if ($newValue instanceof NotifyPropertyChanged) {
                                 $newValue->addPropertyChangedListener($this);
                             }
