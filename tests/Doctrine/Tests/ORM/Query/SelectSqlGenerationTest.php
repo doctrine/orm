@@ -1231,6 +1231,37 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
     }
 
     /**
+     * @group DDC-2205
+     */
+    public function testCaseNegativeValuesInThenExpression()
+    {
+        $this->assertSqlGeneration(
+            "SELECT CASE g.name WHEN 'admin' THEN - 1 ELSE - 2 END FROM Doctrine\Tests\Models\CMS\CmsGroup g",
+            "SELECT CASE c0_.name WHEN 'admin' THEN -1 ELSE -2 END AS sclr0 FROM cms_groups c0_"
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT CASE g.name WHEN 'admin' THEN  - 2 WHEN 'guest' THEN - 1 ELSE 0 END FROM Doctrine\Tests\Models\CMS\CmsGroup g",
+            "SELECT CASE c0_.name WHEN 'admin' THEN -2 WHEN 'guest' THEN -1 ELSE 0 END AS sclr0 FROM cms_groups c0_"
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT CASE g.name WHEN 'admin' THEN (- 1) ELSE (- 2) END FROM Doctrine\Tests\Models\CMS\CmsGroup g",
+            "SELECT CASE c0_.name WHEN 'admin' THEN -1 ELSE -2 END AS sclr0 FROM cms_groups c0_"
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT CASE g.name WHEN 'admin' THEN ( - :value) ELSE ( + :value) END FROM Doctrine\Tests\Models\CMS\CmsGroup g",
+            "SELECT CASE c0_.name WHEN 'admin' THEN -? ELSE +? END AS sclr0 FROM cms_groups c0_"
+        );
+
+        $this->assertSqlGeneration(
+            "SELECT CASE g.name WHEN 'admin' THEN ( - g.id) ELSE ( + g.id) END FROM Doctrine\Tests\Models\CMS\CmsGroup g",
+            "SELECT CASE c0_.name WHEN 'admin' THEN -c0_.id ELSE +c0_.id END AS sclr0 FROM cms_groups c0_"
+        );
+    }
+
+    /**
      * @group DDC-1339
      */
     public function testIdentityFunctionInSelectClause()
