@@ -1792,6 +1792,9 @@ class Parser
         switch (true) {
             case ($lookahead === Lexer::T_INTEGER):
             case ($lookahead === Lexer::T_FLOAT):
+            // SimpleArithmeticExpression : (- u.value ) or ( + u.value )  or ( - 1 ) or ( + 1 )
+            case ($lookahead === Lexer::T_MINUS):
+            case ($lookahead === Lexer::T_PLUS):
                 return $this->SimpleArithmeticExpression();
 
             case ($lookahead === Lexer::T_STRING):
