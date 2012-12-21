@@ -1773,19 +1773,25 @@ class SelectSqlGenerationTest extends \Doctrine\Tests\OrmTestCase
             'SELECT q0_."group-id" AS groupid0, q0_."group-name" AS groupname1, q1_."group-id" AS groupid2, q1_."group-name" AS groupname3 FROM "quote-group" q0_ INNER JOIN "quote-group" q1_ ON q0_."parent-id" = q1_."group-id"'
         );
     }
+
    /**
     * @group DDC-2208
     */
     public function testCaseThenParameterArithmeticExpression()
     {
         $this->assertSqlGeneration(
-            'SELECT SUM(CASE WHEN e.startDate <= :date THEN e.startDate - :date WHEN e.startDate >= :date THEN :date - e.startDate ELSE 0 END) FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
-            'SELECT SUM(CASE WHEN c0_.startDate <= ? THEN c0_.startDate - ? WHEN c0_.startDate >= ? THEN ? - c0_.startDate ELSE 0 END) AS sclr0 FROM company_employees c0_ INNER JOIN company_persons c1_ ON c0_.id = c1_.id'
+            'SELECT SUM(CASE WHEN e.salary <= :value THEN e.salary - :value WHEN e.salary >= :value THEN :value - e.salary ELSE 0 END) FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
+            'SELECT SUM(CASE WHEN c0_.salary <= ? THEN c0_.salary - ? WHEN c0_.salary >= ? THEN ? - c0_.salary ELSE 0 END) AS sclr0 FROM company_employees c0_ INNER JOIN company_persons c1_ ON c0_.id = c1_.id'
         );
 
         $this->assertSqlGeneration(
-            'SELECT SUM(CASE WHEN e.startDate <= :date THEN e.startDate - :date WHEN e.startDate >= :date THEN :date - e.startDate ELSE e.startDate + 0 END) FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
-            'SELECT SUM(CASE WHEN c0_.startDate <= ? THEN c0_.startDate - ? WHEN c0_.startDate >= ? THEN ? - c0_.startDate ELSE c0_.startDate + 0 END) AS sclr0 FROM company_employees c0_ INNER JOIN company_persons c1_ ON c0_.id = c1_.id'
+            'SELECT SUM(CASE WHEN e.salary <= :value THEN e.salary - :value WHEN e.salary >= :value THEN :value - e.salary ELSE e.salary + 0 END) FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
+            'SELECT SUM(CASE WHEN c0_.salary <= ? THEN c0_.salary - ? WHEN c0_.salary >= ? THEN ? - c0_.salary ELSE c0_.salary + 0 END) AS sclr0 FROM company_employees c0_ INNER JOIN company_persons c1_ ON c0_.id = c1_.id'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT SUM(CASE WHEN e.salary <= :value THEN (e.salary - :value) WHEN e.salary >= :value THEN (:value - e.salary) ELSE (e.salary + :value) END) FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
+            'SELECT SUM(CASE WHEN c0_.salary <= ? THEN c0_.salary - ? WHEN c0_.salary >= ? THEN ? - c0_.salary ELSE c0_.salary + ? END) AS sclr0 FROM company_employees c0_ INNER JOIN company_persons c1_ ON c0_.id = c1_.id'
         );
     }
 }
