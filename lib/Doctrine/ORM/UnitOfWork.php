@@ -2571,6 +2571,10 @@ class UnitOfWork implements PropertyChangedListener
                             $newValueOid = spl_object_hash($newValue);
                             $this->entityIdentifiers[$newValueOid] = $associatedId;
                             $this->identityMap[$targetClass->rootEntityName][$relatedIdHash] = $newValue;
+
+                            if ($newValue instanceof NotifyPropertyChanged) {
+                                $newValue->addPropertyChangedListener($this);
+                            }
                             $this->entityStates[$newValueOid] = self::STATE_MANAGED;
                             // make sure that when an proxy is then finally loaded, $this->originalEntityData is set also!
                             break;
