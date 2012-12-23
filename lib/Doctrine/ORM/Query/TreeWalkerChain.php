@@ -29,17 +29,36 @@ namespace Doctrine\ORM\Query;
  */
 class TreeWalkerChain implements TreeWalker
 {
-    /** The tree walkers. */
+    /**
+     * The tree walkers.
+     *
+     * @var TreeWalker[]
+     */
     private $_walkers = array();
-    /** The original Query. */
+
+    /**
+     * The original Query.
+     *
+     * @var \Doctrine\ORM\AbstractQuery
+     */
     private $_query;
-    /** The ParserResult of the original query that was produced by the Parser. */
+
+    /**
+     * The ParserResult of the original query that was produced by the Parser.
+     *
+     * @var \Doctrine\ORM\Query\ParserResult
+     */
     private $_parserResult;
-    /** The query components of the original query (the "symbol table") that was produced by the Parser. */
+
+    /**
+     * The query components of the original query (the "symbol table") that was produced by the Parser.
+     *
+     * @var array
+     */
     private $_queryComponents;
 
     /**
-     * Return internal queryComponents array
+     * Returns the internal queryComponents array.
      *
      * @return array
      */
@@ -49,10 +68,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Set or override a query component for a given dql alias.
-     *
-     * @param string $dqlAlias The DQL alias.
-     * @param array $queryComponent
+     * {@inheritdoc}
      */
     public function setQueryComponent($dqlAlias, array $queryComponent)
     {
@@ -66,7 +82,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
@@ -79,6 +95,8 @@ class TreeWalkerChain implements TreeWalker
      * Adds a tree walker to the chain.
      *
      * @param string $walkerClass The class of the walker to instantiate.
+     *
+     * @return void
      */
     public function addTreeWalker($walkerClass)
     {
@@ -86,9 +104,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a SelectStatement AST node, thereby generating the appropriate SQL.
-     *
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkSelectStatement(AST\SelectStatement $AST)
     {
@@ -100,9 +116,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a SelectClause AST node, thereby generating the appropriate SQL.
-     *
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkSelectClause($selectClause)
     {
@@ -112,9 +126,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a FromClause AST node, thereby generating the appropriate SQL.
-     *
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkFromClause($fromClause)
     {
@@ -124,9 +136,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a FunctionNode AST node, thereby generating the appropriate SQL.
-     *
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkFunction($function)
     {
@@ -136,10 +146,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down an OrderByClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param OrderByClause
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkOrderByClause($orderByClause)
     {
@@ -149,10 +156,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down an OrderByItem AST node, thereby generating the appropriate SQL.
-     *
-     * @param OrderByItem
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkOrderByItem($orderByItem)
     {
@@ -162,10 +166,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a HavingClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param HavingClause
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkHavingClause($havingClause)
     {
@@ -175,10 +176,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a Join AST node and creates the corresponding SQL.
-     *
-     * @param Join $join
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkJoin($join)
     {
@@ -188,10 +186,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a SelectExpression AST node and generates the corresponding SQL.
-     *
-     * @param SelectExpression $selectExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkSelectExpression($selectExpression)
     {
@@ -201,10 +196,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a QuantifiedExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param QuantifiedExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkQuantifiedExpression($qExpr)
     {
@@ -214,10 +206,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a Subselect AST node, thereby generating the appropriate SQL.
-     *
-     * @param Subselect
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkSubselect($subselect)
     {
@@ -227,10 +216,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a SubselectFromClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param SubselectFromClause
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkSubselectFromClause($subselectFromClause)
     {
@@ -240,10 +226,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a SimpleSelectClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param SimpleSelectClause
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkSimpleSelectClause($simpleSelectClause)
     {
@@ -253,10 +236,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a SimpleSelectExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param SimpleSelectExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkSimpleSelectExpression($simpleSelectExpression)
     {
@@ -266,10 +246,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down an AggregateExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param AggregateExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkAggregateExpression($aggExpression)
     {
@@ -279,10 +256,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a GroupByClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param GroupByClause
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkGroupByClause($groupByClause)
     {
@@ -292,10 +266,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a GroupByItem AST node, thereby generating the appropriate SQL.
-     *
-     * @param GroupByItem
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkGroupByItem($groupByItem)
     {
@@ -305,10 +276,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down an UpdateStatement AST node, thereby generating the appropriate SQL.
-     *
-     * @param UpdateStatement
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkUpdateStatement(AST\UpdateStatement $AST)
     {
@@ -318,10 +286,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a DeleteStatement AST node, thereby generating the appropriate SQL.
-     *
-     * @param DeleteStatement
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkDeleteStatement(AST\DeleteStatement $AST)
     {
@@ -331,10 +296,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a DeleteClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param DeleteClause
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkDeleteClause(AST\DeleteClause $deleteClause)
     {
@@ -344,10 +306,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down an UpdateClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param UpdateClause
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkUpdateClause($updateClause)
     {
@@ -357,10 +316,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down an UpdateItem AST node, thereby generating the appropriate SQL.
-     *
-     * @param UpdateItem
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkUpdateItem($updateItem)
     {
@@ -370,10 +326,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a WhereClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param WhereClause
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkWhereClause($whereClause)
     {
@@ -383,10 +336,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a ConditionalExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param ConditionalExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkConditionalExpression($condExpr)
     {
@@ -396,10 +346,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a ConditionalTerm AST node, thereby generating the appropriate SQL.
-     *
-     * @param ConditionalTerm
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkConditionalTerm($condTerm)
     {
@@ -409,10 +356,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a ConditionalFactor AST node, thereby generating the appropriate SQL.
-     *
-     * @param ConditionalFactor
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkConditionalFactor($factor)
     {
@@ -422,10 +366,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a ConditionalPrimary AST node, thereby generating the appropriate SQL.
-     *
-     * @param ConditionalPrimary
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkConditionalPrimary($condPrimary)
     {
@@ -435,10 +376,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down an ExistsExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param ExistsExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkExistsExpression($existsExpr)
     {
@@ -448,10 +386,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a CollectionMemberExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param CollectionMemberExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkCollectionMemberExpression($collMemberExpr)
     {
@@ -461,10 +396,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down an EmptyCollectionComparisonExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param EmptyCollectionComparisonExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkEmptyCollectionComparisonExpression($emptyCollCompExpr)
     {
@@ -474,10 +406,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a NullComparisonExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param NullComparisonExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkNullComparisonExpression($nullCompExpr)
     {
@@ -487,10 +416,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down an InExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param InExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkInExpression($inExpr)
     {
@@ -500,10 +426,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down an InstanceOfExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param InstanceOfExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     function walkInstanceOfExpression($instanceOfExpr)
     {
@@ -513,10 +436,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a literal that represents an AST node, thereby generating the appropriate SQL.
-     *
-     * @param mixed
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkLiteral($literal)
     {
@@ -526,10 +446,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a BetweenExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param BetweenExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkBetweenExpression($betweenExpr)
     {
@@ -539,10 +456,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a LikeExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param LikeExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkLikeExpression($likeExpr)
     {
@@ -552,10 +466,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a StateFieldPathExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param StateFieldPathExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkStateFieldPathExpression($stateFieldPathExpression)
     {
@@ -565,10 +476,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a ComparisonExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param ComparisonExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkComparisonExpression($compExpr)
     {
@@ -578,10 +486,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down an InputParameter AST node, thereby generating the appropriate SQL.
-     *
-     * @param InputParameter
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkInputParameter($inputParam)
     {
@@ -591,10 +496,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down an ArithmeticExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param ArithmeticExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkArithmeticExpression($arithmeticExpr)
     {
@@ -604,10 +506,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down an ArithmeticTerm AST node, thereby generating the appropriate SQL.
-     *
-     * @param mixed
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkArithmeticTerm($term)
     {
@@ -617,10 +516,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down a StringPrimary that represents an AST node, thereby generating the appropriate SQL.
-     *
-     * @param mixed
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkStringPrimary($stringPrimary)
     {
@@ -630,10 +526,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down an ArithmeticFactor that represents an AST node, thereby generating the appropriate SQL.
-     *
-     * @param mixed
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkArithmeticFactor($factor)
     {
@@ -643,10 +536,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down an SimpleArithmeticExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param SimpleArithmeticExpression
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkSimpleArithmeticExpression($simpleArithmeticExpr)
     {
@@ -656,10 +546,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down an PathExpression AST node, thereby generating the appropriate SQL.
-     *
-     * @param mixed
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkPathExpression($pathExpr)
     {
@@ -669,10 +556,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Walks down an ResultVariable AST node, thereby generating the appropriate SQL.
-     *
-     * @param string $resultVariable
-     * @return string The SQL.
+     * {@inheritdoc}
      */
     public function walkResultVariable($resultVariable)
     {
@@ -682,10 +566,9 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * Gets an executor that can be used to execute the result of this walker.
-     *
-     * @return AbstractExecutor
+     * {@inheritdoc}
      */
     public function getExecutor($AST)
-    {}
+    {
+    }
 }

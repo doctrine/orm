@@ -20,9 +20,8 @@
 namespace Doctrine\ORM\Query\Expr;
 
 /**
- * Expression class for DQL comparison expressions
+ * Expression class for DQL comparison expressions.
  *
- * 
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -56,9 +55,9 @@ class Comparison
     /**
      * Creates a comparison expression with the given arguments.
      * 
-     * @param mixed     $leftExpr
-     * @param string    $operator
-     * @param mixed     $rightExpr
+     * @param mixed  $leftExpr
+     * @param string $operator
+     * @param mixed  $rightExpr
      */
     public function __construct($leftExpr, $operator, $rightExpr)
     {

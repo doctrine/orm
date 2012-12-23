@@ -22,7 +22,6 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * DeleteStatement = DeleteClause [WhereClause]
  *
- * 
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -31,14 +30,27 @@ namespace Doctrine\ORM\Query\AST;
  */
 class DeleteStatement extends Node
 {
+    /**
+     * @var DeleteClause
+     */
     public $deleteClause;
+
+    /**
+     * @var WhereClause|null
+     */
     public $whereClause;
 
+    /**
+     * @param DeleteClause $deleteClause
+     */
     public function __construct($deleteClause)
     {
         $this->deleteClause = $deleteClause;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkDeleteStatement($this);

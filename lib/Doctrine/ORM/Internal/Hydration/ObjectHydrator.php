@@ -38,8 +38,11 @@ use Doctrine\ORM\Proxy\Proxy;
  */
 class ObjectHydrator extends AbstractHydrator
 {
-    /* Local ClassMetadata cache to avoid going to the EntityManager all the time.
+    /**
+     * Local ClassMetadata cache to avoid going to the EntityManager all the time.
      * This local cache is maintained between hydration runs and not cleared.
+     *
+     * @var array
      */
     private $ce = array();
 
@@ -79,7 +82,6 @@ class ObjectHydrator extends AbstractHydrator
      * @var array
      */
     private $existingCollections = array();
-
 
      /**
      * {@inheritdoc}
@@ -191,6 +193,8 @@ class ObjectHydrator extends AbstractHydrator
      * @param ClassMetadata $class
      * @param string        $fieldName      The name of the field on the entity that holds the collection.
      * @param string        $parentDqlAlias Alias of the parent fetch joining this collection.
+     *
+     * @return \Doctrine\ORM\PersistentCollection
      */
     private function initRelatedCollection($entity, $class, $fieldName, $parentDqlAlias)
     {
@@ -236,7 +240,10 @@ class ObjectHydrator extends AbstractHydrator
      *
      * @param array  $data     The instance data.
      * @param string $dqlAlias The DQL alias of the entity's class.
+     *
      * @return object The entity.
+     *
+     * @throws HydrationException
      */
     private function getEntity(array $data, $dqlAlias)
     {
@@ -275,6 +282,7 @@ class ObjectHydrator extends AbstractHydrator
     /**
      * @param string $className
      * @param array  $data
+     *
      * @return mixed
      */
     private function getEntityFromIdentityMap($className, array $data)
@@ -306,6 +314,7 @@ class ObjectHydrator extends AbstractHydrator
      * local cache.
      *
      * @param string $className The name of the class.
+     *
      * @return ClassMetadata
      */
     private function getClassMetadata($className)
@@ -337,6 +346,8 @@ class ObjectHydrator extends AbstractHydrator
      * @param array $row    The data of the row to process.
      * @param array $cache  The cache to use.
      * @param array $result The result array to fill.
+     *
+     * @return void
      */
     protected function hydrateRowData(array $row, array &$cache, array &$result)
     {
@@ -593,12 +604,15 @@ class ObjectHydrator extends AbstractHydrator
                 $result[$resultKey][$objIndex] = $obj;
             }
         }
-
     }
 
     /**
      * When executed in a hydrate() loop we may have to clear internal state to
      * decrease memory consumption.
+     *
+     * @param mixed $eventArgs
+     *
+     * @return void
      */
     public function onClear($eventArgs)
     {

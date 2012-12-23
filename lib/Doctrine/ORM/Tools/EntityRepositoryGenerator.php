@@ -50,6 +50,11 @@ class <className> extends EntityRepository
 }
 ';
 
+    /**
+     * @param string $fullClassName
+     *
+     * @return string
+     */
     public function generateEntityRepositoryClass($fullClassName)
     {
         $className = substr($fullClassName, strrpos($fullClassName, '\\') + 1, strlen($fullClassName));
@@ -63,9 +68,10 @@ class <className> extends EntityRepository
     }
 
     /**
-     * Generate the namespace statement, if class do not have namespace, return empty string instead
+     * Generates the namespace statement, if class do not have namespace, return empty string instead.
      * 
-     * @param string $fullClassName The full repository class name
+     * @param string $fullClassName The full repository class name.
+     *
      * @return string $namespace
      */
     private function generateEntityRepositoryNamespace($fullClassName)
@@ -74,7 +80,13 @@ class <className> extends EntityRepository
         
         return $namespace ? 'namespace ' . $namespace . ';' : '';
     }
-    
+
+    /**
+     * @param string $fullClassName
+     * @param string $outputDirectory
+     *
+     * @return void
+     */
     public function writeEntityRepositoryClass($fullClassName, $outputDirectory)
     {
         $code = $this->generateEntityRepositoryClass($fullClassName);

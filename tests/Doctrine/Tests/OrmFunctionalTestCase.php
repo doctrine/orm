@@ -9,12 +9,25 @@ namespace Doctrine\Tests;
  */
 abstract class OrmFunctionalTestCase extends OrmTestCase
 {
-    /* The metadata cache shared between all functional tests. */
+    /**
+     * The metadata cache shared between all functional tests.
+     *
+     * @var \Doctrine\Common\Cache\Cache|null
+     */
     private static $_metadataCacheImpl = null;
-    /* The query cache shared between all functional tests. */
+
+    /**
+     * The query cache shared between all functional tests.
+     *
+     * @var \Doctrine\Common\Cache\Cache|null
+     */
     private static $_queryCacheImpl = null;
 
-    /* Shared connection when a TestCase is run alone (outside of it's functional suite) */
+    /**
+     * Shared connection when a TestCase is run alone (outside of its functional suite).
+     *
+     * @var \Doctrine\DBAL\Connection|null
+     */
     protected static $_sharedConn;
 
     /**
@@ -32,19 +45,32 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      */
     protected $_sqlLoggerStack;
 
-    /** The names of the model sets used in this testcase. */
+    /**
+     * The names of the model sets used in this testcase.
+     *
+     * @var array
+     */
     protected $_usedModelSets = array();
 
-    /** Whether the database schema has already been created. */
+    /**
+     * Whether the database schema has already been created.
+     *
+     * @var array
+     */
     protected static $_tablesCreated = array();
 
     /**
      * Array of entity class name to their tables that were created.
+     *
      * @var array
      */
     protected static $_entityTablesCreated = array();
 
-    /** List of model sets and their classes. */
+    /**
+     * List of model sets and their classes.
+     *
+     * @var array
+     */
     protected static $_modelSets = array(
         'cms' => array(
             'Doctrine\Tests\Models\CMS\CmsUser',
@@ -126,6 +152,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         ),
     );
 
+    /**
+     * @param string $setName
+     *
+     * @return void
+     */
     protected function useModelSet($setName)
     {
         $this->_usedModelSets[$setName] = true;
@@ -133,6 +164,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
     /**
      * Sweeps the database tables and clears the EntityManager.
+     *
+     * @return void
      */
     protected function tearDown()
     {
@@ -242,6 +275,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $this->_em->clear();
     }
 
+    /**
+     * @param array $classNames
+     *
+     * @return void
+     *
+     * @throws \RuntimeException
+     */
     protected function setUpEntitySchema(array $classNames)
     {
         if ($this->_em === null) {
@@ -264,6 +304,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * Creates a connection to the test database, if there is none yet, and
      * creates the necessary tables.
+     *
+     * @return void
      */
     protected function setUp()
     {
@@ -312,9 +354,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * Gets an EntityManager for testing purposes.
      *
-     * @param Configuration $config The Configuration to pass to the EntityManager.
-     * @param EventManager $eventManager The EventManager to pass to the EntityManager.
-     * @return EntityManager
+     * @param \Doctrine\ORM\Configuration   $config       The Configuration to pass to the EntityManager.
+     * @param \Doctrine\Common\EventManager $eventManager The EventManager to pass to the EntityManager.
+     *
+     * @return \Doctrine\ORM\EntityManager
      */
     protected function _getEntityManager($config = null, $eventManager = null) {
         // NOTE: Functional tests use their own shared metadata cache, because
@@ -370,6 +413,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         return \Doctrine\ORM\EntityManager::create($conn, $config);
     }
 
+    /**
+     * @param \Exception $e
+     *
+     * @return void
+     *
+     * @throws \Exception
+     */
     protected function onNotSuccessfulTest(\Exception $e)
     {
         if ($e instanceof \PHPUnit_Framework_AssertionFailedError) {

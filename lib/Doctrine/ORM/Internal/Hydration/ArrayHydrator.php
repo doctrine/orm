@@ -20,7 +20,6 @@
 namespace Doctrine\ORM\Internal\Hydration;
 
 use PDO;
-use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
@@ -33,12 +32,39 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 class ArrayHydrator extends AbstractHydrator
 {
+    /**
+     * @var array
+     */
     private $_ce = array();
+
+    /**
+     * @var array
+     */
     private $_rootAliases = array();
+
+    /**
+     * @var bool
+     */
     private $_isSimpleQuery = false;
+
+    /**
+     * @var array
+     */
     private $_identifierMap = array();
+
+    /**
+     * @var array
+     */
     private $_resultPointers = array();
+
+    /**
+     * @var array
+     */
     private $_idTemplate = array();
+
+    /**
+     * @var int
+     */
     private $_resultCounter = 0;
 
     /**
@@ -238,10 +264,12 @@ class ArrayHydrator extends AbstractHydrator
      * Updates the result pointer for an Entity. The result pointers point to the
      * last seen instance of each Entity type. This is used for graph construction.
      *
-     * @param array $coll  The element.
-     * @param boolean|integer $index  Index of the element in the collection.
-     * @param string $dqlAlias
-     * @param boolean $oneToOne  Whether it is a single-valued association or not.
+     * @param array           $coll     The element.
+     * @param boolean|integer $index    Index of the element in the collection.
+     * @param string          $dqlAlias
+     * @param boolean         $oneToOne Whether it is a single-valued association or not.
+     *
+     * @return void
      */
     private function updateResultPointer(array &$coll, $index, $dqlAlias, $oneToOne)
     {

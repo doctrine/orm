@@ -19,15 +19,14 @@
 
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
-use Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console\Input\InputInterface,
-    Symfony\Component\Console\Output\OutputInterface,
-    Doctrine\ORM\Tools\SchemaTool;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Doctrine\ORM\Tools\SchemaTool;
 
 /**
  * Command to drop the database schema for a set of classes based on their mappings.
- *
  *
  * @link    www.doctrine-project.org
  * @since   2.0
@@ -39,7 +38,7 @@ use Symfony\Component\Console\Input\InputArgument,
 class DropCommand extends AbstractCommand
 {
     /**
-     * @see Console\Command\Command
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -69,6 +68,9 @@ EOT
         );
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
     {
         $isFullDatabaseDrop = $input->getOption('full-database');

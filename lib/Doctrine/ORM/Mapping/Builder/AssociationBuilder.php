@@ -34,19 +34,19 @@ class AssociationBuilder
     protected $mapping;
 
     /**
-     * @var array
+     * @var array|null
      */
     protected $joinColumns;
 
     /**
-     *
      * @var int
      */
     protected $type;
 
     /**
      * @param ClassMetadataBuilder $builder
-     * @param array $mapping
+     * @param array                $mapping
+     * @param int                  $type
      */
     public function __construct(ClassMetadataBuilder $builder, array $mapping, $type)
     {
@@ -55,66 +55,103 @@ class AssociationBuilder
         $this->type = $type;
     }
 
+    /**
+     * @param string $fieldName
+     *
+     * @return AssociationBuilder
+     */
     public function mappedBy($fieldName)
     {
         $this->mapping['mappedBy'] = $fieldName;
         return $this;
     }
 
+    /**
+     * @param string $fieldName
+     *
+     * @return AssociationBuilder
+     */
     public function inversedBy($fieldName)
     {
         $this->mapping['inversedBy'] = $fieldName;
         return $this;
     }
 
+    /**
+     * @return AssociationBuilder
+     */
     public function cascadeAll()
     {
         $this->mapping['cascade'] = array("ALL");
         return $this;
     }
 
+    /**
+     * @return AssociationBuilder
+     */
     public function cascadePersist()
     {
         $this->mapping['cascade'][] = "persist";
         return $this;
     }
 
+    /**
+     * @return AssociationBuilder
+     */
     public function cascadeRemove()
     {
         $this->mapping['cascade'][] = "remove";
         return $this;
     }
 
+    /**
+     * @return AssociationBuilder
+     */
     public function cascadeMerge()
     {
         $this->mapping['cascade'][] = "merge";
         return $this;
     }
 
+    /**
+     * @return AssociationBuilder
+     */
     public function cascadeDetach()
     {
         $this->mapping['cascade'][] = "detach";
         return $this;
     }
 
+    /**
+     * @return AssociationBuilder
+     */
     public function cascadeRefresh()
     {
         $this->mapping['cascade'][] = "refresh";
         return $this;
     }
 
+    /**
+     * @return AssociationBuilder
+     */
     public function fetchExtraLazy()
     {
         $this->mapping['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
         return $this;
     }
 
+    /**
+     * @return AssociationBuilder
+     */
     public function fetchEager()
     {
         $this->mapping['fetch'] = ClassMetadata::FETCH_EAGER;
         return $this;
     }
 
+    /**
+     * @return AssociationBuilder
+     */
     public function fetchLazy()
     {
         $this->mapping['fetch'] = ClassMetadata::FETCH_LAZY;
@@ -122,14 +159,16 @@ class AssociationBuilder
     }
 
     /**
-     * Add Join Columns
+     * Add Join Columns.
      *
-     * @param string $columnName
-     * @param string $referencedColumnName
-     * @param bool $nullable
-     * @param bool $unique
-     * @param string $onDelete
-     * @param string $columnDef
+     * @param string      $columnName
+     * @param string      $referencedColumnName
+     * @param bool        $nullable
+     * @param bool        $unique
+     * @param string|null $onDelete
+     * @param string|null $columnDef
+     *
+     * @return AssociationBuilder
      */
     public function addJoinColumn($columnName, $referencedColumnName, $nullable = true, $unique = false, $onDelete = null, $columnDef = null)
     {
@@ -146,6 +185,8 @@ class AssociationBuilder
 
     /**
      * @return ClassMetadataBuilder
+     *
+     * @throws \InvalidArgumentException
      */
     public function build()
     {

@@ -44,10 +44,10 @@ class LifecycleEventArgs extends EventArgs
     private $entity;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param object $entity
-     * @param \Doctrine\ORM\EntityManager $em
+     * @param object        $entity
+     * @param EntityManager $em
      */
     public function __construct($entity, EntityManager $em)
     {
@@ -56,7 +56,7 @@ class LifecycleEventArgs extends EventArgs
     }
 
     /**
-     * Retrieve associated Entity.
+     * Retrieves associated Entity.
      *
      * @return object
      */
@@ -66,7 +66,7 @@ class LifecycleEventArgs extends EventArgs
     }
 
     /**
-     * Retrieve associated EntityManager.
+     * Retrieves associated EntityManager.
      *
      * @return \Doctrine\ORM\EntityManager
      */

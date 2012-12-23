@@ -32,10 +32,26 @@ namespace Doctrine\ORM\Query\AST;
  */
 class SimpleCaseExpression extends Node
 {
+    /**
+     * @var PathExpression
+     */
     public $caseOperand = null;
+
+    /**
+     * @var array
+     */
     public $simpleWhenClauses = array();
+
+    /**
+     * @var mixed
+     */
     public $elseScalarExpression = null;
 
+    /**
+     * @param PathExpression $caseOperand
+     * @param array          $simpleWhenClauses
+     * @param mixed          $elseScalarExpression
+     */
     public function __construct($caseOperand, array $simpleWhenClauses, $elseScalarExpression)
     {
         $this->caseOperand = $caseOperand;
@@ -43,6 +59,9 @@ class SimpleCaseExpression extends Node
         $this->elseScalarExpression = $elseScalarExpression;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkSimpleCaseExpression($this);

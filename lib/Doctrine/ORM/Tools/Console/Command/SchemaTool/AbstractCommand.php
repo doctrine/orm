@@ -19,11 +19,21 @@
 
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
-use Symfony\Component\Console\Input\InputInterface,
-    Symfony\Component\Console\Output\OutputInterface,
-    Symfony\Component\Console\Command\Command,
-    Doctrine\ORM\Tools\SchemaTool;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Command\Command;
+use Doctrine\ORM\Tools\SchemaTool;
 
+/**
+ * Base class for CreateCommand, DropCommand and UpdateCommand.
+ *
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
+ * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author  Jonathan Wage <jonwage@gmail.com>
+ * @author  Roman Borschel <roman@code-factory.org>
+ */
 abstract class AbstractCommand extends Command
 {
     /**
@@ -31,11 +41,13 @@ abstract class AbstractCommand extends Command
      * @param OutputInterface $output
      * @param SchemaTool      $schemaTool
      * @param array           $metadatas
+     *
+     * @return null|int Null or 0 if everything went fine, or an error code.
      */
     abstract protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas);
 
     /**
-     * @see Console\Command\Command
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

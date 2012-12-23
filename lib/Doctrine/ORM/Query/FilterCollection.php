@@ -30,6 +30,7 @@ use Doctrine\ORM\EntityManager;
 class FilterCollection
 {
     /* Filter STATES */
+
     /**
      * A filter object is in CLEAN state when it has no changed parameters.
      */
@@ -67,7 +68,7 @@ class FilterCollection
     private $filterHash;
 
     /**
-     * @var integer $state The current state of this filter
+     * @var integer The current state of this filter.
      */
     private $filtersState = self::FILTERS_STATE_CLEAN;
 
@@ -83,7 +84,7 @@ class FilterCollection
     }
 
     /**
-     * Get all the enabled filters.
+     * Gets all the enabled filters.
      *
      * @return array The enabled filters.
      */
@@ -97,9 +98,9 @@ class FilterCollection
      *
      * @param string $name Name of the filter.
      *
-     * @throws \InvalidArgumentException If the filter does not exist.
-     *
      * @return \Doctrine\ORM\Query\Filter\SQLFilter The enabled filter.
+     *
+     * @throws \InvalidArgumentException If the filter does not exist.
      */
     public function enable($name)
     {
@@ -145,7 +146,7 @@ class FilterCollection
     }
 
     /**
-     * Get an enabled filter from the collection.
+     * Gets an enabled filter from the collection.
      *
      * @param string $name Name of the filter.
      *
@@ -191,7 +192,7 @@ class FilterCollection
     }
 
     /**
-     * Set the filter state to dirty.
+     * Sets the filter state to dirty.
      */
     public function setFiltersStateDirty()
     {

@@ -25,7 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Doctrine\ORM\Tools\SchemaValidator;
 
 /**
- * Validate that the current mapping is valid
+ * Command to validate that the current mapping is valid.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
@@ -37,6 +37,9 @@ use Doctrine\ORM\Tools\SchemaValidator;
  */
 class ValidateSchemaCommand extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this
@@ -48,6 +51,9 @@ EOT
         );
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $em = $this->getHelper('em')->getEntityManager();

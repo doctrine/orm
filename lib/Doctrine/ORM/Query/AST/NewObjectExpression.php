@@ -40,8 +40,8 @@ class NewObjectExpression extends Node
     public $args;
 
     /**
-     * @param type $className
-     * @param array $args
+     * @param string $className
+     * @param array  $args
      */
     public function __construct($className, array $args)
     {
@@ -50,8 +50,7 @@ class NewObjectExpression extends Node
     }
 
     /**
-     * @param   \Doctrine\ORM\Query\SqlWalker $sqlWalker
-     * @return  string
+     * {@inheritdoc}
      */
     public function dispatch($sqlWalker)
     {

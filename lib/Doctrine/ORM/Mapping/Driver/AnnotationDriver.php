@@ -19,12 +19,12 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\ORM\Mapping\MappingException,
-    Doctrine\ORM\Mapping\JoinColumn,
-    Doctrine\ORM\Mapping\Column,
-    Doctrine\Common\Persistence\Mapping\ClassMetadata,
-    Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -471,10 +471,12 @@ class AnnotationDriver extends AbstractAnnotationDriver
     /**
      * Attempts to resolve the fetch mode.
      *
-     * @param string $className The class name
-     * @param string $fetchMode The fetch mode
-     * @return integer The fetch mode as defined in ClassMetadata
-     * @throws MappingException If the fetch mode is not valid
+     * @param string $className The class name.
+     * @param string $fetchMode The fetch mode.
+     *
+     * @return integer The fetch mode as defined in ClassMetadata.
+     *
+     * @throws MappingException If the fetch mode is not valid.
      */
     private function getFetchMode($className, $fetchMode)
     {
@@ -486,10 +488,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
     }
 
     /**
-     * Parse the given JoinColumn as array
+     * Parses the given JoinColumn as array.
      *
-     * @param   JoinColumn $joinColumn
-     * @return  array
+     * @param JoinColumn $joinColumn
+     *
+     * @return array
      */
     private function joinColumnToArray(JoinColumn $joinColumn)
     {
@@ -506,9 +509,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
     /**
      * Parse the given Column as array
      *
-     * @param   string $fieldName
-     * @param   Column $column
-     * @return  array
+     * @param string $fieldName
+     * @param Column $column
+     *
+     * @return array
      */
     private function columnToArray($fieldName, Column $column)
     {
@@ -538,10 +542,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
     }
 
     /**
-     * Factory method for the Annotation Driver
+     * Factory method for the Annotation Driver.
      *
-     * @param array|string $paths
-     * @param AnnotationReader $reader
+     * @param array|string          $paths
+     * @param AnnotationReader|null $reader
+     *
      * @return AnnotationDriver
      */
     static public function create($paths = array(), AnnotationReader $reader = null)

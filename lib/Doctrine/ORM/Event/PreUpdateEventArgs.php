@@ -40,9 +40,9 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     /**
      * Constructor.
      *
-     * @param object $entity
-     * @param \Doctrine\ORM\EntityManager $em
-     * @param array $changeSet
+     * @param object        $entity
+     * @param EntityManager $em
+     * @param array         $changeSet
      */
     public function __construct($entity, EntityManager $em, array &$changeSet)
     {
@@ -52,7 +52,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     }
 
     /**
-     * Retrieve entity changeset.
+     * Retrieves entity changeset.
      *
      * @return array
      */
@@ -62,7 +62,9 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     }
 
     /**
-     * Check if field has a changeset.
+     * Checks if field has a changeset.
+     *
+     * @param string $field
      *
      * @return boolean
      */
@@ -72,9 +74,10 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     }
 
     /**
-     * Get the old value of the changeset of the changed field.
+     * Gets the old value of the changeset of the changed field.
      *
-     * @param  string $field
+     * @param string $field
+     *
      * @return mixed
      */
     public function getOldValue($field)
@@ -85,9 +88,10 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     }
 
     /**
-     * Get the new value of the changeset of the changed field.
+     * Gets the new value of the changeset of the changed field.
      *
-     * @param  string $field
+     * @param string $field
+     *
      * @return mixed
      */
     public function getNewValue($field)
@@ -98,10 +102,12 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     }
 
     /**
-     * Set the new value of this field.
+     * Sets the new value of this field.
      *
      * @param string $field
-     * @param mixed $value
+     * @param mixed  $value
+     *
+     * @return void
      */
     public function setNewValue($field, $value)
     {
@@ -111,9 +117,13 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     }
 
     /**
-     * Assert the field exists in changeset.
+     * Asserts the field exists in changeset.
      *
      * @param string $field
+     *
+     * @return void
+     *
+     * @throws \InvalidArgumentException
      */
     private function assertValidField($field)
     {
@@ -126,4 +136,3 @@ class PreUpdateEventArgs extends LifecycleEventArgs
         }
     }
 }
-

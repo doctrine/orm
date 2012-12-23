@@ -32,6 +32,9 @@ namespace Doctrine\ORM\Tools\Console;
  */
 class MetadataFilter extends \FilterIterator implements \Countable
 {
+    /**
+     * @var array
+     */
     private $filter = array();
 
     /**
@@ -49,6 +52,10 @@ class MetadataFilter extends \FilterIterator implements \Countable
         return iterator_to_array($metadatas);
     }
 
+    /**
+     * @param \ArrayIterator $metadata
+     * @param array|string   $filter
+     */
     public function __construct(\ArrayIterator $metadata, $filter)
     {
         $this->filter = (array) $filter;
@@ -56,6 +63,9 @@ class MetadataFilter extends \FilterIterator implements \Countable
         parent::__construct($metadata);
     }
 
+    /**
+     * @return bool
+     */
     public function accept()
     {
         if (count($this->filter) == 0) {
@@ -74,6 +84,9 @@ class MetadataFilter extends \FilterIterator implements \Countable
         return false;
     }
 
+    /**
+     * @return int
+     */
     public function count()
     {
         return count($this->getInnerIterator());

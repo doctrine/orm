@@ -32,18 +32,32 @@ namespace Doctrine\ORM\Query\AST;
 class CollectionMemberExpression extends Node
 {
     public $entityExpression;
+
+    /**
+     * @var PathExpression
+     */
     public $collectionValuedPathExpression;
+
+    /**
+     * @var bool
+     */
     public $not;
 
+    /**
+     * @param mixed          $entityExpr
+     * @param PathExpression $collValuedPathExpr
+     */
     public function __construct($entityExpr, $collValuedPathExpr)
     {
         $this->entityExpression = $entityExpr;
         $this->collectionValuedPathExpression = $collValuedPathExpr;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function dispatch($walker)
     {
         return $walker->walkCollectionMemberExpression($this);
     }
 }
-

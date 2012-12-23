@@ -27,6 +27,9 @@ namespace Doctrine\ORM;
  */
 class EntityNotFoundException extends ORMException
 {
+    /**
+     * Constructor.
+     */
     public function __construct()
     {
         parent::__construct('Entity was not found.');

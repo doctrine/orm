@@ -35,16 +35,34 @@ class Join extends Node
     const JOIN_TYPE_LEFTOUTER = 2;
     const JOIN_TYPE_INNER     = 3;
 
+    /**
+     * @var int
+     */
     public $joinType = self::JOIN_TYPE_INNER;
+
+    /**
+     * @var Node|null
+     */
     public $joinAssociationDeclaration = null;
+
+    /**
+     * @var ConditionalExpression|null
+     */
     public $conditionalExpression = null;
 
+    /**
+     * @param int  $joinType
+     * @param Node $joinAssociationDeclaration
+     */
     public function __construct($joinType, $joinAssociationDeclaration)
     {
         $this->joinType = $joinType;
         $this->joinAssociationDeclaration = $joinAssociationDeclaration;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkJoin($this);

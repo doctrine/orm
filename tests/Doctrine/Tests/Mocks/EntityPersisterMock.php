@@ -7,17 +7,46 @@ namespace Doctrine\Tests\Mocks;
  */
 class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
 {
+    /**
+     * @var array
+     */
     private $inserts = array();
+
+    /**
+     * @var array
+     */
     private $updates = array();
+
+    /**
+     * @var array
+     */
     private $deletes = array();
+
+    /**
+     * @var int
+     */
     private $identityColumnValueCounter = 0;
+
+    /**
+     * @var int|null
+     */
     private $mockIdGeneratorType;
+
+    /**
+     * @var array
+     */
     private $postInsertIds = array();
+
+    /**
+     * @var bool
+     */
     private $existsCalled = false;
 
     /**
-     * @param <type> $entity
-     * @return <type>
+     * @param object $entity
+     *
+     * @return mixed
+     *
      * @override
      */
     public function insert($entity)
@@ -32,6 +61,11 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
         return null;
     }
 
+    /**
+     * @param object $entity
+     *
+     * @return mixed
+     */
     public function addInsert($entity)
     {
         $this->inserts[] = $entity;
@@ -44,46 +78,75 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
         return null;
     }
 
+    /**
+     * @return array
+     */
     public function executeInserts()
     {
         return $this->postInsertIds;
     }
 
+    /**
+     * @param int $genType
+     *
+     * @return void
+     */
     public function setMockIdGeneratorType($genType)
     {
         $this->mockIdGeneratorType = $genType;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function update($entity)
     {
         $this->updates[] = $entity;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function exists($entity, array $extraConditions = array())
     {
         $this->existsCalled = true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function delete($entity)
     {
         $this->deletes[] = $entity;
     }
 
+    /**
+     * @return array
+     */
     public function getInserts()
     {
         return $this->inserts;
     }
 
+    /**
+     * @return array
+     */
     public function getUpdates()
     {
         return $this->updates;
     }
 
+    /**
+     * @return array
+     */
     public function getDeletes()
     {
         return $this->deletes;
     }
 
+    /**
+     * @return void
+     */
     public function reset()
     {
         $this->existsCalled = false;
@@ -93,6 +156,9 @@ class EntityPersisterMock extends \Doctrine\ORM\Persisters\BasicEntityPersister
         $this->deletes = array();
     }
 
+    /**
+     * @return bool
+     */
     public function isExistsCalled()
     {
         return $this->existsCalled;

@@ -38,6 +38,7 @@ class Setup
      * its github repository at {@link http://github.com/doctrine/doctrine2}
      *
      * @param string $gitCheckoutRootPath
+     *
      * @return void
      */
     public static function registerAutoloadGit($gitCheckoutRootPath)
@@ -90,6 +91,8 @@ class Setup
      * Pick the directory the library was uncompressed into.
      *
      * @param string $directory
+     *
+     * @return void
      */
     public static function registerAutoloadDirectory($directory)
     {
@@ -105,13 +108,14 @@ class Setup
     }
 
     /**
-     * Create a configuration with an annotation metadata driver.
+     * Creates a configuration with an annotation metadata driver.
      *
-     * @param array $paths
+     * @param array   $paths
      * @param boolean $isDevMode
-     * @param string $proxyDir
-     * @param Cache $cache
-     * @param bool $useSimpleAnnotationReader
+     * @param string  $proxyDir
+     * @param Cache   $cache
+     * @param bool    $useSimpleAnnotationReader
+     *
      * @return Configuration
      */
     public static function createAnnotationMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null, $useSimpleAnnotationReader = true)
@@ -123,12 +127,13 @@ class Setup
     }
 
     /**
-     * Create a configuration with a xml metadata driver.
+     * Creates a configuration with a xml metadata driver.
      *
-     * @param array $paths
+     * @param array   $paths
      * @param boolean $isDevMode
-     * @param string $proxyDir
-     * @param Cache $cache
+     * @param string  $proxyDir
+     * @param Cache   $cache
+     *
      * @return Configuration
      */
     public static function createXMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
@@ -140,12 +145,13 @@ class Setup
     }
 
     /**
-     * Create a configuration with a yaml metadata driver.
+     * Creates a configuration with a yaml metadata driver.
      *
-     * @param array $paths
+     * @param array   $paths
      * @param boolean $isDevMode
-     * @param string $proxyDir
-     * @param Cache $cache
+     * @param string  $proxyDir
+     * @param Cache   $cache
+     *
      * @return Configuration
      */
     public static function createYAMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
@@ -157,11 +163,12 @@ class Setup
     }
 
     /**
-     * Create a configuration without a metadata driver.
+     * Creates a configuration without a metadata driver.
      *
-     * @param bool $isDevMode
+     * @param bool   $isDevMode
      * @param string $proxyDir
-     * @param Cache $cache
+     * @param Cache  $cache
+     *
      * @return Configuration
      */
     public static function createConfiguration($isDevMode = false, $proxyDir = null, Cache $cache = null)

@@ -79,9 +79,11 @@ class SchemaTool
     /**
      * Creates the database schema for the given array of ClassMetadata instances.
      *
-     * @throws ToolsException
      * @param array $classes
+     *
      * @return void
+     *
+     * @throws ToolsException
      */
     public function createSchema(array $classes)
     {
@@ -102,7 +104,8 @@ class SchemaTool
      * the given list of ClassMetadata instances.
      *
      * @param array $classes
-     * @return array $sql The SQL statements needed to create the schema for the classes.
+     *
+     * @return array The SQL statements needed to create the schema for the classes.
      */
     public function getCreateSchemaSql(array $classes)
     {
@@ -111,10 +114,11 @@ class SchemaTool
     }
 
     /**
-     * Some instances of ClassMetadata don't need to be processed in the SchemaTool context. This method detects them.
+     * Detects instances of ClassMetadata that don't need to be processed in the SchemaTool context.
      *
      * @param ClassMetadata $class
-     * @param array $processedClasses
+     * @param array         $processedClasses
+     *
      * @return bool
      */
     private function processingNotRequired($class, array $processedClasses)
@@ -127,10 +131,13 @@ class SchemaTool
     }
 
     /**
-     * From a given set of metadata classes this method creates a Schema instance.
+     * Creates a Schema instance from a given set of metadata classes.
      *
      * @param array $classes
+     *
      * @return Schema
+     *
+     * @throws \Doctrine\ORM\ORMException
      */
     public function getSchemaFromMetadata(array $classes)
     {
@@ -288,9 +295,10 @@ class SchemaTool
      * column of a class.
      *
      * @param ClassMetadata $class
-     * @param Table $table
+     * @param Table         $table
+     *
      * @return array The portable column definition of the discriminator column as required by
-     *              the DBAL.
+     *               the DBAL.
      */
     private function addDiscriminatorColumnDefinition($class, Table $table)
     {
@@ -318,7 +326,8 @@ class SchemaTool
      * found in the given class.
      *
      * @param ClassMetadata $class
-     * @param Table $table
+     * @param Table         $table
+     *
      * @return array The list of portable column definitions as required by the DBAL.
      */
     private function gatherColumns($class, Table $table)
@@ -347,9 +356,10 @@ class SchemaTool
     /**
      * Creates a column definition as required by the DBAL from an ORM field mapping definition.
      *
-     * @param ClassMetadata $class The class that owns the field mapping.
-     * @param array $mapping The field mapping.
-     * @param Table $table
+     * @param ClassMetadata $class   The class that owns the field mapping.
+     * @param array         $mapping The field mapping.
+     * @param Table         $table
+     *
      * @return array The portable column definition as required by the DBAL.
      */
     private function gatherColumn($class, array $mapping, Table $table)
@@ -434,11 +444,14 @@ class SchemaTool
      * This includes the SQL for foreign key constraints and join tables.
      *
      * @param ClassMetadata $class
-     * @param \Doctrine\DBAL\Schema\Table $table
-     * @param \Doctrine\DBAL\Schema\Schema $schema
-     * @param array $addedFks
-     * @param array $blacklistedFks
+     * @param Table         $table
+     * @param Schema        $schema
+     * @param array         $addedFks
+     * @param array         $blacklistedFks
+     *
      * @return void
+     *
+     * @throws \Doctrine\ORM\ORMException
      */
     private function gatherRelationsSql($class, $table, $schema, &$addedFks, &$blacklistedFks)
     {
@@ -484,7 +497,7 @@ class SchemaTool
     }
 
     /**
-     * Get the class metadata that is responsible for the definition of the referenced column name.
+     * Gets the class metadata that is responsible for the definition of the referenced column name.
      *
      * Previously this was a simple task, but with DDC-117 this problem is actually recursive. If its
      * not a simple field, go through all identifier field names that are associations recursivly and
@@ -493,8 +506,9 @@ class SchemaTool
      * TODO: Is there any way to make this code more pleasing?
      *
      * @param ClassMetadata $class
-     * @param string $referencedColumnName
-     * @return array(ClassMetadata, referencedFieldName)
+     * @param string        $referencedColumnName
+     *
+     * @return array (ClassMetadata, referencedFieldName)
      */
     private function getDefiningClass($class, $referencedColumnName)
     {
@@ -520,16 +534,20 @@ class SchemaTool
     }
 
     /**
-     * Gather columns and fk constraints that are required for one part of relationship.
+     * Gathers columns and fk constraints that are required for one part of relationship.
      *
-     * @param array $joinColumns
-     * @param \Doctrine\DBAL\Schema\Table $theJoinTable
+     * @param array         $joinColumns
+     * @param Table         $theJoinTable
      * @param ClassMetadata $class
-     * @param array $mapping
-     * @param array $primaryKeyColumns
-     * @param array $uniqueConstraints
-     * @param array $addedFks
-     * @param array $blacklistedFks
+     * @param array         $mapping
+     * @param array         $primaryKeyColumns
+     * @param array         $uniqueConstraints
+     * @param array         $addedFks
+     * @param array         $blacklistedFks
+     *
+     * @return void
+     *
+     * @throws \Doctrine\ORM\ORMException
      */
     private function _gatherRelationJoinColumns($joinColumns, $theJoinTable, $class, $mapping, &$primaryKeyColumns, &$uniqueConstraints, &$addedFks, &$blacklistedFks)
     {
@@ -629,6 +647,7 @@ class SchemaTool
      * issued for all classes of the schema and some probably just don't exist.
      *
      * @param array $classes
+     *
      * @return void
      */
     public function dropSchema(array $classes)
@@ -677,9 +696,10 @@ class SchemaTool
     }
 
     /**
-     * Get SQL to drop the tables defined by the passed classes.
+     * Gets SQL to drop the tables defined by the passed classes.
      *
      * @param array $classes
+     *
      * @return array
      */
     public function getDropSchemaSQL(array $classes)
@@ -733,8 +753,9 @@ class SchemaTool
      * instances to the current database schema that is inspected. If $saveMode is set
      * to true the command is executed in the Database, else SQL is returned.
      *
-     * @param array $classes
+     * @param array   $classes
      * @param boolean $saveMode
+     *
      * @return void
      */
     public function updateSchema(array $classes, $saveMode = false)
@@ -753,8 +774,9 @@ class SchemaTool
      * If $saveMode is set to true the command is executed in the Database,
      * else SQL is returned.
      *
-     * @param array $classes The classes to consider.
-     * @param boolean $saveMode True for writing to DB, false for SQL string
+     * @param array   $classes  The classes to consider.
+     * @param boolean $saveMode True for writing to DB, false for SQL string.
+     *
      * @return array The sequence of SQL statements.
      */
     public function getUpdateSchemaSql(array $classes, $saveMode = false)

@@ -41,6 +41,7 @@ final class Query extends AbstractQuery
      * A query object is in CLEAN state when it has NO unparsed/unprocessed DQL parts.
      */
     const STATE_CLEAN  = 1;
+
     /**
      * A query object is in state DIRTY when it has DQL parts that have not yet been
      * parsed/processed. This is automatically defined as DIRTY when addDqlQueryPart
@@ -49,6 +50,7 @@ final class Query extends AbstractQuery
     const STATE_DIRTY = 2;
 
     /* Query HINTS */
+
     /**
      * The refresh hint turns any query into a refresh query with the result that
      * any local changes in entities are overridden with the fetched values.
@@ -56,7 +58,6 @@ final class Query extends AbstractQuery
      * @var string
      */
     const HINT_REFRESH = 'doctrine.refresh';
-
 
     /**
      * Internal hint: is set to the proxy entity that is currently triggered for loading
@@ -73,6 +74,7 @@ final class Query extends AbstractQuery
      * @todo Rename: HINT_OPTIMIZE
      */
     const HINT_FORCE_PARTIAL_LOAD = 'doctrine.forcePartialLoad';
+
     /**
      * The includeMetaColumns query hint causes meta columns like foreign keys and
      * discriminator columns to be selected and returned as part of the query result.
@@ -111,49 +113,66 @@ final class Query extends AbstractQuery
      */
     const HINT_LOCK_MODE = 'doctrine.lockMode';
 
-
     /**
-     * @var integer $_state   The current state of this query.
+     * The current state of this query.
+     *
+     * @var integer
      */
     private $_state = self::STATE_CLEAN;
 
     /**
-     * @var string $_dql Cached DQL query.
+     * Cached DQL query.
+     *
+     * @var string
      */
     private $_dql = null;
 
     /**
-     * @var \Doctrine\ORM\Query\ParserResult  The parser result that holds DQL => SQL information.
+     * The parser result that holds DQL => SQL information.
+     *
+     * @var \Doctrine\ORM\Query\ParserResult
      */
     private $_parserResult;
 
     /**
-     * @var integer The first result to return (the "offset").
+     * The first result to return (the "offset").
+     *
+     * @var integer
      */
     private $_firstResult = null;
 
     /**
-     * @var integer The maximum number of results to return (the "limit").
+     * The maximum number of results to return (the "limit").
+     *
+     * @var integer
      */
     private $_maxResults = null;
 
     /**
-     * @var CacheDriver The cache driver used for caching queries.
+     * The cache driver used for caching queries.
+     *
+     * @var \Doctrine\Common\Cache\Cache|null
      */
     private $_queryCache;
 
     /**
-     * @var boolean Boolean value that indicates whether or not expire the query cache.
+     * Whether or not expire the query cache.
+     *
+     * @var boolean
      */
     private $_expireQueryCache = false;
 
     /**
-     * @var int Query Cache lifetime.
+     * The query cache lifetime.
+     *
+     * @var int
      */
     private $_queryCacheTTL;
 
     /**
-     * @var boolean Whether to use a query cache, if available. Defaults to TRUE.
+     * Whether to use a query cache, if available. Defaults to TRUE.
+     *
+     * @var boolean
      */
     private $_useQueryCache = true;
 
@@ -171,6 +190,7 @@ final class Query extends AbstractQuery
      * Gets the SQL query/queries that correspond to this DQL query.
      *
      * @return mixed The built sql query or an array of all sql queries.
+     *
      * @override
      */
     public function getSQL()
@@ -265,10 +285,13 @@ final class Query extends AbstractQuery
     }
 
     /**
-     * Processes query parameter mappings
+     * Processes query parameter mappings.
      *
      * @param array $paramMappings
+     *
      * @return array
+     *
+     * @throws Query\QueryException
      */
     private function processParameterMappings($paramMappings)
     {
@@ -321,7 +344,8 @@ final class Query extends AbstractQuery
     /**
      * Defines a cache driver to be used for caching queries.
      *
-     * @param Doctrine_Cache_Interface|null $driver Cache driver
+     * @param \Doctrine\Common\Cache\Cache|null $queryCache Cache driver.
+     *
      * @return Query This query instance.
      */
     public function setQueryCacheDriver($queryCache)
@@ -335,7 +359,8 @@ final class Query extends AbstractQuery
      * Defines whether the query should make use of a query cache, if available.
      *
      * @param boolean $bool
-     * @return @return Query This query instance.
+     *
+     * @return Query This query instance.
      */
     public function useQueryCache($bool)
     {
@@ -347,8 +372,8 @@ final class Query extends AbstractQuery
     /**
      * Returns the cache driver used for query caching.
      *
-     * @return CacheDriver The cache driver used for query caching or NULL, if
-     *                     this Query does not use query caching.
+     * @return \Doctrine\Common\Cache\Cache|null The cache driver used for query caching or NULL, if
+     *                                           this Query does not use query caching.
      */
     public function getQueryCacheDriver()
     {
@@ -362,7 +387,8 @@ final class Query extends AbstractQuery
     /**
      * Defines how long the query cache will be active before expire.
      *
-     * @param integer $timeToLive How long the cache entry is valid
+     * @param integer $timeToLive How long the cache entry is valid.
+     *
      * @return Query This query instance.
      */
     public function setQueryCacheLifetime($timeToLive)
@@ -390,6 +416,7 @@ final class Query extends AbstractQuery
      * Defines if the query cache is active or not.
      *
      * @param boolean $expire Whether or not to force query cache expiration.
+     *
      * @return Query This query instance.
      */
     public function expireQueryCache($expire = true)
@@ -423,7 +450,8 @@ final class Query extends AbstractQuery
     /**
      * Sets a DQL query string.
      *
-     * @param string $dqlQuery DQL Query
+     * @param string $dqlQuery DQL Query.
+     *
      * @return \Doctrine\ORM\AbstractQuery
      */
     public function setDQL($dqlQuery)
@@ -439,7 +467,7 @@ final class Query extends AbstractQuery
     /**
      * Returns the DQL query that is represented by this query object.
      *
-     * @return string DQL query
+     * @return string DQL query.
      */
     public function getDQL()
     {
@@ -454,7 +482,7 @@ final class Query extends AbstractQuery
      * @see AbstractQuery::STATE_CLEAN
      * @see AbstractQuery::STATE_DIRTY
      *
-     * @return integer Return the query state
+     * @return integer The query state.
      */
     public function getState()
     {
@@ -464,7 +492,8 @@ final class Query extends AbstractQuery
     /**
      * Method to check if an arbitrary piece of DQL exists
      *
-     * @param string $dql Arbitrary piece of DQL to check for
+     * @param string $dql Arbitrary piece of DQL to check for.
+     *
      * @return boolean
      */
     public function contains($dql)
@@ -476,6 +505,7 @@ final class Query extends AbstractQuery
      * Sets the position of the first result to retrieve (the "offset").
      *
      * @param integer $firstResult The first result to return.
+     *
      * @return Query This query object.
      */
     public function setFirstResult($firstResult)
@@ -501,6 +531,7 @@ final class Query extends AbstractQuery
      * Sets the maximum number of results to retrieve (the "limit").
      *
      * @param integer $maxResults
+     *
      * @return Query This query object.
      */
     public function setMaxResults($maxResults)
@@ -526,8 +557,9 @@ final class Query extends AbstractQuery
      * Executes the query and returns an IterableResult that can be used to incrementally
      * iterated over the result.
      *
-     * @param \Doctrine\Common\Collections\ArrayCollection|array $parameters The query parameters.
-     * @param integer $hydrationMode The hydration mode to use.
+     * @param ArrayCollection|array|null $parameters    The query parameters.
+     * @param integer                    $hydrationMode The hydration mode to use.
+     *
      * @return \Doctrine\ORM\Internal\Hydration\IterableResult
      */
     public function iterate($parameters = null, $hydrationMode = self::HYDRATE_OBJECT)
@@ -561,8 +593,12 @@ final class Query extends AbstractQuery
      * Set the lock mode for this Query.
      *
      * @see \Doctrine\DBAL\LockMode
+     *
      * @param  int $lockMode
+     *
      * @return Query
+     *
+     * @throws TransactionRequiredException
      */
     public function setLockMode($lockMode)
     {

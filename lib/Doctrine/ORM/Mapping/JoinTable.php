@@ -25,12 +25,23 @@ namespace Doctrine\ORM\Mapping;
  */
 final class JoinTable implements Annotation
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     public $name;
-    /** @var string */
+
+    /**
+     * @var string
+     */
     public $schema;
-    /** @var array<\Doctrine\ORM\Mapping\JoinColumn> */
+
+    /**
+     * @var array<\Doctrine\ORM\Mapping\JoinColumn>
+     */
     public $joinColumns = array();
-    /** @var array<\Doctrine\ORM\Mapping\JoinColumn> */
+
+    /**
+     * @var array<\Doctrine\ORM\Mapping\JoinColumn>
+     */
     public $inverseJoinColumns = array();
 }

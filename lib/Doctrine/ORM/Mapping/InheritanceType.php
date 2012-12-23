@@ -26,7 +26,9 @@ namespace Doctrine\ORM\Mapping;
 final class InheritanceType implements Annotation
 {
     /**
-     * @var string The inheritance type used by the class and it's subclasses.
+     * The inheritance type used by the class and its subclasses.
+     *
+     * @var string
      *
      * @Enum({"NONE", "JOINED", "SINGLE_TABLE", "TABLE_PER_CLASS"})
      */

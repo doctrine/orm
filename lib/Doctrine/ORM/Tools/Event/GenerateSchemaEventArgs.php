@@ -33,7 +33,14 @@ use Doctrine\ORM\EntityManager;
  */
 class GenerateSchemaEventArgs extends EventArgs
 {
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
     private $em;
+
+    /**
+     * @var \Doctrine\DBAL\Schema\Schema
+     */
     private $schema;
 
     /**

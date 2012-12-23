@@ -36,8 +36,13 @@ class AssignedGenerator extends AbstractIdGenerator
     /**
      * Returns the identifier assigned to the given entity.
      *
-     * @param object $entity
+     * @param EntityManager $em
+     * @param object        $entity
+     *
      * @return mixed
+     *
+     * @throws \Doctrine\ORM\ORMException
+     *
      * @override
      */
     public function generate(EntityManager $em, $entity)

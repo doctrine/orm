@@ -29,10 +29,21 @@ namespace Doctrine\ORM\Mapping\Builder;
  */
 class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
 {
+    /**
+     * @var string|null
+     */
     private $joinTableName;
 
+    /**
+     * @var array
+     */
     private $inverseJoinColumns = array();
 
+    /**
+     * @param string $name
+     *
+     * @return ManyToManyAssociationBuilder
+     */
     public function setJoinTable($name)
     {
         $this->joinTableName = $name;
@@ -40,14 +51,16 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
     }
 
     /**
-     * Add Inverse Join Columns
+     * Adds Inverse Join Columns.
      *
-     * @param string $columnName
-     * @param string $referencedColumnName
-     * @param bool $nullable
-     * @param bool $unique
-     * @param string $onDelete
-     * @param string $columnDef
+     * @param string      $columnName
+     * @param string      $referencedColumnName
+     * @param bool        $nullable
+     * @param bool        $unique
+     * @param string|null $onDelete
+     * @param string|null $columnDef
+     *
+     * @return ManyToManyAssociationBuilder
      */
     public function addInverseJoinColumn($columnName, $referencedColumnName, $nullable = true, $unique = false, $onDelete = null, $columnDef = null)
     {

@@ -28,13 +28,19 @@ use Doctrine\ORM\EntityManager;
  */
 class IdentityGenerator extends AbstractIdGenerator
 {
-    /** @var string The name of the sequence to pass to lastInsertId(), if any. */
+    /**
+     * The name of the sequence to pass to lastInsertId(), if any.
+     *
+     * @var string
+     */
     private $_seqName;
 
     /**
-     * @param string $seqName The name of the sequence to pass to lastInsertId()
-     *                        to obtain the last generated identifier within the current
-     *                        database session/connection, if any.
+     * Constructor.
+     *
+     * @param string|null $seqName The name of the sequence to pass to lastInsertId()
+     *                             to obtain the last generated identifier within the current
+     *                             database session/connection, if any.
      */
     public function __construct($seqName = null)
     {

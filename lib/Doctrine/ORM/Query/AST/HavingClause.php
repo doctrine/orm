@@ -20,9 +20,8 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * Description of HavingClause
+ * Description of HavingClause.
  *
- * 
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -31,13 +30,22 @@ namespace Doctrine\ORM\Query\AST;
  */
 class HavingClause extends Node
 {
+    /**
+     * @var ConditionalExpression
+     */
     public $conditionalExpression;
 
+    /**
+     * @param ConditionalExpression $conditionalExpression
+     */
     public function __construct($conditionalExpression)
     {
         $this->conditionalExpression = $conditionalExpression;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkHavingClause($this);

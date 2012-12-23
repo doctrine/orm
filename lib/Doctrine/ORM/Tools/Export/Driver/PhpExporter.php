@@ -22,8 +22,7 @@ namespace Doctrine\ORM\Tools\Export\Driver;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
- * ClassMetadata exporter for PHP code
- *
+ * ClassMetadata exporter for PHP code.
  *
  * @link    www.doctrine-project.org
  * @since   2.0
@@ -31,14 +30,13 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  */
 class PhpExporter extends AbstractExporter
 {
+    /**
+     * @var string
+     */
     protected $_extension = '.php';
 
     /**
-     * Converts a single ClassMetadata instance to the exported format
-     * and returns it
-     *
-     * @param ClassMetadataInfo $metadata
-     * @return mixed $exported
+     * {@inheritdoc}
      */
     public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
@@ -154,6 +152,11 @@ class PhpExporter extends AbstractExporter
         return implode("\n", $lines);
     }
 
+    /**
+     * @param mixed $var
+     *
+     * @return string
+     */
     protected function _varExport($var)
     {
         $export = var_export($var, true);

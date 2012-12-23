@@ -20,9 +20,8 @@
 namespace Doctrine\ORM\Query\Expr;
 
 /**
- * Expression class for generating DQL functions
+ * Expression class for generating DQL functions.
  *
- * 
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -44,8 +43,8 @@ class Func
     /**
      * Creates a function, with the given argument.
      *
-     * @param string    $name
-     * @param array     $arguments
+     * @param string $name
+     * @param array  $arguments
      */
     public function __construct($name, $arguments)
     {

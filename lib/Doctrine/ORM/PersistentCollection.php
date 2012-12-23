@@ -25,7 +25,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\ExpressionBuilder;
 
 use Closure;
 
@@ -87,6 +86,8 @@ final class PersistentCollection implements Collection, Selectable
 
     /**
      * The class descriptor of the collection's entity type.
+     *
+     * @var ClassMetadata
      */
     private $typeClass;
 
@@ -115,9 +116,9 @@ final class PersistentCollection implements Collection, Selectable
     /**
      * Creates a new persistent collection.
      *
-     * @param EntityManager $em The EntityManager the collection will be associated with.
+     * @param EntityManager $em    The EntityManager the collection will be associated with.
      * @param ClassMetadata $class The class descriptor of the entity type of this collection.
-     * @param array The collection elements.
+     * @param array         $coll  The collection elements.
      */
     public function __construct(EntityManager $em, $class, $coll)
     {
@@ -132,7 +133,9 @@ final class PersistentCollection implements Collection, Selectable
      * describes the association between the owner and the elements of the collection.
      *
      * @param object $entity
-     * @param AssociationMapping $assoc
+     * @param array  $assoc
+     *
+     * @return void
      */
     public function setOwner($entity, array $assoc)
     {
@@ -152,6 +155,9 @@ final class PersistentCollection implements Collection, Selectable
         return $this->owner;
     }
 
+    /**
+     * @return Mapping\ClassMetadata
+     */
     public function getTypeClass()
     {
         return $this->typeClass;
@@ -163,6 +169,8 @@ final class PersistentCollection implements Collection, Selectable
      * complete bidirectional associations in the case of a one-to-many association.
      *
      * @param mixed $element The element to add.
+     *
+     * @return void
      */
     public function hydrateAdd($element)
     {
@@ -186,8 +194,10 @@ final class PersistentCollection implements Collection, Selectable
      * INTERNAL:
      * Sets a keyed element in the collection during hydration.
      *
-     * @param mixed $key The key to set.
-     * $param mixed $value The element to set.
+     * @param mixed $key     The key to set.
+     * @param mixed $element The element to set.
+     *
+     * @return void
      */
     public function hydrateSet($key, $element)
     {
@@ -206,6 +216,8 @@ final class PersistentCollection implements Collection, Selectable
     /**
      * Initializes the collection by loading its contents from the database
      * if the collection is not yet initialized.
+     *
+     * @return void
      */
     public function initialize()
     {
@@ -239,6 +251,8 @@ final class PersistentCollection implements Collection, Selectable
     /**
      * INTERNAL:
      * Tells this collection to take a snapshot of its current state.
+     *
+     * @return void
      */
     public function takeSnapshot()
     {
@@ -299,6 +313,8 @@ final class PersistentCollection implements Collection, Selectable
 
     /**
      * Marks this collection as changed/dirty.
+     *
+     * @return void
      */
     private function changed()
     {
@@ -332,6 +348,8 @@ final class PersistentCollection implements Collection, Selectable
      * Sets a boolean flag, indicating whether this collection is dirty.
      *
      * @param boolean $dirty Whether the collection should be marked dirty or not.
+     *
+     * @return void
      */
     public function setDirty($dirty)
     {
@@ -342,6 +360,8 @@ final class PersistentCollection implements Collection, Selectable
      * Sets the initialized flag of the collection, forcing it into that state.
      *
      * @param boolean $bool
+     *
+     * @return void
      */
     public function setInitialized($bool)
     {
@@ -358,7 +378,9 @@ final class PersistentCollection implements Collection, Selectable
         return $this->initialized;
     }
 
-    /** {@inheritdoc} */
+    /**
+     * {@inheritdoc}
+     */
     public function first()
     {
         $this->initialize();
@@ -366,7 +388,9 @@ final class PersistentCollection implements Collection, Selectable
         return $this->coll->first();
     }
 
-    /** {@inheritdoc} */
+    /**
+     * {@inheritdoc}
+     */
     public function last()
     {
         $this->initialize();
@@ -668,6 +692,8 @@ final class PersistentCollection implements Collection, Selectable
      * Called by PHP when this collection is serialized. Ensures that only the
      * elements are properly serialized.
      *
+     * @return array
+     *
      * @internal Tried to implement Serializable first but that did not work well
      *           with circular references. This solution seems simpler and works well.
      */
@@ -679,7 +705,7 @@ final class PersistentCollection implements Collection, Selectable
     /* ArrayAccess implementation */
 
     /**
-     * @see containsKey()
+     * {@inheritdoc}
      */
     public function offsetExists($offset)
     {
@@ -687,7 +713,7 @@ final class PersistentCollection implements Collection, Selectable
     }
 
     /**
-     * @see get()
+     * {@inheritdoc}
      */
     public function offsetGet($offset)
     {
@@ -695,8 +721,7 @@ final class PersistentCollection implements Collection, Selectable
     }
 
     /**
-     * @see add()
-     * @see set()
+     * {@inheritdoc}
      */
     public function offsetSet($offset, $value)
     {
@@ -708,20 +733,23 @@ final class PersistentCollection implements Collection, Selectable
     }
 
     /**
-     * @see remove()
+     * {@inheritdoc}
      */
     public function offsetUnset($offset)
     {
         return $this->remove($offset);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function key()
     {
         return $this->coll->key();
     }
 
     /**
-     * Gets the element of the collection at the current iterator position.
+     * {@inheritdoc}
      */
     public function current()
     {
@@ -729,7 +757,7 @@ final class PersistentCollection implements Collection, Selectable
     }
 
     /**
-     * Moves the internal iterator position to the next element.
+     * {@inheritdoc}
      */
     public function next()
     {
@@ -747,14 +775,14 @@ final class PersistentCollection implements Collection, Selectable
     }
 
     /**
-     * Extract a slice of $length elements starting at position $offset from the Collection.
+     * Extracts a slice of $length elements starting at position $offset from the Collection.
      *
      * If $length is null it returns all elements from $offset to the end of the Collection.
      * Keys have to be preserved by this method. Calling this method will only return the
      * selected slice and NOT change the elements contained in the collection slice is called on.
      *
-     * @param int $offset
-     * @param int $length
+     * @param int      $offset
+     * @param int|null $length
      *
      * @return array
      */
@@ -772,7 +800,7 @@ final class PersistentCollection implements Collection, Selectable
     }
 
     /**
-     * Cleanup internal state of cloned persistent collection.
+     * Cleans up internal state of cloned persistent collection.
      *
      * The following problems have to be prevented:
      * 1. Added entities are added to old PC
@@ -781,6 +809,8 @@ final class PersistentCollection implements Collection, Selectable
      * 3. Snapshot leads to invalid diffs being generated.
      * 4. Lazy loading grabs entities from old owner object.
      * 5. New collection is connected to old owner and leads to duplicate keys.
+     *
+     * @return void
      */
     public function __clone()
     {
@@ -797,11 +827,14 @@ final class PersistentCollection implements Collection, Selectable
     }
 
     /**
-     * Select all elements from a selectable that match the expression and
+     * Selects all elements from a selectable that match the expression and
      * return a new collection containing these elements.
      *
      * @param \Doctrine\Common\Collections\Criteria $criteria
+     *
      * @return Collection
+     *
+     * @throws \RuntimeException
      */
     public function matching(Criteria $criteria)
     {
@@ -835,4 +868,3 @@ final class PersistentCollection implements Collection, Selectable
         return new ArrayCollection(array_merge($persister->loadCriteria($criteria), $newObjects));
     }
 }
-

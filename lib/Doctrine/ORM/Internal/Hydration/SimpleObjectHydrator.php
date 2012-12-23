@@ -19,11 +19,9 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use \PDO;
+use PDO;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Events;
 use Doctrine\ORM\Query;
 
 class SimpleObjectHydrator extends AbstractHydrator

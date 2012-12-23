@@ -33,15 +33,27 @@ use Doctrine\ORM\Query\AST;
  */
 class MultiTableDeleteExecutor extends AbstractSqlExecutor
 {
+    /**
+     * @var string
+     */
     private $_createTempTableSql;
+
+    /**
+     * @var string
+     */
     private $_dropTempTableSql;
+
+    /**
+     * @var string
+     */
     private $_insertSql;
 
     /**
      * Initializes a new <tt>MultiTableDeleteExecutor</tt>.
      *
-     * @param Node $AST The root AST node of the DQL query.
-     * @param SqlWalker $sqlWalker The walker used for SQL generation from the AST.
+     * @param \Doctrine\ORM\Query\AST\Node  $AST       The root AST node of the DQL query.
+     * @param \Doctrine\ORM\Query\SqlWalker $sqlWalker The walker used for SQL generation from the AST.
+     *
      * @internal Any SQL construction and preparation takes place in the constructor for
      *           best performance. With a query cache the executor will be cached.
      */

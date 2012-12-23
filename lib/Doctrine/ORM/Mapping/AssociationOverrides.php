@@ -30,12 +30,10 @@ namespace Doctrine\ORM\Mapping;
  */
 final class AssociationOverrides implements Annotation
 {
-
     /**
-     * Mapping overrides of relationship properties
+     * Mapping overrides of relationship properties.
      *
      * @var array<\Doctrine\ORM\Mapping\AssociationOverride> 
      */
     public $value;
-
 }

@@ -53,6 +53,11 @@ abstract class AbstractSqlExecutor
         return $this->_sqlStatements;
     }
 
+    /**
+     * @param \Doctrine\DBAL\Cache\QueryCacheProfile $qcp
+     *
+     * @return void
+     */
     public function setQueryCacheProfile(QueryCacheProfile $qcp)
     {
         $this->queryCacheProfile = $qcp;
@@ -61,9 +66,10 @@ abstract class AbstractSqlExecutor
     /**
      * Executes all sql statements.
      *
-     * @param \Doctrine\DBAL\Connection $conn The database connection that is used to execute the queries.
-     * @param array $params  The parameters.
-     * @param array $types The parameter types.
+     * @param Connection $conn   The database connection that is used to execute the queries.
+     * @param array      $params The parameters.
+     * @param array      $types  The parameter types.
+     *
      * @return \Doctrine\DBAL\Driver\Statement
      */
     abstract public function execute(Connection $conn, array $params, array $types);
