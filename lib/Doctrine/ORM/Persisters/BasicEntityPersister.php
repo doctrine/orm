@@ -144,6 +144,7 @@ class BasicEntityPersister
      * when INSERTing or UPDATEing an entity.
      *
      * @var array
+     *
      * @see prepareInsertData($entity)
      * @see prepareUpdateData($entity)
      */
@@ -153,6 +154,7 @@ class BasicEntityPersister
      * The map of quoted column names.
      *
      * @var array
+     *
      * @see prepareInsertData($entity)
      * @see prepareUpdateData($entity)
      */
@@ -207,7 +209,7 @@ class BasicEntityPersister
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
      * and persists instances of the class described by the given ClassMetadata descriptor.
      *
-     * @param \Doctrine\ORM\EntityManager $em
+     * @param \Doctrine\ORM\EntityManager         $em
      * @param \Doctrine\ORM\Mapping\ClassMetadata $class
      */
     public function __construct(EntityManager $em, ClassMetadata $class)
@@ -232,6 +234,8 @@ class BasicEntityPersister
      * The entity remains queued until {@link executeInserts} is invoked.
      *
      * @param object $entity The entity to queue for insertion.
+     *
+     * @return void
      */
     public function addInsert($entity)
     {
@@ -297,7 +301,9 @@ class BasicEntityPersister
      * entities version field.
      *
      * @param object $entity
-     * @param mixed $id
+     * @param mixed  $id
+     *
+     * @return void
      */
     protected function assignDefaultVersionValue($entity, $id)
     {
@@ -307,10 +313,11 @@ class BasicEntityPersister
     }
 
     /**
-     * Fetch the current version value of a versioned entity.
+     * Fetches the current version value of a versioned entity.
      *
      * @param \Doctrine\ORM\Mapping\ClassMetadata $versionedClass
-     * @param mixed $id
+     * @param mixed                               $id
+     *
      * @return mixed
      */
     protected function fetchVersionValue($versionedClass, $id)
@@ -343,6 +350,8 @@ class BasicEntityPersister
      * from {@prepareUpdateData} on the target tables, thereby optionally applying versioning.
      *
      * @param object $entity The entity to update.
+     *
+     * @return void
      */
     public function update($entity)
     {
@@ -369,10 +378,15 @@ class BasicEntityPersister
      * Performs an UPDATE statement for an entity on a specific table.
      * The UPDATE can optionally be versioned, which requires the entity to have a version field.
      *
-     * @param object $entity The entity object being updated.
-     * @param string $quotedTableName The quoted name of the table to apply the UPDATE on.
-     * @param array $updateData The map of columns to update (column => value).
-     * @param boolean $versioned Whether the UPDATE should be versioned.
+     * @param object  $entity          The entity object being updated.
+     * @param string  $quotedTableName The quoted name of the table to apply the UPDATE on.
+     * @param array   $updateData      The map of columns to update (column => value).
+     * @param boolean $versioned       Whether the UPDATE should be versioned.
+     *
+     * @return void
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     protected final function updateTable($entity, $quotedTableName, array $updateData, $versioned = false)
     {
@@ -472,7 +486,9 @@ class BasicEntityPersister
 
     /**
      * @todo Add check for platform if it supports foreign keys/cascading.
+     *
      * @param array $identifier
+     *
      * @return void
      */
     protected function deleteJoinTableRecords($identifier)
@@ -538,6 +554,8 @@ class BasicEntityPersister
      * Subclasses may override this method to customize the semantics of entity deletion.
      *
      * @param object $entity The entity to delete.
+     *
+     * @return void
      */
     public function delete($entity)
     {
@@ -568,6 +586,7 @@ class BasicEntityPersister
      * </code>
      *
      * @param object $entity The entity for which to prepare the data.
+     *
      * @return array The prepared data.
      */
     protected function prepareUpdateData($entity)
@@ -658,7 +677,9 @@ class BasicEntityPersister
      * The default insert data preparation is the same as for updates.
      *
      * @param object $entity The entity for which to prepare the data.
+     *
      * @return array The prepared data for the tables to update.
+     *
      * @see prepareUpdateData
      */
     protected function prepareInsertData($entity)
@@ -674,6 +695,7 @@ class BasicEntityPersister
      * is always persisted to a single table with a BasicEntityPersister.
      *
      * @param string $fieldName The field name.
+     *
      * @return string The table name.
      */
     public function getOwningTable($fieldName)
@@ -684,15 +706,16 @@ class BasicEntityPersister
     /**
      * Loads an entity by a list of field criteria.
      *
-     * @param array $criteria The criteria by which to load the entity.
-     * @param object $entity The entity to load the data into. If not specified,
-     *        a new entity is created.
-     * @param $assoc The association that connects the entity to load to another entity, if any.
-     * @param array $hints Hints for entity creation.
-     * @param int $lockMode
-     * @param int $limit Limit number of results
-     * @param array $orderBy Criteria to order by 
+     * @param array       $criteria The criteria by which to load the entity.
+     * @param object|null $entity   The entity to load the data into. If not specified, a new entity is created.
+     * @param array|null  $assoc    The association that connects the entity to load to another entity, if any.
+     * @param array       $hints    Hints for entity creation.
+     * @param int         $lockMode
+     * @param int|null    $limit    Limit number of results.
+     * @param array|null  $orderBy  Criteria to order by.
+     *
      * @return object The loaded and managed entity instance or NULL if the entity can not be found.
+     *
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
     public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0, $limit = null, array $orderBy = null)
@@ -716,12 +739,15 @@ class BasicEntityPersister
      * Loads an entity of this persister's mapped class as part of a single-valued
      * association from another entity.
      *
-     * @param array $assoc The association to load.
+     * @param array  $assoc        The association to load.
      * @param object $sourceEntity The entity that owns the association (not necessarily the "owning side").
-     * @param array $identifier The identifier of the entity to load. Must be provided if
-     *                          the association to load represents the owning side, otherwise
-     *                          the identifier is derived from the $sourceEntity.
+     * @param array  $identifier   The identifier of the entity to load. Must be provided if
+     *                             the association to load represents the owning side, otherwise
+     *                             the identifier is derived from the $sourceEntity.
+     *
      * @return object The loaded and managed entity instance or NULL if the entity can not be found.
+     *
+     * @throws \Doctrine\ORM\Mapping\MappingException
      */
     public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = array())
     {
@@ -789,9 +815,12 @@ class BasicEntityPersister
     /**
      * Refreshes a managed entity.
      *
-     * @param array $id The identifier of the entity as an associative array from
-     *                  column or field names to values.
-     * @param object $entity The entity to refresh.
+     * @param array  $id       The identifier of the entity as an associative array from
+     *                         column or field names to values.
+     * @param object $entity   The entity to refresh.
+     * @param int    $lockMode
+     *
+     * @return void
      */
     public function refresh(array $id, $entity, $lockMode = 0)
     {
@@ -804,7 +833,7 @@ class BasicEntityPersister
     }
 
     /**
-     * Load Entities matching the given Criteria object
+     * Loads Entities matching the given Criteria object.
      *
      * @param \Doctrine\Common\Collections\Criteria $criteria
      *
@@ -826,7 +855,7 @@ class BasicEntityPersister
     }
 
     /**
-     * Expand Criteria Parameters by walking the expressions and grabbing all
+     * Expands Criteria Parameters by walking the expressions and grabbing all
      * parameters and types from it.
      *
      * @param \Doctrine\Common\Collections\Criteria $criteria
@@ -864,10 +893,11 @@ class BasicEntityPersister
     /**
      * Loads a list of entities by a list of field criteria.
      *
-     * @param array $criteria
-     * @param array $orderBy
-     * @param int $limit
-     * @param int $offset
+     * @param array      $criteria
+     * @param array|null $orderBy
+     * @param int|null   $limit
+     * @param int|null   $offset
+     *
      * @return array
      */
     public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null)
@@ -882,12 +912,13 @@ class BasicEntityPersister
     }
 
     /**
-     * Get (sliced or full) elements of the given collection.
+     * Gets (sliced or full) elements of the given collection.
      *
-     * @param array $assoc
-     * @param object $sourceEntity
+     * @param array    $assoc
+     * @param object   $sourceEntity
      * @param int|null $offset
      * @param int|null $limit
+     *
      * @return array
      */
     public function getManyToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null)
@@ -898,9 +929,9 @@ class BasicEntityPersister
     }
 
     /**
-     * Load an array of entities from a given dbal statement.
+     * Loads an array of entities from a given DBAL statement.
      *
-     * @param array $assoc
+     * @param array                    $assoc
      * @param \Doctrine\DBAL\Statement $stmt
      *
      * @return array
@@ -919,11 +950,11 @@ class BasicEntityPersister
     }
 
     /**
-     * Hydrate a collection from a given dbal statement.
+     * Hydrates a collection from a given DBAL statement.
      *
-     * @param array $assoc
+     * @param array                    $assoc
      * @param \Doctrine\DBAL\Statement $stmt
-     * @param PersistentCollection $coll
+     * @param PersistentCollection     $coll
      *
      * @return array
      */
@@ -946,11 +977,10 @@ class BasicEntityPersister
     /**
      * Loads a collection of entities of a many-to-many association.
      *
-     * @param ManyToManyMapping $assoc The association mapping of the association being loaded.
-     * @param object $sourceEntity The entity that owns the collection.
-     * @param PersistentCollection $coll The collection to fill.
-     * @param int|null $offset
-     * @param int|null $limit
+     * @param array                $assoc        The association mapping of the association being loaded.
+     * @param object               $sourceEntity The entity that owns the collection.
+     * @param PersistentCollection $coll         The collection to fill.
+     *
      * @return array
      */
     public function loadManyToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
@@ -960,6 +990,16 @@ class BasicEntityPersister
         return $this->loadCollectionFromStatement($assoc, $stmt, $coll);
     }
 
+    /**
+     * @param array    $assoc
+     * @param object   $sourceEntity
+     * @param int|null $offset
+     * @param int|null $limit
+     *
+     * @return \Doctrine\DBAL\Driver\Statement
+     *
+     * @throws \Doctrine\ORM\Mapping\MappingException
+     */
     private function getManyToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
         $sourceClass    = $this->em->getClassMetadata($assoc['sourceEntity']);
@@ -1021,12 +1061,12 @@ class BasicEntityPersister
      * Gets the SELECT SQL to select one or more entities by a set of field criteria.
      *
      * @param array|\Doctrine\Common\Collections\Criteria $criteria
-     * @param AssociationMapping $assoc
-     * @param string $orderBy
-     * @param int $lockMode
-     * @param int $limit
-     * @param int $offset
-     * @param array $orderBy
+     * @param array|null                                  $assoc
+     * @param int                                         $lockMode
+     * @param int|null                                    $limit
+     * @param int|null                                    $offset
+     * @param array|null                                  $orderBy
+     *
      * @return string
      */
     protected function getSelectSQL($criteria, $assoc = null, $lockMode = 0, $limit = null, $offset = null, array $orderBy = null)
@@ -1089,9 +1129,12 @@ class BasicEntityPersister
     /**
      * Gets the ORDER BY SQL snippet for ordered collections.
      *
-     * @param array $orderBy
+     * @param array  $orderBy
      * @param string $baseTableAlias
+     *
      * @return string
+     *
+     * @throws \Doctrine\ORM\ORMException
      */
     protected final function getOrderBySQL(array $orderBy, $baseTableAlias)
     {
@@ -1235,10 +1278,10 @@ class BasicEntityPersister
     /**
      * Gets the SQL join fragment used when selecting entities from an association.
      *
-     * @param string $field
-     * @param array $assoc
+     * @param string        $field
+     * @param array         $assoc
      * @param ClassMetadata $class
-     * @param string $alias
+     * @param string        $alias
      *
      * @return string
      */
@@ -1267,7 +1310,8 @@ class BasicEntityPersister
      * Gets the SQL join fragment used when selecting entities from a
      * many-to-many association.
      *
-     * @param ManyToManyMapping $manyToMany
+     * @param array $manyToMany
+     *
      * @return string
      */
     protected function getSelectManyToManyJoinSQL(array $manyToMany)
@@ -1381,10 +1425,12 @@ class BasicEntityPersister
     /**
      * Gets the SQL snippet of a qualified column name for the given field name.
      *
-     * @param string $field The field name.
+     * @param string        $field The field name.
      * @param ClassMetadata $class The class that declares this field. The table this class is
      *                             mapped to must own the column for the given field.
-     * @param string $alias
+     * @param string        $alias
+     *
+     * @return string
      */
     protected function getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
@@ -1408,7 +1454,10 @@ class BasicEntityPersister
      * Gets the SQL table alias for the given class name.
      *
      * @param string $className
+     * @param string $assocName
+     *
      * @return string The SQL table alias.
+     *
      * @todo Reconsider. Binding table aliases to class names is not such a good idea.
      */
     protected function getSQLTableAlias($className, $assocName = '')
@@ -1429,10 +1478,11 @@ class BasicEntityPersister
     }
 
     /**
-     * Lock all rows of this entity matching the given criteria with the specified pessimistic lock mode
+     * Locks all rows of this entity matching the given criteria with the specified pessimistic lock mode.
      *
      * @param array $criteria
-     * @param int $lockMode
+     * @param int   $lockMode
+     *
      * @return void
      */
     public function lock(array $criteria, $lockMode)
@@ -1464,7 +1514,7 @@ class BasicEntityPersister
     }
 
     /**
-     * Get the FROM and optionally JOIN conditions to lock the entity managed by this persister.
+     * Gets the FROM and optionally JOIN conditions to lock the entity managed by this persister.
      *
      * @return string
      */
@@ -1476,9 +1526,10 @@ class BasicEntityPersister
     }
 
     /**
-     * Get the Select Where Condition from a Criteria object.
+     * Gets the Select Where Condition from a Criteria object.
      *
      * @param \Doctrine\Common\Collections\Criteria $criteria
+     *
      * @return string
      */
     protected function getSelectConditionCriteriaSQL(Criteria $criteria)
@@ -1495,12 +1546,12 @@ class BasicEntityPersister
     }
 
     /**
-     * Get the SQL WHERE condition for matching a field with a given value.
+     * Gets the SQL WHERE condition for matching a field with a given value.
      *
-     * @param string $field
-     * @param mixed $value
-     * @param array|null $assoc
-     * @param string $comparison
+     * @param string      $field
+     * @param mixed       $value
+     * @param array|null  $assoc
+     * @param string|null $comparison
      *
      * @return string
      */
@@ -1529,12 +1580,14 @@ class BasicEntityPersister
     }
 
     /**
-     * Build the left-hand-side of a where condition statement.
+     * Builds the left-hand-side of a where condition statement.
      *
-     * @param string $field
-     * @param array $assoc
+     * @param string     $field
+     * @param array|null $assoc
      *
      * @return string
+     *
+     * @throws \Doctrine\ORM\ORMException
      */
     protected function getSelectConditionStatementColumnSQL($field, $assoc = null)
     {
@@ -1578,8 +1631,9 @@ class BasicEntityPersister
      * Subclasses are supposed to override this method if they intend to change
      * or alter the criteria by which entities are selected.
      *
-     * @param array $criteria
-     * @param AssociationMapping $assoc
+     * @param array      $criteria
+     * @param array|null $assoc
+     *
      * @return string
      */
     protected function getSelectConditionSQL(array $criteria, $assoc = null)
@@ -1594,12 +1648,13 @@ class BasicEntityPersister
     }
 
     /**
-     * Return an array with (sliced or full list) of elements in the specified collection.
+     * Returns an array with (sliced or full list) of elements in the specified collection.
      *
-     * @param array $assoc
-     * @param object $sourceEntity
-     * @param int $offset
-     * @param int $limit
+     * @param array    $assoc
+     * @param object   $sourceEntity
+     * @param int|null $offset
+     * @param int|null $limit
+     *
      * @return array
      */
     public function getOneToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null)
@@ -1612,11 +1667,11 @@ class BasicEntityPersister
     /**
      * Loads a collection of entities in a one-to-many association.
      *
-     * @param array $assoc
-     * @param object $sourceEntity
-     * @param PersistentCollection $coll The collection to load/fill.
-     * @param int|null $offset
-     * @param int|null $limit
+     * @param array                $assoc
+     * @param object               $sourceEntity
+     * @param PersistentCollection $coll         The collection to load/fill.
+     *
+     * @return array
      */
     public function loadOneToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
     {
@@ -1626,12 +1681,13 @@ class BasicEntityPersister
     }
 
     /**
-     * Build criteria and execute SQL statement to fetch the one to many entities from.
+     * Builds criteria and execute SQL statement to fetch the one to many entities from.
      *
-     * @param array $assoc
-     * @param object $sourceEntity
+     * @param array    $assoc
+     * @param object   $sourceEntity
      * @param int|null $offset
      * @param int|null $limit
+     *
      * @return \Doctrine\DBAL\Statement
      */
     private function getOneToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
@@ -1667,9 +1723,10 @@ class BasicEntityPersister
     }
 
     /**
-     * Expand the parameters from the given criteria and use the correct binding types if found.
+     * Expands the parameters from the given criteria and use the correct binding types if found.
      *
-     * @param  array $criteria
+     * @param array $criteria
+     *
      * @return array
      */
     private function expandParameters($criteria)
@@ -1690,11 +1747,14 @@ class BasicEntityPersister
     }
 
     /**
-     * Infer field type to be used by parameter type casting.
+     * Infers field type to be used by parameter type casting.
      *
      * @param string $field
-     * @param mixed $value
+     * @param mixed  $value
+     *
      * @return integer
+     *
+     * @throws \Doctrine\ORM\Query\QueryException
      */
     private function getType($field, $value)
     {
@@ -1733,9 +1793,10 @@ class BasicEntityPersister
     }
 
     /**
-     * Retrieve parameter value
+     * Retrieves parameter value.
      *
      * @param mixed $value
+     *
      * @return mixed
      */
     private function getValue($value)
@@ -1754,9 +1815,10 @@ class BasicEntityPersister
     }
 
     /**
-     * Retrieve an individual parameter value
+     * Retrieves an individual parameter value.
      *
      * @param mixed $value
+     *
      * @return mixed
      */
     private function getIndividualValue($value)
@@ -1781,6 +1843,8 @@ class BasicEntityPersister
      * Checks whether the given managed entity exists in the database.
      *
      * @param object $entity
+     * @param array  $extraConditions
+     *
      * @return boolean TRUE if the entity exists in the database, FALSE otherwise.
      */
     public function exists($entity, array $extraConditions = array())
@@ -1814,6 +1878,7 @@ class BasicEntityPersister
      * Generates the appropriate join SQL for the given join column.
      *
      * @param array $joinColumns The join columns definition of an association.
+     *
      * @return string LEFT JOIN if one of the columns is nullable, INNER JOIN otherwise.
      */
     protected function getJoinSQLForJoinColumns($joinColumns)
@@ -1832,6 +1897,7 @@ class BasicEntityPersister
      * Gets an SQL column alias for a column name.
      *
      * @param string $columnName
+     *
      * @return string
      */
     public function getSQLColumnAlias($columnName)
@@ -1842,8 +1908,8 @@ class BasicEntityPersister
     /**
      * Generates the filter SQL for a given entity and table alias.
      *
-     * @param ClassMetadata $targetEntity Metadata of the target entity.
-     * @param string $targetTableAlias The table alias of the joined/selected table.
+     * @param ClassMetadata $targetEntity     Metadata of the target entity.
+     * @param string        $targetTableAlias The table alias of the joined/selected table.
      *
      * @return string The SQL query part to add to a query.
      */

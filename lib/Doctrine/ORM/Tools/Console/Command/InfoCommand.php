@@ -25,8 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command;
 
 /**
- * Show information about mapped entities
- *
+ * Show information about mapped entities.
  *
  * @link    www.doctrine-project.org
  * @since   2.1
@@ -34,6 +33,9 @@ use Symfony\Component\Console\Command\Command;
  */
 class InfoCommand extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this
@@ -47,6 +49,9 @@ EOT
         );
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         /* @var $entityManager \Doctrine\ORM\EntityManager */

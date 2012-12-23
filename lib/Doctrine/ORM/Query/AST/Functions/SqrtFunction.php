@@ -34,6 +34,9 @@ use Doctrine\ORM\Query\Lexer;
  */
 class SqrtFunction extends FunctionNode
 {
+    /**
+     * @var \Doctrine\ORM\Query\AST\SimpleArithmeticExpression
+     */
     public $simpleArithmeticExpression;
 
     /**
@@ -59,4 +62,3 @@ class SqrtFunction extends FunctionNode
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 }
-

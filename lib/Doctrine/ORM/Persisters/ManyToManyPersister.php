@@ -61,6 +61,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * {@inheritdoc}
      *
      * @override
+     *
      * @internal Order of the parameters must be the same as the order of the columns in getDeleteRowSql.
      */
     protected function getDeleteRowSQLParameters(PersistentCollection $coll, $element)
@@ -70,7 +71,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
     /**
      * {@inheritdoc}
-     * 
+     *
      * @throws \BadMethodCallException Not used for OneToManyPersister
      */
     protected function getUpdateRowSQL(PersistentCollection $coll)
@@ -82,6 +83,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * {@inheritdoc}
      *
      * @override
+     *
      * @internal Order of the parameters must be the same as the order of the columns in getInsertRowSql.
      */
     protected function getInsertRowSQL(PersistentCollection $coll)
@@ -107,6 +109,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * {@inheritdoc}
      *
      * @override
+     *
      * @internal Order of the parameters must be the same as the order of the columns in getInsertRowSql.
      */
     protected function getInsertRowSQLParameters(PersistentCollection $coll, $element)
@@ -119,7 +122,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * of the join table columns as specified in ManyToManyMapping#joinTableColumns.
      *
      * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param object $element
+     * @param object                             $element
+     *
      * @return array
      */
     private function collectJoinTableColumnParameters(PersistentCollection $coll, $element)
@@ -181,6 +185,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * {@inheritdoc}
      *
      * @override
+     *
      * @internal Order of the parameters must be the same as the order of the columns in getDeleteSql.
      */
     protected function getDeleteSQLParameters(PersistentCollection $coll)
@@ -253,8 +258,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
     /**
      * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param int $offset
-     * @param int $length
+     * @param int                                $offset
+     * @param int|null                           $length
+     *
      * @return array
      */
     public function slice(PersistentCollection $coll, $offset, $length = null)
@@ -266,7 +272,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
     /**
      * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param object $element
+     * @param object                             $element
+     *
      * @return boolean
      */
     public function contains(PersistentCollection $coll, $element)
@@ -294,7 +301,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
     /**
      * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param object $element
+     * @param object                             $element
+     *
      * @return boolean
      */
     public function removeElement(PersistentCollection $coll, $element)
@@ -323,8 +331,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
     /**
      * @param \Doctrine\ORM\PersistentCollection $coll
-     * @param object $element
-     * @param boolean $addFilters Whether the filter SQL should be included or not.
+     * @param object                             $element
+     * @param boolean                            $addFilters Whether the filter SQL should be included or not.
+     *
      * @return array
      */
     private function getJoinTableRestrictions(PersistentCollection $coll, $element, $addFilters)
@@ -431,8 +440,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * Generates the filter SQL for a given entity and table alias.
      *
-     * @param ClassMetadata $targetEntity Metadata of the target entity.
-     * @param string $targetTableAlias The table alias of the joined/selected table.
+     * @param ClassMetadata $targetEntity     Metadata of the target entity.
+     * @param string        $targetTableAlias The table alias of the joined/selected table.
      *
      * @return string The SQL query part to add to a query.
      */

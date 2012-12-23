@@ -30,13 +30,16 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query\Parameter;
 
 /**
- * Convert Collection expressions to Query expressions
+ * Converts Collection expressions to Query expressions.
  *
  * @author Kirill chEbba Chebunin <iam@chebba.org>
  * @since 2.4
  */
 class QueryExpressionVisitor extends ExpressionVisitor
 {
+    /**
+     * @var array
+     */
     private static $operatorMap = array(
         Comparison::GT => Expr\Comparison::GT,
         Comparison::GTE => Expr\Comparison::GTE,
@@ -44,11 +47,18 @@ class QueryExpressionVisitor extends ExpressionVisitor
         Comparison::LTE => Expr\Comparison::LTE
     );
 
+    /**
+     * @var Expr
+     */
     private $expr;
+
+    /**
+     * @var array
+     */
     private $parameters = array();
 
     /**
-     * Constructor with internal initialization
+     * Constructor with internal initialization.
      */
     public function __construct()
     {
@@ -56,7 +66,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
     }
 
     /**
-     * Get bound parameters.
+     * Gets bound parameters.
      * Filled after {@link dispach()}.
      *
      * @return \Doctrine\Common\Collections\Collection
@@ -67,7 +77,9 @@ class QueryExpressionVisitor extends ExpressionVisitor
     }
 
     /**
-     * Clear parameters
+     * Clears parameters.
+     *
+     * @return void
      */
     public function clearParameters()
     {
@@ -75,7 +87,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
     }
 
     /**
-     * Convert Criteria expression to Query one based on static map.
+     * Converts Criteria expression to Query one based on static map.
      *
      * @param string $criteriaOperator
      *
@@ -155,7 +167,6 @@ class QueryExpressionVisitor extends ExpressionVisitor
 
                 throw new \RuntimeException("Unknown comparison operator: " . $comparison->getOperator());
         }
-
     }
 
     /**

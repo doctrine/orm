@@ -19,17 +19,16 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\DBAL\Schema\AbstractSchemaManager,
-    Doctrine\DBAL\Schema\SchemaException,
-    Doctrine\Common\Persistence\Mapping\Driver\MappingDriver,
-    Doctrine\Common\Persistence\Mapping\ClassMetadata,
-    Doctrine\ORM\Mapping\ClassMetadataInfo,
-    Doctrine\Common\Util\Inflector,
-    Doctrine\ORM\Mapping\MappingException;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\SchemaException;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\Common\Util\Inflector;
+use Doctrine\ORM\Mapping\MappingException;
 
 /**
  * The DatabaseDriver reverse engineers the mapping metadata from a database.
- *
  *
  * @link    www.doctrine-project.org
  * @since   2.0
@@ -45,10 +44,13 @@ class DatabaseDriver implements MappingDriver
     private $_sm;
 
     /**
-     * @var array
+     * @var array|null
      */
     private $tables = null;
 
+    /**
+     * @var array
+     */
     private $classToTableNames = array();
 
     /**
@@ -69,12 +71,11 @@ class DatabaseDriver implements MappingDriver
     /**
      * The namespace for the generated entities.
      *
-     * @var string
+     * @var string|null
      */
     private $namespace;
 
     /**
-     *
      * @param AbstractSchemaManager $schemaManager
      */
     public function __construct(AbstractSchemaManager $schemaManager)
@@ -83,10 +84,11 @@ class DatabaseDriver implements MappingDriver
     }
 
     /**
-     * Set tables manually instead of relying on the reverse engeneering capabilities of SchemaManager.
+     * Sets tables manually instead of relying on the reverse engeneering capabilities of SchemaManager.
      *
      * @param array $entityTables
      * @param array $manyToManyTables
+     *
      * @return void
      */
     public function setTables($entityTables, $manyToManyTables)
@@ -102,6 +104,11 @@ class DatabaseDriver implements MappingDriver
         }
     }
 
+    /**
+     * @return void
+     *
+     * @throws \Doctrine\ORM\Mapping\MappingException
+     */
     private function reverseEngineerMappingFromDatabase()
     {
         if ($this->tables !== null) {
@@ -340,10 +347,11 @@ class DatabaseDriver implements MappingDriver
     }
 
     /**
-     * Set class name for a table.
+     * Sets class name for a table.
      *
      * @param string $tableName
      * @param string $className
+     *
      * @return void
      */
     public function setClassNameForTable($tableName, $className)
@@ -352,11 +360,12 @@ class DatabaseDriver implements MappingDriver
     }
 
     /**
-     * Set field name for a column on a specific table.
+     * Sets field name for a column on a specific table.
      *
      * @param string $tableName
      * @param string $columnName
      * @param string $fieldName
+     *
      * @return void
      */
     public function setFieldNameForColumn($tableName, $columnName, $fieldName)
@@ -365,9 +374,10 @@ class DatabaseDriver implements MappingDriver
     }
 
     /**
-     * Return the mapped class name for a table if it exists. Otherwise return "classified" version.
+     * Returns the mapped class name for a table if it exists. Otherwise return "classified" version.
      *
      * @param string $tableName
+     *
      * @return string
      */
     private function getClassNameForTable($tableName)
@@ -382,9 +392,10 @@ class DatabaseDriver implements MappingDriver
     /**
      * Return the mapped field name for a column, if it exists. Otherwise return camelized version.
      *
-     * @param string $tableName
-     * @param string $columnName
+     * @param string  $tableName
+     * @param string  $columnName
      * @param boolean $fk Whether the column is a foreignkey or not.
+     *
      * @return string
      */
     private function getFieldNameForColumn($tableName, $columnName, $fk = false)
@@ -406,6 +417,7 @@ class DatabaseDriver implements MappingDriver
      * Set the namespace for the generated entities.
      *
      * @param string $namespace
+     *
      * @return void
      */
     public function setNamespace($namespace)

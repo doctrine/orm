@@ -35,10 +35,26 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  */
 class TrimFunction extends FunctionNode
 {
+    /**
+     * @var bool
+     */
     public $leading;
+
+    /**
+     * @var bool
+     */
     public $trailing;
+
+    /**
+     * @var bool
+     */
     public $both;
+
+    /**
+     * @var bool
+     */
     public $trimChar = false;
+
     public $stringPrimary;
 
     /**
@@ -96,5 +112,4 @@ class TrimFunction extends FunctionNode
 
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
-
 }

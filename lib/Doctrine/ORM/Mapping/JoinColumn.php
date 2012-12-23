@@ -25,18 +25,40 @@ namespace Doctrine\ORM\Mapping;
  */
 final class JoinColumn implements Annotation
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     public $name;
-    /** @var string */
+
+    /**
+     * @var string
+     */
     public $referencedColumnName = 'id';
-    /** @var boolean */
+
+    /**
+     * @var boolean
+     */
     public $unique = false;
-    /** @var boolean */
+
+    /**
+     * @var boolean
+     */
     public $nullable = true;
-    /** @var mixed */
+
+    /**
+     * @var mixed
+     */
     public $onDelete;
-    /** @var string */
+
+    /**
+     * @var string
+     */
     public $columnDefinition;
-    /** @var string */
-    public $fieldName; // field name used in non-object hydration (array/scalar)
+
+    /**
+     * Field name used in non-object hydration (array/scalar).
+     *
+     * @var string
+     */
+    public $fieldName;
 }

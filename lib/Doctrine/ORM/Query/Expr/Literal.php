@@ -20,9 +20,8 @@
 namespace Doctrine\ORM\Query\Expr;
 
 /**
- * Expression class for generating DQL functions
+ * Expression class for generating DQL functions.
  *
- * 
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -48,5 +47,4 @@ class Literal extends Base
     {
         return $this->parts;
     }
-
 }

@@ -27,7 +27,6 @@ namespace Doctrine\ORM\Query\AST;
  *                          DatetimeExpression ComparisonOperator (DatetimeExpression | QuantifiedExpression) |
  *                          EntityExpression ("=" | "<>") (EntityExpression | QuantifiedExpression)
  *
- * 
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -36,10 +35,26 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ComparisonExpression extends Node
 {
+    /**
+     * @var Node
+     */
     public $leftExpression;
+
+    /**
+     * @var Node
+     */
     public $rightExpression;
+
+    /**
+     * @var string
+     */
     public $operator;
 
+    /**
+     * @param Node $leftExpr
+     * @param string $operator
+     * @param Node $rightExpr
+     */
     public function __construct($leftExpr, $operator, $rightExpr)
     {
         $this->leftExpression = $leftExpr;
@@ -47,6 +62,9 @@ class ComparisonExpression extends Node
         $this->operator = $operator;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function dispatch($sqlWalker)
     {
         return $sqlWalker->walkComparisonExpression($this);

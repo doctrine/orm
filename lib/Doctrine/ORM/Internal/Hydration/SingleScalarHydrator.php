@@ -19,7 +19,6 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\NonUniqueResultException;
 

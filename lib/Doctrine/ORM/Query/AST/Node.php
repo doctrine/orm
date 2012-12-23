@@ -20,9 +20,8 @@
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * Abstract class of an AST node
+ * Abstract class of an AST node.
  *
- * 
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -36,7 +35,7 @@ abstract class Node
      *
      * Implementation is not mandatory for all nodes.
      *
-     * @param $walker
+     * @param \Doctrine\ORM\Query\SqlWalker $walker
      *
      * @return string
      *
@@ -48,7 +47,7 @@ abstract class Node
     }
 
     /**
-     * Dumps the AST Node into a string representation for information purpose only
+     * Dumps the AST Node into a string representation for information purpose only.
      *
      * @return string
      */
@@ -57,6 +56,11 @@ abstract class Node
         return $this->dump($this);
     }
 
+    /**
+     * @param object $obj
+     *
+     * @return string
+     */
     public function dump($obj)
     {
         static $ident = 0;

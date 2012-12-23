@@ -32,7 +32,7 @@ use Doctrine\ORM\Query\AST\ConditionalFactor;
 use Doctrine\ORM\Query\AST\WhereClause;
 
 /**
- * Replaces the whereClause of the AST with a WHERE id IN (:foo_1, :foo_2) equivalent
+ * Replaces the whereClause of the AST with a WHERE id IN (:foo_1, :foo_2) equivalent.
  *
  * @category    DoctrineExtensions
  * @package     DoctrineExtensions\Paginate
@@ -43,17 +43,17 @@ use Doctrine\ORM\Query\AST\WhereClause;
 class WhereInWalker extends TreeWalkerAdapter
 {
     /**
-     * ID Count hint name
+     * ID Count hint name.
      */
     const HINT_PAGINATOR_ID_COUNT = 'doctrine.id.count';
 
     /**
-     * Primary key alias for query
+     * Primary key alias for query.
      */
     const PAGINATOR_ID_ALIAS = 'dpid';
 
     /**
-     * Replaces the whereClause in the AST
+     * Replaces the whereClause in the AST.
      *
      * Generates a clause equivalent to WHERE IN (:dpid_1, :dpid_2, ...)
      *
@@ -61,10 +61,13 @@ class WhereInWalker extends TreeWalkerAdapter
      * the PAGINATOR_ID_ALIAS
      *
      * The total number of parameters is retrieved from
-     * the HINT_PAGINATOR_ID_COUNT query hint
+     * the HINT_PAGINATOR_ID_COUNT query hint.
      *
-     * @param  SelectStatement $AST
+     * @param SelectStatement $AST
+     *
      * @return void
+     *
+     * @throws \RuntimeException
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
@@ -142,4 +145,3 @@ class WhereInWalker extends TreeWalkerAdapter
         }
     }
 }
-

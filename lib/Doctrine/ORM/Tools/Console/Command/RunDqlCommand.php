@@ -29,7 +29,6 @@ use Doctrine\Common\Util\Debug;
 /**
  * Command to execute DQL queries in a given EntityManager.
  *
- *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
@@ -39,6 +38,9 @@ use Doctrine\Common\Util\Debug;
  */
 class RunDqlCommand extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this
@@ -70,6 +72,9 @@ EOT
         );
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $em = $this->getHelper('em')->getEntityManager();

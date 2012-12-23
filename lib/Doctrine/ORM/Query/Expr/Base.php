@@ -20,9 +20,8 @@
 namespace Doctrine\ORM\Query\Expr;
 
 /**
- * Abstract base Expr class for building DQL parts
+ * Abstract base Expr class for building DQL parts.
  *
- * 
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
@@ -65,8 +64,9 @@ abstract class Base
     }
 
     /**
-     * @param   array $args
-     * @return  Base
+     * @param array $args
+     *
+     * @return Base
      */
     public function addMultiple($args = array())
     {
@@ -78,8 +78,11 @@ abstract class Base
     }
 
     /**
-     * @param   mixed $arg
-     * @return  Base
+     * @param mixed $arg
+     *
+     * @return Base
+     *
+     * @throws \InvalidArgumentException
      */
     public function add($arg)
     {

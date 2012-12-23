@@ -561,7 +561,8 @@ class XmlDriver extends FileDriver
     /**
      * Parses (nested) option elements.
      *
-     * @param SimpleXMLElement $options the XML element.
+     * @param SimpleXMLElement $options The XML element.
+     *
      * @return array The options array.
      */
     private function _parseOptions(SimpleXMLElement $options)
@@ -592,7 +593,8 @@ class XmlDriver extends FileDriver
      * Constructs a joinColumn mapping array based on the information
      * found in the given SimpleXMLElement.
      *
-     * @param SimpleXMLElement $joinColumnElement the XML element.
+     * @param SimpleXMLElement $joinColumnElement The XML element.
+     *
      * @return array The mapping array.
      */
     private function joinColumnToArray(SimpleXMLElement $joinColumnElement)
@@ -622,10 +624,11 @@ class XmlDriver extends FileDriver
     }
 
      /**
-     * Parse the given field as array
+     * Parses the given field as array.
      *
-     * @param   SimpleXMLElement   $fieldMapping
-     * @return  array
+     * @param SimpleXMLElement $fieldMapping
+     *
+     * @return array
      */
     private function columnToArray(SimpleXMLElement $fieldMapping)
     {
@@ -679,7 +682,8 @@ class XmlDriver extends FileDriver
     /**
      * Gathers a list of cascade options found in the given cascade element.
      *
-     * @param SimpleXMLElement $cascadeElement the cascade element.
+     * @param SimpleXMLElement $cascadeElement The cascade element.
+     *
      * @return array The list of cascade options.
      */
     private function _getCascadeMappings($cascadeElement)
@@ -720,6 +724,11 @@ class XmlDriver extends FileDriver
         return $result;
     }
 
+    /**
+     * @param mixed $element
+     *
+     * @return bool
+     */
     protected function evaluateBoolean($element)
     {
         $flag = (string)$element;
@@ -727,4 +736,3 @@ class XmlDriver extends FileDriver
         return ($flag === true || $flag == "true" || $flag == "1");
     }
 }
-

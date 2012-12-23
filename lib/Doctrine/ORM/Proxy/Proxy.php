@@ -27,4 +27,6 @@ use Doctrine\Common\Persistence\Proxy as BaseProxy;
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-interface Proxy extends BaseProxy {}
+interface Proxy extends BaseProxy
+{
+}

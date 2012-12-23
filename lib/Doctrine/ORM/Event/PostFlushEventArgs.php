@@ -47,7 +47,7 @@ class PostFlushEventArgs extends EventArgs
     }
 
     /**
-     * Retrieve associated EntityManager.
+     * Retrieves associated EntityManager.
      *
      * @return \Doctrine\ORM\EntityManager
      */

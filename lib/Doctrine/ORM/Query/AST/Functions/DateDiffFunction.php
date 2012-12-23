@@ -36,6 +36,9 @@ class DateDiffFunction extends FunctionNode
     public $date1;
     public $date2;
 
+    /**
+     * @override
+     */
     public function getSql(SqlWalker $sqlWalker)
     {
         return $sqlWalker->getConnection()->getDatabasePlatform()->getDateDiffExpression(
@@ -44,6 +47,9 @@ class DateDiffFunction extends FunctionNode
         );
     }
 
+    /**
+     * @override
+     */
     public function parse(Parser $parser)
     {
         $parser->match(Lexer::T_IDENTIFIER);

@@ -28,7 +28,6 @@ use Doctrine\Common\Cache\ApcCache;
 /**
  * Command to clear the metadata cache of the various cache drivers.
  *
- *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
@@ -39,7 +38,7 @@ use Doctrine\Common\Cache\ApcCache;
 class MetadataCommand extends Command
 {
     /**
-     * @see Console\Command\Command
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -74,7 +73,7 @@ EOT
     }
 
     /**
-     * @see Console\Command\Command
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

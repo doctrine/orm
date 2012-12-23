@@ -17,7 +17,7 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\AST\SelectStatement;
 
 /**
- * Wrap the query in order to accurately count the root objects
+ * Wraps the query in order to accurately count the root objects.
  *
  * Given a DQL like `SELECT u FROM User u` it will generate an SQL query like:
  * SELECT COUNT(*) (SELECT DISTINCT <id> FROM (<original SQL>))
@@ -45,13 +45,15 @@ class CountOutputWalker extends SqlWalker
     private $queryComponents;
 
     /**
-     * Constructor. Stores various parameters that are otherwise unavailable
+     * Constructor.
+     *
+     * Stores various parameters that are otherwise unavailable
      * because Doctrine\ORM\Query\SqlWalker keeps everything private without
      * accessors.
      *
-     * @param \Doctrine\ORM\Query $query
+     * @param \Doctrine\ORM\Query              $query
      * @param \Doctrine\ORM\Query\ParserResult $parserResult
-     * @param array $queryComponents
+     * @param array                            $queryComponents
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
@@ -63,14 +65,17 @@ class CountOutputWalker extends SqlWalker
     }
 
     /**
-     * Walks down a SelectStatement AST node, wrapping it in a COUNT (SELECT DISTINCT)
+     * Walks down a SelectStatement AST node, wrapping it in a COUNT (SELECT DISTINCT).
      *
      * Note that the ORDER BY clause is not removed. Many SQL implementations (e.g. MySQL)
      * are able to cache subqueries. By keeping the ORDER BY clause intact, the limitSubQuery
      * that will most likely be executed next can be read from the native SQL cache.
      *
      * @param SelectStatement $AST
+     *
      * @return string
+     *
+     * @throws \RuntimeException
      */
     public function walkSelectStatement(SelectStatement $AST)
     {

@@ -39,11 +39,12 @@ class ResolveTargetEntityListener
     private $resolveTargetEntities = array();
 
     /**
-     * Add a target-entity class name to resolve to a new class name.
+     * Adds a target-entity class name to resolve to a new class name.
      *
      * @param string $originalEntity
      * @param string $newEntity
-     * @param array $mapping
+     * @param array  $mapping
+     *
      * @return void
      */
     public function addResolveTargetEntity($originalEntity, $newEntity, array $mapping)
@@ -53,9 +54,10 @@ class ResolveTargetEntityListener
     }
 
     /**
-     * Process event and resolve new target entity names.
+     * Processes event and resolves new target entity names.
      *
      * @param LoadClassMetadataEventArgs $args
+     *
      * @return void
      */
     public function loadClassMetadata(LoadClassMetadataEventArgs $args)
@@ -69,6 +71,12 @@ class ResolveTargetEntityListener
         }
     }
 
+    /**
+     * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $classMetadata
+     * @param array                                   $mapping
+     *
+     * @return void
+     */
     private function remapAssociation($classMetadata, $mapping)
     {
         $newMapping = $this->resolveTargetEntities[$mapping['targetEntity']];
@@ -93,4 +101,3 @@ class ResolveTargetEntityListener
         }
     }
 }
-

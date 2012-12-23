@@ -29,22 +29,41 @@ use Exception;
  */
 class ORMException extends Exception
 {
+    /**
+     * @return ORMException
+     */
     public static function missingMappingDriverImpl()
     {
         return new self("It's a requirement to specify a Metadata Driver and pass it ".
             "to Doctrine\\ORM\\Configuration::setMetadataDriverImpl().");
     }
 
+    /**
+     * @param string $queryName
+     *
+     * @return ORMException
+     */
     public static function namedQueryNotFound($queryName)
     {
         return new self('Could not find a named query by the name "' . $queryName . '"');
     }
 
+    /**
+     * @param string $nativeQueryName
+     *
+     * @return ORMException
+     */
     public static function namedNativeQueryNotFound($nativeQueryName)
     {
         return new self('Could not find a named native query by the name "' . $nativeQueryName . '"');
     }
 
+    /**
+     * @param object $entity
+     * @param object $relatedEntity
+     *
+     * @return ORMException
+     */
     public static function entityMissingForeignAssignedId($entity, $relatedEntity)
     {
         return new self(
@@ -56,6 +75,12 @@ class ORMException extends Exception
         );
     }
 
+    /**
+     * @param object $entity
+     * @param string $field
+     *
+     * @return ORMException
+     */
     public static function entityMissingAssignedIdForField($entity, $field)
     {
         return new self("Entity of type " . get_class($entity) . " is missing an assigned ID for field  '" . $field . "'. " .
@@ -65,6 +90,11 @@ class ORMException extends Exception
         );
     }
 
+    /**
+     * @param string $field
+     *
+     * @return ORMException
+     */
     public static function unrecognizedField($field)
     {
         return new self("Unrecognized field: $field");
@@ -73,37 +103,67 @@ class ORMException extends Exception
     /**
      * @param string $className
      * @param string $field
+     *
+     * @return ORMException
      */
     public static function invalidOrientation($className, $field)
     {
         return new self("Invalid order by orientation specified for " . $className . "#" . $field);
     }
 
+    /**
+     * @param string $mode
+     *
+     * @return ORMException
+     */
     public static function invalidFlushMode($mode)
     {
         return new self("'$mode' is an invalid flush mode.");
     }
 
+    /**
+     * @return ORMException
+     */
     public static function entityManagerClosed()
     {
         return new self("The EntityManager is closed.");
     }
 
+    /**
+     * @param string $mode
+     *
+     * @return ORMException
+     */
     public static function invalidHydrationMode($mode)
     {
         return new self("'$mode' is an invalid hydration mode.");
     }
 
+    /**
+     * @return ORMException
+     */
     public static function mismatchedEventManager()
     {
         return new self("Cannot use different EventManager instances for EntityManager and Connection.");
     }
 
+    /**
+     * @param string $methodName
+     *
+     * @return ORMException
+     */
     public static function findByRequiresParameter($methodName)
     {
         return new self("You need to pass a parameter to '".$methodName."'");
     }
 
+    /**
+     * @param string $entityName
+     * @param string $fieldName
+     * @param string $method
+     *
+     * @return ORMException
+     */
     public static function invalidFindByCall($entityName, $fieldName, $method)
     {
         return new self(
@@ -112,6 +172,12 @@ class ORMException extends Exception
         );
     }
 
+    /**
+     * @param string $entityName
+     * @param string $associationFieldName
+     *
+     * @return ORMException
+     */
     public static function invalidFindByInverseAssociation($entityName, $associationFieldName)
     {
         return new self(
@@ -120,29 +186,51 @@ class ORMException extends Exception
         );
     }
 
-    public static function invalidResultCacheDriver() {
+    /**
+     * @return ORMException
+     */
+    public static function invalidResultCacheDriver()
+    {
         return new self("Invalid result cache driver; it must implement Doctrine\\Common\\Cache\\Cache.");
     }
 
-    public static function notSupported() {
+    /**
+     * @return ORMException
+     */
+    public static function notSupported()
+    {
         return new self("This behaviour is (currently) not supported by Doctrine 2");
     }
 
+    /**
+     * @return ORMException
+     */
     public static function queryCacheNotConfigured()
     {
         return new self('Query Cache is not configured.');
     }
 
+    /**
+     * @return ORMException
+     */
     public static function metadataCacheNotConfigured()
     {
         return new self('Class Metadata Cache is not configured.');
     }
 
+    /**
+     * @return ORMException
+     */
     public static function proxyClassesAlwaysRegenerating()
     {
         return new self('Proxy Classes are always regenerating.');
     }
 
+    /**
+     * @param string $entityNamespaceAlias
+     *
+     * @return ORMException
+     */
     public static function unknownEntityNamespace($entityNamespaceAlias)
     {
         return new self(
@@ -150,16 +238,32 @@ class ORMException extends Exception
         );
     }
 
+    /**
+     * @param string $className
+     *
+     * @return ORMException
+     */
     public static function invalidEntityRepository($className)
     {
         return new self("Invalid repository class '".$className."'. It must be a Doctrine\Common\Persistence\ObjectRepository.");
     }
 
+    /**
+     * @param string $className
+     * @param string $fieldName
+     *
+     * @return ORMException
+     */
     public static function missingIdentifierField($className, $fieldName)
     {
         return new self("The identifier $fieldName is missing for a query of " . $className);
     }
 
+    /**
+     * @param string $functionName
+     *
+     * @return ORMException
+     */
     public static function overwriteInternalDQLFunctionNotAllowed($functionName)
     {
         return new self("It is not allowed to overwrite internal function '$functionName' in the DQL parser through user-defined functions.");

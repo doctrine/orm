@@ -19,7 +19,6 @@
 
 namespace Doctrine\ORM\Id;
 
-use Serializable;
 use Doctrine\ORM\EntityManager;
 
 /**
@@ -30,13 +29,14 @@ use Doctrine\ORM\EntityManager;
  */
 class UuidGenerator extends AbstractIdGenerator
 {
-    
     /**
      * Generates an ID for the given entity.
      *
-     * @param Doctrine\ORM\EntityManager $em The EntityManager to user
-     * @param object $entity
+     * @param EntityManager $em     The EntityManager to use.
+     * @param object        $entity
+     *
      * @return string The generated value.
+     *
      * @override
      */
     public function generate(EntityManager $em, $entity)
@@ -45,5 +45,4 @@ class UuidGenerator extends AbstractIdGenerator
         $sql = 'SELECT ' . $conn->getDatabasePlatform()->getGuidExpression();
         return $conn->query($sql)->fetchColumn(0);
     }
-    
 }

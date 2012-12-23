@@ -26,10 +26,11 @@ use Doctrine\ORM\Version;
 class ConsoleRunner
 {
     /**
-     * Run console with the given helperset.
+     * Runs console with the given helperset.
      *
-     * @param \Symfony\Component\Console\Helper\HelperSet $helperSet
+     * @param \Symfony\Component\Console\Helper\HelperSet  $helperSet
      * @param \Symfony\Component\Console\Command\Command[] $commands
+     *
      * @return void
      */
     static public function run(HelperSet $helperSet, $commands = array())
@@ -44,6 +45,8 @@ class ConsoleRunner
 
     /**
      * @param Application $cli
+     *
+     * @return void
      */
     static public function addCommands(Application $cli)
     {

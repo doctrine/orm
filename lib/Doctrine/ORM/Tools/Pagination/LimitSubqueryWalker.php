@@ -23,10 +23,9 @@ use Doctrine\ORM\Query\TreeWalkerAdapter;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\PathExpression;
-use Doctrine\ORM\Query\AST\AggregateExpression;
 
 /**
- * Replaces the selectClause of the AST with a SELECT DISTINCT root.id equivalent
+ * Replaces the selectClause of the AST with a SELECT DISTINCT root.id equivalent.
  *
  * @category    DoctrineExtensions
  * @package     DoctrineExtensions\Paginate
@@ -37,21 +36,26 @@ use Doctrine\ORM\Query\AST\AggregateExpression;
 class LimitSubqueryWalker extends TreeWalkerAdapter
 {
     /**
-     * ID type hint
+     * ID type hint.
      */
     const IDENTIFIER_TYPE = 'doctrine_paginator.id.type';
 
     /**
-     * @var int Counter for generating unique order column aliases
+     * Counter for generating unique order column aliases.
+     *
+     * @var int
      */
     private $_aliasCounter = 0;
 
     /**
      * Walks down a SelectStatement AST node, modifying it to retrieve DISTINCT ids
-     * of the root Entity
+     * of the root Entity.
      *
      * @param SelectStatement $AST
+     *
      * @return void
+     *
+     * @throws \RuntimeException
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
@@ -60,7 +64,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $selectExpressions = array();
 
         foreach ($this->_getQueryComponents() as $dqlAlias => $qComp) {
-            // preserve mixed data in query for ordering
+            // Preserve mixed data in query for ordering.
             if (isset($qComp['resultVariable'])) {
                 $selectExpressions[] = new SelectExpression($qComp['resultVariable'], $dqlAlias);
                 continue;
@@ -112,8 +116,4 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
 
         $AST->selectClause->isDistinct = true;
     }
-
 }
-
-
-

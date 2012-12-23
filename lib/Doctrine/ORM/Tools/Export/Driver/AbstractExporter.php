@@ -24,8 +24,7 @@ use Doctrine\ORM\Tools\Export\ExportException;
 
 /**
  * Abstract base class which is to be used for the Exporter drivers
- * which can be found in \Doctrine\ORM\Tools\Export\Driver
- *
+ * which can be found in \Doctrine\ORM\Tools\Export\Driver.
  *
  * @link    www.doctrine-project.org
  * @since   2.0
@@ -33,16 +32,39 @@ use Doctrine\ORM\Tools\Export\ExportException;
  */
 abstract class AbstractExporter
 {
+    /**
+     * @var array
+     */
     protected $_metadata = array();
+
+    /**
+     * @var string|null
+     */
     protected $_outputDir;
+
+    /**
+     * @var string|null
+     */
     protected $_extension;
+
+    /**
+     * @var bool
+     */
     protected $_overwriteExistingFiles = false;
 
+    /**
+     * @param string|null $dir
+     */
     public function __construct($dir = null)
     {
         $this->_outputDir = $dir;
     }
 
+    /**
+     * @param bool $overwrite
+     *
+     * @return void
+     */
     public function setOverwriteExistingFiles($overwrite)
     {
         $this->_overwriteExistingFiles = $overwrite;
@@ -50,17 +72,19 @@ abstract class AbstractExporter
 
     /**
      * Converts a single ClassMetadata instance to the exported format
-     * and returns it
+     * and returns it.
      *
      * @param ClassMetadataInfo $metadata
-     * @return mixed $exported
+     *
+     * @return string
      */
     abstract public function exportClassMetadata(ClassMetadataInfo $metadata);
 
     /**
-     * Set the array of ClassMetadataInfo instances to export
+     * Sets the array of ClassMetadataInfo instances to export.
      *
      * @param array $metadata
+     *
      * @return void
      */
     public function setMetadata(array $metadata)
@@ -69,9 +93,9 @@ abstract class AbstractExporter
     }
 
     /**
-     * Get the extension used to generated the path to a class
+     * Gets the extension used to generated the path to a class.
      *
-     * @return string $extension
+     * @return string|null
      */
     public function getExtension()
     {
@@ -79,7 +103,7 @@ abstract class AbstractExporter
     }
 
     /**
-     * Set the directory to output the mapping files to
+     * Sets the directory to output the mapping files to.
      *
      *     [php]
      *     $exporter = new YamlExporter($metadata);
@@ -87,6 +111,7 @@ abstract class AbstractExporter
      *     $exporter->export();
      *
      * @param string $dir
+     *
      * @return void
      */
     public function setOutputDir($dir)
@@ -95,10 +120,12 @@ abstract class AbstractExporter
     }
 
     /**
-     * Export each ClassMetadata instance to a single Doctrine Mapping file
-     * named after the entity
+     * Exports each ClassMetadata instance to a single Doctrine Mapping file
+     * named after the entity.
      *
      * @return void
+     *
+     * @throws \Doctrine\ORM\Tools\Export\ExportException
      */
     public function export()
     {
@@ -123,10 +150,11 @@ abstract class AbstractExporter
     }
 
     /**
-     * Generate the path to write the class for the given ClassMetadataInfo instance
+     * Generates the path to write the class for the given ClassMetadataInfo instance.
      *
      * @param ClassMetadataInfo $metadata
-     * @return string $path
+     *
+     * @return string
      */
     protected function _generateOutputPath(ClassMetadataInfo $metadata)
     {
@@ -134,7 +162,7 @@ abstract class AbstractExporter
     }
 
     /**
-     * Set the directory to output the mapping files to
+     * Sets the directory to output the mapping files to.
      *
      *     [php]
      *     $exporter = new YamlExporter($metadata, __DIR__ . '/yaml');
@@ -142,6 +170,7 @@ abstract class AbstractExporter
      *     $exporter->export();
      *
      * @param string $extension
+     *
      * @return void
      */
     public function setExtension($extension)
@@ -149,6 +178,11 @@ abstract class AbstractExporter
         $this->_extension = $extension;
     }
 
+    /**
+     * @param int $type
+     *
+     * @return string
+     */
     protected function _getInheritanceTypeString($type)
     {
         switch ($type) {
@@ -166,6 +200,11 @@ abstract class AbstractExporter
         }
     }
 
+    /**
+     * @param int $policy
+     *
+     * @return string
+     */
     protected function _getChangeTrackingPolicyString($policy)
     {
         switch ($policy) {
@@ -180,6 +219,11 @@ abstract class AbstractExporter
         }
     }
 
+    /**
+     * @param int $type
+     *
+     * @return string
+     */
     protected function _getIdGeneratorTypeString($type)
     {
         switch ($type) {

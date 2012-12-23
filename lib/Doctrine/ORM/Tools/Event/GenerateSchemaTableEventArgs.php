@@ -33,8 +33,19 @@ use Doctrine\DBAL\Schema\Table;
  */
 class GenerateSchemaTableEventArgs extends EventArgs
 {
+    /**
+     * @var \Doctrine\ORM\Mapping\ClassMetadata
+     */
     private $classMetadata;
+
+    /**
+     * @var \Doctrine\DBAL\Schema\Schema
+     */
     private $schema;
+
+    /**
+     * @var \Doctrine\DBAL\Schema\Table
+     */
     private $classTable;
 
     /**

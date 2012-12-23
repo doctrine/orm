@@ -27,7 +27,7 @@ namespace Doctrine\ORM\Proxy;
 class Autoloader
 {
     /**
-     * Resolve proxy class name to a filename based on the following pattern.
+     * Resolves proxy class name to a filename based on the following pattern.
      *
      * 1. Remove Proxy namespace from class name
      * 2. Remove namespace seperators from remaining class name.
@@ -36,7 +36,10 @@ class Autoloader
      * @param string $proxyDir
      * @param string $proxyNamespace
      * @param string $className
+     *
      * @return string
+     *
+     * @throws ProxyException
      */
     static public function resolveFile($proxyDir, $proxyNamespace, $className)
     {
@@ -49,13 +52,14 @@ class Autoloader
     }
 
     /**
-     * Register and return autoloader callback for the given proxy dir and
+     * Registers and returns autoloader callback for the given proxy dir and
      * namespace.
      *
-     * @param string $proxyDir
-     * @param string $proxyNamespace
-     * @param Closure $notFoundCallback Invoked when the proxy file is not found.
-     * @return Closure
+     * @param string   $proxyDir
+     * @param string   $proxyNamespace
+     * @param \Closure $notFoundCallback Invoked when the proxy file is not found.
+     *
+     * @return \Closure
      */
     static public function register($proxyDir, $proxyNamespace, \Closure $notFoundCallback = null)
     {
@@ -75,4 +79,3 @@ class Autoloader
         return $autoloader;
     }
 }
-

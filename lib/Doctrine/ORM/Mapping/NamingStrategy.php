@@ -31,53 +31,58 @@ namespace Doctrine\ORM\Mapping;
 interface NamingStrategy
 {
     /**
-     * Return a table name for an entity class
+     * Returns a table name for an entity class.
      *
-     * @param string $className The fully-qualified class name
-     * @return string A table name
+     * @param string $className The fully-qualified class name.
+     *
+     * @return string A table name.
      */
     function classToTableName($className);
 
     /**
-     * Return a column name for a property
+     * Returns a column name for a property.
      *
-     * @param string $propertyName A property
-     * @param string $className The fully-qualified class name
-     * @return string A column name
+     * @param string      $propertyName A property name.
+     * @param string|null $className    The fully-qualified class name.
+     *
+     * @return string A column name.
      */
     function propertyToColumnName($propertyName, $className = null);
 
     /**
-     * Return the default reference column name
+     * Returns the default reference column name.
      *
-     * @return string A column name
+     * @return string A column name.
      */
     function referenceColumnName();
 
     /**
-     * Return a join column name for a property
+     * Returns a join column name for a property.
      *
-     * @param string $propertyName A property
-     * @return string A join column name
+     * @param string $propertyName A property name.
+     *
+     * @return string A join column name.
      */
     function joinColumnName($propertyName);
 
     /**
-     * Return a join table name
+     * Returns a join table name.
      *
-     * @param string $sourceEntity The source entity
-     * @param string $targetEntity The target entity
-     * @param string $propertyName A property
-     * @return string A join table name
+     * @param string      $sourceEntity The source entity.
+     * @param string      $targetEntity The target entity.
+     * @param string|null $propertyName A property name.
+     *
+     * @return string A join table name.
      */
     function joinTableName($sourceEntity, $targetEntity, $propertyName = null);
 
     /**
-     * Return the foreign key column name for the given parameters
+     * Returns the foreign key column name for the given parameters.
      *
-     * @param string $entityName A entity
-     * @param string $referencedColumnName A property
-     * @return string A join column name
+     * @param string      $entityName           An entity.
+     * @param string|null $referencedColumnName A property.
+     *
+     * @return string A join column name.
      */
     function joinKeyColumnName($entityName, $referencedColumnName = null);
 }

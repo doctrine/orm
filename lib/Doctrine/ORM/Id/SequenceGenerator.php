@@ -30,16 +30,34 @@ use Doctrine\ORM\EntityManager;
  */
 class SequenceGenerator extends AbstractIdGenerator implements Serializable
 {
+    /**
+     * The allocation size of the sequence.
+     *
+     * @var int
+     */
     private $_allocationSize;
+
+    /**
+     * The name of the sequence.
+     *
+     * @var string
+     */
     private $_sequenceName;
+
+    /**
+     * @var int
+     */
     private $_nextValue = 0;
+
+    /**
+     * @var int|null
+     */
     private $_maxValue = null;
 
     /**
      * Initializes a new sequence generator.
      *
-     * @param \Doctrine\ORM\EntityManager $em The EntityManager to use.
-     * @param string $sequenceName The name of the sequence.
+     * @param string  $sequenceName   The name of the sequence.
      * @param integer $allocationSize The allocation size of the sequence.
      */
     public function __construct($sequenceName, $allocationSize)
@@ -51,8 +69,11 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
     /**
      * Generates an ID for the given entity.
      *
-     * @param object $entity
-     * @return integer|float The generated value.
+     * @param EntityManager $em
+     * @param object        $entity
+     *
+     * @return integer The generated value.
+     *
      * @override
      */
     public function generate(EntityManager $em, $entity)
@@ -72,7 +93,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
     /**
      * Gets the maximum value of the currently allocated bag of values.
      *
-     * @return integer|float
+     * @return integer|null
      */
     public function getCurrentMaxValue()
     {
@@ -82,13 +103,16 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
     /**
      * Gets the next value that will be returned by generate().
      *
-     * @return integer|float
+     * @return integer
      */
     public function getNextValue()
     {
         return $this->_nextValue;
     }
 
+    /**
+     * @return string
+     */
     public function serialize()
     {
         return serialize(array(
@@ -97,6 +121,11 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
         ));
     }
 
+    /**
+     * @param string $serialized
+     *
+     * @return void
+     */
     public function unserialize($serialized)
     {
         $array = unserialize($serialized);

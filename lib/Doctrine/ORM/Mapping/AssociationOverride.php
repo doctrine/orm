@@ -30,9 +30,8 @@ namespace Doctrine\ORM\Mapping;
  */
 final class AssociationOverride implements Annotation
 {
-
     /**
-     * The name of the relationship property whose mapping is being overridden
+     * The name of the relationship property whose mapping is being overridden.
      * 
      * @var string 
      */
@@ -45,12 +44,10 @@ final class AssociationOverride implements Annotation
      */
     public $joinColumns;
 
-
     /**
      * The join table that maps the relationship.
      *
      * @var \Doctrine\ORM\Mapping\JoinTable
      */
     public $joinTable;
-
 }

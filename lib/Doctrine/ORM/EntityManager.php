@@ -123,8 +123,8 @@ class EntityManager implements ObjectManager
      * Creates a new EntityManager that operates on the given database connection
      * and uses the given Configuration and EventManager implementations.
      *
-     * @param \Doctrine\DBAL\Connection $conn
-     * @param \Doctrine\ORM\Configuration $config
+     * @param \Doctrine\DBAL\Connection     $conn
+     * @param \Doctrine\ORM\Configuration   $config
      * @param \Doctrine\Common\EventManager $eventManager
      */
     protected function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
@@ -193,6 +193,8 @@ class EntityManager implements ObjectManager
 
     /**
      * Starts a transaction on the underlying database connection.
+     *
+     * @return void
      */
     public function beginTransaction()
     {
@@ -210,7 +212,8 @@ class EntityManager implements ObjectManager
      * the transaction is rolled back, the EntityManager closed and the exception re-thrown.
      *
      * @param callable $func The function to execute transactionally.
-     * @return mixed Returns the non-empty value returned from the closure or true instead
+     *
+     * @return mixed The non-empty value returned from the closure or true instead.
      */
     public function transactional($func)
     {
@@ -237,6 +240,8 @@ class EntityManager implements ObjectManager
 
     /**
      * Commits a transaction on the underlying database connection.
+     *
+     * @return void
      */
     public function commit()
     {
@@ -245,6 +250,8 @@ class EntityManager implements ObjectManager
 
     /**
      * Performs a rollback on the underlying database connection.
+     *
+     * @return void
      */
     public function rollback()
     {
@@ -261,7 +268,10 @@ class EntityManager implements ObjectManager
      * MyProject\Domain\User
      * sales:PriceRequest
      *
+     * @param string $className
+     *
      * @return \Doctrine\ORM\Mapping\ClassMetadata
+     *
      * @internal Performance-sensitive method.
      */
     public function getClassMetadata($className)
@@ -273,6 +283,7 @@ class EntityManager implements ObjectManager
      * Creates a new Query object.
      *
      * @param string $dql The DQL string.
+     *
      * @return \Doctrine\ORM\Query
      */
     public function createQuery($dql = "")
@@ -290,6 +301,7 @@ class EntityManager implements ObjectManager
      * Creates a Query from a named query.
      *
      * @param string $name
+     *
      * @return \Doctrine\ORM\Query
      */
     public function createNamedQuery($name)
@@ -300,8 +312,9 @@ class EntityManager implements ObjectManager
     /**
      * Creates a native SQL query.
      *
-     * @param string $sql
+     * @param string           $sql
      * @param ResultSetMapping $rsm The ResultSetMapping to use.
+     *
      * @return NativeQuery
      */
     public function createNativeQuery($sql, ResultSetMapping $rsm)
@@ -318,6 +331,7 @@ class EntityManager implements ObjectManager
      * Creates a NativeQuery from a named native query.
      *
      * @param string $name
+     *
      * @return \Doctrine\ORM\NativeQuery
      */
     public function createNamedNativeQuery($name)
@@ -330,7 +344,7 @@ class EntityManager implements ObjectManager
     /**
      * Create a QueryBuilder instance
      *
-     * @return QueryBuilder $qb
+     * @return QueryBuilder
      */
     public function createQueryBuilder()
     {
@@ -346,6 +360,9 @@ class EntityManager implements ObjectManager
      * the cascade-persist semantics + scheduled inserts/removals are synchronized.
      *
      * @param object $entity
+     *
+     * @return void
+     *
      * @throws \Doctrine\ORM\OptimisticLockException If a version check on an entity that
      *         makes use of optimistic locking fails.
      */
@@ -359,12 +376,17 @@ class EntityManager implements ObjectManager
     /**
      * Finds an Entity by its identifier.
      *
-     * @param string $entityName
-     * @param mixed $id
+     * @param string  $entityName
+     * @param mixed   $id
      * @param integer $lockMode
      * @param integer $lockVersion
      *
      * @return object
+     *
+     * @throws OptimisticLockException
+     * @throws ORMInvalidArgumentException
+     * @throws TransactionRequiredException
+     * @throws ORMException
      */
     public function find($entityName, $id, $lockMode = LockMode::NONE, $lockVersion = null)
     {
@@ -446,8 +468,11 @@ class EntityManager implements ObjectManager
      * without actually loading it, if the entity is not yet loaded.
      *
      * @param string $entityName The name of the entity type.
-     * @param mixed $id The entity identifier.
+     * @param mixed  $id         The entity identifier.
+     *
      * @return object The entity reference.
+     *
+     * @throws ORMException
      */
     public function getReference($entityName, $id)
     {
@@ -503,7 +528,8 @@ class EntityManager implements ObjectManager
      * never be loaded in the first place.
      *
      * @param string $entityName The name of the entity type.
-     * @param mixed $identifier The entity identifier.
+     * @param mixed  $identifier The entity identifier.
+     *
      * @return object The (partial) entity reference.
      */
     public function getPartialReference($entityName, $identifier)
@@ -533,7 +559,9 @@ class EntityManager implements ObjectManager
      * Clears the EntityManager. All entities that are currently managed
      * by this EntityManager become detached.
      *
-     * @param string $entityName if given, only entities of this type will get detached
+     * @param string|null $entityName if given, only entities of this type will get detached
+     *
+     * @return void
      */
     public function clear($entityName = null)
     {
@@ -544,6 +572,8 @@ class EntityManager implements ObjectManager
      * Closes the EntityManager. All entities that are currently managed
      * by this EntityManager become detached. The EntityManager may no longer
      * be used after it is closed.
+     *
+     * @return void
      */
     public function close()
     {
@@ -561,7 +591,11 @@ class EntityManager implements ObjectManager
      * NOTE: The persist operation always considers entities that are not yet known to
      * this EntityManager as NEW. Do not pass detached entities to the persist operation.
      *
-     * @param object $object The instance to make managed and persistent.
+     * @param object $entity The instance to make managed and persistent.
+     *
+     * @return void
+     *
+     * @throws ORMInvalidArgumentException
      */
     public function persist($entity)
     {
@@ -581,6 +615,10 @@ class EntityManager implements ObjectManager
      * or as a result of the flush operation.
      *
      * @param object $entity The entity instance to remove.
+     *
+     * @return void
+     *
+     * @throws ORMInvalidArgumentException
      */
     public function remove($entity)
     {
@@ -598,6 +636,10 @@ class EntityManager implements ObjectManager
      * overriding any local changes that have not yet been persisted.
      *
      * @param object $entity The entity to refresh.
+     *
+     * @return void
+     *
+     * @throws ORMInvalidArgumentException
      */
     public function refresh($entity)
     {
@@ -618,6 +660,10 @@ class EntityManager implements ObjectManager
      * reference it.
      *
      * @param object $entity The entity to detach.
+     *
+     * @return void
+     *
+     * @throws ORMInvalidArgumentException
      */
     public function detach($entity)
     {
@@ -634,7 +680,10 @@ class EntityManager implements ObjectManager
      * The entity passed to merge will not become associated/managed with this EntityManager.
      *
      * @param object $entity The detached entity to merge into the persistence context.
+     *
      * @return object The managed copy of the entity.
+     *
+     * @throws ORMInvalidArgumentException
      */
     public function merge($entity)
     {
@@ -650,8 +699,13 @@ class EntityManager implements ObjectManager
     /**
      * Creates a copy of the given entity. Can create a shallow or a deep copy.
      *
-     * @param object $entity  The entity to copy.
-     * @return object  The new entity.
+     * @param object  $entity The entity to copy.
+     * @param boolean $deep   FALSE for a shallow copy, TRUE for a deep copy.
+     *
+     * @return object The new entity.
+     *
+     * @throws \BadMethodCallException
+     *
      * @todo Implementation need. This is necessary since $e2 = clone $e1; throws an E_FATAL when access anything on $e:
      * Fatal error: Maximum function nesting level of '100' reached, aborting!
      */
@@ -663,9 +717,12 @@ class EntityManager implements ObjectManager
     /**
      * Acquire a lock on the given entity.
      *
-     * @param object $entity
-     * @param int $lockMode
-     * @param int $lockVersion
+     * @param object   $entity
+     * @param int      $lockMode
+     * @param int|null $lockVersion
+     *
+     * @return void
+     *
      * @throws OptimisticLockException
      * @throws PessimisticLockException
      */
@@ -678,6 +735,7 @@ class EntityManager implements ObjectManager
      * Gets the repository for an entity class.
      *
      * @param string $entityName The name of the entity.
+     *
      * @return EntityRepository The repository class.
      */
     public function getRepository($entityName)
@@ -706,6 +764,7 @@ class EntityManager implements ObjectManager
      * Determines whether an entity instance is managed in this EntityManager.
      *
      * @param object $entity
+     *
      * @return boolean TRUE if this EntityManager currently manages the given entity, FALSE otherwise.
      */
     public function contains($entity)
@@ -737,6 +796,8 @@ class EntityManager implements ObjectManager
 
     /**
      * Throws an exception if the EntityManager is closed or currently not active.
+     *
+     * @return void
      *
      * @throws ORMException If the EntityManager is closed.
      */
@@ -774,6 +835,7 @@ class EntityManager implements ObjectManager
      * selectively iterate over the result.
      *
      * @param int $hydrationMode
+     *
      * @return \Doctrine\ORM\Internal\Hydration\AbstractHydrator
      */
     public function getHydrator($hydrationMode)
@@ -788,8 +850,11 @@ class EntityManager implements ObjectManager
     /**
      * Create a new instance for the given hydration mode.
      *
-     * @param  int $hydrationMode
+     * @param int $hydrationMode
+     *
      * @return \Doctrine\ORM\Internal\Hydration\AbstractHydrator
+     *
+     * @throws ORMException
      */
     public function newHydrator($hydrationMode)
     {
@@ -834,6 +899,8 @@ class EntityManager implements ObjectManager
      * This method is a no-op for other objects
      *
      * @param object $obj
+     *
+     * @return void
      */
     public function initializeObject($obj)
     {
@@ -843,11 +910,14 @@ class EntityManager implements ObjectManager
     /**
      * Factory method to create EntityManager instances.
      *
-     * @param mixed $conn An array with the connection parameters or an existing
-     *      Connection instance.
-     * @param Configuration $config The Configuration instance to use.
-     * @param EventManager $eventManager The EventManager instance to use.
+     * @param mixed         $conn         An array with the connection parameters or an existing Connection instance.
+     * @param Configuration $config       The Configuration instance to use.
+     * @param EventManager  $eventManager The EventManager instance to use.
+     *
      * @return EntityManager The created EntityManager.
+     *
+     * @throws \InvalidArgumentException
+     * @throws ORMException
      */
     public static function create($conn, Configuration $config, EventManager $eventManager = null)
     {
@@ -902,7 +972,7 @@ class EntityManager implements ObjectManager
     /**
      * Checks whether the Entity Manager has filters.
      *
-     * @return True, if the EM has a filter collection.
+     * @return boolean True, if the EM has a filter collection.
      */
     public function hasFilters()
     {

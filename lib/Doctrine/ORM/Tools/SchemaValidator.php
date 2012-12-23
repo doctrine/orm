@@ -78,9 +78,10 @@ class SchemaValidator
     }
 
     /**
-     * Validate a single class of the current
+     * Validates a single class of the current.
      *
      * @param ClassMetadataInfo $class
+     *
      * @return array
      */
     public function validateClass(ClassMetadataInfo $class)
@@ -255,7 +256,7 @@ class SchemaValidator
     }
 
     /**
-     * Check if the Database Schema is in sync with the current metadata state.
+     * Checks if the Database Schema is in sync with the current metadata state.
      *
      * @return bool
      */

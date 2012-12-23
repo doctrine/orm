@@ -35,7 +35,11 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 class Parser
 {
-    /** READ-ONLY: Maps BUILT-IN string function names to AST class names. */
+    /**
+     * READ-ONLY: Maps BUILT-IN string function names to AST class names.
+     *
+     * @var array
+     */
     private static $_STRING_FUNCTIONS = array(
         'concat'    => 'Doctrine\ORM\Query\AST\Functions\ConcatFunction',
         'substring' => 'Doctrine\ORM\Query\AST\Functions\SubstringFunction',
@@ -45,7 +49,11 @@ class Parser
         'identity'  => 'Doctrine\ORM\Query\AST\Functions\IdentityFunction',
     );
 
-    /** READ-ONLY: Maps BUILT-IN numeric function names to AST class names. */
+    /**
+     * READ-ONLY: Maps BUILT-IN numeric function names to AST class names.
+     *
+     * @var array
+     */
     private static $_NUMERIC_FUNCTIONS = array(
         'length'    => 'Doctrine\ORM\Query\AST\Functions\LengthFunction',
         'locate'    => 'Doctrine\ORM\Query\AST\Functions\LocateFunction',
@@ -58,7 +66,11 @@ class Parser
         'bit_or'    => 'Doctrine\ORM\Query\AST\Functions\BitOrFunction',
     );
 
-    /** READ-ONLY: Maps BUILT-IN datetime function names to AST class names. */
+    /**
+     * READ-ONLY: Maps BUILT-IN datetime function names to AST class names.
+     *
+     * @var array
+     */
     private static $_DATETIME_FUNCTIONS = array(
         'current_date'      => 'Doctrine\ORM\Query\AST\Functions\CurrentDateFunction',
         'current_time'      => 'Doctrine\ORM\Query\AST\Functions\CurrentTimeFunction',
@@ -133,7 +145,7 @@ class Parser
     private $queryComponents = array();
 
     /**
-     * Keeps the nesting level of defined ResultVariables
+     * Keeps the nesting level of defined ResultVariables.
      *
      * @var integer
      */
@@ -159,10 +171,11 @@ class Parser
     private $identVariableExpressions = array();
 
     /**
-     * Check if a function is internally defined. Used to prevent overwriting
+     * Checks if a function is internally defined. Used to prevent overwriting
      * of built-in functions through user-defined functions.
      *
      * @param string $functionName
+     *
      * @return bool
      */
     static public function isInternalFunction($functionName)
@@ -192,6 +205,8 @@ class Parser
      * This tree walker will be run last over the AST, after any other walkers.
      *
      * @param string $className
+     *
+     * @return void
      */
     public function setCustomOutputTreeWalker($className)
     {
@@ -202,6 +217,8 @@ class Parser
      * Adds a custom tree walker for modifying the AST.
      *
      * @param string $className
+     *
+     * @return void
      */
     public function addCustomTreeWalker($className)
     {
@@ -239,7 +256,7 @@ class Parser
     }
 
     /**
-     * Parse and build AST for the given Query.
+     * Parses and builds AST for the given Query.
      *
      * @return \Doctrine\ORM\Query\AST\SelectStatement |
      *         \Doctrine\ORM\Query\AST\UpdateStatement |
@@ -284,8 +301,10 @@ class Parser
      * If they match, updates the lookahead token; otherwise raises a syntax
      * error.
      *
-     * @param int token type
+     * @param int $token The token type.
+     *
      * @return void
+     *
      * @throws QueryException If the tokens dont match.
      */
     public function match($token)
@@ -301,10 +320,12 @@ class Parser
     }
 
     /**
-     * Free this parser enabling it to be reused
+     * Frees this parser, enabling it to be reused.
      *
-     * @param boolean $deep     Whether to clean peek and reset errors
-     * @param integer $position Position to reset
+     * @param boolean $deep     Whether to clean peek and reset errors.
+     * @param integer $position Position to reset.
+     *
+     * @return void
      */
     public function free($deep = false, $position = 0)
     {
@@ -372,13 +393,14 @@ class Parser
     }
 
     /**
-     * Fix order of identification variables.
+     * Fixes order of identification variables.
      *
      * They have to appear in the select clause in the same order as the
      * declarations (from ... x join ... y join ... z ...) appear in the query
      * as the hydration process relies on that order for proper operation.
      *
      * @param AST\SelectStatement|AST\DeleteStatement|AST\UpdateStatement $AST
+     *
      * @return void
      */
     private function fixIdentificationVariableOrder($AST)
@@ -404,8 +426,10 @@ class Parser
     /**
      * Generates a new syntax error.
      *
-     * @param string $expected Expected string.
-     * @param array $token Got token.
+     * @param string      $expected Expected string.
+     * @param array|null  $token    Got token.
+     *
+     * @return void
      *
      * @throws \Doctrine\ORM\Query\QueryException
      */
@@ -427,8 +451,10 @@ class Parser
     /**
      * Generates a new semantical error.
      *
-     * @param string $message Optional message.
-     * @param array $token Optional token.
+     * @param string     $message Optional message.
+     * @param array|null $token   Optional token.
+     *
+     * @return void
      *
      * @throws \Doctrine\ORM\Query\QueryException
      */
@@ -458,9 +484,10 @@ class Parser
     }
 
     /**
-     * Peek beyond the matched closing parenthesis and return the first token after that one.
+     * Peeks beyond the matched closing parenthesis and returns the first token after that one.
      *
-     * @param boolean $resetPeek Reset peek after finding the closing parenthesis
+     * @param boolean $resetPeek Reset peek after finding the closing parenthesis.
+     *
      * @return array
      */
     private function peekBeyondClosingParenthesis($resetPeek = true)
@@ -495,6 +522,8 @@ class Parser
     /**
      * Checks if the given token indicates a mathematical operator.
      *
+     * @param array $token
+     *
      * @return boolean TRUE if the token is a mathematical operator, FALSE otherwise.
      */
     private function isMathOperator($token)
@@ -519,6 +548,8 @@ class Parser
 
     /**
      * Checks whether the given token type indicates an aggregate function.
+     *
+     * @param int $tokenType
      *
      * @return boolean TRUE if the token type is an aggregate function, FALSE otherwise.
      */
@@ -577,6 +608,7 @@ class Parser
      * Validates that the given <tt>NewObjectExpression</tt>.
      *
      * @param \Doctrine\ORM\Query\AST\SelectClause $AST
+     *
      * @return void
      */
     private function processDeferredNewObjectExpressions($AST)
@@ -697,8 +729,9 @@ class Parser
      * SingleValuedAssociationPathExpression ::= IdentificationVariable "." SingleValuedAssociationField
      * CollectionValuedPathExpression        ::= IdentificationVariable "." CollectionValuedAssociationField
      *
-     * @param array $deferredItem
      * @param mixed $AST
+     *
+     * @return void
      */
     private function processDeferredPathExpressions($AST)
     {
@@ -766,6 +799,9 @@ class Parser
         }
     }
 
+    /**
+     * @return void
+     */
     private function processRootEntityAliasSelected()
     {
         if ( ! count($this->identVariableExpressions)) {
@@ -1010,6 +1046,7 @@ class Parser
      * PathExpression ::= IdentificationVariable "." identifier
      *
      * @param integer $expectedTypes
+     *
      * @return \Doctrine\ORM\Query\AST\PathExpression
      */
     public function PathExpression($expectedTypes)
@@ -1473,6 +1510,8 @@ class Parser
      * NewValue ::= SimpleArithmeticExpression | "NULL"
      *
      * SimpleArithmeticExpression covers all *Primary grammar rules and also SimpleEntityExpression
+     *
+     * @return AST\ArithmeticExpression
      */
     public function NewValue()
     {
@@ -1950,7 +1989,7 @@ class Parser
     /**
      * GeneralCaseExpression ::= "CASE" WhenClause {WhenClause}* "ELSE" ScalarExpression "END"
      *
-     * @return \Doctrine\ORM\Query\AST\GeneralExpression
+     * @return \Doctrine\ORM\Query\AST\GeneralCaseExpression
      */
     public function GeneralCaseExpression()
     {
@@ -1973,6 +2012,8 @@ class Parser
     /**
      * SimpleCaseExpression ::= "CASE" CaseOperand SimpleWhenClause {SimpleWhenClause}* "ELSE" ScalarExpression "END"
      * CaseOperand ::= StateFieldPathExpression | TypeDiscriminator
+     *
+     * @return AST\SimpleCaseExpression
      */
     public function SimpleCaseExpression()
     {
@@ -1996,7 +2037,7 @@ class Parser
     /**
      * WhenClause ::= "WHEN" ConditionalExpression "THEN" ScalarExpression
      *
-     * @return \Doctrine\ORM\Query\AST\WhenExpression
+     * @return \Doctrine\ORM\Query\AST\WhenClause
      */
     public function WhenClause()
     {
@@ -2010,7 +2051,7 @@ class Parser
     /**
      * SimpleWhenClause ::= "WHEN" ScalarExpression "THEN" ScalarExpression
      *
-     * @return \Doctrine\ORM\Query\AST\SimpleWhenExpression
+     * @return \Doctrine\ORM\Query\AST\SimpleWhenClause
      */
     public function SimpleWhenClause()
     {
@@ -3146,6 +3187,8 @@ class Parser
 
     /**
      * FunctionDeclaration ::= FunctionsReturningStrings | FunctionsReturningNumerics | FunctionsReturningDatetime
+     *
+     * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
      */
     public function FunctionDeclaration()
     {
@@ -3169,7 +3212,9 @@ class Parser
     }
 
     /**
-     * Helper function for FunctionDeclaration grammar rule
+     * Helper function for FunctionDeclaration grammar rule.
+     *
+     * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
      */
     private function CustomFunctionDeclaration()
     {
@@ -3202,6 +3247,8 @@ class Parser
      *      "SQRT" "(" SimpleArithmeticExpression ")" |
      *      "MOD" "(" SimpleArithmeticExpression "," SimpleArithmeticExpression ")" |
      *      "SIZE" "(" CollectionValuedPathExpression ")"
+     *
+     * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
      */
     public function FunctionsReturningNumerics()
     {
@@ -3214,6 +3261,9 @@ class Parser
         return $function;
     }
 
+    /**
+     * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
+     */
     public function CustomFunctionsReturningNumerics()
     {
         // getCustomNumericFunction is case-insensitive
@@ -3228,6 +3278,8 @@ class Parser
 
     /**
      * FunctionsReturningDateTime ::= "CURRENT_DATE" | "CURRENT_TIME" | "CURRENT_TIMESTAMP"
+     *
+     * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
      */
     public function FunctionsReturningDatetime()
     {
@@ -3240,6 +3292,9 @@ class Parser
         return $function;
     }
 
+    /**
+     * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
+     */
     public function CustomFunctionsReturningDatetime()
     {
         // getCustomDatetimeFunction is case-insensitive
@@ -3259,6 +3314,8 @@ class Parser
      *   "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
      *   "LOWER" "(" StringPrimary ")" |
      *   "UPPER" "(" StringPrimary ")"
+     *
+     * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
      */
     public function FunctionsReturningStrings()
     {
@@ -3271,6 +3328,9 @@ class Parser
         return $function;
     }
 
+    /**
+     * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
+     */
     public function CustomFunctionsReturningStrings()
     {
         // getCustomStringFunction is case-insensitive
