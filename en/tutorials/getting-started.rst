@@ -11,7 +11,7 @@ Getting Started: Code First
     and generate the corresponding PHP code from it.
 
 Doctrine 2 is an object-relational mapper (ORM) for PHP 5.3.0+ that provides
-transparent persistence for PHP objects.  It uses the Data Mapper pattern at
+transparent persistence for PHP objects. It uses the Data Mapper pattern at
 the heart of this project, aiming for a complete separation of the
 domain/business logic from the persistence in a relational database management
 system. The benefit of Doctrine for the programmer is the ability to focus
@@ -74,29 +74,39 @@ requirements to be:
 Setup Project
 -------------
 
-Make sure you get Doctrine from PEAR by calling the following commands
-on your CLI:
+Create a new empty folder for this tutorial project, for example
+``doctrine2-tutorial`` and create a new file ``composer.json`` with
+the following contents:
 
 ::
 
-    $ pear channel-discover pear.doctrine-project.org
-    $ pear install --alldeps doctrine/DoctrineORM
+    {
+        "require": {
+            "doctrine/orm": "2.*",
+            "symfony/console": "2.*",
+            "symfony/yaml": "2.*"
+        },
+        "autoload": {
+            "psr-0": {"": "entities"}
+        }
+    }
 
-This should install the packages DoctrineCommon, DoctrineDBAL, DoctrineORM,
-SymfonyConsole and SymfonyYAML.
-
-Now create a new directory for this tutorial project:
+Install Doctrine using the Composer Dependency Management tool, by calling:
 
 ::
 
-    $ mkdir project
-    $ cd project
+    $ composer install
 
-You can prepare the directory structure so that in the end it looks like:
+This ill install the packages Doctrine Common, Doctrine DBAL, Doctrine ORM,
+Symfony YAML and Symfony Console. Both Symfony dependencies are optional
+but will be used in this tutorial.
+
+You can prepare the directory structure:
 
 ::
 
     project
+    |-- composer.json
     |-- config
     |   |-- xml
     |   `-- yaml
@@ -105,9 +115,10 @@ You can prepare the directory structure so that in the end it looks like:
 A first prototype
 -----------------
 
-A first simplified design for this domain model might look like the
-following set of classes. Put them into `entities/Bug.php`,
-`entities/Product.php` and `entities/User.php` respectively.
+We start with a simplified design for the bug tracker domain, by creating three
+classes ``Bug``, ``Product`` and ``User`` and putting them into
+`entities/Bug.php`, `entities/Product.php` and `entities/User.php`
+respectively.
 
 .. code-block:: php
 
