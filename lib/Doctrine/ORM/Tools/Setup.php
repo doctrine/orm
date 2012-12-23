@@ -63,6 +63,9 @@ class Setup
      * Use this method to register all autoloaders for a setup where Doctrine is installed
      * though {@link http://pear.doctrine-project.org}.
      *
+     * This method registers autoloaders for both Doctrine and Symfony top
+     * level namespaces.
+     *
      * @return void
      */
     static public function registerAutoloadPEAR()
@@ -74,15 +77,8 @@ class Setup
         $loader = new ClassLoader("Doctrine");
         $loader->register();
 
-        $parts = explode(PATH_SEPARATOR, get_include_path());
-
-        foreach ($parts as $includePath) {
-            if ($includePath != "." && file_exists($includePath . "/Doctrine")) {
-                $loader = new ClassLoader("Symfony\Component", $includePath . "/Doctrine");
-                $loader->register();
-                return;
-            }
-        }
+        $loader = new ClassLoader("Symfony");
+        $loader->register();
     }
 
     /**
