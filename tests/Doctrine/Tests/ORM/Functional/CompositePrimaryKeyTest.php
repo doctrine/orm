@@ -72,6 +72,24 @@ class CompositePrimaryKeyTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $sql = $this->_em->createQuery($dql)->getSQL();
     }
 
+    public function testIdentityFunctionWithCompositePrimaryKey()
+    {
+        $this->putGermanysBrandenburderTor();
+
+        $poi    = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('lat' => 100, 'long' => 200));
+        $photo  = new NavPhotos($poi, "asdf");
+        $this->_em->persist($photo);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $dql    = "SELECT IDENTITY(p.poi, 'long') AS long, IDENTITY(p.poi, 'lat') AS lat FROM Doctrine\Tests\Models\Navigation\NavPhotos p";
+        $result = $this->_em->createQuery($dql)->getResult();
+
+        $this->assertCount(1, $result);
+        $this->assertEquals(200, $result[0]['long']);
+        $this->assertEquals(100, $result[0]['lat']);
+    }
+
     public function testManyToManyCompositeRelation()
     {
         $this->putGermanysBrandenburderTor();
