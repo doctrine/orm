@@ -245,11 +245,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         // Make sure the table with the version column is updated even if no columns on that
         // table were affected.
-        if ($isVersioned && ! isset($updateData[$versionedTable])) {
-            $tableName   = $this->quoteStrategy->getTableName($versionedClass, $this->platform);
+        if ($isVersioned) {
+            if ( ! isset($updateData[$versionedTable])) {
+                $tableName   = $this->quoteStrategy->getTableName($versionedClass, $this->platform);
+                $this->updateTable($entity, $tableName, array(), true);
+            }
+
             $identifiers = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
-            
-            $this->updateTable($entity, $tableName, array(), true);
             $this->assignDefaultVersionValue($entity, $identifiers);
         }
     }
