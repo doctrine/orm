@@ -8,9 +8,6 @@ build.properties export-ignore
 build.properties.dev export-ignore
 build.xml export-ignore
 CONTRIBUTING.md export-ignore
-doctrine-mapping.xsd export-ignore
-LICENSE export-ignore
 phpunit.xml.dist export-ignore
 README.markdown export-ignore
 run-all.sh export-ignore
-UPGRADE.md export-ignore
