@@ -208,7 +208,7 @@ allowed. Binding parameters can simply be achieved as follows:
     $qb->select('u')
        ->from('User u')
        ->where('u.id = ?1')
-       ->orderBy('u.name ASC');
+       ->orderBy('u.name', 'ASC');
        ->setParameter(1, 100); // Sets ?1 to 100, and thus we will fetch a user with u.id = 100
 
 You are not forced to enumerate your placeholders as the
