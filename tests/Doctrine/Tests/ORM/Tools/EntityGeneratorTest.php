@@ -70,6 +70,24 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
                 'inverseJoinColumns' => array(array('name' => 'comment_id', 'referencedColumnName' => 'id')),
             ),
         ));
+        $metadata->mapManyToMany(array(
+            'fieldName' => 'bibliographies',
+            'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorBibliography',
+            'joinTable' => array(
+                'name' => 'book_bibliography',
+                'joinColumns' => array(array('name' => 'book_id', 'referencedColumnName' => 'id')),
+                'inverseJoinColumns' => array(array('name' => 'bibliography_id', 'referencedColumnName' => 'id')),
+            ),
+        ));
+        $metadata->mapManyToMany(array(
+            'fieldName' => 'birthdays',
+            'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorBirthday',
+            'joinTable' => array(
+                'name' => 'book_birthday',
+                'joinColumns' => array(array('name' => 'book_id', 'referencedColumnName' => 'id')),
+                'inverseJoinColumns' => array(array('name' => 'birthday_id', 'referencedColumnName' => 'id')),
+            ),
+        ));
         $metadata->addLifecycleCallback('loading', 'postLoad');
         $metadata->addLifecycleCallback('willBeRemoved', 'preRemove');
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
@@ -125,6 +143,12 @@ class EntityGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getComments'), "EntityGeneratorBook::getComments() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'addComment'), "EntityGeneratorBook::addComment() missing.");
         $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'removeComment'), "EntityGeneratorBook::removeComment() missing.");
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getBibliographies'), "EntityGeneratorBook::getBibliographies() missing.");
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'addBibliography'), "EntityGeneratorBook::addBibliography() missing.");
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'removeBibliography'), "EntityGeneratorBook::removeBibliography() missing.");
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getBirthdays'), "EntityGeneratorBook::getBirthdays() missing.");
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'addBirthday'), "EntityGeneratorBook::addBirthday() missing.");
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'removeBirthday'), "EntityGeneratorBook::removeBirthday() missing.");
 
         $this->assertEquals('published', $book->getStatus());
 
@@ -585,3 +609,6 @@ class
 
 class EntityGeneratorAuthor {}
 class EntityGeneratorComment {}
+class EntityGeneratorBibliography {}
+class EntityGeneratorBirthday {}
+
