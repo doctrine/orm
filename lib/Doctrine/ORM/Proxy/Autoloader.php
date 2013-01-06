@@ -75,7 +75,9 @@ class Autoloader
                 require $file;
             }
         };
-        spl_autoload_register($autoloader);
+
+        spl_autoload_register($autoloader, true, true);
+
         return $autoloader;
     }
 }
