@@ -19,26 +19,29 @@
 
 namespace Doctrine\ORM\Proxy;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityNotFoundException;
-
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\Common\Proxy\ProxyDefinition;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Proxy\Proxy;
 use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\ORM\Persisters\BasicEntityPersister;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityNotFoundException;
 
 /**
  * This factory is used to create proxy objects for entities at runtime.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
- * @author Marco Pivetta <ocramius@gmail.com>
+ * @author Marco Pivetta  <ocramius@gmail.com>
  * @since 2.0
  */
-class ProxyFactory
+class ProxyFactory extends AbstractProxyFactory
 {
     /**
-     * @var EntityManager The EntityManager this factory is bound to.
+     * @var \Doctrine\ORM\EntityManager The EntityManager this factory is bound to.
      */
     private $em;
 
@@ -48,182 +51,72 @@ class ProxyFactory
     private $uow;
 
     /**
-     * @var ProxyGenerator the proxy generator responsible for creating the proxy classes/files.
-     */
-    private $proxyGenerator;
-
-    /**
-     * @var bool Whether to automatically (re)generate proxy classes.
-     */
-    private $autoGenerate;
-
-    /**
      * @var string
      */
     private $proxyNs;
 
     /**
-     * @var string
-     */
-    private $proxyDir;
-
-    /**
-     * @var array definitions (indexed by requested class name) for the proxy classes.
-     *            Each element is an array containing following items:
-     *            "fqcn"             - FQCN of the proxy class
-     *            "initializer"      - Closure to be used as proxy __initializer__
-     *            "cloner"           - Closure to be used as proxy __cloner__
-     *            "identifierFields" - list of field names for the identifiers
-     *            "reflectionFields" - ReflectionProperties for the fields
-     */
-    private $definitions = array();
-
-    /**
      * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
      * connected to the given <tt>EntityManager</tt>.
      *
-     * @param EntityManager $em           The EntityManager the new factory works for.
-     * @param string        $proxyDir     The directory to use for the proxy classes. It must exist.
-     * @param string        $proxyNs      The namespace to use for the proxy classes.
-     * @param boolean       $autoGenerate Whether to automatically generate proxy classes.
+     * @param \Doctrine\ORM\EntityManager $em           The EntityManager the new factory works for.
+     * @param string                      $proxyDir     The directory to use for the proxy classes. It must exist.
+     * @param string                      $proxyNs      The namespace to use for the proxy classes.
+     * @param boolean                     $autoGenerate Whether to automatically generate proxy classes.
      */
     public function __construct(EntityManager $em, $proxyDir, $proxyNs, $autoGenerate = false)
     {
-        $this->em           = $em;
-        $this->uow          = $em->getUnitOfWork();
-        $this->proxyDir     = $proxyDir;
-        $this->proxyNs      = $proxyNs;
-        $this->autoGenerate = $autoGenerate;
+        $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
+
+        $proxyGenerator->setPlaceholder('baseProxyInterface', 'Doctrine\ORM\Proxy\Proxy');
+        parent::__construct($proxyGenerator, $em->getMetadataFactory(), $autoGenerate);
+
+        $this->em      = $em;
+        $this->uow     = $em->getUnitOfWork();
+        $this->proxyNs = $proxyNs;
+
     }
 
     /**
-     * Gets a reference proxy instance for the entity of the given type and identified by
-     * the given identifier.
-     *
-     * @param  string $className
-     * @param  mixed  $identifier
-     * @return object
+     * {@inheritDoc}
      */
-    public function getProxy($className, $identifier)
+    protected function skipClass(ClassMetadata $metadata)
     {
-        if ( ! isset($this->definitions[$className])) {
-            $this->initProxyDefinitions($className);
-        }
-
-        $definition         = $this->definitions[$className];
-        $fqcn               = $definition['fqcn'];
-        $identifierFields   = $definition['identifierFields'];
-        /* @var $reflectionFields \ReflectionProperty[] */
-        $reflectionFields   = $definition['reflectionFields'];
-        $proxy              = new $fqcn($definition['initializer'], $definition['cloner']);
-
-        foreach ($identifierFields as $idField) {
-            $reflectionFields[$idField]->setValue($proxy, $identifier[$idField]);
-        }
-
-        return $proxy;
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadataInfo */
+        return $metadata->isMappedSuperclass || $metadata->getReflectionClass()->isAbstract();
     }
 
     /**
-     * @param \Doctrine\Common\Proxy\Proxy $proxy
-     *
-     * @return \Doctrine\Common\Proxy\Proxy
-     *
-     * @throws \Doctrine\ORM\ORMInvalidArgumentException
+     * {@inheritDoc}
      */
-    public function resetUninitializedProxy(Proxy $proxy)
+    protected function createProxyDefinition($className)
     {
-        if ($proxy->__isInitialized()) {
-            throw new ORMInvalidArgumentException('Provided proxy must not be initialized');
-        }
-
-        $className = $this->em->getClassMetadata(get_class($proxy))->getName();
-
-        if ( ! isset($this->definitions[$className])) {
-            $this->initProxyDefinitions($className);
-        }
-
-        $proxy->__setInitializer($this->definitions[$className]['initializer']);
-        $proxy->__setCloner($this->definitions[$className]['cloner']);
-
-        return $proxy;
-    }
-
-    /**
-     * Generates proxy classes for all given classes.
-     *
-     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata[] $classes The classes (ClassMetadata instances)
-     *                                                                      for which to generate proxies.
-     * @param string $proxyDir The target directory of the proxy classes. If not specified, the
-     *                      directory configured on the Configuration of the EntityManager used
-     *                      by this factory is used.
-     * @return int Number of generated proxies.
-     */
-    public function generateProxyClasses(array $classes, $proxyDir = null)
-    {
-        $generated = 0;
-
-        foreach ($classes as $class) {
-            /* @var $class \Doctrine\ORM\Mapping\ClassMetadataInfo */
-            if ($class->isMappedSuperclass || $class->getReflectionClass()->isAbstract()) {
-                continue;
-            }
-
-            $generator = $this->getProxyGenerator();
-
-            $proxyFileName = $generator->getProxyFileName($class->getName(), $proxyDir);
-            $generator->generateProxyClass($class, $proxyFileName);
-            $generated += 1;
-        }
-
-        return $generated;
-    }
-
-    /**
-     * @param ProxyGenerator $proxyGenerator
-     */
-    public function setProxyGenerator(ProxyGenerator $proxyGenerator)
-    {
-        $this->proxyGenerator = $proxyGenerator;
-    }
-
-    /**
-     * @return ProxyGenerator
-     */
-    public function getProxyGenerator()
-    {
-        if (null === $this->proxyGenerator) {
-            $this->proxyGenerator = new ProxyGenerator($this->proxyDir, $this->proxyNs);
-            $this->proxyGenerator->setPlaceholder('<baseProxyInterface>', 'Doctrine\ORM\Proxy\Proxy');
-        }
-
-        return $this->proxyGenerator;
-    }
-
-    /**
-     * @param string $className
-     */
-    private function initProxyDefinitions($className)
-    {
-        $classMetadata = $this->em->getClassMetadata($className);
-        $className     = $classMetadata->getName();
-        $fqcn          = ClassUtils::generateProxyClassName($className, $this->proxyNs);
-
-        if ( ! class_exists($fqcn, false)) {
-            $generator = $this->getProxyGenerator();
-            $fileName = $generator->getProxyFileName($className);
-
-            if ($this->autoGenerate) {
-                $generator->generateProxyClass($classMetadata);
-            }
-
-            require $fileName;
-        }
-
+        $classMetadata   = $this->em->getClassMetadata($className);
         $entityPersister = $this->uow->getEntityPersister($className);
 
+        return new ProxyDefinition(
+            ClassUtils::generateProxyClassName($className, $this->proxyNs),
+            $classMetadata->getIdentifierFieldNames(),
+            $classMetadata->getReflectionProperties(),
+            $this->createInitializer($classMetadata, $entityPersister),
+            $this->createCloner($classMetadata, $entityPersister)
+        );
+    }
+
+    /**
+     * Creates a closure capable of initializing a proxy
+     *
+     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
+     * @param \Doctrine\ORM\Persisters\BasicEntityPersister      $entityPersister
+     *
+     * @return \Closure
+     *
+     * @throws \Doctrine\ORM\EntityNotFoundException
+     */
+    private function createInitializer(ClassMetadata $classMetadata, BasicEntityPersister $entityPersister)
+    {
         if ($classMetadata->getReflectionClass()->hasMethod('__wakeup')) {
-            $initializer = function (Proxy $proxy) use ($entityPersister, $classMetadata) {
+            return function (Proxy $proxy) use ($entityPersister, $classMetadata) {
                 $proxy->__setInitializer(null);
                 $proxy->__setCloner(null);
 
@@ -246,32 +139,45 @@ class ProxyFactory
                     throw new EntityNotFoundException();
                 }
             };
-        } else {
-            $initializer = function (Proxy $proxy) use ($entityPersister, $classMetadata) {
-                $proxy->__setInitializer(null);
-                $proxy->__setCloner(null);
-
-                if ($proxy->__isInitialized()) {
-                    return;
-                }
-
-                $properties = $proxy->__getLazyProperties();
-
-                foreach ($properties as $propertyName => $property) {
-                    if (!isset($proxy->$propertyName)) {
-                        $proxy->$propertyName = $properties[$propertyName];
-                    }
-                }
-
-                $proxy->__setInitialized(true);
-
-                if (null === $entityPersister->load($classMetadata->getIdentifierValues($proxy), $proxy)) {
-                    throw new EntityNotFoundException();
-                }
-            };
         }
 
-        $cloner = function (Proxy $proxy) use ($entityPersister, $classMetadata) {
+        return function (Proxy $proxy) use ($entityPersister, $classMetadata) {
+            $proxy->__setInitializer(null);
+            $proxy->__setCloner(null);
+
+            if ($proxy->__isInitialized()) {
+                return;
+            }
+
+            $properties = $proxy->__getLazyProperties();
+
+            foreach ($properties as $propertyName => $property) {
+                if (!isset($proxy->$propertyName)) {
+                    $proxy->$propertyName = $properties[$propertyName];
+                }
+            }
+
+            $proxy->__setInitialized(true);
+
+            if (null === $entityPersister->load($classMetadata->getIdentifierValues($proxy), $proxy)) {
+                throw new EntityNotFoundException();
+            }
+        };
+    }
+
+    /**
+     * Creates a closure capable of finalizing state a cloned proxy
+     *
+     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
+     * @param \Doctrine\ORM\Persisters\BasicEntityPersister      $entityPersister
+     *
+     * @return \Closure
+     *
+     * @throws \Doctrine\ORM\EntityNotFoundException
+     */
+    private function createCloner(ClassMetadata $classMetadata, BasicEntityPersister $entityPersister)
+    {
+        return function (Proxy $proxy) use ($entityPersister, $classMetadata) {
             if ($proxy->__isInitialized()) {
                 return;
             }
@@ -294,13 +200,5 @@ class ProxyFactory
                 }
             }
         };
-
-        $this->definitions[$className] = array(
-            'fqcn'             => $fqcn,
-            'initializer'      => $initializer,
-            'cloner'           => $cloner,
-            'identifierFields' => $classMetadata->getIdentifierFieldNames(),
-            'reflectionFields' => $classMetadata->getReflectionProperties(),
-        );
     }
 }

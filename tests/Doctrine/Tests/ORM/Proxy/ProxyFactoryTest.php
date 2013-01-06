@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Proxy;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\Tests\Mocks\ConnectionMock;
@@ -9,13 +10,11 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Mocks\DriverMock;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 /**
  * Test the proxy generator. Its work is generating on-the-fly subclasses of a given model, which implement the Proxy pattern.
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
-class ProxtFactoryTest extends \Doctrine\Tests\OrmTestCase
+class ProxyFactoryTest extends \Doctrine\Tests\OrmTestCase
 {
     /**
      * @var ConnectionMock
@@ -73,7 +72,7 @@ class ProxtFactoryTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testSkipAbstractClassesOnGeneration()
     {
-        $cm = new \Doctrine\ORM\Mapping\ClassMetadata(__NAMESPACE__ . '\\AbstractClass');
+        $cm = new ClassMetadata(__NAMESPACE__ . '\\AbstractClass');
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
         $this->assertNotNull($cm->reflClass);
 
