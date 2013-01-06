@@ -532,6 +532,13 @@ class QueryBuilder
      */
     public function add($dqlPartName, $dqlPart, $append = false)
     {
+        if ($append && ($dqlPartName === "where" || $dqlPartName === "having")) {
+            throw new \InvalidArgumentException(
+                "Using \$append = true does not have an effect with 'where' or 'having' ".
+                "parts. See QueryBuilder#andWhere() for an example for correct usage."
+            );
+        }
+
         $isMultiple = is_array($this->_dqlParts[$dqlPartName]);
 
         // This is introduced for backwards compatibility reasons.
@@ -898,7 +905,7 @@ class QueryBuilder
             $where = new Expr\Andx($args);
         }
 
-        return $this->add('where', $where, true);
+        return $this->add('where', $where);
     }
 
     /**
@@ -931,7 +938,7 @@ class QueryBuilder
             $where = new Expr\Orx($args);
         }
 
-        return $this->add('where', $where, true);
+        return $this->add('where', $where);
     }
 
     /**

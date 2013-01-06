@@ -834,4 +834,17 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals('SELECT DISTINCT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $qb->getDQL());
     }
+
+    /**
+     * @group DDC-2192
+     */
+    public function testWhereAppend()
+    {
+        $this->setExpectedException('InvalidArgumentException', "Using \$append = true does not have an effect with 'where' or 'having' parts. See QueryBuilder#andWhere() for an example for correct usage.");
+
+        $qb = $this->_em->createQueryBuilder()
+            ->add('where', 'u.foo = ?1')
+            ->add('where', 'u.bar = ?2', true)
+        ;
+    }
 }
