@@ -14,7 +14,7 @@
     "require": {
         "php": ">=5.3.2",
         "ext-pdo": "*",
-        "doctrine/dbal": ">=2.3-dev,<2.5-dev",
+        "doctrine/dbal": ">=2.4-dev,<2.5-dev",
         "symfony/console": "2.*"
     },
     "suggest": {
