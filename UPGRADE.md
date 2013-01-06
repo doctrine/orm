@@ -1,8 +1,8 @@
 # Upgrade to 2.4
 
-## OnFlush and PreFlush event always called
+## OnFlush and PostFlush event always called
 
-Before 2.4  the preFlush and onFlush events were only called when there were
+Before 2.4 the postFlush and onFlush events were only called when there were
 actually entities that changed. Now these events are called no matter if there
 are entities in the UoW or changes are found.
 

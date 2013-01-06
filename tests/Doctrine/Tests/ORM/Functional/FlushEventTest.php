@@ -57,6 +57,7 @@ class FlushEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $listener = new OnFlushCalledListener();
         $this->_em->getEventManager()->addEventListener(Events::onFlush, $listener);
         $this->_em->getEventManager()->addEventListener(Events::preFlush, $listener);
+        $this->_em->getEventManager()->addEventListener(Events::postFlush, $listener);
 
         $this->_em->flush();
 
@@ -115,6 +116,7 @@ class OnFlushCalledListener
 {
     public $preFlush = 0;
     public $onFlush = 0;
+    public $postFlush = 0;
 
     public function preFlush($args)
     {
@@ -125,4 +127,10 @@ class OnFlushCalledListener
     {
         $this->onFlush++;
     }
+
+    public function postFlush($args)
+    {
+        $this->postFlush++;
+    }
 }
+
