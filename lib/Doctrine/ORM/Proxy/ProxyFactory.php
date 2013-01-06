@@ -25,6 +25,7 @@ use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Proxy\Proxy;
 use Doctrine\Common\Proxy\ProxyGenerator;
+use Doctrine\ORM\ORMInvalidArgumentException;
 
 /**
  * This factory is used to create proxy objects for entities at runtime.
@@ -124,6 +125,31 @@ class ProxyFactory
     }
 
     /**
+     * @param \Doctrine\Common\Proxy\Proxy $proxy
+     *
+     * @return \Doctrine\Common\Proxy\Proxy
+     *
+     * @throws \Doctrine\ORM\ORMInvalidArgumentException
+     */
+    public function resetUninitializedProxy(Proxy $proxy)
+    {
+        if ($proxy->__isInitialized()) {
+            throw new ORMInvalidArgumentException('Provided proxy must not be initialized');
+        }
+
+        $className = $this->em->getClassMetadata(get_class($proxy))->getName();
+
+        if ( ! isset($this->definitions[$className])) {
+            $this->initProxyDefinitions($className);
+        }
+
+        $proxy->__setInitializer($this->definitions[$className]['initializer']);
+        $proxy->__setCloner($this->definitions[$className]['cloner']);
+
+        return $proxy;
+    }
+
+    /**
      * Generates proxy classes for all given classes.
      *
      * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata[] $classes The classes (ClassMetadata instances)
@@ -179,8 +205,9 @@ class ProxyFactory
      */
     private function initProxyDefinitions($className)
     {
-        $fqcn = ClassUtils::generateProxyClassName($className, $this->proxyNs);
         $classMetadata = $this->em->getClassMetadata($className);
+        $className     = $classMetadata->getName();
+        $fqcn          = ClassUtils::generateProxyClassName($className, $this->proxyNs);
 
         if ( ! class_exists($fqcn, false)) {
             $generator = $this->getProxyGenerator();

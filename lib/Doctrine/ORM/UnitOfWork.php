@@ -1769,7 +1769,8 @@ class UnitOfWork implements PropertyChangedListener
         $managedCopy = $entity;
 
         if ($this->getEntityState($entity, self::STATE_DETACHED) !== self::STATE_MANAGED) {
-            if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
+            if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
+                $this->em->getProxyFactory()->resetUninitializedProxy($entity);
                 $entity->__load();
             }
 
